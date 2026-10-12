@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 16.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "La app Perú se organiza como Contabilidad: Clientes, Proveedores, Tesorería, Contabilidad, SUNAT, Informes y Configuración, con secciones dentro de cada menú (antes, 23 menús principales)."
   - version: 15.20261012
     fecha: 12/10/2026
     cambios:

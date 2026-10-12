@@ -255,7 +255,7 @@ pasos:
   - seccion: Cierre del periodo
     texto: Cuadre que exige el PCGE y regeneración.
   - titulo: Destinos del periodo
-    ruta: Perú ▸ Destinos ▸ Destinos del periodo (también en Contabilidad ▸ Cierre)
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Asientos de destino (también en Contabilidad ▸ Cierre)
     texto: >-
       Para un rango de fechas muestra el **saldo acreedor de la 79**, el
       **saldo deudor del Elemento 9** y su **diferencia**, que según el PCGE
@@ -304,7 +304,7 @@ campos:
     campos:
       - [Cuenta de destino, "Cuenta del Elemento 9 (o de la clase 6 en 9 → 6) que recibe la parte del gasto de este centro de costo.", Vacío, "La distribución analítica del gasto decide el reparto"]
   - grupo: Destinos del periodo
-    ruta: Perú ▸ Destinos ▸ Destinos del periodo
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Asientos de destino
     campos:
       - [Desde / Hasta, Rango de fechas del cuadre y de la regeneración., Primer día del mes / hoy, "—"]
       - [Saldo acreedor 79, Cargas imputables del periodo., Calculado, "Solo en 6 → 9"]
@@ -470,6 +470,10 @@ faq:
       facturas y notas.
 
 novedades:
+  - version: 12.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Contabilidad ▸ Cierre del mes (Asientos de destino y Destinos por cuenta)."
   - version: 11.20261009
     fecha: 09/10/2026
     cambios:

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Perú ▸ Tesorería ▸ Depósitos y garantías, con el patrón de Detracciones. -->
-    <menuitem id="menu_treasury_root" name="Tesorería"
-              parent="al_account_base.al_l10n_pe_root"
+    <!-- Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Depósitos, con el patrón de Detracciones. -->
+    <menuitem id="menu_treasury_root" name="Depósitos y garantías"
+              parent="al_account_base.al_l10n_pe_menu_treasury"
               groups="account.group_account_user"
-              sequence="27"/>
-    <menuitem id="menu_term_deposit" name="Depósitos y garantías"
+              sequence="30"/>
+    <menuitem id="menu_term_deposit" name="Depósitos"
               parent="menu_treasury_root" action="action_term_deposit" sequence="10"/>
-    <menuitem id="menu_term_deposit_analysis" name="Análisis de depósitos"
-              parent="menu_treasury_root" action="action_term_deposit_analysis" sequence="20"/>
+    <menuitem id="menu_term_deposit_analysis" name="Depósitos y garantías"
+              parent="al_account_base.al_l10n_pe_reporting_analysis" action="action_term_deposit_analysis" sequence="30"/>
     <menuitem id="menu_term_deposit_portfolio" name="Cartera vigente"
-              parent="menu_treasury_root" action="action_term_deposit_portfolio" sequence="30"/>
+              parent="menu_treasury_root" action="action_term_deposit_portfolio" sequence="20"/>
     <menuitem id="menu_term_deposit_interest" name="Intereses devengados"
-              parent="menu_treasury_root" action="action_term_deposit_interest" sequence="40"/>
+              parent="menu_treasury_root" action="action_term_deposit_interest" sequence="30"/>
 
     <menuitem id="menu_term_deposit_account_config" name="Depósitos y garantías"
               parent="al_account_base.al_l10n_pe_config_accounts"
               action="action_term_deposit_account_config"
-              groups="account.group_account_manager" sequence="35"/>
+              groups="account.group_account_manager" sequence="50"/>
 </odoo>

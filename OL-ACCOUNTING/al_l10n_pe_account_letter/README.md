@@ -153,7 +153,7 @@ Extiende también `account.move` y `account.move.line`.
 Los mismos accesos están duplicados en dos árboles (misma acción, distinto
 punto de entrada):
 
-- **Perú ▸ Letras de cambio** (Clientes/Proveedores: canje, canje masivo,
+- **Perú ▸ Clientes ▸ Letras por cobrar** (Clientes/Proveedores: canje, canje masivo,
   letras e historial de canje) y **Perú ▸ Configuración ▸ Cuentas de letras**.
 - **Contabilidad ▸ Clientes/Proveedores ▸ Letras** (mismos submenús) y
   **Contabilidad ▸ Configuración ▸ Cuentas de letras**.

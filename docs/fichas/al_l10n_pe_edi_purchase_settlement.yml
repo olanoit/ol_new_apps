@@ -106,14 +106,14 @@ pasos:
     imagen: screenshots/09-producto.png
   - seccion: Emisión
   - titulo: El borrador
-    ruta: Perú ▸ Liquidaciones de compra ▸ Liquidaciones de compra
+    ruta: Perú ▸ Proveedores ▸ Comprobantes ▸ Liquidaciones de compra
     texto: >-
       Con el vendedor y las líneas, el módulo pone el tipo 04 y añade el IGV
       retenido a las líneas gravadas. Esta compra de S/ 600 no llega a
       S/ 700: no retiene renta.
     imagen: screenshots/03-borrador.png
   - titulo: La liquidación confirmada
-    ruta: Perú ▸ Liquidaciones de compra ▸ Liquidaciones de compra
+    ruta: Perú ▸ Proveedores ▸ Comprobantes ▸ Liquidaciones de compra
     texto: >-
       Al confirmar toma el número L001-00000001 y queda «Por enviar». Los
       botones de nota de crédito y de débito no aparecen: la liquidación se
@@ -135,7 +135,7 @@ pasos:
     imagen: screenshots/06-asiento.png
   - seccion: SUNAT
   - titulo: Envío, consulta y reversión
-    ruta: Perú ▸ Liquidaciones de compra ▸ Por enviar o en reversión
+    ruta: Perú ▸ Proveedores ▸ Comprobantes ▸ Liquidaciones por enviar
     texto: >-
       «Enviar a SUNAT» firma y envía el XML; aceptada, guarda el ZIP con el
       XML firmado y la constancia. «Revertir en SUNAT» envía el resumen
@@ -247,6 +247,10 @@ faq:
       avisa si ya pasan de 75 UIT.
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Proveedores ▸ Comprobantes."
   - version: 2.20261012
     fecha: 12/10/2026
     cambios:

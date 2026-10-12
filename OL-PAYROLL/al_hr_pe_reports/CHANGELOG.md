@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261012 — 12/10/2026
+
+- Pagos masivos bancarios pasa a Recibos de nómina ▸ Pagos y contabilidad; plantillas de contrato en Configuración ▸ Tipos y plantillas.
+
 ## 22.20261011 — 11/10/2026
 
 - Boleta de pago, certificado de trabajo, carta de retiro CTS, certificado de rentas de 5.ª categoría y contrato de trabajo con el formato del comprobante A4 de la suite (al_report_base): encabezado con logo, datos de la compañía y recuadro del documento, tablas en blanco y negro con cabecera gris y pie con la compañía y «Página X de Y».

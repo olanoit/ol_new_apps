@@ -37,7 +37,7 @@ prestadores y prepara la declaración mensual en la PLAME.
 
 ## Registrar un recibo por honorarios
 
-1. Vaya a **Perú ‣ Renta de 4.ª categoría ‣ Recibos por honorarios** y cree el
+1. Vaya a **Perú ‣ Proveedores ‣ Comprobantes ‣ Recibos por honorarios** y cree el
    recibo con **Tipo de documento** **(02) Recibo por Honorarios**, su número
    (`E001-58`) y el importe de los honorarios, sin IGV.
 2. Al guardar o publicar, la línea recibe el impuesto **Retención 4.ª categoría
@@ -59,7 +59,7 @@ prestadores y prepara la declaración mensual en la PLAME.
 
 ## Registrar una suspensión
 
-1. Vaya a **Perú ‣ Renta de 4.ª categoría ‣ Suspensiones de retención**, o a la
+1. Vaya a **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Suspensiones de 4.ª categoría**, o a la
    pestaña **Facturación** del contacto.
 2. Indique el **Prestador**, el **Número de constancia** y la **Fecha de
    emisión**; adjunte la constancia.
@@ -75,7 +75,7 @@ prestadores y prepara la declaración mensual en la PLAME.
 
 ## Declarar las retenciones del mes
 
-1. Vaya a **Perú ‣ Renta de 4.ª categoría ‣ Retenciones del mes (PLAME)**.
+1. Vaya a **Perú ‣ SUNAT ‣ Declaraciones ‣ Retenciones de 4.ª categoría (PLAME)**.
 2. Elija el **Año** y el **Mes** y haga clic en **Calcular**: aparecen los
    recibos pagados por completo en el mes, con el total de honorarios y el
    **Total retenido** a declarar.
@@ -93,7 +93,7 @@ prestadores y prepara la declaración mensual en la PLAME.
 
 ## Reportes
 
-**Certificado de rentas y retenciones**: en **Perú ‣ Renta de 4.ª categoría ‣
+**Certificado de rentas y retenciones**: en **Perú ‣ Proveedores ‣ Comprobantes ‣ Recibos por honorarios ‣
 Certificado de rentas y retenciones**, elija el ejercicio y los prestadores
 (vacío: todos) y haga clic en **Imprimir**. También se abre desde la acción
 del contacto.

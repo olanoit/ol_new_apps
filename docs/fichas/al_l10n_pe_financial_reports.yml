@@ -45,8 +45,8 @@ contexto:
     cierre, y los asientos de diarios de naturaleza **Cierre** no lo duplican.
   nota: >-
     **Informe y archivo PLE.** Este es el estado financiero para revisar y
-    presentar. El TXT del formato 3.19 se sigue generando en **Perú ▸ Libros
-    PLE ▸ Exportar PLE** con la captura de **Patrimonio 3.19**.
+    presentar. El TXT del formato 3.19 se sigue generando en **Perú ▸ SUNAT ▸
+    Libros PLE ▸ Exportar PLE** con la captura de **Patrimonio 3.19**.
 
 pasos_titulo: Paso a paso
 pasos_intro: >-
@@ -55,7 +55,7 @@ pasos:
   - seccion: Acceso
     texto: Todos los estados financieros juntos.
   - titulo: Abrir los estados financieros
-    ruta: Perú ▸ Estados financieros
+    ruta: Perú ▸ Informes ▸ Estados financieros
     texto: >-
       El grupo reúne el **Balance** y el **Estado de resultados** de la
       localización oficial y el **3.19 Estado de Cambios en el Patrimonio
@@ -65,7 +65,7 @@ pasos:
   - seccion: 3.19 Estado de Cambios en el Patrimonio Neto
     texto: Del saldo inicial al saldo final del periodo.
   - titulo: Leer el estado de cambios
-    ruta: Perú ▸ Estados financieros ▸ 3.19 Estado de Cambios en el Patrimonio Neto
+    ruta: Perú ▸ Informes ▸ Estados financieros ▸ 3.19 Estado de Cambios en el Patrimonio Neto
     texto: >-
       Columnas **Nota**, **Saldo inicial**, **Movimiento** y **Saldo final**.
       El periodo por defecto es el año en curso; se puede elegir otro y
@@ -100,7 +100,7 @@ pasos:
 
 campos:
   - grupo: 3.19 Estado de Cambios en el Patrimonio Neto
-    ruta: Perú ▸ Estados financieros ▸ 3.19 Estado de Cambios en el Patrimonio Neto
+    ruta: Perú ▸ Informes ▸ Estados financieros ▸ 3.19 Estado de Cambios en el Patrimonio Neto
     campos:
       - [Saldos al inicio del periodo, "Patrimonio y resultados no distribuidos hasta el día anterior, más los asientos de apertura del periodo.", "—", "Sin asientos de cierre"]
       - [Saldo inicial reexpresado, "Saldo inicial + cambios de políticas + corrección de errores.", "—", Base del saldo final]
@@ -141,7 +141,7 @@ ejemplos:
 configuracion:
   - Instale el módulo desde Aplicaciones (requiere Odoo Enterprise y la localización peruana).
   - Marque la naturaleza de los diarios de apertura y de cierre.
-  - Abra el informe desde Perú ▸ Estados financieros.
+  - Abra el informe desde Perú ▸ Informes ▸ Estados financieros.
 requisitos_nota: >-
   Se apoya en el motor de informes contables de Odoo Enterprise.
 
@@ -160,10 +160,14 @@ faq:
       diario de Apertura queda para los saldos iniciales al empezar con Odoo.
   - pregunta: ¿Genera el TXT del PLE 3.19?
     respuesta: >-
-      No. El TXT se genera en Perú ▸ Libros PLE ▸ Exportar PLE con la captura
+      No. El TXT se genera en Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE con la captura
       de Patrimonio 3.19.
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Informes ▸ Estados financieros."
   - version: 2.20261008
     fecha: 08/10/2026
     cambios:

@@ -36,7 +36,7 @@ título físico y no devenga intereses de la letra.
 
 | Término | Significado | En Odoo |
 |---|---|---|
-| Canje | Reemplazo de facturas pendientes por letras: CLC para clientes, CLP para proveedores | **Perú ‣ Letras de cambio ‣ Canje de letras** |
+| Canje | Reemplazo de facturas pendientes por letras: CLC para clientes, CLP para proveedores | **Perú ‣ Clientes ‣ Letras por cobrar ‣ Canje de letras** |
 | En cartera | Letra en poder de la empresa | Tipo de letra |
 | Cobranza libre | Letra entregada al banco solo para cobrarla | Tipo de letra (cuenta 1233) |
 | Descuento | El banco adelanta el dinero antes del vencimiento; es una deuda con el banco hasta que el cliente paga | Tipo de letra (cuenta 1234, obligación 4511) |
@@ -69,7 +69,7 @@ flowchart TD
 
 ## Canjear facturas por letras
 
-1. Vaya a **Perú ‣ Letras de cambio ‣ Clientes ‣ Canje de letras** y haga clic
+1. Vaya a **Perú ‣ Clientes ‣ Letras por cobrar ‣ Canje de letras** y haga clic
    en **Nuevo**. Elija el socio, el diario de letras y la fecha.
 2. En **Facturas**, agregue las facturas pendientes y haga clic en
    **Confirmar**: el canje pasa a **Comprobado**.
@@ -182,7 +182,7 @@ solo registro; los canjes de origen pasan a **Historial de canje**.
 
 ## Reportes
 
-- **Perú ‣ Letras de cambio ‣ Letras por cobrar** y **Letras por pagar**: saldo,
+- **Perú ‣ Clientes ‣ Letras por cobrar ‣ Letras por cobrar** y **Letras por pagar**: saldo,
   vencidas en rojo, por banco y por tipo.
 - **Análisis de letras**: tabla dinámica por tipo, moneda y mes de vencimiento.
 - Los asientos van al libro diario y al libro de inventarios y balances (detalle

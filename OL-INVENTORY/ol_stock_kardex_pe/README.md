@@ -14,7 +14,7 @@ PLE): reutiliza sus campos SUNAT y añade la capa visual que falta.
 ## Funcionalidades
 
 - **Integrado a la aplicación única «Perú»**: además de Inventario ▸
-  Informes, el menú **Perú ▸ Kardex (12.1/13.1)** (vía `al_account_base`)
+  Informes, el menú **Perú ▸ Contabilidad ▸ Kardex (12.1 / 13.1) (12.1/13.1)** (vía `al_account_base`)
   ofrece «Generar Kardex» y «Kardex generados» junto al resto de libros
   PLE (`al_l10n_pe_ple`).
 - **Kardex interactivo en pantalla**: líneas con saldo corrido (cantidad,

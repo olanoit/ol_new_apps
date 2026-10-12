@@ -39,7 +39,7 @@ nativo de Odoo 19 (`l10n_account_withholding_tax`).
   asiento 40114 conciliado con la factura.
 - **Reportes**: Resumen mensual TXT para el F.V. 626 y marca de
   retención en el PLE 8.3 (campo 26).
-- Menú **Perú ▸ Retenciones IGV** (efectuadas / sufridas / resumen).
+- Menú **Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones** (efectuadas / sufridas / resumen).
 
 ## Pendiente
 

@@ -17,7 +17,7 @@ Fase actual:
 
 * Motor común PLE (nomenclatura de archivos, serialización ``|``, validador
   de estructura según el Anexo 2 de SUNAT).
-* Wizard de exportación en el menú **Perú ▸ Libros PLE** (libros anuales y
+* Wizard de exportación en el menú **Perú ▸ SUNAT ▸ Libros PLE** (libros anuales y
   mensuales).
 * **Libro 7 — Registro de Activos Fijos**: formatos 7.1 (revaluados y no
   revaluados), 7.3 (diferencia de cambio) y 7.4 (arrendamiento financiero),
@@ -73,7 +73,7 @@ NO se reimplementan.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '25.20261012',
+    'version': '26.20261012',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

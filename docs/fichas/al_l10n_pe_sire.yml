@@ -172,7 +172,7 @@ pasos:
   - seccion: Propuesta
     texto: Traer a Odoo lo que SUNAT tiene registrado para el mes.
   - titulo: Crear el periodo y pedir la propuesta por la API
-    ruta: Perú ▸ SIRE ▸ Ventas (RVIE) ▸ Nuevo
+    ruta: Perú ▸ SUNAT ▸ SIRE ▸ Ventas (RVIE) ▸ Nuevo
     texto: >-
       Indique **Año** y **Mes**; el nombre se forma solo (RVIE-09-2026).
       **Solicitar propuesta** pide la exportación a SUNAT y guarda el ticket;
@@ -184,16 +184,16 @@ pasos:
     imagen: screenshots/04-nuevo-periodo-api.png
 
   - titulo: Cargar la propuesta a mano
-    ruta: Perú ▸ SIRE ▸ Ventas (RVIE) ▸ Nuevo ▸ Carga manual
+    ruta: Perú ▸ SUNAT ▸ SIRE ▸ Ventas (RVIE) ▸ Nuevo ▸ Carga manual
     texto: >-
       Marque **Carga manual**, suba el TXT exportado desde SOL en **TXT
       propuesta SIRE** y pulse **Confirmar TXT manual**: el periodo pasa a
       Propuesta descargada con el ticket «Carga manual». El Registro de Compras
-      funciona igual desde Perú ▸ SIRE ▸ Compras (RCE).
+      funciona igual desde Perú ▸ SUNAT ▸ SIRE ▸ Compras (RCE).
     imagen: screenshots/05-nuevo-periodo-manual.png
 
   - titulo: Seguir el avance de cada periodo
-    ruta: Perú ▸ SIRE ▸ Ventas (RVIE)
+    ruta: Perú ▸ SUNAT ▸ SIRE ▸ Ventas (RVIE)
     texto: >-
       La lista muestra el estado de cada periodo: Borrador, Propuesta
       solicitada, Propuesta descargada, SIRE desplegado, Sistema desplegado,
@@ -228,7 +228,7 @@ pasos:
     pie: "Agosto 2026: 2 correctas, 1 no cuadra, 1 solo en SIRE y 1 solo en el sistema."
 
   - titulo: Revisar lo que Odoo declara en el RCE
-    ruta: Perú ▸ SIRE ▸ Compras (RCE) ▸ pestaña Sistema
+    ruta: Perú ▸ SUNAT ▸ SIRE ▸ Compras (RCE) ▸ pestaña Sistema
     texto: >-
       Cada comprobante tal como saldría en el reemplazo: fecha, tipo, serie,
       número, documento y razón social del proveedor, base e IGV de
@@ -238,7 +238,7 @@ pasos:
     imagen: screenshots/09-rce-sistema.png
 
   - titulo: Diferencias del RCE
-    ruta: Perú ▸ SIRE ▸ Compras (RCE) ▸ pestaña Diferencias
+    ruta: Perú ▸ SUNAT ▸ SIRE ▸ Compras (RCE) ▸ pestaña Diferencias
     texto: >-
       Los comprobantes que Odoo tiene y la propuesta no aparecen como **Solo
       en Sistema**, con enlace a la factura para revisarla.
@@ -315,7 +315,7 @@ campos:
     campos:
       - [Clasificación de bienes y servicios, "Cinco opciones, de mercadería a otros gastos.", Vacío, "Columna «Clasif de Bss y Sss» del RCE"]
   - grupo: Periodo RVIE / RCE
-    ruta: Perú ▸ SIRE ▸ Ventas (RVIE) · Compras (RCE)
+    ruta: Perú ▸ SUNAT ▸ SIRE ▸ Ventas (RVIE) · Compras (RCE)
     campos:
       - [Nombre, Registro + mes + año., Calculado, "RVIE-08-2026"]
       - [Año, Año del periodo., Año en curso, "Obligatorio; editable solo en Borrador"]
@@ -495,6 +495,10 @@ faq:
       reemplazo.
 
 novedades:
+  - version: 21.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ SUNAT ▸ SIRE."
   - version: 20.20261012
     fecha: 12/10/2026
     cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261012 — 12/10/2026
+
+- Menús en Perú ▸ Clientes y Proveedores ▸ Detracciones, retenciones y percepciones; productos en Configuración ▸ Tributos SUNAT; análisis en Informes ▸ Análisis.
+
 ## 23.20261012 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): servicio sujeto al SPOT (037, 12 %), una venta con su detracción y una compra con el depósito y la constancia.

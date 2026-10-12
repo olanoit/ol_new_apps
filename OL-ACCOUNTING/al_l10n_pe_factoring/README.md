@@ -10,7 +10,7 @@ nativas de Odoo: no duplica la factura ni el cobro. Diseño en
 
 ## Flujo
 
-1. **Operación** (`l10n_pe.factoring`, Perú ▸ Factoring ▸ Operaciones, o
+1. **Operación** (`l10n_pe.factoring`, Perú ▸ Clientes ▸ Factoring ▸ Operaciones, o
    «Ceder a factoring» en la lista de facturas): factor, modalidad, contrato,
    moneda, % de adelanto y las facturas (`l10n_pe.factoring.line`) con su
    valor nominal, vencimiento y anotación CAVALI.

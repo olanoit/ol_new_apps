@@ -31,7 +31,7 @@
         </field>
     </record>
 
-    <!-- Nómina ▸ Contabilidad ▸ Cuentas por condición (todas las reglas) -->
+    <!-- Nómina ▸ Configuración ▸ Salario ▸ Cuentas por condición (todas las reglas) -->
     <record id="l10n_pe_hr_salary_rule_account_view_list" model="ir.ui.view">
         <field name="name">l10n_pe.hr.salary.rule.account.list</field>
         <field name="model">l10n_pe.hr.salary.rule.account</field>
@@ -83,7 +83,7 @@
 
     <menuitem id="menu_l10n_pe_hr_salary_rule_account"
               action="l10n_pe_hr_salary_rule_account_action"
-              parent="menu_hr_pe_account_root"
-              sequence="40"
+              parent="hr_payroll.menu_hr_salary_configuration"
+              sequence="50"
               groups="hr_payroll.group_hr_payroll_manager"/>
 </odoo>

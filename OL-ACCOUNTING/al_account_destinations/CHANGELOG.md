@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_destinations.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261012 — 12/10/2026
+
+- Menú en Perú ▸ Contabilidad ▸ Cierre del mes (Asientos de destino y Destinos por cuenta).
+
 ## 11.20261009 — 09/10/2026
 
 - Destino de cuenta con chatter: historial de cambios de cuenta principal, cuenta destino y porcentaje.

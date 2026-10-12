@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_batch_payment.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261012 — 12/10/2026
+
+- Atajo «Pagos por lote» en Perú ▸ Proveedores ▸ Pagos.
+
 ## 3.20261012 — 12/10/2026
 
 - BCP: archivo de pago a proveedores de Telecrédito con la marca de exoneración del ITF, la modalidad de pago y, debajo de cada abono, los comprobantes que se pagan (registro 3).

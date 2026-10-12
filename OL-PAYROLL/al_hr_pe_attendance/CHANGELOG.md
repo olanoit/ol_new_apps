@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261012 — 12/10/2026
+
+- Asistencia pasa a Entradas de trabajo ▸ Asistencia (registro, tareaje, monitor, asignaciones de ciclo) y Configuración ▸ Asistencia (ciclos atípicos, fotocheck).
+
 ## 20.20261010 — 10/10/2026
 
 - La plantilla de turno de la asignación de ciclos atípicos se valida contra la compañía del trabajador (multicompañía).

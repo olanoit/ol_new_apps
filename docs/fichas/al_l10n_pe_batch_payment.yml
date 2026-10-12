@@ -74,6 +74,10 @@ pasos:
     imagen: screenshots/03-diario.png
 
 novedades:
+  - version: 4.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Atajo «Pagos por lote» en Perú ▸ Proveedores ▸ Pagos."
   - version: 3.20261012
     fecha: 12/10/2026
     cambios:

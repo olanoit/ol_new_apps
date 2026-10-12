@@ -222,7 +222,7 @@ pasos:
   - seccion: Configuración
     texto: Una vez por compañía, antes del primer beneficio.
   - titulo: Configurar el motor de beneficios
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Beneficios sociales
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal ▸ Beneficios sociales
     texto: >-
       Una pestaña por compañía indica qué **entradas** de la boleta reciben
       cada beneficio y qué **reglas salariales** y **tipos de días** usa el
@@ -262,7 +262,7 @@ pasos:
   - seccion: CTS
     texto: Dos depósitos al año por lote de nómina.
   - titulo: Procesar la CTS del semestre
-    ruta: Nómina ▸ Beneficios sociales ▸ CTS
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ CTS
     texto: >-
       Elija el **Año** de la lista (del próximo año hacia atrás), el tipo
       (**CTS Noviembre - Abril** o **CTS Mayo - Octubre**), el lote de nómina,
@@ -295,7 +295,7 @@ pasos:
 
   - seccion: Gratificación
   - titulo: Liquidar la gratificación
-    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Gratificación
     texto: >-
       Mismo circuito que la CTS con la **Gratificación Fiestas Patrias** o
       **Navidad**. Con **Con bonificación extraordinaria** se añade la de la
@@ -309,7 +309,7 @@ pasos:
   - seccion: Renta de 5ta categoría
     texto: Una liquidación por lote mensual.
   - titulo: Calcular la retención del mes
-    ruta: Nómina ▸ Beneficios sociales ▸ Renta de 5ta categoría
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta y provisiones ▸ Renta de 5ta categoría
     texto: >-
       Elija el lote del mes y pulse **Generar quinta**: se crea una línea por
       boleta y el documento pasa a **En proceso**. La pestaña **Trabajadores
@@ -349,7 +349,7 @@ pasos:
   - seccion: Liquidación de cese
     texto: Los truncos del trabajador que termina su vínculo.
   - titulo: Procesar la liquidación
-    ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Liquidación de cese
     texto: >-
       Elija el lote del mes de cese: año, tipo de gratificación y tipo de CTS
       se deducen de su fecha. **Procesar** genera las pestañas
@@ -375,7 +375,7 @@ pasos:
 
   - seccion: Provisiones
   - titulo: Provisionar los beneficios del mes
-    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta y provisiones ▸ Provisiones
     texto: >-
       Por lote de nómina, **Procesar** calcula el devengo de gratificación
       (con su bono), CTS y vacaciones de cada trabajador en tres pestañas.
@@ -391,7 +391,7 @@ pasos:
   - seccion: Subsidios EsSalud
     texto: Enfermedad y maternidad, a partir de las suspensiones registradas.
   - titulo: Calcular un subsidio
-    ruta: Nómina ▸ Beneficios sociales ▸ Subsidios
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Subsidios
     texto: >-
       El lote de subsidios de un periodo, al **Procesar**, crea un subsidio por
       cada suspensión T21 de enfermedad (21) o maternidad (22) que empieza en
@@ -406,7 +406,7 @@ pasos:
 
   - seccion: Utilidades
   - titulo: Repartir las utilidades
-    ruta: Nómina ▸ Beneficios sociales ▸ Utilidades
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Utilidades
     texto: >-
       Indique el ejercicio, la renta anual antes de impuestos y el porcentaje
       de su actividad. **Procesar** reparte la mitad por remuneraciones del año
@@ -476,7 +476,7 @@ pasos:
 
   - seccion: Adelanto quincenal
   - titulo: Pagar la primera quincena
-    ruta: Nómina ▸ Beneficios sociales ▸ Adelantos quincenales
+    ruta: Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos ▸ Adelantos quincenales
     texto: >-
       Nombre, periodo (del 1 al 15 del mes en curso por defecto) y el lote
       mensual. **Generar quincena** crea una boleta por empleado con contrato
@@ -494,7 +494,7 @@ campos_intro: >-
   importes calculados son de solo lectura salvo que se indique.
 campos:
   - grupo: Configuración principal ▸ Beneficios sociales
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal
     campos:
       - [Input gratificación / Input bonificación 9 %, Entradas donde se exporta la gratificación y su bono., Vacío, Obligatorias para procesar gratificaciones]
       - [Input CTS, Entrada donde se exporta el depósito., Vacío, Obligatoria para procesar CTS]
@@ -526,7 +526,7 @@ campos:
       - [Input quinta categoría / Input retención extraordinaria, Entradas donde se exporta la retención., Vacío, Exportar quinta]
       - ["Rango, Límite, Tasa (%)", "Tramos; límite 0 = sin tope.", Generados con el botón, Impuesto anual proyectado]
   - grupo: CTS
-    ruta: Nómina ▸ Beneficios sociales ▸ CTS
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ CTS
     campos:
       - [Año, "Año del depósito, elegido de una lista del próximo año hacia atrás.", Año en curso, Semestre calculado]
       - [Semestre, CTS Mayo - Octubre o CTS Noviembre - Abril., Vacío, "Ventana de boletas y gratificación del 1/6"]
@@ -539,7 +539,7 @@ campos:
       - ["Intereses, Otros descuentos", Ajustes manuales de la línea., "0,00", "Suman o restan al pulsar Calcular"]
       - ["Total CTS, CTS a depositar (S/), CTS a depositar (US$)", Resultado., Calculado, Entrada CTS y pago bancario]
   - grupo: Gratificación
-    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Gratificación
     campos:
       - [Gratificación, Fiestas Patrias o Navidad., Vacío, "Ventana ene–jun o jul–dic"]
       - [Con bonificación extraordinaria, Ley 30334 con el % del seguro del trabajador., Marcado, Bonificación extraordinaria]
@@ -547,7 +547,7 @@ campos:
       - [Fecha de pago, Fecha del pago., Vacío, Fecha del asiento]
       - ["Total gratificación, Bonificación extraordinaria, Total a pagar", Resultado por trabajador., Calculado, Entradas de la boleta]
   - grupo: Renta de 5ta categoría
-    ruta: Nómina ▸ Beneficios sociales ▸ Renta de 5ta categoría
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta y provisiones ▸ Renta de 5ta categoría
     campos:
       - [Lote de nómina, Lote del mes., Vacío, Una quinta por lote]
       - [Mes del cálculo, Mes intermedio del lote., Calculado, Meses restantes y divisor]
@@ -557,7 +557,7 @@ campos:
       - [Retención por extraordinarios, Retención sobre la remuneración extraordinaria del mes., Calculado, Se suma a la retención del mes]
       - ["Retención del mes, Saldo por retener", Retención del mes y saldo anual., Calculado, "Entrada QUINTA; ≤ 0 pasa a «Trabajadores sin retención»"]
   - grupo: Liquidación de cese
-    ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Liquidación de cese
     campos:
       - [Lote de nómina, Lote del mes de cese., Vacío, "Deduce año, tipo de gratificación y de CTS"]
       - ["Año, Semestre de la gratificación, Semestre de la CTS", Semestres truncos., Deducidos del lote, Ventanas del motor]
@@ -566,7 +566,7 @@ campos:
       - ["Vacaciones devengadas, Vacaciones adelantadas", Importes ya ganados o adelantados; editables., "0,00", Total vacaciones]
       - [Otros conceptos, "Concepto (entrada), Importe y Tipo Ingreso o Descuento.", Tipo Ingreso, Entradas propias en la boleta]
   - grupo: Provisiones
-    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta y provisiones ▸ Provisiones
     campos:
       - [Lote de nómina, Lote del mes., Vacío, Una provisión por lote]
       - [Gratificación, Gratificación de la que se toma el sexto., Vacío, Sexto de la gratificación en la CTS]
@@ -574,7 +574,7 @@ campos:
       - ["Provisión CTS del mes, Provisión de gratificación, Provisión de bonificación extraordinaria, Provisión de vacaciones del mes", Devengo del mes., Calculado, Asiento de provisión]
       - [Acumulado provisionado, "Suma del semestre (CTS, gratificación) o desde el aniversario (vacaciones).", Obtener acumulado, Reversión en CTS y gratificación]
   - grupo: Subsidio
-    ruta: Nómina ▸ Beneficios sociales ▸ Subsidios
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Subsidios
     campos:
       - [Periodo (lote), Mes cuyas suspensiones se procesan., Vacío, Un subsidio por suspensión]
       - [Trabajador / Suspensión (T-Registro), Trabajador y suspensión de origen., Vacío, "Datos de la contingencia"]
@@ -583,7 +583,7 @@ campos:
       - [Primeros 20 días ya cubiertos, Los 20 días del empleador ya se cubrieron., Desmarcado, Subsidia desde el primer día]
       - [No recalcular, Protege el subsidio al procesar el lote., Desmarcado, Se conserva]
   - grupo: Utilidades
-    ruta: Nómina ▸ Beneficios sociales ▸ Utilidades
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Utilidades
     campos:
       - [Ejercicio, Año cuyas boletas se suman., Año anterior, Una por compañía y ejercicio]
       - ["Renta anual antes de impuestos, Porcentaje de participación", "Base y porcentaje del giro (10 %, 8 % o 5 %).", Vacío, Monto a repartir = renta × %]
@@ -601,7 +601,7 @@ campos:
       - ["N.º de cuota, Vencimiento, Importe de la cuota, Saldo después de la cuota, Estado", Cronograma; editable mientras no está pagada., No pagado, Importar préstamos]
       - [Tipo de adelanto / Tipo de préstamo, Nombre y entrada de la boleta., Vacío, Entrada por la que se descuenta]
   - grupo: Adelanto quincenal
-    ruta: Nómina ▸ Beneficios sociales ▸ Adelantos quincenales
+    ruta: Nómina ▸ Beneficios sociales ▸ Adelantos y préstamos ▸ Adelantos quincenales
     campos:
       - [Planilla, Nombre del lote quincenal., Vacío, Nombre de las boletas]
       - [Quincena, Desde y hasta., "Del 1 al 15 del mes en curso", Fechas de las boletas]
@@ -799,6 +799,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: 23.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Beneficios sociales en secciones: Beneficios, Vacaciones, Adelantos y préstamos (con los adelantos quincenales) y Renta y provisiones; tipos de adelanto y de préstamo en Configuración ▸ Tipos y plantillas."
   - version: 22.20261008
     fecha: 08/10/2026
     cambios:

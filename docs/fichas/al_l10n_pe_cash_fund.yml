@@ -100,7 +100,7 @@ pasos_intro: >-
 pasos:
   - seccion: Entregas a rendir
   - titulo: Fondos
-    ruta: Perú ▸ Entregas a rendir ▸ Fondos
+    ruta: Perú ▸ Tesorería ▸ Entregas a rendir ▸ Entregas a rendir y caja chica
     texto: >-
       Entregas a rendir y cajas chicas con su responsable, monto, saldo por
       rendir y plazo. Filtros por tipo, estado y «Por rendir vencidas». También en
@@ -142,7 +142,7 @@ pasos:
     imagen: screenshots/06-liquidacion.png
   - seccion: Caja chica
   - titulo: Caja chica
-    ruta: Perú ▸ Entregas a rendir ▸ Fondos ▸ Nuevo (tipo Caja chica)
+    ruta: Perú ▸ Tesorería ▸ Entregas a rendir ▸ Entregas a rendir y caja chica ▸ Nuevo (tipo Caja chica)
     texto: >-
       El custodio recibe el fondo fijo; tras cada rendición, **Reponer** crea el
       pago por lo gastado para devolverlo a su monto.
@@ -179,7 +179,7 @@ asientos:
 
 campos:
   - grupo: Fondo
-    ruta: Perú ▸ Entregas a rendir ▸ Fondos
+    ruta: Perú ▸ Tesorería ▸ Entregas a rendir ▸ Entregas a rendir y caja chica
     campos:
       - [Tipo, Entrega a rendir o caja chica, Entrega a rendir, "Caja chica: se repone tras cada rendición"]
       - [Responsable, Quien recibe el dinero y rinde, —, Tercero de la 1413]
@@ -224,6 +224,10 @@ faq:
       mismo número.
 
 novedades:
+  - version: 2.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Tesorería ▸ Entregas a rendir."
   - version: 1.20261011
     fecha: 11/10/2026
     cambios:

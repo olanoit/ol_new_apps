@@ -151,11 +151,8 @@
               groups="account.group_account_invoice" sequence="3"/>
 
     <!-- Espejo en la app Perú (secuencia 36, entre Guías y Arrendamientos). -->
-    <menuitem id="menu_purchase_settlement_root" name="Liquidaciones de compra"
-              parent="al_account_base.al_l10n_pe_root"
-              groups="account.group_account_invoice" sequence="36"/>
     <menuitem id="menu_purchase_settlement" name="Liquidaciones de compra"
-              parent="menu_purchase_settlement_root" action="action_purchase_settlement" sequence="10"/>
-    <menuitem id="menu_purchase_settlement_to_send" name="Por enviar o en reversión"
-              parent="menu_purchase_settlement_root" action="action_purchase_settlement_to_send" sequence="20"/>
+              parent="al_account_base.al_l10n_pe_vendors_documents" action="action_purchase_settlement" sequence="10"/>
+    <menuitem id="menu_purchase_settlement_to_send" name="Liquidaciones por enviar"
+              parent="al_account_base.al_l10n_pe_vendors_documents" action="action_purchase_settlement_to_send" sequence="20"/>
 </odoo>

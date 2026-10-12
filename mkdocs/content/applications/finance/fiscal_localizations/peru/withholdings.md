@@ -41,9 +41,9 @@ Percepciones. La reversión de un CRE aceptado la hace
 | Excepciones | Proveedor agente de retención, buen contribuyente o agente de percepción; boletas; operaciones con detracción; sin IGV | Casillas del contacto (padrón SUNAT) y tipo de documento |
 | Monto mínimo | No se retiene si los comprobantes pagados juntos suman S/ 700 o menos | Asistente de pago |
 | CRE | Comprobante de Retención Electrónico, serie R001 | Pago: número de comprobante y botón **Enviar CRE a SUNAT** |
-| CRE sin pago | CRE de letras, compensaciones o pagos fuera de Odoo | **Perú ‣ Retenciones IGV ‣ CRE sin pago** |
-| Retención sufrida | Lo que un cliente agente retuvo; crédito contra el IGV | **Perú ‣ Retenciones IGV ‣ Retenciones sufridas** |
-| PDT 626 | Declaración mensual de las retenciones efectuadas | **Perú ‣ Retenciones IGV ‣ Resumen 626** |
+| CRE sin pago | CRE de letras, compensaciones o pagos fuera de Odoo | **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ CRE sin pago** |
+| Retención sufrida | Lo que un cliente agente retuvo; crédito contra el IGV | **Perú ‣ Clientes ‣ Detracciones, retenciones y percepciones ‣ Retenciones sufridas** |
+| PDT 626 | Declaración mensual de las retenciones efectuadas | **Perú ‣ SUNAT ‣ Declaraciones ‣ Resumen PDT 626** |
 
 ## Configuración
 
@@ -129,7 +129,7 @@ retienen.
    pago.
 2. Si SUNAT lo rechaza, el error queda en el pago: corríjalo y reenvíe dentro
    del plazo.
-3. Revise **Perú ‣ Retenciones IGV ‣ Retenciones efectuadas**: un CRE por pago,
+3. Revise **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Retenciones efectuadas**: un CRE por pago,
    con el plazo de envío y el estado (amarillo: fuera de plazo; rojo:
    rechazado).
 
@@ -173,7 +173,7 @@ La retención se hace al pagar, cualquiera que sea la forma de pago. Para el
 pago de letras de cambio, una compensación o un pago registrado fuera de Odoo,
 emita el CRE sin pago:
 
-1. Vaya a **Perú ‣ Retenciones IGV ‣ CRE sin pago** y haga clic en **Nuevo**.
+1. Vaya a **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ CRE sin pago** y haga clic en **Nuevo**.
    También puede seleccionar las facturas en **Contabilidad ‣ Proveedores ‣
    Facturas** y usar **Acciones ‣ Emitir CRE sin pago**.
 2. Elija el proveedor, la **Fecha de pago**, la **Forma de pago** (letras,
@@ -223,7 +223,7 @@ S/ 3,54 por descontar; la siguiente factura de S/ 1 180 retiene
 Cuando un cliente agente paga el neto de sus facturas de venta, entrega su
 comprobante de retención, que puede cubrir una o varias facturas:
 
-1. Vaya a **Perú ‣ Retenciones IGV ‣ Retenciones sufridas** y haga clic en
+1. Vaya a **Perú ‣ Clientes ‣ Detracciones, retenciones y percepciones ‣ Retenciones sufridas** y haga clic en
    **Nuevo**.
 2. Elija el cliente y escriba la **Serie**, el **Número** y la fecha del
    comprobante de retención.
@@ -251,7 +251,7 @@ borrador**: deshace el asiento y la conciliación.
 
 ## Reportes
 
-- **Perú ‣ Retenciones IGV ‣ Comprobantes de proveedor**: facturas sujetas,
+- **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Facturas sujetas a retención**: facturas sujetas,
   con lo pendiente de pago.
 - **Retenciones sufridas por factura**: el IGV que le retuvieron sus clientes,
   agrupado por periodo, cliente o comprobante (lista y tabla dinámica). Es el

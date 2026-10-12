@@ -42,7 +42,7 @@ sistema.
 
 | Término | Significado | Dónde aparece en Odoo |
 |---|---|---|
-| Tabla salarial | Jornales por categoría con su vigencia | **Configuración ‣ Perú ‣ Construcción civil ‣ Tablas salariales** |
+| Tabla salarial | Jornales por categoría con su vigencia | **Configuración ‣ Construcción civil ‣ Tablas salariales** |
 | Categoría | Operario, oficial, peón (con su % de BUC) | **Construcción civil ‣ Categorías** |
 | Obra | Lugar de trabajo con sus bonificaciones y centro de costo | **Empleados ‣ Obras** |
 | Jornal congelado | La boleta guarda el jornal vigente al fin del periodo | Boleta |
@@ -54,7 +54,7 @@ aportes (TREM).
 ## Configuración
 
 1. Instale **Planillas de construcción civil** (`al_hr_pe_construction`).
-2. Revise la tabla salarial vigente en **Nómina ‣ Configuración ‣ Perú ‣
+2. Revise la tabla salarial vigente en **Nómina ‣ Configuración ‣
    Construcción civil ‣ Tablas salariales** (trae la de 2026) o importe la del
    convenio (ver más abajo).
 3. Contraste los importes de las **bonificaciones** (BAE, altitud, agua, cota
@@ -178,7 +178,7 @@ Horas extras: valor hora del operario 89,30 ÷ 8 = 11,1625; cuatro horas al
 
 ## CONAFOVICER
 
-1. Vaya a **Configuración ‣ Perú ‣ Construcción civil ‣ CONAFOVICER** y cree el
+1. Vaya a **Configuración ‣ Construcción civil ‣ CONAFOVICER** y cree el
    resumen del mes.
 2. Calcúlelo: toma el 2 % de jornal + D.S.O. de cada obrero (no solo del
    jornal, como publica la tabla oficial).

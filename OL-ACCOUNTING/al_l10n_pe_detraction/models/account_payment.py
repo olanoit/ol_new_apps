@@ -6,7 +6,7 @@ class AccountPayment(models.Model):
     _inherit = 'account.payment'
 
     # El asistente «Registrar depósito» lo rellena: así los depósitos de
-    # detracción se listan en Perú ▸ Detracciones ▸ Depósitos con su factura.
+    # detracción se listan en Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Depósitos de detracción con su factura.
     l10n_pe_detraction_move_id = fields.Many2one(
         'account.move', string='Comprobante con detracción', readonly=True,
         copy=False, index='btree_not_null', check_company=True,

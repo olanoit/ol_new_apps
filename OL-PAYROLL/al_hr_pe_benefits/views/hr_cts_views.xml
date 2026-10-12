@@ -239,9 +239,19 @@
         parent="hr_work_entry_enterprise.menu_hr_payroll_root"
         sequence="72"
         groups="hr_payroll.group_hr_payroll_user"/>
+    <!-- Secciones de Beneficios sociales (Vacaciones y Adelantos y
+         préstamos se declaran en sus archivos). -->
+    <menuitem id="menu_hr_pe_benefits_main"
+        name="Beneficios"
+        parent="menu_hr_pe_benefits_root"
+        sequence="10"/>
+    <menuitem id="menu_hr_pe_benefits_tax"
+        name="Renta y provisiones"
+        parent="menu_hr_pe_benefits_root"
+        sequence="40"/>
     <menuitem id="menu_hr_cts"
         action="action_hr_cts"
-        parent="menu_hr_pe_benefits_root"
-        sequence="2"/>
+        parent="menu_hr_pe_benefits_main"
+        sequence="20"/>
 
 </odoo>

@@ -37,7 +37,7 @@ otros ingresos de gestión) menos devoluciones y descuentos.
 
 ## Calcular un periodo
 
-1. Vaya a **Perú ‣ Declaración mensual (621)** y haga clic en **Nuevo**.
+1. Vaya a **Perú ‣ SUNAT ‣ Declaraciones ‣ Declaración mensual (621)** y haga clic en **Nuevo**.
 2. Elija el **Año** y el **Mes** y haga clic en **Calcular**.
 
 El cálculo trae:

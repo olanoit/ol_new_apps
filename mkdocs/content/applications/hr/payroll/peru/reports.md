@@ -40,7 +40,7 @@ que deja la [contabilización de planillas](accounting.md).
 |---|---|---|
 | Boleta PE | Reporte de la estructura salarial, el único que imprime el botón | **Recibo de nómina ‣ Imprimir** |
 | Recepción confirmada | El trabajador pulsó **Confirmar recepción** en la página del enlace | Recibo, campo y fecha de confirmación |
-| Pago masivo | Documento con las líneas y el TXT de un banco | **Nómina ‣ Pagos masivos bancarios** |
+| Pago masivo | Documento con las líneas y el TXT de un banco | **Nómina ‣ Recibos de nómina ‣ Pagos y contabilidad ‣ Pagos masivos bancarios** |
 | Diario de pago masivo | Cuenta de cargo; su banco define el formato TXT | **Ajustes ‣ Nómina ‣ Perú** |
 | Regla de neto a pagar | Regla de donde sale el importe de cada abono | Configuración principal |
 
@@ -63,7 +63,7 @@ que deja la [contabilización de planillas](accounting.md).
     - BanBif: subtipo.
 5. En cada trabajador, registre sus cuentas de haberes y de CTS y su correo
    laboral.
-6. En **Nómina ‣ Configuración ‣ Perú ‣ Documentos ‣ Plantillas de contrato**,
+6. En **Nómina ‣ Configuración ‣ Tipos y plantillas ‣ Plantillas de contrato**,
    cree o revise las plantillas y asígnelas en la ficha del trabajador.
 7. Configure el servidor de correo saliente para el envío de boletas.
 

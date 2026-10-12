@@ -137,7 +137,7 @@ pasos:
   - seccion: Tipos de cambio
     texto: Consulta, registro manual y carga de históricos.
   - titulo: Consultar los tipos de cambio
-    ruta: Perú ▸ Tipo de cambio ▸ Tipos de cambio
+    ruta: Perú ▸ Tesorería ▸ Tipo de cambio ▸ Tipos de cambio
     texto: >-
       Lista completa de tasas con **Moneda**, **Compra**, **Venta** y
       **Origen** como etiqueta de color: SUNAT, BCRP, Decolecta, apis.net.pe o
@@ -174,7 +174,7 @@ pasos:
     imagen: screenshots/06-moneda-usd.png
 
   - titulo: Cargar históricos por mes
-    ruta: Perú ▸ Tipo de cambio ▸ Actualizar tipo de cambio
+    ruta: Perú ▸ Tesorería ▸ Tipo de cambio ▸ Actualizar tipo de cambio
     texto: >-
       Elija el **Período** (Hoy, Por día, Rango de fechas o Por mes) y la
       **Fuente**. «Hoy» usa siempre el TXT de SUNAT; para fechas pasadas el
@@ -249,7 +249,7 @@ campos:
       - [T.C. en ventas, "Tipo propuesto en facturas, notas y recibos de cliente y en los cobros.", Venta, Importe en soles de las ventas]
       - [T.C. en compras, Tipo propuesto en comprobantes de proveedor y en los pagos a proveedores., Venta, Importe en soles de las compras]
   - grupo: Tipo de cambio
-    ruta: Perú ▸ Tipo de cambio ▸ Tipos de cambio
+    ruta: Perú ▸ Tesorería ▸ Tipo de cambio ▸ Tipos de cambio
     campos:
       - [Compra, "Tipo compra, 3 decimales.", "Igual a la venta si se deja vacío", Facturas y pagos a T.C. compra]
       - [Venta, "Tipo venta, 3 decimales.", "—", "Recalcula la tasa nativa (1 / venta)"]
@@ -261,7 +261,7 @@ campos:
       - [Actualizar por fecha/mes, Botón (solo en USD) que abre el asistente., "—", "—"]
       - ["Tasas: Compra, Venta, Origen", Columnas añadidas a la lista de tasas., "Origen oculta", "—"]
   - grupo: Asistente Actualizar tipo de cambio
-    ruta: Perú ▸ Tipo de cambio ▸ Actualizar tipo de cambio
+    ruta: Perú ▸ Tesorería ▸ Tipo de cambio ▸ Actualizar tipo de cambio
     campos:
       - [Período, "Hoy, Por día, Rango de fechas o Por mes.", Hoy, Muestra los campos de fecha que tocan]
       - [Día, Fecha a cargar (Por día)., Hoy, "—"]
@@ -375,7 +375,7 @@ configuracion_intro: >-
 configuracion:
   - Instale el módulo desde Aplicaciones.
   - "En **Contabilidad ▸ Configuración ▸ Ajustes ▸ Tipo de cambio (Perú)** revise el criterio de ventas y compras."
-  - "Cargue los meses anteriores con **Perú ▸ Tipo de cambio ▸ Actualizar tipo de cambio**, fuente BCRP."
+  - "Cargue los meses anteriores con **Perú ▸ Tesorería ▸ Tipo de cambio ▸ Actualizar tipo de cambio**, fuente BCRP."
   - Si va a usar Decolecta o apis.net.pe, ponga el token en su conexión de consulta RUC/DNI (`l10n_pe_vat_sunat`).
 requisitos_nota: >-
   Funciona en Community y Enterprise. Necesita la librería de Python `requests`
@@ -409,6 +409,10 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 14.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús en Perú ▸ Tesorería ▸ Tipo de cambio."
   - version: 13.20261008
     fecha: 08/10/2026
     cambios:

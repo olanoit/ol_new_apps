@@ -93,7 +93,7 @@ flowchart TD
 1. Emita la factura al crédito en **Contabilidad ‣ Clientes ‣ Facturas**: el
    comprobante electrónico informa el monto neto pendiente.
 2. Seleccione las facturas y vaya a **Acciones ‣ Ceder a factoring**, o cree la
-   operación en **Perú ‣ Factoring ‣ Operaciones**. La operación queda en
+   operación en **Perú ‣ Clientes ‣ Factoring ‣ Operaciones**. La operación queda en
    **Borrador** con el valor nominal propuesto, que se puede editar para ceder
    solo una parte (sin superar el saldo pendiente).
 3. Elija el factor, la **Modalidad** que dice el contrato y el **% de
@@ -235,11 +235,11 @@ diferencia de **S/ 40** va a pérdida por diferencia de cambio.
 
 ## Reportes
 
-- **Perú ‣ Factoring ‣ Facturas cedidas**: cartera cedida por factor, cliente y
+- **Perú ‣ Clientes ‣ Factoring ‣ Facturas cedidas**: cartera cedida por factor, cliente y
   vencimiento; cobrado y por cobrar; vencidas en rojo.
-- **Perú ‣ Factoring ‣ Análisis de factoring**: nominal y pendiente por factor
+- **Perú ‣ Informes ‣ Análisis ‣ Factoring**: nominal y pendiente por factor
   y estado.
-- **Perú ‣ Factoring ‣ Costo financiero**: intereses, comisión, gastos y
+- **Perú ‣ Informes ‣ Análisis ‣ Costo financiero del factoring**: intereses, comisión, gastos y
   retenido perdido por factor y mes.
 - La factura sigue en el registro de ventas por su importe y la cesión no genera
   comprobante. Los asientos de cesión, desembolso y cobro van al libro diario,

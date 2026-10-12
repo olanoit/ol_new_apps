@@ -37,9 +37,9 @@ boleta y el asiento, la [contabilización de planillas](accounting.md).
 
 | Término | Significado | Dónde aparece en Odoo |
 |---|---|---|
-| Ciclo atípico N×M | N días de trabajo por M de descanso | **Nómina ‣ Asistencia ‣ Ciclos atípicos** |
+| Ciclo atípico N×M | N días de trabajo por M de descanso | **Nómina ‣ Configuración ‣ Asistencia ‣ Ciclos atípicos** |
 | Promedio semanal | Horas por día × días de trabajo × 7 ÷ días del ciclo | Ficha del ciclo |
-| Tareaje | Clasificación de las horas del periodo para la boleta | **Nómina ‣ Asistencia ‣ Tareaje** |
+| Tareaje | Clasificación de las horas del periodo para la boleta | **Nómina ‣ Entradas de trabajo ‣ Asistencia ‣ Tareaje** |
 | Tolerancia | Retraso que no se computa; superada, la tardanza cuenta desde la hora programada | Ajustes y cada tareaje |
 | Entradas DLAB, DOM, FER, FAL, TAR, HE25, HE35, HE100 | Conceptos que recibe la boleta | **Configuración principal ‣ Tareaje** |
 | Centro de costo del día | Obra o área donde trabajó ese día | Marcación y detalle diario del tareaje |
@@ -67,7 +67,7 @@ tareajes y las asignaciones son por compañía.
 
 ## Ciclos atípicos y turnos
 
-1. Vaya a **Nómina ‣ Asistencia ‣ Ciclos atípicos** y cree el ciclo con sus
+1. Vaya a **Nómina ‣ Configuración ‣ Asistencia ‣ Ciclos atípicos** y cree el ciclo con sus
    días de trabajo, de descanso y la plantilla de turno.
 2. El sistema calcula el promedio semanal y no guarda un ciclo que supera
    48 h semanales o 12 h diarias:
@@ -89,7 +89,7 @@ tareajes y las asignaciones son por compañía.
 
 1. Los trabajadores marcan en Asistencias; en cada marcación se puede indicar
    el centro de costo u obra.
-2. Vaya a **Nómina ‣ Asistencia ‣ Monitor de asistencia**: compara día por
+2. Vaya a **Nómina ‣ Entradas de trabajo ‣ Asistencia ‣ Monitor de asistencia**: compara día por
    día lo planificado con lo marcado, en lista o tabla dinámica.
 3. Para justificar una falta, haga clic en **Reg. ausencia** en su fila.
 
@@ -97,7 +97,7 @@ tareajes y las asignaciones son por compañía.
 
 ## Tareaje del periodo
 
-1. Vaya a **Nómina ‣ Asistencia ‣ Tareaje**, cree el tareaje del periodo y
+1. Vaya a **Nómina ‣ Entradas de trabajo ‣ Asistencia ‣ Tareaje**, cree el tareaje del periodo y
    haga clic en **Procesar**. Entran los trabajadores que marcaron en el
    periodo.
 2. Revise las líneas por trabajador y el detalle diario. Cada día queda como

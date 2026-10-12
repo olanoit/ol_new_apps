@@ -67,7 +67,7 @@ pasos_intro: >-
   demostración.
 pasos:
   - titulo: Elegir formato y periodo
-    ruta: Perú ▸ Kardex (12.1 / 13.1) ▸ Generar Kardex
+    ruta: Perú ▸ Contabilidad ▸ Kardex (12.1 / 13.1) ▸ Generar Kardex
     texto: >-
       Elija el **Formato** (13.1 valorizado o 12.1 en unidades físicas) y el
       **Período**: **Por mes** —la opción habitual, que calcula desde y hasta—
@@ -101,7 +101,7 @@ pasos:
     pie: Formato 13.1 del arroz en julio 2026, con saldo inicial y promedio ponderado.
 
   - titulo: Generar en segundo plano y descargar
-    ruta: Perú ▸ Kardex (12.1 / 13.1) ▸ Kardex generados
+    ruta: Perú ▸ Contabilidad ▸ Kardex (12.1 / 13.1) ▸ Kardex generados
     texto: >-
       **Generar en segundo plano** crea una solicitud que una tarea programada
       procesa al momento. La lista muestra el formato, el tipo de archivo y el
@@ -186,7 +186,7 @@ requisitos_nota: >-
 faq:
   - pregunta: ¿Sustituye al TXT del PLE de inventarios?
     respuesta: >-
-      No. El TXT se genera desde Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸
+      No. El TXT se genera desde Perú ▸ SUNAT ▸ Libros PLE nativos ▸
       Inventarios TXT (12.1 / 13.1). Este módulo da el registro legible —en
       pantalla, Excel y PDF— con los mismos datos.
   - pregunta: ¿Por qué el modo por almacén no cuadra con la contabilidad?
@@ -211,6 +211,10 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: 14.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Contabilidad ▸ Kardex (12.1 / 13.1)."
   - version: 13.20261011
     fecha: 11/10/2026
     cambios:

@@ -102,22 +102,22 @@ pasos:
     pie: Guía T001-00000101 de la entrega de demostración, en transporte privado.
 
   - titulo: Registrar los vehículos
-    ruta: Perú ▸ Guías de remisión ▸ Vehículos
+    ruta: Perú ▸ Configuración ▸ Comprobantes electrónicos ▸ Vehículos (guías de remisión)
     texto: >-
       Los vehículos de la guía, con placa y operador predeterminado, también
       están en la app Perú. Al elegir el vehículo en la entrega se propone su
       operador.
     imagen: screenshots/04-vehiculos.png
 
-  - seccion: El menú Perú ▸ Guías de remisión
+  - seccion: El menú Perú ▸ Clientes ▸ Comprobantes ▸ Guías de remisión
     texto: >-
       Las guías de la compañía, las pendientes de enviar, los vehículos y el
       análisis, todo en la app Perú (como Detracciones).
   - titulo: Menú de guías
-    ruta: Perú ▸ Guías de remisión
+    ruta: Perú ▸ Clientes ▸ Comprobantes ▸ Guías de remisión
     imagen: screenshots/06-menu-guias.png
   - titulo: Guías de remisión
-    ruta: Perú ▸ Guías de remisión ▸ Guías de remisión
+    ruta: Perú ▸ Clientes ▸ Comprobantes ▸ Guías de remisión
     texto: >-
       Número de guía, transferencia, fecha, destinatario, motivo, modalidad,
       vehículo, conductor y estado SUNAT. En amarillo las entregas hechas que
@@ -127,7 +127,7 @@ pasos:
       las pendientes.
     imagen: screenshots/05-guias.png
   - titulo: Análisis de guías
-    ruta: Perú ▸ Guías de remisión ▸ Análisis de guías
+    ruta: Perú ▸ Informes ▸ Análisis ▸ Guías de remisión
     texto: >-
       Número de guías por motivo y mes, en tabla dinámica, gráfico y lista.
     imagen: screenshots/07-analisis.png
@@ -196,6 +196,10 @@ faq:
       y el vehículo.
 
 novedades:
+  - version: 12.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Guías en Perú ▸ Clientes ▸ Comprobantes; análisis en Informes ▸ Análisis; vehículos solo en Configuración ▸ Comprobantes electrónicos."
   - version: 11.20261008
     fecha: 08/10/2026
     cambios:

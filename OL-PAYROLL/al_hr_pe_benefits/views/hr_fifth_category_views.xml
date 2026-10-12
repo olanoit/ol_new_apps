@@ -294,7 +294,7 @@
 
     <menuitem id="menu_hr_fifth_category"
         action="action_hr_fifth_category"
-        parent="al_hr_pe_benefits.menu_hr_pe_benefits_root"
-        sequence="40"/>
+        parent="menu_hr_pe_benefits_tax"
+        sequence="10"/>
 
 </odoo>

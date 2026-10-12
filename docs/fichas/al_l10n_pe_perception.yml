@@ -139,7 +139,7 @@ pasos:
     pie: "Cobro de S/ 4.453,32: S/ 4.366,00 de la factura y S/ 87,32 de percepción (factor 0,019608)."
 
   - titulo: Cliente agente de percepción
-    ruta: Perú ▸ Percepciones IGV ▸ Comprobantes de percepción
+    ruta: Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones ▸ Comprobantes de percepción
     texto: >-
       Si el cliente es agente de percepción y el comprobante da crédito fiscal,
       la tasa es 0,5 % y el régimen del comprobante, «Agente de percepción, tasa
@@ -147,7 +147,7 @@ pasos:
     imagen: screenshots/05-comprobante-agente.png
 
   - titulo: Comprobantes emitidos y su estado ante SUNAT
-    ruta: Perú ▸ Percepciones IGV ▸ Comprobantes de percepción
+    ruta: Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones ▸ Comprobantes de percepción
     texto: >-
       Cada comprobante con lo cobrado, lo percibido y el estado del envío. En el
       formulario: **Enviar a SUNAT**, **XML** (sin firmar, para revisión),
@@ -155,14 +155,14 @@ pasos:
     imagen: screenshots/06-comprobantes.png
 
   - titulo: Facturas sujetas a percepción
-    ruta: Perú ▸ Percepciones IGV ▸ Facturas sujetas a percepción
+    ruta: Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones ▸ Facturas sujetas a percepción
     texto: >-
       Facturas de venta del régimen con la percepción estimada y la ya
       acreditada con comprobantes.
     imagen: screenshots/07-facturas.png
 
   - titulo: Resumen para el F.V. 697
-    ruta: Perú ▸ Percepciones IGV ▸ Resumen F.V. 697
+    ruta: Perú ▸ SUNAT ▸ Declaraciones ▸ Resumen F.V. 697
     texto: >-
       Por periodo y régimen: el monto cobrado con la percepción (casilla 502) y
       las percepciones efectuadas (casilla 401) de los comprobantes emitidos.
@@ -170,7 +170,7 @@ pasos:
 
   - seccion: Compras — nos perciben
   - titulo: Registrar el comprobante de percepción del proveedor
-    ruta: Perú ▸ Percepciones IGV ▸ Percepciones que nos cobran
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Percepciones que nos cobran
     texto: >-
       Agente, documento (comprobante de percepción, factura o DUA), régimen,
       número, fecha y el monto percibido por comprobante. **Registrar** crea el
@@ -192,15 +192,15 @@ pasos:
     imagen: screenshots/12-factura-proveedor.png
 
   - titulo: Resumen para el F.V. 621
-    ruta: Perú ▸ Percepciones IGV ▸ Resumen F.V. 621
+    ruta: Perú ▸ SUNAT ▸ Declaraciones ▸ Percepciones del F.V. 621
     texto: >-
       Percepciones registradas por periodo y régimen, para aplicarlas contra el
       IGV del mes.
     imagen: screenshots/11-fv621.png
 
-  - seccion: El menú Perú ▸ Percepciones IGV
+  - seccion: El menú Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones
   - titulo: Menú de percepciones
-    ruta: Perú ▸ Percepciones IGV
+    ruta: Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones
     imagen: screenshots/13-menu.png
 
 campos_intro: >-
@@ -233,7 +233,7 @@ campos:
       - [Motivo, Por qué no se percibe., Calculado, "—"]
       - [Percibido (S/), Lo acreditado con comprobantes emitidos., Calculado, "—"]
   - grupo: Comprobante de percepción
-    ruta: Perú ▸ Percepciones IGV ▸ Comprobantes de percepción
+    ruta: Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones ▸ Comprobantes de percepción
     campos:
       - [Cliente y fecha de cobro, "La fecha es la de emisión y la del tipo de cambio.", Hoy, "—"]
       - [Régimen, "Catálogo 22: 01 (2 %), 02 (1 %) o 03 (0,5 %).", "01", Un comprobante por tasa]
@@ -320,6 +320,10 @@ faq:
       (art. 3.2 de la R.S. 058-2006/SUNAT).
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús en Perú ▸ Clientes y Proveedores ▸ Detracciones, retenciones y percepciones; resúmenes en SUNAT ▸ Declaraciones."
   - version: 2.20261012
     fecha: 12/10/2026
     cambios:

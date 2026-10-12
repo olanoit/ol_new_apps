@@ -218,7 +218,7 @@
 
     <menuitem id="menu_hr_subsidies"
         action="action_hr_subsidies_lot"
-        parent="menu_hr_pe_benefits_root"
+        parent="menu_hr_pe_benefits_main"
         sequence="40"/>
 
 </odoo>

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261012 — 12/10/2026
+
+- Menús en Perú ▸ Proveedores y Clientes ▸ Detracciones, retenciones y percepciones; resumen 626 en SUNAT ▸ Declaraciones; análisis en Informes ▸ Análisis.
+
 ## 22.20261012 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de retención con una compra pagada con su comprobante de retención y una venta a un cliente agente con la retención sufrida.

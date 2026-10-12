@@ -62,7 +62,7 @@ servicio web para hacerlo desde fuera.
 
 ## Conciliar el periodo
 
-1. Vaya a **Perú ‣ SIRE ‣ Ventas (RVIE)** o **Compras (RCE)** y cree el
+1. Vaya a **Perú ‣ SUNAT ‣ SIRE ‣ Ventas (RVIE)** o **Compras (RCE)** y cree el
    periodo (año y mes).
 2. Haga clic en **Solicitar propuesta**: SUNAT devuelve un ticket. Una acción
    planificada lo consulta con espera creciente y descarga la propuesta al

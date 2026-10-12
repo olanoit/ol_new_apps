@@ -173,7 +173,7 @@ pasos:
       **Número de operación banco**: el dato que pide el PLE y que permite
       conciliar con el extracto.
   - titulo: Compra y venta de moneda
-    ruta: Perú ▸ Compra y venta de moneda (o Contabilidad ▸ Contabilidad)
+    ruta: Perú ▸ Tesorería ▸ Tipo de cambio ▸ Compra y venta de moneda (o Contabilidad ▸ Contabilidad)
     texto: >-
       Cambio entre una cuenta en soles y otra en dólares al tipo de cambio del
       banco: un pago sale de una cuenta y otro entra en la otra por la cuenta
@@ -287,6 +287,10 @@ faq:
       actualizaciones del módulo no los sobrescriben.
 
 novedades:
+  - version: 10.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "«Compra y venta de moneda» pasa a Perú ▸ Tesorería ▸ Tipo de cambio."
   - version: 9.20261012
     fecha: 12/10/2026
     cambios:

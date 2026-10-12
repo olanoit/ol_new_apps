@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261012 — 12/10/2026
+
+- Beneficios sociales en secciones: Beneficios, Vacaciones, Adelantos y préstamos (con los adelantos quincenales) y Renta y provisiones; tipos de adelanto y de préstamo en Configuración ▸ Tipos y plantillas.
+
 ## 22.20261008 — 08/10/2026
 
 - Formularios de cada beneficio ordenados como en Odoo: recuadro con la base legal (LIR, D.Leg. 650, Ley 27735/30334, D.Leg. 713, Ley 26790, D.Leg. 892), grupos con título en el orden del cálculo y pestañas por tema.

@@ -24,9 +24,9 @@
     <!-- Entrada en la aplicación única "Perú" (además de Inventario) -->
     <menuitem id="menu_l10n_pe_kardex_peru"
               name="Kardex (12.1 / 13.1)"
-              parent="al_account_base.al_l10n_pe_root"
+              parent="al_account_base.al_l10n_pe_menu_accounting"
               groups="stock.group_stock_user"
-              sequence="70"/>
+              sequence="30"/>
 
     <menuitem id="menu_l10n_pe_kardex_peru_wizard"
               name="Generar Kardex"

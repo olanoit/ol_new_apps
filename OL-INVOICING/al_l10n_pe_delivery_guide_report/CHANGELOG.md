@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_delivery_guide_report.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261012 — 12/10/2026
+
+- Guías en Perú ▸ Clientes ▸ Comprobantes; análisis en Informes ▸ Análisis; vehículos solo en Configuración ▸ Comprobantes electrónicos.
+
 ## 11.20261008 — 08/10/2026
 
 - Menú Perú ▸ Guías de remisión: guías con su estado SUNAT (por enviar en amarillo, con error en rojo), pendientes de enviar, vehículos y análisis por motivo y mes.

@@ -99,7 +99,7 @@ pasos_intro: >-
 pasos:
   - seccion: Contrato
   - titulo: Registrar el contrato
-    ruta: Perú ▸ Arrendamientos ▸ Contratos ▸ Nuevo
+    ruta: Perú ▸ Contabilidad ▸ Arrendamientos ▸ Contratos ▸ Nuevo
     texto: >-
       Arrendador, bien, inicio, plazo, cuota y si se paga al inicio o al final
       del mes. Con 12 meses o menos queda marcado como exento (corto plazo);
@@ -132,7 +132,7 @@ pasos:
       publica su interés y su capital en su fecha.
     imagen: screenshots/07-pasivo.png
   - titulo: Contrato exento
-    ruta: Perú ▸ Arrendamientos ▸ Contratos
+    ruta: Perú ▸ Contabilidad ▸ Arrendamientos ▸ Contratos
     texto: >-
       A 12 meses o menos (o de bajo valor), el contrato queda «Exento»: sin
       activo ni pasivo; sus cuotas se facturan a gasto de alquiler.
@@ -146,7 +146,7 @@ pasos:
       pasivo de corto plazo. El préstamo ya registró su interés y su capital.
     imagen: screenshots/08-factura.png
   - titulo: Seguimiento
-    ruta: Perú ▸ Arrendamientos ▸ Tabla de cuotas / Análisis
+    ruta: Perú ▸ Contabilidad ▸ Arrendamientos ▸ Tabla de cuotas / Análisis
     texto: >-
       Cuotas, intereses, capital y saldo por contrato y por año. En el contrato,
       «Saldos a hoy» compara el pasivo según la tabla con el del libro (en soles
@@ -191,7 +191,7 @@ pasos:
 
   - seccion: Impuesto a la renta
   - titulo: Diferencias temporales
-    ruta: Perú ▸ Arrendamientos ▸ Diferencias temporales
+    ruta: Perú ▸ Contabilidad ▸ Arrendamientos ▸ Diferencias temporales
     texto: >-
       Por ejercicio y contrato: depreciación del derecho de uso + interés
       (gasto contable) frente al alquiler de las facturas del arrendador (gasto
@@ -242,7 +242,7 @@ asientos:
 
 campos:
   - grupo: Contrato
-    ruta: Perú ▸ Arrendamientos ▸ Contratos
+    ruta: Perú ▸ Contabilidad ▸ Arrendamientos ▸ Contratos
     campos:
       - [Moneda, Moneda del contrato, La de la compañía, En dólares el pasivo se ajusta por diferencia de cambio]
       - [Producto de la cuota, Servicio de alquiler, —, IGV y detracción de las facturas del arrendador]
@@ -265,6 +265,10 @@ campos:
       - [Gasto de alquiler, Contratos exentos, 6352, —]
 
 novedades:
+  - version: 4.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Contabilidad ▸ Arrendamientos; análisis en Informes ▸ Análisis."
   - version: 3.20261012
     fecha: 12/10/2026
     cambios:

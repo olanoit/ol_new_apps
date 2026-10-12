@@ -52,7 +52,7 @@ monedas extranjeras usan la tasa nativa de Odoo.
 
 ### Cargar históricos
 
-1. Vaya a **Perú ‣ Tipo de cambio ‣ Actualizar tipo de cambio**.
+1. Vaya a **Perú ‣ Tesorería ‣ Tipo de cambio ‣ Actualizar tipo de cambio**.
 2. Elija la fuente y el periodo (un día, un rango o un mes). El BCRP no pide
    token y trae todo el rango en una consulta: es la fuente recomendada para
    cargar un año.
@@ -61,7 +61,7 @@ monedas extranjeras usan la tasa nativa de Odoo.
 
 ### Revisar las tasas
 
-Vaya a **Perú ‣ Tipo de cambio ‣ Tipos de cambio**: cada día tiene su compra,
+Vaya a **Perú ‣ Tesorería ‣ Tipo de cambio ‣ Tipos de cambio**: cada día tiene su compra,
 su venta y su origen. Una tasa escrita a mano tiene origen **Manual** y la
 actualización automática no la pisa.
 

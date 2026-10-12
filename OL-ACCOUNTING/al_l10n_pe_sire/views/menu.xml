@@ -2,9 +2,9 @@
 <odoo>
 
     <menuitem id="menu_sire_root" name="SIRE"
-              parent="al_account_base.al_l10n_pe_root"
+              parent="al_account_base.al_l10n_pe_menu_sunat"
               groups="account.group_account_readonly"
-              sequence="50"/>
+              sequence="20"/>
 
     <menuitem id="menu_sire_rvie" name="Ventas (RVIE)"
               parent="menu_sire_root" action="action_sire_rvie" sequence="10"/>

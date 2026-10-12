@@ -31,7 +31,7 @@ a PDF y XLSX con las herramientas estándar.
   Sin ajustes editables, el saldo final coincide con el patrimonio del
   Balance a la misma fecha.
 
-* Menú **Perú ▸ Estados financieros** con el Balance, el Estado de resultados
+* Menú **Perú ▸ Informes ▸ Estados financieros** con el Balance, el Estado de resultados
   y el 3.19; el 3.19 aparece también en Contabilidad ▸ Informes.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -41,7 +41,7 @@ a PDF y XLSX con las herramientas estándar.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '2.20261008',
+    'version': '3.20261012',
     'license': 'OPL-1',
     'depends': [
         'account_reports',

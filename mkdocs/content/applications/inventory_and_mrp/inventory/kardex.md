@@ -58,7 +58,7 @@ fila de ese TXT.
 flowchart TD
     A["Compras, ventas, devoluciones, producción, ajustes"] --> B["Movimientos de stock valorizados por Odoo"]
     B --> C["Documento del kárdex en cada movimiento<br/>al publicar el comprobante o validar"]
-    C --> D["Perú ‣ Kardex ‣ Generar Kardex"]
+    C --> D["Perú ‣ Contabilidad ‣ Kardex (12.1 / 13.1) ‣ Generar Kardex"]
     D --> E{"¿Formato y periodo?"}
     E --> F["13.1 valorizado o 12.1 unidades"]
     F --> G{"¿Salida?"}
@@ -69,7 +69,7 @@ flowchart TD
     K --> D
 ```
 
-1. Vaya a **Perú ‣ Kardex (12.1 / 13.1) ‣ Generar Kardex** (también en
+1. Vaya a **Perú ‣ Contabilidad ‣ Kardex (12.1 / 13.1) ‣ Generar Kardex** (también en
    **Inventario ‣ Reportes ‣ Kardex SUNAT**).
 2. Elija el **Formato**, el periodo (por mes o por rango) y, si hace falta,
    los almacenes, los productos o las categorías. Active **Kardex por
@@ -80,7 +80,7 @@ flowchart TD
     - **PDF** o **Exportar Excel**: un bloque por producto con la cabecera
       SUNAT;
     - **Generar en segundo plano**, para periodos largos: el archivo aparece en
-      **Perú ‣ Kardex ‣ Kardex generados** con el estado **Listo** para
+      **Perú ‣ Contabilidad ‣ Kardex (12.1 / 13.1) ‣ Kardex generados** con el estado **Listo** para
       descargarlo.
 
 Desde un producto o una categoría, **Ver Kardex** abre el asistente con el

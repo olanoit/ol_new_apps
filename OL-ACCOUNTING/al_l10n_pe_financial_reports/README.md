@@ -7,8 +7,8 @@ como informes contables de Odoo (`account.report`). Cada informe nuevo va aquí.
 
 | Informe | Dónde |
 |---|---|
-| 3.19 Estado de Cambios en el Patrimonio Neto | Perú ▸ Estados financieros · Contabilidad ▸ Informes |
-| Balance y Estado de resultados (Enterprise, variante peruana) | Perú ▸ Estados financieros |
+| 3.19 Estado de Cambios en el Patrimonio Neto | Perú ▸ Informes ▸ Estados financieros · Contabilidad ▸ Informes |
+| Balance y Estado de resultados (Enterprise, variante peruana) | Perú ▸ Informes ▸ Estados financieros |
 
 ## 3.19 Estado de Cambios en el Patrimonio Neto
 

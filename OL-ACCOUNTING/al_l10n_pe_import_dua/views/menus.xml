@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_l10n_pe_dua" name="DUA de importación"
-              parent="al_account_base.al_l10n_pe_root" action="action_l10n_pe_dua"
-              groups="account.group_account_invoice" sequence="42"/>
+              parent="al_account_base.al_l10n_pe_vendors_documents" action="action_l10n_pe_dua"
+              groups="account.group_account_invoice" sequence="30"/>
 </odoo>

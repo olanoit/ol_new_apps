@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Perú ▸ Guías de remisión: guías, pendientes de enviar, vehículos y
-         análisis (mismo patrón que Perú ▸ Detracciones). -->
+    <!-- Perú ▸ Clientes ▸ Comprobantes ▸ Guías de remisión: guías, pendientes de enviar, vehículos y
+         análisis (mismo patrón que Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones). -->
 
     <record id="view_picking_list_guide" model="ir.ui.view">
         <field name="name">stock.picking.list.guide.pe</field>

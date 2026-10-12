@@ -177,16 +177,20 @@ class TestRetentionApplies(TransactionCase):
         self.assertIn(payment, self._action_records('al_l10n_pe_retention.action_retention_payments'))
         self.assertIn(payment, self._action_records('al_l10n_pe_retention.action_retention_analysis'))
         self.assertIn(bill, payment.reconciled_bill_ids)
-        menus = self.env.ref('al_l10n_pe_retention.menu_retention_root').child_id
-        self.assertEqual(menus.sorted('sequence').mapped('action'), [
-            self.env.ref(x) for x in (
-                'al_l10n_pe_retention.action_retention_bills',
-                'al_l10n_pe_retention.action_retention_payments',
-                'al_l10n_pe_retention.action_retention_document',
-                'al_l10n_pe_retention.action_retention_received',
-                'al_l10n_pe_retention.action_retention_received_line',
-                'al_l10n_pe_retention.action_retention_summary',
-                'al_l10n_pe_retention.action_retention_analysis')])
+        # Cada menú en su sección de la app Perú.
+        ref = self.env.ref
+        expected = {
+            'menu_retention_bills': 'al_l10n_pe_vendors_taxes',
+            'menu_retention_payments': 'al_l10n_pe_vendors_taxes',
+            'menu_retention_documents': 'al_l10n_pe_vendors_taxes',
+            'menu_retention_received': 'al_l10n_pe_customers_taxes',
+            'menu_retention_received_line': 'al_l10n_pe_customers_taxes',
+            'menu_retention_summary': 'al_l10n_pe_sunat_returns',
+            'menu_retention_analysis': 'al_l10n_pe_reporting_analysis',
+        }
+        for menu, section in expected.items():
+            self.assertEqual(ref('al_l10n_pe_retention.%s' % menu).parent_id,
+                             ref('al_account_base.%s' % section), menu)
 
     def test_payment_partial_retention(self):
         self._setup_retention_tax()

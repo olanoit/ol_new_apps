@@ -35,7 +35,7 @@ transporte.
 4. **Bienes de terceros**: active **Inventario ‣ Configuración ‣ Ajustes ‣
    Consignación** para ver el campo **Propietario**.
 5. **Transporte**: registre los vehículos en **Inventario ‣ Configuración ‣
-   Perú ‣ Vehículos** y, para transporte público, el transportista con su RUC y
+   Perú ‣ Configuración ‣ Comprobantes electrónicos ‣ Vehículos (guías de remisión)** y, para transporte público, el transportista con su RUC y
    su número MTC.
 6. **Motivo por defecto** (opcional): en **Inventario ‣ Configuración ‣
    Gestión del almacén ‣ Tipos de operaciones**, complete **Motivo de traslado
@@ -219,7 +219,7 @@ obra y 0 en la planta (12 recibidos − 8 trasladados − 4 devueltos).
 
 ## Reportes
 
-- **Guías de remisión**: menú **Perú ‣ Guías de remisión**, con su estado ante
+- **Guías de remisión**: menú **Perú ‣ Clientes ‣ Comprobantes ‣ Guías de remisión**, con su estado ante
   SUNAT y la guía impresa. Vea
   [Guía de remisión impresa](../../finance/fiscal_localizations/peru/electronic_invoicing/delivery_guide.md).
 - [Kárdex valorizado](kardex.md): los bienes de terceros no entran a las

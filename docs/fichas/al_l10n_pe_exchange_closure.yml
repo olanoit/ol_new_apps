@@ -155,7 +155,7 @@ pasos:
   - seccion: El cierre del mes
     texto: Traer el tipo de cambio, calcular y revisar.
   - titulo: Lista de cierres
-    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Cierre de tipo de cambio
     texto: >-
       Un renglón por mes con T.C. compra y venta, ganancia, pérdida, neto,
       asiento y estado. Por defecto oculta los cancelados (filtro
@@ -211,7 +211,7 @@ pasos:
   - seccion: Cierres contabilizados
     texto: Junio y julio de 2026, con sus asientos.
   - titulo: Cierre de junio
-    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio ▸ Junio 2026
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Cierre de tipo de cambio ▸ Junio 2026
     texto: >-
       Compra 3,410 y venta 3,418. Las cuentas por cobrar suben con el dólar
       (ganancia) y la cuenta por pagar también (pérdida). El renglón de DEMO TC
@@ -230,7 +230,7 @@ pasos:
     imagen: screenshots/10-asiento-junio.png
 
   - titulo: Cierre de julio
-    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio ▸ Julio 2026
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Cierre de tipo de cambio ▸ Julio 2026
     texto: >-
       Compra 3,395 y venta 3,404. El dólar baja: los activos pierden y el
       pasivo gana. Cada saldo contable ya incluye el ajuste de junio, así que
@@ -258,7 +258,7 @@ campos:
       - [Cierre de tipo de cambio, "Sin detalle (consolidado por cuenta) o Con detalle (por socio).", Vacío (no entra), Incluye la cuenta en el cálculo; solo activo y pasivo]
       - [T.C. a aplicar, "Automático (activo → compra / pasivo → venta), Siempre compra o Siempre venta.", Automático, Tipo con el que se revalúa; vuelve a Automático si se quita la marca]
   - grupo: Cierre
-    ruta: Perú ▸ Tipo de cambio ▸ Cierre de tipo de cambio
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Cierre de tipo de cambio
     campos:
       - [Mes / Año, Periodo del cierre., Mes y año actuales, "Título «Julio 2026»; un cierre vigente por mes, moneda y compañía"]
       - [Fecha de cierre, Último día del mes., Calculada, Fecha de corte de los saldos y del asiento]
@@ -440,6 +440,10 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 11.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Contabilidad ▸ Cierre del mes."
   - version: 10.20261012
     fecha: 12/10/2026
     cambios:

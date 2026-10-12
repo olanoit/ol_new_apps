@@ -89,9 +89,9 @@ pasos:
     ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ Acciones ▸ Ceder a factoring
     texto: >-
       Seleccione las facturas (misma compañía y moneda) y cree la operación en
-      borrador, o hágalo desde Perú ▸ Factoring ▸ Operaciones.
+      borrador, o hágalo desde Perú ▸ Clientes ▸ Factoring ▸ Operaciones.
   - titulo: Completar la operación
-    ruta: Perú ▸ Factoring ▸ Operaciones
+    ruta: Perú ▸ Clientes ▸ Factoring ▸ Operaciones
     texto: >-
       Indique el factor, la modalidad, el contrato y el % de adelanto. Cada
       factura propone su monto neto pendiente de pago (sin la detracción ni la
@@ -145,19 +145,19 @@ pasos:
 
   - seccion: Seguimiento
   - titulo: Facturas cedidas
-    ruta: Perú ▸ Factoring ▸ Facturas cedidas
+    ruta: Perú ▸ Clientes ▸ Factoring ▸ Facturas cedidas
     texto: >-
       Todas las facturas cedidas con su factor, modalidad, anotación CAVALI,
       adelanto, retenido y estado; las vencidas en rojo.
     imagen: screenshots/06-facturas-cedidas.png
   - titulo: Análisis
-    ruta: Perú ▸ Factoring ▸ Análisis
+    ruta: Perú ▸ Informes ▸ Análisis ▸ Factoring
     texto: >-
       Cartera cedida por factor, estado y vencimiento: nominal y lo que falta
       cobrar.
     imagen: screenshots/08-analisis.png
   - titulo: Costo financiero
-    ruta: Perú ▸ Factoring ▸ Costo financiero
+    ruta: Perú ▸ Informes ▸ Análisis ▸ Costo financiero del factoring
     texto: >-
       Intereses, comisión, gastos y retenido perdido por factor y mes: el costo
       real de financiarse con factoring.
@@ -171,7 +171,7 @@ pasos:
 
 campos:
   - grupo: Operación
-    ruta: Perú ▸ Factoring ▸ Operaciones
+    ruta: Perú ▸ Clientes ▸ Factoring ▸ Operaciones
     campos:
       - [Factor, Banco o empresa de factoring, —, Tercero de la obligación y (sin recurso) de la deuda cedida]
       - [Modalidad, Con o sin recurso, Sin recurso, Decide los asientos]
@@ -196,6 +196,10 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: 7.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Clientes ▸ Factoring; análisis y costo financiero en Informes ▸ Análisis."
   - version: 6.20261012
     fecha: 12/10/2026
     cambios:

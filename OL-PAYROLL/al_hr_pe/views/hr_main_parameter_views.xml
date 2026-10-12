@@ -79,9 +79,9 @@
     <menuitem id="menu_hr_pe_main_parameter" name="Configuración principal"
         parent="menu_hr_pe_cfg_parameters" action="hr_main_parameter_open_action" sequence="10"/>
     <menuitem id="menu_hr_pe_period" name="Periodos"
-        parent="menu_hr_pe_cfg_periods" action="hr_period_action" sequence="10"/>
+        parent="menu_hr_pe_cfg_parameters" action="hr_period_action" sequence="30"/>
     <menuitem id="menu_hr_pe_period_generator" name="Generar periodos"
-        parent="menu_hr_pe_cfg_periods" action="hr_period_generator_action" sequence="20"/>
+        parent="menu_hr_pe_cfg_parameters" action="hr_period_generator_action" sequence="40"/>
     <menuitem id="menu_hr_pe_membership" name="Afiliaciones (AFP/ONP)"
         parent="menu_hr_pe_cfg_social" action="hr_membership_action" sequence="10"/>
     <menuitem id="menu_hr_pe_social_insurance" name="Seguros sociales"
@@ -99,6 +99,6 @@
     <menuitem id="menu_hr_pe_reasons_leave" name="Motivos de baja (T17)"
         parent="menu_hr_pe_cfg_catalogs" action="hr_reasons_leave_action" sequence="17"/>
     <menuitem id="menu_hr_pe_suspension_type" name="Tipos de suspensión (T21)"
-        parent="menu_hr_pe_cfg_periods" action="hr_suspension_type_action" sequence="40"/>
+        parent="menu_hr_pe_cfg_catalogs" action="hr_suspension_type_action" sequence="21"/>
 
 </odoo>

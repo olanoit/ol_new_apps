@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Perú ▸ Percepciones IGV (junto a Retenciones IGV) -->
-    <menuitem id="menu_perception_root" name="Percepciones IGV"
-              parent="al_account_base.al_l10n_pe_root" sequence="41"
-              groups="account.group_account_invoice"/>
+    <!-- Perú ▸ Clientes ▸ Detracciones, retenciones y percepciones (junto a Retenciones IGV) -->
     <menuitem id="menu_perception_invoices" name="Facturas sujetas a percepción"
-              parent="menu_perception_root" action="action_perception_invoices" sequence="10"/>
+              parent="al_account_base.al_l10n_pe_customers_taxes" action="action_perception_invoices" sequence="40"/>
     <menuitem id="menu_perception" name="Comprobantes de percepción"
-              parent="menu_perception_root" action="action_perception" sequence="20"/>
+              parent="al_account_base.al_l10n_pe_customers_taxes" action="action_perception" sequence="50"/>
     <menuitem id="menu_perception_received" name="Percepciones que nos cobran"
-              parent="menu_perception_root" action="action_perception_received" sequence="30"
+              parent="al_account_base.al_l10n_pe_vendors_taxes" action="action_perception_received" sequence="80"
               groups="account.group_account_user"/>
     <menuitem id="menu_perception_fv697" name="Resumen F.V. 697"
-              parent="menu_perception_root" action="action_perception_fv697" sequence="40"/>
-    <menuitem id="menu_perception_fv621" name="Resumen F.V. 621"
-              parent="menu_perception_root" action="action_perception_received_fv621" sequence="50"
+              parent="al_account_base.al_l10n_pe_sunat_returns" action="action_perception_fv697" sequence="30"/>
+    <menuitem id="menu_perception_fv621" name="Percepciones del F.V. 621"
+              parent="al_account_base.al_l10n_pe_sunat_returns" action="action_perception_received_fv621" sequence="40"
               groups="account.group_account_user"/>
 </odoo>

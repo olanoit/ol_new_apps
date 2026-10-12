@@ -178,7 +178,7 @@ pasos:
     imagen: screenshots/18-ajustes-contabilidad.png
 
   - titulo: Reglas de aportes AFP
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ Contabilidad
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal ▸ Contabilidad
     texto: >-
       La Configuración principal de la compañía (una por compañía; el menú abre
       directamente la de la compañía activa) guarda lo técnico. En **R.S.
@@ -199,7 +199,7 @@ pasos:
     pie: "Regla «Basico»: gasto 6211000 y remuneraciones por pagar 4111000, con detalle por trabajador."
 
   - titulo: Cuenta contable de cada afiliación
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Seguridad social ▸ Afiliaciones (AFP/ONP)
+    ruta: Nómina ▸ Configuración ▸ Seguridad social ▸ Afiliaciones (AFP/ONP)
     texto: >-
       Los aportes AFP se abonan en la cuenta de la afiliación del trabajador en
       la compañía. Si falta, el asistente del lote lista los trabajadores
@@ -213,11 +213,11 @@ pasos:
     texto: >-
       El menú de la tarjeta del lote trae **Asiento PE por lote** mientras el
       lote no tenga asiento; abre el asistente con el lote ya elegido. También
-      se llega desde **Nómina ▸ Contabilidad ▸ Asiento de planilla por lote**.
+      se llega desde **Nómina ▸ Recibos de nómina ▸ Pagos y contabilidad ▸ Asiento de planilla por lote**.
     imagen: screenshots/05-lote-menu.png
 
   - titulo: Previsualizar el asiento
-    ruta: Nómina ▸ Contabilidad ▸ Asiento de planilla por lote
+    ruta: Nómina ▸ Recibos de nómina ▸ Pagos y contabilidad ▸ Asiento de planilla por lote
     texto: >-
       Al elegir el lote, el asistente calcula las líneas en el momento con
       descripción, cuenta, debe y haber, y muestra los totales y la
@@ -247,7 +247,7 @@ pasos:
   - seccion: CTS y gratificación
     texto: Un asiento por depósito o pago semestral.
   - titulo: Contabilizar la CTS
-    ruta: Nómina ▸ Beneficios sociales ▸ CTS
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ CTS
     texto: >-
       El documento suma **Obtener provisiones**, que trae lo provisionado en el
       semestre para cada trabajador (columna **Prov. acumulada**), y **Generar
@@ -265,7 +265,7 @@ pasos:
     pie: "CTS202604: S/ 17.848,78 de CTS por pagar en nueve líneas, sin provisión previa."
 
   - titulo: Contabilizar la gratificación
-    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Gratificación
     texto: >-
       Mismo circuito que la CTS. El gasto cubre la gratificación y el bono
       extraordinario, y el haber abona el total a pagar de cada trabajador.
@@ -282,7 +282,7 @@ pasos:
   - seccion: Provisión mensual
     texto: El devengo de cada mes, con su asiento.
   - titulo: Generar el asiento de la provisión
-    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones ▸ Generar asiento
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta y provisiones ▸ Provisiones ▸ Generar asiento
     texto: >-
       Desde la provisión en borrador, **Generar asiento** abre el asistente con
       total debe, total haber y diferencia; si hay diferencia pide la cuenta de
@@ -305,7 +305,7 @@ pasos:
   - seccion: Liquidación de cese
     texto: Un asiento por trabajador cesado.
   - titulo: Asientos por cesado
-    ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese ▸ Asientos contables
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Liquidación de cese ▸ Asientos contables
     texto: >-
       La pestaña **Asientos contables** lista una fila por cesado con
       documento, fechas de ingreso y cese y su asiento. El icono de la fila
@@ -352,7 +352,7 @@ campos:
       - [Detallar provisión por trabajador, Abre el haber de la provisión en una línea por trabajador., Marcado, Desmarcado agrupa por cuenta]
       - [Cuenta de ajuste por redondeo, Cuenta propuesta en el asistente de BBSS., Vacío, "Se usa si debe y haber difieren"]
   - grupo: Asistente «Asiento de planilla por lote»
-    ruta: Nómina ▸ Contabilidad ▸ Asiento de planilla por lote
+    ruta: Nómina ▸ Recibos de nómina ▸ Pagos y contabilidad ▸ Asiento de planilla por lote
     campos:
       - [Lote de nómina, Lote que se contabiliza., Vacío, Calcula la previsualización al elegirlo]
       - [Con distribución analítica, Modo analítico de la previsualización y del asiento., "El de los Parámetros", Muestra la columna de analítica]
@@ -369,14 +369,14 @@ campos:
       - [Diferencia, Diferencia entre ambos., Calculado, "—"]
       - [Cuenta de ajuste, Cuenta de la línea «Ajuste por redondeo»., "La de los Parámetros", Visible y obligatoria con diferencia]
   - grupo: CTS y gratificación
-    ruta: Nómina ▸ Beneficios sociales ▸ CTS / Gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ CTS / Gratificación
     campos:
       - [Obtener provisiones, Trae a cada línea la provisión acumulada del semestre., Botón en borrador, Rellena Prov. acumulada]
       - [Prov. acumulada, Provisión del semestre del trabajador (gratificación con bono)., "0,00", Se revierte al debe del asiento]
       - [Generar asiento, Abre el asistente de BBSS., Botón en Exportado sin asiento, Crea y publica el asiento]
       - [Asiento contable, Asiento generado., Solo lectura, "Botón «Asiento» para abrirlo"]
   - grupo: Liquidación de cese ▸ Asientos contables
-    ruta: Nómina ▸ Beneficios sociales ▸ Liquidación de cese
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Liquidación de cese
     campos:
       - [Nro. doc., Documento del trabajador cesado., Calculado, "—"]
       - [Empleado, Trabajador cesado del lote., Calculado al procesar, Contacto del asiento]
@@ -386,7 +386,7 @@ campos:
       - [Asiento contable, Asiento del trabajador., Solo lectura, "El botón «Asientos» abre todos"]
       - [Obtener provisiones, "Provisión acumulada de CTS, gratificación y vacaciones por cesado.", Botón en borrador, Reversión al debe]
   - grupo: Provisiones
-    ruta: Nómina ▸ Beneficios sociales ▸ Provisiones
+    ruta: Nómina ▸ Beneficios sociales ▸ Renta y provisiones ▸ Provisiones
     campos:
       - [Generar asiento, Abre el asistente de BBSS., Botón en borrador sin asiento, Pasa la provisión a Hecho]
       - [Ver asiento, Abre el asiento generado., Visible con asiento, "—"]
@@ -589,6 +589,10 @@ faq:
       liquidación no la pierda.
 
 novedades:
+  - version: 12.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "«Asiento de planilla por lote» pasa a Recibos de nómina ▸ Pagos y contabilidad y «Cuentas por condición» a Configuración ▸ Salario; se quita el menú principal «Contabilidad»."
   - version: 11.20261010
     fecha: 10/10/2026
     cambios:

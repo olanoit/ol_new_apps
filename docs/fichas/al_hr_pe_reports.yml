@@ -255,7 +255,7 @@ pasos:
   - seccion: Contratos
     texto: Plantillas por compañía y contrato impreso por trabajador.
   - titulo: Preparar la plantilla de contrato
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato
+    ruta: Nómina ▸ Configuración ▸ Tipos y plantillas ▸ Plantillas de contrato
     texto: >-
       Cada plantilla es un texto con formato y marcadores entre llaves dobles.
       El formulario lista los disponibles: datos de la empresa y su apoderado,
@@ -284,7 +284,7 @@ pasos:
   - seccion: Pago masivo bancario
     texto: TXT de haberes y de CTS por banco.
   - titulo: El pago masivo y sus líneas
-    ruta: Nómina ▸ Pagos masivos bancarios
+    ruta: Nómina ▸ Recibos de nómina ▸ Pagos y contabilidad ▸ Pagos masivos bancarios
     texto: >-
       Cada pago lleva el diario de cargo, su cuenta, la fecha y la glosa, el
       origen y una línea por trabajador con documento, cuenta destino, banco,
@@ -306,7 +306,7 @@ pasos:
     imagen: screenshots/16-pago-config-banco.png
 
   - titulo: Generar desde el origen
-    ruta: Nómina ▸ Beneficios sociales ▸ Gratificación
+    ruta: Nómina ▸ Beneficios sociales ▸ Beneficios ▸ Gratificación
     texto: >-
       CTS, gratificación, quincena y liquidación vacacional suman **Generar TXT
       banco** (oculto una vez finalizado un pago) y **Pagos bancarios** para
@@ -363,7 +363,7 @@ campos:
       - [Fecha de emisión, Fecha del certificado., Hoy, "—"]
       - [Empleados, Trabajadores a certificar., Los seleccionados en la lista, Un certificado por página]
   - grupo: Plantilla de contrato
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato
+    ruta: Nómina ▸ Configuración ▸ Tipos y plantillas ▸ Plantillas de contrato
     campos:
       - [Nombre, Nombre de la plantilla., Vacío, Obligatorio]
       - [Secuencia, Orden en la lista., "10", "—"]
@@ -377,7 +377,7 @@ campos:
       - [Fin del periodo de prueba, Inicio de contrato + meses del régimen., Calculado, Editable]
       - [Imprimir contrato, Valida datos mínimos e imprime., Botón, Lista los datos que faltan]
   - grupo: Pago masivo
-    ruta: Nómina ▸ Pagos masivos bancarios
+    ruta: Nómina ▸ Recibos de nómina ▸ Pagos y contabilidad ▸ Pagos masivos bancarios
     campos:
       - [Nombre, Número PM-######., Secuencia por compañía, Solo lectura]
       - [Diario (banco de cargo), Diario bancario del pago., Vacío, Formato y cuenta de cargo]
@@ -489,7 +489,7 @@ configuracion:
   - "En **Ajustes ▸ Nómina ▸ Perú** elija el representante que firma, su firma, si la boleta enviada se cifra y los diarios de pago masivo (el banco de la cuenta del diario debe tener su formato TXT). Con varias compañías, hágalo con cada una activa."
   - "En **Configuración principal** (botón «Abrir configuración principal» de Ajustes) indique las categorías de conceptos de la boleta y la regla del neto a pagar."
   - Registre las cuentas bancarias de haberes y de CTS de los trabajadores y su correo laboral para el envío de boletas.
-  - "Revise o cree las plantillas en **Nómina ▸ Configuración ▸ Perú ▸ Documentos ▸ Plantillas de contrato** y asígnelas en la ficha del trabajador."
+  - "Revise o cree las plantillas en **Nómina ▸ Configuración ▸ Tipos y plantillas ▸ Plantillas de contrato** y asígnelas en la ficha del trabajador."
 requisitos_nota: >-
   Requiere Nómina de Odoo Enterprise y el módulo de beneficios sociales
   peruano. El envío de boletas usa el servidor de correo saliente de Odoo.
@@ -521,6 +521,10 @@ faq:
       regularizar o lo retenido en exceso.
 
 novedades:
+  - version: 23.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Pagos masivos bancarios pasa a Recibos de nómina ▸ Pagos y contabilidad; plantillas de contrato en Configuración ▸ Tipos y plantillas."
   - version: 22.20261011
     fecha: 11/10/2026
     cambios:

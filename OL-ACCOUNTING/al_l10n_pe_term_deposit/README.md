@@ -6,7 +6,7 @@ Módulo `al_l10n_pe_term_deposit`. Lleva el dinero inmovilizado de la empresa co
 su contabilidad: depósitos a plazo, fondos en garantía y depósitos en garantía
 entregados (p. ej. el del alquiler de una oficina o un almacén).
 
-Menú *Perú ▸ Tesorería ▸ Depósitos y garantías* (y *Cartera vigente*,
+Menú *Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Depósitos* (y *Cartera vigente*,
 *Intereses devengados* y *Análisis de depósitos*). Cuentas en *Perú ▸
 Configuración ▸ Cuentas de la localización ▸ Depósitos y garantías*; aviso de
 vencimiento e ITF en *Ajustes ▸ Perú ▸ Depósitos y garantías*.

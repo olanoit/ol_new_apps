@@ -13,6 +13,31 @@ de cambio de cierre, los asientos de destino y la representación impresa de
 los comprobantes electrónicos. Todo queda reunido en la aplicación **Perú**,
 con su menú y su página de ajustes.
 
+## Menú de la aplicación
+
+El menú de **Perú** se organiza como el de Contabilidad: pocas secciones
+generales y, dentro de cada una, encabezados por tema.
+
+| Menú | Qué reúne |
+|---|---|
+| **Clientes** | Guías de remisión, letras por cobrar, factoring, detracciones de ventas, retenciones sufridas, percepciones cobradas y cheques de terceros |
+| **Proveedores** | Liquidaciones de compra, DUA, recibos por honorarios, letras por pagar, detracciones, retenciones efectuadas, CRE sin pago, percepciones que nos cobran y pagos por lote |
+| **Tesorería** | Tipo de cambio y compra y venta de moneda, entregas a rendir y caja chica, depósitos y garantías |
+| **Contabilidad** | Cierre del mes (cierre de tipo de cambio, ganancias no realizadas, asientos de destino), arrendamientos y kardex |
+| **SUNAT** | Declaraciones (621, PDT 626, F.V. 697, retenciones de 4.ª), registros SIRE y libros PLE |
+| **Informes** | Estados financieros y análisis (letras, factoring, depósitos, detracciones, retenciones, arrendamientos, guías) |
+| **Configuración** | Ajustes, catálogos y cuentas de cada módulo |
+
+Cada menú aparece solo si su módulo está instalado. Los mismos documentos
+siguen accesibles desde Contabilidad, Inventario o Compras, donde Odoo los
+tiene.
+
+![Barra de menús de la aplicación Perú](peru/peru-menu.png)
+
+| Clientes | Proveedores | SUNAT |
+|---|---|---|
+| ![Menú Clientes](peru/peru-menu-clientes.png) | ![Menú Proveedores](peru/peru-menu-proveedores.png) | ![Menú SUNAT](peru/peru-menu-sunat.png) |
+
 ## Módulos
 
 | Módulo | Qué agrega | Página |

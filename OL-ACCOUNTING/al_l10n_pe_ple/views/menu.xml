@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <menuitem id="menu_ple_root" name="Libros PLE"
-              parent="al_account_base.al_l10n_pe_root"
+              parent="al_account_base.al_l10n_pe_menu_sunat"
               groups="account.group_account_user"
-              sequence="60"/>
+              sequence="30"/>
 
     <!-- Acción de aterrizaje de la app "Perú": sin ella, Odoo abre la
          primera hoja del menú (el wizard Exportar PLE, target=new), que
@@ -34,21 +34,19 @@
               action="action_ple_equity"
               sequence="40"/>
 
-    <menuitem id="menu_ple_cost" name="Costos (Libro 10)"
-              parent="menu_ple_root" sequence="50"/>
 
     <menuitem id="menu_ple_cost_sales" name="10.1 Costo de ventas"
-              parent="menu_ple_cost" action="action_ple_cost_sales"
-              sequence="10"/>
+              parent="menu_ple_root" action="action_ple_cost_sales"
+              sequence="60"/>
     <menuitem id="menu_ple_cost_element" name="10.2 Elementos del costo"
-              parent="menu_ple_cost" action="action_ple_cost_element"
-              sequence="20"/>
+              parent="menu_ple_root" action="action_ple_cost_element"
+              sequence="61"/>
     <menuitem id="menu_ple_cost_production" name="10.3 Costo de producción"
-              parent="menu_ple_cost" action="action_ple_cost_production"
-              sequence="30"/>
+              parent="menu_ple_root" action="action_ple_cost_production"
+              sequence="62"/>
     <menuitem id="menu_ple_cost_center" name="10.4 Centros de costos"
-              parent="menu_ple_cost" action="action_ple_cost_center"
-              sequence="40"/>
+              parent="menu_ple_root" action="action_ple_cost_center"
+              sequence="63"/>
 
     <!-- ============================================================ -->
     <!-- Reportes PLE nativos (EE): enlaces para concentrar en la     -->
@@ -82,8 +80,8 @@
         <field name="target">new</field>
     </record>
 
-    <menuitem id="menu_ple_native" name="Reportes PLE nativos"
-              parent="menu_ple_root" sequence="60"/>
+    <menuitem id="menu_ple_native" name="Libros PLE nativos"
+              parent="al_account_base.al_l10n_pe_menu_sunat" sequence="40"/>
 
     <menuitem id="menu_ple_native_gl" name="Diario y Mayor (5.1 / 5.3 / 6.1)"
               parent="menu_ple_native"

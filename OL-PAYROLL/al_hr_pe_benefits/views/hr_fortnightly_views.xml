@@ -122,7 +122,7 @@
 
     <menuitem id="menu_hr_fortnightly"
         action="action_hr_fortnightly"
-        parent="menu_hr_pe_benefits_root"
-        sequence="65"/>
+        parent="menu_hr_advances_loans"
+        sequence="3"/>
 
 </odoo>

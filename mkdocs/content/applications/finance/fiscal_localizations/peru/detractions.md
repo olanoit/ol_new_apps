@@ -115,7 +115,7 @@ Después, pague el neto (S/ 3 115,00) al proveedor con el flujo normal de pagos.
 
 ### Depósito masivo
 
-Vaya a **Perú ‣ Detracciones ‣ Depósito masivo (Banco de la Nación)** para
+Vaya a **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Depósito masivo (Banco de la Nación)** para
 generar el archivo TXT de ancho fijo del Banco de la Nación con las facturas
 pendientes. La lista de excluidos indica el motivo de cada una: falta el tipo,
 el monto, el RUC, la cuenta del Banco de la Nación o la fecha.
@@ -134,7 +134,7 @@ Cuando hay muchos depósitos, no hace falta copiar las constancias una a una:
 
 1. En SUNAT Operaciones en Línea, consulte las **constancias de depósito** del
    periodo y descargue el resultado (Excel o CSV).
-2. Vaya a **Perú ‣ Detracciones ‣ Importar constancias** y suba el archivo. Las
+2. Vaya a **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Importar constancias de detracción** y suba el archivo. Las
    columnas se reconocen por su encabezado: número de constancia, RUC del
    proveedor, documento del adquiriente, fecha de pago, monto, tipo, serie y
    número del comprobante.
@@ -154,12 +154,12 @@ Cuando hay muchos depósitos, no hace falta copiar las constancias una a una:
 
 ## Seguimiento y contraste con SUNAT
 
-En **Perú ‣ Detracciones** están las listas de **Facturas**, **Depósitos** y
+En **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones** están las listas de **Facturas**, **Depósitos** y
 **Productos**, y el **Análisis de detracciones** por tipo y mes. Las facturas
 pendientes sin constancia se ven en amarillo.
 
 Si SUNAT cambia un porcentaje, el catálogo no cambia solo. Haga clic en
-**Contrastar con SUNAT** (en **Perú ‣ Detracciones**) para ver las diferencias y
+**Contrastar con SUNAT** (en **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones**) para ver las diferencias y
 aplicarlas, o edite el tipo y haga clic en **Actualizar productos
 vinculados**.
 

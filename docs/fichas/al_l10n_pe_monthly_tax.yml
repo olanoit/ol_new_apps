@@ -49,12 +49,12 @@ pasos_intro: >-
   periodo.
 pasos:
   - titulo: Declaraciones del año
-    ruta: Perú ▸ Declaración mensual (621)
+    ruta: Perú ▸ SUNAT ▸ Declaraciones ▸ Declaración mensual (621)
     texto: >-
       Un periodo por compañía y mes, con el IGV, la renta y el total a pagar.
     imagen: screenshots/01-lista.png
   - titulo: IGV, saldo a favor, percepciones y retenciones
-    ruta: Perú ▸ Declaración mensual (621) ▸ periodo
+    ruta: Perú ▸ SUNAT ▸ Declaraciones ▸ Declaración mensual (621) ▸ periodo
     texto: >-
       Calcular trae los importes del mes y los saldos del periodo anterior; los
       saldos no aplicados quedan para el siguiente.
@@ -71,6 +71,10 @@ pasos:
     imagen: screenshots/04-regimen.png
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ SUNAT ▸ Declaraciones."
   - version: 2.20261012
     fecha: 12/10/2026
     cambios:

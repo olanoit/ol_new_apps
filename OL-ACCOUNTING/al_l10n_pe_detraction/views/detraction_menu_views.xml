@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Perú ▸ Detracciones: facturas, depósitos, productos y análisis. -->
+    <!-- Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones: facturas, depósitos, productos y análisis. -->
 
     <!-- Comprobantes con detracción -->
     <record id="view_move_list_detraction" model="ir.ui.view">

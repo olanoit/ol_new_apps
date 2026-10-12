@@ -24,7 +24,7 @@ la factura ni el cobro:
   retenido (sin recurso); diferencia de cambio de la obligación (con recurso).
 * Cuentas por modalidad y moneda (PCGE por defecto), «Ceder a factoring»
   desde la lista de facturas, pestaña Factoring en la factura y menú
-  Perú ▸ Factoring con análisis y costo financiero.
+  Perú ▸ Clientes ▸ Factoring con análisis y costo financiero.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -32,7 +32,7 @@ la factura ni el cobro:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '6.20261012',
+    'version': '7.20261012',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],

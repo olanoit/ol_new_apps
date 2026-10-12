@@ -52,31 +52,31 @@ pasos_intro: >-
   suspensión.
 pasos:
   - titulo: El recibo por honorarios con su retención
-    ruta: Perú ▸ Renta de 4.ª categoría ▸ Recibos por honorarios
+    ruta: Perú ▸ Proveedores ▸ Comprobantes ▸ Recibos por honorarios
     texto: >-
       El recibo E001-58 de S/ 2 000 lleva la retención de S/ 160; el neto a
       pagar es S/ 1 840. La pestaña Contabilidad PE ▸ Renta de 4.ª categoría
       dice por qué se retiene o no.
     imagen: screenshots/01-recibo.png
   - titulo: Los recibos del periodo
-    ruta: Perú ▸ Renta de 4.ª categoría ▸ Recibos por honorarios
+    ruta: Perú ▸ Proveedores ▸ Comprobantes ▸ Recibos por honorarios
     texto: >-
       Cada recibo con su estado: retenido, no supera el tope o suspendido.
     imagen: screenshots/02-recibos.png
   - titulo: La constancia de suspensión
-    ruta: Perú ▸ Renta de 4.ª categoría ▸ Suspensiones de retención
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Suspensiones de 4.ª categoría
     texto: >-
       Número de la constancia del Formulario 1609 y fecha de emisión; la
       vigencia (del día siguiente al 31 de diciembre) se calcula sola.
     imagen: screenshots/03-suspension.png
   - titulo: Las retenciones del mes para la PLAME
-    ruta: Perú ▸ Renta de 4.ª categoría ▸ Retenciones del mes (PLAME)
+    ruta: Perú ▸ SUNAT ▸ Declaraciones ▸ Retenciones de 4.ª categoría (PLAME)
     texto: >-
       Recibos pagados en el mes, total retenido a declarar y el archivo .4ta
       para importar en el PDT PLAME.
     imagen: screenshots/04-plame.png
   - titulo: El certificado de rentas y retenciones
-    ruta: Perú ▸ Renta de 4.ª categoría ▸ Certificado de rentas y retenciones
+    ruta: Perú ▸ SUNAT ▸ Declaraciones ▸ Certificado de rentas y retenciones
     texto: >-
       Por prestador y ejercicio, con cada recibo pagado y su retención.
     imagen: screenshots/05-certificado.png
@@ -88,6 +88,10 @@ pasos:
     imagen: screenshots/06-ajustes.png
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Recibos en Perú ▸ Proveedores ▸ Comprobantes; suspensiones en Detracciones, retenciones y percepciones; PLAME y certificado en SUNAT ▸ Declaraciones."
   - version: 2.20261012
     fecha: 12/10/2026
     cambios:

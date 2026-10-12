@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_multicurrency_revaluation.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261012 — 12/10/2026
+
+- Menú en Perú ▸ Contabilidad ▸ Cierre del mes.
+
 ## 5.20261009 — 09/10/2026
 
 - Etiqueta más corta en la cuenta: «T.C. de revaluación» (el detalle pasa a la ayuda).

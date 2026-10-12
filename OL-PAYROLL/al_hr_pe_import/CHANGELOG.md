@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_import.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261012 — 12/10/2026
+
+- Importar desde Excel pasa a Configuración ▸ Importar desde Excel.
+
 ## 10.20261011 — 11/10/2026
 
 - Modo oscuro: la barra y las tarjetas de conteo del progreso de importación toman los tonos del tema oscuro de Odoo; el modo claro no cambia.

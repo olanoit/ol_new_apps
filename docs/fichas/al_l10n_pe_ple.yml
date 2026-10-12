@@ -63,7 +63,7 @@ contexto:
     000112-2021/SUNAT.
   nota: >-
     **No duplica lo que ya existe.** Los libros que genera la localización
-    oficial no se reimplementan: el submenú **Reportes PLE nativos** los
+    oficial no se reimplementan: el submenú **Libros PLE nativos** los
     reúne en la app Perú junto a los propios.
 
 libros_titulo: Guía de los libros
@@ -102,7 +102,7 @@ libros:
       - [Quién lo lleva, "Empresas con contabilidad completa que tienen activos fijos."]
       - [Periodicidad, "**Anual**: el nombre del archivo lleva el mes 00."]
       - [Datos de Odoo, "Activos (módulo Activos de Enterprise), su pestaña PLE SUNAT y sus asientos de depreciación publicados. El tipo de cambio de cierre del 7.3 sale de las tasas de Odoo al 31/12."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Activos fijos (Libro 7)** (informe en pantalla con botones TXT) o **Exportar PLE**."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Activos fijos (Libro 7)** (informe en pantalla con botones TXT) o **Exportar PLE**."]
       - [Captura, "Ninguna: solo los datos SUNAT de cada activo."]
     nota: >-
       Un activo dado de baja en el ejercicio sale del registro con sus retiros
@@ -134,8 +134,8 @@ libros:
       - [Quién lo lleva, "Quien paga rentas de los incisos e) o f) del art. 34 de la LIR."]
       - [Periodicidad, "**Mensual**: solo entran los pagos con fecha dentro del mes elegido."]
       - [Datos de Odoo, "Captura propia (fecha, prestador, monto bruto y retención) y el documento del contacto."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ 4.1, con el Mes."]
-      - [Captura, "Perú ▸ Libros PLE ▸ **Retenciones 4.1** (admite el importador estándar)."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Exportar PLE** ▸ 4.1, con el Mes."]
+      - [Captura, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Retenciones 4.1** (admite el importador estándar)."]
 
   - codigo: "9"
     titulo: Registro de Consignaciones
@@ -167,7 +167,7 @@ libros:
       - [Quién lo lleva, "Quien entrega (9.1) o recibe (9.2) bienes en consignación."]
       - [Periodicidad, "**Mensual**: solo cuentan los albaranes hechos del mes."]
       - [Datos de Odoo, "Albaranes con **Consignación PLE (Libro 9)**, su contacto y productos, la guía de remisión si existe y la factura publicada de la orden de venta."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ 9.1 / 9.2, con el Mes."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Exportar PLE** ▸ 9.1 / 9.2, con el Mes."]
       - [Captura, "Ninguna: un campo en el albarán."]
 
   - codigo: "3"
@@ -204,8 +204,8 @@ libros:
       - [Quién lo lleva, "Empresas con contabilidad completa (el 3.8, solo si hay inversiones en la cuenta 30)."]
       - [Periodicidad, "**A la fecha del balance**: normalmente el 31/12, con oportunidad 01."]
       - [Datos de Odoo, "3.8 y 3.19 por captura; 3.9 desde los activos con cuenta 34 y su amortización publicada; 3.23 un PDF adjunto."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ Libro 3, con Fecha de los EEFF y Oportunidad."]
-      - [Captura, "Perú ▸ Libros PLE ▸ **Inversiones 3.8** y **Patrimonio 3.19**."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Exportar PLE** ▸ Libro 3, con Fecha de los EEFF y Oportunidad."]
+      - [Captura, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Inversiones 3.8** y **Patrimonio 3.19**."]
     nota: >-
       El resto del Libro 3 (3.1 a 3.7, 3.11 a 3.18, 3.20, 3.24 y 3.25) lo
       genera la localización oficial con el botón **Inventory and Balance**
@@ -237,8 +237,8 @@ libros:
       - [Quién lo lleva, "Empresas con actividad de producción o transformación que superan el límite de ingresos del Reglamento de la LIR (art. 35); confirme el umbral vigente con su contador."]
       - [Periodicidad, "**Anual**: el 10.2 va en el archivo anual con una fila por mes."]
       - [Datos de Odoo, "Captura propia; en el 10.4 la cuenta analítica propone código y nombre del centro."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ Libro 10, con el Ejercicio."]
-      - [Captura, "Perú ▸ Libros PLE ▸ **Costos (Libro 10)** ▸ 10.1 a 10.4."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Exportar PLE** ▸ Libro 10, con el Ejercicio."]
+      - [Captura, "Perú ▸ SUNAT ▸ **Libros PLE** ▸ 10.1 a 10.4."]
 
   - codigo: "S"
     titulo: Formatos simplificados
@@ -266,7 +266,7 @@ libros:
       - [Quién lo lleva, "Contribuyentes autorizados a llevar contabilidad simplificada."]
       - [Periodicidad, "**Mensual**."]
       - [Datos de Odoo, "Asientos publicados, plan de cuentas y facturas publicadas del mes."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Exportar PLE** ▸ Formatos simplificados, con el Mes."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ Libros PLE ▸ **Exportar PLE** ▸ Formatos simplificados, con el Mes."]
       - [Activación, "Perú ▸ Configuración ▸ Ajustes ▸ **Libros PLE simplificados**; sin la marca el asistente los oculta y los rechaza."]
 
   - codigo: "SIRE"
@@ -296,25 +296,25 @@ libros:
       - [Quién lo lleva, "Los contribuyentes obligados al SIRE según el calendario de SUNAT."]
       - [Periodicidad, "**Mensual**, por fecha de factura."]
       - [Datos de Odoo, "Comprobantes publicados y anulados del mes, salvo los diarios excluidos, con su Clasificación y Estado RCE."]
-      - [Dónde se genera, "Perú ▸ Libros PLE ▸ **Reportes PLE nativos** ▸ Compras (8.1), Compras no domiciliados (8.2) o Ventas (14.1): botones TXT y **XLSX RCE 8.4**, **XLSX RCE 8.5** o **XLSX RVIE 14.4**."]
+      - [Dónde se genera, "Perú ▸ SUNAT ▸ **Libros PLE nativos** ▸ Compras (8.1), Compras no domiciliados (8.2) o Ventas (14.1): botones TXT y **XLSX RCE 8.4**, **XLSX RCE 8.5** o **XLSX RVIE 14.4**."]
       - [Nombre del archivo, "Indicador de generación 2 (SIRE) en lugar del 1 del PLE."]
 
 libros_mapa:
   - [Libro, Formatos, Periodicidad, Lo genera, Menú en la app Perú]
-  - ["1 Caja y Bancos", "1.1 · 1.2", Mensual, Localización oficial, "Reportes PLE nativos ▸ Caja y Bancos (1.1 / 1.2): TXT y XLSX"]
-  - ["3 Inventarios y Balances", "3.1–3.7 · 3.11–3.18 · 3.20 · 3.24 · 3.25", Al cierre, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor ▸ botones Inventory and Balance y XLSX Inventario y Balance"]
+  - ["1 Caja y Bancos", "1.1 · 1.2", Mensual, Localización oficial, "Libros PLE nativos ▸ Caja y Bancos (1.1 / 1.2): TXT y XLSX"]
+  - ["3 Inventarios y Balances", "3.1–3.7 · 3.11–3.18 · 3.20 · 3.24 · 3.25", Al cierre, Localización oficial, "Libros PLE nativos ▸ Diario y Mayor ▸ botones Inventory and Balance y XLSX Inventario y Balance"]
   - ["3 Inventarios y Balances", "3.8 · 3.9 · 3.19 · 3.23", Al cierre, "**Este módulo**", "Exportar PLE"]
   - ["4 Retenciones", "4.1", Mensual, "**Este módulo**", "Retenciones 4.1 · Exportar PLE"]
-  - ["5 Diario", "5.1 · 5.3", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1): TXT y XLSX"]
+  - ["5 Diario", "5.1 · 5.3", Mensual, Localización oficial, "Libros PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1): TXT y XLSX"]
   - ["5 Diario simplificado", "5.2 · 5.4", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
-  - ["6 Mayor", "6.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1): TXT y XLSX"]
+  - ["6 Mayor", "6.1", Mensual, Localización oficial, "Libros PLE nativos ▸ Diario y Mayor (5.1 / 5.3 / 6.1): TXT y XLSX"]
   - ["7 Activos Fijos", "7.1 · 7.3 · 7.4", Anual, "**Este módulo**", "Activos fijos (Libro 7) · Exportar PLE"]
-  - ["8 Compras (SIRE)", "RCE 8.4 · 8.5", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Reportes PLE nativos ▸ Compras (8.1) · Compras no domiciliados (8.2)"]
+  - ["8 Compras (SIRE)", "RCE 8.4 · 8.5", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Libros PLE nativos ▸ Compras (8.1) · Compras no domiciliados (8.2)"]
   - ["8 Compras simplificado", "8.3", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
   - ["9 Consignaciones", "9.1 · 9.2", Mensual, "**Este módulo**", "Exportar PLE"]
   - ["10 Costos", "10.1 · 10.2 · 10.3 · 10.4", Anual, "**Este módulo**", "Costos (Libro 10) · Exportar PLE"]
-  - ["12 y 13 Inventario permanente", "12.1 · 13.1", Mensual, Localización oficial, "Reportes PLE nativos ▸ Inventarios TXT (12.1 / 13.1): TXT y XLSX"]
-  - ["14 Ventas (SIRE)", "RVIE 14.4", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Reportes PLE nativos ▸ Ventas (14.1)"]
+  - ["12 y 13 Inventario permanente", "12.1 · 13.1", Mensual, Localización oficial, "Libros PLE nativos ▸ Inventarios TXT (12.1 / 13.1): TXT y XLSX"]
+  - ["14 Ventas (SIRE)", "RVIE 14.4", Mensual, "Localización oficial, con el TXT y el XLSX de **este módulo**", "Libros PLE nativos ▸ Ventas (14.1)"]
   - ["14 Ventas simplificado", "14.2", Mensual, "**Este módulo**", "Exportar PLE (con la marca de Ajustes)"]
 
 flujos_intro: >-
@@ -328,7 +328,7 @@ flujos:
       y no entrega ningún archivo.
     mermaid: |
       flowchart TD
-        A[Perú ▸ Libros PLE ▸ Exportar PLE:<br/>ejercicio, indicador y formatos] --> B{¿Compañía de la<br/>localización peruana?}
+        A[Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE:<br/>ejercicio, indicador y formatos] --> B{¿Compañía de la<br/>localización peruana?}
         B -- No --> X[Aviso: se detiene<br/>sin archivo]
         B -- Sí --> C{¿Simplificado sin la marca de Ajustes,<br/>libro mensual sin mes o<br/>Libro 3 sin fecha de EEFF?}
         C -- Sí --> X
@@ -350,7 +350,7 @@ flujos:
       flowchart TD
         A[Activo en proceso, pausado o cerrado<br/>con la pestaña PLE SUNAT completa] --> B[Valor, mejoras y bajas del ejercicio<br/>y asientos de depreciación publicados]
         B --> C{¿Desde dónde?}
-        C -- Informe en pantalla --> D[Perú ▸ Libros PLE ▸ Activos fijos:<br/>un renglón por activo, agrupado por cuenta]
+        C -- Informe en pantalla --> D[Perú ▸ SUNAT ▸ Libros PLE ▸ Activos fijos:<br/>un renglón por activo, agrupado por cuenta]
         C -- Asistente --> E[Exportar PLE:<br/>7.1, 7.3 y 7.4]
         D --> F[Botones TXT 7.1, XLSX 7.1,<br/>TXT 7.3 y TXT 7.4]
         F --> G{¿Falta tipo de activo, datos<br/>en moneda extranjera o contrato?}
@@ -367,7 +367,7 @@ flujos:
       editables. El asistente filtra cada lista por la fecha que corresponde.
     mermaid: |
       flowchart TD
-        A[Captura o importación en las listas<br/>de Perú ▸ Libros PLE] --> B{¿Qué formato?}
+        A[Captura o importación en las listas<br/>de Perú ▸ SUNAT ▸ Libros PLE] --> B{¿Qué formato?}
         B -- "4.1" --> C[Registros con fecha<br/>dentro del mes]
         B -- "3.8 y 3.19" --> D[Registros con fecha igual<br/>a la Fecha de los EEFF]
         B -- "3.9" --> E[Sin captura: activos con cuenta 34<br/>vigentes a la Fecha de los EEFF]
@@ -404,7 +404,7 @@ flujos:
       extracción y el formato del TXT y añade el botón XLSX.
     mermaid: |
       flowchart TD
-        A[Reportes PLE nativos:<br/>Compras 8.1, No domiciliados 8.2 o Ventas 14.1] --> B[Mes en el filtro de fechas]
+        A[Libros PLE nativos:<br/>Compras 8.1, No domiciliados 8.2 o Ventas 14.1] --> B[Mes en el filtro de fechas]
         B --> C[Botón TXT o XLSX]
         C --> D[Comprobantes publicados y anulados del mes<br/>por fecha de factura, salvo diarios excluidos]
         D --> E{¿Qué registro?}
@@ -445,7 +445,7 @@ pasos:
   - seccion: Asistente Exportar PLE
     texto: El punto único de generación de los TXT propios del módulo.
   - titulo: Generar libros anuales y mensuales
-    ruta: Perú ▸ Libros PLE ▸ Exportar PLE
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE
     texto: >-
       Indique **Ejercicio**, **Indicador de operaciones** y marque los
       formatos. El **Mes** aparece al marcar un libro mensual. **Generar** deja
@@ -459,7 +459,7 @@ pasos:
     pie: Libro 7.1 del ejercicio 2026 y 4.1 de julio 2026 en un ZIP, con su Excel de revisión.
 
   - titulo: Generar los formatos del Libro 3
-    ruta: Perú ▸ Libros PLE ▸ Exportar PLE ▸ Libro 3 — Inventarios y Balances
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE ▸ Libro 3 — Inventarios y Balances
     texto: >-
       Al marcar 3.8, 3.9, 3.19 o adjuntar el PDF de notas aparecen **Fecha de
       los EEFF** (por defecto el 31/12 del ejercicio) y **Oportunidad (CC)**.
@@ -495,7 +495,7 @@ pasos:
     pie: "Servidor comprado en USD 4.000,00 a 3,750."
 
   - titulo: Revisar el Registro de Activos Fijos en pantalla
-    ruta: Perú ▸ Libros PLE ▸ Activos fijos (Libro 7)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Activos fijos (Libro 7)
     texto: >-
       Informe con las columnas del formato 7.1: identificación, valor del
       activo, uso y método, y depreciación; un renglón por activo agrupado por
@@ -509,7 +509,7 @@ pasos:
     imagen: screenshots/07-libro7-pantalla.png
 
   - titulo: Depreciación del ejercicio
-    ruta: Perú ▸ Libros PLE ▸ Activos fijos (Libro 7)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Activos fijos (Libro 7)
     texto: >-
       La depreciación sale de los **asientos de depreciación publicados** del
       activo: acumulada al cierre del ejercicio anterior (incluido el importe
@@ -522,7 +522,7 @@ pasos:
   - seccion: Libro 4 — Retenciones 4.1
     texto: Rentas de los incisos e) y f) del art. 34 de la LIR.
   - titulo: Capturar las retenciones del mes
-    ruta: Perú ▸ Libros PLE ▸ Retenciones 4.1
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Retenciones 4.1
     texto: >-
       Lista editable con fecha de pago o retención, prestador del servicio,
       monto bruto y retención efectuada, ambos en positivo (un importe negativo
@@ -535,7 +535,7 @@ pasos:
   - seccion: Libro 3 — Inventarios y Balances
     texto: Los cuatro anexos que no genera la localización oficial.
   - titulo: "3.8: inversiones mobiliarias (cuenta 30)"
-    ruta: Perú ▸ Libros PLE ▸ Inversiones 3.8
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Inversiones 3.8
     texto: >-
       Una fila por título al cierre: fecha del saldo, **Emisor** (contacto) o,
       si no tiene documento peruano, **Nombre del emisor** (columna opcional),
@@ -544,7 +544,7 @@ pasos:
     imagen: screenshots/10-inversiones-38.png
 
   - titulo: "3.19: estado de cambios en el patrimonio neto"
-    ruta: Perú ▸ Libros PLE ▸ Patrimonio 3.19
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Patrimonio 3.19
     texto: >-
       Una fila por **rubro (tabla 34)** con la fecha del EEFF y las doce
       columnas del estado (capital, reservas, resultados…, varias opcionales
@@ -552,7 +552,7 @@ pasos:
     imagen: screenshots/11-patrimonio-319.png
 
   - titulo: "3.9 intangibles y 3.23 notas a los EEFF"
-    ruta: Perú ▸ Libros PLE ▸ Exportar PLE
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE
     texto: >-
       El **3.9** no requiere captura: toma los activos cuya cuenta empieza por
       **34**, vigentes a la fecha de los EEFF, con la amortización publicada del
@@ -562,7 +562,7 @@ pasos:
   - seccion: Libro 10 — Registro de Costos
     texto: Cuatro formatos anuales por captura, sin necesidad de Fabricación.
   - titulo: "10.1: estado de costo de ventas"
-    ruta: Perú ▸ Libros PLE ▸ Costos (Libro 10) ▸ 10.1 Costo de ventas
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ 10.1 Costo de ventas
     texto: >-
       Una sola fila por ejercicio: inventario inicial y final de productos
       terminados, costo de producción y ajustes. El inventario final se captura
@@ -570,7 +570,7 @@ pasos:
     imagen: screenshots/12-costo-ventas-101.png
 
   - titulo: "10.2: elementos del costo por mes"
-    ruta: Perú ▸ Libros PLE ▸ Costos (Libro 10) ▸ 10.2 Elementos del costo
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ 10.2 Elementos del costo
     texto: >-
       Una fila por mes (no admite dos filas del mismo mes) con materiales
       directos, mano de obra directa, otros costos directos y los tres gastos
@@ -578,7 +578,7 @@ pasos:
     imagen: screenshots/13-costos-102.png
 
   - titulo: "10.3: costo de producción por proceso"
-    ruta: Perú ▸ Libros PLE ▸ Costos (Libro 10) ▸ 10.3 Costo de producción
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ 10.3 Costo de producción
     texto: >-
       Una fila por proceso con su código, descripción, los seis elementos del
       costo (los gastos indirectos, en columnas opcionales), inventarios de
@@ -586,7 +586,7 @@ pasos:
     imagen: screenshots/14-costo-produccion-103.png
 
   - titulo: "10.4: centros de costos"
-    ruta: Perú ▸ Libros PLE ▸ Costos (Libro 10) ▸ 10.4 Centros de costos
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ 10.4 Centros de costos
     texto: >-
       Unidad de operación y centro de costos. Si elige una **Cuenta
       analítica**, se proponen su código (o su id) y su nombre, editables.
@@ -607,7 +607,7 @@ pasos:
   - seccion: Formatos simplificados
     texto: Solo con la marca de Ajustes.
   - titulo: Generar 5.2, 5.4, 8.3 y 14.2
-    ruta: Perú ▸ Libros PLE ▸ Exportar PLE ▸ Formatos simplificados (mensuales)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE ▸ Formatos simplificados (mensuales)
     texto: >-
       Salen sin captura: el **5.2** con una línea por apunte de los asientos
       publicados del mes, el **5.4** con el plan de cuentas, el **8.3** con las
@@ -619,7 +619,7 @@ pasos:
   - seccion: SIRE — RCE y RVIE
     texto: Los informes oficiales de compras y ventas, con los TXT corregidos.
   - titulo: "RCE 8.4 con la estructura oficial"
-    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸ Compras (8.1)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE nativos ▸ Compras (8.1)
     texto: >-
       El informe de compras de la localización emite el **RCE 8.4**; con este
       módulo su **TXT** sale con los 41 campos de la norma y completa la
@@ -631,7 +631,7 @@ pasos:
     imagen: screenshots/17-rce-84.png
 
   - titulo: "RVIE 14.4 con 33 campos"
-    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸ Ventas (14.1)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE nativos ▸ Ventas (14.1)
     texto: >-
       El TXT del RVIE sale con los 33 campos de la norma: los comprobantes
       anulados se anotan con importe cero y las notas de crédito de un
@@ -649,10 +649,10 @@ pasos:
       liquidaciones de compra. Ambos son editables y alimentan los campos 33 y
       40 del 8.4.
 
-  - seccion: Reportes PLE nativos
+  - seccion: Libros PLE nativos
     texto: Todo el PLE en la app Perú.
   - titulo: Acceder a los libros de la localización oficial
-    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos
+    ruta: Perú ▸ SUNAT ▸ Libros PLE nativos
     texto: >-
       Accesos a los informes que genera la localización oficial: **Diario y
       Mayor (5.1 / 5.3 / 6.1)**, **Caja y Bancos (1.1 / 1.2)**, **Ventas
@@ -662,7 +662,7 @@ pasos:
     imagen: screenshots/19-menu-libros-ple.png
 
   - titulo: Excel de revisión de los libros de la localización oficial
-    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸ Diario y Mayor ▸ engranaje
+    ruta: Perú ▸ SUNAT ▸ Libros PLE nativos ▸ Diario y Mayor ▸ engranaje
     texto: >-
       Junto a cada botón TXT de la localización oficial hay uno **XLSX** con
       las mismas líneas: **XLSX 5.1**, **XLSX 5.3** y **XLSX 6.1** en el Libro
@@ -677,7 +677,7 @@ pasos:
     pie: "Libro Mayor: cada TXT del PLE con su Excel al lado."
 
   - titulo: Inventario permanente en Excel
-    ruta: Perú ▸ Libros PLE ▸ Reportes PLE nativos ▸ Inventarios TXT (12.1 / 13.1)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE nativos ▸ Inventarios TXT (12.1 / 13.1)
     texto: >-
       El asistente del inventario permanente suma **XLSX 12.1** (unidades
       físicas) y **XLSX 13.1** (valorizado) a sus botones TXT, para el periodo
@@ -703,7 +703,7 @@ campos:
     campos:
       - [Libros PLE simplificados, "Habilita los formatos 5.2/5.4, 8.3 y 14.2.", Desmarcado, "Muestra su grupo en el asistente; sin la marca los rechaza"]
   - grupo: Asistente Exportar PLE
-    ruta: Perú ▸ Libros PLE ▸ Exportar PLE
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Exportar PLE
     campos:
       - [Compañía, Compañía que genera (solo en multicompañía)., Compañía activa, RUC del nombre del archivo]
       - [Ejercicio, Año fiscal., Año en curso, "Único dato de los libros 7 y 10"]
@@ -738,13 +738,13 @@ campos:
       - [Inicio del arrendamiento, Fecha de inicio., Vacío, "Si falta, fecha de adquisición"]
       - ["Nº cuotas pactadas y Monto total del contrato", Condiciones del contrato., "0", "Campos 9 y 10 del 7.4"]
   - grupo: Informe Registro de Activos Fijos (PLE 7.1)
-    ruta: Perú ▸ Libros PLE ▸ Activos fijos (Libro 7)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Activos fijos (Libro 7)
     campos:
       - [Fecha (Al 31/12/…), Fecha de cierre., "31/12 del ejercicio anterior", "Su año es el ejercicio del informe"]
       - ["TXT 7.1, XLSX 7.1, TXT 7.3, TXT 7.4", Botones del engranaje., "—", Mismos archivos que el asistente]
       - [Abrir activo, Menú contextual de cada renglón., "—", Abre la ficha del activo]
   - grupo: Retenciones 4.1
-    ruta: Perú ▸ Libros PLE ▸ Retenciones 4.1
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Retenciones 4.1
     campos:
       - [Fecha de pago / retención, Fecha de la operación., Vacío, "Obligatoria; decide el mes"]
       - [Prestador del servicio, Contacto que percibe la renta., Vacío, "Obligatorio; tipo, número y nombre"]
@@ -752,7 +752,7 @@ campos:
       - [Monto bruto, Retribución pagada., Vacío, "Obligatorio; no admite negativos"]
       - [Retención efectuada, Importe retenido en positivo., "0,00", Se emite en negativo]
   - grupo: Inversiones 3.8
-    ruta: Perú ▸ Libros PLE ▸ Inversiones 3.8
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Inversiones 3.8
     campos:
       - [Fecha del saldo (EEFF), Fecha de los EEFF., Vacío, "Debe coincidir con la del asistente"]
       - [Emisor, Contacto emisor del título., Vacío, Tipo y número de documento]
@@ -761,14 +761,14 @@ campos:
       - ["Valor nominal unitario, Cantidad de títulos, Costo total en libros", Datos del título., Vacíos, Obligatorios]
       - [Provisión total, Provisión en positivo., Vacío, "Se emite en negativo; no admite negativos"]
   - grupo: Patrimonio 3.19
-    ruta: Perú ▸ Libros PLE ▸ Patrimonio 3.19
+    ruta: Perú ▸ SUNAT ▸ Libros PLE ▸ Patrimonio 3.19
     campos:
       - [Fecha del EEFF, Fecha de los EEFF., Vacío, "Debe coincidir con la del asistente"]
       - [Rubro EEFF (T34), Rubro del estado., Vacío, "Obligatorio; campo 3 del 3.19"]
       - [Catálogo (T22), Catálogo de EEFF., Sector del rubro o 01, Editable]
       - ["Capital … Resultado del ejercicio", "Las doce columnas del Anexo 2 (varias opcionales en la lista).", Vacías, "Campos 4 a 15"]
   - grupo: Costos del Libro 10
-    ruta: Perú ▸ Libros PLE ▸ Costos (Libro 10)
+    ruta: Perú ▸ SUNAT ▸ Libros PLE
     campos:
       - [Ejercicio, Año del registro (en las cuatro listas)., Vacío, Filtro del asistente]
       - ["10.1: inventarios inicial y final, costo de producción, ajustes", Estado de costo de ventas., Vacíos, "Una fila por ejercicio; inventario final en negativo"]
@@ -881,7 +881,7 @@ funcionalidades:
       - Clasificación RCE en productos y facturas de proveedor, y estado RCE en la factura.
   - grupo: App Perú
     items:
-      - "Submenú Reportes PLE nativos: Diario y Mayor, Caja y Bancos, Ventas, Compras, no domiciliados e inventarios TXT."
+      - "Submenú Libros PLE nativos: Diario y Mayor, Caja y Bancos, Ventas, Compras, no domiciliados e inventarios TXT."
       - "Excel de revisión junto a cada TXT de la localización oficial: 1.1, 1.2, 5.1, 5.3, 6.1, 12.1, 13.1 y el Libro 3 completo (una hoja por formato), con los encabezados del Anexo 2 de SUNAT."
       - Script de datos de demostración que crea los registros «DEMO PLE» y valida los reportes.
 
@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 26.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús en Perú ▸ SUNAT ▸ Libros PLE (con los formatos 10.1 a 10.4 en la misma sección) y Libros PLE nativos."
   - version: 25.20261012
     fecha: 12/10/2026
     cambios:

@@ -87,7 +87,7 @@ pasos:
 
   - seccion: Comprobantes de retención
   - titulo: Enviar el CRE
-    ruta: Perú ▸ Retenciones IGV ▸ Retenciones efectuadas ▸ Enviar CRE a SUNAT
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Retenciones efectuadas ▸ Enviar CRE a SUNAT
     texto: >-
       Con «Comprobantes de retención (CRE)» activo, el CRE del pago se firma y
       se envía a HKA (número en 8 dígitos). Aceptado, el pago guarda el ZIP con

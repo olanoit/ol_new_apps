@@ -99,7 +99,7 @@ Asiento de destino generado al publicar:
 
 ## Cuadrar el periodo
 
-Vaya a **Perú ‣ Destinos ‣ Destinos del periodo**: muestra el saldo de la 79,
+Vaya a **Perú ‣ Contabilidad ‣ Cierre del mes ‣ Asientos de destino**: muestra el saldo de la 79,
 el del Elemento 9 y la diferencia. En el ejemplo, ambos suman S/ 1 000,00 y la
 diferencia es 0.
 

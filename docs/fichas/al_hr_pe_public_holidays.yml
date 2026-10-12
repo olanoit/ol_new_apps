@@ -206,7 +206,7 @@ pasos:
     pie: "Boleta DEMO de julio 2026: Día de la Fuerza Aérea, Día de la Independencia y Día de la Gran Parada Militar (24 horas)."
 
   - titulo: Feriado laborado en el tareaje
-    ruta: Nómina ▸ Asistencia ▸ Tareaje
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Tareaje
     texto: >-
       Con `al_hr_pe_attendance`, el tareaje lee los descansos globales del
       horario de cada trabajador: si hay marcaciones en un feriado, el día se

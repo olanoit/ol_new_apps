@@ -162,9 +162,9 @@
 
     <menuitem id="menu_hr_tareaje_manager"
         name="Tareaje"
-        parent="al_hr_pe_attendance.menu_hr_pe_attendance_root"
+        parent="menu_hr_pe_attendance_root"
         action="hr_tareaje_manager_action"
-        sequence="30"/>
+        sequence="20"/>
 
     <!-- ============================================================ -->
     <!-- Parámetros principales: pestaña Tareaje                       -->

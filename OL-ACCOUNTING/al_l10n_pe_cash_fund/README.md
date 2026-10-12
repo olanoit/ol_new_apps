@@ -7,9 +7,9 @@ la empresa (entregas a rendir) y fondos fijos (caja chica): entrega, rendición
 con facturas de proveedor y planilla de movilidad, devolución, reembolso,
 reposición y cierre.
 
-Menú *Perú ▸ Entregas a rendir* (*Fondos*, *Rendiciones*, *Gastos de
+Menú *Perú ▸ Tesorería ▸ Entregas a rendir* (*Fondos*, *Rendiciones*, *Gastos de
 movilidad*), también en *Contabilidad ▸ Proveedores*. Ajustes en *Ajustes ▸
-Perú ▸ Entregas a rendir y caja chica*.
+Perú ▸ Tesorería ▸ Entregas a rendir ▸ Entregas a rendir y caja chica*.
 
 ## Modelos
 

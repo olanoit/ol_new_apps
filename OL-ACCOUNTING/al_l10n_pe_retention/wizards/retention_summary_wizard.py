@@ -68,7 +68,7 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
             raise UserError(_(
                 'No hay retenciones efectuadas en %(month)s/%(year)s para '
                 '%(company)s: no hay nada que declarar en ese periodo. '
-                'Revise el mes o los pagos en Perú ▸ Retenciones IGV ▸ '
+                'Revise el mes o los pagos en Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ '
                 'Retenciones efectuadas.',
                 month=self.month, year=self.year,
                 company=self.company_id.display_name))

@@ -287,30 +287,26 @@
         </field>
     </record>
 
-    <!-- Menú: Perú ▸ Retenciones IGV -->
-    <menuitem id="menu_retention_root" name="Retenciones IGV"
-              parent="al_account_base.al_l10n_pe_root"
-              groups="account.group_account_user"
-              sequence="40"/>
-    <menuitem id="menu_retention_bills" name="Comprobantes de proveedor"
-              parent="menu_retention_root" action="action_retention_bills"
-              sequence="10"/>
+    <!-- Menú: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones -->
+    <menuitem id="menu_retention_bills" name="Facturas sujetas a retención"
+              parent="al_account_base.al_l10n_pe_vendors_taxes" action="action_retention_bills"
+              sequence="50"/>
     <menuitem id="menu_retention_payments" name="Retenciones efectuadas"
-              parent="menu_retention_root" action="action_retention_payments"
-              sequence="20"/>
+              parent="al_account_base.al_l10n_pe_vendors_taxes" action="action_retention_payments"
+              sequence="60"/>
     <menuitem id="menu_retention_documents" name="CRE sin pago"
-              parent="menu_retention_root" action="action_retention_document"
-              sequence="25"/>
+              parent="al_account_base.al_l10n_pe_vendors_taxes" action="action_retention_document"
+              sequence="70"/>
     <menuitem id="menu_retention_received" name="Retenciones sufridas"
-              parent="menu_retention_root" action="action_retention_received"
-              sequence="30"/>
+              parent="al_account_base.al_l10n_pe_customers_taxes" action="action_retention_received"
+              sequence="20"/>
     <menuitem id="menu_retention_received_line" name="Retenciones sufridas por factura"
-              parent="menu_retention_root" action="action_retention_received_line"
-              sequence="31"/>
+              parent="al_account_base.al_l10n_pe_customers_taxes" action="action_retention_received_line"
+              sequence="30"/>
     <menuitem id="menu_retention_summary" name="Resumen PDT 626"
-              parent="menu_retention_root" action="action_retention_summary"
-              sequence="40"/>
-    <menuitem id="menu_retention_analysis" name="Análisis de retenciones"
-              parent="menu_retention_root" action="action_retention_analysis"
+              parent="al_account_base.al_l10n_pe_sunat_returns" action="action_retention_summary"
+              sequence="20"/>
+    <menuitem id="menu_retention_analysis" name="Retenciones"
+              parent="al_account_base.al_l10n_pe_reporting_analysis" action="action_retention_analysis"
               sequence="50"/>
 </odoo>

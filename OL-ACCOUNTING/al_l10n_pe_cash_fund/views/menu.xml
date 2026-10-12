@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Perú ▸ Entregas a rendir, y espejo en Contabilidad ▸ Proveedores. -->
+    <!-- Perú ▸ Tesorería ▸ Entregas a rendir, y espejo en Contabilidad ▸ Proveedores. -->
     <menuitem id="menu_cash_fund_root" name="Entregas a rendir"
-              parent="al_account_base.al_l10n_pe_root"
-              groups="account.group_account_invoice" sequence="28"/>
+              parent="al_account_base.al_l10n_pe_menu_treasury"
+              groups="account.group_account_invoice" sequence="20"/>
     <menuitem id="menu_cash_fund" name="Entregas a rendir y caja chica"
               parent="menu_cash_fund_root" action="action_cash_fund" sequence="10"/>
     <menuitem id="menu_cash_settlement" name="Rendiciones"

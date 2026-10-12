@@ -77,7 +77,7 @@ La diferencia de cambio que Odoo registra al conciliar cobros y pagos
 
 ## Cierre de tipo de cambio
 
-1. Vaya a **Perú ‣ Tipo de cambio ‣ Cierre de tipo de cambio** y haga clic en
+1. Vaya a **Perú ‣ Contabilidad ‣ Cierre del mes ‣ Cierre de tipo de cambio** y haga clic en
    **Nuevo**. Elija el mes, el año y la moneda.
 2. Haga clic en **Traer T.C.**: toma la compra y la venta del cierre del último
    día. Si no hay tasa para esa fecha, la descarga del BCRP o de apis.net.pe;
@@ -137,7 +137,7 @@ primero los posteriores, en orden.
 
 ## Ganancias y pérdidas no realizadas (Enterprise)
 
-1. Vaya a **Perú ‣ Tipo de cambio ‣ Ganancias/pérdidas no realizadas** (el
+1. Vaya a **Perú ‣ Contabilidad ‣ Cierre del mes ‣ Ganancias/pérdidas no realizadas** (el
    mismo informe está en **Contabilidad ‣ Informes**).
 2. Revise la columna **T.C.**: cada cuenta muestra la tasa que le corresponde y
    la cabecera indica la tasa de la moneda («USD (1 USD = S/ 3.700)»). En los

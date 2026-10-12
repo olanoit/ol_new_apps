@@ -29,7 +29,7 @@ servicios independientes al pagar sus recibos por honorarios:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '2.20261012',
+    'version': '3.20261012',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',

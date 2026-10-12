@@ -147,7 +147,7 @@ class TestDeliveryGuideReport(TransactionCase):
         return self.env[action.res_model].search(safe_eval(action.domain or '[]'))
 
     def test_guide_menu_actions(self):
-        """Perú ▸ Guías de remisión: la entrega hecha sin guía enviada sale en
+        """Perú ▸ Clientes ▸ Comprobantes: la entrega hecha sin guía enviada sale en
         «Guías de remisión», «Por enviar» y el análisis; al enviarla deja de
         estar pendiente."""
         picking = self._create_picking()
@@ -156,10 +156,10 @@ class TestDeliveryGuideReport(TransactionCase):
         self.assertIn(picking, self._action_records('al_l10n_pe_delivery_guide_report.action_guides_analysis'))
         picking.l10n_pe_edi_status = 'sent'
         self.assertNotIn(picking, self._action_records('al_l10n_pe_delivery_guide_report.action_guides_to_send'))
-        menus = self.env.ref('al_l10n_pe_delivery_guide_report.menu_guides_root').child_id.sorted('sequence')
-        self.assertEqual([action.id for action in menus.mapped('action')], [
-            self.env.ref(xmlid).id for xmlid in (
-                'al_l10n_pe_delivery_guide_report.action_guides',
-                'al_l10n_pe_delivery_guide_report.action_guides_to_send',
-                'l10n_pe_edi_stock.l10n_pe_edi_vehicle_actions',
-                'al_l10n_pe_delivery_guide_report.action_guides_analysis')])
+        # Perú ▸ Clientes ▸ Comprobantes y Perú ▸ Informes ▸ Análisis.
+        ref = self.env.ref
+        documents = ref('al_account_base.al_l10n_pe_customers_documents')
+        self.assertEqual(ref('al_l10n_pe_delivery_guide_report.menu_guides').parent_id, documents)
+        self.assertEqual(ref('al_l10n_pe_delivery_guide_report.menu_guides_to_send').parent_id, documents)
+        self.assertEqual(ref('al_l10n_pe_delivery_guide_report.menu_guides_analysis').parent_id,
+                         ref('al_account_base.al_l10n_pe_reporting_analysis'))

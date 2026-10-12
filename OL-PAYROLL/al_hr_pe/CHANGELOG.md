@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 35.20261012 — 12/10/2026
+
+- Menús de Nómina con el patrón de la app Perú: las secciones de la localización (Parámetros, Seguridad social, Catálogos SUNAT, Tipos y plantillas) pasan al segundo nivel de Configuración, sin el submenú «Perú» que obligaba a un cuarto nivel; periodos en Parámetros, derechohabientes en Seguridad social, T21 en Catálogos SUNAT y suspensiones de labores en Entradas de trabajo.
+
 ## 34.20261010 — 10/10/2026
 
 - Punto de extensión `_l10n_pe_tareaje_distribution` en la boleta: el reparto del costo por centro de costo según el tareaje (lo calcula Asistencia y lo usa el asiento de planilla por lote).

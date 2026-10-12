@@ -50,7 +50,7 @@ cálculo de los beneficios, los [beneficios sociales](benefits.md).
 2. En **Nómina ‣ Configuración ‣ Salario ‣ Reglas ‣ Contabilidad**, indique las
    cuentas de débito y crédito de cada regla. Marque **Asignar empleado en la
    línea de la cuenta** en las que deban detallarse por trabajador.
-3. En **Configuración ‣ Perú ‣ Seguridad social ‣ Afiliaciones**, indique la
+3. En **Configuración ‣ Seguridad social ‣ Afiliaciones**, indique la
    cuenta contable de cada AFP/ONP por compañía.
 4. Vaya a **Ajustes ‣ Nómina ‣ Perú: contabilidad de planillas** e indique el
    diario, el contacto para líneas sin trabajador, **Asiento de lote con
@@ -128,7 +128,7 @@ administradoras de fondos de pensiones, y se configura en cada afiliación.
 
 Para usar cuentas distintas sin duplicar la estructura salarial (por ejemplo,
 empleados y obreros), agregue filas en **Regla ‣ Contabilidad ‣ Cuentas por
-condición** o en **Nómina ‣ Contabilidad ‣ Cuentas por condición**: por tipo de
+condición** o en **Nómina ‣ Configuración ‣ Salario ‣ Cuentas por condición**: por tipo de
 trabajador (T08), departamento o centro de costo.
 
 - Gana la fila que cumple **más condiciones**; a igualdad, la de menor

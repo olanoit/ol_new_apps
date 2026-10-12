@@ -164,7 +164,7 @@ pasos:
   - seccion: Ciclos atípicos
     texto: Jornadas acumulativas del tipo 14×7, desde el catálogo hasta los turnos.
   - titulo: Definir los ciclos de jornada atípica
-    ruta: Nómina ▸ Asistencia ▸ Ciclos atípicos
+    ruta: Nómina ▸ Configuración ▸ Asistencia ▸ Ciclos atípicos
     texto: >-
       Lista de ciclos con días de trabajo, días de descanso, horas por día,
       duración del ciclo y **promedio semanal**.
@@ -191,7 +191,7 @@ pasos:
     pie: "Un 14×7 de 12 horas da 56 h semanales y no se puede guardar."
 
   - titulo: Asignar el ciclo a un trabajador
-    ruta: Nómina ▸ Asistencia ▸ Asignaciones de ciclo
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Asignaciones de ciclo
     texto: >-
       Trabajador, ciclo, plantilla de turno, inicio y número de ciclos; el
       **Fin** se calcula. **Generar turnos** crea en borrador un turno por
@@ -229,7 +229,7 @@ pasos:
   - seccion: Control de asistencia
     texto: Lo planificado frente a lo marcado, día a día.
   - titulo: Comparar lo planificado con lo marcado
-    ruta: Nómina ▸ Asistencia ▸ Monitor de asistencia
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Monitor de asistencia
     texto: >-
       Por trabajador y día: ingreso, salida y duración planificados, primera
       entrada y última salida marcadas, horas marcadas y estado. Se abre con
@@ -269,7 +269,7 @@ pasos:
     imagen: screenshots/21-ajustes-tareaje.png
 
   - titulo: Tipos de entrada de trabajo del tareaje
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal ▸ pestaña Tareaje
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal ▸ pestaña Tareaje
     texto: >-
       La configuración principal de la compañía (una por compañía; el menú
       abre directamente la de la compañía activa) indica qué tipo de entrada
@@ -290,7 +290,7 @@ pasos:
     pie: Huamán y Rivas están sujetos a horas extras; Salazar, no.
 
   - titulo: Crear el tareaje del periodo
-    ruta: Nómina ▸ Asistencia ▸ Tareaje
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Tareaje
     texto: >-
       Lista de tareajes con periodo, tolerancia, cálculo de horas extras y
       estado, con filtros **Borrador** y **Aplicado**. Un tareaje nuevo propone
@@ -334,7 +334,7 @@ pasos:
   - seccion: Fotocheck
     texto: El carné de identificación del personal.
   - titulo: Configurar el fotocheck de la compañía
-    ruta: Nómina ▸ Asistencia ▸ Configuración de fotocheck
+    ruta: Nómina ▸ Configuración ▸ Asistencia ▸ Configuración de fotocheck
     texto: >-
       Una configuración por compañía con hasta cinco **logos de
       certificaciones** (franja superior), la **imagen de fondo del anverso**
@@ -363,7 +363,7 @@ campos_intro: >-
   Cada campo que añade el módulo, dónde está y qué efecto tiene.
 campos:
   - grupo: Ciclo atípico
-    ruta: Nómina ▸ Asistencia ▸ Ciclos atípicos
+    ruta: Nómina ▸ Configuración ▸ Asistencia ▸ Ciclos atípicos
     campos:
       - [Nombre, "Nombre del ciclo; se muestra con «(N×M)» al final.", Vacío, Identifica el ciclo en las asignaciones]
       - [Días de trabajo, Días seguidos con turno., Vacío, "Obligatorio y mayor que cero"]
@@ -373,7 +373,7 @@ campos:
       - ["Promedio semanal (h)", "Horas por día × días de trabajo × 7 ÷ días del ciclo.", Calculado, "Rechaza más de 48 h"]
       - [Compañía, Vacío para un ciclo común a todas las compañías., Vacío, Visibilidad por compañía]
   - grupo: Asignación de ciclo atípico
-    ruta: Nómina ▸ Asistencia ▸ Asignaciones de ciclo
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Asignaciones de ciclo
     campos:
       - [Trabajador, Empleado al que se aplica el ciclo., Vacío, Recurso de los turnos]
       - [Ciclo atípico, Ciclo a repetir., Vacío, Días de trabajo y de descanso]
@@ -400,7 +400,7 @@ campos:
       - [Turno planificado, Turno publicado más cercano a la entrada (hasta 14 h)., Automático, "Enlace de la marcación con el turno; editable"]
       - ["Es vacaciones (Perú)", "Clasifica las ausencias de ese tipo.", Desmarcado, "Monitor: Vacaciones en lugar de Justificada"]
   - grupo: Monitor de asistencia
-    ruta: Nómina ▸ Asistencia ▸ Monitor de asistencia
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Monitor de asistencia
     campos:
       - ["Ingreso plan. / Salida plan. / Duración plan.", Horario del turno publicado en la zona horaria del trabajador., Calculado, "Cero en los días de descanso"]
       - ["Marc. ingreso / Marc. salida", Primera entrada y última salida marcadas del día., Calculado, "—"]
@@ -417,7 +417,7 @@ campos:
       - [Tolerancia, "Retraso que no se computa (horas:minutos).", "00:00", Valor por defecto de cada tareaje nuevo]
       - ["Redondeo (minutos)", Múltiplo al que se redondean tardanzas y sobretiempo., "0 (sin redondeo)", "—"]
   - grupo: Configuración principal ▸ Tareaje
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal
     campos:
       - ["W.E. días laborados (tareaje)", Tipo de entrada de trabajo de los días laborados., DLAB, Línea de la boleta]
       - ["W.E. jornada nocturna (tareaje)", Tipo de los días y horas nocturnas., Vacío, "Sin él, la nocturnidad no llega a la boleta"]
@@ -428,7 +428,7 @@ campos:
     campos:
       - ["Sujeto a horas extras (PE)", Habilita el cálculo de sobretiempo del trabajador; guarda historial de cambios., Desmarcado, "Sin él, el tareaje no calcula HE 25/35/100 %"]
   - grupo: Tareaje
-    ruta: Nómina ▸ Asistencia ▸ Tareaje
+    ruta: Nómina ▸ Entradas de trabajo ▸ Asistencia ▸ Tareaje
     campos:
       - [Nombre, Nombre del tareaje., Vacío, Obligatorio]
       - [Periodo, Desde y hasta., Mes en curso, Días que se clasifican]
@@ -449,7 +449,7 @@ campos:
       - [Inconsistencias, Marcación con solo entrada o solo salida., Calculado, "No se clasifica"]
       - [Horas a compensar, Sobretiempo compensado con descanso (solo en el detalle diario)., "0", "Descuenta HE 25 % y luego HE 35 % en la boleta"]
   - grupo: Configuración de fotocheck
-    ruta: Nómina ▸ Asistencia ▸ Configuración de fotocheck
+    ruta: Nómina ▸ Configuración ▸ Asistencia ▸ Configuración de fotocheck
     campos:
       - [Nombre, Nombre de la configuración., Configuración de fotocheck, "—"]
       - [Logo certificado 1 a 5, Logos de la franja superior del anverso., Vacío, Se imprimen a la derecha del logo de la compañía]
@@ -563,6 +563,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: 22.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Asistencia pasa a Entradas de trabajo ▸ Asistencia (registro, tareaje, monitor, asignaciones de ciclo) y Configuración ▸ Asistencia (ciclos atípicos, fotocheck)."
   - version: 20.20261010
     fecha: 10/10/2026
     cambios:

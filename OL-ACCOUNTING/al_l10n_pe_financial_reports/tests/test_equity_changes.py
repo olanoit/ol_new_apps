@@ -217,7 +217,7 @@ class TestEquityChanges(AccountTestInvoicingCommon):
 
     def test_menus(self):
         root = self.env.ref('al_l10n_pe_financial_reports.menu_pe_financial_statements')
-        self.assertEqual(root.parent_id, self.env.ref('al_account_base.al_l10n_pe_root'))
+        self.assertEqual(root.parent_id, self.env.ref('al_account_base.al_l10n_pe_menu_reporting'))
         self.assertEqual(root.child_id.mapped('name'), [
             'Balance', 'Estado de resultados',
             '3.19 Estado de Cambios en el Patrimonio Neto'])

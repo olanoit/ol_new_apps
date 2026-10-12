@@ -45,7 +45,7 @@ producto importado.
 
 ## Registrar la DUA
 
-1. Vaya a **Perú ‣ DUA de importación** y haga clic en **Nuevo**.
+1. Vaya a **Perú ‣ Proveedores ‣ Comprobantes ‣ DUA de importación** y haga clic en **Nuevo**.
 2. Elija la Aduana como proveedor, el diario de compras y el tipo de documento
    **(50) Declaración Única de Aduanas - Importación definitiva**. La fecha de la
    factura es la de numeración de la DAM.

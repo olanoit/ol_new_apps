@@ -149,7 +149,7 @@ pasos:
   - seccion: Acceso
     texto: Dónde están los importadores.
   - titulo: El menú de importadores
-    ruta: Nómina ▸ Importar desde Excel
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel
     texto: >-
       Asistencias, Inputs de boletas (novedades), Récord vacacional (saldos),
       Adelantos, Datos PE de versiones y Reglas salariales, además del
@@ -177,7 +177,7 @@ pasos:
       adelantos o préstamos sobre las boletas de un lote. Muestra también los
       tres pasos comunes a todos los asistentes.
   - titulo: Paso 1 — Cargar el archivo
-    ruta: Nómina ▸ Importar desde Excel ▸ Inputs de boletas (novedades)
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Inputs de boletas (novedades)
     texto: >-
       Elija el **Lote de boletas** y suba el Excel. Si aún no tiene el formato,
       **Descargar plantilla** baja un libro con las columnas NRO DOCUMENTO,
@@ -223,7 +223,7 @@ pasos:
   - seccion: Datos laborales PE
     texto: Para el alta inicial o un cambio masivo de AFP, régimen o catálogos PLAME.
   - titulo: Cargar los datos PE de las versiones
-    ruta: Nómina ▸ Importar desde Excel ▸ Datos PE de versiones
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Datos PE de versiones
     texto: >-
       Diez columnas: documento, régimen laboral, CUSPP, tipo de comisión AFP,
       afiliación, seguro social, tipo de trabajador (T08), situación (T15),
@@ -248,7 +248,7 @@ pasos:
   - seccion: Récord vacacional
     texto: Saldos de vacaciones pendientes al arrancar con el sistema.
   - titulo: Importar los saldos iniciales
-    ruta: Nómina ▸ Importar desde Excel ▸ Récord vacacional (saldos)
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Récord vacacional (saldos)
     texto: >-
       Columnas FECHA DE APLICACIÓN, NRO DOCUMENTO, DÍAS DE SALDO e IMPORTE DE
       SALDO (opcional). Cada fila crea el **saldo inicial** del trabajador, del
@@ -270,7 +270,7 @@ pasos:
   - seccion: Adelantos
     texto: Adelantos de sueldo, gratificación, CTS o vacaciones que se descuentan en una boleta posterior.
   - titulo: Importar adelantos
-    ruta: Nómina ▸ Importar desde Excel ▸ Adelantos
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Adelantos
     texto: >-
       Columnas NRO DOCUMENTO, TIPO DE ADELANTO (nombre exacto del tipo en la
       compañía), FECHA DE ADELANTO, FECHA DE DESCUENTO, MONTO y OBSERVACIONES.
@@ -290,7 +290,7 @@ pasos:
   - seccion: Asistencias
     texto: Marcaciones de un reloj biométrico o de una hoja de control.
   - titulo: Configurar la zona horaria del archivo
-    ruta: Nómina ▸ Importar desde Excel ▸ Asistencias
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Asistencias
     texto: >-
       Columnas EMPLEADO, ENTRADA y SALIDA. El empleado se busca por su nombre
       exacto y, si no aparece, por su número de documento. Las horas del Excel
@@ -311,7 +311,7 @@ pasos:
   - seccion: Reglas salariales
     texto: Carga o migración de las reglas de una estructura.
   - titulo: Elegir la estructura destino
-    ruta: Nómina ▸ Importar desde Excel ▸ Reglas salariales
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Reglas salariales
     texto: >-
       El Excel no trae la estructura: todas las reglas van a la **Estructura
       salarial destino**. La categoría se busca por nombre o código y la regla
@@ -331,7 +331,7 @@ pasos:
   - seccion: Historial
     texto: Qué se importó, cuándo y con qué resultado.
   - titulo: Consultar el historial
-    ruta: Nómina ▸ Importar desde Excel ▸ Historial de importaciones
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Historial de importaciones
     texto: >-
       Una línea por importación con fecha, modelo de destino, compañía,
       estado, contadores e inicio y fin. En verde las completadas, en rojo las
@@ -347,7 +347,7 @@ campos_intro: >-
   reales.
 campos:
   - grupo: Paso «Cargar archivo» (todos los asistentes)
-    ruta: Nómina ▸ Importar desde Excel ▸ cualquier importador
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ cualquier importador
     campos:
       - [Archivo Excel, "Libro a importar.", Vacío, "Obligatorio; solo .xlsx o .xlsm"]
       - [Analizar archivo, Botón que lee las hojas del libro., "—", Pasa al paso Configurar]
@@ -389,7 +389,7 @@ campos:
       - [Descargar reporte, "Excel con las hojas Resultado, Errores y Omitidos: fila, estado, detalle, sugerencia y los datos leídos.", "—", Aparece al terminar]
       - [Ver registros, Lista de los registros creados o actualizados., "—", Solo si hubo alguno]
   - grupo: Historial de importaciones
-    ruta: Nómina ▸ Importar desde Excel ▸ Historial de importaciones
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Historial de importaciones
     campos:
       - [Fecha, Momento en que se lanzó la importación., Automático, Orden descendente]
       - [Modelo destino, "Modelo técnico que recibe los datos (hr.payslip, hr.version…).", Automático, Filtro y agrupación]
@@ -522,6 +522,10 @@ faq:
       cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
+  - version: 11.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Importar desde Excel pasa a Configuración ▸ Importar desde Excel."
   - version: 10.20261011
     fecha: 11/10/2026
     cambios:

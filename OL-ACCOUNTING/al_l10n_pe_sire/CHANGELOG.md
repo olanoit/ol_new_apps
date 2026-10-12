@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261012 — 12/10/2026
+
+- Menú en Perú ▸ SUNAT ▸ SIRE.
+
 ## 20.20261012 — 12/10/2026
 
 - El documento modificado de las notas cuyo original no está en Odoo sale de los datos escritos en la nota, también para decidir si va como descuento.

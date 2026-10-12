@@ -70,7 +70,7 @@ pasos:
     puntos:
       - "La columna **T.C. en ganancias/pérdidas no realizadas** se puede añadir a la lista del plan de cuentas."
   - titulo: Tener el tipo de cambio de compra y venta del día
-    ruta: Perú ▸ Tipo de cambio ▸ Tipos de cambio
+    ruta: Perú ▸ Tesorería ▸ Tipo de cambio ▸ Tipos de cambio
     texto: >-
       El informe toma la **Compra** o la **Venta** del registro vigente a su
       fecha. Si ese día no tiene tipo de cambio registrado, la cuenta se
@@ -79,7 +79,7 @@ pasos:
   - seccion: Informe
     texto: El informe nativo, con el T.C. de cada cuenta.
   - titulo: Revisar las ganancias y pérdidas no realizadas
-    ruta: Perú ▸ Tipo de cambio ▸ Ganancias/pérdidas no realizadas
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Ganancias/pérdidas no realizadas
     texto: >-
       Es el mismo informe de **Contabilidad ▸ Informes ▸ Monedas no realizadas**. Cada cuenta se
       revalúa con su tipo de cambio y la nueva columna **T.C.** muestra el
@@ -106,7 +106,7 @@ campos:
     campos:
       - [T.C. en ganancias/pérdidas no realizadas, "Compra o Venta.", Vacío, "Obligatorio cuando se muestra; sin tasa del día usa la genérica"]
   - grupo: Informe Ganancias/pérdidas de moneda no realizadas
-    ruta: Perú ▸ Tipo de cambio ▸ Ganancias/pérdidas no realizadas
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Ganancias/pérdidas no realizadas
     campos:
       - [T.C., "Tipo de cambio aplicado, en soles por unidad.", "—", "En blanco si el total mezcla tipos de cambio"]
       - [Cabecera de moneda, "«USD (1 USD = S/ 3.400)».", "—", "Muestra la tasa genérica del informe"]
@@ -155,6 +155,10 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
+  - version: 6.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Contabilidad ▸ Cierre del mes."
   - version: 5.20261009
     fecha: 09/10/2026
     cambios:

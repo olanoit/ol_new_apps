@@ -309,7 +309,7 @@
     <menuitem id="menu_hr_advances_loans"
         name="Adelantos y préstamos"
         parent="menu_hr_pe_benefits_root"
-        sequence="60"/>
+        sequence="30"/>
     <menuitem id="menu_hr_advance"
         action="action_hr_advance"
         parent="menu_hr_advances_loans"
@@ -320,13 +320,13 @@
         sequence="2"/>
     <menuitem id="menu_hr_advance_type"
         action="action_hr_advance_type"
-        parent="menu_hr_advances_loans"
-        sequence="10"
+        parent="al_hr_pe.menu_hr_pe_cfg_documents"
+        sequence="20"
         groups="hr_payroll.group_hr_payroll_manager"/>
     <menuitem id="menu_hr_loan_type"
         action="action_hr_loan_type"
-        parent="menu_hr_advances_loans"
-        sequence="11"
+        parent="al_hr_pe.menu_hr_pe_cfg_documents"
+        sequence="30"
         groups="hr_payroll.group_hr_payroll_manager"/>
 
 </odoo>

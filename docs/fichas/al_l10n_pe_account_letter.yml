@@ -161,7 +161,7 @@ pasos:
   - seccion: Canje de facturas
     texto: De la factura pendiente al asiento del canje.
   - titulo: Lista de canjes
-    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Canje de letras
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar ▸ Canje de letras
     texto: >-
       Cada canje con socio, glosa, fecha, referencia, diario, estado y las
       facturas o letras de origen. Hay filtros de borrador, canjeado,
@@ -275,7 +275,7 @@ pasos:
       - "El botón **Banco** del canje abre todos estos asientos."
 
   - titulo: Seguir las letras
-    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Letras
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar ▸ Letras por cobrar
     texto: >-
       Todas las letras de clientes con socio, moneda, banco, código, tipo,
       cuenta, vencimiento, estado de pago y código de canje, con búsqueda por
@@ -297,7 +297,7 @@ pasos:
     imagen: screenshots/12-refinanciar.png
 
   - titulo: El canje de refinanciación
-    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Canje de letras
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar ▸ Canje de letras
     texto: >-
       Se trabaja como cualquier canje: confirmar, crear letras, numerarlas y
       canjear. **Canje relacionado** o **Canjes de origen** enlazan con el
@@ -339,7 +339,7 @@ pasos:
     imagen: screenshots/16-metodo.png
 
   - titulo: Canje masivo consolidado
-    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Canje de letras masiva
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar ▸ Canje masivo
     texto: >-
       El registro reúne las facturas y las letras de los canjes de origen, con
       su estado de pago.
@@ -347,7 +347,7 @@ pasos:
     pie: "CLC00093: letras LET-CLI-004 y LET-CLI-005 de los canjes CLC00090 y CLC00092."
 
   - titulo: Historial de canje
-    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Historial de canje
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar ▸ Historial de canje masivo
     texto: >-
       Los canjes que forman parte de un canje masivo salen de **Canje de
       letras** y se consultan aquí.
@@ -368,22 +368,22 @@ pasos:
   - seccion: Proveedores
     texto: El mismo ciclo para las compras canjeadas por letras.
   - titulo: Canje de proveedor
-    ruta: Perú ▸ Letras de cambio ▸ Proveedores ▸ Canje de letras
+    ruta: Perú ▸ Proveedores ▸ Letras por pagar ▸ Canje de letras
     texto: >-
       Se numera **CLP**. El asiento carga la cuenta por pagar de la factura y
       abona una línea por letra en la cuenta de letras por pagar.
     imagen: screenshots/19-canje-proveedor.png
     pie: "CLP00094: factura F001-DEMOLETRA1 de S/ 2.360,00 en dos letras de S/ 1.180,00."
 
-  - seccion: El menú Perú ▸ Letras de cambio
+  - seccion: El menú Perú ▸ Clientes ▸ Letras por cobrar
     texto: >-
       Letras por cobrar y por pagar con su saldo, canjes, letras en el banco,
       refinanciaciones y el análisis de vencimientos.
   - titulo: Menú de letras
-    ruta: Perú ▸ Letras de cambio
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar
     imagen: screenshots/21-menu-letras.png
   - titulo: Letras por cobrar
-    ruta: Perú ▸ Letras de cambio ▸ Clientes ▸ Letras por cobrar
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar ▸ Letras por cobrar
     texto: >-
       Número de letra, canje, cliente, vencimiento, tipo, banco, importe y
       saldo con totales; en rojo las vencidas con saldo. Por defecto solo las
@@ -391,7 +391,7 @@ pasos:
       agrupaciones por contacto, tipo, banco, moneda y mes.
     imagen: screenshots/22-letras-por-cobrar.png
   - titulo: Análisis de letras
-    ruta: Perú ▸ Letras de cambio ▸ Análisis de letras
+    ruta: Perú ▸ Informes ▸ Análisis ▸ Letras
     texto: >-
       Saldo e importe por venta o compra, tipo de letra, moneda y mes de
       vencimiento, en tabla dinámica, gráfico y lista.
@@ -411,7 +411,7 @@ campos:
       - [Cuenta, Cuenta contable de las letras., Vacío, Cuenta de las líneas de letra en los asientos]
       - [Moneda, Moneda de las letras., Vacío, Se cruza con la moneda del diario del canje]
   - grupo: Canje (cabecera)
-    ruta: Perú ▸ Letras de cambio ▸ Clientes o Proveedores ▸ Canje de letras
+    ruta: Perú ▸ Clientes ▸ Letras por cobrar (o Proveedores ▸ Letras por pagar) ▸ Canje de letras
     campos:
       - [Nro.canje, "CLC o CLP más la secuencia.", Asignado al crear, Referencia del asiento]
       - [Cliente o Proveedor, Socio del canje., Vacío, Editable solo en borrador]
@@ -630,6 +630,10 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 20.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús en Perú ▸ Clientes ▸ Letras por cobrar y Proveedores ▸ Letras por pagar; el análisis, en Informes ▸ Análisis."
   - version: 19.20261012
     fecha: 12/10/2026
     cambios:

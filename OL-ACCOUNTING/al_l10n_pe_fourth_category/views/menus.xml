@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_fourth_category_root" name="Renta de 4.ª categoría"
-              parent="al_account_base.al_l10n_pe_root"
-              groups="account.group_account_user" sequence="42"/>
     <menuitem id="menu_fourth_category_receipts" name="Recibos por honorarios"
-              parent="menu_fourth_category_root"
-              action="action_fourth_category_receipts" sequence="10"/>
-    <menuitem id="menu_fourth_category_suspensions" name="Suspensiones de retención"
-              parent="menu_fourth_category_root"
-              action="action_fourth_category_suspension" sequence="20"/>
-    <menuitem id="menu_fourth_category_report" name="Retenciones del mes (PLAME)"
-              parent="menu_fourth_category_root"
-              action="action_fourth_category_report" sequence="30"/>
+              parent="al_account_base.al_l10n_pe_vendors_documents"
+              action="action_fourth_category_receipts" sequence="40"/>
+    <menuitem id="menu_fourth_category_suspensions" name="Suspensiones de 4.ª categoría"
+              parent="al_account_base.al_l10n_pe_vendors_taxes"
+              action="action_fourth_category_suspension" sequence="90"/>
+    <menuitem id="menu_fourth_category_report" name="Retenciones de 4.ª categoría (PLAME)"
+              parent="al_account_base.al_l10n_pe_sunat_returns"
+              action="action_fourth_category_report" sequence="50"/>
     <menuitem id="menu_fourth_category_certificate" name="Certificado de rentas y retenciones"
-              parent="menu_fourth_category_root"
-              action="action_fourth_category_certificate" sequence="40"/>
+              parent="al_account_base.al_l10n_pe_sunat_returns"
+              action="action_fourth_category_certificate" sequence="60"/>
 </odoo>

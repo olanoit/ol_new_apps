@@ -1,21 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Menú raíz "Perú" y configuración (extensible por otros módulos AL).
+    <!-- Menú raíz "Perú": secciones generales como la app Contabilidad.
 
-         Orden del primer nivel (cada módulo fija su secuencia en su propio
-         archivo de menús):
-           10 Tipo de cambio      (al_l10n_pe_currency)
-           20 Letras de cambio    (al_l10n_pe_account_letter)
-           30 Detracciones        (al_l10n_pe_detraction)
-           40 Retenciones IGV     (al_l10n_pe_retention)
-           50 SIRE                (al_l10n_pe_sire)
-           60 Libros PLE          (al_l10n_pe_ple)
-           70 Kardex              (ol_stock_kardex_pe)
-          100 Configuración       (este archivo)
+         Primer nivel (contenedores de este archivo; nada de acciones sueltas):
+           10 Clientes       comprobantes, letras por cobrar, factoring,
+                             detracciones y retenciones de ventas, cobros
+           20 Proveedores    comprobantes, letras por pagar, detracciones,
+                             retenciones y percepciones de compras, pagos
+           30 Tesorería      tipo de cambio, entregas a rendir, depósitos
+           40 Contabilidad   cierre del mes, arrendamientos, kardex
+           50 SUNAT          declaraciones, SIRE, libros PLE
+           60 Informes       estados financieros y análisis
+          100 Configuración
+
+         Segundo nivel: secciones (encabezados del desplegable). Las
+         compartidas viven aquí; las de un solo módulo, en ese módulo.
+         Tercer nivel: las acciones. El desplegable de Odoo no muestra un
+         cuarto nivel: no anidar más.
     -->
     <menuitem id="al_l10n_pe_root" name="Perú"
               web_icon="al_account_base,static/description/icon.png"
               sequence="-100"/>
+
+    <menuitem id="al_l10n_pe_menu_customers" name="Clientes"
+              parent="al_l10n_pe_root" sequence="10"/>
+    <menuitem id="al_l10n_pe_customers_documents" name="Comprobantes"
+              parent="al_l10n_pe_menu_customers" sequence="10"/>
+    <menuitem id="al_l10n_pe_customers_taxes" name="Detracciones, retenciones y percepciones"
+              parent="al_l10n_pe_menu_customers" sequence="40"/>
+    <menuitem id="al_l10n_pe_customers_payments" name="Cobros"
+              parent="al_l10n_pe_menu_customers" sequence="50"/>
+
+    <menuitem id="al_l10n_pe_menu_vendors" name="Proveedores"
+              parent="al_l10n_pe_root" sequence="20"/>
+    <menuitem id="al_l10n_pe_vendors_documents" name="Comprobantes"
+              parent="al_l10n_pe_menu_vendors" sequence="10"/>
+    <menuitem id="al_l10n_pe_vendors_taxes" name="Detracciones, retenciones y percepciones"
+              parent="al_l10n_pe_menu_vendors" sequence="30"/>
+    <menuitem id="al_l10n_pe_vendors_payments" name="Pagos"
+              parent="al_l10n_pe_menu_vendors" sequence="40"/>
+
+    <menuitem id="al_l10n_pe_menu_treasury" name="Tesorería"
+              parent="al_l10n_pe_root" sequence="30"/>
+    <menuitem id="al_l10n_pe_treasury_exchange" name="Tipo de cambio"
+              parent="al_l10n_pe_menu_treasury" sequence="10"/>
+
+    <menuitem id="al_l10n_pe_menu_accounting" name="Contabilidad"
+              parent="al_l10n_pe_root" sequence="40"/>
+    <menuitem id="al_l10n_pe_accounting_closing" name="Cierre del mes"
+              parent="al_l10n_pe_menu_accounting" sequence="10"/>
+
+    <menuitem id="al_l10n_pe_menu_sunat" name="SUNAT"
+              parent="al_l10n_pe_root" sequence="50"/>
+    <menuitem id="al_l10n_pe_sunat_returns" name="Declaraciones"
+              parent="al_l10n_pe_menu_sunat" sequence="10"/>
+
+    <menuitem id="al_l10n_pe_menu_reporting" name="Informes"
+              parent="al_l10n_pe_root" sequence="60"/>
+    <menuitem id="al_l10n_pe_reporting_analysis" name="Análisis"
+              parent="al_l10n_pe_menu_reporting" sequence="20"/>
 
     <menuitem id="al_l10n_pe_config" name="Configuración"
               parent="al_l10n_pe_root" sequence="100"/>

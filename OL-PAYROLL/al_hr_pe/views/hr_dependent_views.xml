@@ -215,15 +215,15 @@
               sequence="40"/>
 
     <menuitem id="menu_l10n_pe_dependent_type" name="Tipos de derechohabiente"
-              parent="menu_hr_pe_cfg_dependents"
+              parent="menu_hr_pe_cfg_social"
               action="action_l10n_pe_dependent_type"
-              sequence="10"/>
+              sequence="40"/>
 
     <menuitem id="menu_l10n_pe_dependent_end_reason"
               name="Motivos de baja de derechohabientes"
-              parent="menu_hr_pe_cfg_dependents"
+              parent="menu_hr_pe_cfg_social"
               action="action_l10n_pe_dependent_end_reason"
-              sequence="20"/>
+              sequence="50"/>
 
     <!-- Botón en la ficha del trabajador: solo nómina, que es quien tiene
          acceso a los derechohabientes (un oficial de RR. HH. sin nómina no

@@ -99,7 +99,7 @@ flowchart TD
 
 ## Abrir un depósito
 
-1. Vaya a **Perú ‣ Tesorería ‣ Depósitos y garantías** y haga clic en
+1. Vaya a **Perú ‣ Tesorería ‣ Depósitos y garantías ‣ Depósitos** y haga clic en
    **Nuevo**. Elija el tipo, la entidad, el capital, la **TEA (%)**, la **Base
    de días** y el plazo. El borrador recibe el número `DEP/AAAA/NNNN` y las
    cuentas propuestas por tipo y moneda.
@@ -250,13 +250,13 @@ cierra la garantía.
 
 ## Reportes
 
-- **Perú ‣ Tesorería ‣ Cartera vigente**: saldo por entidad, moneda y mes de
+- **Perú ‣ Tesorería ‣ Depósitos y garantías ‣ Cartera vigente**: saldo por entidad, moneda y mes de
   vencimiento. Sirve para el flujo de caja y para cuadrar las cuentas 106, 107
   y 164.
-- **Perú ‣ Tesorería ‣ Intereses devengados**: ingreso por intereses
+- **Perú ‣ Tesorería ‣ Depósitos y garantías ‣ Intereses devengados**: ingreso por intereses
   (**Ingreso**) y ajustes (**Ajuste**) por depósito y mes, en soles; cuadra con
   la 7721 del mes.
-- **Perú ‣ Tesorería ‣ Análisis de depósitos**: saldo e intereses por tipo,
+- **Perú ‣ Informes ‣ Análisis ‣ Depósitos y garantías**: saldo e intereses por tipo,
   entidad y estado.
 - Los asientos entran al libro diario y al mayor de los
   [libros electrónicos](../fiscal_localizations/peru/ple.md), y los saldos de

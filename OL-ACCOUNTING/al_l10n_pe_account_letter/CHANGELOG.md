@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261012 — 12/10/2026
+
+- Menús en Perú ▸ Clientes ▸ Letras por cobrar y Proveedores ▸ Letras por pagar; el análisis, en Informes ▸ Análisis.
+
 ## 19.20261012 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): cuentas de letras del PCGE, diarios de letras por cobrar y por pagar, canje de una factura de cliente en tres letras (una en cobranza libre) y de una factura de proveedor en dos letras.

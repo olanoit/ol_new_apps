@@ -148,30 +148,30 @@ python3 scripts/gen_addons_table.py
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](OL-ACCOUNTING/al_account_base/) | 15.20261012 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
-[al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 11.20261009 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
+[al_account_base](OL-ACCOUNTING/al_account_base/) | 16.20261012 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_destinations](OL-ACCOUNTING/al_account_destinations/) | 12.20261012 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](OL-ACCOUNTING/al_account_move_name_sequence/) | 13.20261008 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
-[al_account_payments](OL-ACCOUNTING/al_account_payments/) | 9.20261012 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
-[al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 19.20261012 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
-[al_l10n_pe_batch_payment](OL-ACCOUNTING/al_l10n_pe_batch_payment/) | 3.20261012 | OPL-1 | Lotes de pago a proveedores con el archivo TXT de BCP, BBVA, Interbank, Scotiabank y Banco de la Nación: cuenta o CCI del proveedor, controles y totales del archivo.
-[al_l10n_pe_cash_fund](OL-ACCOUNTING/al_l10n_pe_cash_fund/) | 1.20261011 | OPL-1 | Entregas a rendir y cajas chicas a cargo de un responsable: aprobación, entrega, rendición con comprobantes y planilla de movilidad, devolución, reembolso o reposición, con sus asientos.
+[al_account_payments](OL-ACCOUNTING/al_account_payments/) | 10.20261012 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
+[al_l10n_pe_account_letter](OL-ACCOUNTING/al_l10n_pe_account_letter/) | 20.20261012 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
+[al_l10n_pe_batch_payment](OL-ACCOUNTING/al_l10n_pe_batch_payment/) | 4.20261012 | OPL-1 | Lotes de pago a proveedores con el archivo TXT de BCP, BBVA, Interbank, Scotiabank y Banco de la Nación: cuenta o CCI del proveedor, controles y totales del archivo.
+[al_l10n_pe_cash_fund](OL-ACCOUNTING/al_l10n_pe_cash_fund/) | 2.20261012 | OPL-1 | Entregas a rendir y cajas chicas a cargo de un responsable: aprobación, entrega, rendición con comprobantes y planilla de movilidad, devolución, reembolso o reposición, con sus asientos.
 [al_l10n_pe_check](OL-ACCOUNTING/al_l10n_pe_check/) | 1.20261012 | OPL-1 | Cartera de cheques de terceros y cheques propios sobre el módulo nativo de Odoo: diarios y cuentas del PCGE, emisor con RUC o DNI y plazo de presentación de la Ley de Títulos Valores.
 [al_l10n_pe_cpe_validation](OL-ACCOUNTING/al_l10n_pe_cpe_validation/) | 2.20261012 | OPL-1 | Consulta integrada de comprobantes de pago de SUNAT para las facturas de proveedor: de una en una, en lote o al publicar, con aviso o bloqueo.
-[al_l10n_pe_currency](OL-ACCOUNTING/al_l10n_pe_currency/) | 13.20261008 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
-[al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 23.20261012 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
-[al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 10.20261012 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
-[al_l10n_pe_factoring](OL-ACCOUNTING/al_l10n_pe_factoring/) | 6.20261012 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
-[al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 2.20261008 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
-[al_l10n_pe_fourth_category](OL-ACCOUNTING/al_l10n_pe_fourth_category/) | 2.20261012 | OPL-1 | Recibos por honorarios: retención del 8 % sobre el tope, suspensión (Formulario 1609), reporte y archivo .4ta para la PLAME y certificado anual.
-[al_l10n_pe_import_dua](OL-ACCOUNTING/al_l10n_pe_import_dua/) | 2.20261012 | OPL-1 | La DUA (tipo 50) como documento de compra: IGV e IPM con crédito fiscal, derechos aduaneros, percepción aduanera y costos en destino del producto.
-[al_l10n_pe_lease](OL-ACCOUNTING/al_l10n_pe_lease/) | 3.20261012 | OPL-1 | Contratos de alquiler como arrendatario según NIIF 16: pasivo a valor presente, derecho de uso con su depreciación, cuotas del arrendador, remedición, terminación anticipada, contratos en dólares e impuesto diferido.
-[al_l10n_pe_monthly_tax](OL-ACCOUNTING/al_l10n_pe_monthly_tax/) | 2.20261012 | OPL-1 | Régimen tributario, pago a cuenta del impuesto a la renta y resumen del Formulario Virtual 621 con saldo a favor, percepciones y retenciones.
-[al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 5.20261009 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
-[al_l10n_pe_perception](OL-ACCOUNTING/al_l10n_pe_perception/) | 2.20261012 | OPL-1 | Régimen de percepciones del IGV: comprobante de percepción electrónico (tipo 40) como agente, percepciones que nos cobran para el F.V. 621 y resumen del F.V. 697.
-[al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 25.20261012 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
-[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 22.20261012 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
-[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 20.20261012 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
-[al_l10n_pe_term_deposit](OL-ACCOUNTING/al_l10n_pe_term_deposit/) | 3.20261012 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
+[al_l10n_pe_currency](OL-ACCOUNTING/al_l10n_pe_currency/) | 14.20261012 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
+[al_l10n_pe_detraction](OL-ACCOUNTING/al_l10n_pe_detraction/) | 24.20261012 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
+[al_l10n_pe_exchange_closure](OL-ACCOUNTING/al_l10n_pe_exchange_closure/) | 11.20261012 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
+[al_l10n_pe_factoring](OL-ACCOUNTING/al_l10n_pe_factoring/) | 7.20261012 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
+[al_l10n_pe_financial_reports](OL-ACCOUNTING/al_l10n_pe_financial_reports/) | 3.20261012 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
+[al_l10n_pe_fourth_category](OL-ACCOUNTING/al_l10n_pe_fourth_category/) | 3.20261012 | OPL-1 | Recibos por honorarios: retención del 8 % sobre el tope, suspensión (Formulario 1609), reporte y archivo .4ta para la PLAME y certificado anual.
+[al_l10n_pe_import_dua](OL-ACCOUNTING/al_l10n_pe_import_dua/) | 3.20261012 | OPL-1 | La DUA (tipo 50) como documento de compra: IGV e IPM con crédito fiscal, derechos aduaneros, percepción aduanera y costos en destino del producto.
+[al_l10n_pe_lease](OL-ACCOUNTING/al_l10n_pe_lease/) | 4.20261012 | OPL-1 | Contratos de alquiler como arrendatario según NIIF 16: pasivo a valor presente, derecho de uso con su depreciación, cuotas del arrendador, remedición, terminación anticipada, contratos en dólares e impuesto diferido.
+[al_l10n_pe_monthly_tax](OL-ACCOUNTING/al_l10n_pe_monthly_tax/) | 3.20261012 | OPL-1 | Régimen tributario, pago a cuenta del impuesto a la renta y resumen del Formulario Virtual 621 con saldo a favor, percepciones y retenciones.
+[al_l10n_pe_multicurrency_revaluation](OL-ACCOUNTING/al_l10n_pe_multicurrency_revaluation/) | 6.20261012 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
+[al_l10n_pe_perception](OL-ACCOUNTING/al_l10n_pe_perception/) | 3.20261012 | OPL-1 | Régimen de percepciones del IGV: comprobante de percepción electrónico (tipo 40) como agente, percepciones que nos cobran para el F.V. 621 y resumen del F.V. 697.
+[al_l10n_pe_ple](OL-ACCOUNTING/al_l10n_pe_ple/) | 26.20261012 | OPL-1 | Completa los libros electrónicos PLE de SUNAT no cubiertos por la localización oficial: Libro 7 (Activos Fijos), 4.1 (Retenciones LIR), 9.1/9.2 (Consignaciones), complementos del Libro 3 (3.8/3.9/3.19/3.23), Libro 10 (Costos) y formatos simplificados (5.2/5.4, 8.3, 14.2). Corrige además el RCE 8.4 y 8.5 del SIRE.
+[al_l10n_pe_retention](OL-ACCOUNTING/al_l10n_pe_retention/) | 23.20261012 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
+[al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 21.20261012 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
+[al_l10n_pe_term_deposit](OL-ACCOUNTING/al_l10n_pe_term_deposit/) | 4.20261012 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 2.20261009 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
 [l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 20.20261012 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
@@ -181,9 +181,9 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_complaints_book](OL-INVOICING/al_l10n_pe_complaints_book/) | 8.20261011 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
-[al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 11.20261008 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
+[al_l10n_pe_delivery_guide_report](OL-INVOICING/al_l10n_pe_delivery_guide_report/) | 12.20261012 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](OL-INVOICING/al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
-[al_l10n_pe_edi_purchase_settlement](OL-INVOICING/al_l10n_pe_edi_purchase_settlement/) | 2.20261012 | OPL-1 | Liquidación de compra electrónica (tipo 04) a personas naturales sin RUC: XML UBL 2.1 firmado y enviado, retención del IGV y del impuesto a la renta, PDF y reversión.
+[al_l10n_pe_edi_purchase_settlement](OL-INVOICING/al_l10n_pe_edi_purchase_settlement/) | 3.20261012 | OPL-1 | Liquidación de compra electrónica (tipo 04) a personas naturales sin RUC: XML UBL 2.1 firmado y enviado, retención del IGV y del impuesto a la renta, PDF y reversión.
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 20.20261011 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [al_ose_factory_hka](OL-INVOICING/al_ose_factory_hka/) | 4.20261012 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
 
@@ -191,14 +191,14 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 34.20261010 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
-[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 11.20261010 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
-[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 21.20261010 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
-[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 22.20261008 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
-[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 23.20261011 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
-[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 10.20261011 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
+[al_hr_pe](OL-PAYROLL/al_hr_pe/) | 35.20261012 | OPL-1 | Localización peruana de nómina: tablas PLAME/AFP, campos laborales en hr.version, reglas salariales SUNAT y exportadores PLAME/AFPNet.
+[al_hr_pe_account](OL-PAYROLL/al_hr_pe_account/) | 12.20261012 | OPL-1 | Asientos de planilla y beneficios sociales con distribución analítica opcional por compañía.
+[al_hr_pe_attendance](OL-PAYROLL/al_hr_pe_attendance/) | 22.20261012 | OPL-1 | Capa peruana sobre planning EE: régimen atípico, monitor de asistencia, tareaje y horas extra.
+[al_hr_pe_benefits](OL-PAYROLL/al_hr_pe_benefits/) | 23.20261012 | OPL-1 | CTS, gratificaciones, liquidaciones, renta 5ta, provisiones, subsidios, utilidades, vacaciones, préstamos y quincena.
+[al_hr_pe_construction](OL-PAYROLL/al_hr_pe_construction/) | 24.20261012 | OPL-1 | Régimen de construcción civil: tabla salarial por convenio, categorías, BUC, BAE, bonificaciones por condiciones de trabajo, obras y CONAFOVICER.
+[al_hr_pe_import](OL-PAYROLL/al_hr_pe_import/) | 11.20261012 | OPL-1 | Framework de importación Excel (openpyxl) con lotes, progreso en vivo y reporte de errores por fila para toda la suite de planillas Perú.
 [al_hr_pe_public_holidays](OL-PAYROLL/al_hr_pe_public_holidays/) | 10.20261008 | OPL-1 | Calendario completo de 10 años de días festivos de Peru, listo para Odoo HR. Festivos nacionales y religiosos — aplicados automáticamente al resource.calendar como ausencias.
-[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 22.20261011 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
+[al_hr_pe_reports](OL-PAYROLL/al_hr_pe_reports/) | 23.20261012 | OPL-1 | Boleta de pago, certificados, contratos y archivos TXT de pago masivo bancario.
 
 ### OL-POS
 
@@ -216,7 +216,7 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_stock_transfer](OL-INVENTORY/al_l10n_pe_stock_transfer/) | 3.20261012 | OPL-1 | Guía de remisión para todos los traslados de la empresa: entre establecimientos (04), compras que recoge (02, 07, 08), devoluciones (06) y exportación (09), y control de los bienes de terceros.
 [al_stock_base](OL-INVENTORY/al_stock_base/) | 1.20261008 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
-[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 13.20261011 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
+[ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 14.20261012 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 
 ### OL-PROJECTS
 

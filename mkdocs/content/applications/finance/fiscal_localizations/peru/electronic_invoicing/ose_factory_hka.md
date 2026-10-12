@@ -156,7 +156,7 @@ número BNC-21, referencia a la boleta B001-21 (tipo 03), estado 3, total
 
 Con **Comprobantes de retención (CRE)** activo, el CRE de los pagos con
 [retención del IGV](../withholdings.md) se envía por HKA. Para revertirlo, vaya
-a **Perú ‣ Retenciones IGV ‣ Retenciones efectuadas**, abra el pago y haga clic
+a **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Retenciones efectuadas**, abra el pago y haga clic
 en **Revertir CRE**, con el motivo obligatorio: el módulo envía el resumen de
 reversiones (RR) y guarda el ticket, que se consulta con **Consultar
 reversión**. Con **Reversión del CRE** desactivada la reversión no está
@@ -170,7 +170,7 @@ disponible; con el CRE desactivado, la reversión va directo a SUNAT como en
 - Los [libros electrónicos (PLE)](../ple.md) y el [SIRE](../sire.md) se generan
   con los comprobantes aceptados; las bajas aceptadas dejan los documentos como
   anulados.
-- Los comprobantes de retención están en **Perú ‣ Retenciones IGV**.
+- Los comprobantes de retención están en **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones**.
 
 ## Casos especiales
 

@@ -9,7 +9,7 @@ Los contribuyentes obligados llevan sus libros y registros contables de forma
 que fija SUNAT, lo validan con el **Programa de Libros Electrónicos (PLE)** y
 lo presentan. Odoo Enterprise (`l10n_pe_reports`) ya genera los libros
 principales (Diario, Mayor, Caja y Bancos, Ventas, Compras, Inventarios); este
-módulo **completa los que faltan** y los reúne en **Perú ‣ Libros PLE**, cada
+módulo **completa los que faltan** y los reúne en **Perú ‣ SUNAT ‣ Libros PLE**, cada
 uno con un Excel de revisión. Lo usa el contador en el cierre mensual y anual.
 
 Cubre Activos Fijos (7.1, 7.3, 7.4), Retenciones del art. 34 de la LIR (4.1),
@@ -56,7 +56,7 @@ registros de compras y ventas de los obligados al SIRE se llevan en
 1. Registre y publique las operaciones del mes y capture lo que no sale de los
    asientos (retenciones 4.1, inversiones 3.8, patrimonio 3.19, costos del
    Libro 10).
-2. Vaya a **Perú ‣ Libros PLE ‣ Exportar PLE** (requiere el permiso de
+2. Vaya a **Perú ‣ SUNAT ‣ Libros PLE ‣ Exportar PLE** (requiere el permiso de
    contador).
 3. Elija la **Compañía**, el **Ejercicio** y, si marca un libro mensual, el
    **Mes**. Indique el **Indicador de operaciones**.
@@ -125,7 +125,7 @@ completo.
 ## Retenciones 4.1 (art. 34 LIR)
 
 Libro mensual de las retenciones de rentas de los incisos e) y f) del
-artículo 34 de la LIR. Se alimenta por captura en **Perú ‣ Libros PLE ‣
+artículo 34 de la LIR. Se alimenta por captura en **Perú ‣ SUNAT ‣ Libros PLE ‣
 Retenciones 4.1**, una lista editable con la **Fecha de pago / retención**, el
 **Prestador del servicio** (contacto con tipo y número de documento), el
 **Monto bruto** y la **Retención efectuada** (0 si no hubo). Capture los
@@ -145,7 +145,7 @@ elegido.
 ### Inversiones 3.8
 
 Detalle, al cierre, de los títulos que forman el saldo de la cuenta 30. Se
-captura en **Perú ‣ Libros PLE ‣ Inversiones 3.8**: **Fecha del saldo
+captura en **Perú ‣ SUNAT ‣ Libros PLE ‣ Inversiones 3.8**: **Fecha del saldo
 (EEFF)**, **Emisor** (o **Nombre del emisor** si es extranjero sin documento
 peruano), **Código del título (T15)**, valor nominal unitario, cantidad, costo
 total en libros y **Provisión** (en positivo; el TXT la emite negativa). Solo
@@ -162,7 +162,7 @@ depreciación publicados hasta esa fecha.
 ### Patrimonio 3.19
 
 Estado de cambios en el patrimonio neto, preparado desde el estado financiero
-aprobado. En **Perú ‣ Libros PLE ‣ Patrimonio 3.19**, capture por **Fecha del
+aprobado. En **Perú ‣ SUNAT ‣ Libros PLE ‣ Patrimonio 3.19**, capture por **Fecha del
 EEFF** una fila por **Rubro EEFF (T34)** (el **Catálogo (T22)** se propone
 solo) con sus doce columnas: capital, acciones de inversión, capital
 adicional, resultados no realizados, reservas legales, otras reservas,
@@ -196,7 +196,7 @@ sistemas) y la del ejercicio. Las bajas y ventas no cuentan como depreciación
 y las revaluaciones negativas van a «otros ajustes». Un activo dado de baja en
 el ejercicio sale con su valor y su depreciación en cero.
 
-Revise el libro en **Perú ‣ Libros PLE ‣ Activos fijos (Libro 7)** (también en
+Revise el libro en **Perú ‣ SUNAT ‣ Libros PLE ‣ Activos fijos (Libro 7)** (también en
 **Contabilidad ‣ Revisión ‣ Inventario**): un renglón por activo agrupado por
 cuenta, con el formato físico 7.1, el menú **Abrir activo** y los botones
 **PDF**, **XLSX**, **TXT 7.1**, **XLSX 7.1**, **TXT 7.3** y **TXT 7.4**. La
@@ -238,7 +238,7 @@ guía de remisión electrónica, su número alimenta la serie y el número.
 ## Registro de costos (Libro 10)
 
 Libro anual de las empresas del régimen general con actividad de
-transformación. Se captura en **Perú ‣ Libros PLE ‣ Costos (Libro 10)**:
+transformación. Se captura en **Perú ‣ SUNAT ‣ Libros PLE**:
 
 | Formato | Una fila por | Contenido |
 |---|---|---|
@@ -252,9 +252,9 @@ El sistema impide duplicar un ejercicio en el 10.1 o un mes en el 10.2. El
 el 10.3 con los elementos 6 y 9 del PCGE. Los cuatro se presentan juntos en la
 oportunidad anual.
 
-## Reportes PLE nativos
+## Libros PLE nativos
 
-**Perú ‣ Libros PLE ‣ Reportes PLE nativos** reúne los reportes de la
+**Perú ‣ SUNAT ‣ Libros PLE nativos** reúne los reportes de la
 localización Enterprise y añade, junto a cada botón TXT, uno **XLSX** armado
 con el mismo TXT oficial:
 

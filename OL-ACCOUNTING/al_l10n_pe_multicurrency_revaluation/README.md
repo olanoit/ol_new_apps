@@ -17,7 +17,7 @@ de moneda no realizadas)** para compañías peruanas. Migración a Odoo 19 de
 | Asiento de ajuste | Cada provisión cita el T.C. de su cuenta: `Provisión de USD (T.C. S/ 3.720)`. |
 | Otras compañías | Informe nativo, sin columna T.C. |
 
-Atajo en la app **Perú ▸ Tipo de cambio ▸ Ganancias/pérdidas no realizadas**.
+Atajo en la app **Perú ▸ Contabilidad ▸ Cierre del mes ▸ Ganancias/pérdidas no realizadas**.
 
 ## Cómo se calcula sin copiar el SQL de Enterprise
 

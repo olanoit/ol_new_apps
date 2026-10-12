@@ -4,7 +4,7 @@ modulos: [al_l10n_pe_financial_reports]
 
 # Estados financieros
 
-**Perú ‣ Estados financieros** reúne los estados financieros peruanos como
+**Perú ‣ Informes ‣ Estados financieros** reúne los estados financieros peruanos como
 informes contables de Odoo: el **Estado de Cambios en el Patrimonio Neto
 (formato 3.19)**, calculado desde los asientos con las cuentas del PCGE, y los
 accesos al **Balance** y al **Estado de resultados** de Odoo Enterprise en su
@@ -56,7 +56,7 @@ No incluye el Estado de Flujos de Efectivo ni la versión por columnas del
 
 ## Estado de cambios en el patrimonio neto
 
-1. Vaya a **Perú ‣ Estados financieros ‣ 3.19 Estado de Cambios en el
+1. Vaya a **Perú ‣ Informes ‣ Estados financieros ‣ 3.19 Estado de Cambios en el
    Patrimonio Neto** y elija el periodo.
 2. Revise el saldo inicial, los movimientos por rubro y el saldo final. El
    resultado del ejercicio sale de las cuentas de resultados del periodo, no de
@@ -64,8 +64,8 @@ No incluye el Estado de Flujos de Efectivo ni la versión por columnas del
 3. Si hay ajustes sin asiento (cambios de política, corrección de errores,
    aportes), haga clic en el lápiz de la línea y escriba el importe con su
    nota.
-4. Compare el saldo final con el patrimonio del **Balance** (**Perú ‣ Estados
-   financieros ‣ Balance**) a la misma fecha.
+4. Compare el saldo final con el patrimonio del **Balance** (**Perú ‣ Informes ‣
+   Estados financieros ‣ Balance**) a la misma fecha.
 5. Exporte con los botones **PDF** o **XLSX**.
 
 ![Estado de cambios en el patrimonio neto](financial_statements/equity-statement.png)

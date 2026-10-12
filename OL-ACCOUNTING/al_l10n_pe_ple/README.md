@@ -13,7 +13,7 @@ Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.
 
 - **Aplicación única «Perú»**: todos los accesos PLE viven bajo el menú
   raíz de `al_account_base` — captura y exportación propias, el submenú
-  **Reportes PLE nativos** con enlaces a los reportes EE (Diario/Mayor
+  **Libros PLE nativos** con enlaces a los reportes EE (Diario/Mayor
   5.1/5.3/6.1, Caja y Bancos 1.1/1.2, Ventas 14.1, Compras 8.1/8.2 e
   Inventarios TXT 12.1/13.1) y el Kardex visual (`ol_stock_kardex_pe`,
   que ahora también depende de `al_account_base`).
@@ -26,7 +26,7 @@ Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.
   visual heredado del módulo v18 (`ce18 al_l10n_pe_ple`): título de
   compañía, fila RUC/Período/Mes, numeración de columnas y encabezados
   oficiales del Anexo 2.
-- **Wizard** en **Perú ▸ Libros PLE**: ejercicio + indicador de operaciones
+- **Wizard** en **Perú ▸ SUNAT ▸ Libros PLE**: ejercicio + indicador de operaciones
   + selección de formatos; genera TXT (o ZIP si son varios).
 - **Libro 7 — Registro de Activos Fijos** sobre `account.asset` (EE):
   - **7.1** revaluados y no revaluados (37 campos),
@@ -35,12 +35,12 @@ Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.
 
   Los datos SUNAT (código, tablas 13/18/19/20, marca/modelo/placa, ME/TC,
   leasing) se capturan en la pestaña **PLE SUNAT** de la ficha del activo.
-  Informe en pantalla **Registro de Activos Fijos (PLE 7.1)** (Perú ▸ Libros
-  PLE ▸ Activos fijos, y Contabilidad ▸ Revisión ▸ Inventario) con las columnas
+  Informe en pantalla **Registro de Activos Fijos (PLE 7.1)** (Perú ▸ SUNAT ▸
+  Libros PLE ▸ Activos fijos, y Contabilidad ▸ Revisión ▸ Inventario) con las columnas
   del formato físico, PDF/XLSX nativos y botones TXT 7.1/7.3/7.4 y XLSX 7.1.
   Documentación: [`docs/ple/reportes/libro_7.md`](../../docs/ple/reportes/libro_7.md).
 - **Libro 4 — PLE 4.1 Retenciones Art. 34 LIR** (mensual): captura en
-  **Perú ▸ Libros PLE ▸ Retenciones 4.1** (sin nómina PE, lista editable e
+  **Perú ▸ SUNAT ▸ Libros PLE ▸ Retenciones 4.1** (sin nómina PE, lista editable e
   importable). Doc: [`docs/ple/reportes/libro_4.md`](../../docs/ple/reportes/libro_4.md).
 - **Libro 9 — PLE 9.1/9.2 Consignaciones** (mensual): albaranes marcados
   con «Consignación PLE (Libro 9)»; incluye fila de saldo inicial por
@@ -50,8 +50,8 @@ Datos de demostración y validación integral: [`docs/ple/pruebas/ple_demo_data.
   activos con cuenta `34…`), **3.19** patrimonio (captura por rubro T34) y
   **3.23** notas (PDF adjunto al ZIP).
   Doc: [`docs/ple/reportes/libro_3_complementos.md`](../../docs/ple/reportes/libro_3_complementos.md).
-- **Libro 10 — Registro de Costos** (anual): captura en **Perú ▸ Libros
-  PLE ▸ Costos (Libro 10)** — 10.1 costo de ventas (fila única por
+- **Libro 10 — Registro de Costos** (anual): captura en **Perú ▸ SUNAT ▸
+  Libros PLE (10.1 a 10.4)** — 10.1 costo de ventas (fila única por
   ejercicio), 10.2 elementos del costo (fila por mes), 10.3 procesos
   productivos (agrupamiento T21) y 10.4 centros de costos (precargables
   desde cuentas analíticas).

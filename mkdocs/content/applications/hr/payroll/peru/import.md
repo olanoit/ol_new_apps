@@ -38,7 +38,7 @@ de asistencia (D.S. 004-2006-TR) y conservan su fecha y hora reales.
 | Proceso por lotes | Se confirma cada 100 filas (configurable) | Paso **Configurar** |
 | Actualizar existentes | Vuelve a escribir las filas ya importadas | Paso **Configurar** |
 | Zona horaria del archivo | Huso de las horas de las marcaciones | Importador de asistencias |
-| Historial | Registro de cada importación con su reporte | **Nómina ‣ Importar desde Excel ‣ Historial de importaciones** |
+| Historial | Registro de cada importación con su reporte | **Nómina ‣ Configuración ‣ Importar desde Excel ‣ Historial de importaciones** |
 
 Los importes se redondean a dos decimales «medio hacia arriba» (180,255 →
 180,26), como en la planilla.
@@ -56,7 +56,7 @@ Los importes se redondean a dos decimales «medio hacia arriba» (180,255 →
 
 ## Importar un archivo
 
-1. Vaya a **Nómina ‣ Importar desde Excel** y elija el importador (asistencias y
+1. Vaya a **Nómina ‣ Configuración ‣ Importar desde Excel** y elija el importador (asistencias y
    reglas también tienen un botón en sus listas).
 2. Haga clic en **Descargar plantilla** y complete el Excel. Las columnas se
    leen por posición: parta siempre de la plantilla.

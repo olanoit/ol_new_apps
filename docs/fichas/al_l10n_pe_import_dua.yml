@@ -50,7 +50,7 @@ pasos_intro: >-
   Datos «DEMO DUA» de ol_pe_v19 (OL-ACCOUNTING/al_l10n_pe_import_dua/tools/import_dua_demo_data.py).
 pasos:
   - titulo: La DUA y su liquidación
-    ruta: Perú ▸ DUA de importación
+    ruta: Perú ▸ Proveedores ▸ Comprobantes ▸ DUA de importación
     texto: >-
       Factura de proveedor a nombre de la Aduana con el tipo 50. En la pestaña DUA
       se completan el número de la DAM (118-2026-10-204518) y la liquidación: valor
@@ -82,6 +82,10 @@ configuracion:
   - "Para la percepción aduanera, instale Percepciones del IGV y configure su cuenta de percepciones por aplicar."
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Proveedores ▸ Comprobantes."
   - version: 2.20261012
     fecha: 12/10/2026
     cambios:

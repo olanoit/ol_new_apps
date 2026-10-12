@@ -59,7 +59,7 @@ noviembre (mayo–octubre), a razón de 1/12 de la remuneración computable por
 mes y 1/360 por día. La remuneración computable incluye 1/6 de la
 gratificación del semestre.
 
-1. Vaya a **Nómina ‣ Beneficios sociales ‣ CTS** y cree el documento del
+1. Vaya a **Nómina ‣ Beneficios sociales ‣ Beneficios ‣ CTS** y cree el documento del
    semestre.
 2. Haga clic en **Procesar**: hay una línea por trabajador.
 3. Revise y haga clic en **Exportar** para llevar el importe a la boleta.

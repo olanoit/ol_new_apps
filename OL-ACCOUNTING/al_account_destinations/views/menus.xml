@@ -6,15 +6,12 @@
               action="account_account_destiny_action" sequence="10"/>
 
     <!-- Proceso de cierre: en la app Perú y en Contabilidad ▸ Cierre -->
-    <menuitem id="menu_pe_destinations_root" name="Destinos"
-              parent="al_account_base.al_l10n_pe_root"
-              groups="account.group_account_manager" sequence="60"/>
-    <menuitem id="menu_pe_destination_period" name="Destinos del periodo"
-              parent="menu_pe_destinations_root"
-              action="destination_period_wizard_action" sequence="10"/>
+    <menuitem id="menu_pe_destination_period" name="Asientos de destino"
+              parent="al_account_base.al_l10n_pe_accounting_closing"
+              action="destination_period_wizard_action" sequence="30"/>
     <menuitem id="menu_pe_destination_accounts" name="Destinos por cuenta"
-              parent="menu_pe_destinations_root"
-              action="account_account_destiny_action" sequence="20"/>
+              parent="al_account_base.al_l10n_pe_accounting_closing"
+              action="account_account_destiny_action" sequence="40"/>
     <menuitem id="menu_account_destination_period" name="Destinos del periodo (PE)"
               parent="account.account_closing_menu"
               action="destination_period_wizard_action"

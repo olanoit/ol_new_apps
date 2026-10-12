@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_account.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261012 — 12/10/2026
+
+- «Asiento de planilla por lote» pasa a Recibos de nómina ▸ Pagos y contabilidad y «Cuentas por condición» a Configuración ▸ Salario; se quita el menú principal «Contabilidad».
+
 ## 11.20261010 — 10/10/2026
 
 - Cuentas por condición en las reglas salariales (pestaña Contabilidad de la regla y Nómina ▸ Contabilidad ▸ Cuentas por condición): otra cuenta de cargo o de abono según el tipo de trabajador (T08), el departamento o el centro de costo; gana la fila más específica y lo vacío conserva la cuenta de la regla. Recupera la cuenta por centro de costo de v18.

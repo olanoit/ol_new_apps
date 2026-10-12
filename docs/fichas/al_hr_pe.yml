@@ -153,7 +153,7 @@ pasos:
   - seccion: Configuración de la compañía
     texto: Parámetros, valores oficiales y tasas previsionales, una vez por compañía.
   - titulo: Todo lo peruano, agrupado en Configuración ▸ Perú
-    ruta: Nómina ▸ Configuración ▸ Perú
+    ruta: Nómina ▸ Configuración
     texto: >-
       La configuración de la localización vive en siete grupos: Parámetros,
       Periodos y suspensiones, Seguridad social, Derechohabientes, Catálogos
@@ -177,7 +177,7 @@ pasos:
     imagen: screenshots/26-ajustes-nomina-peru.png
 
   - titulo: Configuración principal de la compañía
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal
     texto: >-
       Un registro por compañía que consulta toda la suite; el menú abre
       directamente el de la compañía activa, sin lista. En **Generales** está
@@ -194,7 +194,7 @@ pasos:
     imagen: screenshots/02-parametros.png
 
   - titulo: Valor de la UIT por año
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ UIT
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ UIT
     texto: >-
       Lista editable con un valor por año, sin compañía porque es nacional.
       Alimenta la renta de quinta categoría: si el año no está cargado, el
@@ -202,7 +202,7 @@ pasos:
     imagen: screenshots/03-uit.png
 
   - titulo: Afiliaciones AFP/ONP con sus tasas
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Seguridad social ▸ Afiliaciones (AFP/ONP)
+    ruta: Nómina ▸ Configuración ▸ Seguridad social ▸ Afiliaciones (AFP/ONP)
     texto: >-
       Cada AFP trae su aporte al fondo (10 %), comisión sobre flujo, comisión
       mixta, prima de seguro y remuneración máxima asegurable; la ONP, su
@@ -219,7 +219,7 @@ pasos:
     imagen: screenshots/05-afiliacion.png
 
   - titulo: Seguros sociales y aportes del empleador
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Seguridad social ▸ Seguros sociales
+    ruta: Nómina ▸ Configuración ▸ Seguridad social ▸ Seguros sociales
     texto: >-
       **Seguros sociales** trae EsSalud (9 %) y EPS (6,75 %). En **Aportes**
       se registran los aportes adicionales del empleador, por tasa o monto
@@ -229,7 +229,7 @@ pasos:
   - seccion: Periodos y suspensiones
     texto: El calendario de declaración y las suspensiones que van a la PLAME.
   - titulo: Generar los periodos del ejercicio
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones ▸ Generar periodos
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Generar periodos
     texto: >-
       Crea de una vez los doce periodos mensuales con código PLAME `AAAAMM`.
       Con **Generar también semanas** añade las semanas de lunes a domingo
@@ -241,7 +241,7 @@ pasos:
     imagen: screenshots/07-generar-periodos.png
 
   - titulo: Consultar los periodos
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones ▸ Periodos
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Periodos
     texto: >-
       Código, nombre, fechas, periodicidad y periodo mensual del que cuelga
       cada semana. En la ficha de un mes con semanas, la pestaña **Semanas**
@@ -253,7 +253,7 @@ pasos:
     imagen: screenshots/08-periodos.png
 
   - titulo: Registrar suspensiones de labores (T21)
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones ▸ Suspensiones de labores
+    ruta: Nómina ▸ Entradas de trabajo ▸ Suspensiones de labores
     texto: >-
       Lista editable: periodo, trabajador, tipo de suspensión de la tabla 21,
       fechas y días. Es la fuente del archivo PLAME **.snl** del lote de ese
@@ -268,7 +268,7 @@ pasos:
   - seccion: Catálogos SUNAT
     texto: Las tablas del Anexo 2, cargadas con sus códigos.
   - titulo: Regímenes laborales (T33) y familia de cálculo
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Catálogos SUNAT ▸ Regímenes laborales (T33)
+    ruta: Nómina ▸ Configuración ▸ Catálogos SUNAT ▸ Regímenes laborales (T33)
     texto: >-
       Los 27 regímenes de SUNAT, cada uno con su **Familia de cálculo**
       (régimen general, pequeña empresa, microempresa, practicante o
@@ -280,7 +280,7 @@ pasos:
     imagen: screenshots/10-regimenes.png
 
   - titulo: Ocupaciones (T30)
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Catálogos SUNAT ▸ Ocupaciones (T30)
+    ruta: Nómina ▸ Configuración ▸ Catálogos SUNAT ▸ Ocupaciones (T30)
     texto: >-
       4 644 ocupaciones con las columnas **Ejecutivo**, **Empleado** y
       **Obrero** de la tabla, y filtros por cada una. Al cambiar la
@@ -388,7 +388,7 @@ pasos:
     imagen: screenshots/19-dar-baja.png
 
   - titulo: Tipos de derechohabiente
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Derechohabientes ▸ Tipos de derechohabiente
+    ruta: Nómina ▸ Configuración ▸ Seguridad social ▸ Tipos de derechohabiente
     texto: >-
       El vínculo familiar de la tabla 19 con las banderas que usa el cálculo:
       **Es hijo** (da asignación familiar según la edad), **Es cónyuge o
@@ -466,7 +466,7 @@ campos_intro: >-
   defecto y su efecto.
 campos:
   - grupo: Configuración principal
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros ▸ Configuración principal
+    ruta: Nómina ▸ Configuración ▸ Parámetros ▸ Configuración principal
     campos:
       - [Compañía, Compañía del registro (uno por compañía; solo lectura)., Compañía activa, Cada compañía lee el suyo]
       - [R.M.V., "Respaldo si la tabla RMV no cubre la fecha.", "1.230,00", "Snapshot de la boleta; base mínima de EsSalud"]
@@ -478,7 +478,7 @@ campos:
       - ["W.D. días laborados / no laborados / subsidiados / sobretiempo / ausencias", Clasifican los tipos de work entry., Vacío, "Horas del .jor (obligatorios para exportarlo) y días de la boleta impresa"]
       - ["Categorías de ingresos / descuentos / aportes del trabajador / aportes del empleador", Clasifican las categorías de reglas., Vacío, Agrupación de la boleta impresa]
   - grupo: UIT, afiliaciones, seguros y aportes
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Parámetros / Seguridad social
+    ruta: Nómina ▸ Configuración ▸ Parámetros / Seguridad social
     campos:
       - ["Año / Valor UIT", Un valor por año (único)., "—", Renta de quinta categoría]
       - [Entidad, Nombre de la AFP u ONP., "—", "Las reglas AFP/ONP comparan por nombre"]
@@ -492,7 +492,7 @@ campos:
       - ["Seguro / %", "EsSalud, EPS…", "—", "Regla ESSALUD (EPS por su tasa)"]
       - ["Código / Descripción / Tipo / Tasa / Monto", "Aporte adicional del empleador (p. ej. SVLEY).", "Tipo: Porcentaje", "Regla SVLEY y archivo .toc"]
   - grupo: Periodos y suspensiones
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Periodos y suspensiones
+    ruta: Nómina ▸ Configuración ▸ Parámetros
     campos:
       - [Año (Generar periodos), Ejercicio a generar., Año en curso, "Crea AAAAMM de enero a diciembre"]
       - [Generar también semanas, Añade las semanas de cada mes., Desmarcado, "Crea AAAAMM-S01…"]
@@ -724,6 +724,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: 35.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús de Nómina con el patrón de la app Perú: las secciones de la localización (Parámetros, Seguridad social, Catálogos SUNAT, Tipos y plantillas) pasan al segundo nivel de Configuración, sin el submenú «Perú» que obligaba a un cuarto nivel; periodos en Parámetros, derechohabientes en Seguridad social, T21 en Catálogos SUNAT y suspensiones de labores en Entradas de trabajo."
   - version: 34.20261010
     fecha: 10/10/2026
     cambios:

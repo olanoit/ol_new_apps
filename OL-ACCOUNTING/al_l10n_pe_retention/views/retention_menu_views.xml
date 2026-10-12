@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Perú ▸ Retenciones IGV: comprobantes, pagos con retención, retenciones
+    <!-- Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones: comprobantes, pagos con retención, retenciones
          sufridas, resumen 626 y análisis (mismo patrón que Detracciones). -->
 
     <!-- Comprobantes de proveedor comprendidos en el régimen -->

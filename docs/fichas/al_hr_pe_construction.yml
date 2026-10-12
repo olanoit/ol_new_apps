@@ -128,7 +128,7 @@ pasos:
   - seccion: Maestros del convenio
     texto: Se instalan con el módulo y se ajustan cuando cambia el convenio.
   - titulo: Tablas salariales
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ Tablas salariales
     texto: >-
       Una tabla por convenio, con su resolución y vigencia. Vacía de compañía es
       la tabla nacional; con compañía, una tabla propia que prevalece.
@@ -188,14 +188,14 @@ pasos:
     pie: El PDF de CAPECO 2026 contra la tabla cargada con el módulo, sin diferencias.
 
   - titulo: Categorías
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Categorías
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ Categorías
     texto: >-
       Operario, oficial y peón con su porcentaje de BUC (32 % y 30 %) y si
       admiten la bonificación por alta especialización: solo el operario.
     imagen: screenshots/03-categorias.png
 
   - titulo: Catálogo de bonificaciones
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Bonificaciones
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ Bonificaciones
     texto: >-
       Las cuatro especialidades BAE (8 %, 9 %, 10 % y 22 % del jornal) y cuatro
       bonificaciones por condiciones de trabajo, con importe fijo por día o
@@ -294,7 +294,7 @@ pasos:
   - seccion: CONAFOVICER
     texto: El depósito mensual de las retenciones semanales.
   - titulo: Resúmenes mensuales
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ CONAFOVICER
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ CONAFOVICER
     texto: >-
       Un resumen por periodo y compañía con vencimiento, trabajadores, base,
       retenido y estado (**Borrador**, **Calculado**, **Pagado**).
@@ -315,7 +315,7 @@ campos_intro: >-
   Cada pantalla propia del módulo con sus etiquetas, valores por defecto y efecto.
 campos:
   - grupo: Tabla salarial
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ Tablas salariales
     campos:
       - [Convenio, Nombre de la tabla., Vacío, Obligatorio]
       - [Resolución ministerial, Norma que aprueba la tabla., Vacío, Informativo]
@@ -346,7 +346,7 @@ campos:
       - ["Grat. F. Patrias diaria, Grat. Navidad diaria", "40 jornales ÷ 210 y ÷ 150.", Calculado, Referencia]
       - [Asig. escolar diaria, "30 jornales ÷ 360.", Calculado, Referencia]
   - grupo: Categoría
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Categorías
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ Categorías
     campos:
       - [Código, Código único por compañía., Vacío, "—"]
       - [Categoría, Nombre., Vacío, "—"]
@@ -354,7 +354,7 @@ campos:
       - [Admite BAE, Permite asignar especialidad., Desmarcado, Sin él la ficha rechaza la BAE]
       - [Compañía, "Vacía = global.", Vacío, "—"]
   - grupo: Bonificación
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Bonificaciones
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ Bonificaciones
     campos:
       - [Código, Código único por compañía., Vacío, "—"]
       - [Bonificación, Nombre., Vacío, "—"]
@@ -400,7 +400,7 @@ campos:
       - [Jornal básico, Jornal congelado al calcular., Calculado, "Editable; manda sobre la tabla"]
       - [Línea del convenio, Fila de la tabla usada., Calculado, "—"]
   - grupo: CONAFOVICER
-    ruta: Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ CONAFOVICER
+    ruta: Nómina ▸ Configuración ▸ Construcción civil ▸ CONAFOVICER
     campos:
       - [Periodo, "Mes que se liquida (único por compañía).", Vacío, Incluye sus semanas]
       - [Fecha de inicio / Fecha de fin, Del periodo., Relacionado, "—"]
@@ -540,7 +540,7 @@ configuracion_intro: >-
   La tabla del convenio 2026, las categorías, las bonificaciones y la estructura
   salarial se instalan con el módulo.
 configuracion:
-  - "Revise la tabla salarial en **Nómina ▸ Configuración ▸ Perú ▸ Construcción civil ▸ Tablas salariales** y cargue la del convenio que corresponda."
+  - "Revise la tabla salarial en **Nómina ▸ Configuración ▸ Construcción civil ▸ Tablas salariales** y cargue la del convenio que corresponda."
   - Contraste los importes de las bonificaciones por condiciones de trabajo con el convenio de la empresa.
   - "En **Ajustes ▸ Usuarios y empresas ▸ Empresas**, pestaña **Construcción civil (PE)**, ponga las tasas del SCTR de su póliza y la cuenta del CONAFOVICER."
   - "Genere los periodos del año marcando **Generar también semanas**."
@@ -607,6 +607,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: 24.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Construcción civil pasa a Configuración ▸ Construcción civil."
   - version: 23.20261011
     fecha: 11/10/2026
     cambios:

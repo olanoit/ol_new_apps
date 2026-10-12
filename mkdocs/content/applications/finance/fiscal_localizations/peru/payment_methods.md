@@ -108,7 +108,7 @@ y que permite conciliar con el extracto. Los diarios de caja no lo necesitan.
 Para cambiar soles por dólares (o al revés) entre dos cuentas de la empresa al
 tipo de cambio del banco:
 
-1. Vaya a **Perú ‣ Compra y venta de moneda** (o **Contabilidad ‣ Contabilidad ‣
+1. Vaya a **Perú ‣ Tesorería ‣ Tipo de cambio ‣ Compra y venta de moneda** (o **Contabilidad ‣ Contabilidad ‣
    Compra y venta de moneda**).
 2. Elija la cuenta de la que **Sale** el dinero y a la que **Entra**; una debe
    estar en soles y la otra en moneda extranjera.

@@ -323,7 +323,7 @@ pasos:
   - seccion: Depósito masivo
     texto: Un archivo para pagar muchas detracciones de una vez en el Banco de la Nación.
   - titulo: Generar el archivo del Banco de la Nación
-    ruta: Perú ▸ Detracciones ▸ Depósito masivo (Banco de la Nación)
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Depósito masivo (Banco de la Nación)
     texto: >-
       Elija la **Modalidad**, el **Nº de lote** (6 dígitos, AANNNN) y el
       periodo **Desde** / **Hasta**. Si deja **Comprobantes** vacío se toman
@@ -337,7 +337,7 @@ pasos:
     pie: "Julio de 2026: tres facturas de proveedor en el archivo y una excluida por no tener cuenta del Banco de la Nación."
 
   - titulo: Importar constancias de SUNAT
-    ruta: Perú ▸ Detracciones ▸ Importar constancias
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Importar constancias de detracción
     texto: >-
       Suba el Excel o CSV de la consulta de constancias de depósito de SUNAT
       Operaciones en Línea. Cada fila se empareja por RUC y serie-número:
@@ -350,12 +350,12 @@ pasos:
     imagen: screenshots/21-importar-constancias.png
     pie: "Dos facturas de venta encontradas y una fila sin comprobante en Odoo."
 
-  - seccion: El menú Perú ▸ Detracciones
+  - seccion: El menú Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones
     texto: >-
       Todo lo de la detracción a mano en la app Perú: facturas de venta y de
       proveedor, depósitos, depósito masivo, productos y el análisis.
   - titulo: Facturas y depósitos
-    ruta: Perú ▸ Detracciones
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones
     texto: >-
       **Facturas de venta** y **Facturas de proveedor** listan solo los
       comprobantes con detracción, con su tipo, porcentaje, importe,
@@ -365,30 +365,30 @@ pasos:
       enlazan solos al actualizar).
     imagen: screenshots/18-menu-detracciones.png
   - titulo: Facturas de proveedor con detracción
-    ruta: Perú ▸ Detracciones ▸ Facturas de proveedor
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Facturas con detracción
     texto: >-
       Totales de la operación y de la detracción al pie; los filtros de
       factura (por ejemplo **Detracción sin constancia**) siguen disponibles.
     imagen: screenshots/20-facturas-proveedor.png
   - titulo: Depósitos de detracción
-    ruta: Perú ▸ Detracciones ▸ Depósitos
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Depósitos de detracción
     texto: >-
       Cobros (ventas) y pagos (compras) de la detracción con el comprobante que
       los originó, la glosa con la constancia, el diario y el estado.
     imagen: screenshots/19-depositos.png
   - titulo: Análisis de detracciones
-    ruta: Perú ▸ Detracciones ▸ Análisis de detracciones
+    ruta: Perú ▸ Informes ▸ Análisis ▸ Detracciones
     texto: >-
       Tabla dinámica de los comprobantes publicados: importe de la detracción
       por tipo y mes, con gráfico y lista. Se puede agrupar por contacto, por
       venta o compra y filtrar los pendientes de constancia.
     imagen: screenshots/17-analisis.png
-    pie: "Los productos con detracción están en Perú ▸ Detracciones ▸ Productos."
+    pie: "Los productos con detracción están en Perú ▸ Configuración ▸ Tributos SUNAT ▸ Productos con detracción."
 
   - seccion: Declaración
     texto: Lo que otros módulos toman de las detracciones.
   - titulo: Constancia en los registros de compras
-    ruta: Perú ▸ Libros PLE
+    ruta: Perú ▸ SUNAT ▸ Libros PLE
     texto: >-
       El número y la fecha de la constancia salen en el PLE 8.1 (campos 32-33,
       informe nativo de Odoo Enterprise) y en el PLE 8.3 Compras Simplificado
@@ -455,7 +455,7 @@ campos:
       - [Fecha de la constancia, Fecha del pago y de la constancia., Hoy, Fecha de detracción de la factura]
       - [Nº de constancia, Número de la constancia (hasta 24 caracteres)., Vacío, Detracción de la factura y memo del pago]
   - grupo: Depósito masivo de detracciones
-    ruta: Perú ▸ Detracciones ▸ Depósito masivo (Banco de la Nación)
+    ruta: Perú ▸ Proveedores ▸ Detracciones, retenciones y percepciones ▸ Depósito masivo (Banco de la Nación)
     campos:
       - [Company, "Compañía del lote (solo en multicompañía).", Compañía activa, RUC y razón social de la cabecera]
       - [Modalidad, Adquiriente (depósito a proveedores) o proveedor (en la propia cuenta)., Como adquiriente, "Tipo de facturas y cabecera `*` o `P`"]
@@ -636,6 +636,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 24.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menús en Perú ▸ Clientes y Proveedores ▸ Detracciones, retenciones y percepciones; productos en Configuración ▸ Tributos SUNAT; análisis en Informes ▸ Análisis."
   - version: 23.20261012
     fecha: 12/10/2026
     cambios:

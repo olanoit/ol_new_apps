@@ -101,7 +101,7 @@ flowchart TD
 
 ## Registrar el contrato
 
-1. Vaya a **Perú ‣ Arrendamientos ‣ Contratos** y haga clic en **Nuevo**.
+1. Vaya a **Perú ‣ Contabilidad ‣ Arrendamientos ‣ Contratos** y haga clic en **Nuevo**.
    Indique el arrendador, el plazo, la cuota, el **Pago** (adelantado o
    vencido) y la **Tasa incremental anual (%)**. Si el contrato dura 12 meses o
    menos, se marca **Corto plazo**.
@@ -256,14 +256,14 @@ gasto.
 
 ## Reportes
 
-- **Perú ‣ Arrendamientos ‣ Tabla de cuotas** y **Análisis**: interés, capital y
+- **Perú ‣ Contabilidad ‣ Arrendamientos ‣ Tabla de cuotas** y **Análisis**: interés, capital y
   saldo por contrato y año.
 - **Saldos a hoy**, en cada contrato: pasivo según la tabla, pasivo en el libro
   y su diferencia, y valor en libros del derecho de uso. La diferencia es cero
   en soles; en dólares, es la diferencia de cambio aún no registrada.
 - **Historial** del contrato: remediciones, terminación y diferencias de cambio
   con sus asientos.
-- **Perú ‣ Arrendamientos ‣ Diferencias temporales**: para la declaración anual
+- **Perú ‣ Contabilidad ‣ Arrendamientos ‣ Diferencias temporales**: para la declaración anual
   y el impuesto diferido.
 - El derecho de uso aparece en los **Activos** de Odoo y el pasivo en los
   **Préstamos**. Los asientos van al libro diario y al mayor de los

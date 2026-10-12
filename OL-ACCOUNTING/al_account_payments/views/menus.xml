@@ -17,8 +17,8 @@
     <!-- Compra y venta de moneda: Perú y Contabilidad ▸ Contabilidad. -->
     <menuitem id="menu_currency_exchange_wizard_pe" name="Compra y venta de moneda"
               action="action_currency_exchange_wizard"
-              parent="al_account_base.al_l10n_pe_root"
-              groups="account.group_account_user" sequence="29"/>
+              parent="al_account_base.al_l10n_pe_treasury_exchange"
+              groups="account.group_account_user" sequence="30"/>
     <menuitem id="menu_currency_exchange_wizard" name="Compra y venta de moneda"
               action="action_currency_exchange_wizard"
               parent="account.menu_finance_entries"

@@ -55,7 +55,7 @@ Quedan fuera:
 
 ## Entregar el dinero
 
-1. Vaya a **Perú ‣ Entregas a rendir ‣ Fondos** y pulse **Nuevo**.
+1. Vaya a **Perú ‣ Tesorería ‣ Entregas a rendir ‣ Entregas a rendir y caja chica** y pulse **Nuevo**.
 2. Indique el **Responsable**, el **Motivo**, el **Monto**, el **Diario de
    pago** y, si corresponde, la fecha **Rendir hasta**.
 3. Pulse **Aprobar**: el fondo recibe su número.

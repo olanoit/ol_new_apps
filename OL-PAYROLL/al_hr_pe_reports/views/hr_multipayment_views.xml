@@ -166,8 +166,8 @@
     <menuitem id="menu_hr_multipayment"
               name="Pagos masivos bancarios"
               action="action_hr_automate_multipayment"
-              parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-              sequence="91"
+              parent="al_hr_pe.menu_hr_pe_payments"
+              sequence="10"
               groups="hr_payroll.group_hr_payroll_user"/>
 
     <!-- ========================================================== -->

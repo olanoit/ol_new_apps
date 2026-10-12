@@ -85,7 +85,7 @@ la Aduana.
 1. Registre el cobro de la factura por el total más la percepción.
 2. En el pago, haga clic en **Comprobante de percepción**: se crea el borrador
    con lo que ese cobro pagó de cada factura sujeta. También puede elegir las
-   facturas en **Perú ‣ Percepciones IGV ‣ Facturas sujetas a percepción** y
+   facturas en **Perú ‣ Clientes ‣ Detracciones, retenciones y percepciones ‣ Facturas sujetas a percepción** y
    usar **Acciones ‣ Emitir comprobante de percepción**.
 3. Revise las líneas y haga clic en **Emitir**: el comprobante recibe su número
    **P001-########**, se crea el asiento (cargo al cliente, abono a la cuenta
@@ -116,7 +116,7 @@ la Aduana.
 
 ## Declarar en el F.V. 697
 
-Vaya a **Perú ‣ Percepciones IGV ‣ Resumen F.V. 697**. La tabla muestra, por
+Vaya a **Perú ‣ SUNAT ‣ Declaraciones ‣ Resumen F.V. 697**. La tabla muestra, por
 mes y régimen, el **Cobrado con la percepción** (base, casilla 502) y lo
 **Percibido** (casilla 401) de los comprobantes emitidos.
 
@@ -124,7 +124,7 @@ mes y régimen, el **Cobrado con la percepción** (base, casilla 502) y lo
 
 ## Registrar las percepciones que le cobran
 
-1. Vaya a **Perú ‣ Percepciones IGV ‣ Percepciones que nos cobran** y cree el
+1. Vaya a **Perú ‣ Proveedores ‣ Detracciones, retenciones y percepciones ‣ Percepciones que nos cobran** y cree el
    registro con el **Agente de percepción**, el **Documento** (comprobante de
    percepción, factura del proveedor o DUA), el **Régimen**, el número y la
    fecha.
@@ -139,7 +139,7 @@ mes y régimen, el **Cobrado con la percepción** (base, casilla 502) y lo
 
 ![Percepción a la importación (DUA)](perceptions/import-dua.png)
 
-Para aplicarlas, vaya a **Perú ‣ Percepciones IGV ‣ Resumen F.V. 621**: lo
+Para aplicarlas, vaya a **Perú ‣ SUNAT ‣ Declaraciones ‣ Percepciones del F.V. 621**: lo
 registrado por mes y régimen se aplica contra el IGV del periodo; el saldo no
 aplicado se arrastra a los meses siguientes.
 

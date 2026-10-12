@@ -55,8 +55,8 @@
 
     <menuitem id="menu_hr_fotocheck_config"
         action="action_hr_fotocheck_config"
-        parent="menu_hr_pe_attendance_root"
-        sequence="90"
+        parent="menu_hr_pe_attendance_config"
+        sequence="20"
         groups="hr_payroll.group_hr_payroll_manager"/>
 
 </odoo>

@@ -36,4 +36,13 @@
             </field>
         </field>
     </record>
+
+    <!-- App Perú (atajos; los menús nativos siguen en Clientes y Proveedores
+         de Contabilidad). -->
+    <menuitem id="pe_menu_third_party_checks" name="Cheques de terceros"
+              parent="al_account_base.al_l10n_pe_customers_payments"
+              action="l10n_latam_check.action_third_party_check" sequence="10"/>
+    <menuitem id="pe_menu_own_checks" name="Cheques propios"
+              parent="al_account_base.al_l10n_pe_vendors_payments"
+              action="l10n_latam_check.action_own_check" sequence="20"/>
 </odoo>

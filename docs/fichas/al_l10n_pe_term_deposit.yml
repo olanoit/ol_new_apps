@@ -91,7 +91,7 @@ pasos_intro: >-
 pasos:
   - seccion: Depósitos a plazo
   - titulo: Lista de depósitos y garantías
-    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Depósitos
     texto: >-
       Vigentes y vencidos con su capital, saldo e intereses; en amarillo los
       que vencen dentro del aviso y en rojo los vencidos.
@@ -127,14 +127,14 @@ pasos:
 
   - seccion: Garantías
   - titulo: Garantía de alquiler liberada en parte
-    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Garantías
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Depósitos ▸ Garantías
     texto: >-
       La garantía entregada al arrendador queda en la 1643 a su nombre; al
       recuperarla se libera en una o varias partes. El grupo «Garantía» guarda
       su finalidad, el beneficiario, el contrato y su vigencia.
     imagen: screenshots/05-garantia.png
   - titulo: Fondo de una carta fianza
-    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Fondo en garantía
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Depósitos ▸ Fondo en garantía
     texto: >-
       El dinero que el banco retiene para emitir una carta fianza queda en la
       1071, con la licitación o el contrato que respalda y su vigencia. El aviso
@@ -142,19 +142,19 @@ pasos:
     imagen: screenshots/11-carta-fianza.png
   - seccion: Reportes
   - titulo: Cartera vigente
-    ruta: Perú ▸ Tesorería ▸ Cartera vigente
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Cartera vigente
     texto: >-
       Saldo de los depósitos y garantías vigentes por entidad, moneda y mes de
       vencimiento: qué dinero se libera y cuándo.
     imagen: screenshots/08-cartera.png
   - titulo: Intereses devengados
-    ruta: Perú ▸ Tesorería ▸ Intereses devengados
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Intereses devengados
     texto: >-
       Ingreso por intereses de cada depósito por mes (devengo) y sus ajustes al
       cobrarlos o por penalidad, en soles, desde los asientos publicados.
     imagen: screenshots/09-intereses.png
   - titulo: Análisis
-    ruta: Perú ▸ Tesorería ▸ Análisis de depósitos
+    ruta: Perú ▸ Informes ▸ Análisis ▸ Depósitos y garantías
     texto: >-
       Saldo e intereses por tipo, entidad y estado.
     imagen: screenshots/06-analisis.png
@@ -167,7 +167,7 @@ pasos:
 
 campos:
   - grupo: Depósito
-    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías
+    ruta: Perú ▸ Tesorería ▸ Depósitos y garantías ▸ Depósitos
     campos:
       - [Tipo, Depósito a plazo / fondo en garantía / garantía entregada, Depósito a plazo, Decide la cuenta y las operaciones]
       - [Entidad, Banco o quien recibe la garantía, —, Tercero de la cuenta del depósito]
@@ -199,6 +199,10 @@ campos:
       - [Afecto al ITF, Por depósito, El de Ajustes, "Desmarcar si la cuenta está exonerada (declaración jurada ante el banco)"]
 
 novedades:
+  - version: 4.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Menú en Perú ▸ Tesorería ▸ Depósitos y garantías; análisis en Informes ▸ Análisis."
   - version: 3.20261012
     fecha: 12/10/2026
     cambios:

@@ -92,7 +92,7 @@ flowchart TD
 
 ## Emitir una liquidación de compra
 
-1. Vaya a **Perú ‣ Liquidaciones de compra ‣ Liquidaciones de compra** (o
+1. Vaya a **Perú ‣ Proveedores ‣ Comprobantes ‣ Liquidaciones de compra** (o
    **Contabilidad ‣ Proveedores ‣ Liquidaciones de compra**) y haga clic en
    **Nuevo**: se abre en el diario de liquidaciones, con el tipo de documento
    **(04) Liquidación de compra**.

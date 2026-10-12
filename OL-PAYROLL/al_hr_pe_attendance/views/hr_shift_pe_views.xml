@@ -211,19 +211,26 @@
     <!-- Sin el sufijo «PE»: dentro de la localización peruana no
          distingue nada. La secuencia lo deja detrás de la «Entradas de
          trabajo» nativa (60). -->
+    <!-- Nómina ▸ Entradas de trabajo ▸ Asistencia (sección) y Nómina ▸
+         Configuración ▸ Asistencia. -->
     <menuitem id="menu_hr_pe_attendance_root"
         name="Asistencia"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-        sequence="62"
+        parent="hr_work_entry_enterprise.menu_hr_payroll_work_entries_root"
+        sequence="80"
         groups="hr_payroll.group_hr_payroll_user,planning.group_planning_user"/>
+    <menuitem id="menu_hr_pe_attendance_config"
+        name="Asistencia"
+        parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+        sequence="68"
+        groups="hr_payroll.group_hr_payroll_manager"/>
 
     <menuitem id="menu_l10n_pe_hr_shift_cycle_assignment"
         action="action_l10n_pe_hr_shift_cycle_assignment"
         parent="menu_hr_pe_attendance_root"
-        sequence="10"/>
+        sequence="40"/>
     <menuitem id="menu_l10n_pe_hr_shift_cycle"
         action="action_l10n_pe_hr_shift_cycle"
-        parent="menu_hr_pe_attendance_root"
-        sequence="80"/>
+        parent="menu_hr_pe_attendance_config"
+        sequence="10"/>
 
 </odoo>

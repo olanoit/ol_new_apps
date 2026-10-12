@@ -154,7 +154,7 @@
 
     <menuitem id="menu_hr_utilities"
         action="action_hr_utilities"
-        parent="menu_hr_pe_benefits_root"
-        sequence="50"/>
+        parent="menu_hr_pe_benefits_main"
+        sequence="30"/>
 
 </odoo>

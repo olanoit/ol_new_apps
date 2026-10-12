@@ -5,11 +5,6 @@
          Menú raíz contable PE (lo referencia también el resto de
          acciones contables del módulo: provisiones, BBSS, etc.)
          ============================================================== -->
-    <menuitem id="menu_hr_pe_account_root"
-        name="Contabilidad"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_root"
-        sequence="92"
-        groups="hr_payroll.group_hr_payroll_manager"/>
 
     <record id="hr_payslip_run_move_wizard_action" model="ir.actions.act_window">
         <field name="name">Asiento de planilla por lote</field>
@@ -21,8 +16,8 @@
 
     <menuitem id="menu_hr_payslip_run_move_wizard"
         action="hr_payslip_run_move_wizard_action"
-        parent="menu_hr_pe_account_root"
-        sequence="10"
+        parent="al_hr_pe.menu_hr_pe_payments"
+        sequence="20"
         groups="hr_payroll.group_hr_payroll_manager"/>
 
     <!-- ==============================================================

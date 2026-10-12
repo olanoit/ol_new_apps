@@ -8,7 +8,7 @@ fijos (`account_asset`) y préstamos (`account_loans`).
 
 ## Cómo funciona
 
-1. **Perú ▸ Arrendamientos ▸ Contratos ▸ Nuevo**: arrendador, bien, inicio,
+1. **Perú ▸ Contabilidad ▸ Arrendamientos ▸ Contratos ▸ Nuevo**: arrendador, bien, inicio,
    plazo, cuota mensual sin IGV, pago al inicio o al final del mes, tasa
    incremental de endeudamiento, costos directos e incentivos.
 2. **Calcular**: valor presente y tabla del pasivo.
@@ -34,7 +34,7 @@ fijos (`account_asset`) y préstamos (`account_loans`).
 7. **Moneda extranjera**: el derecho de uso queda al tipo de cambio del
    inicio (NIC 21, no monetario); el pasivo se ajusta por **Diferencia de
    cambio** (cron de fin de mes y botón), sobre las cuentas del pasivo.
-8. **Diferencias temporales** (Perú ▸ Arrendamientos): por ejercicio,
+8. **Diferencias temporales** (Perú ▸ Contabilidad ▸ Arrendamientos): por ejercicio,
    depreciación + interés frente al alquiler de las facturas del arrendador,
    con el impuesto diferido (el derecho de uso no se deprecia tributariamente,
    Informe N.° 054-2021-SUNAT/7T0000).

@@ -1888,8 +1888,8 @@
         <field name="kind">model</field>
         <field name="name">Letras por cobrar</field>
         <field name="module">al_l10n_pe_account_letter</field>
-        <field name="path">applications/finance/accounting/bills_of_exchange/#datos-de-demostración</field>
-        <field name="section">Datos de demostración</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/#canjear-facturas-por-letras</field>
+        <field name="section">Canjear facturas por letras</field>
     </record>
     <record id="help_l10n_pe_letter_link_summary" model="al.docs.help">
         <field name="key">l10n_pe.letter.link.summary</field>

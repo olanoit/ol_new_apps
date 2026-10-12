@@ -1,57 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ==================================================================
-         Organización de «Configuración ▸ Perú»
+         Organización de la app Nómina (mismo patrón que la app Perú)
 
-         Aquí viven **solo los grupos**. Cada menú se cuelga de su grupo
-         en el archivo donde está declarado: redefinirlo aquí obligaría a
-         repetir su `name` —Odoo reescribe el nombre con el xmlid si se
-         omite— y tener el mismo texto en dos sitios acaba divergiendo.
+         Primer nivel: los menús nativos (Tablero, Empleados, Entradas de
+         trabajo, Recibos de nómina, Reportes, Configuración) más
+         «Beneficios sociales» (al_hr_pe_benefits). Segundo nivel:
+         secciones (encabezados del desplegable). Tercer nivel: acciones.
+         El desplegable de Odoo no muestra un cuarto nivel: no anidar más.
 
-         Se carga antes que el resto para que los grupos existan cuando
-         los menús los referencian.
+         Aquí viven **solo las secciones compartidas**. Cada menú se
+         cuelga de su sección en el archivo donde está declarado:
+         redefinirlo aquí obligaría a repetir su `name` —Odoo reescribe el
+         nombre con el xmlid si se omite— y tener el mismo texto en dos
+         sitios acaba divergiendo. Se carga antes que el resto.
 
-         El problema que resuelve: «Perú» tenía veintitrés entradas
-         planas —trece de ellas catálogos T** del T-Registro— y había que
-         recorrerlas a ojo para encontrar cualquiera.
+         Configuración (secuencias junto a las secciones nativas: Ajustes 0,
+         Entradas de trabajo 50, Salario 80, Tablero 100):
+           60 Parámetros            62 Seguridad social
+           64 Catálogos SUNAT       66 Construcción civil (su módulo)
+           68 Asistencia (al_hr_pe_attendance)
+           70 Tipos y plantillas    90 Importar desde Excel (su módulo)
          ================================================================== -->
     <data>
 
-        <!-- Menú Perú bajo Nómina ▸ Configuración -->
-        <menuitem id="menu_hr_pe_root" name="Perú"
-                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
-                  sequence="60"/>
-
-        <!-- ===================== GRUPOS ===================== -->
-
         <menuitem id="menu_hr_pe_cfg_parameters"
                   name="Parámetros"
-                  parent="menu_hr_pe_root"
-                  sequence="10"/>
-        <menuitem id="menu_hr_pe_cfg_periods"
-                  name="Periodos y suspensiones"
-                  parent="menu_hr_pe_root"
-                  sequence="20"/>
+                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  sequence="60"/>
         <menuitem id="menu_hr_pe_cfg_social"
                   name="Seguridad social"
-                  parent="menu_hr_pe_root"
-                  sequence="30"/>
-        <menuitem id="menu_hr_pe_cfg_dependents"
-                  name="Derechohabientes"
-                  parent="menu_hr_pe_root"
-                  sequence="40"/>
-        <!-- Las trece tablas del T-Registro juntas: se consultan poco y
-             siempre por su número. -->
+                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  sequence="62"/>
+        <!-- Las tablas del T-Registro juntas: se consultan poco y siempre
+             por su número. -->
         <menuitem id="menu_hr_pe_cfg_catalogs"
                   name="Catálogos SUNAT"
-                  parent="menu_hr_pe_root"
-                  sequence="50"/>
-        <!-- 60 queda para «Construcción civil», que ya era un grupo y se
-             coloca desde su propio módulo. -->
+                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  sequence="64"/>
         <menuitem id="menu_hr_pe_cfg_documents"
-                  name="Documentos"
-                  parent="menu_hr_pe_root"
+                  name="Tipos y plantillas"
+                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
                   sequence="70"/>
+
+        <!-- Recibos de nómina ▸ Pagos y contabilidad: el pago al banco
+             (al_hr_pe_reports) y el asiento (al_hr_pe_account), que no
+             dependen uno del otro. -->
+        <menuitem id="menu_hr_pe_payments"
+                  name="Pagos y contabilidad"
+                  parent="hr_payroll.menu_hr_payroll_payslips"
+                  sequence="90"/>
 
     </data>
 </odoo>

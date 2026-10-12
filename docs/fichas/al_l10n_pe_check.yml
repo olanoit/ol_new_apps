@@ -91,4 +91,5 @@ novedades:
       - "Diarios «Cheques de terceros» y «Cheques rechazados» y método «Cheques propios» en los bancos, con las cuentas 1033001, 1689001 y 1049001 del PCGE, al cargar el plan peruano o al instalar el módulo."
       - "Documento del emisor del cheque con RUC (dígito verificador), DNI o carné de extranjería."
       - "Fecha límite de presentación al cobro (Ley 27287), filtros de cheques vencidos y por cobrar en la semana, y aviso al depositar un cheque diferido o vencido."
+      - "Atajos en la app Perú: Clientes ▸ Cobros ▸ Cheques de terceros y Proveedores ▸ Pagos ▸ Cheques propios."
       - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): cuatro cheques de terceros y un cheque propio diferido."

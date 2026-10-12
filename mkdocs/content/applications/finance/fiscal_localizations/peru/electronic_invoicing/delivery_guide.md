@@ -15,7 +15,7 @@ impresa** (`al_l10n_pe_delivery_guide_report`) agrega:
 - una línea por **bien transportado**, que agrupa los movimientos del mismo
   producto y junta sus lotes o series;
 - el **peso bruto** de respaldo cuando los productos no tienen peso;
-- el menú **Perú ‣ Guías de remisión** con las guías, las pendientes, los
+- el menú **Perú ‣ Clientes ‣ Comprobantes ‣ Guías de remisión** con las guías, las pendientes, los
   vehículos y el análisis.
 
 Lo usan almacén y despacho, que emiten e imprimen, y contabilidad, que hace el
@@ -33,7 +33,7 @@ son de `l10n_pe_edi_stock`. No emite guía de remisión transportista.
    clientes: SUNAT rechaza la guía sin ubigeo.
 3. Registre los vehículos con placa y operador en **Perú ‣ Configuración ‣
    Comprobantes electrónicos ‣ Vehículos (guías de remisión)**, también
-   disponible en **Perú ‣ Guías de remisión ‣ Vehículos**.
+   disponible en **Perú ‣ Configuración ‣ Comprobantes electrónicos ‣ Vehículos (guías de remisión)**.
 4. Configure el peso de los productos o indique el **peso para envío** en la
    entrega.
 
@@ -52,7 +52,7 @@ flowchart TD
     A["Entrega validada en Inventario"] --> B["Completar Logística PE:<br/>motivo, modalidad, fecha de inicio,<br/>vehículo y conductor o transportista"]
     B --> C["Generar la guía electrónica<br/>(l10n_pe_edi_stock)"]
     C --> D{"¿SUNAT la aceptó?"}
-    D -- "Error" --> E["Corregir datos y reenviar<br/>(Perú ‣ Guías de remisión ‣ Por enviar)"]
+    D -- "Error" --> E["Corregir datos y reenviar<br/>(Perú ‣ Clientes ‣ Comprobantes ‣ Guías por enviar)"]
     E --> C
     D -- "Aceptada, con CDR" --> F["Botón Guía de remisión"]
     F --> G["PDF A4: traslado, remitente, destinatario,<br/>bienes agrupados, transporte y QR"]
@@ -68,7 +68,7 @@ flowchart TD
    público).
 3. Genere la guía con el flujo nativo de la localización: la entrega recibe el
    número de guía y el ticket de SUNAT.
-4. Revise en **Perú ‣ Guías de remisión ‣ Por enviar** y **Guías de remisión**
+4. Revise en **Perú ‣ Clientes ‣ Comprobantes ‣ Guías por enviar** y **Guías de remisión**
    las pendientes (en amarillo) y las rechazadas (en rojo); corrija y reenvíe.
 
 ![Datos del traslado en la página Logística PE de la entrega](delivery_guide/transfer-data.png)
@@ -114,9 +114,9 @@ peso de cada producto.
 ## Reportes
 
 - **Guía de remisión** (PDF A4).
-- **Perú ‣ Guías de remisión**: lista con el estado SUNAT y filtros **Por
+- **Perú ‣ Clientes ‣ Comprobantes ‣ Guías de remisión**: lista con el estado SUNAT y filtros **Por
   enviar**, **Enviadas**, **Con error** y por modalidad.
-- **Perú ‣ Guías de remisión ‣ Análisis de guías**: guías por motivo y mes.
+- **Perú ‣ Informes ‣ Análisis ‣ Guías de remisión**: guías por motivo y mes.
 - El [kárdex valorizado](../../../../inventory_and_mrp/inventory/kardex.md) usa
   el tipo 09 (guía de remisión) en los movimientos sin comprobante de pago.
 

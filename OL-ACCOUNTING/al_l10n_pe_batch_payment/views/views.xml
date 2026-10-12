@@ -62,4 +62,11 @@
             </field>
         </field>
     </record>
+
+    <!-- App Perú ▸ Proveedores ▸ Pagos (atajo del menú nativo). -->
+    <menuitem id="pe_menu_batch_payments" name="Pagos por lote"
+              parent="al_account_base.al_l10n_pe_vendors_payments"
+              action="account_batch_payment.action_batch_payment_out"
+              groups="account.group_account_basic,account.group_account_readonly"
+              sequence="10"/>
 </odoo>

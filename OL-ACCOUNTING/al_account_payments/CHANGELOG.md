@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_payments.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261012 — 12/10/2026
+
+- «Compra y venta de moneda» pasa a Perú ▸ Tesorería ▸ Tipo de cambio.
+
 ## 9.20261012 — 12/10/2026
 
 - Aviso (no bloqueo) de pago con fecha futura en el asistente de registro y en el pago; al publicarlo queda anotado en su historial.

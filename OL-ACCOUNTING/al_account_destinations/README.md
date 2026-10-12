@@ -20,7 +20,7 @@ se reflejan en cuentas por **función/destino (clase 9)** —o al revés— usan
      parte sin centro de costo. Es de cada compañía.
    Una cuenta sin ninguna de las dos no genera destino. Una cuenta puede
    indicar su propia cuenta de carga (78, 72).
-3. **Destinos del periodo** (Perú ▸ Destinos, Contabilidad ▸ Cierre) muestra
+3. **Destinos del periodo** (Perú ▸ Contabilidad ▸ Cierre del mes, Contabilidad ▸ Cierre) muestra
    el cuadre 79 vs Elemento 9 que exige el PCGE y regenera los destinos de un
    rango de fechas.
 3. Al **postear** un comprobante con líneas de esas cuentas, se genera

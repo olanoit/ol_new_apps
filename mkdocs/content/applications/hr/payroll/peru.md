@@ -29,6 +29,18 @@ y AFPNet: el sistema genera los archivos, no los envía.
 
 ![Menú Perú de la configuración de nómina](peru/peru-menu.png)
 
+## Menú de la aplicación
+
+La localización se reparte en los menús nativos de **Nómina**, con secciones
+como en Contabilidad:
+
+| Menú | Qué agrega la localización |
+|---|---|
+| **Entradas de trabajo** | Suspensiones de labores y la sección **Asistencia** (registro de asistencia, tareaje, monitor, asignaciones de ciclo) |
+| **Recibos de nómina** | Sección **Pagos y contabilidad**: pagos masivos bancarios y asiento de planilla por lote |
+| **Beneficios sociales** | Secciones **Beneficios** (gratificación, CTS, utilidades, subsidios, liquidación de cese), **Vacaciones**, **Adelantos y préstamos** y **Renta y provisiones** |
+| **Configuración** | Junto a las secciones nativas: **Parámetros** (configuración principal, RMV, UIT, periodos), **Seguridad social**, **Catálogos SUNAT**, **Construcción civil**, **Asistencia**, **Tipos y plantillas** e **Importar desde Excel**; las cuentas por condición, en **Salario** |
+
 ## Conceptos
 
 - **Régimen laboral de la actividad privada**: TUO del D. Leg. 728 (D.S.
@@ -56,10 +68,10 @@ y AFPNet: el sistema genera los archivos, no los envía.
 | Término | Significado | Dónde aparece en Odoo |
 |---|---|---|
 | Versión del empleado | Reemplaza al contrato: guarda régimen, afiliación, tipo de trabajador y su histórico | **Nómina ‣ Empleados ‣ Registros de los empleados** |
-| Configuración principal | Un registro por compañía con las reglas de referencia y la clasificación de conceptos | **Nómina ‣ Configuración ‣ Perú ‣ Parámetros** |
+| Configuración principal | Un registro por compañía con las reglas de referencia y la clasificación de conceptos | **Nómina ‣ Configuración ‣ Parámetros** |
 | Snapshot | Valores que la boleta fotografía al calcular: RMV, asignación familiar, tasas AFP y tope | Boleta, página **Planilla PE ‣ Cálculo** |
 | Código SUNAT (tabla 22) | Código PLAME de cada concepto (0121 básico, 0201 asignación familiar…) | Regla salarial |
-| Periodo | Mes declarado (AAAAMM) y, si aplica, sus semanas (AAAAMM-S01…) | **Configuración ‣ Perú ‣ Periodos y suspensiones** |
+| Periodo | Mes declarado (AAAAMM) y, si aplica, sus semanas (AAAAMM-S01…) | **Configuración ‣ Parámetros** |
 | Suspensión T21 | Día sin labor (perfecta o imperfecta) que va al archivo `.snl` | **Periodos y suspensiones ‣ Suspensiones de labores** |
 
 ## Configuración
@@ -68,14 +80,14 @@ y AFPNet: el sistema genera los archivos, no los envía.
    Nómina y la localización peruana.
 2. Vaya a **Ajustes ‣ Nómina ‣ Perú** y, por compañía, indique el SCTR de
    salud y de pensión con su tasa, el representante legal y la firma.
-3. Vaya a **Nómina ‣ Configuración ‣ Perú ‣ Parámetros ‣ Configuración
+3. Vaya a **Nómina ‣ Configuración ‣ Parámetros ‣ Configuración
    principal** e indique la regla del neto y la de ingresos afectos AFP. En la
    pestaña **Boleta**, clasifique los tipos de entrada de trabajo (laborados,
    no laborados, subsidiados, sobretiempo y ausencias) y las categorías de
    ingresos, descuentos y aportes.
 4. Registre la **UIT** del año y revise las tasas de **Afiliaciones (AFP/ONP)**,
    **Seguros sociales** y **Aportes** (Vida Ley).
-5. Vaya a **Configuración ‣ Perú ‣ Periodos y suspensiones ‣ Generar periodos**
+5. Vaya a **Configuración ‣ Parámetros ‣ Generar periodos**
    y genere los periodos del ejercicio, con semanas si hay régimen semanal.
 6. Indique el **código de establecimiento** en los lugares de trabajo y la
    **entidad SUNAT (T36)** en los bancos.
@@ -181,8 +193,8 @@ El saldo de la 4111000 queda en S/ 2 527,03 al haber: el neto a pagar.
 
 ### Suspensiones de labores
 
-Registre las faltas, licencias y subsidios en **Configuración ‣ Perú ‣
-Periodos y suspensiones ‣ Suspensiones de labores**, con su tipo (tabla T21).
+Registre las faltas, licencias y subsidios en **Nómina ‣ Entradas de trabajo
+‣ Suspensiones de labores**, con su tipo (tabla T21).
 Salen en el archivo `.snl` del lote de su periodo.
 
 ### EPS y SCTR

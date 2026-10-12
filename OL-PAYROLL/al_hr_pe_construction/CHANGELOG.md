@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261012 — 12/10/2026
+
+- Construcción civil pasa a Configuración ▸ Construcción civil.
+
 ## 23.20261011 — 11/10/2026
 
 - La boleta de construcción civil hereda el nuevo formato A4 de la boleta (al_report_base): jornal básico, categoría, obra y especialidad en la tabla del trabajador.

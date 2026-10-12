@@ -11,9 +11,9 @@
     <!-- App Perú: todos los estados financieros en un grupo. Balance y Estado
          de resultados son los de Enterprise (con su variante peruana). -->
     <menuitem id="menu_pe_financial_statements" name="Estados financieros"
-              parent="al_account_base.al_l10n_pe_root"
+              parent="al_account_base.al_l10n_pe_menu_reporting"
               groups="account.group_account_readonly,account.group_account_basic"
-              sequence="65"/>
+              sequence="10"/>
 
     <menuitem id="menu_pe_balance_sheet" name="Balance"
               parent="menu_pe_financial_statements"

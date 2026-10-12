@@ -214,7 +214,7 @@
 
     <menuitem id="menu_hr_gratification"
         action="action_hr_gratification"
-        parent="menu_hr_pe_benefits_root"
-        sequence="1"/>
+        parent="menu_hr_pe_benefits_main"
+        sequence="10"/>
 
 </odoo>

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_import_dua.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261012 — 12/10/2026
+
+- Menú en Perú ▸ Proveedores ▸ Comprobantes.
+
 ## 2.20261012 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): importación de diez motobombas con recepción, factura del exterior, gastos del agente y la DAM publicada con su costo en destino.
