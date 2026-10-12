@@ -245,6 +245,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_city](OL-THIRD-PARTY/al_l10n_pe_city/) | 3.20261008 | LGPL-3 | Datos de la ciudad
 [base_tier_validation](OL-THIRD-PARTY/base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
 [prt_report_attachment_preview](OL-THIRD-PARTY/prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
+[purchase_request](OL-THIRD-PARTY/purchase_request/) | 19.0.1.0.2 | LGPL-3 | Use this module to have notification of requirements of materials and/or external services and keep track of such requirements.
 [queue_job](OL-THIRD-PARTY/queue_job/) | 19.0.2.1.0 | LGPL-3 | Job Queue
 [//]: # (end addons-all)
 
