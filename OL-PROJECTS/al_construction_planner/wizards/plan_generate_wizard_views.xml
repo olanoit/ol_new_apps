@@ -31,6 +31,22 @@
                         </div>
                     </group>
                 </group>
+                <group string="Ritmo de programación">
+                    <group>
+                        <field name="schedule_mode" widget="radio"/>
+                        <field name="schedule_pace" invisible="schedule_mode == 'none'"
+                               required="schedule_mode != 'none'"/>
+                        <field name="schedule_date_start" invisible="schedule_mode == 'none'"
+                               required="schedule_mode != 'none'"/>
+                        <field name="schedule_order" invisible="schedule_mode == 'none'"/>
+                    </group>
+                    <group invisible="schedule_mode == 'none'">
+                        <field name="days_production"/>
+                        <field name="days_assembly"/>
+                        <field name="days_installation"/>
+                        <field name="days_finishing"/>
+                    </group>
+                </group>
                 <separator string="Vista previa"/>
                 <field name="preview_html" readonly="1" nolabel="1"/>
                 <field name="warning_html" readonly="1" nolabel="1" invisible="not warning_html"/>

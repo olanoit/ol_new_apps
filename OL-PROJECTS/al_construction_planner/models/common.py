@@ -2,11 +2,38 @@
 """Valores compartidos del planificador (especificación v1.4, «Modelo de datos»)."""
 
 # Niveles de la jerarquía de la obra en project.task (la obra es el proyecto).
+# Es la *función* del nivel; su nombre visible (Torre, Etapa, Sótano…) sale
+# de la plantilla de niveles de la obra (v1.5, M15-01). «Agrupador» es todo
+# agrupador por encima del que agrupa unidades (piso), y «Mueble» el nivel
+# opcional entre el ambiente y el módulo (M15-03).
 LEVELS = [
+    ('group', 'Agrupador'),
     ('floor', 'Piso'),
     ('apartment', 'Departamento'),
     ('space', 'Ambiente'),
+    ('furniture', 'Mueble'),
     ('module', 'Módulo'),
+]
+
+# Función de cada nivel de la plantilla (construction.level.template.line).
+LEVEL_ROLES = [
+    ('group', 'Agrupador'),
+    ('unit', 'Unidad'),
+    ('space', 'Ambiente'),
+    ('furniture', 'Mueble'),
+    ('module', 'Módulo'),
+]
+
+# Tipo de unidad (M15-02): casuística de las 29 obras vendidas.
+UNIT_TYPES = [
+    ('apartment', 'Departamento'),
+    ('duplex_level', 'Nivel de dúplex'),
+    ('duct', 'Ducto'),
+    ('parking', 'Estacionamiento'),
+    ('common_area', 'Área común'),
+    ('storage', 'Depósito'),
+    ('commercial', 'Local'),
+    ('pilot', 'Piloto'),
 ]
 
 # Etapas de ejecución: líneas del plan, actividades y consumo de la BOM.
@@ -54,7 +81,35 @@ TYPOLOGY_FAMILIES = [
     ('closet', 'Closet'),
     ('bathroom', 'Baño'),
     ('laundry', 'Lavandería'),
+    ('duct', 'Ducto'),
+    ('common', 'Área común'),
+    ('special', 'Especial'),
     ('other', 'Otro'),
+]
+
+# Documento de donde sale cada nombre de una tipología (v1.5, M15-04): una
+# misma tipología se llama distinto en la cotización, la orden o el ETO.
+TYPOLOGY_ALIAS_SOURCES = [
+    ('quote', 'Cotización'),
+    ('client_order', 'Orden del cliente'),
+    ('itemized', 'Itemizado'),
+    ('projection', 'Proyección'),
+    ('eto', 'ETO'),
+    ('other', 'Otro'),
+]
+
+FURNITURE_GROUPS = [
+    ('low', 'Bajo'),
+    ('high', 'Alto'),
+    ('other', 'Otro'),
+]
+
+# Variantes de una unidad o ambiente (M15-04): «Navarra 605 en Rovere»,
+# «once departamentos sin verdulero», un metrado distinto.
+UNIT_OVERRIDE_KINDS = [
+    ('color', 'Color o acabado'),
+    ('exclude', 'Excluir componente'),
+    ('qty', 'Metrado distinto'),
 ]
 
 # Control del saldo del plan en requerimientos de obra y OF (P-11, W-10).

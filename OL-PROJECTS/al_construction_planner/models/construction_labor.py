@@ -50,6 +50,19 @@ class ConstructionLaborActivity(models.Model):
         [('estimated', 'Estimado'), ('measured', 'Medido')], string='Origen del rendimiento',
         default='estimated')
     rate_ids = fields.One2many('construction.labor.rate', 'activity_id', string='Tarifas')
+    # Pases y tramos (v1.5, M15-08).
+    hang_role = fields.Selection(
+        [('module', 'Módulo'), ('furniture', 'Mueble'), ('space', 'Ambiente'),
+         ('unit', 'Unidad'), ('group', 'Agrupador (piso, torre)')], string='Cuelga de',
+        help='Nivel del árbol donde se planifica y se paga: los cajones armados en taller por '
+             'lote de piso cuelgan del piso.')
+    pass_number = fields.Integer(
+        string='Pase', help='Instalación: 1 estructura, 2 regulación y puertas, 3 accesorios.')
+    tranche_ids = fields.One2many(
+        'construction.activity.tranche', 'activity_id', string='Tramos de pago', copy=True,
+        help='Partes del pago de la actividad (entregas: limpieza 45, acabado 50, R1 10, R2 5). '
+             'El avance se reporta por tramo y cada unidad vale su %.')
+    tranche_total_pct = fields.Float(string='Suma de tramos %', compute='_compute_tranche_total_pct')
 
     _code_company_unique = models.Constraint(
         'UNIQUE(code, company_id)', 'El código de la actividad debe ser único por compañía.')
@@ -70,6 +83,36 @@ class ConstructionLaborActivity(models.Model):
     def _compute_display_name(self):
         for activity in self:
             activity.display_name = activity.name or activity.code
+
+    @api.depends('tranche_ids.pct')
+    def _compute_tranche_total_pct(self):
+        for activity in self:
+            activity.tranche_total_pct = sum(activity.tranche_ids.mapped('pct'))
+
+    def action_create_service_products(self):
+        """Producto de servicio de cada actividad que no lo tiene (v1.5,
+        M15-14), en la categoría de su etapa: producción y armado en la de
+        armado (601) e instalación y acabado en la de instalación (602), para
+        que la factura de la contrata tome el modelo de distribución analítica
+        de la categoría."""
+        Product = self.env['product.product']
+        created = Product
+        for activity in self.filtered(lambda a: not a.product_id):
+            company = activity.company_id or self.env.company
+            categ = company.construction_categ_assembly_id \
+                if activity.stage in ('production', 'assembly') \
+                else company.construction_categ_installation_id
+            vals = {
+                'name': activity.name, 'default_code': activity.code, 'type': 'service',
+                'purchase_ok': True, 'sale_ok': False, 'uom_id': activity.uom_id.id,
+                'company_id': activity.company_id.id or False,
+            }
+            if categ:
+                vals['categ_id'] = categ.id
+            product = Product.create(vals)
+            activity.product_id = product
+            created |= product
+        return created
 
     def _get_rate(self, project=None, partner=None, date=None):
         """Tarifa vigente de la actividad. Prioridad: obra y contrata, solo
@@ -153,3 +196,24 @@ class ConstructionLaborRate(models.Model):
                     raise ValidationError(self.env._(
                         'La tarifa de %(activity)s se superpone con otra vigente para la '
                         'misma obra y contrata.', activity=rate.activity_id.display_name))
+
+
+class ConstructionActivityTranche(models.Model):
+    """Tramo del pago de una actividad (v1.5, M15-08)."""
+    _name = 'construction.activity.tranche'
+    _description = 'Tramo de pago de la actividad'
+    _order = 'activity_id, sequence, id'
+
+    activity_id = fields.Many2one(
+        'construction.labor.activity', string='Actividad', required=True, ondelete='cascade',
+        index=True)
+    company_id = fields.Many2one(related='activity_id.company_id', store=True, index=True)
+    sequence = fields.Integer(string='Orden', default=10)
+    name = fields.Char(string='Tramo', required=True, help='Limpieza, acabado, R1, R2…')
+    pct = fields.Float(string='% del pago', required=True, digits=(16, 2))
+
+    @api.constrains('pct')
+    def _check_pct(self):
+        if any(tranche.pct <= 0 or tranche.pct > 100 for tranche in self):
+            raise ValidationError(self.env._('El % de un tramo va de 0 a 100.'))
+

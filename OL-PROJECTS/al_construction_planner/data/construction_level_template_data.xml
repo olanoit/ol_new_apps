@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plantillas iniciales de niveles (v1.5, M15-01). Se pueden editar o
+     duplicar: noupdate para no pisar los cambios del cliente. -->
+<odoo noupdate="1">
+    <record id="level_template_building" model="construction.level.template">
+        <field name="name">Edificio</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="level_template_building_floor" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_building"/>
+        <field name="sequence">10</field><field name="name">Piso</field><field name="role">group</field>
+    </record>
+    <record id="level_template_building_unit" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_building"/>
+        <field name="sequence">20</field><field name="name">Departamento</field><field name="role">unit</field>
+    </record>
+    <record id="level_template_building_space" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_building"/>
+        <field name="sequence">30</field><field name="name">Ambiente</field><field name="role">space</field>
+    </record>
+    <record id="level_template_building_furniture" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_building"/>
+        <field name="sequence">40</field><field name="name">Mueble</field><field name="role">furniture</field>
+    </record>
+    <record id="level_template_building_module" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_building"/>
+        <field name="sequence">50</field><field name="name">Módulo</field><field name="role">module</field>
+    </record>
+
+    <record id="level_template_towers" model="construction.level.template">
+        <field name="name">Edificio con torres</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="level_template_towers_tower" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_towers"/>
+        <field name="sequence">5</field><field name="name">Torre</field><field name="role">group</field>
+    </record>
+    <record id="level_template_towers_floor" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_towers"/>
+        <field name="sequence">10</field><field name="name">Piso</field><field name="role">group</field>
+    </record>
+    <record id="level_template_towers_unit" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_towers"/>
+        <field name="sequence">20</field><field name="name">Departamento</field><field name="role">unit</field>
+    </record>
+    <record id="level_template_towers_space" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_towers"/>
+        <field name="sequence">30</field><field name="name">Ambiente</field><field name="role">space</field>
+    </record>
+    <record id="level_template_towers_furniture" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_towers"/>
+        <field name="sequence">40</field><field name="name">Mueble</field><field name="role">furniture</field>
+    </record>
+    <record id="level_template_towers_module" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_towers"/>
+        <field name="sequence">50</field><field name="name">Módulo</field><field name="role">module</field>
+    </record>
+</odoo>

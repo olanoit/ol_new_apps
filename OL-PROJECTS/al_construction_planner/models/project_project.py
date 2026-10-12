@@ -2,6 +2,7 @@
 from datetime import timedelta
 
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 from .common import WEEKDAYS
 from .construction_resource_plan import DRAFT_STATES, OPEN_STATES
@@ -10,6 +11,11 @@ from .construction_resource_plan import DRAFT_STATES, OPEN_STATES
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
+    construction_level_template_id = fields.Many2one(
+        'construction.level.template', string='Plantilla de niveles',
+        help='Niveles del árbol de la obra y su nombre (Torre › Piso › Departamento › '
+             'Ambiente › Mueble › Módulo). Vacía: Piso › Departamento › Ambiente › Módulo. '
+             'No se cambia con un plan aprobado.')
     construction_plan_ids = fields.One2many(
         'construction.resource.plan', 'project_id', string='Planes de recursos')
     construction_plan_count = fields.Integer(
@@ -103,6 +109,58 @@ class ProjectProject(models.Model):
         for project in self:
             project.construction_plan_count = plans.get(project, 0)
             project.construction_typology_count = typologies.get(project, 0)
+
+    @api.constrains('construction_level_template_id')
+    def _check_construction_level_template(self):
+        """La plantilla de niveles no cambia con un plan aprobado: el árbol ya
+        está costeado con esos niveles."""
+        for project in self:
+            approved = project.construction_plan_ids.filtered(
+                lambda p: p.state in ('approved', 'in_progress', 'closed'))
+            levels = self.env['project.task'].search_count([
+                ('project_id', '=', project.id), ('construction_level_line_id', '!=', False),
+                ('construction_level_line_id.template_id', '!=', project.construction_level_template_id.id)])
+            if approved and levels:
+                raise ValidationError(self.env._(
+                    'La obra %s ya tiene un plan aprobado: no se le cambia la plantilla de niveles.',
+                    project.display_name))
+
+    def _construction_distance_m(self, latitude, longitude):
+        """Distancia en metros de un punto a la sede de la obra (fase 17); 0
+        si la obra no tiene sede con ubicación."""
+        self.ensure_one()
+        site = self._construction_site() if hasattr(self, '_construction_site') else False
+        if not site or not (site.latitude or site.longitude):
+            return 0.0
+        return site._distance_to(latitude, longitude)
+
+    def _construction_level_lines(self):
+        """Niveles de la plantilla de la obra por función del planificador:
+        ``{'group': [líneas de arriba abajo], 'floor': línea, 'apartment': …,
+        'space': …, 'furniture': …, 'module': …}``. Vacío sin plantilla."""
+        self.ensure_one()
+        template = self.construction_level_template_id
+        if not template:
+            return {}
+        result = {'group': []}
+        for line in template.line_ids.sorted(lambda l: (l.sequence, l.id)):
+            if line.level == 'group':
+                result['group'].append(line)
+            else:
+                result[line.level] = line
+        return result
+
+    def _construction_level_vals(self, level, depth=0):
+        """Valores del nivel para crear una tarea de la obra: la línea de la
+        plantilla (``depth``: posición entre los agrupadores superiores)."""
+        self.ensure_one()
+        lines = self._construction_level_lines()
+        line = lines.get('group', [])[depth] if level == 'group' and \
+            depth < len(lines.get('group', [])) else lines.get(level) if level != 'group' else False
+        vals = {'construction_level': level}
+        if line:
+            vals['construction_level_line_id'] = line.id
+        return vals
 
     def _construction_current_plan(self):
         """Plan vigente de la obra o, si aún no se aprobó ninguno, el que está

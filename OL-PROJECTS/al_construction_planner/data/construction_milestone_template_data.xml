@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plantillas de hitos de cobro (v1.5, M15-06): los esquemas de las 29 obras
+     vendidas. Se pueden editar o duplicar: noupdate. -->
+<odoo noupdate="1">
+    <record id="milestone_template_80_15_5" model="construction.milestone.template">
+        <field name="name">Estructura 80 / Acabados 15 / Entrega 5</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="milestone_template_80_15_5_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_80_15_5"/>
+        <field name="sequence">10</field><field name="name">Estructura</field><field name="pct">80</field><field name="trigger">stage_done</field><field name="stage">installation</field>
+    </record>
+    <record id="milestone_template_80_15_5_2" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_80_15_5"/>
+        <field name="sequence">20</field><field name="name">Limpieza y acabados</field><field name="pct">15</field><field name="trigger">stage_done</field><field name="stage">finishing</field>
+    </record>
+    <record id="milestone_template_80_15_5_3" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_80_15_5"/>
+        <field name="sequence">30</field><field name="name">Entrega</field><field name="pct">5</field><field name="trigger">delivery</field>
+    </record>
+    <record id="milestone_template_40_40_15_5" model="construction.milestone.template">
+        <field name="name">40 / 40 / 15 / 5 con puertas</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="milestone_template_40_40_15_5_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_40_40_15_5"/>
+        <field name="sequence">10</field><field name="name">Estructura</field><field name="pct">40</field><field name="trigger">stage_done</field><field name="stage">assembly</field>
+    </record>
+    <record id="milestone_template_40_40_15_5_2" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_40_40_15_5"/>
+        <field name="sequence">20</field><field name="name">Instalación y puertas</field><field name="pct">40</field><field name="trigger">stage_done</field><field name="stage">installation</field>
+    </record>
+    <record id="milestone_template_40_40_15_5_3" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_40_40_15_5"/>
+        <field name="sequence">30</field><field name="name">Acabados</field><field name="pct">15</field><field name="trigger">stage_done</field><field name="stage">finishing</field>
+    </record>
+    <record id="milestone_template_40_40_15_5_4" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_40_40_15_5"/>
+        <field name="sequence">40</field><field name="name">Entrega</field><field name="pct">5</field><field name="trigger">delivery</field>
+    </record>
+    <record id="milestone_template_60_20_15_5" model="construction.milestone.template">
+        <field name="name">60 / 20 / 15 / 5 con suministro</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="milestone_template_60_20_15_5_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_20_15_5"/>
+        <field name="sequence">10</field><field name="name">Suministro</field><field name="pct">60</field><field name="trigger">material_arrival</field>
+    </record>
+    <record id="milestone_template_60_20_15_5_2" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_20_15_5"/>
+        <field name="sequence">20</field><field name="name">Instalación</field><field name="pct">20</field><field name="trigger">stage_done</field><field name="stage">installation</field>
+    </record>
+    <record id="milestone_template_60_20_15_5_3" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_20_15_5"/>
+        <field name="sequence">30</field><field name="name">Acabados</field><field name="pct">15</field><field name="trigger">stage_done</field><field name="stage">finishing</field>
+    </record>
+    <record id="milestone_template_60_20_15_5_4" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_20_15_5"/>
+        <field name="sequence">40</field><field name="name">Entrega</field><field name="pct">5</field><field name="trigger">delivery</field>
+    </record>
+    <record id="milestone_template_50_10_25_15" model="construction.milestone.template">
+        <field name="name">50 / 10 / 25 / 15 con llegada de material</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="milestone_template_50_10_25_15_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_50_10_25_15"/>
+        <field name="sequence">10</field><field name="name">Adelanto de fabricación</field><field name="pct">50</field><field name="trigger">stage_done</field><field name="stage">production</field>
+    </record>
+    <record id="milestone_template_50_10_25_15_2" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_50_10_25_15"/>
+        <field name="sequence">20</field><field name="name">Llegada a obra</field><field name="pct">10</field><field name="trigger">material_arrival</field>
+    </record>
+    <record id="milestone_template_50_10_25_15_3" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_50_10_25_15"/>
+        <field name="sequence">30</field><field name="name">Instalación</field><field name="pct">25</field><field name="trigger">stage_done</field><field name="stage">installation</field>
+    </record>
+    <record id="milestone_template_50_10_25_15_4" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_50_10_25_15"/>
+        <field name="sequence">40</field><field name="name">Entrega</field><field name="pct">15</field><field name="trigger">delivery</field>
+    </record>
+    <record id="milestone_template_60_15_15_10" model="construction.milestone.template">
+        <field name="name">60 / 15 / 15 / 10 con postventa</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="milestone_template_60_15_15_10_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_15_15_10"/>
+        <field name="sequence">10</field><field name="name">Estructura</field><field name="pct">60</field><field name="trigger">stage_done</field><field name="stage">installation</field>
+    </record>
+    <record id="milestone_template_60_15_15_10_2" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_15_15_10"/>
+        <field name="sequence">20</field><field name="name">Acabados</field><field name="pct">15</field><field name="trigger">stage_done</field><field name="stage">finishing</field>
+    </record>
+    <record id="milestone_template_60_15_15_10_3" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_15_15_10"/>
+        <field name="sequence">30</field><field name="name">Entrega</field><field name="pct">15</field><field name="trigger">delivery</field>
+    </record>
+    <record id="milestone_template_60_15_15_10_4" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_60_15_15_10"/>
+        <field name="sequence">40</field><field name="name">Postventa</field><field name="pct">10</field><field name="trigger">after_sales</field>
+    </record>
+    <record id="milestone_template_90_10" model="construction.milestone.template">
+        <field name="name">90 / 10 solo servicio</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="milestone_template_90_10_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_90_10"/>
+        <field name="sequence">10</field><field name="name">Servicio</field><field name="pct">90</field><field name="trigger">stage_done</field><field name="stage">installation</field>
+    </record>
+    <record id="milestone_template_90_10_2" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_90_10"/>
+        <field name="sequence">20</field><field name="name">Entrega</field><field name="pct">10</field><field name="trigger">delivery</field>
+    </record>
+    <record id="milestone_template_100" model="construction.milestone.template">
+        <field name="name">100 % del suministro contra entrega</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="milestone_template_100_1" model="construction.milestone.template.line">
+        <field name="template_id" ref="milestone_template_100"/>
+        <field name="sequence">10</field><field name="name">Suministro</field><field name="pct">100</field><field name="trigger">delivery</field>
+    </record>
+</odoo>

@@ -8,6 +8,7 @@ idempotente. El formato del libro está en ``master_import_layout.py``.
 """
 import base64
 import logging
+import re
 from collections import defaultdict
 from io import BytesIO
 
@@ -19,6 +20,7 @@ from odoo.exceptions import UserError
 from .master_import_layout import (
     FAMILY_VALUES, MEASURE_VALUES, ML_GROUP_VALUES, MODULE_TYPE_VALUES, SHEETS, STAGE_VALUES,
     build_workbook, norm, selection_value, sheet_key,
+    UNIT_TYPE_VALUES, FURNITURE_GROUP_VALUES, OVERRIDE_KIND_VALUES,
 )
 
 _logger = logging.getLogger(__name__)
@@ -52,6 +54,30 @@ def _text(value):
     if isinstance(value, float) and value.is_integer():
         value = int(value)
     return str(value).strip()
+
+
+def _group_path(value):
+    """Agrupadores de la columna «Agrupador»: «Etapa 1 / Torre A» → ('Etapa 1', 'Torre A')."""
+    return tuple(part.strip() for part in _text(value).split('/') if part.strip())
+
+
+def _fmt_path(path):
+    """Ruta legible: agrupadores, piso, unidad y ambiente separados por «›»."""
+    groups, rest = path[0], path[1:]
+    return ' › '.join(list(groups) + [part for part in rest if part])
+
+
+def _unit_matches_floor(floor, unit):
+    """Validación de datos (M15-11): el número de la unidad empieza por el
+    de su piso (D501 en el piso 5, 1203 en el piso 12). Sin números en el
+    piso o con una unidad de menos de tres dígitos (D01, Ducto 2) no se
+    puede comparar y se da por buena."""
+    floor_digits = re.findall(r'\d+', floor or '')
+    unit_digits = re.findall(r'\d+', unit or '')
+    if len(floor_digits) != 1 or not unit_digits or len(unit_digits[-1]) < 3:
+        return True
+    number = unit_digits[-1]
+    return number[:-2].lstrip('0') == floor_digits[0].lstrip('0')
 
 
 def _decimals(value):
@@ -153,7 +179,8 @@ class ConstructionMasterImportWizard(models.TransientModel):
         self.ensure_one()
         result = {'errors': [], 'warnings': defaultdict(list), 'stats': {},
                   'catalog': [], 'typologies': {}, 'modules': {}, 'activities': {}, 'bom': {},
-                  'products_to_create': {}, 'tree': [], 'eto': defaultdict(list)}
+                  'products_to_create': {}, 'tree': [], 'eto': defaultdict(list),
+                  'furniture': {}, 'overrides': []}
         if not self.file or not self.project_id:
             return result
         sheets, errors = self._read_workbook()
@@ -239,6 +266,11 @@ class ConstructionMasterImportWizard(models.TransientModel):
             if not family:
                 invalid('TIPOLOGIAS', row, self.env._('Familia'), row.get('family'))
                 continue
+            if code in result['typologies']:
+                # Validaciones de datos (M15-11): el código repetido gana la
+                # última fila, como antes, pero se avisa.
+                warn['typology_duplicate'].append(self.env._(
+                    'TIPOLOGIAS fila %(row)s: %(code)s', row=row['_row'], code=code))
             record = existing_typologies.get(code)
             result['typologies'][code] = {
                 'record': record,
@@ -246,6 +278,8 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'product': _text(row.get('product')),
                 'ml_low': _number(row.get('ml_low')),
                 'ml_high': _number(row.get('ml_high')),
+                'variant_of': _text(row.get('variant_of')),
+                'aliases': [a.strip() for a in _text(row.get('aliases')).split(';') if a.strip()],
             }
             if record:
                 updated += 1
@@ -253,13 +287,57 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 new += 1
         stats['TIPOLOGIAS'] = (len(rows), new, updated)
         typology_codes = set(existing_typologies) | set(result['typologies'])
+        # Otros nombres (M15-04): «VK-01», «V-K-01» y «COCINA 05» son la misma.
+        Typology = self.env['construction.typology']
+        alias_codes = {}
+        for code, typology in existing_typologies.items():
+            for name in [typology.name] + typology.alias_ids.mapped('name'):
+                alias_codes.setdefault(Typology._name_key(name), code)
+        for code, info in result['typologies'].items():
+            for name in [info['vals']['name']] + info['aliases']:
+                alias_codes[Typology._name_key(name)] = code
+        for code in typology_codes:
+            alias_codes[Typology._name_key(code)] = code
+        for code, info in result['typologies'].items():
+            base = info['variant_of']
+            if base and alias_codes.get(Typology._name_key(base)) not in typology_codes:
+                warn['unknown_typology'].append('TIPOLOGIAS · %s' % base)
+                info['variant_of'] = ''
+            elif base:
+                info['variant_of'] = alias_codes[Typology._name_key(base)]
+
+        def resolve_typology(text):
+            text = _text(text)
+            if text in typology_codes:
+                return text
+            return alias_codes.get(Typology._name_key(text))
 
         def typology_ok(sheet, row):
-            code = _text(row['typology'])
-            if code in typology_codes:
+            code = resolve_typology(row['typology'])
+            if code:
                 return code
-            warn['unknown_typology'].append('%s · %s' % (sheet, code or '—'))
+            warn['unknown_typology'].append('%s · %s' % (sheet, _text(row['typology']) or '—'))
             return None
+
+        # Muebles de cada tipología (M15-03).
+        rows = sheets.get('MUEBLES', [])
+        count = 0
+        for row in rows:
+            typology = typology_ok('MUEBLES', row)
+            if not typology:
+                continue
+            name = _text(row['name'])
+            group = selection_value(FURNITURE_GROUP_VALUES, row.get('ml_group')) or (
+                'low' if not _text(row.get('ml_group')) else None)
+            ml = _number(row.get('ml'))
+            if not name or not group or (ml is not None and ml < 0):
+                invalid('MUEBLES', row, self.env._('Mueble, grupo y ML'), name)
+                continue
+            furniture = result['furniture'].setdefault(typology, {})
+            furniture[name] = {'name': name, 'ml_group': group, 'ml': ml or 0.0,
+                               'sequence': (len(furniture) + 1) * 10}
+            count += 1
+        stats['MUEBLES'] = (len(rows), count, 0)
 
         # Plantilla de módulos.
         rows = sheets.get('MODULOS', [])
@@ -294,6 +372,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'sequence': int(sequence) if sequence is not None else (len(modules) + 1) * 10,
                 'code': code, 'module_type': module_type, 'width_mm': int(round(width or 0)),
                 'ml_group': ml_group, '_activity': activity,
+                '_furniture': _text(row.get('furniture')),
             }
             count += 1
         stats['MODULOS'] = (len(rows), count, 0)
@@ -323,29 +402,50 @@ class ConstructionMasterImportWizard(models.TransientModel):
         Task = self.env['project.task']
         spaces_in_tree = set()
         rows = sheets.get('ARBOL', [])
+        group_depth = len(project._construction_level_lines().get('group', []))
         for row in rows:
-            path = (_text(row['floor']), _text(row['apartment']), _text(row['space']))
-            if not all(path):
-                invalid('ARBOL', row, self.env._('Piso, departamento y ambiente'), ' › '.join(path))
+            path = (_group_path(row.get('group')), _text(row['floor']), _text(row['apartment']),
+                    _text(row['space']))
+            if not all(path[1:]):
+                invalid('ARBOL', row, self.env._('Piso, departamento y ambiente'), _fmt_path(path))
+                continue
+            if path[0] and group_depth and len(path[0]) != group_depth:
+                invalid('ARBOL', row, self.env._('Agrupador (%s niveles)', group_depth),
+                        _text(row.get('group')))
                 continue
             typology = _text(row.get('typology'))
-            if typology and typology not in typology_codes:
-                warn['tree_unknown_typology'].append('%s (%s)' % (' › '.join(path), typology))
+            if typology and not resolve_typology(typology):
+                warn['tree_unknown_typology'].append('%s (%s)' % (_fmt_path(path), typology))
                 typology = ''
-            result['tree'].append(path + (typology,))
+            elif typology:
+                typology = resolve_typology(typology)
+            unit_type = selection_value(UNIT_TYPE_VALUES, row.get('unit_type')) \
+                if _text(row.get('unit_type')) else False
+            if _text(row.get('unit_type')) and not unit_type:
+                invalid('ARBOL', row, self.env._('Tipo de unidad'), row.get('unit_type'))
+                continue
+            if path in spaces_in_tree:
+                warn['tree_duplicate'].append(self.env._(
+                    'ARBOL fila %(row)s: %(path)s', row=row['_row'], path=_fmt_path(path)))
+                continue
+            if not _unit_matches_floor(path[1], path[2]):
+                warn['unit_floor_mismatch'].append(self.env._(
+                    'ARBOL fila %(row)s: %(unit)s en %(floor)s', row=row['_row'], unit=path[2],
+                    floor=path[1]))
+            result['tree'].append(path + (typology, unit_type))
             spaces_in_tree.add(path)
         existing_spaces = {}
         for space in Task.search([('project_id', '=', project.id),
                                   ('construction_level', '=', 'space')]):
-            path = (space.construction_floor_task_id.name, space.construction_apartment_task_id.name,
-                    space.name)
-            existing_spaces[path] = space
+            floor = space.construction_floor_task_id
+            existing_spaces[(floor._construction_group_names(), floor.name,
+                             space.construction_apartment_task_id.name, space.name)] = space
         tree_new = len(spaces_in_tree - set(existing_spaces))
         stats['ARBOL'] = (len(rows), tree_new, len(spaces_in_tree & set(existing_spaces)))
         space_count = defaultdict(int)
         typology_of_path = {path: space.construction_typology_id.code
                             for path, space in existing_spaces.items()}
-        typology_of_path.update({row[:3]: row[3] for row in result['tree']})
+        typology_of_path.update({row[:4]: row[4] for row in result['tree']})
         for code in typology_of_path.values():
             if code:
                 space_count[code] += 1
@@ -437,12 +537,52 @@ class ConstructionMasterImportWizard(models.TransientModel):
         stats['BOM'] = (len(rows), count, 0)
         stats['PRODUCTOS'] = (0, len(result['products_to_create']), 0)
 
+        # Variantes de una unidad o ambiente (M15-04).
+        rows = sheets.get('VARIANTES', [])
+        count = 0
+        known_units = {path[:3] for path in set(existing_spaces) | spaces_in_tree}
+        known_spaces = set(existing_spaces) | spaces_in_tree
+        product_codes = {_text(row.get(key)) for row in rows
+                         for key in ('product_code', 'new_product_code') if _text(row.get(key))}
+        found_codes = set(self.env['product.product'].with_context(active_test=False).search(
+            [('default_code', 'in', list(product_codes))]).mapped('default_code')) \
+            if product_codes else set()
+        for row in rows:
+            unit = (_group_path(row.get('group')), _text(row['floor']), _text(row['apartment']))
+            space = _text(row.get('space'))
+            kind = selection_value(OVERRIDE_KIND_VALUES, row.get('kind'))
+            product_code = _text(row.get('product_code'))
+            new_code = _text(row.get('new_product_code'))
+            qty = _number(row.get('qty'))
+            if not kind:
+                invalid('VARIANTES', row, self.env._('Tipo'), row.get('kind'))
+                continue
+            if unit not in known_units or (space and unit + (space,) not in known_spaces):
+                warn['override_unknown_unit'].append(_fmt_path(unit + (space,)))
+                continue
+            missing = [code for code in (product_code, new_code if kind == 'color' else '')
+                       if code and code not in found_codes]
+            if not product_code or (kind == 'color' and not new_code) or missing:
+                warn['override_unknown_product'].append(
+                    '%s · %s' % (_fmt_path(unit + (space,)), ', '.join(missing) or '—'))
+                continue
+            if kind == 'qty' and (qty is None or qty < 0):
+                invalid('VARIANTES', row, self.env._('Cantidad por ambiente'), row.get('qty'))
+                continue
+            result['overrides'].append({
+                'unit': unit, 'space': space, 'kind': kind, 'product_code': product_code,
+                'new_product_code': new_code if kind == 'color' else '',
+                'qty': qty or 0.0, 'note': _text(row.get('note'))})
+            count += 1
+        stats['VARIANTES'] = (len(rows), count, 0)
+
         # ETO: módulos reales de cada ambiente (del árbol del libro o de la obra).
         rows = sheets.get('ETO', [])
         count = 0
         known_paths = set(existing_spaces) | spaces_in_tree
         for row in rows:
-            path = (_text(row['floor']), _text(row['apartment']), _text(row['space']))
+            path = (_group_path(row.get('group')), _text(row['floor']), _text(row['apartment']),
+                    _text(row['space']))
             code = _text(row['code'])
             width = _number(row['width'])
             module_type = selection_value(MODULE_TYPE_VALUES, row.get('type')) \
@@ -450,7 +590,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             ml_group = selection_value(ML_GROUP_VALUES, row.get('ml_group')) \
                 if _text(row.get('ml_group')) else False
             if path not in known_paths:
-                warn['eto_unknown_space'].append(' › '.join(path))
+                warn['eto_unknown_space'].append(_fmt_path(path))
                 continue
             if not code:
                 invalid('ETO', row, self.env._('Código del módulo'), code)
@@ -499,6 +639,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'Módulos con una actividad de armado que no se mide por módulo (filas omitidas)'),
             'catalog_no_rights': self.env._(
                 'La hoja CATALOGO la aplica un administrador del planificador (se omite)'),
+            'override_unknown_unit': self.env._(
+                'Variantes de una unidad o ambiente que no existe en la obra ni en ÁRBOL (omitidas)'),
+            'override_unknown_product': self.env._(
+                'Variantes con un producto que no existe o sin el material que reemplaza (omitidas)'),
             'unknown_typology': self.env._(
                 'Filas de una tipología que no existe en la obra ni en la hoja TIPOLOGIAS '
                 '(omitidas)'),
@@ -507,6 +651,11 @@ class ConstructionMasterImportWizard(models.TransientModel):
             'eto_unknown_space': self.env._(
                 'Ambientes del ETO que no existen en la obra ni en el árbol del libro (filas '
                 'omitidas)'),
+            'typology_duplicate': self.env._(
+                'Códigos de tipología repetidos en TIPOLOGIAS (vale la última fila)'),
+            'tree_duplicate': self.env._('Ambientes repetidos en ÁRBOL (filas omitidas)'),
+            'unit_floor_mismatch': self.env._(
+                'Unidades cuyo número no corresponde a su piso (revise el árbol)'),
             'invalid_value': self.env._('Valores no reconocidos (filas omitidas)'),
         }
 
@@ -515,7 +664,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
         labels = {
             'CATALOGO': self.env._('Actividades de obra'),
             'TIPOLOGIAS': self.env._('Tipologías'),
+            'MUEBLES': self.env._('Muebles de las tipologías'),
             'MODULOS': self.env._('Módulos de la plantilla'),
+            'VARIANTES': self.env._('Variantes de unidades'),
             'ACTIVIDADES': self.env._('Actividades por ambiente'),
             'BOM': self.env._('Filas de BOM'),
             'PRODUCTOS': self.env._('Productos por crear'),
@@ -628,13 +779,44 @@ class ConstructionMasterImportWizard(models.TransientModel):
             summary['typologies'] += 1
             info['record'] = record
 
+        # Tipología base y otros nombres (M15-04).
+        Alias = self.env['construction.typology.alias']
+        for code, info in data['typologies'].items():
+            typology = typologies[code]
+            base = typologies.get(info.get('variant_of')) if info.get('variant_of') else False
+            if base and typology.variant_of_id != base:
+                typology.variant_of_id = base
+            current = set(typology.alias_ids.mapped('name'))
+            Alias.create([{'typology_id': typology.id, 'name': name, 'source': 'quote'}
+                          for name in info.get('aliases', []) if name not in current])
+
+        # Muebles de la tipología: los del libro reemplazan a los de la tipología.
+        Furniture = self.env['construction.typology.furniture']
+        furniture_by_typology = {}
+        for code, items in data['furniture'].items():
+            typology = typologies[code]
+            current = {f.name: f for f in typology.furniture_line_ids}
+            for name, vals in items.items():
+                if name in current:
+                    record = current.pop(name)
+                    record.write(vals)
+                else:
+                    record = Furniture.create(dict(vals, typology_id=typology.id))
+                furniture_by_typology.setdefault(code, {})[name] = record
+            if current:
+                Furniture.browse([f.id for f in current.values()]).unlink()
+
         # Plantilla de módulos: la del libro reemplaza a la de la tipología.
         Module = self.env['construction.typology.module']
         for code, modules in data['modules'].items():
             typology = typologies[code]
             current = {m.code: m for m in typology.module_line_ids}
+            furniture_names = furniture_by_typology.get(code) or {
+                f.name: f for f in typology.furniture_line_ids}
             for module_code, vals in modules.items():
-                vals = dict(vals, assembly_activity_id=activities[vals.pop('_activity')].id)
+                furniture = furniture_names.get(vals.pop('_furniture', ''))
+                vals = dict(vals, assembly_activity_id=activities[vals.pop('_activity')].id,
+                            furniture_id=furniture.id if furniture else False)
                 if module_code in current:
                     current.pop(module_code).write(vals)
                 else:
@@ -675,39 +857,59 @@ class ConstructionMasterImportWizard(models.TransientModel):
             info = data['typologies'].get(code, {})
             self._sync_bom(typology, lines, products, info.get('product'), company)
 
-        # Árbol de la obra.
+        # Árbol de la obra (con los niveles de la plantilla de la obra).
         Task = self.env['project.task']
         nodes = {}
         for task in Task.search([('project_id', '=', project.id),
-                                 ('construction_level', 'in', ('floor', 'apartment', 'space'))]):
+                                 ('construction_level', 'in', ('group', 'floor', 'apartment', 'space'))]):
             nodes[(task.construction_level, task.parent_id.id, task.name)] = task
 
-        def node(name, level, parent):
+        def node(name, level, parent, depth=0, extra=None):
             key = (level, parent.id if parent else False, name)
             if key not in nodes:
-                nodes[key] = Task.create({
-                    'name': name, 'project_id': project.id, 'construction_level': level,
-                    'parent_id': parent.id if parent else False, 'user_ids': False})
+                nodes[key] = Task.create(dict(
+                    project._construction_level_vals(level, depth), name=name,
+                    project_id=project.id, parent_id=parent.id if parent else False,
+                    user_ids=False, **(extra or {})))
                 if level == 'space':
                     summary['spaces'] += 1
+            elif extra:
+                nodes[key].write({k: v for k, v in extra.items() if nodes[key][k] != v})
             return nodes[key]
 
-        for floor, apartment, space, typology_code in data['tree']:
+        def floor_node(groups, floor):
+            parent = None
+            for depth, group in enumerate(groups):
+                parent = node(group, 'group', parent, depth)
+            return node(floor, 'floor', parent)
+
+        for groups, floor, apartment, space, typology_code, unit_type in data['tree']:
+            unit_extra = {'construction_unit_type': unit_type} if unit_type else None
             space_task = node(space, 'space', node(apartment, 'apartment',
-                                                   node(floor, 'floor', None)))
+                                                   floor_node(groups, floor), extra=unit_extra))
             typology = typologies.get(typology_code) if typology_code else False
             if typology and space_task.construction_typology_id != typology:
                 space_task.construction_typology_id = typology
 
         # ETO: módulos reales de cada ambiente, por código.
-        for (floor, apartment, space), modules in data['eto'].items():
-            floor_task = nodes.get(('floor', False, floor))
+        module_vals = project._construction_level_vals('module')
+        for (groups, floor, apartment, space), modules in data['eto'].items():
+            parent = False
+            for group in groups:
+                parent = nodes.get(('group', parent.id if parent else False, group))
+                if not parent:
+                    break
+            if groups and not parent:
+                continue
+            floor_task = nodes.get(('floor', parent.id if parent else False, floor))
             apartment_task = floor_task and nodes.get(('apartment', floor_task.id, apartment))
             space_task = apartment_task and nodes.get(('space', apartment_task.id, space))
             if not space_task:
                 continue
             current = {m.construction_module_code: m for m in Task.search([
-                ('parent_id', '=', space_task.id), ('construction_level', '=', 'module')])}
+                ('construction_space_task_id', '=', space_task.id),
+                ('construction_level', '=', 'module')])}
+            has_furniture = bool(project._construction_level_lines().get('furniture'))
             templates = {m.code: m for m in space_task.construction_typology_id.module_line_ids}
             for vals in modules:
                 template = templates.get(vals['code'])
@@ -723,11 +925,43 @@ class ConstructionMasterImportWizard(models.TransientModel):
                     task.write(task_vals)
                 else:
                     Task.with_context(mail_create_nolog=True, tracking_disable=True).create(dict(
-                        task_vals, name=vals['code'], project_id=project.id,
-                        parent_id=space_task.id, construction_level='module',
+                        task_vals, **module_vals, name=vals['code'], project_id=project.id,
+                        parent_id=(space_task._construction_furniture_for(
+                            task_vals['construction_ml_group'], task_vals['construction_module_type'])
+                            if has_furniture else space_task).id,
                         construction_module_code=vals['code'],
                         construction_unit_state='planned', user_ids=False))
                 summary['eto'] += 1
+
+        # Variantes de unidades y ambientes (M15-04).
+        Override = self.env['construction.unit.override']
+        Product = self.env['product.product'].with_context(active_test=False)
+        codes = {item[key] for item in data['overrides'] for key in ('product_code', 'new_product_code')
+                 if item[key]}
+        products_by_code = {}
+        for product in Product.search([('default_code', 'in', list(codes))]):
+            products_by_code.setdefault(product.default_code, product)
+        for item in data['overrides']:
+            groups, floor, apartment = item['unit']
+            parent = False
+            for group in groups:
+                parent = nodes.get(('group', parent.id if parent else False, group))
+            floor_task = nodes.get(('floor', parent.id if parent else False, floor))
+            target = floor_task and nodes.get(('apartment', floor_task.id, apartment))
+            if target and item['space']:
+                target = nodes.get(('space', target.id, item['space']))
+            product = products_by_code.get(item['product_code'])
+            if not target or not product:
+                continue
+            vals = {'task_id': target.id, 'kind': item['kind'], 'product_id': product.id,
+                    'new_product_id': products_by_code.get(item['new_product_code'], Product).id
+                    or False, 'qty': item['qty'], 'note': item['note'] or False}
+            existing = target.construction_override_ids.filtered(
+                lambda o: o.kind == item['kind'] and o.product_id == product)
+            if existing:
+                existing[:1].write(vals)
+            else:
+                Override.create(vals)
         return summary
 
     def _sync_bom(self, typology, lines, products, product_name, company):

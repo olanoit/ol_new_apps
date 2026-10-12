@@ -23,6 +23,9 @@ LICENSE_EXCEPTIONS = {
     'al_construction_material_request': 'LGPL-3',
     # Depende de base_tier_validation (AGPL-3) por la aprobación del plan.
     'al_construction_planner': 'LGPL-3',
+    # Extienden el planificador y, con él, base_tier_validation (AGPL-3).
+    'al_construction_attendance': 'LGPL-3',
+    'al_construction_planner_spreadsheet': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts', 'mkdocs'}

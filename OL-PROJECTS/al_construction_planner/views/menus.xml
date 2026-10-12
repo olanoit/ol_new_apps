@@ -75,6 +75,12 @@
             <menuitem id="menu_planner_settlements" name="Liquidaciones semanales"
                       action="action_construction_contract_settlement" sequence="30"/>
         </menuitem>
+        <menuitem id="menu_planner_changes" name="Cambios" sequence="25">
+            <menuitem id="menu_planner_change_orders" name="Adicionales y deductivos"
+                      action="action_construction_change_order" sequence="10"/>
+            <menuitem id="menu_planner_dependencies" name="Dependencias de terceros"
+                      action="action_construction_dependency" sequence="20"/>
+        </menuitem>
     </menuitem>
 
     <menuitem id="menu_planner_supply" name="Abastecimiento" parent="menu_planner_root" sequence="30"
@@ -95,6 +101,10 @@
 
     <menuitem id="menu_planner_income" name="Ingresos" parent="menu_planner_root" sequence="40"
               groups="group_planner_user">
+        <menuitem id="menu_planner_contracts_income" name="Contratos de obra"
+                  action="action_construction_contract" sequence="5"/>
+        <menuitem id="menu_planner_unit_milestones" name="Hitos por unidad"
+                  action="action_construction_unit_milestone" sequence="7"/>
         <menuitem id="menu_planner_deliveries" name="Entregas semanales"
                   action="action_construction_weekly_delivery" sequence="10"/>
         <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización"
@@ -137,6 +147,9 @@
                   action="action_construction_planner_settings" sequence="5"
                   groups="group_planner_manager"/>
         <menuitem id="menu_planner_config_plan" name="Plan de obra" sequence="10">
+            <menuitem id="menu_planner_level_templates" name="Plantillas de niveles"
+                      action="action_construction_level_template" sequence="5"
+                      groups="group_planner_manager"/>
             <menuitem id="menu_planner_typologies" name="Tipologías"
                       action="action_construction_typology" sequence="10"/>
             <menuitem id="menu_planner_activities" name="Actividades de obra"
@@ -144,8 +157,16 @@
             <menuitem id="menu_planner_rates" name="Tarifas de contrata"
                       action="action_construction_labor_rate" sequence="30"
                       groups="group_planner_manager"/>
+            <menuitem id="menu_planner_analytic_rules" name="Reglas analíticas"
+                      action="action_construction_analytic_rule" sequence="35"
+                      groups="group_planner_manager"/>
             <menuitem id="menu_planner_master_import" name="Importar maestro y ETO"
                       action="action_construction_master_import_wizard" sequence="40"/>
+        </menuitem>
+        <menuitem id="menu_planner_config_income" name="Cobro al cliente" sequence="15">
+            <menuitem id="menu_planner_milestone_templates" name="Plantillas de hitos de cobro"
+                      action="action_construction_milestone_template" sequence="10"
+                      groups="group_planner_manager"/>
         </menuitem>
         <menuitem id="menu_planner_config_other" name="Aprobaciones y Gantt" sequence="20">
             <menuitem id="menu_planner_tier_definitions" name="Reglas de aprobación"

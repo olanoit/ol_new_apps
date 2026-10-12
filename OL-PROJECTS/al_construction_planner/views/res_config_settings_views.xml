@@ -95,6 +95,14 @@
                                     <label for="construction_advance_account_id" class="col-lg-5 o_light_label"/>
                                     <field name="construction_advance_account_id" options="{'no_create': True}"/>
                                 </div>
+                                <div class="row">
+                                    <label for="construction_categ_assembly_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_categ_assembly_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_categ_installation_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_categ_installation_id" options="{'no_create': True}"/>
+                                </div>
                             </div>
                         </setting>
                     </block>

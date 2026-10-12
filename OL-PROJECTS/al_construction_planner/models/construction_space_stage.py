@@ -190,15 +190,111 @@ class ConstructionSpaceStage(models.Model):
     # ------------------------------------------------------------------
     # Mover fechas
     # ------------------------------------------------------------------
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._rollup_task_dates()
+        return records
+
     def write(self, vals):
         moving = 'date_start' in vals and not self.env.context.get('construction_stage_keep_lines')
         old = {record.id: record.date_start for record in self} if moving else {}
         res = super().write(vals)
         if moving:
             self._shift_lines(old)
+        if {'date_start', 'date_end'} & set(vals):
+            # Cambiar la etapa desde su formulario también empuja a las
+            # siguientes del ambiente (el arrastre lo hace en una sola vez).
+            if not self.env.context.get('construction_stage_no_chain'):
+                for record in self:
+                    record._chain_successors()
+            if not self.env.context.get('construction_stage_no_rollup'):
+                self._rollup_task_dates()
         return res
 
-    def _shift_lines(self, old_starts):
+    def unlink(self):
+        spaces = self.space_task_id
+        res = super().unlink()
+        self.browse()._rollup_task_dates(spaces)
+        return res
+
+    # ------------------------------------------------------------------
+    # Días hábiles, cadena y fechas de las tareas (v1.5, M15-17 y M15-18)
+    # ------------------------------------------------------------------
+    def _company_for_days(self):
+        return self.company_id or self.project_id.company_id or self.env.company
+
+    def _chain_successors(self):
+        """Empuja las etapas siguientes del ambiente que quedan solapadas:
+        cada una empieza el día hábil siguiente al fin de la anterior y
+        conserva sus días hábiles. Devuelve ``[(etapa, inicio, fin)]`` con
+        las fechas anteriores de las movidas."""
+        self.ensure_one()
+        company = self._company_for_days()
+        moved = []
+        previous_end = self.date_end
+        for successor in self.space_task_id.construction_stage_ids.filtered(
+                lambda s: s.sequence > self.sequence).sorted('sequence'):
+            if successor.date_start > previous_end:
+                break
+            days = company._construction_count_site_days(successor.date_start, successor.date_end)
+            new_start = company._construction_next_site_day(previous_end + timedelta(days=1))
+            new_end = company._construction_add_site_days(new_start, days)
+            moved.append((successor, successor.date_start, successor.date_end))
+            successor.with_context(construction_stage_no_chain=True,
+                                   construction_stage_no_rollup=True).write(
+                {'date_start': new_start, 'date_end': new_end})
+            previous_end = new_end
+        return moved
+
+    @api.model
+    def _task_date_fields(self):
+        field_map = self.env['al.gantt.field.map'].get_map()
+        return field_map.get('date_start'), field_map.get('date_end')
+
+    def _rollup_task_dates(self, spaces=None):
+        """Guarda en las tareas del árbol (ambiente, unidad, piso y
+        agrupadores) el menor inicio y el mayor fin de lo que tienen debajo,
+        para que Proyectos, listas, calendario e hitos vean las mismas fechas
+        que el cronograma."""
+        start_field, end_field = self._task_date_fields()
+        if not start_field and not end_field:
+            return
+        Task = self.env['project.task'].with_context(
+            tracking_disable=True, mail_notrack=True, construction_stage_no_rollup=True)
+        nodes = (spaces or self.space_task_id)
+        nodes = Task.browse(nodes.ids)
+
+        def value(field, day):
+            if not field or not day:
+                return False
+            return day if Task._fields[field].type == 'date' else \
+                fields.Datetime.to_datetime(day)
+
+        while nodes:
+            for node in nodes:
+                if node.construction_level == 'space':
+                    stages = self.search([('space_task_id', '=', node.id)])
+                    starts = stages.mapped('date_start')
+                    ends = stages.mapped('date_end')
+                else:
+                    children = Task.search([('parent_id', '=', node.id),
+                                            ('construction_level', '!=', False)])
+                    starts = [fields.Date.to_date(c[start_field]) for c in children
+                              if start_field and c[start_field]]
+                    ends = [fields.Date.to_date(c[end_field]) for c in children
+                            if end_field and c[end_field]]
+                vals = {}
+                if start_field:
+                    vals[start_field] = value(start_field, min(starts) if starts else False)
+                if end_field:
+                    vals[end_field] = value(end_field, max(ends) if ends else False)
+                vals = {k: v for k, v in vals.items() if node[k] != v}
+                if vals:
+                    node.write(vals)
+            nodes = nodes.parent_id.filtered('construction_level')
+
+    def _shift_lines(self, old_starts, notify=True):
         """Desplaza la fecha de necesidad de las líneas de cada etapa movida
         tantos días como su inicio y avisa a Logística. Devuelve
         ``{'lines': n, 'notified': [documentos]}``."""
@@ -217,7 +313,7 @@ class ConstructionSpaceStage(models.Model):
                     else line._get_default_date_needed().get(line)
             lines_count += len(lines)
             plan = record._get_plan()
-            if not plan or not lines:
+            if not plan or not lines or not notify:
                 continue
             documents = plan._notify_logistics(lines, delta)
             notified += documents
@@ -242,25 +338,29 @@ class ConstructionSpaceStage(models.Model):
             raise UserError(self.env._('El inicio de la etapa no puede ser posterior a su fin.'))
         moves = [(self, start, end)]
         if chain:
+            company = self._company_for_days()
             previous_end = end
             for successor in self.space_task_id.construction_stage_ids.filtered(
                     lambda s: s.sequence > self.sequence).sorted('sequence'):
                 if successor.date_start > previous_end:
                     break
-                new_start = previous_end + timedelta(days=1)
-                while new_start.weekday() >= 5:  # empieza el lunes, no en fin de semana
-                    new_start += timedelta(days=1)
-                shift = new_start - successor.date_start
-                moves.append((successor, successor.date_start + shift,
-                              successor.date_end + shift))
-                previous_end = successor.date_end + shift
+                # Empieza el día hábil siguiente y conserva sus días hábiles.
+                days = company._construction_count_site_days(
+                    successor.date_start, successor.date_end)
+                new_start = company._construction_next_site_day(previous_end + timedelta(days=1))
+                new_end = company._construction_add_site_days(new_start, days)
+                moves.append((successor, new_start, new_end))
+                previous_end = new_end
         old = {stage.id: stage.date_start for stage, _start, _end in moves}
         moved = self.browse()
         for stage, new_start, new_end in moves:
             if (stage.date_start, stage.date_end) != (new_start, new_end):
-                stage.with_context(construction_stage_keep_lines=True).write(
+                stage.with_context(construction_stage_keep_lines=True,
+                                   construction_stage_no_chain=True,
+                                   construction_stage_no_rollup=True).write(
                     {'date_start': new_start, 'date_end': new_end})
                 moved |= stage
+        moved._rollup_task_dates()
         result = moved._shift_lines(old)
         result['stages'] = [{'id': stage.id, 'date_start': fields.Date.to_string(stage.date_start),
                              'date_end': fields.Date.to_string(stage.date_end)}
@@ -300,6 +400,55 @@ class ConstructionSpaceStage(models.Model):
                            'date_start': start, 'date_end': end})
         return self.create(values)
 
+
+    @api.model
+    def _schedule_by_pace(self, plan, spaces, date_start, mode, pace, order='asc', stage_days=None):
+        """Ritmo de programación (v1.5, M15-17): fechas escalonadas por piso.
+
+        ``mode`` ``floors_per_week`` (``pace`` pisos empiezan cada semana) o
+        ``weeks_per_floor`` (cada piso empieza ``pace`` semanas después del
+        anterior). Dentro de cada ambiente las etapas van una tras otra, con
+        ``stage_days`` días hábiles cada una, desde el día hábil siguiente al
+        fin de la anterior; los feriados no cuentan. Devuelve las etapas
+        movidas."""
+        if not spaces or not date_start or not pace or pace <= 0:
+            return self.browse()
+        company = plan.company_id or plan.project_id.company_id or self.env.company
+        stage_days = stage_days or {}
+        # En el orden del árbol: agrupadores (torre, etapa) y luego el piso.
+        floors = spaces.mapped('construction_floor_task_id').sorted(
+            lambda f: (f._construction_group_names(), f.sequence, f.name or '', f.id),
+            reverse=(order == 'desc'))
+        floor_start = {}
+        for index, floor in enumerate(floors):
+            weeks = index / pace if mode == 'floors_per_week' else index * pace
+            floor_start[floor.id] = company._construction_next_site_day(
+                date_start + timedelta(days=int(weeks * 7 + 0.5)))
+        stages = self.search([('space_task_id', 'in', spaces.ids)])
+        by_space = {}
+        for stage in stages:
+            by_space.setdefault(stage.space_task_id.id, []).append(stage)
+        moved, old = self.browse(), {}
+        for space in spaces:
+            cursor = floor_start.get(space.construction_floor_task_id.id) or \
+                company._construction_next_site_day(date_start)
+            for stage in sorted(by_space.get(space.id, []), key=lambda s: s.sequence):
+                start = company._construction_next_site_day(cursor)
+                end = company._construction_add_site_days(
+                    start, stage_days.get(stage.stage) or DEFAULT_STAGE_DAYS)
+                if (stage.date_start, stage.date_end) != (start, end):
+                    old[stage.id] = stage.date_start
+                    stage.with_context(construction_stage_keep_lines=True,
+                                       construction_stage_no_chain=True,
+                                       construction_stage_no_rollup=True).write(
+                        {'date_start': start, 'date_end': end})
+                    moved |= stage
+                cursor = end + timedelta(days=1)
+        # Las fechas de necesidad se mueven con su etapa, sin un aviso por
+        # etapa (al programar la obra todavía no hay documentos abiertos).
+        moved._shift_lines(old, notify=False)
+        moved._rollup_task_dates(spaces)
+        return moved
 
 class ProjectTask(models.Model):
     _inherit = 'project.task'

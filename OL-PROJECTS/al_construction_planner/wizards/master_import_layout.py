@@ -34,11 +34,23 @@ SHEETS = {
     'TIPOLOGIAS': ('Tipologías de ambiente de la obra.', [
         ('code', 'Código', True, 'Código de la tipología (01, C01, CL01…).'),
         ('name', 'Nombre', True, 'Nombre de la tipología.'),
-        ('family', 'Familia', False, 'Cocina, Closet, Baño, Lavandería u Otro.'),
+        ('family', 'Familia', False,
+         'Cocina, Closet, Baño, Lavandería, Ducto, Área común, Especial u Otro.'),
         ('product', 'Producto terminado', False,
          'Mueble terminado que fabrica la OF; si no existe se crea con este nombre.'),
         ('ml_low', 'ML bajo', False, 'Solo si los módulos no traen ancho.'),
         ('ml_high', 'ML alto', False, 'Solo si los módulos no traen ancho.'),
+        ('variant_of', 'Variante de', False,
+         'Código de la tipología base de una variante con sufijo (03 para 03A).'),
+        ('aliases', 'Otros nombres', False,
+         'Cómo se llama en la cotización, la orden o el ETO, separados por «;» '
+         '(p. ej. «VK-01; V-K-01; COCINA 05»).'),
+    ]),
+    'MUEBLES': ('Muebles de cada tipología (con el nivel Mueble en la plantilla de la obra).', [
+        ('typology', 'Tipología', True, 'Código de la tipología.'),
+        ('name', 'Mueble', True, 'Mueble bajo, mueble alto, torre de horno…'),
+        ('ml_group', 'Grupo', False, 'Bajo, Alto u Otro.'),
+        ('ml', 'Metros lineales', False, 'Sin anchos en los módulos, los ML del mueble.'),
     ]),
     'MODULOS': ('Plantilla de módulos de cada tipología.', [
         ('typology', 'Tipología', True, 'Código de la tipología.'),
@@ -48,6 +60,7 @@ SHEETS = {
         ('width', 'Ancho (mm)', False, 'Con ancho, las actividades por ML bajan al módulo.'),
         ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto o Sin ML.'),
         ('activity', 'Actividad de armado', True, 'Código de una actividad que se mide por módulo.'),
+        ('furniture', 'Mueble', False, 'Mueble de la tipología al que pertenece (hoja MUEBLES).'),
     ]),
     'ACTIVIDADES': ('Actividades por ambiente de cada tipología.', [
         ('typology', 'Tipología', True, 'Código de la tipología.'),
@@ -65,13 +78,31 @@ SHEETS = {
         ('cost', 'Costo unitario', False,
          'Costo del maestro: informativo y costo del producto si se crea.'),
     ]),
-    'ARBOL': ('Árbol de la obra: piso › departamento › ambiente.', [
+    'ARBOL': ('Árbol de la obra: agrupador › piso › unidad › ambiente.', [
+        ('group', 'Agrupador', False,
+         'Torre o etapa encima del piso (p. ej. «Torre A»); varios niveles separados por '
+         '« / » (p. ej. «Etapa 1 / Torre A»). Vacío si la obra no tiene agrupadores.'),
         ('floor', 'Piso', True, 'Nombre del piso.'),
         ('apartment', 'Departamento', True, 'Nombre del departamento.'),
         ('space', 'Ambiente', True, 'Nombre del ambiente.'),
         ('typology', 'Tipología', False, 'Código de la tipología del ambiente.'),
+        ('unit_type', 'Tipo de unidad', False,
+         'Departamento, Nivel de dúplex, Ducto, Estacionamiento, Área común, Depósito, Local '
+         'o Piloto. Vacío: Departamento.'),
+    ]),
+    'VARIANTES': ('Variantes de una unidad o ambiente frente a su tipología.', [
+        ('group', 'Agrupador', False, 'Torre o etapa, como en ÁRBOL.'),
+        ('floor', 'Piso', True, 'Piso de la unidad.'),
+        ('apartment', 'Departamento', True, 'Unidad.'),
+        ('space', 'Ambiente', False, 'Vacío: todos los ambientes de la unidad.'),
+        ('kind', 'Tipo', True, 'Color, Excluir o Metrado.'),
+        ('product_code', 'Código del producto', True, 'Material de la tipología.'),
+        ('new_product_code', 'Reemplazar por', False, 'Solo para Color: código del material nuevo.'),
+        ('qty', 'Cantidad por ambiente', False, 'Solo para Metrado.'),
+        ('note', 'Nota', False, 'Por qué (p. ej. «el cliente pidió Rovere»).'),
     ]),
     'ETO': ('Módulos reales de cada ambiente (código y ancho), del despiece de ingeniería.', [
+        ('group', 'Agrupador', False, 'Torre o etapa del piso, como en ÁRBOL.'),
         ('floor', 'Piso', True, 'Piso del ambiente.'),
         ('apartment', 'Departamento', True, 'Departamento del ambiente.'),
         ('space', 'Ambiente', True, 'Ambiente.'),
@@ -104,10 +135,33 @@ ML_GROUP_VALUES = {
 }
 FAMILY_VALUES = {
     'kitchen': ('Cocina',),
-    'closet': ('Closet', 'Clóset'),
-    'bathroom': ('Baño',),
+    'closet': ('Closet', 'Clóset', 'Walk-in'),
+    'bathroom': ('Baño', 'Vanitorio'),
     'laundry': ('Lavandería',),
+    'duct': ('Ducto',),
+    'common': ('Área común', 'Area comun'),
+    'special': ('Especial', 'Isla', 'Bar', 'Parrilla'),
     'other': ('Otro',),
+}
+FURNITURE_GROUP_VALUES = {
+    'low': ('Bajo', 'Mueble bajo'),
+    'high': ('Alto', 'Mueble alto'),
+    'other': ('Otro',),
+}
+OVERRIDE_KIND_VALUES = {
+    'color': ('Color', 'Acabado', 'Color o acabado'),
+    'exclude': ('Excluir', 'Excluir componente', 'Sin'),
+    'qty': ('Metrado', 'Metrado distinto', 'Cantidad'),
+}
+UNIT_TYPE_VALUES = {
+    'apartment': ('Departamento', 'Dpto'),
+    'duplex_level': ('Nivel de dúplex', 'Dúplex', 'Duplex'),
+    'duct': ('Ducto',),
+    'parking': ('Estacionamiento',),
+    'common_area': ('Área común', 'Area comun'),
+    'storage': ('Depósito', 'Deposito'),
+    'commercial': ('Local',),
+    'pilot': ('Piloto',),
 }
 MEASURE_VALUES = {
     'module': ('Módulo',),

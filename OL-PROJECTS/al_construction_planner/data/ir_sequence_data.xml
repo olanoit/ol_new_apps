@@ -35,4 +35,11 @@
         <field name="padding">5</field>
         <field name="company_id" eval="False"/>
     </record>
+    <record id="seq_construction_change_order" model="ir.sequence">
+        <field name="name">Cambio de obra</field>
+        <field name="code">construction.change.order</field>
+        <field name="prefix">CAM/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
 </odoo>

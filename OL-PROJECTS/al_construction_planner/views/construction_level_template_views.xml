@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_level_template_list" model="ir.ui.view">
+        <field name="name">construction.level.template.list</field>
+        <field name="model">construction.level.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="summary"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_construction_level_template_form" model="ir.ui.view">
+        <field name="name">construction.level.template.form</field>
+        <field name="model">construction.level.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Edificio con torres"/></h1>
+                    </div>
+                    <group>
+                        <field name="summary"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="role"/>
+                            <field name="level" optional="hide"/>
+                        </list>
+                    </field>
+                    <p class="text-muted">
+                        Una sola Unidad, un solo Ambiente y un solo Módulo; el Mueble es
+                        opcional y los agrupadores (torre, etapa, piso…) van encima de la
+                        unidad. El último agrupador es el que agrupa las unidades.
+                    </p>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_level_template" model="ir.actions.act_window">
+        <field name="name">Plantillas de niveles</field>
+        <field name="res_model">construction.level.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree una plantilla de niveles</p>
+            <p>Los niveles del árbol de la obra con su nombre: Torre › Piso › Departamento ›
+               Ambiente › Mueble › Módulo.</p>
+        </field>
+    </record>
+</odoo>

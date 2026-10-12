@@ -28,11 +28,11 @@ principales y, dentro de cada uno, secciones por tema.
 | Menú | Secciones y pantallas |
 |---|---|
 | **Obras** | **Obras y tareas** (inicio, obras, tareas de la obra), **Plan de recursos** (planes, árbol de recursos, recursos planificados) y **Cronograma** (cronograma de la obra, etapas, Gantt de proyectos) |
-| **Ejecución** | **Avance** (registrar, por validar, avances) y **Contratas** (asignar contrata o cuadrilla, OC de servicio, liquidaciones semanales) |
+| **Ejecución** | **Avance** (registrar, por validar, avances), **Contratas** (asignar contrata o cuadrilla, OC de servicio, liquidaciones semanales), **Cambios** (adicionales y deductivos, dependencias de terceros) y **Asistencia** (con el módulo de sedes) |
 | **Abastecimiento** | Tablero de abastecimiento, requerimientos de obra y de compra, órdenes de fabricación y asignaciones del plan |
-| **Ingresos** | Entregas semanales, preparar valorización, valorizaciones y cobranza |
+| **Ingresos** | Contratos de obra, hitos por unidad, entregas semanales, preparar valorización, valorizaciones y cobranza |
 | **Informes** | **Plan** (análisis, control de saldo), **Cronograma valorizado** y **Compras** (precios de compra, compras por producto) |
-| **Configuración** | Ajustes, **Plan de obra** (tipologías, actividades, tarifas, importar maestro y ETO) y **Aprobaciones y Gantt** |
+| **Configuración** | Ajustes, **Plan de obra** (plantillas de niveles, tipologías, actividades, tarifas, reglas analíticas, importar maestro y ETO, sedes de obra), **Cobro al cliente** (plantillas de hitos) y **Aprobaciones y Gantt** |
 
 ## Configuración
 
@@ -148,6 +148,16 @@ flowchart TD
 | W-14 | Confirmar valorización | Valorización ‣ **Confirmar** | [Ruta del ingreso](planning/income.md) |
 | P-21 | Calendario e ingresos de la obra | Obra ‣ pestaña **Calendario e ingresos** | [Ruta del ingreso](planning/income.md) |
 | P-22 | Cronograma valorizado | **Reportes ‣ Cronograma valorizado** | [Cronograma valorizado e inicio](planning/valued_schedule.md) |
+| P-23 a P-25 | Portal de la contrata: mis obras, registrar avance, mis avances | **Mi cuenta ‣ Mis obras** (portal) | [Portal de obra, sedes y marcación](planning/site_portal.md) |
+| P-26 | Parte diario de cuadrilla | **Mi cuenta ‣ Mis obras** (portal) | [Portal de obra, sedes y marcación](planning/site_portal.md) |
+| P-27 | Quiosco de la sede | Enlace del quiosco en la sede de obra | [Portal de obra, sedes y marcación](planning/site_portal.md) |
+| P-28 | Asistencia diaria de la obra | **Ejecución ‣ Asistencia** | [Portal de obra, sedes y marcación](planning/site_portal.md) |
+| P-29 | Costo de personal por sede | Boleta ‣ distribución analítica | [Portal de obra, sedes y marcación](planning/site_portal.md) |
+| P-30 | Contrato de obra e hitos por unidad | **Ingresos ‣ Contratos de obra / Hitos por unidad** | [Contratos de obra e hitos de cobro](planning/client_contracts.md) |
+| P-31 | Plantilla de niveles | **Configuración ‣ Plan de obra ‣ Plantillas de niveles** | [Niveles de la obra y tipologías](planning/levels_typologies.md) |
+| P-32 | Adicionales y dependencias | **Ejecución ‣ Cambios** | [Adicionales, deductivos y dependencias](planning/changes.md) |
+| — | Reglas analíticas | **Configuración ‣ Plan de obra ‣ Reglas analíticas** | [Tramos, analítica y presupuesto](planning/analytic_budget.md) |
+| — | Pestaña Planificación y hoja de trabajo | Obra ‣ pestaña **Planificación** | [Pestaña Planificación y hoja de trabajo](planning/planning_worksheet.md) |
 
 ## Ejemplo de la demostración
 

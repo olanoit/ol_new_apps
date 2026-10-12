@@ -38,6 +38,10 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_guarantee_release', readonly=False)
     construction_income_calendar_id = fields.Many2one(
         related='company_id.construction_income_calendar_id', readonly=False)
+    construction_categ_assembly_id = fields.Many2one(
+        related='company_id.construction_categ_assembly_id', readonly=False)
+    construction_categ_installation_id = fields.Many2one(
+        related='company_id.construction_categ_installation_id', readonly=False)
     construction_guarantee_account_id = fields.Many2one(
         related='company_id.construction_guarantee_account_id', readonly=False)
     construction_advance_account_id = fields.Many2one(

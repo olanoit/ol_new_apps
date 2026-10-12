@@ -1,0 +1,76 @@
+titulo: Sedes, marcación y costo de personal de obra
+subtitulo: >-
+  La sede de obra con su ubicación y su horario, un quiosco de marcación para
+  el personal propio y el de las contratas, y el costo de la planilla en la
+  obra, la etapa y la partida que le corresponden.
+categoria: Construcción · Proyectos
+etiquetas: [Sedes de obra, Quiosco, Marcación, Contratas, SCTR, Asistencia diaria, Costo de personal, MODF]
+
+destacados_intro: >-
+  Une el planificador de obra con la sede de obra de la planilla de
+  construcción civil (v1.5, fases 17 y 18).
+destacados:
+  - icono: "⌖"
+    titulo: Sede con ubicación
+    texto: >-
+      Coordenadas, radio, hora límite de ingreso y etapa por defecto (obra →
+      instalación, planta → producción).
+  - icono: "▣"
+    titulo: Quiosco de la sede
+    texto: >-
+      Una página para la tablet de la obra: el personal marca con su documento
+      o PIN, sin usuario, y ve si llegó tarde o está fuera del radio.
+  - icono: "⚠"
+    titulo: Personal de contratas
+    texto: >-
+      Marca en el mismo quiosco, no entra a la planilla ni al T-Registro y
+      avisa si su SCTR venció.
+  - icono: "S/"
+    titulo: Costo por sede
+    texto: >-
+      La planilla y el cierre mensual llevan el costo a la obra, a la etapa de
+      la sede y a la partida de mano de obra fija.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La marcación se llevaba con campos manuales de distancia y rango, el
+    personal de las contratas no quedaba registrado y el costo de la planilla
+    llegaba a la obra sin etapa ni partida, así que no se podía comparar con
+    el presupuesto de mano de obra de la obra.
+
+pasos_intro: >-
+  Se instala solo con el planificador de obra, la planilla de construcción
+  civil y Asistencias.
+pasos:
+  - titulo: La sede de obra
+    ruta: Planificación de obra ▸ Configuración ▸ Plan de obra ▸ Sedes de obra
+    texto: >-
+      Obra, ubicación, radio, hora límite, etapa por defecto y el enlace del
+      quiosco con su clave.
+  - titulo: El quiosco
+    ruta: Enlace del quiosco en la tablet de la obra
+    texto: >-
+      Documento o PIN; la primera marcación del día es el ingreso y la
+      segunda, la salida.
+  - titulo: La asistencia diaria
+    ruta: Planificación de obra ▸ Ejecución ▸ Asistencia
+    texto: >-
+      Marcación del personal propio y de las contratas, y los avances de
+      contratas sin asistencia ese día.
+  - titulo: El cierre de costo de personal
+    ruta: Planificación de obra ▸ Ejecución ▸ Asistencia ▸ Cierre de costo de personal
+    texto: >-
+      Horas del mes por sede por el costo por hora, contra lo planificado de
+      personal propio; al publicarlo crea los apuntes analíticos.
+
+novedades:
+  - version: 1.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Sede de obra con ubicación, radio, hora límite de ingreso, etapa por defecto y quiosco de marcación con clave propia."
+      - "Quiosco para el personal propio y el de las contratas (documento o PIN), con avisos de fuera de hora, fuera del radio y SCTR vencido."
+      - "Personal y marcación de contratas, asistencia diaria y avances de contratas sin asistencia; parte diario de la cuadrilla en el portal (P-26)."
+      - "Marcación propia con distancia, fuera de rango y fuera de hora calculados desde la sede."
+      - "Costo de la planilla por sede: la distribución analítica de la boleta suma la etapa de la sede y la partida MODF de la compañía (Ajustes)."
+      - "Cierre mensual de costo de personal (P-29): horas por sede por costo por hora, contra el plan, con publicación de los apuntes analíticos."

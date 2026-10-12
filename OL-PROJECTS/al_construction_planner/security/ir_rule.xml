@@ -22,6 +22,51 @@
             <field name="model_id" ref="model_construction_typology_module"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <record id="rule_construction_analytic_rule_company" model="ir.rule">
+            <field name="name">Regla analítica: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_analytic_rule"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_contract_company" model="ir.rule">
+            <field name="name">Contrato de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_contract"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_contract_price_company" model="ir.rule">
+            <field name="name">Precio del contrato: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_contract_price"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_contract_document_company" model="ir.rule">
+            <field name="name">Documento del contrato: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_contract_document"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_unit_milestone_company" model="ir.rule">
+            <field name="name">Hito por unidad: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_unit_milestone"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_valuation_milestone_company" model="ir.rule">
+            <field name="name">Hito de la valorización: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_valuation_milestone"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_typology_alias_company" model="ir.rule">
+            <field name="name">Otro nombre de la tipología: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_typology_alias"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_typology_furniture_company" model="ir.rule">
+            <field name="name">Mueble de la tipología: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_typology_furniture"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_unit_override_company" model="ir.rule">
+            <field name="name">Variante de la unidad: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_unit_override"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
         <record id="rule_construction_typology_activity_company" model="ir.rule">
             <field name="name">Actividad de la tipología: compañías del usuario</field>
             <field name="model_id" ref="model_construction_typology_activity"/>
@@ -107,6 +152,21 @@
         <record id="rule_construction_schedule_report_company" model="ir.rule">
             <field name="name">Cronograma valorizado: compañías del usuario</field>
             <field name="model_id" ref="model_construction_schedule_report"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_change_order_company" model="ir.rule">
+            <field name="name">Cambio de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_change_order"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_change_order_line_company" model="ir.rule">
+            <field name="name">Línea del cambio de obra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_change_order_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="rule_construction_dependency_company" model="ir.rule">
+            <field name="name">Dependencia de terceros: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_dependency"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
     </data>

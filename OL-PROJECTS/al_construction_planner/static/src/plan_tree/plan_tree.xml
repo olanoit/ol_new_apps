@@ -131,7 +131,7 @@
                                         <a href="#" t-if="node.task_id" t-on-click.prevent="() => this.openTask(node)"
                                            t-esc="node.name"/>
                                         <span t-else="" t-esc="node.name"/>
-                                        <span class="o_cp_lvl" t-esc="levelLabel(node.level)"/>
+                                        <span class="o_cp_lvl" t-esc="node.level_name || levelLabel(node.level)"/>
                                     </td>
                                     <td t-esc="node.typology"/>
                                     <td class="text-end" t-esc="node.modules"/>

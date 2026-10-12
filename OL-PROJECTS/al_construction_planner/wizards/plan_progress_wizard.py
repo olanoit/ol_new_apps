@@ -34,6 +34,16 @@ class ConstructionPlanProgressWizard(models.TransientModel):
     qty_total = fields.Float(
         string='Unidades a reportar', compute='_compute_qty_total', digits='Product Unit')
     uom_id = fields.Many2one(related='activity_id.uom_id', string='Unidad')
+    has_tranches = fields.Boolean(compute='_compute_has_tranches')
+    tranche_id = fields.Many2one(
+        'construction.activity.tranche', string='Tramo',
+        domain="[('activity_id', '=', activity_id)]",
+        help='Pase o tramo que se reporta: el saldo es el de ese tramo.')
+
+    @api.depends('activity_id')
+    def _compute_has_tranches(self):
+        for wizard in self:
+            wizard.has_tranches = bool(wizard.activity_id.tranche_ids)
 
     def _get_driver_lines(self, activity=None):
         self.ensure_one()
@@ -51,7 +61,7 @@ class ConstructionPlanProgressWizard(models.TransientModel):
             wizard.available_activity_ids = wizard._get_driver_lines().activity_id \
                 if wizard.plan_id else False
 
-    @api.depends('plan_id', 'task_ids', 'whole_project', 'activity_id', 'partner_id')
+    @api.depends('plan_id', 'task_ids', 'whole_project', 'activity_id', 'partner_id', 'tranche_id')
     def _compute_line_ids(self):
         for wizard in self:
             commands = [Command.clear()]
@@ -60,19 +70,25 @@ class ConstructionPlanProgressWizard(models.TransientModel):
                         lambda l: (l.floor_task_id.sequence, l.apartment_task_id.name or '',
                                    l.task_id.sequence, l.task_id.name or '', l.id)):
                     balance = wizard._get_balance(line)
+                    tranche = wizard.tranche_id
                     commands.append(Command.create({
                         'plan_line_id': line.id,
                         'qty_planned': line.qty_planned,
-                        'qty_executed': line.qty_executed,
-                        'qty_pending': line._get_reported_qty(),
+                        'qty_executed': line._get_tranche_executed(tranche) if tranche
+                        else line.qty_executed,
+                        'qty_pending': line._get_reported_qty(tranche),
                         'qty_balance': balance,
                         'qty_report': max(balance, 0.0),
                     }))
             wizard.line_ids = commands
 
-    @staticmethod
-    def _get_balance(line):
-        """Presupuestado menos lo reportado o validado (lo rechazado no cuenta)."""
+    def _get_balance(self, line):
+        """Presupuestado menos lo reportado o validado (lo rechazado no
+        cuenta); con tramo, lo del tramo."""
+        tranche = self.tranche_id if self else False
+        if tranche:
+            return line.qty_planned - line._get_tranche_executed(tranche) \
+                - line._get_reported_qty(tranche)
         return line.qty_planned - line.qty_executed - line._get_reported_qty()
 
     @api.depends('line_ids.qty_report')
@@ -86,6 +102,10 @@ class ConstructionPlanProgressWizard(models.TransientModel):
             raise UserError(self.env._('El avance se reporta sobre el plan vigente.'))
         if not self.attachment_ids:
             raise UserError(self.env._('Adjunte al menos una foto del avance.'))
+        if self.has_tranches and not self.tranche_id:
+            raise UserError(self.env._(
+                'La actividad %s se paga por tramos: elija el tramo que se reporta.',
+                self.activity_id.display_name))
         rows = self.line_ids.filtered(
             lambda r: r.plan_line_id.product_uom_id.compare(r.qty_report, 0.0) > 0)
         if not rows:
@@ -110,6 +130,7 @@ class ConstructionPlanProgressWizard(models.TransientModel):
                 'plan_line_id': line.id,
                 'date': self.date,
                 'qty': row.qty_report,
+                'tranche_id': self.tranche_id.id or False,
                 'attachment_ids': [Command.set(photos.ids)],
             })
             photos.write({'res_id': progress.id})

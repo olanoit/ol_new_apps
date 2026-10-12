@@ -324,6 +324,9 @@
                     <button name="action_open_price_wizard" type="object" string="Aplicar costo"
                             invisible="state != 'draft'"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_apply_analytic_rules" type="object"
+                            string="Aplicar reglas analíticas" invisible="state != 'draft'"
+                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_request_approval" type="object"
                             string="Solicitar aprobación" class="btn-primary"
                             invisible="state != 'draft' or not line_count"

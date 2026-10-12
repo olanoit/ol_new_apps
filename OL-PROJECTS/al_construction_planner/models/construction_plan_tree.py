@@ -10,15 +10,17 @@ from .common import DRIVER_TYPES, LEVELS, RESOURCE_TYPES, UNIT_STATES
 # Campo de la línea del plan que agrupa por cada nivel (el nodo incluido).
 LINE_FIELD = {
     'floor': 'floor_task_id', 'apartment': 'apartment_task_id',
-    'space': 'space_task_id', 'module': 'module_task_id',
+    'space': 'space_task_id', 'furniture': 'furniture_task_id', 'module': 'module_task_id',
 }
 # Campo de project.task con el ancestro de cada nivel (también incluye al
 # propio nodo: el piso es su propio construction_floor_task_id).
 TASK_FIELD = {
     'floor': 'construction_floor_task_id', 'apartment': 'construction_apartment_task_id',
-    'space': 'construction_space_task_id',
+    'space': 'construction_space_task_id', 'furniture': 'construction_furniture_task_id',
 }
-CHILD_LEVEL = {'floor': 'apartment', 'apartment': 'space', 'space': 'module'}
+# Los agrupadores (torre, etapa) suman lo de los pisos que tienen debajo:
+# no llevan un ancestro propio en las líneas.
+GROUP_LEVEL = 'group'
 ROOT_KEY = 'p'
 
 # Acciones de la barra de selección (W-02 a W-08). Las que aún no existen
@@ -154,23 +156,28 @@ class ConstructionResourcePlan(models.Model):
             return [self._tree_root_node(filters)]
         if parent_key == ROOT_KEY:
             children = Task.search([
-                ('project_id', '=', self.project_id.id), ('construction_level', '=', 'floor')],
-                order='sequence, name, id')
-            level = 'floor'
+                ('project_id', '=', self.project_id.id), ('construction_level', '!=', False),
+                ('parent_id', '=', False)], order='sequence, name, id')
         else:
             parent = Task.browse(int(parent_key)).exists()
-            if not parent or parent.project_id != self.project_id:
-                return []
-            level = CHILD_LEVEL.get(parent.construction_level)
-            if not level:
+            if not parent or parent.project_id != self.project_id \
+                    or parent.construction_level == 'module':
                 return []
             children = Task.search([('parent_id', '=', parent.id),
-                                    ('construction_level', '=', level)],
+                                    ('construction_level', '!=', False)],
                                    order='sequence, name, id')
-            if (filters or {}).get('unit_states') and level == 'module':
+            if (filters or {}).get('unit_states'):
                 children = children.filtered(
-                    lambda t: t.construction_unit_state in filters['unit_states'])
-        return self._tree_nodes(children, level, filters)
+                    lambda t: t.construction_level != 'module'
+                    or t.construction_unit_state in filters['unit_states'])
+        # Hermanos de distinto nivel (p. ej. módulos sueltos junto a muebles):
+        # cada nivel se resuelve con sus propias consultas, en el orden de las tareas.
+        nodes = {}
+        for level in dict.fromkeys(children.mapped('construction_level')):
+            level_children = children.filtered(lambda t, level=level: t.construction_level == level)
+            for node in self._tree_nodes(level_children, level, filters):
+                nodes[node['task_id']] = node
+        return [nodes[task.id] for task in children if task.id in nodes]
 
     def _tree_root_node(self, filters):
         Line = self.env['construction.resource.plan.line']
@@ -182,7 +189,8 @@ class ConstructionResourcePlan(models.Model):
         spaces = Task.search([('project_id', '=', self.project_id.id),
                               ('construction_level', '=', 'space')])
         has_children = bool(Task.search_count([
-            ('project_id', '=', self.project_id.id), ('construction_level', '=', 'floor')]))
+            ('project_id', '=', self.project_id.id), ('construction_level', '!=', False),
+            ('parent_id', '=', False)]))
         return dict(amounts, **{
             'key': ROOT_KEY, 'task_id': False, 'name': self.project_id.display_name,
             'level': 'project', 'typology': '', 'modules': modules,
@@ -220,6 +228,8 @@ class ConstructionResourcePlan(models.Model):
     def _tree_nodes(self, children, level, filters):
         if not children:
             return []
+        if level == GROUP_LEVEL:
+            return self._tree_group_nodes(children, filters)
         Line = self.env['construction.resource.plan.line']
         Task = self.env['project.task']
         ids = children.ids
@@ -242,6 +252,17 @@ class ConstructionResourcePlan(models.Model):
             modules = {task.id: count for task, count in Task._read_group(
                 self._tree_module_domain(filters) + [(task_field, 'in', ids)],
                 [task_field], ['__count'])}
+            if level == 'furniture':
+                # ML del mueble: la suma de los anchos de sus módulos o, sin
+                # anchos, los del mueble de la tipología.
+                for module in Task.search([('construction_level', '=', 'module'),
+                                           (task_field, 'in', ids)]):
+                    if module.construction_ml_group in ('low', 'high'):
+                        key = module[task_field].id
+                        ml[key] = ml.get(key, 0.0) + (module.construction_width_mm or 0) / 1000.0
+                for task in children:
+                    if not ml.get(task.id):
+                        ml[task.id] = task.construction_furniture_ml or 0.0
             spaces = Task.search([('construction_level', '=', 'space'), (task_field, 'in', ids)])
             space_ml = self._tree_space_ml(spaces)
             codes = {}
@@ -254,7 +275,7 @@ class ConstructionResourcePlan(models.Model):
                 typology[key] = ', '.join(sorted(values)) if len(values) <= 2 else \
                     self.env._('%s tipologías', len(values))
             has_children = {task.id: count for task, count in Task._read_group(
-                [('parent_id', 'in', ids), ('construction_level', '=', CHILD_LEVEL[level])],
+                [('parent_id', 'in', ids), ('construction_level', '!=', False)],
                 ['parent_id'], ['__count'])}
 
         progress = self._progress_amounts(
@@ -265,12 +286,47 @@ class ConstructionResourcePlan(models.Model):
             node = self._tree_amounts(groups.get(task.id, []))
             node.update({
                 'key': str(task.id), 'task_id': task.id, 'name': task.name, 'level': level,
+                'level_name': task.construction_level_name,
                 'typology': typology.get(task.id, ''), 'modules': modules.get(task.id, 0),
                 'ml': round(ml.get(task.id, 0.0), 2),
                 'progress': self._progress_ratio(progress, task.id),
                 'unit_state': task.construction_unit_state or False,
                 'unit_state_label': unit_labels.get(task.construction_unit_state, ''),
                 'has_children': bool(has_children.get(task.id)),
+            })
+            nodes.append(node)
+        return nodes
+
+    def _tree_group_nodes(self, groups, filters):
+        """Agrupadores (torre, etapa): suman los nodos de los pisos que tienen
+        debajo, con las mismas consultas por piso."""
+        Task = self.env['project.task']
+        floors = Task.search([('id', 'child_of', groups.ids), ('construction_level', '=', 'floor')])
+        floor_nodes = {node['task_id']: node for node in self._tree_nodes(floors, 'floor', filters)}
+        owner = {}
+        for floor in floors:
+            node = floor
+            while node and node not in groups:
+                node = node.parent_id
+            if node:
+                owner.setdefault(node.id, []).append(floor_nodes.get(floor.id))
+        numeric = ('material', 'contract', 'other', 'total', 'qty_material', 'qty_contract',
+                   'qty_total', 'modules', 'ml')
+        has_children = {task.id for task, _count in Task._read_group(
+            [('parent_id', 'in', groups.ids), ('construction_level', '!=', False)],
+            ['parent_id'], ['__count'])}
+        nodes = []
+        for task in groups:
+            parts = [node for node in owner.get(task.id, []) if node]
+            node = {key: round(sum(part[key] for part in parts), 2) for key in numeric}
+            total = sum(part['total'] for part in parts)
+            node.update({
+                'key': str(task.id), 'task_id': task.id, 'name': task.name, 'level': GROUP_LEVEL,
+                'level_name': task.construction_level_name,
+                'typology': '', 'unit_state': False, 'unit_state_label': '',
+                'progress': sum(part['progress'] * part['total'] for part in parts) / total
+                if total else 0.0,
+                'has_children': task.id in has_children,
             })
             nodes.append(node)
         return nodes

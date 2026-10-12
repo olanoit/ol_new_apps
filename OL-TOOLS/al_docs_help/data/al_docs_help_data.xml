@@ -235,6 +235,62 @@
         <field name="path">applications/services/project/gantt/#abrir-el-diagrama</field>
         <field name="section">Abrir el diagrama</field>
     </record>
+    <record id="help_construction_activity_tranche" model="al.docs.help">
+        <field name="key">construction.activity.tranche</field>
+        <field name="kind">model</field>
+        <field name="name">Tramo de pago de la actividad</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_analytic_rule" model="al.docs.help">
+        <field name="key">construction.analytic.rule</field>
+        <field name="kind">model</field>
+        <field name="name">Regla analítica del plan de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_change_order" model="al.docs.help">
+        <field name="key">construction.change.order</field>
+        <field name="kind">model</field>
+        <field name="name">Cambio de obra (adicional o deductivo)</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_change_order_line" model="al.docs.help">
+        <field name="key">construction.change.order.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea del cambio de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_contract" model="al.docs.help">
+        <field name="key">construction.contract</field>
+        <field name="kind">model</field>
+        <field name="name">Contrato de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/#contrato-de-obra</field>
+        <field name="section">Contrato de obra</field>
+    </record>
+    <record id="help_construction_contract_document" model="al.docs.help">
+        <field name="key">construction.contract.document</field>
+        <field name="kind">model</field>
+        <field name="name">Documento del contrato</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_contract_price" model="al.docs.help">
+        <field name="key">construction.contract.price</field>
+        <field name="kind">model</field>
+        <field name="name">Precio por tipología del contrato</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
     <record id="help_construction_contract_settlement" model="al.docs.help">
         <field name="key">construction.contract.settlement</field>
         <field name="kind">model</field>
@@ -251,21 +307,85 @@
         <field name="path">applications/services/project/construction/planning/contractors/</field>
         <field name="section">Contratas y liquidación semanal</field>
     </record>
+    <record id="help_construction_contract_unit_wizard" model="al.docs.help">
+        <field name="key">construction.contract.unit.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Marcar unidades del contrato</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_contractor_attendance" model="al.docs.help">
+        <field name="key">construction.contractor.attendance</field>
+        <field name="kind">model</field>
+        <field name="name">Marcación de personal de contrata</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/site_portal/</field>
+        <field name="section">Portal de obra, sedes y marcación</field>
+    </record>
+    <record id="help_construction_contractor_worker" model="al.docs.help">
+        <field name="key">construction.contractor.worker</field>
+        <field name="kind">model</field>
+        <field name="name">Personal de contrata</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/site_portal/#quiosco-de-marcación</field>
+        <field name="section">Quiosco de marcación</field>
+    </record>
+    <record id="help_construction_dependency" model="al.docs.help">
+        <field name="key">construction.dependency</field>
+        <field name="kind">model</field>
+        <field name="name">Dependencia de terceros en la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/changes/#dependencias-de-terceros</field>
+        <field name="section">Dependencias de terceros</field>
+    </record>
     <record id="help_construction_labor_activity" model="al.docs.help">
         <field name="key">construction.labor.activity</field>
         <field name="kind">model</field>
         <field name="name">Actividad de obra (driver de pago)</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_labor_cost_allocation" model="al.docs.help">
+        <field name="key">construction.labor.cost.allocation</field>
+        <field name="kind">model</field>
+        <field name="name">Cierre de costo de personal por sede</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/site_portal/#costo-de-personal-por-sede</field>
+        <field name="section">Costo de personal por sede</field>
+    </record>
+    <record id="help_construction_labor_cost_allocation_line" model="al.docs.help">
+        <field name="key">construction.labor.cost.allocation.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea del cierre de costo de personal</field>
+        <field name="module">al_construction_attendance</field>
+        <field name="path">applications/services/project/construction/planning/site_portal/#costo-de-personal-por-sede</field>
+        <field name="section">Costo de personal por sede</field>
     </record>
     <record id="help_construction_labor_rate" model="al.docs.help">
         <field name="key">construction.labor.rate</field>
         <field name="kind">model</field>
         <field name="name">Tarifa de contrata</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_level_template" model="al.docs.help">
+        <field name="key">construction.level.template</field>
+        <field name="kind">model</field>
+        <field name="name">Plantilla de niveles de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/levels_typologies/#plantilla-de-niveles</field>
+        <field name="section">Plantilla de niveles</field>
+    </record>
+    <record id="help_construction_level_template_line" model="al.docs.help">
+        <field name="key">construction.level.template.line</field>
+        <field name="kind">model</field>
+        <field name="name">Nivel de la plantilla de la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/levels_typologies/#plantilla-de-niveles</field>
+        <field name="section">Plantilla de niveles</field>
     </record>
     <record id="help_construction_master_import_wizard" model="al.docs.help">
         <field name="key">construction.master.import.wizard</field>
@@ -291,13 +411,29 @@
         <field name="path">applications/services/project/construction/material_requests/</field>
         <field name="section">Requerimientos de materiales</field>
     </record>
+    <record id="help_construction_milestone_template" model="al.docs.help">
+        <field name="key">construction.milestone.template</field>
+        <field name="kind">model</field>
+        <field name="name">Plantilla de hitos de cobro</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/#plantillas-de-hitos</field>
+        <field name="section">Plantillas de hitos</field>
+    </record>
+    <record id="help_construction_milestone_template_line" model="al.docs.help">
+        <field name="key">construction.milestone.template.line</field>
+        <field name="kind">model</field>
+        <field name="name">Hito de la plantilla de cobro</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
     <record id="help_construction_plan_contract_wizard" model="al.docs.help">
         <field name="key">construction.plan.contract.wizard</field>
         <field name="kind">model</field>
         <field name="name">Asignar contrata desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_contract_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.contract.wizard.line</field>
@@ -312,16 +448,16 @@
         <field name="kind">model</field>
         <field name="name">Asignar cuadrilla desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_crew_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.crew.wizard.line</field>
         <field name="kind">model</field>
         <field name="name">Turno de la cuadrilla</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_exceed_wizard" model="al.docs.help">
         <field name="key">construction.plan.exceed.wizard</field>
@@ -336,8 +472,8 @@
         <field name="kind">model</field>
         <field name="name">Material que excede el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_generate_wizard" model="al.docs.help">
         <field name="key">construction.plan.generate.wizard</field>
@@ -360,24 +496,24 @@
         <field name="kind">model</field>
         <field name="name">Orden de fabricación desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_production_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.production.wizard.line</field>
         <field name="kind">model</field>
         <field name="name">OF propuesta desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_progress_wizard" model="al.docs.help">
         <field name="key">construction.plan.progress.wizard</field>
         <field name="kind">model</field>
         <field name="name">Registrar avance desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_progress_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.progress.wizard.line</field>
@@ -392,8 +528,8 @@
         <field name="kind">model</field>
         <field name="name">Compra masiva desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_purchase_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.purchase.wizard.line</field>
@@ -408,32 +544,32 @@
         <field name="kind">model</field>
         <field name="name">Nueva versión del plan de recursos</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_request_wizard" model="al.docs.help">
         <field name="key">construction.plan.request.wizard</field>
         <field name="kind">model</field>
         <field name="name">Requerimiento de obra desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_request_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.request.wizard.line</field>
         <field name="kind">model</field>
         <field name="name">Línea del requerimiento de obra desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_reschedule_wizard" model="al.docs.help">
         <field name="key">construction.plan.reschedule.wizard</field>
         <field name="kind">model</field>
         <field name="name">Cambiar fechas desde el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_reschedule_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.reschedule.wizard.line</field>
@@ -448,16 +584,16 @@
         <field name="kind">model</field>
         <field name="name">Selección del plan para los asistentes de abastecimiento</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_planner_home" model="al.docs.help">
         <field name="key">construction.planner.home</field>
         <field name="kind">model</field>
         <field name="name">Inicio de la planificación de obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/</field>
-        <field name="section">Planificación de obra</field>
+        <field name="path">applications/services/project/construction/planning/planning_worksheet/#pestaña-planificación-de-la-obra</field>
+        <field name="section">Pestaña Planificación de la obra</field>
     </record>
     <record id="help_construction_product_create_wizard" model="al.docs.help">
         <field name="key">construction.product.create.wizard</field>
@@ -472,8 +608,8 @@
         <field name="kind">model</field>
         <field name="name">Producto parecido</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_purchase_price_analysis" model="al.docs.help">
         <field name="key">construction.purchase.price.analysis</field>
@@ -496,16 +632,16 @@
         <field name="kind">model</field>
         <field name="name">Motivo del rechazo o la devolución</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_resource_plan" model="al.docs.help">
         <field name="key">construction.resource.plan</field>
         <field name="kind">model</field>
         <field name="name">Plan de recursos de obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_resource_plan_allocation" model="al.docs.help">
         <field name="key">construction.resource.plan.allocation</field>
@@ -520,8 +656,8 @@
         <field name="kind">model</field>
         <field name="name">Línea del plan de recursos</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_schedule_report" model="al.docs.help">
         <field name="key">construction.schedule.report</field>
@@ -536,8 +672,8 @@
         <field name="kind">model</field>
         <field name="name">Etapa del ambiente</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_supply_board" model="al.docs.help">
         <field name="key">construction.supply.board</field>
@@ -552,40 +688,72 @@
         <field name="kind">model</field>
         <field name="name">Avance reportado</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_typology" model="al.docs.help">
         <field name="key">construction.typology</field>
         <field name="kind">model</field>
         <field name="name">Tipología de la obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/#pantallas-y-asistentes</field>
-        <field name="section">Pantallas y asistentes</field>
+        <field name="path">applications/services/project/construction/planning/levels_typologies/</field>
+        <field name="section">Niveles de la obra y tipologías</field>
     </record>
     <record id="help_construction_typology_activity" model="al.docs.help">
         <field name="key">construction.typology.activity</field>
         <field name="kind">model</field>
         <field name="name">Actividad por ambiente de la tipología</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_typology_alias" model="al.docs.help">
+        <field name="key">construction.typology.alias</field>
+        <field name="kind">model</field>
+        <field name="name">Otro nombre de la tipología</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_typology_furniture" model="al.docs.help">
+        <field name="key">construction.typology.furniture</field>
+        <field name="kind">model</field>
+        <field name="name">Mueble de la tipología</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_typology_module" model="al.docs.help">
         <field name="key">construction.typology.module</field>
         <field name="kind">model</field>
         <field name="name">Módulo de la tipología</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_unit_milestone" model="al.docs.help">
+        <field name="key">construction.unit.milestone</field>
+        <field name="kind">model</field>
+        <field name="name">Hito de cobro por unidad</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_unit_override" model="al.docs.help">
+        <field name="key">construction.unit.override</field>
+        <field name="kind">model</field>
+        <field name="name">Variante de la unidad</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/levels_typologies/#variantes-por-unidad</field>
+        <field name="section">Variantes por unidad</field>
     </record>
     <record id="help_construction_valuation" model="al.docs.help">
         <field name="key">construction.valuation</field>
         <field name="kind">model</field>
         <field name="name">Valorización de obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_valuation_confirm_wizard" model="al.docs.help">
         <field name="key">construction.valuation.confirm.wizard</field>
@@ -600,24 +768,32 @@
         <field name="kind">model</field>
         <field name="name">Monto confirmado por partida</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_valuation_cutoff" model="al.docs.help">
         <field name="key">construction.valuation.cutoff</field>
         <field name="kind">model</field>
         <field name="name">Corte de valorización de la obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_valuation_line" model="al.docs.help">
         <field name="key">construction.valuation.line</field>
         <field name="kind">model</field>
         <field name="name">Línea de la valorización (partida)</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_valuation_milestone" model="al.docs.help">
+        <field name="key">construction.valuation.milestone</field>
+        <field name="kind">model</field>
+        <field name="name">Hito de la valorización</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_valuation_prepare_wizard" model="al.docs.help">
         <field name="key">construction.valuation.prepare.wizard</field>
@@ -632,8 +808,8 @@
         <field name="kind">model</field>
         <field name="name">Partida de la valorización por preparar</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Línea base y versiones</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_weekly_delivery" model="al.docs.help">
         <field name="key">construction.weekly.delivery</field>

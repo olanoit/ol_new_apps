@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_construction_crew_link" inherit_id="al_construction_planner.portal_my_construction">
+        <xpath expr="//a[@href='/my/obra/avances']" position="before">
+            <a href="/my/obra/parte" class="btn btn-secondary">Parte diario</a>
+        </xpath>
+    </template>
+
+    <template id="portal_crew_report" name="Parte diario de la cuadrilla">
+        <t t-call="portal.portal_layout">
+            <h3 class="my-3">Parte diario · <t t-out="today" t-options="{'widget': 'date'}"/></h3>
+            <div t-if="not attendances" class="alert alert-info">Hoy nadie de su empresa ha marcado en una sede.</div>
+            <t t-if="attendances" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Persona</th>
+                        <th>Sede</th>
+                        <th>Ingreso</th>
+                        <th>Salida</th>
+                        <th>Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="attendances" t-as="attendance">
+                        <td t-out="attendance.worker_id.name"/>
+                        <td t-out="attendance.site_id.name"/>
+                        <td t-out="attendance.check_in" t-options="{'widget': 'datetime', 'format': 'HH:mm'}"/>
+                        <td t-out="attendance.check_out" t-options="{'widget': 'datetime', 'format': 'HH:mm'}"/>
+                        <td>
+                            <span t-if="attendance.late" class="badge text-bg-warning">Fuera de hora</span>
+                            <span t-if="attendance.out_of_range" class="badge text-bg-warning">Fuera de rango</span>
+                            <span t-if="attendance.sctr_expired" class="badge text-bg-danger">SCTR vencido</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </t>
+            <a href="/my/obra" class="btn btn-secondary mt-3">Volver</a>
+        </t>
+    </template>
+</odoo>

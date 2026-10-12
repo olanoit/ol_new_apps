@@ -197,6 +197,26 @@ Fase 12 (importar maestro y ETO, W-15):
   pisos y su ETO) para descargar desde el asistente; se generan con
   tools/generar_ejemplos_importacion.py.
 
+Paquete de mejoras v1.5 (fases 12 a 21 de la especificación v1.5):
+
+* Plantilla de niveles por obra (agrupadores, unidad, ambiente, mueble y
+  módulo) con tipo de unidad; ritmo de programación y etapas encadenadas por
+  días hábiles con fechas acumuladas.
+* Tipologías con familia, variantes, otros nombres, muebles y variantes por
+  unidad.
+* Contratos de obra con hitos de cobro por unidad, documentos habilitantes y
+  valorización por hitos.
+* Producto de servicio por actividad, tramos de pago, reglas analíticas y
+  presupuesto por obra › etapa › partida.
+* Portal de la contrata (P-23 a P-25) con foto y ubicación.
+* Adicionales y deductivos con regla de precio; dependencias de terceros que
+  bloquean etapas (P-32).
+* Pestaña «Planificación» en la obra con margen planificado, devengado y
+  contable.
+* Validaciones de datos en el importador y aviso de avances duplicados.
+* Sedes, marcación y costo de personal: al_construction_attendance. Hoja de
+  trabajo en Documentos: al_construction_planner_spreadsheet.
+
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
@@ -206,7 +226,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '19.20261012',
+    'version': '20.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -235,6 +255,8 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
+        'data/construction_level_template_data.xml',
+        'data/construction_milestone_template_data.xml',
         'data/tier_definition_data.xml',
         'data/ir_cron_data.xml',
         'data/mail_message_subtype_data.xml',
@@ -248,6 +270,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'wizards/valuation_wizard_views.xml',
         'wizards/master_import_wizard_views.xml',
         'views/construction_labor_views.xml',
+        'views/construction_level_template_views.xml',
         'views/construction_typology_views.xml',
         'views/construction_progress_views.xml',
         'views/construction_resource_plan_views.xml',
@@ -261,6 +284,10 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_price_views.xml',
         'views/construction_income_views.xml',
         'views/construction_schedule_report_views.xml',
+        'views/construction_contract_views.xml',
+        'views/construction_analytic_rule_views.xml',
+        'views/construction_change_views.xml',
+        'views/portal_templates.xml',
         'views/menus.xml',
     ],
     'demo': [
@@ -274,6 +301,10 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
             'al_construction_planner/static/src/schedule_report/*',
             'al_construction_planner/static/src/home/*',
             ('remove', 'al_construction_planner/static/src/**/*.dark.scss'),
+        ],
+        # Portal de obra: ubicación del celular al registrar el avance.
+        'web.assets_frontend': [
+            'al_construction_planner/static/src/portal/construction_portal.js',
         ],
         # Modo oscuro: se compila con las variables oscuras de Odoo.
         'web.assets_web_dark': [

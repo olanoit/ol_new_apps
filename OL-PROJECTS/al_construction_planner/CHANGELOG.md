@@ -7,6 +7,18 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261013 — 13/10/2026
+
+- Paquete de mejoras v1.5. Plantilla de niveles por obra (agrupadores como torre o etapa, unidad, ambiente, mueble y módulo) con tipo de unidad; árbol, cronograma e importador con niveles variables.
+- Ritmo de programación al generar el plan (pisos por semana o semanas por piso), etapas encadenadas por días hábiles de la obra y fechas acumuladas en ambiente, unidad y piso.
+- Tipologías completas: familia, variantes, otros nombres por documento, muebles con sus ML (actividades por ML por mueble) y variantes por unidad (color, no lleva, metrado distinto).
+- Contratos de obra con condiciones, unidades cubiertas, documentos habilitantes y hitos de cobro por unidad (plantillas 80/15/5 y otras); valorización por hitos.
+- Producto de servicio por actividad, tramos de pago con avance ponderado, reglas analíticas de etapa y partida, presupuesto por obra › etapa › partida y etapa y partida completadas en los apuntes reales.
+- Portal de la contrata (P-23 a P-25): obras asignadas, registro de avance con foto y ubicación, historial de avances y liquidaciones.
+- Adicionales, deductivos y rehacer con regla de precio según el estado de la unidad, llevados al plan aprobado y a su presupuesto; dependencias de terceros que bloquean avances y fechas de la etapa en el cronograma (P-32).
+- Pestaña «Planificación» en la obra con margen planificado, devengado y contable, y accesos al árbol y al cronograma.
+- Validaciones de datos: tipologías y ambientes repetidos, unidades que no corresponden a su piso y avances posiblemente duplicados.
+
 ## 19.20261012 — 12/10/2026
 
 - Menús organizados como Contabilidad: de 8 menús principales a Obras (obras y tareas, plan de recursos, cronograma), Ejecución (avance y contratas), Abastecimiento, Ingresos, Informes (plan, cronograma valorizado, compras) y Configuración (plan de obra, aprobaciones y Gantt); se quita el menú repetido «Precios de compra».

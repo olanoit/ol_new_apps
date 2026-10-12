@@ -484,6 +484,14 @@ class ConstructionResourcePlan(models.Model):
                 issues.append('%s: %s\n%s' % (title, len(faulty), faulty._get_issue_summary()))
         return issues
 
+    def action_apply_analytic_rules(self):
+        """Vuelve a aplicar las reglas analíticas a las líneas del plan en
+        preparación (etapa, partida y área: v1.5, M15-12)."""
+        for plan in self:
+            plan._check_draft()
+            plan.line_ids._apply_analytic_rules()
+        return True
+
     def action_request_approval(self):
         """Pide las revisiones que apliquen; si ninguna regla aplica, aprueba
         directamente."""
@@ -852,6 +860,9 @@ class ConstructionResourcePlanLine(models.Model):
     space_task_id = fields.Many2one(
         'project.task', string='Ambiente', compute='_compute_ancestors', store=True, index=True,
         check_company=True)
+    furniture_task_id = fields.Many2one(
+        'project.task', string='Mueble', compute='_compute_ancestors', store=True, index=True,
+        check_company=True)
     module_task_id = fields.Many2one(
         'project.task', string='Módulo', compute='_compute_ancestors', store=True, index=True,
         check_company=True)
@@ -969,13 +980,15 @@ class ConstructionResourcePlanLine(models.Model):
              'del plan.')
 
     @api.depends('task_id', 'task_id.construction_level', 'task_id.construction_floor_task_id',
-                 'task_id.construction_apartment_task_id', 'task_id.construction_space_task_id')
+                 'task_id.construction_apartment_task_id', 'task_id.construction_space_task_id',
+                 'task_id.construction_furniture_task_id')
     def _compute_ancestors(self):
         for line in self:
             task = line.task_id
             line.floor_task_id = task.construction_floor_task_id
             line.apartment_task_id = task.construction_apartment_task_id
             line.space_task_id = task.construction_space_task_id
+            line.furniture_task_id = task.construction_furniture_task_id
             line.module_task_id = task if task.construction_level == 'module' else False
 
     @api.depends('qty_planned', 'price_unit_planned')
@@ -1093,7 +1106,7 @@ class ConstructionResourcePlanLine(models.Model):
             line.resource_name = (line.activity_id or line.product_id or line.role_id).display_name
 
     @api.depends('qty_planned', 'resource_type', 'qty_consumed', 'progress_ids.state',
-                 'progress_ids.qty', 'progress_ids.settled')
+                 'progress_ids.qty_weighted', 'progress_ids.settled')
     def _compute_progress_qty(self):
         Progress = self.env['construction.task.progress']
         executed = defaultdict(float)
@@ -1102,7 +1115,7 @@ class ConstructionResourcePlanLine(models.Model):
         if real:
             for line, is_settled, qty in Progress._read_group(
                     [('plan_line_id', 'in', real.ids), ('state', '=', 'validated')],
-                    ['plan_line_id', 'settled'], ['qty:sum']):
+                    ['plan_line_id', 'settled'], ['qty_weighted:sum']):
                 executed[line.id] += qty or 0.0
                 if is_settled:
                     settled[line.id] += qty or 0.0
@@ -1138,7 +1151,7 @@ class ConstructionResourcePlanLine(models.Model):
             progress_sudo = self.env['construction.task.progress'].sudo()
             for line, qty in progress_sudo._read_group(
                     [('plan_line_id', 'in', by_driver.ids), ('state', '=', 'validated'),
-                     ('date', '<=', day)], ['plan_line_id'], ['qty:sum']):
+                     ('date', '<=', day)], ['plan_line_id'], ['qty_weighted:sum']):
                 line = self.browse(line.id)
                 result[line][line.resource_type] += (qty or 0.0) * line.price_unit_planned
         for line in hour_based:
@@ -1157,11 +1170,42 @@ class ConstructionResourcePlanLine(models.Model):
                 result[line]['material'] += qty * line.price_unit_planned
         return result
 
-    def _get_reported_qty(self):
-        """Avance reportado y aún no validado de la línea."""
+    def _apply_analytic_rules(self):
+        """Distribución de la línea con la cuenta de la obra más las cuentas de
+        la regla analítica que le toca (etapa, partida, área: M15-12). Sin
+        regla queda solo la cuenta de la obra."""
+        Rule = self.env['construction.analytic.rule']
+        cache = {}
+        for line in self:
+            project_account = line.project_id.account_id
+            if not project_account:
+                continue
+            categ = line.product_id.categ_id
+            key = (line.company_id.id, line.resource_type, line.stage, categ.id)
+            if key not in cache:
+                cache[key] = Rule._accounts_for(line.company_id, line.resource_type, line.stage, categ)
+            accounts = project_account | cache[key]
+            distribution = {','.join(str(a) for a in sorted(accounts.ids)): 100.0}
+            if line.analytic_distribution != distribution:
+                line.analytic_distribution = distribution
+
+    def _get_reported_qty(self, tranche=None):
+        """Avance reportado y aún no validado de la línea (de un tramo, si se
+        indica: en unidades del tramo; si no, en unidades equivalentes)."""
+        self.ensure_one()
+        domain = [('plan_line_id', '=', self.id), ('state', '=', 'draft')]
+        if tranche:
+            return self.env['construction.task.progress']._read_group(
+                domain + [('tranche_id', '=', tranche.id)], [], ['qty:sum'])[0][0]
+        return self.env['construction.task.progress']._read_group(
+            domain, [], ['qty_weighted:sum'])[0][0]
+
+    def _get_tranche_executed(self, tranche):
+        """Unidades del tramo ya validadas en la línea."""
         self.ensure_one()
         return self.env['construction.task.progress']._read_group(
-            [('plan_line_id', '=', self.id), ('state', '=', 'draft')], [], ['qty:sum'])[0][0]
+            [('plan_line_id', '=', self.id), ('state', '=', 'validated'),
+             ('tranche_id', '=', tranche.id)], [], ['qty:sum'])[0][0]
 
     def _get_tolerance_qty(self):
         self.ensure_one()

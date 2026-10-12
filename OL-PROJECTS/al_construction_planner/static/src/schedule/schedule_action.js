@@ -134,6 +134,7 @@ export function buildStageRows(ganttData, payload) {
             cp_progress: stage.progress,
             cp_partner: resource,
             cp_unassigned: stage.unassigned,
+            cp_blocked: stage.blocked,
             cp_alerts: stage.alerts || [],
         });
     }
@@ -362,6 +363,9 @@ export class ConstructionScheduleAction extends GanttAction {
                 classes.push(`o_cp_stage o_cp_stage_${task.cp_stage_key}`);
                 if (task.cp_unassigned) {
                     classes.push("o_cp_stage_unassigned");
+                }
+                if (task.cp_blocked) {
+                    classes.push("o_cp_stage_blocked");
                 }
             }
             return classes.join(" ");

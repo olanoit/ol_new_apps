@@ -48,6 +48,8 @@
                             <field name="module_level"/>
                             <field name="ml_based"/>
                             <field name="ml_group" invisible="not ml_based"/>
+                            <field name="hang_role"/>
+                            <field name="pass_number"/>
                             <field name="default_price"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
@@ -58,6 +60,20 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Tramos de pago" name="tranches">
+                            <div class="alert alert-warning" role="alert"
+                                 invisible="not tranche_ids or tranche_total_pct == 100">
+                                Los tramos suman <field name="tranche_total_pct" class="oe_inline"/> %:
+                                revise con el cliente si así se paga (p. ej. R1 y R2).
+                            </div>
+                            <field name="tranche_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="pct" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Tarifas" name="rates">
                             <field name="rate_ids" context="{'default_activity_id': id}">
                                 <list editable="bottom">
@@ -76,6 +92,16 @@
                 </sheet>
             </form>
         </field>
+    </record>
+
+    <record id="action_server_activity_service_products" model="ir.actions.server">
+        <field name="name">Crear productos de servicio</field>
+        <field name="model_id" ref="model_construction_labor_activity"/>
+        <field name="binding_model_id" ref="model_construction_labor_activity"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="group_ids" eval="[(4, ref('al_construction_planner.group_planner_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">records.action_create_service_products()</field>
     </record>
 
     <record id="construction_labor_activity_view_search" model="ir.ui.view">

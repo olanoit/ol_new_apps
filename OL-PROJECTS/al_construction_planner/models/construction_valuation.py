@@ -40,6 +40,12 @@ class ConstructionValuation(models.Model):
         'res.company', string='Compañía', required=True, index=True, store=True,
         compute='_compute_company_id', precompute=True, readonly=True)
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda', store=True)
+    contract_id = fields.Many2one(
+        'construction.contract', string='Contrato', index=True, check_company=True, tracking=True,
+        help='Valorización por hitos de cobro del contrato (v1.5): lo ganado por los hitos de '
+             'sus unidades, por partida.')
+    milestone_line_ids = fields.One2many(
+        'construction.valuation.milestone', 'valuation_id', string='Hitos valorizados')
     sale_order_id = fields.Many2one(
         'sale.order', string='Contrato', required=True, check_company=True, readonly=True)
     partner_id = fields.Many2one(related='sale_order_id.partner_id', string='Cliente', store=True)
@@ -258,6 +264,78 @@ class ConstructionValuation(models.Model):
         return valuation
 
     @api.model
+    def _create_from_milestones(self, contract, cutoff):
+        """Valorización por hitos del contrato al corte: por partida, lo ganado
+        por los hitos de sus unidades (monto × avance) menos lo confirmado
+        antes. Guarda el detalle por hito (avance cobrado y avance al corte)."""
+        if contract.state != 'active':
+            raise UserError(self.env._(
+                'El contrato %s no está vigente.', contract.display_name))
+        if not contract.sale_order_id:
+            raise UserError(self.env._(
+                'El contrato %s no tiene orden de venta.', contract.display_name))
+        milestones = contract.milestone_ids.filtered(lambda m: m.sale_line_id)
+        if not milestones:
+            raise UserError(self.env._(
+                'El contrato %s no tiene hitos con partida: genere los hitos y asigne la partida '
+                'de cada precio.', contract.display_name))
+        if self.search_count([('contract_id', '=', contract.id),
+                              ('state', 'in', ('draft', 'sent', 'observed'))]):
+            raise UserError(self.env._(
+                'El contrato %s ya tiene una valorización en curso.', contract.display_name))
+        project = contract.project_id
+        currency = contract.company_id.currency_id
+        previous = self.env['construction.valuation.line'].search([
+            ('valuation_id.contract_id', '=', contract.id),
+            ('valuation_id.state', 'in', DONE_STATES)])
+        details, earned = [], {}
+        for milestone in milestones:
+            now = milestone.progress_pct
+            if now <= milestone.billed_pct:
+                continue
+            amount = milestone.amount * (now - milestone.billed_pct) / 100
+            details.append(Command.create({
+                'milestone_id': milestone.id, 'pct_before': milestone.billed_pct,
+                'pct_now': now, 'amount': amount}))
+        for milestone in milestones:
+            earned[milestone.sale_line_id] = earned.get(milestone.sale_line_id, 0.0) + \
+                milestone.amount * max(milestone.progress_pct, milestone.billed_pct) / 100
+        if not details:
+            raise UserError(self.env._(
+                'Los hitos del contrato %s no avanzaron desde la última valorización.',
+                contract.display_name))
+        lines = []
+        for sale_line, value in earned.items():
+            # Los hitos van en la moneda del contrato; la partida, en la de la compañía.
+            value = contract.currency_id._convert(value, currency, contract.company_id, cutoff)
+            price = sale_line._construction_price(cutoff)
+            before = previous.filtered(lambda l, s=sale_line: l.sale_line_id == s)
+            confirmed_before = sum(before.mapped('amount_confirmed'))
+            amount = currency.round(min(value, price) - confirmed_before)
+            if amount <= 0:
+                continue
+            lines.append(Command.create({
+                'sale_line_id': sale_line.id, 'price': price,
+                'progress_delivered': min(value / price, 1.0) if price else 0.0,
+                'confirmed_before': confirmed_before,
+                'amortization_before': sum(before.mapped('amount_amortization')),
+                'amount_delivered': amount, 'amount_confirmed': amount,
+            }))
+        return self.create({
+            'project_id': project.id, 'contract_id': contract.id,
+            'sale_order_id': contract.sale_order_id.id, 'cutoff_date': cutoff,
+            'guarantee_pct': contract.guarantee_pct,
+            'advance_amortization_pct': contract.advance_pct,
+            'line_ids': lines, 'milestone_line_ids': details,
+        })
+
+    def _construction_bill_milestones(self):
+        """Al confirmar, cada hito queda cobrado hasta su avance al corte."""
+        for valuation in self.filtered('milestone_line_ids'):
+            for detail in valuation.milestone_line_ids:
+                detail.milestone_id.billed_pct = max(detail.milestone_id.billed_pct, detail.pct_now)
+
+    @api.model
     def _prepare_valuations(self, today=None, projects=None):
         """Corte de valorización según la obra (F-11): con entregas
         confirmadas sin valorizar hasta el último corte y sin otra
@@ -312,9 +390,15 @@ class ConstructionValuation(models.Model):
         de envío y el PDF de la valorización en el historial."""
         self._check_state(('draft', 'observed'))
         for valuation in self:
-            if not valuation.delivery_ids:
+            if not valuation.delivery_ids and not valuation.milestone_line_ids:
                 raise UserError(self.env._(
                     'La valorización %s no tiene entregas confirmadas.', valuation.display_name))
+            missing = valuation.contract_id._missing_documents() if valuation.contract_id else []
+            if missing:
+                raise UserError(self.env._(
+                    'Falta recibir %(docs)s del contrato %(contract)s: sin ellos no se envía la '
+                    'valorización.', docs=', '.join(missing.mapped('name')),
+                    contract=valuation.contract_id.display_name))
             resend = valuation.state == 'observed'
             valuation.write({'state': 'sent', 'submit_date': fields.Date.context_today(self)})
             # sudo: el PDF se adjunta al historial aunque quien envía no
@@ -374,6 +458,7 @@ class ConstructionValuation(models.Model):
         # sudo: la conformidad la registra Proyectos o Finanzas, que no
         # editan entregas; el paso a Valorizada es efecto del sistema.
         self.delivery_ids.sudo().write({'state': 'valued'})
+        self._construction_bill_milestones()
 
     def action_cancel(self):
         """Anular (Jefatura): sin factura; las entregas vuelven a Confirmada."""
@@ -597,7 +682,8 @@ class ConstructionValuationLine(models.Model):
 
     @api.depends('amount_delivered', 'amount_confirmed', 'price', 'amortization_before',
                  'valuation_id.guarantee_pct', 'valuation_id.advance_amortization_pct',
-                 'valuation_id.project_id.construction_advance_pct')
+                 'valuation_id.project_id.construction_advance_pct',
+                 'valuation_id.contract_id.advance_pct')
     def _compute_amounts(self):
         for line in self:
             currency = line.currency_id
@@ -605,7 +691,9 @@ class ConstructionValuationLine(models.Model):
             confirmed = line.amount_confirmed
             line.amount_pending = line.amount_delivered - confirmed
             guarantee = confirmed * valuation.guarantee_pct / 100.0
-            advance = line.price * valuation.project_id.construction_advance_pct / 100.0
+            advance_pct = valuation.contract_id.advance_pct if valuation.contract_id \
+                else valuation.project_id.construction_advance_pct
+            advance = line.price * advance_pct / 100.0
             amortization = min(confirmed * valuation.advance_amortization_pct / 100.0,
                                max(advance - line.amortization_before, 0.0))
             if currency:
@@ -624,3 +712,25 @@ class ConstructionValuationLine(models.Model):
                 raise ValidationError(self.env._(
                     '%s: lo confirmado va de cero a lo entregado.',
                     line.sale_line_id.name.splitlines()[0]))
+
+
+class ConstructionValuationMilestone(models.Model):
+    """Hito valorizado: lo que una valorización cobra de un hito de unidad."""
+    _name = 'construction.valuation.milestone'
+    _description = 'Hito de la valorización'
+    _order = 'valuation_id, milestone_id'
+
+    valuation_id = fields.Many2one(
+        'construction.valuation', string='Valorización', required=True, ondelete='cascade',
+        index=True)
+    company_id = fields.Many2one(related='valuation_id.company_id', store=True, index=True)
+    currency_id = fields.Many2one(related='milestone_id.currency_id', string='Moneda')
+    milestone_id = fields.Many2one(
+        'construction.unit.milestone', string='Hito', required=True, index=True)
+    task_id = fields.Many2one(related='milestone_id.task_id', string='Unidad', store=True)
+    template_line_id = fields.Many2one(
+        related='milestone_id.template_line_id', string='Hito de cobro', store=True)
+    pct_before = fields.Float(string='Cobrado antes %', digits=(16, 2))
+    pct_now = fields.Float(string='Avance al corte %', digits=(16, 2))
+    amount = fields.Monetary(string='Monto del periodo', currency_field='currency_id')
+

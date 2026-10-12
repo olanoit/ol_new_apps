@@ -53,6 +53,8 @@ class ConstructionTaskProgress(models.Model):
         related='plan_line_id.apartment_task_id', string='Departamento', store=True, index=True)
     space_task_id = fields.Many2one(
         related='plan_line_id.space_task_id', string='Ambiente', store=True, index=True)
+    furniture_task_id = fields.Many2one(
+        related='plan_line_id.furniture_task_id', string='Mueble', store=True, index=True)
     module_task_id = fields.Many2one(
         related='plan_line_id.module_task_id', string='Módulo', store=True, index=True)
     date = fields.Date(
@@ -62,6 +64,20 @@ class ConstructionTaskProgress(models.Model):
         string='Unidades de driver', digits='Product Unit', required=True, tracking=True,
         help='Lo que reporta la contrata, en la unidad de la actividad.')
     uom_id = fields.Many2one(related='activity_id.uom_id', string='Unidad')
+    tranche_id = fields.Many2one(
+        'construction.activity.tranche', string='Tramo', index=True,
+        domain="[('activity_id', '=', activity_id)]",
+        help='Pase o tramo de la actividad que se reporta (p. ej. limpieza 45 %, acabado 50 %): '
+             'cada unidad del tramo vale su % del pago.')
+    possible_duplicate = fields.Boolean(
+        string='Posible duplicado', compute='_compute_possible_duplicate',
+        search='_search_possible_duplicate',
+        help='Validación de datos (M15-11): hay otro avance vigente del mismo nivel, actividad, '
+             'tramo y fecha; revise que no se pague dos veces.')
+    qty_weighted = fields.Float(
+        string='Unidades equivalentes', compute='_compute_qty_weighted', store=True,
+        digits='Product Unit',
+        help='Cantidad × % del tramo: lo que el avance suma a lo ejecutado de la línea.')
     amount = fields.Monetary(
         string='Valor', compute='_compute_amount', store=True, currency_field='currency_id',
         help='Unidades por el costo unitario de la línea del plan: pondera el avance de los '
@@ -77,6 +93,15 @@ class ConstructionTaskProgress(models.Model):
     reported_by_id = fields.Many2one(
         'res.users', string='Reportado por', required=True, default=lambda self: self.env.user,
         help='Capataz de la contrata o supervisor que transcribe.')
+    # Portal de obra (v1.5, fase 16).
+    source = fields.Selection(
+        [('internal', 'Planificador'), ('portal', 'Portal de obra')], string='Origen',
+        default='internal', required=True, readonly=True, copy=False)
+    latitude = fields.Float(string='Latitud', digits=(10, 7), readonly=True, copy=False)
+    longitude = fields.Float(string='Longitud', digits=(10, 7), readonly=True, copy=False)
+    distance_m = fields.Float(
+        string='Distancia a la obra (m)', digits=(12, 1), compute='_compute_distance_m',
+        store=True, help='Del lugar donde se reportó a la sede de la obra (si tiene ubicación).')
     state = fields.Selection(
         PROGRESS_STATES, string='Estado', required=True, default='draft', tracking=True,
         copy=False)
@@ -113,17 +138,30 @@ class ConstructionTaskProgress(models.Model):
                 ('activity_id', '=', progress.activity_id.id),
                 ('plan_id.state', 'in', OPEN_STATES)], limit=1)
 
-    @api.depends('qty', 'plan_line_id.price_unit_planned')
+    @api.depends('qty', 'tranche_id.pct')
+    def _compute_qty_weighted(self):
+        for progress in self:
+            factor = progress.tranche_id.pct / 100.0 if progress.tranche_id else 1.0
+            progress.qty_weighted = progress.qty * factor
+
+    @api.depends('qty_weighted', 'plan_line_id.price_unit_planned')
     def _compute_amount(self):
         for progress in self:
             currency = progress.currency_id
-            amount = progress.qty * progress.plan_line_id.price_unit_planned
+            amount = progress.qty_weighted * progress.plan_line_id.price_unit_planned
             progress.amount = currency.round(amount) if currency else amount
 
     @api.depends('attachment_ids')
     def _compute_photo_count(self):
         for progress in self:
             progress.photo_count = len(progress.attachment_ids)
+
+    @api.depends('latitude', 'longitude', 'project_id')
+    def _compute_distance_m(self):
+        for progress in self:
+            progress.distance_m = progress.project_id._construction_distance_m(
+                progress.latitude, progress.longitude) if progress.latitude or progress.longitude \
+                else 0.0
 
     @api.depends('settlement_id.state')
     def _compute_settled(self):
@@ -141,6 +179,32 @@ class ConstructionTaskProgress(models.Model):
             start, _end = project._construction_period(progress.date)
             progress.period_start = start
             progress.settlement_date_planned = project._construction_settlement_dates(start)[0]
+
+    def _duplicate_groups(self, domain=None):
+        """Grupos (nivel, actividad, tramo, fecha) con más de un avance
+        vigente (no rechazado)."""
+        groups = self._read_group(
+            [('state', '!=', 'rejected')] + (domain or []),
+            groupby=['task_id', 'activity_id', 'tranche_id', 'date:day'],
+            aggregates=['id:recordset'], having=[('__count', '>', 1)])
+        return [records for *_keys, records in groups]
+
+    @api.depends('task_id', 'activity_id', 'tranche_id', 'date', 'state')
+    def _compute_possible_duplicate(self):
+        records = self.filtered('id')
+        duplicated = self.browse()
+        if records:
+            for group in self._duplicate_groups([('task_id', 'in', records.task_id.ids)]):
+                duplicated |= group
+        for progress in self:
+            progress.possible_duplicate = progress.state != 'rejected' and progress in duplicated
+
+    def _search_possible_duplicate(self, operator, value):
+        if operator not in ('=', '!='):
+            return NotImplemented
+        ids = [i for group in self._duplicate_groups() for i in group.ids]
+        positive = (operator == '=') == bool(value)
+        return [('id', 'in' if positive else 'not in', ids)]
 
     @api.constrains('attachment_ids')
     def _check_photos(self):
@@ -164,9 +228,12 @@ class ConstructionTaskProgress(models.Model):
         """No acepta más que lo presupuestado más la tolerancia del plan
         (especificación, «Control de saldo»: avance reportado)."""
         lines = self.filtered(lambda p: p.state != 'rejected').plan_line_id
-        totals = dict(self._read_group(
-            [('plan_line_id', 'in', lines.ids), ('state', '!=', 'rejected')],
-            ['plan_line_id'], ['qty:sum']))
+        # Por tramo: cada tramo admite lo presupuestado de la línea.
+        totals = {}
+        for line, _tranche, qty in self._read_group(
+                [('plan_line_id', 'in', lines.ids), ('state', '!=', 'rejected')],
+                ['plan_line_id', 'tranche_id'], ['qty:sum']):
+            totals[line] = max(totals.get(line, 0.0), qty or 0.0)
         for line in lines:
             reported = totals.get(line, 0.0)
             limit = line.qty_planned + line._get_tolerance_qty()

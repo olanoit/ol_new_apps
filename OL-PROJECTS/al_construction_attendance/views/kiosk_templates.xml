@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="kiosk_page" name="Quiosco de la sede">
+        <t t-call="web.frontend_layout">
+            <t t-set="no_header" t-value="True"/>
+            <t t-set="no_footer" t-value="True"/>
+            <div class="container py-4" style="max-width: 32rem;">
+                <h2 class="text-center mb-1" t-out="site.name"/>
+                <p class="text-center text-muted">Marque su ingreso o su salida</p>
+                <div t-if="result" t-attf-class="alert #{'alert-success' if result.get('ok') else 'alert-danger'}" role="alert">
+                    <strong t-out="result.get('message')"/>
+                    <div t-foreach="result.get('warnings') or []" t-as="warning" class="mt-1" t-out="warning"/>
+                </div>
+                <form id="o_construction_kiosk_form" method="post"
+                      t-attf-action="/obra/quiosco/#{site.id}/#{token}">
+                    <input type="hidden" name="latitude"/>
+                    <input type="hidden" name="longitude"/>
+                    <input type="text" name="document" class="form-control form-control-lg text-center mb-3"
+                           inputmode="numeric" autocomplete="off" autofocus="autofocus"
+                           placeholder="Documento o PIN"/>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Marcar</button>
+                </form>
+                <p class="small text-muted text-center mt-3">
+                    Ingreso hasta las <t t-out="'%02d:%02d' % (int(site.entry_deadline), round((site.entry_deadline % 1) * 60))"/>.
+                </p>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -244,7 +244,7 @@ class ConstructionContractSettlement(models.Model):
             for po_line, progresses in sorted(
                     by_po_line.items(), key=lambda kv: (kv[0].sequence, kv[0].id)):
                 activity = progresses.activity_id[:1]
-                qty = sum(progresses.mapped('qty'))
+                qty = sum(progresses.mapped('qty_weighted'))
                 if po_line.product_uom_id and activity.uom_id \
                         and po_line.product_uom_id != activity.uom_id:
                     qty = activity.uom_id._compute_quantity(qty, po_line.product_uom_id)

@@ -31,6 +31,14 @@ class PlannerCommon(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # Días hábiles de la obra de lunes a viernes (las bases de prueba
+        # pueden traer sábados laborables).
+        cls.company.resource_calendar_id = cls.env['resource.calendar'].create({
+            'name': 'Lunes a viernes (test planificador)', 'company_id': cls.company.id,
+            'tz': 'America/Lima',
+            'attendance_ids': [(5, 0, 0)] + [(0, 0, {
+                'name': 'Día %s' % day, 'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
+                'day_period': 'full_day'}) for day in range(5)]})
         cls.unit = cls.env.ref('uom.product_uom_unit')
         cls.meter = cls.env.ref('uom.product_uom_meter')
         grp = 'al_construction_planner.group_planner_'
@@ -152,4 +160,16 @@ class PlannerCommon(TransactionCase):
     def _generate(self, **vals):
         wizard = self._wizard(**vals)
         wizard.action_generate()
+        return wizard
+
+    def _generate_and_approve(self, **vals):
+        """Genera el plan, completa etapa y costo de lo que falte y lo
+        aprueba (sin reglas de aprobación, queda aprobado de inmediato)."""
+        wizard = self._generate(**vals)
+        lines = self.plan.line_ids
+        lines.filtered(lambda l: not l.stage).stage = 'production'
+        for line in lines.filtered(lambda l: not l.price_unit_planned):
+            line.price_unit_planned = 10.0
+        self.plan.action_request_approval()
+        self.assertEqual(self.plan.state, 'approved')
         return wizard

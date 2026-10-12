@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Planificación de obra ▸ Ejecución ▸ Asistencia (P-28) -->
+    <menuitem id="menu_planner_attendance" name="Asistencia"
+              parent="al_construction_planner.menu_planner_execution" sequence="30"
+              groups="al_construction_planner.group_planner_user">
+        <menuitem id="menu_planner_attendance_own" name="Personal propio"
+                  action="action_own_attendance_sites" sequence="10"
+                  groups="hr_attendance.group_hr_attendance_officer"/>
+        <menuitem id="menu_planner_attendance_contractor" name="Contratas"
+                  action="action_contractor_attendance" sequence="20"/>
+        <menuitem id="menu_planner_progress_no_attendance" name="Avances sin asistencia"
+                  action="action_progress_without_attendance" sequence="30"/>
+        <menuitem id="menu_planner_contractor_workers" name="Personal de contratas"
+                  action="action_contractor_worker" sequence="40"/>
+        <menuitem id="menu_planner_labor_cost_allocation" name="Cierre de costo de personal"
+                  action="action_labor_cost_allocation" sequence="50"
+                  groups="al_construction_planner.group_planner_manager"/>
+    </menuitem>
+    <menuitem id="menu_planner_sites" name="Sedes de obra"
+              parent="al_construction_planner.menu_planner_config_plan"
+              action="al_hr_pe_construction.action_construction_site" sequence="50"
+              groups="al_construction_planner.group_planner_manager"/>
+</odoo>

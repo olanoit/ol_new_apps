@@ -141,7 +141,10 @@ class ConstructionPlanRescheduleWizard(models.TransientModel):
         stages = self.env['construction.space.stage'].search([
             ('space_task_id', 'in', spaces.ids), ('stage', 'in', self._get_stages())])
         for stage in stages:
-            stage.with_context(construction_stage_keep_lines=True).write({
+            # Las tareas ya se movieron con sus propias fechas: las etapas las
+            # acompañan sin encadenar ni recalcular las de las tareas.
+            stage.with_context(construction_stage_keep_lines=True, construction_stage_no_chain=True,
+                               construction_stage_no_rollup=True).write({
                 'date_start': stage.date_start + shift, 'date_end': stage.date_end + shift})
         notified = self._notify_logistics(lines, delta)
         body = self.env._(

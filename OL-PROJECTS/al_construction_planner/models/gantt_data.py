@@ -47,7 +47,7 @@ class GanttData(models.AbstractModel):
         schedule = self._construction_options(options)
         if schedule and schedule['rows'] == 'stages':
             # Las barras son las etapas: los módulos no se listan.
-            domain = domain + [('construction_level', 'in', ('floor', 'apartment', 'space'))]
+            domain = domain + [('construction_level', 'in', ('group', 'floor', 'apartment', 'space'))]
         return domain
 
     @api.model
@@ -169,6 +169,9 @@ class GanttData(models.AbstractModel):
             if unassigned and record.date_start - today <= timedelta(days=UNASSIGNED_ALERT_DAYS) \
                     and record.date_end >= today:
                 alerts.append(self.env._('Empieza pronto sin contrata ni cuadrilla'))
+            dependencies = record.dependency_ids
+            if dependencies:
+                alerts.append(self.env._('Bloqueada por %s', ', '.join(dependencies.mapped('name'))))
             rows.append({
                 'id': record.id,
                 'space_task_id': record.space_task_id.id,
@@ -181,6 +184,7 @@ class GanttData(models.AbstractModel):
                 'amount': round(item.get('amount', 0.0), 2),
                 'progress': round(progress.get(key, 0.0) * 100, 1),
                 'unassigned': unassigned,
+                'blocked': bool(dependencies),
                 'alerts': alerts,
                 'editable': editable,
             })

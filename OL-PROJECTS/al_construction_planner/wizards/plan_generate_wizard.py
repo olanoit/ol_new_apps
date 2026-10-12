@@ -47,6 +47,25 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         default='replace', required=True,
         help='Reemplazar borra antes las líneas generadas de esos ambientes (conserva las '
              'manuales y los costos ya escritos); agregar las suma.')
+    # Ritmo de programación (v1.5, M15-17).
+    schedule_mode = fields.Selection(
+        [('none', 'No cambiar fechas'), ('floors_per_week', 'Pisos por semana'),
+         ('weeks_per_floor', 'Semanas por piso')], string='Ritmo', default='none', required=True,
+        help='Fechas escalonadas de las etapas de cada ambiente: cada piso empieza cuando le '
+             'toca según el ritmo y, dentro del ambiente, las etapas van una tras otra en días '
+             'hábiles (sin feriados). Las fechas se pueden cambiar después en el cronograma.')
+    schedule_pace = fields.Float(
+        string='Cantidad', default=1.0,
+        help='Pisos que empiezan cada semana, o semanas entre un piso y el siguiente (p. ej. 1.5).')
+    schedule_date_start = fields.Date(
+        string='Inicio del primer piso', default=fields.Date.context_today)
+    schedule_order = fields.Selection(
+        [('asc', 'Del primero al último'), ('desc', 'Del último al primero')],
+        string='Orden de los pisos', default='asc', required=True)
+    days_production = fields.Integer(string='Días de producción', default=5)
+    days_assembly = fields.Integer(string='Días de armado', default=5)
+    days_installation = fields.Integer(string='Días de instalación', default=5)
+    days_finishing = fields.Integer(string='Días de acabado y entrega', default=5)
     preview_html = fields.Html(string='Se creará', compute='_compute_preview', sanitize=False)
     warning_html = fields.Html(string='Advertencias', compute='_compute_preview', sanitize=False)
 
@@ -96,10 +115,10 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                   'line_kinds': defaultdict(lambda: [0, 0.0])}
         spaces = self._get_spaces()
         existing_modules = Task.search([
-            ('parent_id', 'in', spaces.ids), ('construction_level', '=', 'module')])
+            ('construction_space_task_id', 'in', spaces.ids), ('construction_level', '=', 'module')])
         modules_by_space = defaultdict(lambda: self.env['project.task'])
         for module in existing_modules:
-            modules_by_space[module.parent_id.id] |= module
+            modules_by_space[module.construction_space_task_id.id] |= module
 
         def rate(activity):
             if ('activity', activity.id) in prices:
@@ -123,6 +142,10 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         project_ml = ml_activities.filtered(
             lambda a: any(rate.project_id == project for rate in a.rate_ids))
         ml_activities = project_ml or ml_activities
+        # Con el nivel Mueble en la plantilla de la obra y muebles en la
+        # tipología, las actividades por ML cuelgan de cada mueble (v1.5,
+        # M15-03): sus ML son los del mueble.
+        furniture_level = bool(project._construction_level_lines().get('furniture'))
 
         for space in spaces:
             typology = space.construction_typology_id
@@ -206,6 +229,12 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                                     base, task_id=task.id if task else False,
                                     qty_planned=width(task, template) / 1000.0,
                                     _space=space, _template=template))
+                    elif activity.ml_based and furniture_level and typology.furniture_line_ids:
+                        for furniture in typology.furniture_line_ids.filtered(
+                                lambda f, group=activity.ml_group: f.ml_group == group and f.ml):
+                            add('contract_furniture', dict(
+                                base, task_id=False, qty_planned=furniture.ml,
+                                _space=space, _furniture=furniture))
                     else:
                         if activity.ml_based:
                             result['warnings']['ml_on_space'].append(typology.display_name)
@@ -219,6 +248,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                     or [(space, None, typology.bom_id)]
                 if not module_boms and not typology.bom_id:
                     result['warnings']['no_bom'].append(typology.display_name)
+                overrides = space._construction_overrides()
                 for task, template, bom in sources:
                     if not bom:
                         continue
@@ -228,12 +258,20 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         if stage and stage not in stages:
                             continue
                         product = bom_line.product_id
+                        line_qty = bom_line.product_qty * factor
+                        if overrides:
+                            # Variantes de la unidad (M15-04): otro color, sin el
+                            # componente o con otro metrado.
+                            applied = overrides._apply_to_material(product, line_qty)
+                            if applied is None:
+                                continue
+                            product, line_qty = applied
                         price, basis, basis_date = prices.get(('product', product.id),
                                                               (0.0, False, False))
                         vals = dict(
                             common, resource_type='material', stage=stage or False,
                             product_id=product.id, product_uom_id=bom_line.product_uom_id.id,
-                            qty_planned=bom_line.product_qty * factor,
+                            qty_planned=line_qty,
                             price_unit_planned=price, price_basis=basis,
                             price_basis_date=basis_date)
                         if template:
@@ -257,6 +295,8 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
              self.env._('Módulo')),
             ('contract_space', self.env._('Líneas de contrata por ambiente'),
              self.env._('Ambiente')),
+            ('contract_furniture', self.env._('Líneas de contrata por ML del mueble'),
+             self.env._('Mueble')),
             ('material_staged', self.env._('Líneas de material con etapa'), ''),
             ('material_unstaged', self.env._('Líneas de material sin etapa'), ''),
         ]
@@ -327,6 +367,24 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
     # ------------------------------------------------------------------
     # Generación
     # ------------------------------------------------------------------
+    def _module_parents(self, modules_to_create):
+        """Padre de cada módulo por crear: el ambiente o, si la plantilla de
+        niveles de la obra tiene Mueble, el mueble del ambiente que le toca
+        (lo crea si falta). Ver ``project.task._construction_furniture_for``."""
+        project = self.plan_id.project_id
+        has_furniture = bool(project._construction_level_lines().get('furniture'))
+        result = {}
+        for space, template in modules_to_create:
+            if not has_furniture:
+                result[(space.id, template.id)] = space
+            elif template.furniture_id:
+                result[(space.id, template.id)] = space._construction_furniture_named(
+                    template.furniture_id.name, template.furniture_id.ml)
+            else:
+                result[(space.id, template.id)] = space._construction_furniture_for(
+                    template.ml_group, template.module_type)
+        return result
+
     def action_generate(self):
         self.ensure_one()
         plan = self.plan_id
@@ -345,18 +403,20 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         module_map = {}
         if data['modules_to_create']:
             Task = self.env['project.task']
-            created = Task.with_context(mail_create_nolog=True, tracking_disable=True).create([{
-                'name': template.code,
-                'project_id': space.project_id.id,
-                'parent_id': space.id,
-                'construction_level': 'module',
-                'construction_module_code': template.code,
-                'construction_module_type': template.module_type,
-                'construction_width_mm': template.width_mm,
-                'construction_ml_group': template.ml_group,
-                'construction_unit_state': 'planned',
-                'user_ids': False,
-            } for space, template in data['modules_to_create']])
+            module_vals = plan.project_id._construction_level_vals('module')
+            parents = self._module_parents(data['modules_to_create'])
+            created = Task.with_context(mail_create_nolog=True, tracking_disable=True).create([dict(
+                module_vals,
+                name=template.code,
+                project_id=space.project_id.id,
+                parent_id=parents[(space.id, template.id)].id,
+                construction_module_code=template.code,
+                construction_module_type=template.module_type,
+                construction_width_mm=template.width_mm,
+                construction_ml_group=template.ml_group,
+                construction_unit_state='planned',
+                user_ids=False,
+            ) for space, template in data['modules_to_create']])
             for (space, template), task in zip(data['modules_to_create'], created):
                 module_map[(space.id, template.id)] = task
             data = self._collect(module_map=module_map)
@@ -364,14 +424,26 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         for vals in data['lines']:
             vals = dict(vals)
             space, template = vals.pop('_space', None), vals.pop('_template', None)
-            if not vals.get('task_id') and space and template:
+            furniture = vals.pop('_furniture', None)
+            if furniture and space:
+                vals['task_id'] = space._construction_furniture_named(furniture.name, furniture.ml).id
+            elif not vals.get('task_id') and space and template:
                 vals['task_id'] = module_map[(space.id, template.id)].id
             vals_list.append(vals)
         # Validación de compañía por lotes (todas las relaciones salen de la obra).
         lines = self.env['construction.resource.plan.line'].with_context(
             construction_plan_generating=True).create(vals_list)
+        # Etapa, partida y área de cada línea (v1.5, M15-12).
+        lines._apply_analytic_rules()
         # Las barras del cronograma (P-15): una por ambiente y etapa con líneas.
         stages = self.env['construction.space.stage']._sync_from_plan(plan)
+        if self.schedule_mode != 'none':
+            self.env['construction.space.stage']._schedule_by_pace(
+                plan, spaces, self.schedule_date_start, self.schedule_mode, self.schedule_pace,
+                self.schedule_order, {
+                    'production': self.days_production, 'assembly': self.days_assembly,
+                    'installation': self.days_installation, 'finishing': self.days_finishing,
+                })
         plan.message_post(body=self.env._(
             'Plan generado: %(modules)s tareas de módulo, %(lines)s líneas y %(stages)s etapas '
             'en el cronograma.', modules=len(module_map), lines=len(lines), stages=len(stages)))

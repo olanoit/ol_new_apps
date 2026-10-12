@@ -84,6 +84,18 @@ class ConstructionPlanRequestWizard(models.TransientModel):
             })
         return result
 
+    def _line_analytic(self, line):
+        """La analítica de las líneas del plan (obra, etapa, partida) pasa al
+        requerimiento si todas coinciden (v1.5, M15-15)."""
+        RequestLine = self.env['construction.material.request.line']
+        if 'analytic_distribution' not in RequestLine._fields:
+            return {}
+        distributions = {tuple(sorted((plan_line.analytic_distribution or {}).items()))
+                         for plan_line in line.plan_line_ids}
+        if len(distributions) == 1 and next(iter(distributions)):
+            return {'analytic_distribution': dict(next(iter(distributions)))}
+        return {}
+
     def action_create(self):
         self.ensure_one()
         plan = self.plan_id
@@ -99,12 +111,12 @@ class ConstructionPlanRequestWizard(models.TransientModel):
             'date_required': self.date_required or min(
                 filter(None, lines.mapped('date_needed')), default=False),
             'construction_plan_id': plan.id,
-            'line_ids': [Command.create({
+            'line_ids': [Command.create(dict({
                 'product_id': line.product_id.id,
                 'product_qty': line.qty_to_request,
                 'product_uom_id': line.product_uom_id.id,
                 'task_id': line.group_task_id.id,
-            }) for line in lines],
+            }, **self._line_analytic(line))) for line in lines],
         }
         if self.location_src_id:
             vals['location_src_id'] = self.location_src_id.id

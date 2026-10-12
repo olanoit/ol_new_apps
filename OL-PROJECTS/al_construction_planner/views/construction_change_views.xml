@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Adicionales y deductivos (P-32) -->
+    <record id="view_construction_change_order_list" model="ir.ui.view">
+        <field name="name">construction.change.order.list</field>
+        <field name="model">construction.change.order</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'" decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="kind"/>
+                <field name="requested_by" optional="show"/>
+                <field name="client_order_ref" optional="hide"/>
+                <field name="contract_id" optional="hide"/>
+                <field name="amount_cost" sum="Costo"/>
+                <field name="amount_sale" sum="Precio al cliente"/>
+                <field name="state" widget="badge" decoration-success="state == 'approved'"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_construction_change_order_form" model="ir.ui.view">
+        <field name="name">construction.change.order.form</field>
+        <field name="model">construction.change.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" type="object" string="Aprobar y llevar al plan"
+                            class="btn-primary" invisible="state != 'draft'"
+                            groups="al_construction_planner.group_planner_manager"
+                            confirm="Las líneas entran al plan vigente y a su presupuesto. ¿Continuar?"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_plan_lines" type="object" class="oe_stat_button"
+                                icon="fa-list" invisible="state != 'approved'"
+                                string="Líneas del plan"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="plan_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="contract_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="kind" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="requested_by" readonly="state != 'draft'"/>
+                            <field name="client_order_ref" readonly="state != 'draft'"/>
+                            <field name="task_ids" widget="many2many_tags"/>
+                            <field name="amount_cost"/>
+                            <field name="amount_sale" invisible="kind == 'rework'"/>
+                            <field name="approved_by_id" invisible="not approved_by_id"/>
+                            <field name="date_approved" invisible="not date_approved"/>
+                        </group>
+                    </group>
+                    <field name="reason" placeholder="Qué cambia, quién lo pidió y por qué…"
+                           readonly="state != 'draft'"/>
+                    <notebook>
+                        <page string="Líneas" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'"
+                                   context="{'default_change_id': id}">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="project_id" column_invisible="True"/>
+                                    <field name="task_id" options="{'no_create': True}"/>
+                                    <field name="unit_state" optional="show"/>
+                                    <field name="resource_type"/>
+                                    <field name="stage"/>
+                                    <field name="product_id" options="{'no_create': True}"
+                                           required="resource_type in ('material', 'service')"/>
+                                    <field name="activity_id" options="{'no_create': True}"
+                                           required="resource_type == 'contract'"/>
+                                    <field name="partner_id" optional="hide"/>
+                                    <field name="qty"/>
+                                    <field name="product_uom_id" optional="show"/>
+                                    <field name="price_unit"/>
+                                    <field name="amount_cost" sum="Costo"/>
+                                    <field name="price_rule"
+                                           column_invisible="parent.kind == 'rework'"/>
+                                    <field name="sale_price_unit"
+                                           column_invisible="parent.kind == 'rework'"/>
+                                    <field name="reinstall_amount" optional="show"
+                                           column_invisible="parent.kind == 'rework'"
+                                           readonly="price_rule != 'reinstall'"/>
+                                    <field name="amount_sale" sum="Precio al cliente"
+                                           column_invisible="parent.kind == 'rework'"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <div class="text-muted small">
+                                Regla de precio propuesta según el estado de la unidad: sin producir,
+                                diferencia de precio; producida o en obra, pieza suelta; instalada o
+                                entregada, reinstalación.
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_construction_change_order_search" model="ir.ui.view">
+        <field name="name">construction.change.order.search</field>
+        <field name="model">construction.change.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="contract_id"/>
+                <filter string="Por aprobar" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Aprobados" name="approved" domain="[('state', '=', 'approved')]"/>
+                <separator/>
+                <filter string="Adicionales" name="additional" domain="[('kind', '=', 'additional')]"/>
+                <filter string="Deductivos" name="deductive" domain="[('kind', '=', 'deductive')]"/>
+                <filter string="Rehacer" name="rework" domain="[('kind', '=', 'rework')]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Tipo" name="group_kind" context="{'group_by': 'kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_change_order" model="ir.actions.act_window">
+        <field name="name">Adicionales y deductivos</field>
+        <field name="res_model">construction.change.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un cambio de la obra</p>
+            <p>Lo que se agrega o se quita de una unidad después de aprobado el plan. Al aprobarlo,
+               sus líneas entran al plan vigente con origen «Cambio» y a su presupuesto.</p>
+        </field>
+    </record>
+
+    <!-- Dependencias de terceros (P-32) -->
+    <record id="view_construction_dependency_list" model="ir.ui.view">
+        <field name="name">construction.dependency.list</field>
+        <field name="model">construction.dependency</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state != 'open'"
+                  decoration-danger="state == 'open' and date_expected and date_expected &lt; current_date">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="kind"/>
+                <field name="partner_id"/>
+                <field name="task_ids" widget="many2many_tags" optional="show"/>
+                <field name="stage"/>
+                <field name="date_expected"/>
+                <field name="date_done" optional="hide"/>
+                <field name="state" widget="badge" decoration-warning="state == 'open'"
+                       decoration-success="state == 'done'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_construction_dependency_form" model="ir.ui.view">
+        <field name="name">construction.dependency.form</field>
+        <field name="model">construction.dependency</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_done" type="object" string="Cumplida" class="btn-primary"
+                            invisible="state != 'open'"/>
+                    <button name="action_shift_schedule" type="object" string="Mover cronograma"
+                            invisible="state != 'open' or not date_expected"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state != 'open'"/>
+                    <button name="action_reopen" type="object" string="Reabrir"
+                            invisible="state == 'open'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="open,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_stages" type="object" class="oe_stat_button"
+                                icon="fa-ban">
+                            <field name="stage_count" widget="statinfo" string="Etapas bloqueadas"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Encimeras de granito, torre B"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="kind"/>
+                            <field name="partner_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="stage"/>
+                            <field name="date_expected"/>
+                            <field name="date_done" invisible="not date_done"/>
+                        </group>
+                    </group>
+                    <field name="task_ids" widget="many2many_tags" options="{'no_create': True}"
+                           placeholder="Toda la obra"/>
+                    <field name="note" placeholder="Qué falta, a quién se pidió…"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_construction_dependency_search" model="ir.ui.view">
+        <field name="name">construction.dependency.search</field>
+        <field name="model">construction.dependency</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <filter string="Abiertas" name="open" domain="[('state', '=', 'open')]"/>
+                <filter string="Vencidas" name="late"
+                        domain="[('state', '=', 'open'), ('date_expected', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Tipo" name="group_kind" context="{'group_by': 'kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_dependency" model="ir.actions.act_window">
+        <field name="name">Dependencias de terceros</field>
+        <field name="res_model">construction.dependency</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre lo que un tercero debe entregar</p>
+            <p>Encimeras, electrodomésticos, frente liberado, piloto aprobado o instalaciones:
+               mientras la dependencia está abierta, la etapa que bloquea no admite avances ni se
+               programa antes de la fecha prevista.</p>
+        </field>
+    </record>
+
+    <!-- Etapas del cronograma: bloqueo por dependencia -->
+    <record id="construction_space_stage_view_list_dependency" model="ir.ui.view">
+        <field name="name">construction.space.stage.list.dependency</field>
+        <field name="model">construction.space.stage</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_space_stage_view_list"/>
+        <field name="arch" type="xml">
+            <field name="progress_pct" position="after">
+                <field name="blocked" optional="show"/>
+                <field name="dependency_ids" widget="many2many_tags" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Unidad: su contrato -->
+    <record id="project_task_view_form_construction_contract" model="ir.ui.view">
+        <field name="name">project.task.form.construction.contract</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="al_construction_planner.project_task_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <field name="construction_unit_type" position="after">
+                <field name="construction_contract_id" invisible="construction_level != 'apartment'"
+                       groups="al_construction_planner.group_planner_user"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Contrato: cambios aprobados -->
+    <record id="view_construction_contract_form_changes" model="ir.ui.view">
+        <field name="name">construction.contract.form.changes</field>
+        <field name="model">construction.contract</field>
+        <field name="inherit_id" ref="al_construction_planner.view_construction_contract_form"/>
+        <field name="arch" type="xml">
+            <field name="amount_total" position="after">
+                <field name="amount_changes"/>
+            </field>
+        </field>
+    </record>
+</odoo>

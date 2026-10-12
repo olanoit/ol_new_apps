@@ -45,6 +45,7 @@
                             <field name="project_id" options="{'no_create': True}"/>
                             <field name="family"/>
                             <field name="code"/>
+                            <field name="variant_of_id" options="{'no_create': True}"/>
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -66,9 +67,34 @@
                                     <field name="module_type"/>
                                     <field name="width_mm"/>
                                     <field name="ml_group"/>
+                                    <field name="furniture_id" optional="show" options="{'no_create': True}"/>
                                     <field name="assembly_activity_id" options="{'no_create': True}"/>
                                     <field name="bom_id" optional="show" options="{'no_create': True}"/>
                                     <field name="company_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Muebles" name="furniture">
+                            <field name="furniture_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="ml_group"/>
+                                    <field name="ml"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <p class="text-muted">
+                                Con el nivel Mueble en la plantilla de la obra, los módulos cuelgan
+                                de su mueble y la instalación y la limpieza por ML se calculan por
+                                mueble con estos metros lineales.
+                            </p>
+                        </page>
+                        <page string="Otros nombres" name="aliases">
+                            <field name="alias_ids">
+                                <list editable="bottom">
+                                    <field name="source"/>
+                                    <field name="name"/>
                                 </list>
                             </field>
                         </page>

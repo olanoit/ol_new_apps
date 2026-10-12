@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_project_view_form_construction_spreadsheet" model="ir.ui.view">
+        <field name="name">project.project.form.construction.spreadsheet</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <button name="action_construction_open_schedule" position="after">
+                <button name="action_construction_open_spreadsheet" type="object"
+                        string="Hoja de trabajo" icon="fa-table" class="btn-secondary"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </button>
+        </field>
+    </record>
+</odoo>

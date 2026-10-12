@@ -99,6 +99,9 @@
                     </group>
                     <group string="Avance">
                         <field name="activity_id" options="{'no_create': True}"/>
+                        <field name="has_tranches" invisible="1"/>
+                        <field name="tranche_id" options="{'no_create': True}"
+                               invisible="not has_tranches" required="has_tranches"/>
                         <field name="date"/>
                         <label for="qty_total"/>
                         <div class="o_row">

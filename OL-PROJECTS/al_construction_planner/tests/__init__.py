@@ -15,3 +15,10 @@ from . import test_schedule_report
 from . import test_import
 from . import test_menus
 from . import test_feedback
+from . import test_levels_v15
+from . import test_typology_v15
+from . import test_contract_v15
+from . import test_analytic_v15
+from . import test_portal_v15
+from . import test_change_v15
+from . import test_planning_tab_v15

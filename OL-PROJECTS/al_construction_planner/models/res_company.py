@@ -78,6 +78,14 @@ class ResCompany(models.Model):
              'como línea negativa a esta cuenta. Sin cuenta, la amortización queda solo en la '
              'valorización.')
 
+    construction_categ_assembly_id = fields.Many2one(
+        'product.category', string='Categoría de los servicios de armado',
+        help='Categoría (p. ej. 601) de los productos de servicio de las actividades de '
+             'producción y armado: su modelo de distribución analítica pone la etapa.')
+    construction_categ_installation_id = fields.Many2one(
+        'product.category', string='Categoría de los servicios de instalación',
+        help='Categoría (p. ej. 602) de las actividades de instalación y entregas.')
+
     def _construction_is_holiday(self, day):
         """Feriado de la compañía: un día cubierto por una ausencia global
         (sin recurso) de la compañía, en cualquiera de sus calendarios (la
@@ -163,3 +171,51 @@ class ResCompany(models.Model):
                 return day
             day += timedelta(days=1)
         return day
+
+    # ------------------------------------------------------------------
+    # Días hábiles de la obra (cronograma, v1.5 M15-17 y M15-18)
+    # ------------------------------------------------------------------
+    def _construction_site_weekdays(self):
+        """Días de la semana con horario en el calendario de la compañía
+        (sin calendario: lunes a viernes)."""
+        self.ensure_one()
+        weekdays = {int(a.dayofweek) for a in self.resource_calendar_id.attendance_ids
+                    if not a.display_type}
+        return weekdays or {0, 1, 2, 3, 4}
+
+    def _construction_is_site_day(self, day):
+        """Día hábil de la obra: con horario en el calendario de la compañía y
+        sin feriado (calendarios y feriados nacionales de Perú)."""
+        self.ensure_one()
+        return day.weekday() in self._construction_site_weekdays() \
+            and not self._construction_is_holiday(day)
+
+    def _construction_next_site_day(self, day):
+        """``day`` o el siguiente día hábil de la obra."""
+        self.ensure_one()
+        for _attempt in range(60):
+            if self._construction_is_site_day(day):
+                return day
+            day += timedelta(days=1)
+        return day
+
+    def _construction_add_site_days(self, start, days):
+        """Último día de un tramo de ``days`` días hábiles que empieza en
+        ``start`` (que se corre al siguiente día hábil si no lo es)."""
+        self.ensure_one()
+        day = self._construction_next_site_day(start)
+        for _done in range(1, max(int(days or 1), 1)):
+            day = self._construction_next_site_day(day + timedelta(days=1))
+        return day
+
+    def _construction_count_site_days(self, start, end):
+        """Días hábiles de la obra entre ``start`` y ``end`` (ambos incluidos;
+        al menos 1)."""
+        self.ensure_one()
+        count, day = 0, start
+        while day <= end:
+            if self._construction_is_site_day(day):
+                count += 1
+            day += timedelta(days=1)
+        return max(count, 1)
+

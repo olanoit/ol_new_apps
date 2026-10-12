@@ -2,7 +2,10 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .common import ML_GROUPS, MODULE_TYPES, TYPOLOGY_FAMILIES
+from .common import (
+    FURNITURE_GROUPS, ML_GROUPS, MODULE_TYPES, TYPOLOGY_ALIAS_SOURCES, TYPOLOGY_FAMILIES,
+    UNIT_OVERRIDE_KINDS,
+)
 
 
 class ConstructionTypology(models.Model):
@@ -27,6 +30,21 @@ class ConstructionTypology(models.Model):
     family = fields.Selection(
         TYPOLOGY_FAMILIES, string='Familia', required=True, default='kitchen', tracking=True)
     active = fields.Boolean(string='Activo', default=True)
+    variant_of_id = fields.Many2one(
+        'construction.typology', string='Variante de', index=True, check_company=True,
+        domain="[('project_id', '=', project_id), ('id', '!=', id)]",
+        help='Tipología base de una variante con sufijo (03A, 01.1): se agrupan juntas en '
+             'los reportes.')
+    variant_ids = fields.One2many('construction.typology', 'variant_of_id', string='Variantes')
+    alias_ids = fields.One2many(
+        'construction.typology.alias', 'typology_id', string='Otros nombres', copy=True,
+        help='Cómo se llama la tipología en la cotización, la orden del cliente, el itemizado '
+             'o el ETO: el importador la reconoce por cualquiera de ellos.')
+    furniture_line_ids = fields.One2many(
+        'construction.typology.furniture', 'typology_id', string='Muebles', copy=True,
+        help='Muebles del ambiente (bajo, alto, torre de horno…) con sus metros lineales: con '
+             'el nivel Mueble en la plantilla de la obra, la instalación, las puertas y la '
+             'limpieza por ML cuelgan de cada mueble.')
     product_tmpl_id = fields.Many2one(
         'product.template', string='Producto', check_company=True,
         help='Mueble terminado de la tipología: lo que fabrica la OF.')
@@ -113,6 +131,38 @@ class ConstructionTypology(models.Model):
         for typology in self:
             typology.display_name = typology.name or typology.code
 
+    @api.constrains('variant_of_id')
+    def _check_variant_of(self):
+        for typology in self.filtered('variant_of_id'):
+            if typology.variant_of_id.project_id != typology.project_id:
+                raise ValidationError(self.env._(
+                    'La tipología %s solo puede ser variante de otra de la misma obra.',
+                    typology.display_name))
+            if typology.variant_of_id.variant_of_id:
+                raise ValidationError(self.env._(
+                    'La tipología base de %s no puede ser a su vez una variante.',
+                    typology.display_name))
+
+    @api.model
+    def _find_by_name(self, project, text, typologies=None):
+        """Tipología de la obra por su código, su nombre o cualquiera de sus
+        otros nombres (sin distinguir mayúsculas, espacios ni guiones):
+        «VK-01», «V-K-01» y «COCINA 05» pueden ser la misma."""
+        key = self._name_key(text)
+        if not key:
+            return self.browse()
+        typologies = typologies if typologies is not None else self.search(
+            [('project_id', '=', project.id)])
+        for typology in typologies:
+            names = [typology.code, typology.name] + typology.alias_ids.mapped('name')
+            if key in {self._name_key(name) for name in names}:
+                return typology
+        return self.browse()
+
+    @staticmethod
+    def _name_key(text):
+        return ''.join(ch for ch in (text or '').upper() if ch.isalnum())
+
     def action_view_space_tasks(self):
         self.ensure_one()
         return {
@@ -144,6 +194,11 @@ class ConstructionTypologyModule(models.Model):
     width_mm = fields.Integer(
         string='Ancho (mm)', help='Con ancho, las actividades por ML cuelgan del módulo.')
     ml_group = fields.Selection(ML_GROUPS, string='Grupo ML', default='none')
+    furniture_id = fields.Many2one(
+        'construction.typology.furniture', string='Mueble', check_company=True,
+        domain="[('typology_id', '=', typology_id)]",
+        help='Mueble del ambiente al que pertenece el módulo (con el nivel Mueble en la '
+             'plantilla de la obra).')
     assembly_activity_id = fields.Many2one(
         'construction.labor.activity', string='Actividad de armado', required=True,
         check_company=True, domain=[('module_level', '=', True)])
@@ -178,3 +233,112 @@ class ConstructionTypologyActivity(models.Model):
         string='Cantidad por ambiente', digits=(16, 4), required=True,
         help='Unidades de driver de un ambiente de esta tipología '
              '(p. ej. instalación de mueble bajo: 2.12 ML).')
+
+
+class ConstructionTypologyAlias(models.Model):
+    """Otro nombre de una tipología en un documento (v1.5, M15-04)."""
+    _name = 'construction.typology.alias'
+    _description = 'Otro nombre de la tipología'
+    _order = 'typology_id, source, name'
+
+    typology_id = fields.Many2one(
+        'construction.typology', string='Tipología', required=True, ondelete='cascade',
+        index=True)
+    company_id = fields.Many2one(related='typology_id.company_id', store=True, index=True)
+    name = fields.Char(string='Nombre', required=True)
+    source = fields.Selection(
+        TYPOLOGY_ALIAS_SOURCES, string='Documento', required=True, default='quote')
+
+
+class ConstructionTypologyFurniture(models.Model):
+    """Mueble de una tipología: bajo, alto, torre de horno… (v1.5, M15-03)."""
+    _name = 'construction.typology.furniture'
+    _description = 'Mueble de la tipología'
+    _order = 'typology_id, sequence, id'
+    _check_company_auto = True
+
+    typology_id = fields.Many2one(
+        'construction.typology', string='Tipología', required=True, ondelete='cascade',
+        index=True, check_company=True)
+    company_id = fields.Many2one(related='typology_id.company_id', store=True, index=True)
+    sequence = fields.Integer(string='Orden', default=10)
+    name = fields.Char(string='Mueble', required=True, help='Mueble bajo, mueble alto, torre de horno…')
+    ml_group = fields.Selection(
+        FURNITURE_GROUPS, string='Grupo', required=True, default='low',
+        help='Bajo y alto reciben las actividades por ML de su grupo (instalación, limpieza).')
+    ml = fields.Float(
+        string='Metros lineales', digits=(16, 2), compute='_compute_ml', store=True,
+        readonly=False,
+        help='Suma del ancho de sus módulos; sin anchos, se escribe a mano.')
+    module_ids = fields.One2many('construction.typology.module', 'furniture_id', string='Módulos')
+
+    @api.depends('module_ids.width_mm')
+    def _compute_ml(self):
+        for furniture in self:
+            widths = sum(furniture.module_ids.mapped('width_mm'))
+            if widths:
+                furniture.ml = round(widths / 1000.0, 2)
+            elif not furniture.ml:
+                furniture.ml = 0.0
+
+
+class ConstructionUnitOverride(models.Model):
+    """Variante de una unidad o un ambiente frente a su tipología (v1.5,
+    M15-04): otro color de un material, un componente excluido o un metrado
+    distinto. El generador del plan la aplica a los materiales del ambiente
+    (y de todos los ambientes de la unidad)."""
+    _name = 'construction.unit.override'
+    _description = 'Variante de la unidad'
+    _order = 'task_id, id'
+    _check_company_auto = True
+
+    task_id = fields.Many2one(
+        'project.task', string='Unidad o ambiente', required=True, ondelete='cascade',
+        index=True, check_company=True,
+        domain="[('construction_level', 'in', ('apartment', 'space'))]")
+    project_id = fields.Many2one(related='task_id.project_id', store=True, index=True)
+    company_id = fields.Many2one(
+        'res.company', string='Compañía', compute='_compute_company_id', store=True, index=True,
+        precompute=True)
+    kind = fields.Selection(UNIT_OVERRIDE_KINDS, string='Tipo', required=True, default='color')
+    product_id = fields.Many2one(
+        'product.product', string='Producto', required=True, check_company=True,
+        help='El material de la tipología al que se aplica la variante.')
+    new_product_id = fields.Many2one(
+        'product.product', string='Reemplazar por', check_company=True,
+        help='Solo para «Color o acabado»: el material que se usa en su lugar.')
+    qty = fields.Float(
+        string='Cantidad por ambiente', digits='Product Unit',
+        help='Solo para «Metrado distinto»: la cantidad que reemplaza a la de la tipología.')
+    note = fields.Text(string='Nota')
+
+    @api.depends('task_id.company_id', 'task_id.project_id.company_id')
+    def _compute_company_id(self):
+        # En Odoo 19 la obra puede no tener compañía: la de la tarea, la de la
+        # obra o la activa (como la tipología).
+        for override in self:
+            override.company_id = override.task_id.company_id \
+                or override.task_id.project_id.company_id or self.env.company
+
+    @api.constrains('kind', 'new_product_id', 'qty')
+    def _check_values(self):
+        for override in self:
+            if override.kind == 'color' and not override.new_product_id:
+                raise ValidationError(self.env._(
+                    'La variante de color de %s necesita el material que reemplaza.',
+                    override.task_id.display_name))
+            if override.kind == 'qty' and override.qty < 0:
+                raise ValidationError(self.env._('La cantidad de la variante no puede ser negativa.'))
+
+    def _apply_to_material(self, product, qty):
+        """(producto, cantidad) de una línea de material tras las variantes;
+        ``None`` si se excluye."""
+        for override in self.filtered(lambda o: o.product_id == product):
+            if override.kind == 'exclude':
+                return None
+            if override.kind == 'qty':
+                qty = override.qty
+            elif override.kind == 'color':
+                product = override.new_product_id
+        return product, qty
+

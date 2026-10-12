@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_contractor_worker_list" model="ir.ui.view">
+        <field name="name">construction.contractor.worker.list</field>
+        <field name="model">construction.contractor.worker</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" decoration-danger="sctr_expired">
+                <field name="partner_id" options="{'no_create': True}"/>
+                <field name="name"/>
+                <field name="document_number"/>
+                <field name="pin" password="True" optional="hide"/>
+                <field name="sctr_valid_until"/>
+                <field name="sctr_expired" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_contractor_worker_search" model="ir.ui.view">
+        <field name="name">construction.contractor.worker.search</field>
+        <field name="model">construction.contractor.worker</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="document_number"/>
+                <field name="partner_id"/>
+                <filter string="Archivados" name="inactive" domain="[('active', '=', False)]"/>
+                <group><filter string="Contrata" name="group_partner" context="{'group_by': 'partner_id'}"/></group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_contractor_worker" model="ir.actions.act_window">
+        <field name="name">Personal de contratas</field>
+        <field name="res_model">construction.contractor.worker</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre al personal de las contratas</p>
+            <p>Marcan en la tablet de la sede con su documento o PIN. No entran a la planilla ni al T-Registro.</p>
+        </field>
+    </record>
+
+    <record id="view_contractor_attendance_list" model="ir.ui.view">
+        <field name="name">construction.contractor.attendance.list</field>
+        <field name="model">construction.contractor.attendance</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="late or out_of_range" decoration-danger="sctr_expired">
+                <field name="date"/>
+                <field name="site_id"/>
+                <field name="partner_id"/>
+                <field name="worker_id"/>
+                <field name="check_in"/>
+                <field name="check_out"/>
+                <field name="late"/>
+                <field name="out_of_range"/>
+                <field name="distance_m" optional="hide"/>
+                <field name="sctr_expired"/>
+                <field name="mode" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_contractor_attendance_search" model="ir.ui.view">
+        <field name="name">construction.contractor.attendance.search</field>
+        <field name="model">construction.contractor.attendance</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="worker_id"/>
+                <field name="partner_id"/>
+                <field name="site_id"/>
+                <filter string="Hoy" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Fuera de hora" name="late" domain="[('late', '=', True)]"/>
+                <filter string="Fuera de rango" name="out_of_range" domain="[('out_of_range', '=', True)]"/>
+                <filter string="SCTR vencido" name="sctr" domain="[('sctr_expired', '=', True)]"/>
+                <group>
+                    <filter string="Sede" name="group_site" context="{'group_by': 'site_id'}"/>
+                    <filter string="Contrata" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Día" name="group_date" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_contractor_attendance" model="ir.actions.act_window">
+        <field name="name">Asistencia de contratas</field>
+        <field name="res_model">construction.contractor.attendance</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_today': 1, 'search_default_group_site': 1}</field>
+    </record>
+
+    <!-- Avances de contratas sin asistencia ese día -->
+    <record id="view_task_progress_list_attendance" model="ir.ui.view">
+        <field name="name">construction.task.progress.list.attendance</field>
+        <field name="model">construction.task.progress</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_task_progress_view_list"/>
+        <field name="arch" type="xml">
+            <field name="qty" position="after">
+                <field name="attendance_ok" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_progress_without_attendance" model="ir.actions.act_window">
+        <field name="name">Avances sin asistencia</field>
+        <field name="res_model">construction.task.progress</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('attendance_ok', '=', False)]</field>
+    </record>
+</odoo>

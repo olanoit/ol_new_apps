@@ -31,6 +31,13 @@ class TestSchedule(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Días hábiles de lunes a viernes: la cadena cuenta los del calendario.
+        cls.env.company.resource_calendar_id = cls.env['resource.calendar'].create({
+            'name': 'Lunes a viernes (test cronograma)', 'company_id': cls.env.company.id,
+            'tz': 'America/Lima',
+            'attendance_ids': [(5, 0, 0)] + [(0, 0, {
+                'name': 'Día %s' % day, 'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
+                'day_period': 'full_day'}) for day in range(5)]})
         demo = _approved_demo(cls.env, 'TEST CRONO')
         cls.plan = demo['plan']
         cls.project = demo['project']

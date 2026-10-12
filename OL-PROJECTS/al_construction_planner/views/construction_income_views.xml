@@ -382,6 +382,13 @@
                       invisible="not is_construction_site"
                       groups="al_construction_planner.group_planner_user">
                     <group>
+                        <group string="Estructura de la obra">
+                            <field name="construction_level_template_id"
+                                   options="{'no_create': True}"
+                                   groups="al_construction_planner.group_planner_planner"/>
+                        </group>
+                    </group>
+                    <group>
                         <group string="Contrato">
                             <field name="construction_sale_order_id" options="{'no_create': True}"
                                    context="{'default_partner_id': partner_id}"/>

@@ -2,12 +2,16 @@
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .common import DRIVER_TYPES, LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATE_RANK, UNIT_STATES
+from .common import (
+    DRIVER_TYPES, LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATE_RANK, UNIT_STATES, UNIT_TYPES,
+)
 
 # Estados del módulo que pone el avance validado (y que su reversión quita).
 PROGRESS_UNIT_STATES = ('produced', 'installed')
-# Nivel inmediatamente superior de cada nivel (la obra es el proyecto).
-PARENT_LEVEL = {'apartment': 'floor', 'space': 'apartment', 'module': 'space'}
+# Nivel inmediatamente superior de cada nivel en una obra sin plantilla de
+# niveles (la obra es el proyecto). Con plantilla manda su orden.
+PARENT_LEVEL = {'apartment': ('floor',), 'space': ('apartment',), 'furniture': ('space',),
+                'module': ('space', 'furniture')}
 
 
 class ProjectTask(models.Model):
@@ -15,7 +19,27 @@ class ProjectTask(models.Model):
 
     construction_level = fields.Selection(
         LEVELS, string='Nivel de obra', index=True,
-        help='Define la jerarquía del árbol del plan: piso › departamento › ambiente › módulo.')
+        help='Función del nivel en el árbol del plan: agrupador, piso, unidad, ambiente, '
+             'mueble o módulo. Con plantilla de niveles sale del nivel de la plantilla.')
+    construction_level_line_id = fields.Many2one(
+        'construction.level.template.line', string='Nivel', index=True,
+        help='Nivel de la plantilla de la obra (Torre, Piso, Departamento…): da el nombre que '
+             'se ve en el árbol y fija la función del nivel.')
+    construction_level_name = fields.Char(
+        string='Nombre del nivel', compute='_compute_construction_level_name')
+    construction_unit_type = fields.Selection(
+        UNIT_TYPES, string='Tipo de unidad',
+        help='Departamento, nivel de dúplex, ducto, estacionamiento, área común, depósito, '
+             'local o piloto (solo en el nivel Unidad).')
+    construction_furniture_ml = fields.Float(
+        string='Metros lineales del mueble', digits=(16, 2),
+        help='Los del mueble de la tipología; con módulos con ancho, el árbol suma sus anchos.')
+    construction_override_ids = fields.One2many(
+        'construction.unit.override', 'task_id', string='Variantes de la unidad',
+        help='Otro color, un componente excluido o un metrado distinto que la tipología.')
+    construction_furniture_task_id = fields.Many2one(
+        'project.task', string='Mueble', compute='_compute_construction_ancestors', store=True,
+        index=True, recursive=True)
     construction_floor_task_id = fields.Many2one(
         'project.task', string='Piso', compute='_compute_construction_ancestors', store=True,
         index=True, recursive=True)
@@ -63,13 +87,14 @@ class ProjectTask(models.Model):
     @api.depends('parent_id', 'construction_level',
                  'parent_id.construction_floor_task_id',
                  'parent_id.construction_apartment_task_id',
-                 'parent_id.construction_space_task_id')
+                 'parent_id.construction_space_task_id',
+                 'parent_id.construction_furniture_task_id')
     def _compute_construction_ancestors(self):
         for task in self:
-            ancestors = {'floor': False, 'apartment': False, 'space': False}
+            ancestors = {'floor': False, 'apartment': False, 'space': False, 'furniture': False}
             node = task
-            # La obra tiene cinco niveles: como mucho cuatro saltos hacia arriba.
-            for _depth in range(6):
+            # Hasta seis niveles bajo la obra y los agrupadores de la plantilla.
+            for _depth in range(10):
                 if not node:
                     break
                 level = node.construction_level
@@ -79,21 +104,99 @@ class ProjectTask(models.Model):
             task.construction_floor_task_id = ancestors['floor']
             task.construction_apartment_task_id = ancestors['apartment']
             task.construction_space_task_id = ancestors['space']
+            task.construction_furniture_task_id = ancestors['furniture']
 
-    @api.constrains('construction_level', 'parent_id')
+    @api.depends('construction_level', 'construction_level_line_id.name')
+    def _compute_construction_level_name(self):
+        labels = dict(LEVELS)
+        for task in self:
+            task.construction_level_name = task.construction_level_line_id.name \
+                or labels.get(task.construction_level, '')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            self._construction_level_from_line(vals)
+        return super().create(vals_list)
+
+    def write(self, vals):
+        self._construction_level_from_line(vals)
+        return super().write(vals)
+
+    @api.model
+    def _construction_level_from_line(self, vals):
+        """El nivel de la plantilla fija la función del nivel."""
+        if vals.get('construction_level_line_id'):
+            line = self.env['construction.level.template.line'].browse(
+                vals['construction_level_line_id'])
+            vals['construction_level'] = line.level
+
+    @api.constrains('construction_level', 'parent_id', 'construction_level_line_id')
     def _check_construction_level(self):
         """Un nivel cuelga del nivel inmediatamente superior (o de la obra si
-        es piso). Las subtareas sin nivel no se validan."""
+        es el primero). Con plantilla de niveles, del nivel anterior de la
+        plantilla; sin ella, piso › departamento › ambiente › módulo. Las
+        subtareas sin nivel no se validan."""
         for task in self:
+            line = task.construction_level_line_id
+            if line:
+                previous = line._previous()
+                if task.parent_id.construction_level_line_id != previous \
+                        or (not previous and task.parent_id):
+                    raise ValidationError(self.env._(
+                        'La tarea %(task)s es de nivel %(level)s: debe colgar de %(parent)s.',
+                        task=task.display_name, level=line.name,
+                        parent=previous.name.lower() if previous else self.env._('la obra')))
+                continue
             expected = PARENT_LEVEL.get(task.construction_level)
             if not expected:
                 continue
-            if task.parent_id.construction_level != expected:
+            if task.parent_id.construction_level not in expected:
                 raise ValidationError(self.env._(
                     'La tarea %(task)s es de nivel %(level)s: debe colgar de un %(parent)s.',
                     task=task.display_name,
                     level=dict(LEVELS)[task.construction_level],
-                    parent=dict(LEVELS)[expected].lower()))
+                    parent=' o '.join(dict(LEVELS)[level].lower() for level in expected)))
+
+    def _construction_group_names(self):
+        """Nombres de los agrupadores (torre, etapa) por encima de la tarea,
+        de arriba abajo: la ruta del importador."""
+        self.ensure_one()
+        names, node = [], self.parent_id
+        while node and node.construction_level == 'group':
+            names.insert(0, node.name)
+            node = node.parent_id
+        return tuple(names)
+
+    def _construction_furniture_for(self, ml_group, module_type=False):
+        """Mueble del ambiente donde va un módulo sin mueble en su plantilla:
+        el de su grupo ML o, sin grupo, el de su tipo (mueble bajo o alto; los
+        demás en «Otros muebles»)."""
+        self.ensure_one()
+        names = {'low': self.env._('Mueble bajo'), 'high': self.env._('Mueble alto')}
+        key = ml_group if ml_group in names else module_type
+        return self._construction_furniture_named(names.get(key, self.env._('Otros muebles')))
+
+    def _construction_furniture_named(self, name, ml=0.0):
+        """Mueble ``name`` del ambiente; se crea con el nivel Mueble de la
+        plantilla de la obra si aún no existe."""
+        self.ensure_one()
+        furniture = self.search([('parent_id', '=', self.id),
+                                 ('construction_level', '=', 'furniture'), ('name', '=', name)],
+                                limit=1)
+        if not furniture:
+            furniture = self.with_context(mail_create_nolog=True, tracking_disable=True).create(dict(
+                self.project_id._construction_level_vals('furniture'), name=name,
+                project_id=self.project_id.id, parent_id=self.id, user_ids=False,
+                construction_furniture_ml=ml))
+        elif ml and not furniture.construction_furniture_ml:
+            furniture.construction_furniture_ml = ml
+        return furniture
+
+    def _construction_overrides(self):
+        """Variantes que aplican a un ambiente: las suyas y las de su unidad."""
+        self.ensure_one()
+        return self.construction_override_ids | self.construction_apartment_task_id.construction_override_ids
 
     def _construction_plan_domain(self):
         """Líneas del plan vigente (o del borrador si no hay vigente) del nodo
@@ -101,11 +204,16 @@ class ProjectTask(models.Model):
         self.ensure_one()
         field = {
             'floor': 'floor_task_id', 'apartment': 'apartment_task_id',
-            'space': 'space_task_id', 'module': 'module_task_id',
+            'space': 'space_task_id', 'furniture': 'furniture_task_id',
+            'module': 'module_task_id',
         }.get(self.construction_level)
+        plan = self.project_id._construction_current_plan()
+        if self.construction_level == 'group':
+            # Agrupador (torre, etapa): lo de los pisos que tiene debajo.
+            floors = self.search([('id', 'child_of', self.id), ('construction_level', '=', 'floor')])
+            return [('floor_task_id', 'in', floors.ids), ('plan_id', '=', plan.id)]
         if not field:
             return [('task_id', '=', self.id)]
-        plan = self.project_id._construction_current_plan()
         return [(field, '=', self.id), ('plan_id', '=', plan.id)]
 
     def _compute_construction_plan_amount(self):
@@ -146,7 +254,7 @@ class ProjectTask(models.Model):
         modules = self.filtered(lambda t: t.construction_level == 'module')
         spaces = self.filtered(lambda t: t.construction_level == 'space')
         if spaces:
-            modules |= self.search([('parent_id', 'in', spaces.ids),
+            modules |= self.search([('construction_space_task_id', 'in', spaces.ids),
                                     ('construction_level', '=', 'module')])
         Line = self.env['construction.resource.plan.line']
         for module in modules:

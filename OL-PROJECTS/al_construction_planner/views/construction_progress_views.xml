@@ -22,7 +22,9 @@
                 <field name="task_id"/>
                 <field name="activity_id"/>
                 <field name="date"/>
+                <field name="tranche_id" optional="show"/>
                 <field name="qty" sum="Total"/>
+                <field name="possible_duplicate" optional="show" widget="boolean_toggle" readonly="1"/>
                 <field name="uom_id" groups="uom.group_uom"/>
                 <field name="qty_executed" optional="show"/>
                 <field name="qty_planned" optional="show"/>
@@ -87,6 +89,8 @@
                             <field name="date" readonly="state != 'draft'"/>
                             <label for="qty"/>
                             <div class="o_row">
+                                <field name="tranche_id" readonly="state != 'draft'"
+                                       options="{'no_create': True}"/>
                                 <field name="qty" readonly="state != 'draft'"/>
                                 <field name="uom_id" groups="uom.group_uom"/>
                             </div>
@@ -130,6 +134,8 @@
                 <filter string="Por validar" name="to_validate" domain="[('state', '=', 'draft')]"/>
                 <filter string="Validados" name="validated" domain="[('state', '=', 'validated')]"/>
                 <filter string="Rechazados" name="rejected" domain="[('state', '=', 'rejected')]"/>
+                <filter string="Posibles duplicados" name="possible_duplicate"
+                        domain="[('possible_duplicate', '=', True)]"/>
                 <separator/>
                 <filter string="Sin liquidar" name="unsettled"
                         domain="[('state', '=', 'validated'), ('settled', '=', False)]"/>

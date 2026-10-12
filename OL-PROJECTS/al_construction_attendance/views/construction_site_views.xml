@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_construction_site_form_attendance" model="ir.ui.view">
+        <field name="name">l10n_pe.hr.construction.site.form.attendance</field>
+        <field name="model">l10n_pe.hr.construction.site</field>
+        <field name="inherit_id" ref="al_hr_pe_construction.view_construction_site_form"/>
+        <field name="arch" type="xml">
+            <field name="analytic_account_id" position="after">
+                <field name="project_id" options="{'no_create': True}"/>
+                <field name="default_stage_account_id" options="{'no_create': True}"/>
+            </field>
+            <xpath expr="//sheet" position="inside">
+                <group string="Ubicación y marcación">
+                    <group>
+                        <field name="latitude"/>
+                        <field name="longitude"/>
+                        <field name="radius_m"/>
+                        <field name="entry_deadline" widget="float_time"/>
+                    </group>
+                    <group groups="hr.group_hr_user">
+                        <field name="kiosk_url" widget="CopyClipboardChar"/>
+                        <button name="action_new_kiosk_token" type="object" string="Cambiar la clave del quiosco"
+                                class="btn-link" colspan="2"
+                                confirm="El enlace actual de la tablet deja de funcionar. ¿Continuar?"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

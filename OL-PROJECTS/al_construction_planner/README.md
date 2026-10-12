@@ -23,6 +23,22 @@ Diseño técnico, equivalencias de nombres y plan de fases:
 | 10 | Ruta del ingreso: calendario e ingresos de la obra (P-21), entrega semanal (P-19), valorización con el cliente (P-20) con W-13 y W-14, factura de la valorización con control de lo confirmado | hecha |
 | 11 | Cronograma valorizado (P-22) plan y real con curva S, Excel, pivote y gráfico; inicio de la aplicación (P-01) con obras, próximo hito y pendientes por grupo; menú Reportes y cobranza de la obra | hecha |
 
+Paquete de mejoras v1.5 (especificación v1.5 del 12/10/2026; fases renumeradas
+12 a 21 dentro del paquete):
+
+| Fase v1.5 | Contenido | Estado |
+|---|---|---|
+| 12 | Plantilla de niveles (`construction.level.template`), tipo de unidad, `construction_level` calculado desde la función del nivel, importador y árbol con niveles variables, ritmo de programación, fechas acumuladas y encadenamiento por días hábiles (P-31) | hecha |
+| 13 | Tipologías: familia, variantes, otros nombres, muebles y variantes por unidad (`construction.typology.alias`, `.furniture`, `construction.unit.override`) | hecha |
+| 14 | Contrato de obra, plantillas de hitos, hito por unidad, valorización por hitos, documentos habilitantes (P-30) | hecha |
+| 15 | Producto de servicio por actividad, tramos de pago, reglas analíticas, presupuesto por obra › etapa › partida, etapa y partida en los apuntes reales | hecha |
+| 16 | Portal de la contrata (P-23 a P-25) con foto y ubicación | hecha |
+| 17 y 18 | Sedes, quiosco, marcación de contratas, asistencia diaria (P-26 a P-28) y cierre de costo de personal (P-29): módulo `al_construction_attendance` | hecha |
+| 19 | Adicionales y deductivos (`construction.change.order`) y dependencias de terceros (`construction.dependency`) que bloquean etapas (P-32) | hecha |
+| 20 | Pestaña «Planificación» en la obra: margen planificado, devengado y contable | hecha |
+| 21 | Hoja de trabajo en Documentos con «Enviar al planificador»: módulo `al_construction_planner_spreadsheet` | hecha |
+| M15-11 | Validaciones de datos: tipologías y ambientes repetidos, unidad contra piso, avances posiblemente duplicados | hecha |
+
 Criterios de aceptación de la especificación y su test:
 [`docs/planificador/ACEPTACION.md`](../../docs/planificador/ACEPTACION.md).
 
