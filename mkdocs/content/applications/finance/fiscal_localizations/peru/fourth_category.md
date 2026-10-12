@@ -109,6 +109,18 @@ del contacto.
 | El prestador no tiene RUC | El archivo .4ta no se genera | Complete su número de documento |
 | Nota de crédito sobre un recibo | No se ajusta la retención automáticamente | Regístrela a mano y revise la PLAME |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+4TA** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Dos prestadores con RUC 10 y la constancia de suspensión de uno de ellos.
+- Tres recibos por honorarios pagados: S/ 2 000 con retención del 8 %, S/ 1 200
+  bajo el tope y S/ 5 000 sin retención por la constancia.
+
 !!! info "Ver también"
     - [SUNAT: rentas de cuarta categoría (tasa y tope)](https://orientacion.sunat.gob.pe/node/283)
     - [SUNAT, Oficio 000021-2024: la constancia de suspensión y la retención](https://www.sunat.gob.pe/legislacion/oficios-ti/2024/o-000021-2024-7T0000.pdf)

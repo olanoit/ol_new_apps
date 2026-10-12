@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 RUC_TEST = '20512528458'
 PERIOD_YEAR = 2026
@@ -102,6 +103,7 @@ class TestSire(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if (cls.company.vat or '') != RUC_TEST:
             cls.company.vat = RUC_TEST

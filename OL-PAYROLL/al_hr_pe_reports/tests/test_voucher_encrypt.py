@@ -18,6 +18,11 @@ class TestVoucherEncrypt(TransactionCase, _PayslipCase):
         cls.env['hr.main.parameter'].create({'company_id': cls.company.id})
         cls.employee.identification_id = '70112233'
         cls.slip.compute_sheet()
+        # wkhtmltopdf pide los estilos a report.url (o web.base.url). En una
+        # base nueva nadie responde ahí y se quedaba esperando sin límite: un
+        # puerto cerrado falla al instante y el PDF se genera igual (solo se
+        # comprueba el cifrado, no el aspecto).
+        cls.env['ir.config_parameter'].sudo().set_param('report.url', 'http://127.0.0.1:9')
 
     def _render(self, **context):
         Report = self.env['ir.actions.report'].with_context(

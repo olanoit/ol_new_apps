@@ -199,6 +199,21 @@ solo registro; los canjes de origen pasan a **Historial de canje**.
 | No aparece la factura | Solo se ofrecen apuntes publicados, con saldo, del socio y de la moneda del diario | Revisar el socio, la moneda y el tipo de documento |
 | «No se ha configurado la cuenta» al enviar al banco | Falta la fila de cuenta para ese tipo de letra y moneda | Completar **Cuentas de letras** |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+LETRA** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Cuentas de letras del PCGE (1232, 1233 y 1234 por cobrar; 4230 por pagar) y
+  cuentas «Redondeo».
+- Diarios **DEMO Letras por cobrar** (DLEC) y **DEMO Letras por pagar** (DLEP).
+- Canje de la factura de cliente de S/ 1 180,00 en tres letras de S/ 393,33 con
+  su redondeo de S/ 0,01; la primera, enviada a **cobranza libre**.
+- Canje de la factura de proveedor de S/ 2 360,00 en dos letras.
+
 !!! info "Ver también"
     - [Ley 27287, Ley de Títulos Valores](https://www.leyes.congreso.gob.pe/Documentos/Leyes/27287.pdf)
     - [Plan Contable General Empresarial 2019 (MEF)](https://cdn.www.gob.pe/uploads/document/file/315820/PCGE_2019.pdf)

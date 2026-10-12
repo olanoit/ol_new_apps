@@ -7,6 +7,7 @@ from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
 from ..models import bank_formats
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -15,6 +16,7 @@ class TestBatchPayment(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.pen = cls.env.ref('base.PEN')
         Bank = cls.env['res.bank']

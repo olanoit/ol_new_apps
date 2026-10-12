@@ -124,6 +124,21 @@ En la pestaña **DUA**:
 | Importación sin percepción | Deje la percepción en cero |
 | Gastos con IGV (agente, flete local) | Registre su factura normal con el IGV y use un producto de costo en destino en la línea del servicio |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+DUA** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Configuración de la DAM: entidad aduanera, cuenta 609190 por regularizar y
+  diario.
+- Recepción de diez motobombas, factura del proveedor del exterior y gastos del
+  agente de aduana (S/ 350).
+- La DAM publicada (valor en aduana S/ 37 450, ad valorem S/ 2 247) con su costo
+  en destino.
+
 !!! info "Ver también"
     - [SUNAT: régimen de percepciones del IGV en la importación](https://orientacion.sunat.gob.pe/03-porcentajes-de-percepcion)
     - [Percepciones del IGV](../fiscal_localizations/peru/perceptions.md)

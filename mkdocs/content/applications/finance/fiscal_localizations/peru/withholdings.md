@@ -275,6 +275,20 @@ borrador**: deshace el asiento y la conciliación.
 | Pago con CRE aceptado que hay que corregir | El pago no pasa a borrador | Revierta el CRE y, aceptada la reversión, páselo a borrador |
 | Letra de cambio pagada en el banco | No hay pago de Odoo con retención | Emita el CRE sin pago con la partida de la letra |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+RET** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- La compañía como agente de retención, con la cuenta 40114 de retenciones
+  sufridas.
+- Compra de S/ 2 360,00 pagada con su comprobante de retención (S/ 70,80).
+- Venta de S/ 3 540,00 a un cliente agente con la retención sufrida (S/ 106,20).
+- No se envía nada a SUNAT.
+
 !!! info "Ver también"
     - [R.S. 037-2002/SUNAT — Régimen de Retenciones del IGV](https://www.sunat.gob.pe/legislacion/superin/2002/037.htm)
     - [R.S. 061-2005/SUNAT — Flexibilización del régimen](https://www.sunat.gob.pe/legislacion/superin/2005/061.htm)

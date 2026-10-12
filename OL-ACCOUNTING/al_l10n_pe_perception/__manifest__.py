@@ -46,7 +46,7 @@ Percepciones que nos cobran:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '1.20261012',
+    'version': '2.20261012',
     'license': 'OPL-1',
     'depends': [
         # Motor del comprobante electrónico (l10n_pe.retention.edi.mixin),
@@ -69,6 +69,8 @@ Percepciones que nos cobran:
         'views/perception_received_views.xml',
         'views/perception_menus.xml',
     ],
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_perception_demo.xml'],
     'installable': True,
     'application': False,
 }

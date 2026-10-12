@@ -7,6 +7,7 @@ from io import BytesIO
 
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 RUC_TEST = '20512528458'
 
@@ -17,6 +18,7 @@ class TestPleAssetReport(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if not (cls.company.vat and len(cls.company.vat) == 11):
             cls.company.vat = RUC_TEST

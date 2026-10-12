@@ -7,3 +7,4 @@ from . import perception_xml
 from . import perception
 from . import perception_received
 from . import account_payment
+from . import al_pe_demo

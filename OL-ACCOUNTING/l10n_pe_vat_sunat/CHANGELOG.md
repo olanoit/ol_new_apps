@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261012 — 12/10/2026
+
+- La unicidad de ciudades (nombre y departamento) solo se valida en Perú: ya no impide instalar módulos oficiales con ciudades homónimas de otros países, como la nómina de EE. UU. que se instala sola en bases con demo.
+
 ## 19.20261011 — 11/10/2026
 
 - «Actualizar desde API» completa la ficha RUC con las demás conexiones cuando la primera que responde solo trae los datos básicos, y avisa con el motivo si ninguna la trae (por ejemplo, el portal SUNAT responde 403 fuera del Perú).

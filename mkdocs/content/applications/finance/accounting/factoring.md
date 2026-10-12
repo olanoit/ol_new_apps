@@ -259,6 +259,22 @@ diferencia de **S/ 40** va a pérdida por diferencia de cambio.
 | Intereses y comisiones mayores que el adelanto | Error en el desembolso | Revisar la liquidación del factor |
 | Se intenta **Pagar** una factura cedida | Bloqueado | Registrar el cobro desde la operación |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+FAC** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Factor **DEMO FAC Factor Capital S.A.** y cliente **DEMO FAC Inmobiliaria del
+  Sur S.A.C.**
+- Operación sin recurso de dos facturas (S/ 12 000 y S/ 8 500), cedida y
+  desembolsada.
+- Operación con recurso de una factura de S/ 15 000, desembolsada y con
+  intereses devengados.
+- Una operación en borrador.
+
 !!! info "Ver también"
     - [Ley 29623: factura negociable](https://www.leyes.congreso.gob.pe/Documentos/Leyes/29623.pdf)
     - [D.U. 013-2020: financiamiento de la MIPYME](https://www.leyes.congreso.gob.pe/Documentos/2016_2021/Decretos/Urgencias/2020/DU-013-2020-PP.pdf)

@@ -29,7 +29,7 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '21.20261012',
+    'version': '22.20261012',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -56,6 +56,8 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
         'reports/retention_report.xml',
     ],
     'post_init_hook': 'post_init_hook',
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_retention_demo.xml'],
     'installable': True,
     'application': False,
 }

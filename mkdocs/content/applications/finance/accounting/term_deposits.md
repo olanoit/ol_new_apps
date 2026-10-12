@@ -276,6 +276,19 @@ cierra la garantía.
 | La garantía no tiene vencimiento | No hay fecha de aviso | Llenar **Vigencia de la garantía** |
 | «Solo se liberan las garantías» | Un depósito a plazo no se libera | Cancelarlo o renovarlo |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+DEP** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Depósito a plazo de S/ 250 000 con intereses devengados y otro de S/ 80 000
+  por vencer.
+- Fondo en garantía de una carta fianza de S/ 45 000.
+- Depósito en garantía de un alquiler de S/ 18 000, liberado en S/ 6 000.
+
 !!! info "Ver también"
     - [SBS: cuenta a plazo fijo](https://www.sbs.gob.pe/usuarios/informacion-financiera/productos-financieros/depositos-y-ahorros/cuenta-de-plazo-fijo) y [Compara y elige](https://www.sbs.gob.pe/usuarios/aprende-con-la-sbs/compara-y-elige)
     - [BCRP: glosario (tasa efectiva)](https://www.bcrp.gob.pe/publicaciones/glosario/t.html)

@@ -36,8 +36,15 @@ with Captura('al_l10n_pe_delivery_guide_report') as c:
     # ---- Menú Perú ▸ Guías de remisión -------------------------------------
     c.abrir_accion('al_l10n_pe_delivery_guide_report.action_guides', ms=3000)
     c.foto('05-guias', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
-    c.page.get_by_role('button', name='Guías de remisión').first.click()
+    # Con todas las secciones de la app Perú, el menú se desborda a «Más» a 1440 px
+    c.page.set_viewport_size({'width': 2560, 'height': 900})
+    c.abrir_accion('al_l10n_pe_delivery_guide_report.action_guides', ms=3000)
+    boton = c.page.locator('.o_menu_sections button:visible:has-text("Guías de remisión")').first
+    boton.click()
     c.esperar(800)
-    c.foto('06-menu-guias', clip={'x': 0, 'y': 0, 'width': 900, 'height': 230})
+    caja = boton.bounding_box()
+    c.foto('06-menu-guias', clip={'x': max(caja['x'] - 300, 0), 'y': 0, 'width': 900, 'height': 230},
+           recortar=False)
+    c.page.set_viewport_size({'width': 1440, 'height': 900})
     c.abrir_accion('al_l10n_pe_delivery_guide_report.action_guides_analysis', ms=3000)
     c.foto('07-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})

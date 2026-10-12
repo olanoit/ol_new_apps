@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 11.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Los datos de demostración (existencias de cemento y fierro) ya no impiden actualizar el módulo en una base con demo: se cargan una sola vez y no se reescriben en cada actualización."
   - version: 10.20261011
     fecha: 11/10/2026
     cambios:

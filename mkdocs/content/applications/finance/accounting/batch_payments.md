@@ -75,6 +75,20 @@ Si hay que corregir un pago, use **Volver a generar el archivo de exportación**
 | Proveedor sin CCI en otro banco | El lote no se valida | Registre el CCI en su cuenta |
 | Pagos en soles y en dólares | Un lote solo tiene una moneda | Use un diario y un lote por moneda |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+PAGO** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Bancos DEMO BCP, DEMO BBVA y DEMO Interbank con su formato de archivo.
+- Diario **DEMO BCP soles** (DBCP) con la cuenta de la compañía y el método de
+  pago masivo.
+- Un lote validado con tres pagos (S/ 4 820,00, S/ 1 350,75 y S/ 690,00) a
+  proveedores de los tres bancos, listo para **Exportar archivo**.
+
 !!! info "Ver también"
     - [Lotes de pago en Odoo](https://www.odoo.com/documentation/19.0/es_419/applications/finance/accounting/payments/batch.html)
     - [Detracciones (SPOT)](../fiscal_localizations/peru/detractions.md)

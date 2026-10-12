@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_factoring.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): factor, cliente y tres operaciones: sin recurso desembolsada, con recurso desembolsada con intereses devengados y una en borrador.
+
 ## 5.20261011 — 11/10/2026
 
 - El neto pendiente de la factura cedida usa la misma regla de retención que el comprobante impreso y el XML: entre agentes de retención no se retiene.

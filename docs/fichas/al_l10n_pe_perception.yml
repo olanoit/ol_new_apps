@@ -320,6 +320,10 @@ faq:
       (art. 3.2 de la R.S. 058-2006/SUNAT).
 
 novedades:
+  - version: 2.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de percepción con tres ventas, dos cobradas con su comprobante de percepción, y dos percepciones sufridas (proveedor agente e importación)."
   - version: 1.20261012
     fecha: 12/10/2026
     cambios:

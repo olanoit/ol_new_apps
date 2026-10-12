@@ -480,7 +480,7 @@ class TestFase8E2EMulticompania(TransactionCase):
                               'Falta el bloque «%s» en la boleta' % bloque)
             # El neto es el dato que se busca primero y va en su propia
             # banda, separado de los totales de cada columna.
-            self.assertIn('Neto a pagar', texto)
+            self.assertIn('neto a pagar', texto.lower())
 
         # La retención judicial (SUNAT 0703) sale en la columna de
         # descuentos de la boleta de Alfa

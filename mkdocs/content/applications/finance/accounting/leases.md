@@ -294,6 +294,21 @@ Con los importes del ejemplo en 2026:
 | Contrato en dólares sin tipo de cambio | No se puede medir ni ajustar | Registrar el tipo de cambio de la fecha |
 | Factura del arrendador en borrador | **Registrar cuota** la deja así | Completar el número de comprobante del proveedor y confirmarla |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+NIIF16** y las fechas se calculan respecto del día de la instalación. En una
+base sin datos de demostración no se carga nada.
+
+- Oficina a 36 meses con cuota adelantada de S/ 4 500, confirmada y con sus dos
+  primeras facturas.
+- Almacén a 12 meses, exento por corto plazo.
+- Montacargas a 24 meses en borrador con su tabla.
+- Depósito con subcuentas del pasivo, remedido por el reajuste de la renta a S/
+  3 300.
+
 !!! info "Ver también"
     - [NIIF 16 Arrendamientos (IFRS Foundation)](https://www.ifrs.org/issued-standards/list-of-standards/ifrs-16-leases/) y [en español (MEF)](https://mef.gob.pe/contenidos/conta_publ/con_nor_co/niif/NIIF_16_BV2024_IRACH.pdf)
     - [NIC 12 Impuesto a las ganancias](https://www.ifrs.org/issued-standards/list-of-standards/ias-12-income-taxes/) y [NIC 21 Variaciones en las tasas de cambio](https://www.ifrs.org/issued-standards/list-of-standards/ias-21-the-effects-of-changes-in-foreign-exchange-rates/)

@@ -7,6 +7,7 @@ from datetime import date
 
 from odoo import Command, fields
 from odoo.tests import TransactionCase, tagged
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -15,6 +16,7 @@ class TestCurrencyRate(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.company.currency_id = cls.env.ref('base.PEN')
         cls.usd = cls.env.ref('base.USD')

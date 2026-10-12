@@ -6,6 +6,7 @@ from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -14,6 +15,7 @@ class TestTermDeposit(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.bank_journal = cls.env['account.journal'].create({
             'name': 'Banco depósitos test', 'code': 'BDTS', 'type': 'bank', 'company_id': cls.company.id})

@@ -169,6 +169,7 @@ de no domiciliados anteriores al SIRE.
 |---|---|---|
 | Nota de crédito o débito cuyo original no está en Odoo | El documento modificado sale vacío | Escriba sus datos en **Facturación PE ‣ Comprobante modificado** de la nota |
 | DAM o DSI (tipos 50-54) con el valor en aduana en una cuenta puente | El total del RCE es base + IGV + otros derechos, no el total de la factura | Nada |
+| Liquidación de compra (tipo 04) con IGV y renta retenidos | El RCE informa el total del comprobante, no el neto que recibe el vendedor: las retenciones no lo reducen | Nada; ver [liquidación de compra](electronic_invoicing/purchase_settlement.md) |
 | Observaciones de validación (RUC, serie, IGV, fechas) | **Enviar reemplazo** se niega | Corrija las facturas y vuelva a desplegar el sistema |
 | Ticket que no termina | La acción planificada reintenta hasta 30 veces y luego deja una actividad | Consulte a mano o espere |
 | Sin credenciales | La API no funciona | Use la carga manual del TXT |

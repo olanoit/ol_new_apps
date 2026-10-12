@@ -36,7 +36,7 @@ Requiere Odoo Enterprise (``account_asset`` y ``account_loans``).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '2.20261010',
+    'version': '3.20261012',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account_asset', 'account_loans', 'al_account_base'],
@@ -49,6 +49,8 @@ Requiere Odoo Enterprise (``account_asset`` y ``account_loans``).
         'views/account_move_views.xml',
         'views/menu.xml',
     ],
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_lease_demo.xml'],
     'installable': True,
     'application': False,
     'auto_install': False,

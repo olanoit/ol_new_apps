@@ -33,12 +33,16 @@ with Captura('al_l10n_pe_edi_downpayment_discount') as c:
 
     # 1. Pedido con sus facturas: anticipo y factura final
     c.abrir_registro('sale.order', pedido['id'], ms=2500)
-    p.get_by_role('button', name='Crear factura').first.click()
-    p.wait_for_selector('.modal-content', timeout=20000)
-    c.esperar(800)
-    c.foto('01-crear-factura', selector='.modal-content')
-    p.keyboard.press('Escape')
-    c.esperar(600)
+    # Con el pedido ya facturado por completo el botón desaparece: se conserva
+    # la captura anterior del asistente.
+    boton = p.get_by_role('button', name='Crear factura')
+    if boton.count():
+        boton.first.click()
+        p.wait_for_selector('.modal-content', timeout=20000)
+        c.esperar(800)
+        c.foto('01-crear-factura', selector='.modal-content')
+        p.keyboard.press('Escape')
+        c.esperar(600)
 
     # Aviso del estado de envío al OSE: depende del entorno, no del módulo.
     SIN_AVISO = "() => document.querySelectorAll('.o_form_sheet_bg > .alert').forEach(e => e.remove())"

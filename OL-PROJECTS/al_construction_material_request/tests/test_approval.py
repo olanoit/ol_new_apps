@@ -88,8 +88,13 @@ class TestApproval(ConstructionRequestCommon):
     def test_demo_data_100_bags_with_60_available(self):
         """Carga el XML demo en la transacción y recorre el caso de aceptación
         (plan §9.3): 100 bolsas pedidas, 60 en almacén."""
-        convert_file(self.env, 'al_construction_material_request',
-                     'demo/construction_demo.xml', {}, mode='init')
+        # En una base con demo ya está cargado: volver a cargarlo reescribiría
+        # los quants aplicados, que Odoo no deja editar.
+        demo_loaded = self.env.ref('al_construction_material_request.demo_request_school',
+                                   raise_if_not_found=False)
+        if not demo_loaded:
+            convert_file(self.env, 'al_construction_material_request',
+                         'demo/construction_demo.xml', {}, mode='init')
         request = self.env.ref('al_construction_material_request.demo_request_school')
         site = self.env.ref('al_construction_material_request.demo_site_school')
         self.assertTrue(site.construction_location_id)
@@ -97,6 +102,9 @@ class TestApproval(ConstructionRequestCommon):
         (self.tier_manager | self.tier_operations).active = False
         demo_tiers = self.env.ref('al_construction_material_request.demo_tier_project_manager') \
             | self.env.ref('al_construction_material_request.demo_tier_operations')
+        if demo_loaded:
+            # el setUp desactiva todos los niveles del modelo, también los demo
+            demo_tiers.active = True
         self.assertTrue(all(demo_tiers.mapped('active')))
 
         request.action_request_approval()

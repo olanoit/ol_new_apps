@@ -71,6 +71,10 @@ pasos:
     imagen: screenshots/04-regimen.png
 
 novedades:
+  - version: 2.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): régimen general desde el 1 de enero, coeficientes de ejemplo y el PDT 621 de los dos últimos meses calculado."
   - version: 1.20261012
     fecha: 12/10/2026
     cambios:

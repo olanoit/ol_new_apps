@@ -11,6 +11,7 @@ from odoo.tests.common import TransactionCase
 
 from ..models.l10n_pe_economic_activity import activity_commands
 from ..services import activities, sunat_oficial
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 # Maquetación del portal e-consultaruc: cada dato en una fila con la
 # etiqueta (h4 terminado en «:») y su valor (p, h4 o tabla).
@@ -172,6 +173,7 @@ class TestFichaRucPartner(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.pe = cls.env.ref('base.pe')
         cls.ruc_type = cls.env.ref('l10n_pe.it_RUC')
         cls.dni_type = cls.env.ref('l10n_pe.it_DNI')
@@ -303,6 +305,7 @@ class TestFichaRucCompletion(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         pe = cls.env.ref('base.pe')
         cls.company_pe = cls.env['res.company'].create({
             'name': 'FICHA COMPLETA TEST S.A.C.', 'country_id': pe.id})

@@ -196,6 +196,10 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: 6.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): factor, cliente y tres operaciones: sin recurso desembolsada, con recurso desembolsada con intereses devengados y una en borrador."
   - version: 5.20261011
     fecha: 11/10/2026
     cambios:

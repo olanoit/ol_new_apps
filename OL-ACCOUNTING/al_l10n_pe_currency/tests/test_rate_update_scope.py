@@ -15,6 +15,7 @@ from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
 
 from odoo.addons.al_l10n_pe_currency.services import decolecta_rate
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 RATE_DAY = date(2026, 4, 6)
 # Día sin tasas en la base de pruebas: lo que se compara no depende de los datos.
@@ -27,6 +28,7 @@ class TestRateUpdateScope(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.usd = cls.env.ref('base.USD')
         cls.usd.active = True
         cls.pen = cls.env.ref('base.PEN')

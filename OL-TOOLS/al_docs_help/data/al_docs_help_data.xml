@@ -179,6 +179,14 @@
         <field name="path">applications/hr/payroll/peru/import/</field>
         <field name="section">Importación de novedades</field>
     </record>
+    <record id="help_al_pe_demo" model="al.docs.help">
+        <field name="key">al.pe.demo</field>
+        <field name="kind">model</field>
+        <field name="name">Datos de demostración de la localización peruana</field>
+        <field name="module">al_account_base</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/accounting_base/</field>
+        <field name="section">Configuración contable básica</field>
+    </record>
     <record id="help_al_construction_planner_home" model="al.docs.help">
         <field name="key">al_construction_planner.home</field>
         <field name="kind">tag</field>
@@ -1880,8 +1888,8 @@
         <field name="kind">model</field>
         <field name="name">Letras por cobrar</field>
         <field name="module">al_l10n_pe_account_letter</field>
-        <field name="path">applications/finance/accounting/bills_of_exchange/</field>
-        <field name="section">Letras de cambio</field>
+        <field name="path">applications/finance/accounting/bills_of_exchange/#datos-de-demostración</field>
+        <field name="section">Datos de demostración</field>
     </record>
     <record id="help_l10n_pe_letter_link_summary" model="al.docs.help">
         <field name="key">l10n_pe.letter.link.summary</field>
@@ -2112,8 +2120,8 @@
         <field name="kind">model</field>
         <field name="name">Comprobante de retención electrónico</field>
         <field name="module">al_l10n_pe_retention</field>
-        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/</field>
-        <field name="section">Retenciones del IGV</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/withholdings/#datos-de-demostración</field>
+        <field name="section">Datos de demostración</field>
     </record>
     <record id="help_l10n_pe_retention_received" model="al.docs.help">
         <field name="key">l10n_pe.retention.received</field>

@@ -440,6 +440,10 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 10.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): movimientos en dólares de hace dos meses, el cierre de ese mes contabilizado y el del mes siguiente calculado, con T.C. de cierre registrados sin descargarlos."
   - version: 9.20261008
     fecha: 08/10/2026
     cambios:

@@ -82,6 +82,10 @@ configuracion:
   - "Para la percepción aduanera, instale Percepciones del IGV y configure su cuenta de percepciones por aplicar."
 
 novedades:
+  - version: 2.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): importación de diez motobombas con recepción, factura del exterior, gastos del agente y la DAM publicada con su costo en destino."
   - version: 1.20261012
     fecha: 12/10/2026
     cambios:

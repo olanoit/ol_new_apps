@@ -4,6 +4,7 @@ from datetime import timedelta
 
 from odoo import Command, fields
 from odoo.tests import TransactionCase, tagged
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -12,6 +13,7 @@ class TestFutureDatePayment(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         company = cls.env.company
         cls.partner = cls.env['res.partner'].create({
             'name': 'CLIENTE FECHA FUTURA SAC', 'vat': '20557912879',

@@ -51,9 +51,10 @@ obras.</p>
 
     ---
 
-    Localización peruana: comprobantes electrónicos, detracciones,
-    retenciones, tipo de cambio, PLE y SIRE. Letras, factoring, depósitos,
-    arrendamientos y pagos con tarjeta.
+    Localización peruana: comprobantes electrónicos y liquidación de compra,
+    detracciones, retenciones, percepciones, 4.ª categoría, declaración 621,
+    tipo de cambio, PLE y SIRE. Letras, factoring, caja chica, pagos masivos,
+    DUA, depósitos, arrendamientos y pagos con tarjeta.
 
 -   :material-point-of-sale:{ .lg .middle } **[Ventas](applications/sales/index.md)**
 

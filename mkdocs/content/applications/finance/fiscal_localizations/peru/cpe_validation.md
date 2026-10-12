@@ -97,6 +97,19 @@ Acciones programadas** cuando las credenciales estén configuradas.
 | SUNAT rechazó las credenciales | Aviso con el código de SUNAT | Revise el client ID y el secret, o genérelos de nuevo en SOL |
 | Comprobante físico | Se consulta sin monto | Nada: el servicio no lo pide |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+CPE** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Tres facturas de proveedor en borrador con el resultado de la consulta ya
+  registrado: una **válida**, una **observada** (domicilio no habido) y una **no
+  informada** a SUNAT.
+- No se llama al servicio de SUNAT.
+
 !!! info "Ver también"
     - [Manual de consulta integrada de comprobante de pago por servicio web (SUNAT)](https://cpe.sunat.gob.pe/sites/default/files/inline-files/Manual-de-Consulta-Integrada-de-Comprobante-de-Pago-por-ServicioWEB_v2_0.pdf)
     - [Registros SIRE](sire.md)

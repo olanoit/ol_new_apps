@@ -5,6 +5,7 @@ from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -13,6 +14,7 @@ class TestFactoring(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.today = fields.Date.context_today(cls.env['res.users'])
         Account = cls.env['account.account'].with_company(cls.company)

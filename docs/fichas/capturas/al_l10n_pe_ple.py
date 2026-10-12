@@ -122,15 +122,17 @@ if 3 in BLOQUES:
 if 4 in BLOQUES:
     with Captura('al_l10n_pe_ple') as c:
         # 19. Menú Libros PLE con el submenú de reportes nativos
+        # La barra de la app Perú se desborda a 1440 px: el menú se abre a 3840 px.
+        c.page.set_viewport_size({'width': 3840, 'height': 900})
         c.abrir_accion('al_l10n_pe_ple.action_ple_withholding', ms=2000)
-        c.clic('.o_main_navbar button:has-text("Libros PLE"), '
-               '.o_main_navbar a:has-text("Libros PLE")', ms=900)
+        c.clic('.o_main_navbar button:visible:has-text("Libros PLE")', ms=900)
         menu = c.page.locator('.o-dropdown--menu').first
         caja = menu.bounding_box()
         c.foto('19-menu-libros-ple', clip={
             'x': max(caja['x'] - 260, 0), 'y': 0,
             'width': caja['width'] + 520, 'height': caja['y'] + caja['height'] + 16})
         c.page.keyboard.press('Escape')
+        c.page.set_viewport_size(c.viewport)
 
         # 17. RCE 8.4 (septiembre 2026, periodo por defecto) con los botones TXT y XLSX
         c.abrir_accion('al_l10n_pe_ple.action_report_ple_purchase_8_1', ms=3000)

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261012 — 12/10/2026
+
+- Modelo `al.pe.demo` con las ayudas comunes de los datos de demostración de la suite (compañía «PE Company» de l10n_pe, xmlids sin actualizar, diarios sin documentos electrónicos, RUC con dígito verificador).
+
 ## 14.20261012 — 12/10/2026
 
 - Notas de crédito y débito cuyo comprobante original no está en Odoo: pestaña «Comprobante modificado» con tipo, serie, número y fecha, que usan el PLE y el SIRE (_l10n_pe_modified_document).

@@ -152,6 +152,10 @@ campos:
       - [Propietarios de los bienes, Dueños distintos de la compañía, —, Observaciones de la guía y guía impresa]
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): dos almacenes con establecimiento anexo, andamios propios y de terceros, dos traslados a la obra, una compra recogida en el proveedor y la devolución al propietario."
   - version: 2.20261010
     fecha: 10/10/2026
     cambios:

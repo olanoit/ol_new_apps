@@ -181,6 +181,19 @@ vinculados**.
 | No aparece **Registrar depósito** | La factura no está publicada o ya tiene constancia | Verifique el estado y el campo de la constancia |
 | Comprobante excluido del depósito masivo | Falta un dato | Corrija el que indica el motivo |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+SPOT** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Cuenta de detracciones de la compañía en el Banco de la Nación.
+- Servicio **DEMO SPOT Servicio empresarial** con el código 037 (12 %).
+- Venta de S/ 5 900,00 con su detracción de S/ 708,00 y compra de S/ 2 360,00
+  con el depósito de S/ 283,00 y su constancia.
+
 !!! info "Ver también"
     - [Normas legales de detracciones (SUNAT)](https://orientacion.sunat.gob.pe/normas-legales-detracciones-empresas)
     - [Consultas sobre detracciones (SUNAT)](https://orientacion.sunat.gob.pe/consultas-sunat-detracciones-empresas)

@@ -145,6 +145,20 @@ aplicado se arrastra a los meses siguientes.
 
 ![Resumen para el F.V. 621](perceptions/fv621-summary.png)
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+PER** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- La compañía como agente de percepción, con sus cuentas y diario.
+- Tres ventas de cemento y fierro; dos cobradas con su comprobante de
+  percepción.
+- Dos percepciones sufridas: la de un proveedor agente y la de una importación
+  (DAM).
+
 !!! info "Ver también"
     - [R.S. 058-2006/SUNAT — Régimen de percepciones del IGV en la venta de bienes](https://www.sunat.gob.pe/legislacion/superin/2006/058.htm)
     - [R.S. 274-2015/SUNAT — Comprobantes de retención y de percepción electrónicos](https://www.sunat.gob.pe/legislacion/superin/2015/274-2015.pdf)

@@ -66,7 +66,7 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '9.20261008',
+    'version': '10.20261012',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -81,6 +81,8 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
         'views/res_config_settings_views.xml',
         'views/menu.xml',
     ],
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_exchange_closure_demo.xml'],
     'installable': True,
     'application': False,
 }

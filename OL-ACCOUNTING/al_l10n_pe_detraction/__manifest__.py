@@ -46,7 +46,7 @@ asientos por su complejidad y riesgo contable.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '22.20261011',
+    'version': '23.20261012',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -75,6 +75,8 @@ asientos por su complejidad y riesgo contable.
         ],
     },
     'external_dependencies': {'python': ['requests']},
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_detraction_demo.xml'],
     'installable': True,
     'application': False,
 }

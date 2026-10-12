@@ -5,6 +5,7 @@ from odoo import Command
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import Form, new_test_user, tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import format_date
 
 # PNG de 1 × 1 píxel: la foto del avance.
 PHOTO = (b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAE'
@@ -431,7 +432,9 @@ class TestIncome(IncomeCommon):
         for row in rows:
             self.assertAlmostEqual(row['guarantee'], round(row['amount'] * 0.05, 2))
             self.assertAlmostEqual(row['net'], row['amount'] - row['guarantee'])
-        self.assertIn('28/12/2026', project.construction_valuation_forecast_html)
+        # Formato de fecha del idioma del usuario (28/12/2026 en es_PE)
+        self.assertIn(format_date(self.env, date(2026, 12, 28)),
+                      project.construction_valuation_forecast_html)
 
         # Fechas fijas de corte y adelanto con amortización.
         project.write({

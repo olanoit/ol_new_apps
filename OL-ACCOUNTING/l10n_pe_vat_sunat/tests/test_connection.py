@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests del mapeo config-driven de una conexión hacia el partner."""
 from odoo.tests import TransactionCase, tagged
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -9,6 +10,7 @@ class TestConnection(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.Field = cls.env['ir.model.fields']
         # Conexión REST de prueba con mapeo explícito.

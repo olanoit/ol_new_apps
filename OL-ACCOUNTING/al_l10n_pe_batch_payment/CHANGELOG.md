@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_batch_payment.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): diario BCP en soles con el pago masivo y un lote validado de tres pagos a proveedores de BCP, BBVA e Interbank.
+
 ## 1.20261012 — 12/10/2026
 
 - Método de pago «Pago masivo (TXT de banco peruano)» en los lotes de pago, con archivo para BCP, BBVA, Interbank, Scotiabank y Banco de la Nación.

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solo en bases con datos de demostración: en «PE Company» (l10n_pe).
+     noupdate="0": la función corre también al actualizar el módulo (los datos
+     demo se ejecutan, si no, solo al instalarlo), así una base con demo que ya
+     tenía el módulo recibe el ejemplo; la función es idempotente. -->
+<odoo noupdate="0">
+    <function model="al.pe.demo" name="_demo_load">
+        <value>_load_demo_cpe_validation</value>
+    </function>
+</odoo>

@@ -25,8 +25,12 @@ con su menú y su página de ajustes.
 | `al_l10n_pe_exchange_closure`, `al_l10n_pe_multicurrency_revaluation` | Ajuste de cierre de saldos en moneda extranjera | [Diferencia de cambio](peru/exchange_differences.md) |
 | `al_account_destinations` | Asiento de destino de la clase 6 al Elemento 9 | [Asientos de destino](peru/destination_entries.md) |
 | `al_l10n_pe_detraction` | Detracciones SPOT en ventas y compras, depósito masivo | [Detracciones (SPOT)](peru/detractions.md) |
-| `al_l10n_pe_retention` | Retenciones del IGV, CRE y resumen del PDT 626 | [Retenciones del IGV](peru/withholdings.md) |
-| `al_l10n_pe_invoice`, `al_l10n_pe_delivery_guide_report`, `al_l10n_pe_edi_downpayment_discount`, `al_ose_factory_hka` | Comprobante y guía impresos, anticipos y descuentos, operador The Factory HKA | [Facturación electrónica](peru/electronic_invoicing.md) |
+| `al_l10n_pe_retention` | Retenciones del IGV, CRE (también sin pago), reversión, retenciones sufridas y resumen del PDT 626 | [Retenciones del IGV](peru/withholdings.md) |
+| `al_l10n_pe_perception` | Percepciones del IGV como agente (tipo 40) y las que nos cobran | [Percepciones del IGV](peru/perceptions.md) |
+| `al_l10n_pe_fourth_category` | Retención de renta de 4.ª categoría a recibos por honorarios | [Retención de renta de 4.ª categoría](peru/fourth_category.md) |
+| `al_l10n_pe_cpe_validation` | Consulta de validez de los comprobantes de proveedores | [Consulta de validez de comprobantes](peru/cpe_validation.md) |
+| `al_l10n_pe_monthly_tax` | Régimen tributario, pago a cuenta y resumen del F.V. 621 | [Declaración mensual IGV y renta (621)](peru/monthly_tax.md) |
+| `al_l10n_pe_invoice`, `al_l10n_pe_delivery_guide_report`, `al_l10n_pe_edi_downpayment_discount`, `al_l10n_pe_edi_purchase_settlement`, `al_ose_factory_hka` | Comprobante y guía impresos, anticipos y descuentos, liquidación de compra, operador The Factory HKA | [Facturación electrónica](peru/electronic_invoicing.md) |
 | `al_l10n_pe_complaints_book` | Libro de reclamaciones en el sitio web | [Libro de reclamaciones](peru/complaints_book.md) |
 | `al_l10n_pe_ple` | Libros PLE que Odoo no genera y formatos simplificados | [Libros electrónicos (PLE)](peru/ple.md) |
 | `al_l10n_pe_sire` | Conciliación y envío del RVIE y el RCE | [Registros SIRE](peru/sire.md) |
@@ -77,11 +81,14 @@ Antes de operar, complete en este orden:
 1. **Ventas y compras**: los comprobantes llevan su serie, el tipo de cambio
    elegido, la detracción y la retención que correspondan.
 2. **Cobros y pagos**: medio de pago y número de operación; depósitos de
-   detracciones y comprobantes de retención.
+   detracciones, comprobantes de retención y de percepción, retención de 4.ª
+   categoría en los recibos por honorarios y
+   [pagos masivos](../accounting/batch_payments.md).
 3. **Cierre del mes**: [diferencia de cambio](peru/exchange_differences.md) y
    cuadre de los [asientos de destino](peru/destination_entries.md).
-4. **Declaraciones**: [registros SIRE](peru/sire.md),
-   [libros PLE](peru/ple.md) y resumen del PDT 626.
+4. **Declaraciones**: [declaración mensual 621](peru/monthly_tax.md),
+   [registros SIRE](peru/sire.md), [libros PLE](peru/ple.md), resúmenes del
+   PDT 626 y del F.V. 697, y el archivo .4ta de la PLAME.
 5. **Cierre del ejercicio**: [estados financieros](peru/financial_statements.md)
    y libros anuales (activos fijos, costos).
 

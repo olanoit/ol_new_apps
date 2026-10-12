@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261012 — 12/10/2026
+
+- Los datos de demostración (existencias de cemento y fierro) ya no impiden actualizar el módulo en una base con demo: se cargan una sola vez y no se reescriben en cada actualización.
+
 ## 10.20261011 — 11/10/2026
 
 - El vale de requerimiento de obra usa el formato común de los documentos de la suite (el del comprobante A4, módulo al_report_base): recuadro R.U.C./tipo/número con el estado, tablas con borde redondeado, materiales con el valor estimado al pie, aprobaciones, firmas y pie con la numeración de páginas.

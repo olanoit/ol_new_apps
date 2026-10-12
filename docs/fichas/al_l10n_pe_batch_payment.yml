@@ -72,6 +72,10 @@ pasos:
     imagen: screenshots/03-diario.png
 
 novedades:
+  - version: 2.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): diario BCP en soles con el pago masivo y un lote validado de tres pagos a proveedores de BCP, BBVA e Interbank."
   - version: 1.20261012
     fecha: 12/10/2026
     cambios:

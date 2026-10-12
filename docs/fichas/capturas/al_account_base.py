@@ -39,11 +39,16 @@ with Captura('al_account_base') as c:
         # 1. App Perú con el menú Configuración desplegado. Con todas las
         # secciones (factoring, guías…) a 1440 px «Configuración» cae en el
         # desplegable «+»: se captura más ancho.
-        c.page.set_viewport_size({'width': 1920, 'height': 900})
+        # Con los módulos de 4.ª, percepciones, 621, DUA… ni a 2560 px cabe: se
+        # abre a 3840 px y se recortan 1920 px alrededor del desplegable.
+        c.page.set_viewport_size({'width': 3840, 'height': 1000})
         c.abrir_accion('al_account_base.action_pe_settings', ms=2500)
-        c.clic('.o_menu_sections button:has-text("Configuración")', ms=900)
-        c.foto('01-menu-configuracion', clip={'x': 0, 'y': 0, 'width': 1920, 'height': 690},
-               recortar=False)
+        c.clic('.o_menu_sections button:visible:has-text("Configuración")', ms=900)
+        menu = c.page.locator('.o-dropdown--menu').first.bounding_box()
+        x = max(0, menu['x'] + menu['width'] + 40 - 1100)
+        c.foto('01-menu-configuracion', clip={
+            'x': x, 'y': 0, 'width': 1100, 'height': menu['y'] + menu['height'] + 16},
+            recortar=False)
         c.page.keyboard.press('Escape')
         c.page.set_viewport_size(c.viewport)
 

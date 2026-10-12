@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_term_deposit.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): depósito a plazo con intereses devengados, otro por vencer, fondo en garantía de una carta fianza y depósito en garantía de un alquiler liberado en parte.
+
 ## 2.20261010 — 10/10/2026
 
 - ITF (Ley 28194) opcional por depósito sobre el capital en la apertura, la cancelación y la liberación, con tasa y cuenta (6412) en Ajustes; los intereses y la renovación sin dinero nuevo están exonerados (Informe SUNAT 025-2004-SUNAT/2B0000).

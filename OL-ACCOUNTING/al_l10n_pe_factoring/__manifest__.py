@@ -32,7 +32,7 @@ la factura ni el cobro:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '5.20261011',
+    'version': '6.20261012',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],
@@ -47,6 +47,8 @@ la factura ni el cobro:
         'views/menu.xml',
         'data/factoring_data.xml',
     ],
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_factoring_demo.xml'],
     'installable': True,
     'application': False,
     'auto_install': False,

@@ -38,7 +38,7 @@ se usaban en la lógica del módulo).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '18.20261009',
+    'version': '19.20261012',
     'license': 'OPL-1',
     'depends': [
         'mail',
@@ -72,6 +72,8 @@ se usaban en la lógica del módulo).
         'data/ir_sequence_data.xml',
     ],
     'post_init_hook': 'post_init_hook',
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_account_letter_demo.xml'],
     'installable': True,
     'application': False,
 }

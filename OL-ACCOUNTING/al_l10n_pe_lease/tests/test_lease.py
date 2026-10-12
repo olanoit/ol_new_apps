@@ -4,6 +4,7 @@ from datetime import date
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 # Tasa efectiva anual equivalente al 1 % mensual: 1,01^12 − 1.
 RATE_1_PCT_MONTHLY = (1.01 ** 12 - 1) * 100
@@ -15,6 +16,7 @@ class TestLease(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.journal = cls.env['account.journal'].create({
             'name': 'Arrendamientos test', 'code': 'ARRT', 'type': 'general', 'company_id': cls.company.id})
@@ -89,6 +91,15 @@ class TestLease(TransactionCase):
         self.assertAlmostEqual(sum(loan.line_ids.mapped('principal')), lease.liability_amount, 2)
         self.assertEqual(loan.asset_group_id, lease.asset_group_id)
         self.assertIn(asset, loan.linked_assets_ids, 'activo y pasivo enlazados por el grupo')
+
+    def test_asset_type_for_ple(self):
+        """El derecho de uso lleva el tipo de activo 1 (no revaluado) de la
+        tabla 18: sin él no se genera el formato 7.1 del PLE."""
+        if 'l10n_pe_asset_type' not in self.env['account.asset']._fields:
+            self.skipTest('Sin al_l10n_pe_ple no existe el tipo de activo (T18)')
+        lease = self._lease()
+        lease.action_confirm()
+        self.assertEqual(lease.asset_id.l10n_pe_asset_type, '1')
 
     def test_installments(self):
         lease = self._lease()

@@ -241,6 +241,20 @@ obra y 0 en la planta (12 recibidos − 8 trasladados − 4 devueltos).
 | El propietario no aparece en la guía | La transferencia y sus líneas no tienen propietario | Indicar el propietario al recibir los bienes de terceros |
 | Motivo 04 escrito «Translados…» | Errata de la traducción del estándar | Solo es el texto; el código enviado es 04 |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+TRAS** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Almacenes **DEMO TRAS Planta Ate** (DTP, anexo 0001) y **DEMO TRAS Obra
+  Surco** (DTO, anexo 0002).
+- Andamios propios y andamios alquilados a un tercero (consignación).
+- Dos traslados de la planta a la obra (motivo 04), una compra recogida en el
+  proveedor (motivo 02) y la devolución al propietario (motivo 06).
+
 !!! info "Ver también"
     - [Reglamento de Comprobantes de Pago, capítulo V (guías de remisión)](https://www.sunat.gob.pe/legislacion/comprob/regla/capituloV.pdf)
     - [R.S. N.° 123-2022/SUNAT, guía de remisión electrónica](https://www.sunat.gob.pe/legislacion/superin/2022/123-2022.pdf)

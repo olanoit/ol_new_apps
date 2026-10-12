@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_perception.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de percepción con tres ventas, dos cobradas con su comprobante de percepción, y dos percepciones sufridas (proveedor agente e importación).
+
 ## 1.20261012 — 12/10/2026
 
 - Primera versión: cálculo en la factura (2 %, 0,5 % y 1 %, con las exclusiones del reglamento), XML de la factura (operación 2001, cargo del catálogo 53 y monto con la percepción) y leyenda en el PDF.

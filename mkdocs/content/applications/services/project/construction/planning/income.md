@@ -41,7 +41,10 @@ previstas desde cada corte:
 - cobro = factura + plazo de cobro.
 
 Una fecha que cae en un día no hábil o feriado pasa al siguiente día hábil, para
-no adelantar ingresos. El cobro previsto es neto del fondo de garantía y de la
+no adelantar ingresos. Los feriados son los del calendario de la compañía y,
+con **Feriados de Perú** instalado, también los feriados nacionales de día
+completo (no los de un solo régimen, como el 25 de octubre de construcción
+civil). El cobro previsto es neto del fondo de garantía y de la
 amortización del adelanto; el fondo se cobra al cierre de la obra o en una
 fecha fija.
 

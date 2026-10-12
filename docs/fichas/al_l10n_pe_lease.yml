@@ -265,6 +265,10 @@ campos:
       - [Gasto de alquiler, Contratos exentos, 6352, —]
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): oficina confirmada con dos facturas, almacén exento por corto plazo, montacargas en borrador y depósito remedido por el reajuste de la renta. El activo por derecho de uso lleva el tipo de activo 1 de la tabla 18 que exige el PLE 7.1."
   - version: 2.20261010
     fecha: 10/10/2026
     cambios:

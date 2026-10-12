@@ -4,6 +4,7 @@ from unittest.mock import patch
 from odoo.exceptions import AccessError
 from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 CREDENTIAL_FIELDS = (
     'l10n_pe_sire_sol_user', 'l10n_pe_sire_sol_password',
@@ -18,6 +19,7 @@ class TestSireSecurity(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.accountant = new_test_user(
             cls.env, login='sire_accountant', groups='account.group_account_user',

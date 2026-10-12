@@ -220,6 +220,8 @@ class TestSireServices(TestSire):
         self.assertEqual(operation.ticket, '20260700000003')
 
     def test_exchange_rates_need_foreign_currency(self):
+        # Una venta en soles del periodo: sin líneas el error sería otro
+        self._make_invoice('out_invoice')
         self.rvie.action_load_system()
         with patch.object(type(self.rvie), '_sire_exchange_rates', return_value=[]):
             with self.assertRaisesRegex(UserError, 'moneda extranjera'):

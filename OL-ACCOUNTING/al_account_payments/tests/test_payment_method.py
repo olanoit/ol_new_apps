@@ -14,6 +14,7 @@ Lo que se valida:
 from odoo import Command
 from odoo.exceptions import AccessError
 from odoo.tests import TransactionCase, tagged
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -22,6 +23,7 @@ class TestPePaymentMethod(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.Catalog = cls.env['pe.catalog.payment']
         cls.deposito = cls.env.ref('al_account_payments.pe_catalog_payment_001')

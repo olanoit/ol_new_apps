@@ -24,7 +24,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/purchase/static/description/icon.png',
-    'version': '10.20261011',
+    'version': '11.20261012',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [

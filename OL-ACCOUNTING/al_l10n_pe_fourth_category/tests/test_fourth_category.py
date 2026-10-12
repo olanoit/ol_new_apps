@@ -36,6 +36,8 @@ class TestFourthCategory(TransactionCase):
         cls.journal = cls.env['account.journal'].search([
             ('type', '=', 'purchase'), ('company_id', '=', cls.company.id)], limit=1)
         cls.today = fields.Date.context_today(cls.env['account.move'])
+        cls.bank_journal = cls.env['account.journal'].search([
+            ('type', '=', 'bank'), ('company_id', '=', cls.company.id)], limit=1)
 
     def _receipt(self, amount, currency=None, number='E001-123', date=None, post=True):
         move = self.env['account.move'].create({
@@ -131,9 +133,12 @@ class TestFourthCategory(TransactionCase):
         self.assertFalse(move.l10n_pe_fourth_category_amount)
 
     def _pay(self, move):
+        # Diario explícito: el que propone el asistente puede ser uno sin
+        # cuenta de pagos pendientes (p. ej. el del pago masivo), cuyo pago
+        # en Odoo 19 no genera asiento ni concilia el recibo.
         self.env['account.payment.register'].with_context(
             active_model='account.move', active_ids=move.ids).create({
-                'payment_date': self.today})._create_payments()
+                'payment_date': self.today, 'journal_id': self.bank_journal.id})._create_payments()
 
     def test_monthly_report_and_txt(self):
         move = self._receipt(2000.0, number='E001-45')

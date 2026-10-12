@@ -9,6 +9,7 @@ from datetime import date
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 RUC_COMPANY = '20512528458'
 RUC_SUPPLIER = '20601034809'
@@ -30,6 +31,7 @@ class TestRce84(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.company.vat = RUC_COMPANY
         cls.common = cls.env['l10n_pe.rce.common']

@@ -31,7 +31,7 @@ Traslados internos y bienes de terceros
     'category': 'OL-INVENTORY/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/stock/static/description/icon.png',
-    'version': '2.20261010',
+    'version': '3.20261012',
     'license': 'OPL-1',
     'depends': [
         'l10n_pe_edi_stock',
@@ -44,6 +44,8 @@ Traslados internos y bienes de terceros
         'views/stock_quant_views.xml',
         'reports/guia_remision_reports.xml',
     ],
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_stock_transfer_demo.xml'],
     'installable': True,
     'application': False,
 }

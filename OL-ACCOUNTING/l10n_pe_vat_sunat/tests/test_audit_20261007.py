@@ -16,6 +16,7 @@ from odoo.tests.common import TransactionCase
 
 from odoo.addons.l10n_pe_vat_sunat.services import http as http_service
 from odoo.addons.l10n_pe_vat_sunat.services import sunat_padron, ubigeo
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -24,6 +25,7 @@ class TestAudit20261007(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.Padron = cls.env['l10n_pe.sunat.padron']
         cls.Padron.search([('kind', '=', 'retention_agent'), ('vat', '=', '20100070970')]).unlink()
         cls.Padron.create({'kind': 'retention_agent', 'vat': '20999999999'})

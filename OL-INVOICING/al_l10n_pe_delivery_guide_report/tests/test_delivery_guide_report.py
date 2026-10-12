@@ -3,6 +3,7 @@ from datetime import date
 
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', 'post_install_l10n', '-at_install')
@@ -11,6 +12,7 @@ class TestDeliveryGuideReport(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.company.write({
             'vat': '20512528458',

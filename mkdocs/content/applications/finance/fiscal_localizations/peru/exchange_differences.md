@@ -190,6 +190,22 @@ la columna **T.C.**
 | Cuenta con naturaleza contraria | El T.C. automático usaría el tipo equivocado | Fuerce **Siempre compra** o **Siempre venta** en la cuenta |
 | Cuenta por cobrar o por pagar sin tipo de revaluación | El campo es obligatorio | Elija **Compra** o **Venta** |
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
+TC** y las fechas se calculan respecto del día de la instalación. En una base
+sin datos de demostración no se carga nada.
+
+- Cuenta 1041901 en dólares (cierre sin detalle) y 1212000 y 4212000 con detalle
+  por socio.
+- Venta de US$ 10 000, compra de US$ 6 000 y depósito de US$ 5 000 de hace dos
+  meses.
+- Tipos de cambio de cierre registrados sin descargarlos (3,410/3,418 y
+  3,395/3,404).
+- El cierre de ese mes **contabilizado** y el del mes siguiente **calculado**.
+
 !!! info "Ver también"
     - [Ley del Impuesto a la Renta, capítulo IX — artículo 61](https://www.sunat.gob.pe/legislacion/renta/ley/capix.pdf)
     - [Reglamento de la LIR, capítulo IX — artículo 34](https://www.sunat.gob.pe/legislacion/renta/regla/cap9.pdf)

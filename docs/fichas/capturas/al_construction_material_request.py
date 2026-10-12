@@ -89,13 +89,13 @@ with Captura(M, viewport={'width': 390, 'height': 844}) as c:
 import subprocess  # noqa: E402
 
 import requests  # noqa: E402
-from capturar import DB, PASSWORD, ROOT, URL, USER  # noqa: E402
+from capturar import DB, PASSWORD, ROOT, URL, USER, module_dir  # noqa: E402
 
 session = requests.Session()
 session.post(f'{URL}/web/session/authenticate', json={
     'jsonrpc': '2.0', 'params': {'db': DB, 'login': USER, 'password': PASSWORD}})
 pdf = session.get(f'{URL}/report/pdf/{M}.report_construction_request/{R_PROCESS}').content
-out = ROOT / M / 'static' / 'description' / 'screenshots'
+out = module_dir(M) / 'static' / 'description' / 'screenshots'
 (out / 'vale.pdf').write_bytes(pdf)
 subprocess.run(['pdftoppm', '-r', '110', '-png', '-singlefile', str(out / 'vale.pdf'),
                 str(out / '20-vale')], check=True)

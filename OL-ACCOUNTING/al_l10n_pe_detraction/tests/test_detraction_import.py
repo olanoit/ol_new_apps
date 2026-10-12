@@ -6,6 +6,7 @@ from datetime import date
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 HEADER = ('Tipo de Cuenta,Numero de Cuenta,Numero Constancia,Periodo Tributario,RUC Proveedor,'
           'Nombre Proveedor,Tipo de Documento Adquiriente,Numero de Documento Adquiriente,'
@@ -19,6 +20,7 @@ class TestDetractionImport(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if not (cls.company.vat and len(cls.company.vat) == 11):
             cls.company.vat = '20512528458'

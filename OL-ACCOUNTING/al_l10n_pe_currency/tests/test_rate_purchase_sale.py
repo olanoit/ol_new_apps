@@ -14,6 +14,7 @@ from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
 from odoo.addons.al_l10n_pe_currency.services import decolecta_rate
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -22,6 +23,7 @@ class TestRatePurchaseSale(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.usd = cls.env.ref('base.USD')
         cls.Rate = cls.env['res.currency.rate']
 

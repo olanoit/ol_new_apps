@@ -17,6 +17,8 @@ BLOCK_BOX = """(title) => {
 with Captura('al_ose_factory_hka', viewport={'width': 1440, 'height': 1500}) as c:
     # 1. Ajustes ▸ Facturación electrónica peruana con The Factory HKA
     c.abrir('/odoo/settings#account', ms=2500)
+    # Con el servidor ocupado los Ajustes tardan en pintarse
+    c.page.wait_for_selector('h2:has-text("Facturación electrónica peruana")', timeout=30000)
     c.page.evaluate(BLOCK_BOX, 'Facturación electrónica peruana')
     c.page.locator('input[id$=_factory_hka][type=radio]').first.check()
     c.esperar(800)

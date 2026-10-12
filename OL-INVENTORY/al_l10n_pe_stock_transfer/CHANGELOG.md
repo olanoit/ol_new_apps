@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_stock_transfer.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): dos almacenes con establecimiento anexo, andamios propios y de terceros, dos traslados a la obra, una compra recogida en el proveedor y la devolución al propietario.
+
 ## 2.20261010 — 10/10/2026
 
 - Catálogo 20 completo para la empresa: se añaden 02 Compra, 06 Devolución, 07 Recojo de bienes transformados, 08 Importación y 09 Exportación (anexo de la R.S. 240-2024/SUNAT); 13 «Otros» con descripción obligatoria que va en la guía; 08 y 09 exigen la DAM o DS.

@@ -3,6 +3,7 @@
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -11,6 +12,7 @@ class TestDestinations(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.company.l10n_pe_dest_type = '6a9'
         Account = cls.env['account.account']

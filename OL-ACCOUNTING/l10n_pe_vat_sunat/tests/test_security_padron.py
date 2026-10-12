@@ -19,6 +19,7 @@ from odoo.exceptions import AccessError
 from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
 
+from odoo.addons.al_account_base.tests.common import use_pe_company
 from odoo.addons.l10n_pe_vat_sunat.services import (
     http as http_service,
     sunat_oficial,
@@ -53,6 +54,7 @@ class TestSecurityPadron(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.pe = cls.env.ref('base.pe')
         cls.company = cls.env['res.company'].create({
             'name': 'AUDITORIA PE S.A.C.',

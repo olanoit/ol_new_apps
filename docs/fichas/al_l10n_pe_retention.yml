@@ -403,6 +403,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 22.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de retención con una compra pagada con su comprobante de retención y una venta a un cliente agente con la retención sufrida."
   - version: 21.20261012
     fecha: 12/10/2026
     cambios:

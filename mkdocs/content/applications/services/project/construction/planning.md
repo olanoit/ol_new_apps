@@ -26,7 +26,16 @@ ventas de Odoo. No alimenta libros PLE ni archivos SUNAT.
    **Aplicaciones**.
 2. En cada obra, vaya a **Proyecto ‣ (proyecto) ‣ Ajustes** y active **Es
    obra**. La obra necesita su cuenta analítica (o cada línea su distribución)
-   para crear el presupuesto del plan.
+   para crear el presupuesto del plan. Las obras de la aplicación están en
+   **Planificación de obra ‣ Obras ‣ Obras**.
+
+    !!! tip "Consejo"
+        Si las obras nacen de una venta, marque **Crea una obra** en el producto
+        de servicio que crea el proyecto (pestaña **Ventas**, junto a la
+        plantilla del proyecto). Al confirmar la orden de venta, el proyecto se
+        crea ya marcado como obra y con esa venta como **Orden de venta del
+        contrato**. Un proyecto que se marca como obra después también toma su
+        venta de origen.
 3. En **Ajustes ‣ Usuarios**, asigne los grupos de la aplicación:
     - **Planificador** a Oficina Técnica;
     - **Administrador** a Jefatura de Proyectos;

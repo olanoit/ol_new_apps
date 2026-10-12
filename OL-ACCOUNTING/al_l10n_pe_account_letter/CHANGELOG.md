@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): cuentas de letras del PCGE, diarios de letras por cobrar y por pagar, canje de una factura de cliente en tres letras (una en cobranza libre) y de una factura de proveedor en dos letras.
+
 ## 18.20261009 — 09/10/2026
 
 - Canje masivo con chatter en el formulario (seguimiento y actividades, como el canje normal).

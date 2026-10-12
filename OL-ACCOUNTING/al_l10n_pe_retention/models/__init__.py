@@ -10,3 +10,4 @@ from . import account_chart_template
 from . import res_partner
 from . import retention_document
 from . import retention_credit
+from . import al_pe_demo

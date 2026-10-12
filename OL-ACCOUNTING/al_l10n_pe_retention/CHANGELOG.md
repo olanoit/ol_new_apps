@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): agente de retención con una compra pagada con su comprobante de retención y una venta a un cliente agente con la retención sufrida.
+
 ## 21.20261012 — 12/10/2026
 
 - El motor del comprobante electrónico (l10n_pe.retention.edi.mixin) admite otros tipos de comprobante: el tipo, el número, el XML y los mensajes se piden al documento. Lo usa el comprobante de percepción (tipo 40) de al_l10n_pe_perception; el CRE no cambia.

@@ -5,6 +5,7 @@ from datetime import date
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 RUC_TEST = '20512528458'
 
@@ -15,6 +16,7 @@ class TestPleExport(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if (cls.company.vat or '') != RUC_TEST and not (
                 cls.company.vat and len(cls.company.vat) == 11):

@@ -4,6 +4,7 @@ from unittest.mock import patch
 from odoo import fields
 from odoo.exceptions import AccessError
 from odoo.tests import tagged
+from odoo.tools import formatLang
 
 from .common import ConstructionRequestCommon
 
@@ -305,7 +306,8 @@ class TestProcess(ConstructionRequestCommon):
         body = self.env['purchase.request.allocation']._purchase_request_confirm_done_message_content({
             'product_name': 'Cemento <42.5>', 'product_qty': 40.0, 'product_uom': 'Unidades'})
         self.assertIn('<strong>Cemento &lt;42.5&gt;</strong>', body)
-        self.assertIn('40,00', body)
+        # Formato del idioma del usuario (40,00 en es_PE, 40.00 en en_US)
+        self.assertIn(formatLang(self.env, 40.0, digits=2), body)
         self.assertEqual(pending_move.state, 'assigned')
         self.assertEqual(pending_move.quantity, 40)
         self._validate(pending_move.picking_id)

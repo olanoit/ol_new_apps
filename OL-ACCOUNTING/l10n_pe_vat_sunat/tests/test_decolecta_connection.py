@@ -11,6 +11,7 @@ from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
 from odoo.addons.l10n_pe_vat_sunat.models.res_company import DEFAULT_CONNECTIONS
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 # Respuestas reales de la API (documentación de Decolecta).
 RUC_RESPONSE = {
@@ -41,6 +42,7 @@ class TestDecolectaConnection(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env['res.company'].create({
             'name': 'DECOLECTA TEST S.A.C.',
             'country_id': cls.env.ref('base.pe').id,

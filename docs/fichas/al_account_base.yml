@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 15.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Modelo `al.pe.demo` con las ayudas comunes de los datos de demostración de la suite (compañía «PE Company» de l10n_pe, xmlids sin actualizar, diarios sin documentos electrónicos, RUC con dígito verificador)."
   - version: 14.20261012
     fecha: 12/10/2026
     cambios:

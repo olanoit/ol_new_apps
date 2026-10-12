@@ -12,6 +12,7 @@ from datetime import date
 from odoo import Command
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', 'post_install_l10n', '-at_install')
@@ -20,6 +21,7 @@ class TestGuideGrouping(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.company.write({
             'vat': '20512528458',
@@ -185,6 +187,9 @@ class TestGuideGrouping(TransactionCase):
     def test_print_action_targets_own_report(self):
         """El botón imprime el reporte propio de guía de remisión."""
         picking = self._picking([(self.product, 1.0, self.uom_unit)])
+        # Sin diseño de documento, report_action abre antes el asistente de
+        # configuración (compañía recién creada, p. ej. en una base demo).
+        self.env.company.external_report_layout_id = self.env.ref('web.external_layout_standard')
         action = picking.action_print_guia_remision()
         expected = self.env.ref(
             'al_l10n_pe_delivery_guide_report.action_report_guia_remision')

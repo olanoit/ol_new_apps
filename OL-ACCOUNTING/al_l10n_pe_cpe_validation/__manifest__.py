@@ -33,7 +33,7 @@ Facturas (01), boletas (03), liquidaciones de compra (04), notas de crédito
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '1.20261012',
+    'version': '2.20261012',
     'license': 'OPL-1',
     'depends': ['al_account_base', 'l10n_pe'],
     'external_dependencies': {'python': ['requests']},
@@ -42,6 +42,8 @@ Facturas (01), boletas (03), liquidaciones de compra (04), notas de crédito
         'views/res_config_settings_views.xml',
         'views/account_move_views.xml',
     ],
+    # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
+    'demo': ['demo/al_l10n_pe_cpe_validation_demo.xml'],
     'installable': True,
     'application': False,
 }

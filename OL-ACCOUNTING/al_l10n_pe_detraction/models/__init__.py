@@ -7,3 +7,4 @@ from . import res_partner
 from . import detraction_check
 from . import account_edi_xml_ubl_pe
 from . import account_payment
+from . import al_pe_demo

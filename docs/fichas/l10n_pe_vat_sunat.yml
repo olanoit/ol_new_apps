@@ -440,6 +440,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 20.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "La unicidad de ciudades (nombre y departamento) solo se valida en Perú: ya no impide instalar módulos oficiales con ciudades homónimas de otros países, como la nómina de EE. UU. que se instala sola en bases con demo."
   - version: 19.20261011
     fecha: 11/10/2026
     cambios:

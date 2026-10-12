@@ -14,6 +14,7 @@ from odoo.tests.common import TransactionCase
 
 from ..models.detraction_check import L10nPeDetractionCheck
 from ..tools import sunat_spot_page
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 CODES = [
     ('1', 'Azúcar y melaza de caña (1)'), ('3', 'Alcohol etílico (1)'),
@@ -101,6 +102,7 @@ class TestDetractionCheck(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.Check = cls.env['l10n_pe.detraction.check']
         cls.dtype_012 = cls.env.ref('al_l10n_pe_detraction.detraction_012')
         cls.dtype_037 = cls.env.ref('al_l10n_pe_detraction.detraction_037')

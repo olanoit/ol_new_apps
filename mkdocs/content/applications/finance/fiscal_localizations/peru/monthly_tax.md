@@ -75,6 +75,18 @@ El cálculo trae:
 La lista de **Declaración mensual (621)** suma por año el IGV, la renta y el
 total a pagar, y se agrupa por compañía.
 
+## Datos de demostración
+
+Una base creada **con datos de demostración** carga, al instalar el módulo, un
+ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
+de Odoo, con el plan contable de Perú). Los periodos se calculan respecto del
+día de la instalación. En una base sin datos de demostración no se carga nada.
+
+- Régimen general desde el 1 de enero y coeficientes de ejemplo (1,85 % y 1,50 %
+  para enero y febrero).
+- El PDT 621 de los dos últimos meses cerrados, calculado con los movimientos de
+  la compañía.
+
 !!! info "Ver también"
     - [Determinación de pagos a cuenta (SUNAT)](https://orientacion.sunat.gob.pe/01-determinacion-de-pagos-cuenta)
     - [Ley del Impuesto a la Renta, capítulo XI (art. 85)](https://www.sunat.gob.pe/legislacion/renta/ley/capxi.pdf)

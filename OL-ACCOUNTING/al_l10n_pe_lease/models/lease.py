@@ -443,7 +443,7 @@ class L10nPeLease(models.Model):
     def _create_asset(self):
         self.ensure_one()
         rou_line = self.initial_move_id.line_ids.filtered(lambda l: l.account_id == self.rou_account_id)
-        asset = self.env['account.asset'].create({
+        vals = {
             'name': '%s - %s' % (self.name, self.property_description),
             'company_id': self.company_id.id,
             'original_move_line_ids': [Command.set(rou_line.ids)],
@@ -457,7 +457,12 @@ class L10nPeLease(models.Model):
             'account_depreciation_expense_id': self.depreciation_expense_account_id.id,
             'journal_id': self.journal_id.id,
             'asset_group_id': self.asset_group_id.id,
-        })
+        }
+        # Tabla 18 de SUNAT (campo de al_l10n_pe_ple, obligatorio en el
+        # formato 7.1): el derecho de uso no se revalúa, tipo 1.
+        if 'l10n_pe_asset_type' in self.env['account.asset']._fields:
+            vals['l10n_pe_asset_type'] = '1'
+        asset = self.env['account.asset'].create(vals)
         asset.validate()
         self.asset_id = asset
 

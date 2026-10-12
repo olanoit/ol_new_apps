@@ -59,9 +59,16 @@ with Captura('al_l10n_pe_retention') as c:
     # ---- Menú Perú ▸ Retenciones IGV ---------------------------------------
     c.abrir_accion('al_l10n_pe_retention.action_retention_analysis', ms=3000)
     c.foto('12-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})
-    c.page.get_by_role('button', name='Retenciones IGV').first.click()
+    # Con todas las secciones de la app Perú, el menú se desborda a «Más» a 1440 px
+    c.page.set_viewport_size({'width': 3840, 'height': 900})
+    c.abrir_accion('al_l10n_pe_retention.action_retention_analysis', ms=3000)
+    boton = c.page.locator('.o_menu_sections button:visible:has-text("Retenciones IGV")').first
+    boton.click()
     c.esperar(800)
-    c.foto('13-menu-retenciones', clip={'x': 0, 'y': 0, 'width': 900, 'height': 230})
+    caja = boton.bounding_box()
+    c.foto('13-menu-retenciones', clip={'x': max(caja['x'] - 300, 0), 'y': 0, 'width': 900, 'height': 230},
+           recortar=False)
+    c.page.set_viewport_size(c.viewport)
     c.abrir_accion('al_l10n_pe_retention.action_retention_bills', ms=3000)
     c.foto('14-comprobantes', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
     c.abrir_accion('al_l10n_pe_retention.action_retention_payments', ms=3000)

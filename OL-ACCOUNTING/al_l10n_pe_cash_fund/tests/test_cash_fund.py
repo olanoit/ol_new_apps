@@ -7,6 +7,7 @@ from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -15,6 +16,7 @@ class TestCashFund(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         Account = cls.env['account.account']
         cls.advance_account = cls.company._l10n_pe_cash_fund_account('advance')

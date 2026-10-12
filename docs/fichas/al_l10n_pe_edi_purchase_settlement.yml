@@ -247,6 +247,10 @@ faq:
       avisa si ya pasan de 75 UIT.
 
 novedades:
+  - version: 2.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): productora de café sin RUC y dos liquidaciones de compra (una confirmada por enviar y otra en borrador), sin enviar nada a SUNAT."
   - version: 1.20261011
     fecha: 11/10/2026
     cambios:

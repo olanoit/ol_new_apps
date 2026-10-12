@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- DATOS DEMO FICTICIOS: obras, materiales, costos, existencias y umbral de
      aprobación son inventados. Todo lleva el prefijo [DEMO]. -->
-<odoo>
+<odoo noupdate="1">
 
     <!-- Analítica: planes «disciplina» y «partida» (el plan «proyecto» es el
          de Odoo). -->

@@ -636,6 +636,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 23.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): servicio sujeto al SPOT (037, 12 %), una venta con su detracción y una compra con el depósito y la constancia."
   - version: 22.20261011
     fecha: 11/10/2026
     cambios:

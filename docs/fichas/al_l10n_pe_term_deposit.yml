@@ -199,6 +199,10 @@ campos:
       - [Afecto al ITF, Por depósito, El de Ajustes, "Desmarcar si la cuenta está exonerada (declaración jurada ante el banco)"]
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): depósito a plazo con intereses devengados, otro por vencer, fondo en garantía de una carta fianza y depósito en garantía de un alquiler liberado en parte."
   - version: 2.20261010
     fecha: 10/10/2026
     cambios:

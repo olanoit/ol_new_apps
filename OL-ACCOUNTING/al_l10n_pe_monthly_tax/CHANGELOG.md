@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_monthly_tax.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): régimen general desde el 1 de enero, coeficientes de ejemplo y el PDT 621 de los dos últimos meses calculado.
+
 ## 1.20261012 — 12/10/2026
 
 - Resumen mensual del Formulario Virtual 621: IGV de ventas y compras, saldo a favor, percepciones y retenciones con arrastre y pago a cuenta del impuesto a la renta según el régimen.

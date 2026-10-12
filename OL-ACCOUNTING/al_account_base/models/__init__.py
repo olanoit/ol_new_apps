@@ -5,3 +5,4 @@ from . import res_partner
 from . import res_partner_bank
 from . import account_journal
 from . import res_config_settings
+from . import al_pe_demo

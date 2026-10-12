@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_lease.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261012 — 12/10/2026
+
+- Datos de demostración en «PE Company» (solo en bases con datos de demostración): oficina confirmada con dos facturas, almacén exento por corto plazo, montacargas en borrador y depósito remedido por el reajuste de la renta. El activo por derecho de uso lleva el tipo de activo 1 de la tabla 18 que exige el PLE 7.1.
+
 ## 2.20261010 — 10/10/2026
 
 - Remedición (cuota, plazo o tasa) con ajuste del pasivo y del derecho de uso, y terminación anticipada con baja de ambos y su resultado; historial por contrato.

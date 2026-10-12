@@ -630,6 +630,10 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 19.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): cuentas de letras del PCGE, diarios de letras por cobrar y por pagar, canje de una factura de cliente en tres letras (una en cobranza libre) y de una factura de proveedor en dos letras."
   - version: 18.20261009
     fecha: 09/10/2026
     cambios:

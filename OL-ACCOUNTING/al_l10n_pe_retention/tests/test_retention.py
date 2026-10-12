@@ -4,6 +4,7 @@ from datetime import date
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -12,6 +13,7 @@ class TestRetentionApplies(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if not (cls.company.vat and len(cls.company.vat) == 11):
             cls.company.vat = '20512528458'
@@ -32,6 +34,16 @@ class TestRetentionApplies(TransactionCase):
             'company_id': cls.company.id, 'l10n_latam_use_documents': False})
         cls.partner = cls.env['res.partner'].create({
             'name': 'Proveedor Retención SAC', 'vat': '20131312955'})
+        # En Odoo 19 un pago sin cuenta de pagos pendientes no genera asiento
+        # ni concilia la factura. Una compañía nueva no la trae configurada.
+        method_lines = cls.env['account.payment.method.line'].search([
+            ('journal_id.company_id', '=', cls.company.id),
+            ('journal_id.type', 'in', ('bank', 'cash')), ('payment_account_id', '=', False)])
+        if method_lines:
+            method_lines.payment_account_id = cls.env['account.account'].create({
+                'name': 'Pagos pendientes (pruebas)', 'code': '104999',
+                'account_type': 'asset_current', 'reconcile': True,
+                'company_ids': [(6, 0, cls.company.ids)]})
 
     def _bill(self, price, partner=None):
         return self.env['account.move'].create({

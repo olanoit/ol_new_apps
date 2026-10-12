@@ -6,6 +6,7 @@ from datetime import date
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -14,6 +15,7 @@ class TestCurrencyExchange(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.usd = cls.env.ref('base.USD')
         cls.usd.active = True

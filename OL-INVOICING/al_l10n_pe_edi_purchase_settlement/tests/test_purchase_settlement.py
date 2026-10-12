@@ -10,6 +10,7 @@ from odoo import Command, fields
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 NS = {
     'i': 'urn:oasis:names:specification:ubl:schema:xsd:SelfBilledInvoice-2',
@@ -28,6 +29,7 @@ class TestPurchaseSettlement(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         if not (cls.company.vat and len(cls.company.vat) == 11):
             cls.company.vat = '20512528458'

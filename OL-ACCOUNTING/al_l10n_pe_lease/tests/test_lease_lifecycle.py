@@ -13,6 +13,7 @@ from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -22,6 +23,7 @@ class TestLeaseLifecycle(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.company = cls.env.company
         cls.journal = cls.env['account.journal'].create({
             'name': 'Arrendamientos ciclo', 'code': 'ARRC', 'type': 'general', 'company_id': cls.company.id})

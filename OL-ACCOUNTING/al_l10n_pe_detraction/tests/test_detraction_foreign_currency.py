@@ -13,6 +13,7 @@ from datetime import date
 from odoo.tests import tagged
 
 from .test_detraction import TestDetraction
+from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
@@ -21,6 +22,7 @@ class TestDetractionForeignCurrency(TestDetraction):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        use_pe_company(cls)
         cls.usd = cls.env.ref('base.USD')
         cls.usd.active = True
         rate_vals = {'name': date(2025, 6, 10), 'currency_id': cls.usd.id,
