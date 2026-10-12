@@ -19,7 +19,8 @@ destacados:
   - icono: "#"
     titulo: Cuenta o CCI
     texto: >-
-      El proveedor con cuenta en el mismo banco se paga a su cuenta; el de otro
+      El proveedor con cuenta en el mismo banco se paga a su cuenta (la
+      corriente antes que la de ahorros, elegida sola en el pago); el de otro
       banco, a su CCI de 20 dígitos.
   - icono: "✓"
     titulo: Controles al validar
@@ -66,12 +67,20 @@ pasos:
   - titulo: El formato en el diario
     ruta: Contabilidad ▸ Configuración ▸ Diarios ▸ diario del banco
     texto: >-
-      El formato sale del banco de la cuenta; el código del servicio (BCP,
-      Interbank, Scotiabank) y el código de la empresa (Interbank) los asigna
-      el banco al afiliarse.
+      El formato sale del banco de la cuenta; el código del servicio
+      (Interbank, Scotiabank) y el código de la empresa (Interbank) los asigna
+      el banco al afiliarse. En BCP se marca la exoneración del ITF, la
+      validación del documento del proveedor y el detalle de comprobantes.
     imagen: screenshots/03-diario.png
 
 novedades:
+  - version: 3.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "BCP: archivo de pago a proveedores de Telecrédito con la marca de exoneración del ITF, la modalidad de pago y, debajo de cada abono, los comprobantes que se pagan (registro 3)."
+      - "BCP: un solo abono por proveedor y cuenta aunque el lote tenga varios pagos al mismo proveedor."
+      - "BCP: exoneración del ITF, validación del documento del beneficiario y detalle de comprobantes configurables en el diario."
+      - "El pago a un proveedor usa por defecto su cuenta en el mismo banco del diario (la corriente antes que la de ahorros), aunque la factura traiga la de otro banco."
   - version: 2.20261012
     fecha: 12/10/2026
     cambios:

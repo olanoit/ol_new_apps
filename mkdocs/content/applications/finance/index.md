@@ -37,6 +37,7 @@ en el Perú.
 | [Arrendamientos (NIIF 16)](accounting/leases.md) | Derecho de uso y pasivo por arrendamiento |
 | [Entregas a rendir y caja chica](accounting/cash_fund.md) | Entregas, rendición por facturas y movilidad, caja chica y reposición |
 | [Pagos masivos a proveedores](accounting/batch_payments.md) | Archivo TXT de pago masivo para BCP, BBVA, Interbank, Scotiabank y Banco de la Nación |
+| [Cheques recibidos y girados](accounting/checks.md) | Cartera de cheques de terceros, depósito, rechazo, cheques propios y plazo de presentación |
 | [DUA de importación](accounting/import_dua.md) | DUA como compra: derechos, IGV, percepción aduanera y costos en destino |
 
 ## Proveedores de pago

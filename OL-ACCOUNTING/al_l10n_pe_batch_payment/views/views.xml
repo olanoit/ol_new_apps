@@ -41,9 +41,12 @@
         <field name="arch" type="xml">
             <field name="bank_id" position="after">
                 <field name="l10n_pe_batch_format" invisible="not bank_id"/>
-                <field name="l10n_pe_batch_service_code" invisible="not l10n_pe_batch_format"/>
+                <field name="l10n_pe_batch_service_code" invisible="l10n_pe_batch_format not in ('interbank', 'scotiabank')"/>
                 <field name="l10n_pe_batch_company_code" invisible="l10n_pe_batch_format != 'interbank'"/>
                 <field name="l10n_pe_batch_process_type" invisible="l10n_pe_batch_format != 'bbva'"/>
+                <field name="l10n_pe_batch_itf_exempt" invisible="l10n_pe_batch_format != 'bcp'"/>
+                <field name="l10n_pe_batch_validate_idc" invisible="l10n_pe_batch_format != 'bcp'"/>
+                <field name="l10n_pe_batch_documents" invisible="l10n_pe_batch_format != 'bcp'"/>
             </field>
         </field>
     </record>

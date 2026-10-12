@@ -1,0 +1,94 @@
+titulo: Cheques recibidos y girados
+subtitulo: >-
+  La gestión de cheques de Odoo adaptada a Perú: diarios y cuentas del PCGE,
+  emisor con RUC o DNI y el plazo de presentación de la Ley de Títulos
+  Valores.
+categoria: Contabilidad · Tesorería
+etiquetas: [Cheques, Cobranza, Tesorería, Títulos valores]
+portada: screenshots/01-cartera.png
+
+destacados_intro: >-
+  La cartera de cheques al día: qué hay en caja, qué se puede depositar y qué
+  está por vencer.
+destacados:
+  - icono: "▤"
+    titulo: Diarios y cuentas del PCGE
+    texto: >-
+      «Cheques de terceros» (1033001), «Cheques rechazados» (1689001) y los
+      cheques propios girados (1049001), creados al instalar.
+  - icono: "#"
+    titulo: Emisor con RUC o DNI
+    texto: >-
+      El cheque de una persona natural se registra con su DNI o carné de
+      extranjería; el RUC se valida con su dígito verificador.
+  - icono: "⏱"
+    titulo: Plazo de presentación
+    texto: >-
+      Cada cheque muestra hasta cuándo se puede presentar al cobro (30 días,
+      Ley 27287) y la cartera filtra los vencidos y los que se cobran esta
+      semana.
+  - icono: "!"
+    titulo: Aviso al depositar
+    texto: >-
+      Antes de depositar, el asistente avisa de los cheques diferidos que el
+      banco aún no paga y de los que ya vencieron.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo trae la cartera de cheques de terceros y los cheques propios, pero
+    solo crea sus diarios y cuentas para Argentina, exige un RUC como
+    documento del emisor y no conoce el plazo de presentación peruano: un
+    cheque depositado tarde vuelve rechazado y la deuda del cliente queda
+    abierta sin que nadie lo note a tiempo.
+  nota: >-
+    **Base legal.** Ley 27287, Ley de Títulos Valores: el cheque se presenta
+    al cobro dentro de los 30 días de su fecha; el de pago diferido, desde la
+    fecha de pago indicada.
+
+pasos_intro: >-
+  Se instala y queda listo: los diarios y las cuentas se crean solos.
+pasos:
+  - titulo: La cartera de cheques
+    ruta: Contabilidad ▸ Clientes ▸ Cheques de Terceros
+    texto: >-
+      Los cheques en caja con su fecha de pago y la fecha límite para
+      presentarlos al cobro.
+    imagen: screenshots/01-cartera.png
+
+  - titulo: El cheque recibido
+    ruta: Pago del cliente ▸ diario Cheques de terceros
+    texto: >-
+      Número, banco, fecha de pago (o fecha diferida), importe y documento del
+      emisor, que puede ser un RUC o un DNI.
+    imagen: screenshots/02-cheque.png
+
+  - titulo: El depósito en el banco
+    ruta: Cheques de Terceros ▸ Transferir Cheque
+    texto: >-
+      Elija el banco y la fecha; el asistente avisa si algún cheque es
+      diferido y aún no se puede cobrar o si venció su plazo.
+    imagen: screenshots/03-depositar.png
+
+  - titulo: El diario de cheques
+    ruta: Contabilidad ▸ Configuración ▸ Diarios ▸ Cheques de terceros
+    texto: >-
+      Métodos para recibir, mover y devolver cheques, con la cuenta 1033001 de
+      cheques en cartera.
+    imagen: screenshots/04-diario.png
+
+  - titulo: Los cheques propios
+    ruta: Contabilidad ▸ Proveedores ▸ Cheques Propios
+    texto: >-
+      Los cheques girados a proveedores, entregados hasta que el banco los
+      paga; se pueden anular.
+    imagen: screenshots/05-cheques-propios.png
+
+novedades:
+  - version: 1.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Diarios «Cheques de terceros» y «Cheques rechazados» y método «Cheques propios» en los bancos, con las cuentas 1033001, 1689001 y 1049001 del PCGE, al cargar el plan peruano o al instalar el módulo."
+      - "Documento del emisor del cheque con RUC (dígito verificador), DNI o carné de extranjería."
+      - "Fecha límite de presentación al cobro (Ley 27287), filtros de cheques vencidos y por cobrar en la semana, y aviso al depositar un cheque diferido o vencido."
+      - "Datos de demostración en «PE Company» (solo en bases con datos de demostración): cuatro cheques de terceros y un cheque propio diferido."

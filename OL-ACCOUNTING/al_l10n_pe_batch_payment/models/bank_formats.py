@@ -4,10 +4,12 @@
 
 Los bancos peruanos no publican la especificación de sus archivos: la
 entregan al cliente afiliado (Telecrédito, net cash, Interbank Empresas,
-Scotiabank Telebanking, Banco de la Nación). Las estructuras de BCP, BBVA,
-Interbank y Scotiabank parten de los formatos de pago masivo que la suite ya
-usa en producción para planillas (al_hr_pe_reports), adaptados a
-proveedores; la del Banco de la Nación es una estructura propia. Todas deben
+Scotiabank Telebanking, Banco de la Nación). La de BCP es la de pago a
+proveedores de Telecrédito (marca del ITF, modalidad de pago y comprobantes
+pagados), distinta de la de haberes; las de BBVA, Interbank y Scotiabank
+parten de los formatos de pago masivo que la suite ya usa en producción para
+planillas (al_hr_pe_reports), adaptados a proveedores; la del Banco de la
+Nación es una estructura propia. Todas deben
 validarse con el banco antes del primer pago real (ver la documentación del
 módulo). Cada función recibe:
 
@@ -21,7 +23,9 @@ módulo). Cada función recibe:
     6 RUC, 7 pasaporte), ``doc_number``, ``name``, ``account`` (número de
     cuenta en el mismo banco o CCI), ``is_cci`` (bool), ``account_kind``
     ('checking'/'savings'), ``amount`` (en la moneda del lote) y
-    ``reference`` (comprobantes que se pagan).
+    ``reference`` (comprobantes que se pagan) y ``documents`` (lista de dicts
+    ``type`` F/B/N/C, ``number`` y ``amount``: lo que el pago salda de cada
+    comprobante; vacía si no se conoce).
 
 Devuelven el texto del archivo (líneas terminadas en CRLF).
 """
@@ -72,16 +76,52 @@ def total(lines):
     return float_round(sum(line['amount'] for line in lines), precision_digits=2)
 
 
+def group_by_beneficiary(lines):
+    """Un abono por proveedor y cuenta: suma los pagos y junta sus
+    comprobantes. Si algún pago no trae comprobantes, el abono va sin
+    detalle (el banco exige que el detalle sume el abono)."""
+    groups = {}
+    for line in lines:
+        key = (line['doc_type'], line['doc_number'], line['account'], line['is_cci'])
+        group = groups.get(key)
+        if group is None:
+            groups[key] = dict(line, documents=list(line.get('documents') or []),
+                               _complete=bool(line.get('documents')))
+            continue
+        group['amount'] = float_round(group['amount'] + line['amount'], precision_digits=2)
+        group['reference'] = ' '.join(filter(None, (group['reference'], line['reference'])))
+        group['documents'] += line.get('documents') or []
+        group['_complete'] = group['_complete'] and bool(line.get('documents'))
+    result = []
+    for group in groups.values():
+        complete = group.pop('_complete')
+        if not complete or float_round(
+                sum(doc['amount'] for doc in group['documents']) - group['amount'],
+                precision_digits=2):
+            group['documents'] = []
+        result.append(group)
+    return result
+
+
 # ---------------------------------------------------------------------------
-# BCP — Telecrédito, pagos masivos (cabecera «1» y detalle «2»)
+# BCP — Telecrédito, pago a proveedores: cabecera «1», abono «2» por
+# beneficiario y, debajo de cada abono, un «3» por comprobante pagado
 # ---------------------------------------------------------------------------
 BCP_DOC_TYPES = {'1': '1', '4': '3', '7': '4', '6': '6'}
 BCP_ACCOUNT_TYPES = {'checking': 'C', 'savings': 'A'}
+BCP_PAYMENT_MODE = '1'  # abono en cuenta
 
 
 def bcp_txt(header, lines):
-    """Suma de control de la cabecera: las cuentas de abono (la CCI desde
-    la posición 11 y las demás desde la 4) más la cuenta de cargo (desde la
+    """``lines`` ya agrupadas por beneficiario (``group_by_beneficiary``).
+
+    Opciones del diario: ``itf_exempt`` (marca de exoneración del ITF de la
+    cabecera), ``validate_idc`` (el banco comprueba que el documento del
+    beneficiario sea el titular de la cuenta) y ``documents`` (registros
+    «3» con los comprobantes de cada abono).
+
+    Suma de control de la cabecera: las cuentas de abono (la CCI desde la
+    posición 11 y las demás desde la 4) más la cuenta de cargo (desde la
     4), a 15 posiciones."""
     options = header['options']
     currency = '0001' if header['currency'] == 'PEN' else '1001'
@@ -89,16 +129,22 @@ def bcp_txt(header, lines):
                 for line in lines]
     accounts.append(int(digits(header['charge_acc'])[3:] or 0))
     out = ['1' + number(len(lines), 6) + header['payment_date'].strftime('%Y%m%d')
-           + (options.get('service_code') or 'P')[:1] + 'C' + currency
-           + alpha(header['charge_acc'], 20) + amount(total(lines), 17, point=True)
-           + alpha(header['reference'], 40) + number(sum(accounts), 15) + EOL]
+           + 'C' + currency + alpha(header['charge_acc'], 20)
+           + amount(total(lines), 17, point=True) + alpha(header['reference'], 40)
+           + ('S' if options.get('itf_exempt') else 'N')
+           + number(sum(accounts), 15) + EOL]
+    idc = 'S' if options.get('validate_idc', True) else 'N'
     for line in lines:
         kind = 'B' if line['is_cci'] else BCP_ACCOUNT_TYPES.get(line['account_kind'], 'C')
-        out.append('2' + kind + alpha(digits(line['account']), 20)
+        out.append('2' + kind + alpha(digits(line['account']), 20) + BCP_PAYMENT_MODE
                    + BCP_DOC_TYPES.get(line['doc_type'], '6') + alpha(line['doc_number'], 12)
                    + '   ' + alpha(line['name'], 75) + alpha(line['reference'], 40)
                    + alpha(header['company_name'], 20) + currency
-                   + amount(line['amount'], 17, point=True) + 'S' + EOL)
+                   + amount(line['amount'], 17, point=True) + idc + EOL)
+        if options.get('documents', True):
+            for doc in line.get('documents') or []:
+                out.append('3' + doc['type'][:1] + number(doc['number'], 15)
+                           + amount(doc['amount'], 17, point=True) + EOL)
     return ''.join(out)
 
 
@@ -193,10 +239,11 @@ def bn_txt(header, lines):
     return ''.join(out)
 
 
+# Formato: (función, etiqueta del archivo, agrupa los pagos por beneficiario)
 FORMATS = {
-    'bcp': (bcp_txt, 'BCP'),
-    'bbva': (bbva_txt, 'BBVA'),
-    'interbank': (interbank_txt, 'Interbank'),
-    'scotiabank': (scotiabank_txt, 'Scotiabank'),
-    'bn': (bn_txt, 'BN'),
+    'bcp': (bcp_txt, 'BCP', True),
+    'bbva': (bbva_txt, 'BBVA', False),
+    'interbank': (interbank_txt, 'Interbank', False),
+    'scotiabank': (scotiabank_txt, 'Scotiabank', False),
+    'bn': (bn_txt, 'BN', False),
 }

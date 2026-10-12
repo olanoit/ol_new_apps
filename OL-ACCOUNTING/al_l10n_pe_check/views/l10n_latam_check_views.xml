@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cartera de cheques de terceros: plazo de presentación (Ley 27287). -->
+    <record id="view_third_party_check_tree_pe" model="ir.ui.view">
+        <field name="name">l10n_latam.check.third.party.list.pe</field>
+        <field name="model">l10n_latam.check</field>
+        <field name="inherit_id" ref="l10n_latam_check.view_account_third_party_check_tree"/>
+        <field name="arch" type="xml">
+            <field name="payment_date" position="after">
+                <field name="l10n_pe_presentation_deadline" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_third_party_checks_search_pe" model="ir.ui.view">
+        <field name="name">l10n_latam.check.third.party.search.pe</field>
+        <field name="model">l10n_latam.check</field>
+        <field name="inherit_id" ref="l10n_latam_check.view_account_payment_third_party_checks_search"/>
+        <field name="arch" type="xml">
+            <filter name="checks_on_hand" position="after">
+                <filter string="Plazo de presentación vencido" name="l10n_pe_presentation_expired"
+                        domain="[('current_journal_id', '!=', False), ('l10n_pe_presentation_deadline', '&lt;', 'today')]"/>
+                <filter string="Por cobrar esta semana" name="l10n_pe_due_this_week"
+                        domain="[('current_journal_id', '!=', False), ('payment_date', '&lt;=', (context_today() + relativedelta(days=7)).strftime('%Y-%m-%d')), ('l10n_pe_presentation_deadline', '&gt;=', 'today')]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="l10n_latam_check_view_form_pe" model="ir.ui.view">
+        <field name="name">l10n_latam.check.form.pe</field>
+        <field name="model">l10n_latam.check</field>
+        <field name="inherit_id" ref="l10n_latam_check.l10n_latam_check_view_form"/>
+        <field name="arch" type="xml">
+            <field name="payment_date" position="after">
+                <field name="l10n_pe_presentation_deadline" invisible="not l10n_pe_presentation_deadline"/>
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -146,6 +146,28 @@ Documentación: ficha de cada módulo (`docs/fichas/`), páginas
   aprueba contabilidad) y aviso cuando un mismo día tiene planilla y
   comprobantes de movilidad del mismo trabajador (art. 21 v, numeral 1).
 
+## 7. Segunda revisión (12/10/2026)
+
+Se revisaron todos los desarrollos v16 que heredan `account.payment`. Solo los
+de Inveragro son peruanos; los `mblz_*` de Onesta son chilenos (RUT, Banco de
+Chile, Santander) y los de BNI, Socialite y Omnia, mexicanos (CFDI, STP).
+
+| Brecha | Resultado |
+|---|---|
+| Cheques recibidos y diferidos (`dv_account_inbound_check`) | **Desarrollado**: `al_l10n_pe_check` 1.20261012 sobre el nativo `l10n_latam_check` (diarios y cuentas del PCGE, emisor con RUC o DNI, plazo de presentación de la Ley 27287); 9 pruebas |
+| Telecrédito BCP completo (`dv_l10n_pe_account_batch_payment_bcp`) | **Desarrollado**: `al_l10n_pe_batch_payment` 3.20261012 (estructura de proveedores con ITF, modalidad y registro 3 por comprobante; un abono por proveedor; cuenta del mismo banco por defecto); 14 pruebas |
+| Proyección de cobranza (`payment_projection`) | Pendiente: no lo cubre Odoo ni la suite |
+| Respuesta del banco (rechazos del lote) | Pendiente: requiere el formato de cada banco |
+| Comprobante de egreso con monto en letras | Pendiente |
+| BanBif y Pichincha para proveedores | Pendiente |
+| TXT 0621 de retenciones sufridas | No se desarrolla: SUNAT precarga las retenciones de los CRE electrónicos en el 621 |
+| CRE sin pago | Ya cubierto por `al_l10n_pe_retention` (mejora 5 de `analisis_retenciones_v16.md`) |
+
+La estructura del archivo BCP se tomó del formato de pago a proveedores de
+Telecrédito; el registro 3 solo se envía cuando los comprobantes suman el
+abono (sin notas de crédito). Como el resto de formatos, se valida con el
+banco antes del primer pago real.
+
 ## Fuentes
 
 - [TUO de la Ley del Impuesto a la Renta, capítulo VI (art. 37 a1)](https://www.sunat.gob.pe/legislacion/renta/ley/capvi.pdf)

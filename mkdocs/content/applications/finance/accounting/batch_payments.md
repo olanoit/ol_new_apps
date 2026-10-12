@@ -9,6 +9,11 @@ proveedores a la vez: BCP (Telecrédito), BBVA (net cash), Interbank, Scotiabank
 Banco de la Nación. Cada proveedor se paga a su cuenta en el mismo banco o, si es de
 otro banco, a su CCI. Lo usan tesorería y cuentas por pagar.
 
+Al registrar un pago desde un diario de banco con formato, Odoo propone la cuenta del
+proveedor **en ese mismo banco** (la corriente antes que la de ahorros), aunque la
+factura traiga la de otro banco: el abono llega directo y sin comisión interbancaria.
+Solo se proponen cuentas marcadas como de confianza.
+
 ![Lote de pagos con su archivo, número de registros y total](batch_payments/01-lote.png)
 
 ## Configuración
@@ -21,10 +26,13 @@ otro banco, a su CCI. Lo usan tesorería y cuentas por pagar.
    revise:
     - **Número de cuenta bancaria**: la cuenta de cargo.
     - **Código del servicio**: el que asigna el banco al afiliar el pago a
-      proveedores (BCP: subtipo, P por defecto; Interbank: servicio, 04;
-      Scotiabank: forma de pago, 1).
+      proveedores (Interbank: servicio, 04; Scotiabank: forma de pago, 1).
     - **Código de la empresa** (Interbank) y **Proceso** (BBVA: inmediato o en la
       fecha del lote).
+    - En BCP: **Exonerado del ITF** (solo si el banco registró la exoneración de
+      la cuenta de cargo), **Validar documento del beneficiario** (el banco
+      rechaza el abono si el RUC no es el titular de la cuenta) y **Detalle de
+      comprobantes**.
     - En **Pagos salientes**, el método **Pago masivo (TXT de banco peruano)**.
 4. En cada proveedor, registre su cuenta en **Facturación ‣ Cuentas bancarias**:
    banco, número, **Tipo de cuenta** y **CCI** de 20 dígitos. Márquela como de
@@ -59,6 +67,22 @@ otro banco, a su CCI. Lo usan tesorería y cuentas por pagar.
 | Moneda de la cuenta del proveedor igual a la del lote | Soles y dólares se pagan en lotes distintos |
 | Proveedor con RUC o documento | El banco lo informa y lo valida |
 | Ningún depósito de detracción | La detracción se deposita en el Banco de la Nación con su propio archivo |
+
+### BCP: un abono por proveedor y sus comprobantes
+
+El archivo de Telecrédito para proveedores tiene tres tipos de registro:
+
+| Registro | Contenido |
+|---|---|
+| 1 · Cabecera | Número de abonos, fecha, cuenta de cargo, total, referencia del lote, marca de exoneración del ITF y suma de control de las cuentas |
+| 2 · Abono | Tipo y número de cuenta (o CCI), modalidad (abono en cuenta), documento y nombre del proveedor, importe y marca de validación del documento |
+| 3 · Comprobante | Debajo de cada abono, cada factura (F), boleta (B) o nota de débito (C) que se paga, con su número y el importe que el pago salda |
+
+Los pagos al mismo proveedor y a la misma cuenta van en **un solo abono** con la
+suma; sus comprobantes se listan debajo y el proveedor los ve en su estado de
+cuenta. El detalle solo se envía cuando los comprobantes suman exactamente el
+abono: si el pago incluye notas de crédito o algún pago no está vinculado a
+facturas, ese abono va sin detalle.
 
 ### Nombre del archivo
 

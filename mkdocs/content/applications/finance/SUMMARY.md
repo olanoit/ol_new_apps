@@ -27,6 +27,7 @@
 * Contabilidad y facturación
     * [Letras de cambio](accounting/bills_of_exchange.md)
     * [Pagos masivos a proveedores](accounting/batch_payments.md)
+    * [Cheques recibidos y girados](accounting/checks.md)
     * [Factoring](accounting/factoring.md)
     * [Depósitos a plazo y garantías](accounting/term_deposits.md)
     * [Entregas a rendir y caja chica](accounting/cash_fund.md)

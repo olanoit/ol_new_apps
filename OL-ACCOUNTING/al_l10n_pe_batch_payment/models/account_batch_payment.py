@@ -4,9 +4,14 @@ import base64
 from odoo import fields, models
 from odoo.exceptions import UserError
 
-from .bank_formats import FORMATS, digits
+from odoo.tools.float_utils import float_compare
+
+from .bank_formats import FORMATS, digits, group_by_beneficiary
 
 METHOD = 'pe_bank_txt'
+# Tipo de comprobante del registro «3» del BCP según la tabla 10 de SUNAT;
+# los demás (recibo por honorarios, liquidación de compra…) van como factura.
+BCP_DOCUMENT_TYPES = {'01': 'F', '03': 'B', '07': 'N', '08': 'C'}
 
 
 class AccountBatchPayment(models.Model):
@@ -14,7 +19,8 @@ class AccountBatchPayment(models.Model):
 
     l10n_pe_export_count = fields.Integer(
         string='Registros del archivo', readonly=True, copy=False,
-        help='Número de pagos del último archivo generado (control con el banco).')
+        help='Número de abonos del último archivo generado (control con el banco). En BCP '
+             'los pagos al mismo proveedor y cuenta van en un solo abono.')
     l10n_pe_export_total = fields.Monetary(
         string='Total del archivo', readonly=True, copy=False, currency_field='currency_id',
         help='Suma de los pagos del último archivo generado (control con el banco).')
@@ -104,6 +110,41 @@ class AccountBatchPayment(models.Model):
         names = invoices.mapped(lambda m: m.ref or m.name)
         return ' '.join(names) or payment.memo or payment.name
 
+    def _l10n_pe_document_code(self, move):
+        return BCP_DOCUMENT_TYPES.get(move.l10n_latam_document_type_id.code, 'F')
+
+    def _l10n_pe_payment_documents(self, payment):
+        """Comprobantes que salda el pago, con el importe de cada uno en la
+        moneda del pago. Con asiento, salen de la conciliación; sin asiento
+        (pago en proceso sin cuenta transitoria), de los comprobantes del pago
+        cuando su saldo suma el pago. Lista vacía si no cuadran."""
+        amounts = {}
+        counterpart = payment.move_id and payment._seek_for_lines()[1]
+        if counterpart:
+            for line in counterpart:
+                for partial in line.matched_credit_ids:
+                    move = partial.credit_move_id.move_id
+                    amounts[move] = amounts.get(move, 0.0) + partial.debit_amount_currency
+                for partial in line.matched_debit_ids:
+                    move = partial.debit_move_id.move_id
+                    amounts[move] = amounts.get(move, 0.0) - partial.credit_amount_currency
+        else:
+            for move in payment.invoice_ids.filtered(lambda m: m.is_purchase_document(True)):
+                if move.currency_id != payment.currency_id:
+                    return []
+                residual = abs(move.amount_residual)
+                amounts[move] = -residual if move.move_type == 'in_refund' else residual
+        # Con notas de crédito el abono va sin detalle: solo se informan
+        # comprobantes que suman el abono, sin restas.
+        if not amounts or any(value < 0 for value in amounts.values()) \
+                or float_compare(sum(amounts.values()), payment.amount, precision_digits=2):
+            return []
+        return [{
+            'type': self._l10n_pe_document_code(move),
+            'number': move.l10n_latam_document_number or move.ref or move.name,
+            'amount': value,
+        } for move, value in amounts.items() if value]
+
     def _l10n_pe_export_lines(self):
         lines = []
         for payment in self.payment_ids.sorted('id'):
@@ -118,6 +159,7 @@ class AccountBatchPayment(models.Model):
                 'account_kind': payment.partner_bank_id.l10n_pe_account_kind or 'checking',
                 'amount': payment.amount,
                 'reference': self._l10n_pe_reference(payment),
+                'documents': self._l10n_pe_payment_documents(payment),
             })
         return lines
 
@@ -136,6 +178,9 @@ class AccountBatchPayment(models.Model):
                 'service_code': journal.l10n_pe_batch_service_code,
                 'company_code': journal.l10n_pe_batch_company_code,
                 'process_type': journal.l10n_pe_batch_process_type,
+                'itf_exempt': journal.l10n_pe_batch_itf_exempt,
+                'validate_idc': journal.l10n_pe_batch_validate_idc,
+                'documents': journal.l10n_pe_batch_documents,
             },
         }
 
@@ -145,8 +190,10 @@ class AccountBatchPayment(models.Model):
         bank_format = self.journal_id.l10n_pe_batch_format
         if bank_format not in FORMATS:
             raise UserError(self.env._('El banco del diario no tiene formato de pago masivo.'))
-        builder, label = FORMATS[bank_format]
+        builder, label, grouped = FORMATS[bank_format]
         lines = self._l10n_pe_export_lines()
+        if grouped:
+            lines = group_by_beneficiary(lines)
         text = builder(self._l10n_pe_export_header(), lines)
         self.l10n_pe_export_count = len(lines)
         self.l10n_pe_export_total = sum(line['amount'] for line in lines)
