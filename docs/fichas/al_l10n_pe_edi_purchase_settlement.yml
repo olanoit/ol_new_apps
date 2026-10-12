@@ -1,0 +1,257 @@
+titulo: Liquidación de compra electrónica
+subtitulo: >-
+  El comprador emite la liquidación de compra (tipo 04) a personas naturales
+  sin RUC, retiene el IGV y el impuesto a la renta, la envía firmada a SUNAT y
+  la revierte si hubo un error.
+categoria: Localización Perú · Facturación electrónica
+etiquetas: [Liquidación de compra, Tipo 04, SUNAT, IGV retenido, Retención de renta, UBL 2.1]
+portada: screenshots/05-pestana.png
+
+destacados_intro: >-
+  Para comprar café, cacao, madera, oro artesanal o desperdicios a quien no
+  tiene RUC: el comprobante lo emite la empresa, con sus retenciones.
+destacados:
+  - icono: "L001"
+    titulo: Serie y número propios
+    texto: >-
+      Un diario de compras marcado como de liquidaciones numera L001-00000001,
+      L001-00000002… con el tipo de documento 04, sin digitar el número.
+  - icono: "IGV"
+    titulo: Retenciones solas
+    texto: >-
+      Cada línea gravada lleva el IGV retenido y, si la operación pasa de
+      S/ 700, la retención de renta del 1,5 % (4 % en el oro). El vendedor
+      recibe el importe total neto.
+  - icono: "XML"
+    titulo: Firmada y enviada
+    texto: >-
+      XML UBL 2.1 SelfBilledInvoice del anexo 6, firmado con el certificado de
+      la compañía y enviado con su operador electrónico.
+  - icono: "RR"
+    titulo: Reversión
+    texto: >-
+      Una liquidación aceptada con errores en el vendedor o el producto se
+      revierte con el resumen diario de reversiones dentro de los siete días.
+  - icono: "75"
+    titulo: Límite de 75 UIT
+    texto: >-
+      Aviso cuando las compras del año al mismo vendedor pasan de 75 UIT.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Cuando una empresa compra productos primarios agropecuarios, de pesca
+    artesanal, madera, productos silvestres, oro de minería artesanal,
+    artesanía o desperdicios a personas naturales que no tienen RUC, es ella
+    quien emite el comprobante: la liquidación de compra. Además retiene el
+    IGV de la operación (lo paga con el formulario 1662) y el impuesto a la
+    renta (PDT 617). La facturación electrónica de Odoo solo emite
+    comprobantes de venta.
+  nota: >-
+    **Base legal.** Reglamento de Comprobantes de Pago, art. 6, num. 1.3;
+    R.S. 097-2012/SUNAT, capítulo XI y anexos 6, 17, 22 y 27 (R.S.
+    244-2019/SUNAT); retención de renta: R.S. 234-2005/SUNAT (1,5 %, nada
+    hasta S/ 700) y R.S. 028-2013/SUNAT (4 % en el oro).
+
+flujos_intro: >-
+  Del borrador a SUNAT y, si hace falta, la reversión.
+flujos:
+  - id: flujo-liquidacion
+    titulo: Emisión y reversión
+    texto: >-
+      Lo que hace el módulo en cada botón.
+    mermaid: |
+      flowchart TD
+        A[Borrador en el diario<br/>de liquidaciones] --> B[Retenciones en las líneas:<br/>IGV retenido y renta]
+        B --> C{¿Datos completos?<br/>vendedor sin RUC, domicilio,<br/>lugar de la operación}
+        C -- No --> X[Error con lo que falta]
+        C -- Sí --> D[Confirmar: número L001-…<br/>y asiento por el neto]
+        D --> E[Enviar a SUNAT:<br/>XML firmado con el operador]
+        E --> F{¿Aceptada?}
+        F -- No --> G[Respuesta de SUNAT<br/>en la liquidación]
+        G --> E
+        F -- Sí --> H[Aceptada por SUNAT<br/>ZIP con XML y constancia]
+        H --> I{¿Error en vendedor<br/>o producto?}
+        I -- Sí --> J[Revertir en SUNAT:<br/>resumen RR, ticket]
+        J --> K[Consultar reversión]
+        K --> L[Revertida: el asiento<br/>se anula y el número no se reutiliza]
+    pie: >-
+      SUNAT recibe la liquidación hasta el día siguiente a su emisión; la
+      reversión, dentro de los siete días siguientes a su aceptación.
+
+pasos_intro: >-
+  Ejemplo: compra de 1 250 kg de café pergamino a S/ 9,50 a una productora de
+  Chinchao (Huánuco) identificada con DNI.
+pasos:
+  - seccion: Configuración
+  - titulo: Los impuestos y el envío
+    ruta: Ajustes ▸ Perú ▸ Liquidación de compra electrónica
+    texto: >-
+      Los tres impuestos de retención que crea el módulo, el importe mínimo
+      para retener la renta (S/ 700), la UIT del aviso de 75 UIT y si se envía
+      al confirmar.
+    imagen: screenshots/01-ajustes.png
+  - titulo: El diario de liquidaciones
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
+    texto: >-
+      El módulo crea el diario «Liquidaciones de compra» (LCE) con la serie
+      L001. Cualquier diario de compras que use documentos puede marcarse como
+      de liquidaciones con otra serie que empiece con L.
+    imagen: screenshots/02-diario.png
+  - titulo: El oro retiene el 4 %
+    ruta: Contabilidad ▸ Proveedores ▸ Productos ▸ Contabilidad
+    texto: >-
+      Los productos de oro (minerales, amalgama, oro en bruto y desperdicios)
+      se marcan para que la liquidación retenga el 4 % de renta.
+    imagen: screenshots/09-producto.png
+  - seccion: Emisión
+  - titulo: El borrador
+    ruta: Perú ▸ Liquidaciones de compra ▸ Liquidaciones de compra
+    texto: >-
+      Con el vendedor y las líneas, el módulo pone el tipo 04 y añade el IGV
+      retenido a las líneas gravadas. Esta compra de S/ 600 no llega a
+      S/ 700: no retiene renta.
+    imagen: screenshots/03-borrador.png
+  - titulo: La liquidación confirmada
+    ruta: Perú ▸ Liquidaciones de compra ▸ Liquidaciones de compra
+    texto: >-
+      Al confirmar toma el número L001-00000001 y queda «Por enviar». Los
+      botones de nota de crédito y de débito no aparecen: la liquidación se
+      corrige revirtiéndola.
+    imagen: screenshots/04-confirmada.png
+  - titulo: Los datos de la liquidación
+    ruta: Facturación PE ▸ Liquidación de compra
+    texto: >-
+      Tipo de operación, condición del domicilio del vendedor, lugar de la
+      operación (se propone el domicilio del vendedor), placa del vehículo y
+      los importes: sub total S/ 14 012,50, IGV - Crédito S/ 2 137,50, IR -
+      Retención S/ 178,13 e importe total neto S/ 11 696,87.
+    imagen: screenshots/05-pestana.png
+  - titulo: El asiento
+    ruta: Apuntes contables
+    texto: >-
+      La compra y el IGV al debe; el IGV retenido, la renta retenida y el
+      neto por pagar al vendedor, al haber.
+    imagen: screenshots/06-asiento.png
+  - seccion: SUNAT
+  - titulo: Envío, consulta y reversión
+    ruta: Perú ▸ Liquidaciones de compra ▸ Por enviar o en reversión
+    texto: >-
+      «Enviar a SUNAT» firma y envía el XML; aceptada, guarda el ZIP con el
+      XML firmado y la constancia. «Revertir en SUNAT» envía el resumen
+      diario de reversiones con el motivo y «Consultar reversión» trae el
+      resultado.
+    imagen: screenshots/07-lista.png
+  - titulo: La representación impresa
+    ruta: Imprimir liquidación
+    texto: >-
+      Con el formato de los documentos de la suite: vendedor, lugar de la
+      operación, detalle, Op. gravada, IGV - Crédito, IR - Retención e
+      importe total neto en números y en letras.
+    imagen: screenshots/08-pdf.png
+
+campos_intro: >-
+  Campos que añade el módulo.
+campos:
+  - grupo: Ajustes
+    ruta: Ajustes ▸ Perú ▸ Liquidación de compra electrónica
+    campos:
+      - [Campo, Qué hace, Por defecto, Efecto]
+      - [IGV retenido en la liquidación de compra, Impuesto negativo con la tasa del IGV, "-18% IGV retenido LC", Se añade a las líneas gravadas]
+      - ["Retención del impuesto a la renta (1,5 %)", Retención de renta general, "-1,5% Retención IR LC", Se añade si la operación pasa del mínimo]
+      - ["Retención del impuesto a la renta (oro, 4 %)", Retención de renta del oro, "-4% Retención IR LC (oro)", Productos marcados como oro o compra de oro]
+      - [Importe mínimo para retener la renta (S/), Tope de la excepción, "700,00", "Hasta ese importe (sin tributos, en soles) no se retiene"]
+      - [UIT (S/), UIT del aviso de 75 UIT, "5.500,00", Con la planilla instalada se usa la UIT de su catálogo]
+      - [Enviar al confirmar, Envía la liquidación al confirmarla, "No", Sin él se usa el botón «Enviar a SUNAT»]
+  - grupo: Diario
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
+    campos:
+      - [Campo, Qué hace, Por defecto, Efecto]
+      - [Liquidaciones de compras electrónicas, Marca el diario de compras, "No (Sí en el diario LCE)", Tipo 04 y numeración automática]
+      - [Serie de la liquidación de compra, Serie de cuatro caracteres, L001, Debe empezar con L]
+  - grupo: Liquidación
+    ruta: Facturación PE ▸ Liquidación de compra
+    campos:
+      - [Campo, Qué hace, Por defecto, Efecto]
+      - [Tipo de operación de la liquidación, Catálogo 51, 0501 - Compra interna, "0503: compra de oro (retiene 4 %)"]
+      - [Condición del domicilio del vendedor, Catálogo 60, Punto de venta, Va en el XML y en el PDF]
+      - [Lugar de la operación, Dirección donde se compra, Domicilio del vendedor, Va en el XML y en el PDF]
+      - [Distrito del lugar de la operación, Ubigeo del lugar, Distrito del vendedor, "Provincia y departamento salen del distrito"]
+      - [Condición del lugar de la operación, Catálogo 60, Punto de venta, Va en el XML y en el PDF]
+      - [Operación exonerada o inafecta de la renta, Excluye la retención de renta, "No", Sin retención de renta]
+      - [Placa del vehículo, Para sustentar el traslado, Vacío, Va en el XML]
+      - [Motivo de la reversión, Texto del resumen RR, Vacío, Obligatorio para revertir]
+  - grupo: Producto
+    ruta: Producto ▸ Contabilidad
+    campos:
+      - [Campo, Qué hace, Por defecto, Efecto]
+      - ["Oro (retención de renta del 4 %)", Marca los productos de oro, "No", La línea retiene 4 %]
+
+asientos_intro: >-
+  Asiento real de la liquidación de ejemplo (datos de demostración).
+asientos:
+  - titulo: Liquidación de compra con retenciones
+    referencia: L L001-00000001
+    texto: >-
+      1 250 kg de café a S/ 9,50: el vendedor recibe S/ 11 696,87.
+    lineas:
+      - ["6329000", "Café pergamino seco, humedad 12 %", "11.875,00", ""]
+      - ["4011100", IGV 18%, "2.137,50", ""]
+      - ["4018900", "-18% IGV retenido LC", "", "2.137,50"]
+      - ["4017500", "-1,5% Retención IR LC", "", "178,13"]
+      - ["4212000", DEMO LC 1, "", "11.696,87"]
+    nota: >-
+      Las cuentas de los impuestos se cambian en cada impuesto. El IGV
+      retenido se paga con el formulario 1662 y la renta en el PDT 617
+      (tributo 3039).
+
+funcionalidades:
+  - grupo: Emisión
+    items:
+      - "Diario de compras de liquidaciones con serie L### y numeración automática."
+      - "Tipo de documento 04 fijo en ese diario; las demás facturas de proveedor no lo proponen."
+      - "Validación: vendedor con DNI, carné de extranjería, pasaporte o cédula diplomática; domicilio con distrito; lugar de la operación; un IGV por línea."
+      - "Aviso cuando las liquidaciones del año al mismo vendedor pasan de 75 UIT."
+  - grupo: Retenciones
+    items:
+      - "IGV retenido en las líneas gravadas (exoneradas e inafectas no)."
+      - "Renta: 1,5 %, o 4 % en el oro; nada hasta S/ 700 o si la operación es exonerada o inafecta."
+      - "Los libros (RCE del PLE y SIRE) informan el total del comprobante, no el neto."
+  - grupo: SUNAT
+    items:
+      - "XML SelfBilledInvoice (anexo 6) firmado con el operador de la compañía."
+      - "Resumen diario de reversiones (anexo 17) con ticket y consulta."
+      - "Representación impresa (anexo 27) con el formato de la suite."
+
+configuracion:
+  - "Instale el módulo: crea los impuestos y el diario «Liquidaciones de compra» en las compañías con el plan peruano."
+  - "Revise en Ajustes ▸ Perú las cuentas de los impuestos de retención."
+  - "Marque como oro los productos que correspondan."
+  - "Registre a los vendedores con su DNI, domicilio y distrito."
+  - "Pruebe primero con el entorno de prueba del operador electrónico."
+
+faq:
+  - pregunta: "¿Por qué no aparece el botón de nota de crédito?"
+    respuesta: >-
+      La liquidación de compra electrónica no tiene notas electrónicas: si se
+      equivocó en el vendedor o en el producto, se revierte con el resumen
+      diario de reversiones.
+  - pregunta: "¿Qué pasa si se envía tarde?"
+    respuesta: >-
+      SUNAT la recibe el día de su emisión o el siguiente. Fuera de plazo el
+      módulo lo advierte en el historial: ya no tiene calidad de comprobante.
+  - pregunta: "¿Cómo sé si el vendedor superó las 75 UIT?"
+    respuesta: >-
+      El límite son las ventas del vendedor a cualquier comprador y se consulta
+      en SUNAT Operaciones en Línea. El módulo solo ve sus propias compras y
+      avisa si ya pasan de 75 UIT.
+
+novedades:
+  - version: 1.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Liquidación de compra electrónica (tipo 04): diario con serie L###, retención del IGV y de la renta (1,5 %, 4 % en el oro, nada hasta S/ 700) e importe total neto."
+      - "XML SelfBilledInvoice firmado y enviado con el operador de la compañía y resumen diario de reversiones."
+      - "Representación impresa, aviso de 75 UIT y total íntegro en los registros de compras (PLE y SIRE)."
+
+relacionados: [al_account_base, al_report_base, al_l10n_pe_ple, al_l10n_pe_sire, al_ose_factory_hka]

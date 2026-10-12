@@ -29,6 +29,14 @@ RCE_TAX_GROUPS = (
     'ret',        # retenciones
 )
 
+# Grupos de impuestos de retención: no reducen el total del comprobante. La
+# retención del IGV (3 %) y las de la liquidación de compra (IGV y renta).
+RCE_WITHHOLDING_TAX_GROUPS = (
+    'igv_withholding',
+    'lce_igv_withholding',
+    'lce_ir_withholding',
+)
+
 # Tipos de comprobante propios del registro de no domiciliados (8.5).
 RCE_NON_DOMICILED_DOC_TYPES = ('00', '91', '97', '98')
 
@@ -244,17 +252,28 @@ class L10nPeRceExtractor(models.AbstractModel):
     def _rce_total(self, move):
         """Importe total en soles, negativo si es abono.
 
-        La retención del IGV (3 %) no reduce el total del comprobante: Odoo la
-        resta de ``amount_total``, pero el XML y el registro llevan el
-        importe íntegro."""
+        Las retenciones no reducen el total del comprobante: Odoo las resta
+        de ``amount_total``, pero el XML y el registro llevan el importe
+        íntegro. Son la del IGV (3 %) y, en la liquidación de compra (04), el
+        IGV y la renta que retiene el comprador
+        (``al_l10n_pe_edi_purchase_settlement``)."""
         sign = -1 if move.move_type in ('in_refund', 'out_refund') else 1
-        group = self.env.ref(
-            'account.%s_tax_group_igv_withholding' % move.company_id.root_id.id,
-            raise_if_not_found=False)
+        groups = self._rce_withholding_tax_groups(move.company_id)
         withheld = abs(sum(
             line.balance for line in move.line_ids
-            if group and line.tax_line_id.tax_group_id == group))
+            if line.tax_line_id.tax_group_id in groups))
         return sign * (abs(move.amount_total_signed) + withheld)
+
+    @api.model
+    def _rce_withholding_tax_groups(self, company):
+        """Grupos de impuestos de retención (los que existan en la compañía)."""
+        groups = self.env['account.tax.group']
+        for key in RCE_WITHHOLDING_TAX_GROUPS:
+            group = self.env.ref('account.%s_tax_group_%s' % (company.root_id.id, key),
+                                 raise_if_not_found=False)
+            if group:
+                groups |= group
+        return groups
 
     # ------------------------------------------------------------------
     # Registro de ventas (RVIE)

@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fourth_category_suspension_user,fourth.category.suspension.user,model_l10n_pe_fourth_category_suspension,account.group_account_invoice,1,0,0,0
+access_fourth_category_suspension_manager,fourth.category.suspension.manager,model_l10n_pe_fourth_category_suspension,account.group_account_user,1,1,1,1
+access_fourth_category_report,fourth.category.report,model_l10n_pe_fourth_category_report,account.group_account_user,1,1,1,1
+access_fourth_category_report_line,fourth.category.report.line,model_l10n_pe_fourth_category_report_line,account.group_account_user,1,1,1,1
+access_fourth_category_certificate,fourth.category.certificate,model_l10n_pe_fourth_category_certificate,account.group_account_user,1,1,1,1

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_property_form_fourth_category" model="ir.ui.view">
+        <field name="name">res.partner.form.fourth.category</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='accounting']" position="inside">
+                <group string="Renta de 4.ª categoría" name="l10n_pe_fourth_category"
+                       invisible="'PE' not in fiscal_country_codes">
+                    <field name="l10n_pe_fourth_category_suspended"/>
+                    <field name="l10n_pe_fourth_category_suspension_ids" colspan="2" nolabel="1"
+                           context="{'default_partner_id': id}">
+                        <list editable="bottom">
+                            <field name="number"/>
+                            <field name="date_issued"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="company_id" column_invisible="True"/>
+                        </list>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

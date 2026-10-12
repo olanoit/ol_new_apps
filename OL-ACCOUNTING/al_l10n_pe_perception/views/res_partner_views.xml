@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_perception" model="ir.ui.view">
+        <field name="name">res.partner.form.perception.pe</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="al_l10n_pe_retention.view_partner_form_perception_agent"/>
+        <field name="arch" type="xml">
+            <field name="l10n_pe_is_perception_agent" position="after">
+                <field name="l10n_pe_perception_excluded" invisible="not is_company"/>
+            </field>
+        </field>
+    </record>
+</odoo>

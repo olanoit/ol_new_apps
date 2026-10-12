@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fourth_category_suspension_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.fourth.category.suspension.list</field>
+        <field name="model">l10n_pe.fourth.category.suspension</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="partner_id"/>
+                <field name="number"/>
+                <field name="date_issued"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="year" optional="hide" options="{'enable_formatting': false}"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="fourth_category_suspension_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.fourth.category.suspension.form</field>
+        <field name="model">l10n_pe.fourth.category.suspension</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="number"/>
+                            <field name="date_issued"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="year" options="{'enable_formatting': false}"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="attachment_ids" widget="many2many_binary"/>
+                    <field name="note" placeholder="Notas"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="fourth_category_suspension_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.fourth.category.suspension.search</field>
+        <field name="model">l10n_pe.fourth.category.suspension</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="number"/>
+                <filter name="current_year" string="Ejercicio actual"
+                        domain="[('year', '=', context_today().year)]"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_year" string="Ejercicio" context="{'group_by': 'year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_fourth_category_suspension" model="ir.actions.act_window">
+        <field name="name">Suspensiones de retención</field>
+        <field name="res_model">l10n_pe.fourth.category.suspension</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_current_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre la constancia de suspensión</p>
+            <p>Cuando un prestador entrega la constancia del Formulario Virtual 1609, sus
+               recibos por honorarios del ejercicio no llevan retención de 4.ª categoría.</p>
+        </field>
+    </record>
+
+</odoo>

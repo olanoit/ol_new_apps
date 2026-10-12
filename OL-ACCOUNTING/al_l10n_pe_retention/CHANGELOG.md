@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261012 — 12/10/2026
+
+- El motor del comprobante electrónico (l10n_pe.retention.edi.mixin) admite otros tipos de comprobante: el tipo, el número, el XML y los mensajes se piden al documento. Lo usa el comprobante de percepción (tipo 40) de al_l10n_pe_perception; el CRE no cambia.
+- El resumen de reversiones (RR) informa el tipo del comprobante revertido (20 o 40).
+
 ## 20.20261011 — 11/10/2026
 
 - Reversión del CRE (resumen de reversiones RR, R.S. 274-2015/SUNAT) con todos los operadores: SUNAT directo, IAP y Digiflow (y The Factory HKA con su módulo); un CRE aceptado bloquea el pago hasta revertirlo y, revertido, el pago vuelve a borrador y retiene con un número nuevo.

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Representación impresa del comprobante de percepción electrónico
+         (tipo 40). Los importes son los mismos que lleva el XML. -->
+    <template id="report_perception">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="company" t-value="o.company_id"/>
+                <t t-set="pen" t-value="company.currency_id"/>
+                <t t-set="customer" t-value="o.partner_id.commercial_partner_id"/>
+                <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="doc_title" t-value="'Comprobante de percepción electrónico'"/>
+                    <t t-set="doc_number" t-value="o.l10n_pe_edi_perception_number"/>
+
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label" style="width: 16%;">Cliente</td>
+                            <td class="pe-doc-value" style="width: 44%;" t-out="customer.name"/>
+                            <td class="pe-doc-label" style="width: 18%;">Fecha de emisión</td>
+                            <td class="pe-doc-value" style="width: 22%;">
+                                <span t-field="o.date" t-options="date_fmt"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Documento</td>
+                            <td class="pe-doc-value" t-out="customer.vat"/>
+                            <td class="pe-doc-label">Régimen</td>
+                            <td class="pe-doc-value">
+                                <span t-field="o.perception_code"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Dirección</td>
+                            <td class="pe-doc-value" t-out="customer.contact_address_inline"/>
+                            <td class="pe-doc-label">Moneda</td>
+                            <td class="pe-doc-value">Soles (PEN)</td>
+                        </tr>
+                    </table>
+
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <td>Tipo</td>
+                                <td>Comprobante</td>
+                                <td>Fecha</td>
+                                <td class="text-end">Importe total</td>
+                                <td class="text-end">Cobrado</td>
+                                <td class="text-end">T.C.</td>
+                                <td class="text-end">Percepción (S/)</td>
+                                <td class="text-end">Cobrado con percepción (S/)</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_ids" t-as="line">
+                                <t t-set="invoice" t-value="line.invoice_id"/>
+                                <td t-out="invoice.l10n_latam_document_type_id.code or '01'"/>
+                                <td t-out="o._l10n_pe_edi_retention_bill_number(invoice)"/>
+                                <td><span t-field="invoice.invoice_date" t-options="date_fmt"/></td>
+                                <td class="text-end"><span t-out="invoice.amount_total"
+                                    t-options="{'widget': 'monetary', 'display_currency': invoice.currency_id}"/></td>
+                                <td class="text-end"><span t-out="line.paid_amount"
+                                    t-options="{'widget': 'monetary', 'display_currency': invoice.currency_id}"/></td>
+                                <td class="text-end"><span t-if="invoice.currency_id != pen"
+                                    t-out="'%.3f' % line.exchange_rate"/></td>
+                                <td class="text-end"><span t-out="line.perception_pen"
+                                    t-options="{'widget': 'monetary', 'display_currency': pen}"/></td>
+                                <td class="text-end"><span t-out="line.collected_pen"
+                                    t-options="{'widget': 'monetary', 'display_currency': pen}"/></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="pe-doc-total">
+                                <td colspan="6" class="text-end">Totales</td>
+                                <td class="text-end"><span t-out="o.amount_perception"
+                                    t-options="{'widget': 'monetary', 'display_currency': pen}"/></td>
+                                <td class="text-end"><span t-out="o.amount_collected"
+                                    t-options="{'widget': 'monetary', 'display_currency': pen}"/></td>
+                            </tr>
+                            <tr class="pe-doc-note">
+                                <td colspan="8" class="pe-doc-fs-11">
+                                    Representación impresa del comprobante de percepción electrónico.
+                                    <t t-if="o.note"><span t-out="o.note"/>. </t>
+                                    <t t-if="o.l10n_pe_edi_status == 'sent'">Aceptado por SUNAT.</t>
+                                    Consulte su validez en www.sunat.gob.pe.
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_perception" model="ir.actions.report">
+        <field name="name">Comprobante de percepción</field>
+        <field name="model">l10n_pe.perception</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_perception.report_perception</field>
+        <field name="report_file">al_l10n_pe_perception.report_perception</field>
+        <field name="print_report_name">'%s - Percepción' % (object.l10n_pe_edi_perception_number or object.name)</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_l10n_pe_perception"/>
+        <field name="binding_type">report</field>
+        <field name="domain" eval="[('l10n_pe_edi_perception_number', '!=', False)]"/>
+    </record>
+
+    <!-- Leyenda del comprobante A4 de la factura (R.S. 058-2006/SUNAT, 11.1) -->
+    <template id="report_cpe_invoice_a4_perception" inherit_id="al_l10n_pe_invoice.report_cpe_invoice_a4_document">
+        <xpath expr="//tr[@t-if='o.l10n_pe_detraction_applies']" position="before">
+            <tr class="pe-doc-note" t-if="o.l10n_pe_perception_code">
+                <td t-att-colspan="ncols">
+                    <strong>Operación sujeta a percepción del IGV</strong>
+                    (<span t-out="'%g' % o.l10n_pe_perception_rate"/> %): percepción
+                    <span t-out="o.l10n_pe_perception_amount"
+                          t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>;
+                    total por cobrar con la percepción
+                    <span t-out="o._l10n_pe_perception_total_pen()"
+                          t-options="{'widget': 'monetary', 'display_currency': o.company_currency_id}"/>.
+                </td>
+            </tr>
+        </xpath>
+    </template>
+</odoo>

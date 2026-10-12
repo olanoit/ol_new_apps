@@ -1,0 +1,96 @@
+titulo: Retención de renta de 4.ª categoría
+subtitulo: >-
+  Recibos por honorarios con la retención del 8 % calculada sola, suspensiones
+  del Formulario 1609 por prestador, el archivo .4ta para la PLAME y el
+  certificado anual de rentas y retenciones.
+categoria: Localización Perú · Impuesto a la renta
+etiquetas: [Recibos por honorarios, Renta de 4.ª categoría, PLAME, SUNAT, Retenciones]
+portada: screenshots/01-recibo.png
+
+destacados_intro: >-
+  Toda empresa que contrata trabajadores independientes retiene su impuesto a
+  la renta: el módulo lo hace en el mismo recibo y prepara la declaración.
+destacados:
+  - icono: "8%"
+    titulo: Retención automática
+    texto: >-
+      El recibo por honorarios (documento 02) que supera S/ 1 500 lleva la
+      retención del 8 % del importe total; la cuenta por pagar queda por el
+      neto y la retención en la 40172.
+  - icono: "1609"
+    titulo: Suspensiones por prestador
+    texto: >-
+      Con la constancia del Formulario Virtual 1609 registrada, los recibos del
+      ejercicio no llevan retención, desde el día siguiente a su emisión.
+  - icono: ".4ta"
+    titulo: PLAME del mes
+    texto: >-
+      Recibos pagados en el periodo, totales a declarar y el archivo de
+      importación .4ta para el PDT PLAME (formulario 0601).
+  - icono: "▤"
+    titulo: Certificado anual
+    texto: >-
+      Certificado de rentas y retenciones de 4.ª categoría por prestador y
+      ejercicio, con el formato de los documentos de la suite.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El agente de retención debe retener el 8 % de cada recibo por honorarios
+    de más de S/ 1 500 que paga, salvo que el prestador le haya entregado su
+    constancia de suspensión, y declararlo en la PLAME del mes del pago. Odoo
+    trae el tipo de documento y la cuenta 40172, pero ni el impuesto ni la
+    regla ni la declaración.
+  nota: >-
+    **Base legal.** Tasa y tope según SUNAT (orientación sobre rentas de cuarta
+    categoría); suspensión por el Formulario Virtual 1609 (constancia
+    vigente hasta el 31 de diciembre); archivo .4ta según la estructura 20 del anexo 3 de la planilla
+    electrónica (R.S. 235-2013/SUNAT y 028-2018/SUNAT).
+
+pasos_intro: >-
+  Ejemplo con dos prestadores: uno con retención y otro con constancia de
+  suspensión.
+pasos:
+  - titulo: El recibo por honorarios con su retención
+    ruta: Perú ▸ Renta de 4.ª categoría ▸ Recibos por honorarios
+    texto: >-
+      El recibo E001-58 de S/ 2 000 lleva la retención de S/ 160; el neto a
+      pagar es S/ 1 840. La pestaña Contabilidad PE ▸ Renta de 4.ª categoría
+      dice por qué se retiene o no.
+    imagen: screenshots/01-recibo.png
+  - titulo: Los recibos del periodo
+    ruta: Perú ▸ Renta de 4.ª categoría ▸ Recibos por honorarios
+    texto: >-
+      Cada recibo con su estado: retenido, no supera el tope o suspendido.
+    imagen: screenshots/02-recibos.png
+  - titulo: La constancia de suspensión
+    ruta: Perú ▸ Renta de 4.ª categoría ▸ Suspensiones de retención
+    texto: >-
+      Número de la constancia del Formulario 1609 y fecha de emisión; la
+      vigencia (del día siguiente al 31 de diciembre) se calcula sola.
+    imagen: screenshots/03-suspension.png
+  - titulo: Las retenciones del mes para la PLAME
+    ruta: Perú ▸ Renta de 4.ª categoría ▸ Retenciones del mes (PLAME)
+    texto: >-
+      Recibos pagados en el mes, total retenido a declarar y el archivo .4ta
+      para importar en el PDT PLAME.
+    imagen: screenshots/04-plame.png
+  - titulo: El certificado de rentas y retenciones
+    ruta: Perú ▸ Renta de 4.ª categoría ▸ Certificado de rentas y retenciones
+    texto: >-
+      Por prestador y ejercicio, con cada recibo pagado y su retención.
+    imagen: screenshots/05-certificado.png
+  - titulo: La configuración
+    ruta: Ajustes ▸ Perú ▸ Renta de 4.ª categoría
+    texto: >-
+      Agente de retención, tasa (8 %), tope (S/ 1 500) y cuenta de las
+      retenciones (40172 por defecto).
+    imagen: screenshots/06-ajustes.png
+
+novedades:
+  - version: 1.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Retención de 4.ª categoría automática en los recibos por honorarios: 8 % del importe total cuando supera S/ 1 500 y la compañía es agente de retención; tasa, tope y cuenta en Ajustes."
+      - "Suspensiones de retención por prestador con la constancia del Formulario Virtual 1609, vigentes del día siguiente a su emisión al 31 de diciembre."
+      - "Retenciones del mes para la PLAME con el archivo de importación .4ta (estructura 20) y certificado anual de rentas y retenciones."

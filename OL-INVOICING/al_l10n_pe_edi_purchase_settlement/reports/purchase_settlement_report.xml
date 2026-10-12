@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_purchase_settlement" model="ir.actions.report">
+        <field name="name">Liquidación de compra</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_edi_purchase_settlement.report_purchase_settlement</field>
+        <field name="report_file">al_l10n_pe_edi_purchase_settlement.report_purchase_settlement</field>
+        <field name="print_report_name">'Liquidación de compra %s' % (object.l10n_latam_document_number or object.name)</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+    </record>
+
+    <!-- Representación impresa (anexo 27 de la R.S. 097-2012/SUNAT): denominación
+         del documento, RUC, datos y domicilio del vendedor, lugar de la operación
+         con su condición (catálogo 60), detalle, «Op. gravada / exonerada /
+         inafecta», «IGV - Crédito», «IR - Retención» e importe total neto en
+         números y en letras. Formato común de la suite (al_report_base). -->
+    <template id="report_purchase_settlement_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="values" t-value="o._l10n_pe_lce_values()"/>
+        <t t-set="currency" t-value="o.currency_id"/>
+        <t t-set="money" t-value="{'widget': 'monetary', 'display_currency': currency}"/>
+        <t t-set="cat60" t-value="dict(o._fields['l10n_pe_lce_place_type'].selection)"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="'Liquidación de compra electrónica'"/>
+            <t t-set="doc_number" t-value="values['number']"/>
+            <t t-set="doc_extra" t-value="'Revertida' if o.l10n_pe_lce_status == 'reversed' else False"/>
+
+            <table class="pe-doc-table mb-2">
+                <tr>
+                    <td class="pe-doc-label" style="width: 18%;">Fecha de emisión</td>
+                    <td class="pe-doc-value" style="width: 32%;" t-out="o.invoice_date.strftime('%d/%m/%Y')"/>
+                    <td class="pe-doc-label" style="width: 20%;">Moneda</td>
+                    <td class="pe-doc-value" style="width: 30%;" t-out="currency.currency_unit_label or currency.name"/>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Tipo de operación</td>
+                    <td class="pe-doc-value" t-out="dict(o._fields['l10n_pe_lce_operation_type'].selection).get(o.l10n_pe_lce_operation_type)"/>
+                    <td class="pe-doc-label">Vencimiento</td>
+                    <td class="pe-doc-value" t-out="o.invoice_date_due and o.invoice_date_due.strftime('%d/%m/%Y') or ''"/>
+                </tr>
+            </table>
+
+            <div class="pe-doc-section">VENDEDOR</div>
+            <table class="pe-doc-table mb-2 pe-doc-keep">
+                <tr>
+                    <td class="pe-doc-label" style="width: 18%;">Apellidos y nombres</td>
+                    <td class="pe-doc-value" style="width: 52%;" t-out="values['seller_name']"/>
+                    <td class="pe-doc-label" style="width: 12%;" t-out="values['seller_doc_name']"/>
+                    <td class="pe-doc-value" style="width: 18%;" t-out="values['seller_vat']"/>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Domicilio</td>
+                    <td class="pe-doc-value" colspan="3">
+                        <t t-set="address" t-value="values['seller_address']"/>
+                        <t t-out="', '.join(part for part in (address['street'], address['urbanization'], address['district'], address['province'], address['department']) if part)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Condición del domicilio</td>
+                    <td class="pe-doc-value" colspan="3" t-out="cat60.get(o.l10n_pe_lce_partner_address_type)"/>
+                </tr>
+            </table>
+
+            <div class="pe-doc-section">LUGAR DE LA OPERACIÓN</div>
+            <table class="pe-doc-table mb-2 pe-doc-keep">
+                <tr>
+                    <td class="pe-doc-label" style="width: 18%;">Dirección</td>
+                    <td class="pe-doc-value" colspan="3">
+                        <t t-set="place" t-value="values['place_address']"/>
+                        <t t-out="', '.join(part for part in (place['street'], place['district'], place['province'], place['department']) if part)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Condición del lugar</td>
+                    <td class="pe-doc-value" t-att-colspan="1 if o.l10n_pe_lce_license_plate else 3"
+                        t-out="cat60.get(o.l10n_pe_lce_place_type)"/>
+                    <t t-if="o.l10n_pe_lce_license_plate">
+                        <td class="pe-doc-label" style="width: 20%;">Placa del vehículo</td>
+                        <td class="pe-doc-value">
+                            <t t-out="o.l10n_pe_lce_license_plate"/>
+                            <t t-if="o.l10n_pe_lce_trailer_plate"> / <t t-out="o.l10n_pe_lce_trailer_plate"/></t>
+                        </td>
+                    </t>
+                </tr>
+            </table>
+
+            <table class="pe-doc-table pe-doc-lines mb-2">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <th class="text-center" style="width: 5%;">N.º</th>
+                        <th class="text-end" style="width: 8%;">Cantidad</th>
+                        <th style="width: 8%;">Unidad</th>
+                        <th>Descripción</th>
+                        <th class="text-end" style="width: 11%;">Valor unitario</th>
+                        <th class="text-end" style="width: 11%;">Precio unitario</th>
+                        <th class="text-center" style="width: 9%;">IGV</th>
+                        <th class="text-center" style="width: 7%;">IR</th>
+                        <th class="text-end" style="width: 12%;">Valor de venta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="values['lines']" t-as="line">
+                        <td class="text-center" t-out="line['sequence']"/>
+                        <td class="text-end" t-out="line['quantity']" t-options="{'widget': 'float', 'precision': 2}"/>
+                        <td t-out="line['uom_name']"/>
+                        <td>
+                            <t t-if="line['default_code']">[<t t-out="line['default_code']"/>] </t>
+                            <t t-out="line['description']"/>
+                        </td>
+                        <td class="text-end" t-out="line['price_unit']" t-options="{'widget': 'float', 'precision': 4}"/>
+                        <td class="text-end" t-out="line['price_with_tax']" t-options="{'widget': 'float', 'precision': 4}"/>
+                        <td class="text-center">
+                            <t t-if="line['igv_code'] == '1000'" t-out="line['igv_label']"/>
+                            <t t-elif="line['igv_code'] == '9997'">Exonerado</t>
+                            <t t-else="">Inafecto</t>
+                        </td>
+                        <td class="text-center" t-out="line['ir_label']"/>
+                        <td class="text-end" t-out="line['untaxed']" t-options="money"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="pe-doc-plain pe-doc-keep" style="width: 100%;">
+                <tr>
+                    <td style="width: 55%; vertical-align: top; padding-right: 12px;">
+                        <div class="pe-doc-highlight">
+                            <strong>Son:</strong> <t t-out="o._l10n_pe_edi_amount_to_text()"/>
+                        </div>
+                        <div class="pe-doc-fs-11 mt-2">
+                            El comprador retiene el IGV (formulario 1662) y el impuesto a la renta
+                            (R.S. 234-2005/SUNAT) y paga al vendedor el importe total neto.
+                        </div>
+                        <div class="pe-doc-fs-11 mt-2" t-if="o.l10n_pe_lce_status in ('sent', 'reversing', 'reversed')">
+                            Representación impresa de la liquidación de compra electrónica.
+                            <t t-set="digest" t-value="o._l10n_pe_lce_digest()"/>
+                            <t t-if="digest"><br/>Valor resumen: <t t-out="digest"/></t>
+                        </div>
+                    </td>
+                    <td style="width: 45%; vertical-align: top;">
+                        <table class="pe-doc-table">
+                            <tr t-if="values['taxed_base'] or not (values['exonerated_base'] or values['unaffected_base'])">
+                                <td class="pe-doc-label">Op. gravada</td>
+                                <td class="text-end" t-out="values['taxed_base']" t-options="money"/>
+                            </tr>
+                            <tr t-if="values['exonerated_base']">
+                                <td class="pe-doc-label">Op. exonerada</td>
+                                <td class="text-end" t-out="values['exonerated_base']" t-options="money"/>
+                            </tr>
+                            <tr t-if="values['unaffected_base']">
+                                <td class="pe-doc-label">Op. inafecta</td>
+                                <td class="text-end" t-out="values['unaffected_base']" t-options="money"/>
+                            </tr>
+                            <tr>
+                                <td class="pe-doc-label">IGV</td>
+                                <td class="text-end" t-out="values['igv']" t-options="money"/>
+                            </tr>
+                            <tr class="pe-doc-subtotal">
+                                <td class="pe-doc-label">Sub total</td>
+                                <td class="text-end" t-out="values['subtotal']" t-options="money"/>
+                            </tr>
+                            <tr>
+                                <td class="pe-doc-label">IGV - Crédito</td>
+                                <td class="text-end" t-out="-values['igv']" t-options="money"/>
+                            </tr>
+                            <tr>
+                                <td class="pe-doc-label">IR - Retención</td>
+                                <td class="text-end" t-out="-values['ir']" t-options="money"/>
+                            </tr>
+                            <tr class="pe-doc-total">
+                                <td><strong>IMPORTE TOTAL NETO</strong></td>
+                                <td class="text-end"><strong t-out="values['net']" t-options="money"/></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+    <template id="report_purchase_settlement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_edi_purchase_settlement.report_purchase_settlement_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>

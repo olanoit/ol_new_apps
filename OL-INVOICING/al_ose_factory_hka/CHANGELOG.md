@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_ose_factory_hka.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261012 — 12/10/2026
+
+- La firma por The Factory HKA usa el tipo del comprobante que se envía (20 para el CRE, 40 para el comprobante de percepción de al_l10n_pe_perception) en lugar de fijar el 20.
+
 ## 3.20261011 — 11/10/2026
 
 - La reversión del CRE, su plantilla RR y su correlativo pasan a al_l10n_pe_retention (comunes a todos los operadores); este módulo solo decide si la firma, el envío y la reversión van por The Factory HKA. El correlativo RR sigue donde estaba.

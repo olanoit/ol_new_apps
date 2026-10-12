@@ -91,6 +91,41 @@ fondos) aunque se pague en dos partes de S/ 1 180,00.
     para corregirlos, haga clic en **Restablecer a borrador**, corrija y
     confirme.
 
+## Exigir el número de operación
+
+En **Contabilidad ‣ Configuración ‣ Diarios**, abra el diario del banco y marque
+**Exigir número de operación**. Desde entonces, ese diario no deja confirmar un
+pago sin **Número de operación banco**: el dato que pide el Libro Caja y Bancos
+y que permite conciliar con el extracto. Los diarios de caja no lo necesitan.
+
+## Comprar y vender moneda
+
+Para cambiar soles por dólares (o al revés) entre dos cuentas de la empresa al
+tipo de cambio del banco:
+
+1. Vaya a **Perú ‣ Compra y venta de moneda** (o **Contabilidad ‣ Contabilidad ‣
+   Compra y venta de moneda**).
+2. Elija la cuenta de la que **Sale** el dinero y a la que **Entra**; una debe
+   estar en soles y la otra en moneda extranjera.
+3. Indique el **Monto que sale** y el **Tipo de cambio del banco**: el **Monto
+   que entra** se calcula y se puede corregir con lo que abonó el banco. El
+   asistente muestra el **Tipo de cambio del sistema** (el de SUNAT) y la
+   **Diferencia de cambio** resultante.
+4. Complete el **Número de operación banco** y pulse **Registrar**.
+
+Se crean dos pagos, uno que sale y otro que entra, por la cuenta de
+transferencias de liquidez de la compañía, cada uno conciliable con su extracto.
+La diferencia entre lo que salió y lo que entró, valorizados al tipo de cambio
+del sistema, va a la cuenta de **pérdida** (676) o de **ganancia** (776) por
+diferencia de cambio de la compañía, y la cuenta de transferencias queda
+conciliada.
+
+Ejemplo: se compran US$ 1 000 a 3,80 (S/ 3 800) con un tipo de cambio del
+sistema de 3,75. Entran S/ 3 750 valorizados: la pérdida por diferencia de
+cambio es S/ 50.
+
+![Asistente de compra y venta de moneda](payment_methods/currency-exchange-wizard.png)
+
 ## Reportes
 
 - **Libro Caja y Bancos** (PLE 1.1 y 1.2) y **Registro de Compras**: el medio
@@ -107,6 +142,8 @@ fondos) aunque se pague en dos partes de S/ 1 180,00.
 | No aparece el medio en el asistente | Está archivado o se busca mal | Busque por código o por texto; desarchívelo |
 | Se pagó sin medio | El campo queda vacío (es opcional) | Complételo antes de confirmar el pago |
 | No se puede crear un medio desde el asistente | Está bloqueado a propósito | Créelo en el catálogo |
+| «Indique el número de operación del banco» al confirmar | El diario lo exige | Complete **Número de operación banco** |
+| Compra y venta de moneda: «Configure la cuenta de transferencias de liquidez» | La compañía no la tiene | Defínala en **Contabilidad ‣ Configuración ‣ Ajustes** |
 
 !!! info "Ver también"
     - [Ley N.° 28194 (Congreso)](https://www.leyes.congreso.gob.pe/Documentos/Leyes/28194.pdf)

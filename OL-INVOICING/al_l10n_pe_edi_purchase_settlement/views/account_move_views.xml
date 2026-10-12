@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_purchase_settlement" model="ir.ui.view">
+        <field name="name">account.move.form.purchase.settlement.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="l10n_pe_lce_required" invisible="1"/>
+                <field name="l10n_pe_lce_status" invisible="1"/>
+                <button name="action_l10n_pe_lce_send" type="object" string="Enviar a SUNAT"
+                        class="oe_highlight" groups="account.group_account_invoice"
+                        invisible="not l10n_pe_lce_required or state != 'posted' or l10n_pe_lce_status != 'to_send'"/>
+                <button name="action_l10n_pe_lce_reverse" type="object" string="Revertir en SUNAT"
+                        groups="account.group_account_invoice"
+                        confirm="Se enviará a SUNAT el resumen de reversiones con el motivo indicado en «Facturación PE ▸ Liquidación de compra». ¿Continuar?"
+                        invisible="not l10n_pe_lce_required or l10n_pe_lce_status != 'sent'"/>
+                <button name="action_l10n_pe_lce_check_reversal" type="object" string="Consultar reversión"
+                        groups="account.group_account_invoice"
+                        invisible="not l10n_pe_lce_required or l10n_pe_lce_status != 'reversing'"/>
+                <button name="action_l10n_pe_lce_print" type="object" string="Imprimir liquidación"
+                        invisible="not l10n_pe_lce_required or state != 'posted'"/>
+            </xpath>
+            <!-- La liquidación de compra no admite notas de crédito ni de débito
+                 electrónicas: se corrige revirtiéndola. -->
+            <xpath expr="//button[@name='action_reverse']" position="attributes">
+                <attribute name="invisible" separator=" or " add="l10n_pe_lce_required"/>
+            </xpath>
+            <xpath expr="//button[@name='action_debit_note']" position="attributes">
+                <attribute name="invisible" separator=" or " add="l10n_pe_lce_required"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger mb-0" role="alert"
+                     invisible="not l10n_pe_lce_required or not l10n_pe_lce_message">
+                    <field name="l10n_pe_lce_message" readonly="1"/>
+                </div>
+                <div class="alert alert-warning mb-0" role="alert"
+                     invisible="not l10n_pe_lce_seller_warning">
+                    <field name="l10n_pe_lce_seller_warning" readonly="1"/>
+                </div>
+            </xpath>
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Liquidación de compra" name="l10n_pe_lce"
+                      invisible="not l10n_pe_lce_required">
+                    <group>
+                        <group name="l10n_pe_lce_operation" string="Operación">
+                            <field name="l10n_pe_lce_operation_type" readonly="state != 'draft'"
+                                   required="l10n_pe_lce_required"/>
+                            <field name="l10n_pe_lce_partner_address_type" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_lce_place_street" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_lce_place_district_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="l10n_pe_lce_place_type" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_lce_ir_exempt" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_lce_license_plate" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_lce_trailer_plate" readonly="state != 'draft'"
+                                   invisible="not l10n_pe_lce_license_plate"/>
+                        </group>
+                        <group name="l10n_pe_lce_amounts" string="Importes">
+                            <field name="l10n_pe_lce_subtotal"/>
+                            <field name="l10n_pe_lce_igv_amount"/>
+                            <field name="l10n_pe_lce_ir_amount"/>
+                            <field name="amount_total" string="Importe total neto"/>
+                            <button name="action_l10n_pe_lce_compute_withholdings" type="object"
+                                    string="Calcular retenciones" class="btn-link" colspan="2"
+                                    invisible="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="l10n_pe_lce_sunat" string="SUNAT">
+                            <field name="l10n_pe_lce_status" readonly="1"/>
+                            <field name="l10n_pe_lce_accepted_date"/>
+                            <button name="action_l10n_pe_lce_download_xml" type="object"
+                                    string="Descargar XML sin firmar" class="btn-link" colspan="2"
+                                    invisible="state != 'posted'"/>
+                        </group>
+                        <group name="l10n_pe_lce_reversal" string="Reversión"
+                               invisible="l10n_pe_lce_status not in ('sent', 'reversing', 'reversed')">
+                            <field name="l10n_pe_lce_reversal_reason"
+                                   readonly="l10n_pe_lce_status != 'sent'"/>
+                            <field name="l10n_pe_lce_reversal_filename"/>
+                            <field name="l10n_pe_lce_reversal_ticket"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_in_invoice_purchase_settlement_tree" model="ir.ui.view">
+        <field name="name">account.move.list.purchase.settlement.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_in_invoice_bill_tree"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <field name="status_in_payment" position="after">
+                <field name="l10n_pe_lce_status" string="Estado SUNAT" widget="badge" optional="show"
+                       decoration-success="l10n_pe_lce_status == 'sent'"
+                       decoration-warning="l10n_pe_lce_status in ('to_send', 'reversing')"
+                       decoration-muted="l10n_pe_lce_status == 'reversed'"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_account_bill_filter_purchase_settlement" model="ir.ui.view">
+        <field name="name">account.move.search.purchase.settlement.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_bill_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='draft']" position="before">
+                <filter string="Liquidaciones por enviar" name="l10n_pe_lce_to_send"
+                        domain="[('l10n_pe_lce_status', '=', 'to_send')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_purchase_settlement" model="ir.actions.act_window">
+        <field name="name">Liquidaciones de compra</field>
+        <field name="res_model">account.move</field>
+        <field name="path">purchase-settlements</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('view_in_invoice_purchase_settlement_tree')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('account.view_move_form')})]"/>
+        <field name="search_view_id" ref="account.view_account_bill_filter"/>
+        <field name="domain">[('move_type', '=', 'in_invoice'), ('journal_id.l10n_pe_lce_journal', '=', True)]</field>
+        <field name="context">{'default_move_type': 'in_invoice', 'l10n_pe_lce_default_journal': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre una liquidación de compra</p>
+            <p>Para compras a personas naturales sin RUC de productos primarios, madera,
+                oro de minería artesanal, artesanía o desperdicios: el comprador emite el
+                comprobante, retiene el IGV y la renta y lo envía a SUNAT.</p>
+        </field>
+    </record>
+
+    <record id="action_purchase_settlement_to_send" model="ir.actions.act_window">
+        <field name="name">Liquidaciones por enviar</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('view_in_invoice_purchase_settlement_tree')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('account.view_move_form')})]"/>
+        <field name="search_view_id" ref="account.view_account_bill_filter"/>
+        <field name="domain">[('move_type', '=', 'in_invoice'), ('journal_id.l10n_pe_lce_journal', '=', True), ('l10n_pe_lce_status', 'in', ('to_send', 'reversing'))]</field>
+        <field name="context">{'default_move_type': 'in_invoice', 'l10n_pe_lce_default_journal': True}</field>
+    </record>
+
+    <!-- Ubicación nativa: Contabilidad ▸ Proveedores. -->
+    <menuitem id="menu_purchase_settlement_payables" name="Liquidaciones de compra"
+              parent="account.menu_finance_payables" action="action_purchase_settlement"
+              groups="account.group_account_invoice" sequence="3"/>
+
+    <!-- Espejo en la app Perú (secuencia 36, entre Guías y Arrendamientos). -->
+    <menuitem id="menu_purchase_settlement_root" name="Liquidaciones de compra"
+              parent="al_account_base.al_l10n_pe_root"
+              groups="account.group_account_invoice" sequence="36"/>
+    <menuitem id="menu_purchase_settlement" name="Liquidaciones de compra"
+              parent="menu_purchase_settlement_root" action="action_purchase_settlement" sequence="10"/>
+    <menuitem id="menu_purchase_settlement_to_send" name="Por enviar o en reversión"
+              parent="menu_purchase_settlement_root" action="action_purchase_settlement_to_send" sequence="20"/>
+</odoo>

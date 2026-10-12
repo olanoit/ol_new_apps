@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_cash_fund" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.cash.fund</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="66"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Entregas a rendir y caja chica" name="pe_cash_fund_block">
+                    <setting company_dependent="1" string="Cuentas de los fondos"
+                             help="Cuentas por cobrar (conciliables) al responsable de una entrega a rendir o de una caja chica.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_cash_advance_account_id" string="Entregas a rendir"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cash_advance_account_id" options="{'no_create': True}"
+                                       placeholder="1413 del plan contable"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_petty_cash_account_id" string="Caja chica"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_petty_cash_account_id" options="{'no_create': True}"
+                                       placeholder="La de entregas a rendir"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cash_settlement_journal_id" string="Diario de rendiciones"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cash_settlement_journal_id" options="{'no_create': True}"
+                                       placeholder="Operaciones varias"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Planilla de movilidad"
+                             help="Gasto de movilidad sustentado con planilla: tope diario por trabajador como porcentaje de la remuneración mínima vital (art. 37 a1 de la Ley del Impuesto a la Renta).">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_mobility_account_id" string="Cuenta de gasto"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_mobility_account_id" options="{'no_create': True}"
+                                       placeholder="63112 del plan contable"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_rmv_amount" string="RMV" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_rmv_amount"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_mobility_limit_pct" string="Tope diario (%)"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_mobility_limit_pct"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

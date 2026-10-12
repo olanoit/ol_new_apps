@@ -14,10 +14,11 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
     _inherit = 'l10n_pe.retention.edi.mixin'
 
     def _l10n_pe_edi_sign_retention(self, edi_format, filename, edi_str):
-        # Factory HKA recibe el CRE en el mismo billService que las facturas.
+        # Factory HKA recibe el CRE en el mismo billService que las facturas
+        # (y el comprobante de percepción, tipo 40, de al_l10n_pe_perception).
         if self.company_id._l10n_pe_edi_factory_hka_uses('retention'):
             return edi_format._l10n_pe_edi_sign_service_factory_hka(
-                self.company_id, filename, edi_str, '20')
+                self.company_id, filename, edi_str, self._l10n_pe_edi_cpe_type())
         return super()._l10n_pe_edi_sign_retention(edi_format, filename, edi_str)
 
     def _l10n_pe_edi_reversal_supported(self):

@@ -164,6 +164,24 @@ pasos:
     texto: Un solo apunte al proveedor por el total de las dos facturas.
     imagen: screenshots/09-asiento-agrupado.png
 
+  - seccion: Número de operación y compra y venta de moneda
+    texto: Control del número de operación y cambio de moneda entre cuentas propias.
+  - titulo: Número de operación obligatorio
+    ruta: Contabilidad ▸ Configuración ▸ Diarios ▸ banco ▸ Exigir número de operación
+    texto: >-
+      Con la casilla marcada, el diario no deja confirmar pagos sin el
+      **Número de operación banco**: el dato que pide el PLE y que permite
+      conciliar con el extracto.
+  - titulo: Compra y venta de moneda
+    ruta: Perú ▸ Compra y venta de moneda (o Contabilidad ▸ Contabilidad)
+    texto: >-
+      Cambio entre una cuenta en soles y otra en dólares al tipo de cambio del
+      banco: un pago sale de una cuenta y otro entra en la otra por la cuenta
+      de transferencias de liquidez, y la diferencia con el tipo de cambio del
+      sistema queda como ganancia (776) o pérdida (676) por diferencia de
+      cambio.
+    imagen: screenshots/10-compra-venta-moneda.png
+
 campos_intro: >-
   Cada campo que añade el módulo, dónde está y qué efecto tiene.
 campos:
@@ -269,6 +287,11 @@ faq:
       actualizaciones del módulo no los sobrescriben.
 
 novedades:
+  - version: 8.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Diarios que exigen el número de operación del banco para confirmar pagos."
+      - "Asistente **Compra y venta de moneda**: dos pagos entre cuentas propias al tipo de cambio del banco y la diferencia con el del sistema como ganancia o pérdida por diferencia de cambio."
   - version: 7.20261008
     fecha: 08/10/2026
     cambios:

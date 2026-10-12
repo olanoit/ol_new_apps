@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Resumen de reversiones (RR) de un comprobante de retención (tipo 20),
-         común a todos los operadores. SUNAT no acepta el tipo 20 en
+    <!-- Resumen de reversiones (RR) de un comprobante de retención (tipo 20)
+         o de percepción (tipo 40, al_l10n_pe_perception), común a todos los
+         operadores. SUNAT no acepta el tipo 20 en
          VoidedDocuments (RA, error 2308): se revierte con SummaryDocuments,
          estado 3 e importe 0. Misma estructura y firma que la comunicación de
          baja de l10n_pe_edi. -->
@@ -47,7 +48,7 @@
             </cac:AccountingSupplierParty>
             <sac:SummaryDocumentsLine>
                 <cbc:LineID>1</cbc:LineID>
-                <cbc:DocumentTypeCode>20</cbc:DocumentTypeCode>
+                <cbc:DocumentTypeCode t-out="document_type or '20'"/>
                 <sac:DocumentSerialID t-out="serie"/>
                 <sac:DocumentNumberID t-out="folio"/>
                 <sac:TotalAmount currencyID="PEN">0.00</sac:TotalAmount>

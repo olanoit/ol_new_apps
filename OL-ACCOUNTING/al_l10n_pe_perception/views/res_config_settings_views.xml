@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_perception" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.perception</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="63"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Percepciones del IGV" name="pe_perception_block">
+                    <setting company_dependent="1" string="Agente de percepción del IGV"
+                             help="Percibe el IGV al cobrar la venta de los bienes del Apéndice 1 de la Ley 29173 (2 %, o 0,5 % al cliente agente de percepción) o de combustibles (1 %) y emite el comprobante de percepción electrónico (serie P001).">
+                        <div class="content-group">
+                            <div class="row">
+                                <label for="l10n_pe_perception_agent" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_perception_agent" readonly="not is_root_company"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_perception_fuel_agent" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_perception_fuel_agent" readonly="not is_root_company"/>
+                            </div>
+                            <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
+                            <div invisible="not l10n_pe_perception_agent and not l10n_pe_perception_fuel_agent">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_perception_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_pe_perception_account_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_perception_journal_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_pe_perception_journal_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Percepciones que nos cobran"
+                             help="Cuenta y diario del crédito por las percepciones que nos cobran los proveedores y la Aduana; se aplican en el F.V. 621.">
+                        <div class="content-group">
+                            <div class="row">
+                                <label for="l10n_pe_perception_received_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_perception_received_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_perception_received_journal_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_perception_received_journal_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -28,6 +28,9 @@
     <menuitem id="menu_detraction_deposits" name="Depósitos"
               parent="menu_detraction_root"
               action="action_detraction_deposits" sequence="30"/>
+    <menuitem id="menu_detraction_import_wizard" name="Importar constancias"
+              parent="menu_detraction_root" action="action_detraction_import_wizard"
+              groups="account.group_account_user" sequence="35"/>
     <menuitem id="menu_detraction_txt_wizard"
               name="Depósito masivo (Banco de la Nación)"
               parent="menu_detraction_root"

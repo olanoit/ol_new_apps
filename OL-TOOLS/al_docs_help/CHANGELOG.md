@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261012 — 12/10/2026
+
+- Mapa de pantallas ampliado a 300 con los módulos de caja chica y entregas a rendir, renta de 4.ª categoría, percepciones y liquidación de compra.
+
 ## 5.20261011 — 11/10/2026
 
 - Ayuda contextual para los CRE sin pago y las notas de crédito descontadas en un CRE.

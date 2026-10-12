@@ -2,3 +2,4 @@
 
 from . import pe_catalog_payment
 from . import account_payment
+from . import account_journal

@@ -1,0 +1,328 @@
+titulo: Percepciones del IGV
+subtitulo: >-
+  Régimen de percepciones del IGV (Ley 29173 y R.S. 058-2006/SUNAT): como
+  agente, la factura calcula la percepción y el cobro emite el comprobante de
+  percepción electrónico (tipo 40); como cliente, registra las percepciones que
+  le cobran para aplicarlas en el F.V. 621.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Agente de percepción, "2 % · 1 % · 0,5 %", Comprobante P001, Tipo 40, F.V. 697, F.V. 621, DUA]
+portada: screenshots/04-comprobante.png
+
+destacados_intro: >-
+  Los dos lados del régimen: cuando la empresa percibe a sus clientes y cuando
+  un proveedor o la Aduana le perciben a ella.
+destacados:
+  - icono: "%"
+    titulo: Tasa según el bien y el cliente
+    texto: >-
+      2 % general, 0,5 % al cliente agente de percepción con factura y 1 % en
+      combustibles; con las exclusiones del reglamento ya resueltas en la factura.
+  - icono: "40"
+    titulo: Comprobante electrónico
+    texto: >-
+      Comprobante de percepción tipo 40, serie P001, firmado y enviado por el
+      operador de la compañía con el mismo motor que el comprobante de retención.
+  - icono: "XML"
+    titulo: Factura que lo informa
+    texto: >-
+      Operación 2001, cargo de percepción del catálogo 53 y monto total con la
+      percepción en el XML; leyenda «Operación sujeta a percepción del IGV» en el PDF.
+  - icono: "697"
+    titulo: Resumen F.V. 697
+    texto: >-
+      Base cobrada (casilla 502) y percepciones efectuadas (casilla 401) por
+      periodo, desde los comprobantes emitidos.
+  - icono: "621"
+    titulo: Percepciones que nos cobran
+    texto: >-
+      Comprobante del proveedor, factura que la consigna o DUA de importación:
+      asiento al IGV percibido y resumen por periodo para el F.V. 621.
+  - icono: "↺"
+    titulo: Reversión
+    texto: >-
+      Un comprobante aceptado por SUNAT se revierte con el resumen de reversiones
+      (RR); al aceptarse, el comprobante y su asiento quedan anulados.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El **agente de percepción** designado por SUNAT cobra a su cliente, además
+    del precio, un porcentaje del IGV que este pagará en sus ventas siguientes,
+    y entrega un **comprobante de percepción** por cada cobro. La percepción se
+    calcula sobre el **precio de venta con IGV**, con una tasa que depende del
+    bien, del comprobante y del cliente, y hay que declararla y pagarla en el
+    **F.V. 697**.
+
+
+    Del otro lado, la empresa a la que le perciben (un proveedor agente o la
+    Aduana en la importación) acumula un crédito que **aplica contra el IGV en
+    el F.V. 621** y arrastra si sobra. Sin un módulo, la tasa se decide a mano,
+    los comprobantes se emiten fuera del ERP y el crédito se reconstruye en
+    hojas de cálculo.
+  nota: >-
+    **Base normativa.** Ley 29173 y su Apéndice 1 (bienes sujetos, desde 2015
+    solo los numerales 1 a 12), R.S. 058-2006/SUNAT (venta interna), R.S.
+    128-2002/SUNAT (combustibles), R.S. 203-2003/SUNAT (importación) y R.S.
+    274-2015/SUNAT (comprobante electrónico, serie P###).
+
+flujos_intro: >-
+  De la factura al comprobante y a la declaración.
+flujos:
+  - id: agente
+    titulo: La empresa es agente de percepción (ventas)
+    texto: >-
+      La factura decide si la operación está sujeta y por cuánto; la percepción
+      se efectúa y se acredita al cobrar.
+    mermaid: |
+      flowchart TD
+        A[Factura de venta con bienes del Apéndice 1] --> B{¿Sujeta?}
+        B -- "No: cliente agente de retención o exceptuado,<br/>consumidor final, detracción" --> C[Venta normal]
+        B -- Sí --> D["Tasa: 2 %, 0,5 % al cliente agente<br/>o 1 % en combustibles"]
+        D --> E[XML: operación 2001, cargo 51/52/53<br/>y total con la percepción]
+        E --> F[Cobro de la factura más la percepción]
+        F --> G[Comprobante de percepción P001<br/>con su asiento]
+        G --> H[Envío a SUNAT y resumen F.V. 697]
+    pie: Con pagos parciales se emite un comprobante por cada cobro.
+  - id: cliente
+    titulo: Un proveedor o la Aduana nos percibe (compras)
+    texto: >-
+      El crédito se registra con el documento que lo acredita y se aplica en la
+      declaración mensual.
+    mermaid: |
+      flowchart TD
+        A["Comprobante de percepción del proveedor,<br/>factura que la consigna o DUA"] --> B[Percepciones que nos cobran:<br/>número, fecha y monto]
+        B --> C[Registrar: cargo a la cuenta<br/>de percepciones por aplicar]
+        C --> D[Resumen F.V. 621 por periodo]
+
+pasos_intro: >-
+  Todas las funciones del módulo con los datos de demostración «DEMO PER».
+pasos:
+  - seccion: Configuración
+    texto: Una sola vez, antes de la primera factura.
+  - titulo: Activar la empresa como agente de percepción
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Percepciones del IGV
+    texto: >-
+      Marque **Agente de percepción (venta interna)** y, si vende combustibles,
+      **Agente de percepción (combustibles)**. Elija la **cuenta del IGV
+      percibido por pagar** y el **diario de percepciones**. En el bloque de la
+      derecha, la cuenta y el diario de las percepciones que le cobran.
+    puntos:
+      - "La condición de agente es del RUC: en una sucursal se ve la de la compañía raíz."
+    imagen: screenshots/01-ajustes.png
+
+  - titulo: Marcar los bienes sujetos
+    ruta: Inventario ▸ Productos ▸ Contabilidad
+    texto: >-
+      En **Percepción del IGV** elija el grupo del bien: Apéndice 1, numerales 1,
+      2 y 3 (con el límite de S/ 100 para el consumidor final), gas licuado o
+      combustible.
+    imagen: screenshots/02-producto.png
+
+  - seccion: Ventas — la empresa percibe
+  - titulo: La factura calcula la percepción
+    ruta: Factura de cliente ▸ Facturación PE ▸ Percepción IGV
+    texto: >-
+      Régimen, tasa, base sujeta (precio con IGV de los bienes sujetos) y
+      percepción estimada. Si la operación queda excluida, el **Motivo** lo dice.
+      Más abajo, los comprobantes de percepción emitidos por esta factura.
+    imagen: screenshots/03-factura.png
+
+  - titulo: Emitir el comprobante de percepción al cobrar
+    ruta: Pago ▸ Comprobante de percepción
+    texto: >-
+      Desde el cobro, el botón **Comprobante de percepción** crea el borrador
+      con lo que ese cobro pagó de cada factura (uno por tasa). También desde la
+      lista de facturas (**Acciones ▸ Emitir comprobante de percepción**) o a
+      mano. **Emitir** asigna el número P001, crea el asiento y lo concilia con
+      lo que el cliente pagó de más.
+    imagen: screenshots/04-comprobante.png
+    pie: "Cobro de S/ 4.453,32: S/ 4.366,00 de la factura y S/ 87,32 de percepción (factor 0,019608)."
+
+  - titulo: Cliente agente de percepción
+    ruta: Perú ▸ Percepciones IGV ▸ Comprobantes de percepción
+    texto: >-
+      Si el cliente es agente de percepción y el comprobante da crédito fiscal,
+      la tasa es 0,5 % y el régimen del comprobante, «Agente de percepción, tasa
+      especial».
+    imagen: screenshots/05-comprobante-agente.png
+
+  - titulo: Comprobantes emitidos y su estado ante SUNAT
+    ruta: Perú ▸ Percepciones IGV ▸ Comprobantes de percepción
+    texto: >-
+      Cada comprobante con lo cobrado, lo percibido y el estado del envío. En el
+      formulario: **Enviar a SUNAT**, **XML** (sin firmar, para revisión),
+      **Revertir** (si fue aceptado) y el PDF.
+    imagen: screenshots/06-comprobantes.png
+
+  - titulo: Facturas sujetas a percepción
+    ruta: Perú ▸ Percepciones IGV ▸ Facturas sujetas a percepción
+    texto: >-
+      Facturas de venta del régimen con la percepción estimada y la ya
+      acreditada con comprobantes.
+    imagen: screenshots/07-facturas.png
+
+  - titulo: Resumen para el F.V. 697
+    ruta: Perú ▸ Percepciones IGV ▸ Resumen F.V. 697
+    texto: >-
+      Por periodo y régimen: el monto cobrado con la percepción (casilla 502) y
+      las percepciones efectuadas (casilla 401) de los comprobantes emitidos.
+    imagen: screenshots/08-fv697.png
+
+  - seccion: Compras — nos perciben
+  - titulo: Registrar el comprobante de percepción del proveedor
+    ruta: Perú ▸ Percepciones IGV ▸ Percepciones que nos cobran
+    texto: >-
+      Agente, documento (comprobante de percepción, factura o DUA), régimen,
+      número, fecha y el monto percibido por comprobante. **Registrar** crea el
+      asiento a la cuenta de percepciones por aplicar.
+    imagen: screenshots/09-recibida.png
+
+  - titulo: Percepción a la importación
+    ruta: Percepciones que nos cobran ▸ Nuevo
+    texto: >-
+      Con el documento **DUA o DAM** y el régimen **Importación** se registra lo
+      que liquidó la Aduana; no hace falta una factura en Odoo.
+    imagen: screenshots/10-dua.png
+
+  - titulo: Desde la factura de proveedor
+    ruta: Factura de proveedor ▸ Registrar percepción
+    texto: >-
+      Cuando la factura consigna la percepción (pago al contado), el botón crea
+      el borrador con la serie y el número de la factura y el 2 % del total.
+    imagen: screenshots/12-factura-proveedor.png
+
+  - titulo: Resumen para el F.V. 621
+    ruta: Perú ▸ Percepciones IGV ▸ Resumen F.V. 621
+    texto: >-
+      Percepciones registradas por periodo y régimen, para aplicarlas contra el
+      IGV del mes.
+    imagen: screenshots/11-fv621.png
+
+  - seccion: El menú Perú ▸ Percepciones IGV
+  - titulo: Menú de percepciones
+    ruta: Perú ▸ Percepciones IGV
+    imagen: screenshots/13-menu.png
+
+campos_intro: >-
+  Cada campo que añade el módulo, dónde está y qué efecto tiene.
+campos:
+  - grupo: Ajustes de la compañía
+    ruta: Perú ▸ Configuración ▸ Ajustes ▸ Percepciones del IGV
+    campos:
+      - [Agente de percepción (venta interna), Designación de SUNAT para los bienes del Apéndice 1., Desmarcado, Activa el cálculo en las facturas]
+      - [Agente de percepción (combustibles), Designación para combustibles líquidos., Desmarcado, "Tasa del 1 %"]
+      - [Cuenta del IGV percibido por pagar, Pasivo con SUNAT por lo percibido., Vacío, Obligatoria para emitir]
+      - [Diario de percepciones, Diario del asiento del comprobante., Vacío, "Si falta, el primer diario general"]
+      - [Cuenta de percepciones por aplicar, Crédito por lo que nos perciben., Vacío, Obligatoria para registrar]
+      - [Diario de percepciones que nos cobran, Diario de ese asiento., Vacío, "Si falta, el primer diario general"]
+  - grupo: Producto
+    ruta: Producto ▸ Contabilidad
+    campos:
+      - [Percepción del IGV, "Grupo del bien sujeto: Apéndice 1, numerales 1-3, gas licuado o combustible.", Vacío, La factura lo percibe]
+  - grupo: Contacto
+    ruta: Contacto ▸ Ventas y compras
+    campos:
+      - [Agente de percepción, Designado agente; se marca solo al consultar la ficha RUC si figura en ese padrón., Desmarcado, "0,5 % con factura; combustibles: no se le percibe"]
+      - [Exceptuado de la percepción, Entidad del listado de exceptuados o consumidor directo de combustibles., Desmarcado, No se le percibe con factura]
+  - grupo: Factura de venta
+    ruta: Factura ▸ Facturación PE ▸ Percepción IGV
+    campos:
+      - [Percepción del IGV, "Régimen del catálogo 53 (51, 52 o 53).", Calculado, Operación 2001 y cargo en el XML]
+      - [Base sujeta a percepción, Precio con IGV de los bienes sujetos., Calculado, "—"]
+      - [Percepción estimada (S/), Base en soles por la tasa., Calculado, Leyenda del PDF y monto total del XML]
+      - [Motivo, Por qué no se percibe., Calculado, "—"]
+      - [Percibido (S/), Lo acreditado con comprobantes emitidos., Calculado, "—"]
+  - grupo: Comprobante de percepción
+    ruta: Perú ▸ Percepciones IGV ▸ Comprobantes de percepción
+    campos:
+      - [Cliente y fecha de cobro, "La fecha es la de emisión y la del tipo de cambio.", Hoy, "—"]
+      - [Régimen, "Catálogo 22: 01 (2 %), 02 (1 %) o 03 (0,5 %).", "01", Un comprobante por tasa]
+      - [Cobro, Pago del cliente que incluye la percepción., Vacío, Se concilia con el asiento]
+      - [Cobrado, Lo pagado de cada factura en su moneda., Saldo o lo conciliado, Base del cálculo]
+      - [Percepción (S/), Cobrado con la percepción por el factor de seis decimales., Calculado, XML y asiento]
+
+asientos_intro: >-
+  Asientos reales de los datos de demostración.
+asientos:
+  - titulo: Comprobante de percepción emitido
+    referencia: MISCE/2026/09/0021
+    texto: >-
+      El cliente pagó S/ 4.453,32 por una factura de S/ 4.366,00: el exceso queda
+      a su favor hasta que el comprobante lo carga y lo traslada al IGV
+      percibido por pagar.
+    lineas:
+      - [1213000, "Percepción IGV P001-00000001 · DPSV/2026/00010", "87,32", ""]
+      - [401132, Comprobante de percepción P001-00000001, "", "87,32"]
+    nota: El cargo al cliente queda conciliado con el exceso del cobro.
+  - titulo: Percepción que nos cobró un proveedor
+    referencia: MISCE/2026/09/0023
+    lineas:
+      - [401131, "Percepción P001-00004521 · DPSC/2026/09/0001", "259,60", ""]
+      - [4212000, Percepción del IGV P001-00004521, "", "259,60"]
+    nota: Al pagar al proveedor la factura más la percepción, el abono se concilia con lo pagado de más.
+
+ejemplos:
+  - titulo: Qué tasa se aplica
+    tabla:
+      - [Situación, "¿Percibe?", Tasa]
+      - [Factura a una empresa, Sí, "2 %"]
+      - [Factura a un cliente agente de percepción, Sí, "0,5 %"]
+      - [Factura a un agente de retención o entidad exceptuada, "No", "—"]
+      - ["Boleta a persona natural hasta S/ 1 500 (S/ 100 en los numerales 1, 2 y 3)", "No (consumidor final)", "—"]
+      - ["Boleta a persona natural por más del límite", Sí, "2 %"]
+      - [Combustible a una empresa con factura, Sí, "1 %"]
+      - [Combustible a otro agente o consumidor directo, "No", "—"]
+      - [Operación con detracción, "No", "—"]
+  - titulo: Cálculo del comprobante
+    texto: >-
+      El factor es tasa ÷ (100 + tasa), redondeado a seis decimales, y se aplica
+      al monto cobrado con la percepción (numeral 2.6 del art. 10.1).
+    tabla:
+      - [Régimen, Factor, Cobrado con la percepción, Percepción]
+      - ["2 %", "0,019608", "S/ 4.453,32", "S/ 87,32"]
+      - ["0,5 %", "0,004975", "S/ 9.961,56", "S/ 49,56"]
+      - ["1 %", "0,009901", "S/ 1.191,80", "S/ 11,80"]
+
+configuracion_intro: >-
+  Pasos para empezar a percibir.
+configuracion:
+  - Instale el módulo desde Aplicaciones (requiere la localización peruana y el módulo de retenciones).
+  - "En **Ajustes ▸ Perú ▸ Percepciones del IGV** marque la designación de agente y elija la cuenta y el diario."
+  - Marque los bienes sujetos en sus productos.
+  - Revise en los contactos «Agente de percepción» y «Exceptuado de la percepción»; la consulta de la ficha RUC marca el primero.
+  - "El comprobante se envía con el operador electrónico de la compañía (SUNAT directo, IAP, Digiflow o The Factory HKA)."
+requisitos_nota: >-
+  Funciona en Community y Enterprise. El envío a SUNAT usa los servicios de la
+  localización peruana de Odoo (l10n_pe_edi).
+
+faq:
+  - pregunta: ¿Por qué la factura no calcula la percepción?
+    respuesta: >-
+      La compañía no está marcada como agente, ningún producto de la factura es
+      un bien sujeto o la operación está excluida: la pestaña **Percepción IGV**
+      muestra el motivo.
+  - pregunta: ¿Qué pasa con los pagos parciales?
+    respuesta: >-
+      Se emite un comprobante por cada cobro, con lo pagado en ese cobro; el
+      XML numera los cobros de cada factura (1, 2…).
+  - pregunta: ¿Y si la factura está en dólares?
+    respuesta: >-
+      Lo cobrado se convierte a soles al tipo de cambio de la fecha de cobro
+      (art. 8 de la R.S. 058-2006/SUNAT); el comprobante informa el tipo usado.
+  - pregunta: ¿De dónde sale «Agente de percepción» del cliente?
+    respuesta: >-
+      SUNAT no publica un padrón descargable de agentes de percepción como el de
+      retención: al consultar la ficha RUC, si figura en ese padrón se marca solo;
+      si no, márquelo a mano.
+  - pregunta: ¿Las notas de crédito cambian la percepción?
+    respuesta: >-
+      No. La percepción ya efectuada no se modifica por notas de crédito
+      (art. 3.2 de la R.S. 058-2006/SUNAT).
+
+novedades:
+  - version: 1.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "Primera versión: cálculo en la factura (2 %, 0,5 % y 1 %, con las exclusiones del reglamento), XML de la factura (operación 2001, cargo del catálogo 53 y monto con la percepción) y leyenda en el PDF."
+      - "Comprobante de percepción electrónico (tipo 40, serie P001) desde el cobro o las facturas: factor de seis decimales, tipo de cambio de la fecha de cobro, asiento conciliado, envío por el operador de la compañía, reversión y PDF."
+      - "Percepciones que nos cobran (comprobante del proveedor, factura o DUA) con su asiento, y resúmenes por periodo para los F.V. 697 y 621."

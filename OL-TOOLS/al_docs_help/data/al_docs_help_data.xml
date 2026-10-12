@@ -3,6 +3,22 @@
      llevar una pantalla a otra guía o sección, use
      docs/ayuda/ayuda_contextual.yml y vuelva a generar. -->
 <odoo>
+    <record id="help_account_edi_xml_ubl_pe_lce" model="al.docs.help">
+        <field name="key">account.edi.xml.ubl_pe_lce</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidación de compra electrónica UBL (SUNAT)</field>
+        <field name="module">al_l10n_pe_edi_purchase_settlement</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/electronic_invoicing/purchase_settlement/</field>
+        <field name="section">Liquidación de compra electrónica</field>
+    </record>
+    <record id="help_account_edi_xml_ubl_pe_perception" model="al.docs.help">
+        <field name="key">account.edi.xml.ubl_pe_perception</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de percepción UBL (SUNAT)</field>
+        <field name="module">al_l10n_pe_perception</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/perceptions/</field>
+        <field name="section">Percepciones del IGV</field>
+    </record>
     <record id="help_account_edi_xml_ubl_pe_withholding" model="al.docs.help">
         <field name="key">account.edi.xml.ubl_pe_withholding</field>
         <field name="kind">model</field>
@@ -1227,6 +1243,38 @@
         <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
         <field name="section">Consulta de RUC y DNI</field>
     </record>
+    <record id="help_l10n_pe_cash_fund" model="al.docs.help">
+        <field name="key">l10n_pe.cash.fund</field>
+        <field name="kind">model</field>
+        <field name="name">Entrega a rendir o caja chica</field>
+        <field name="module">al_l10n_pe_cash_fund</field>
+        <field name="path">applications/finance/accounting/cash_fund/</field>
+        <field name="section">Entregas a rendir y caja chica</field>
+    </record>
+    <record id="help_l10n_pe_cash_settlement" model="al.docs.help">
+        <field name="key">l10n_pe.cash.settlement</field>
+        <field name="kind">model</field>
+        <field name="name">Rendición de entrega a rendir o caja chica</field>
+        <field name="module">al_l10n_pe_cash_fund</field>
+        <field name="path">applications/finance/accounting/cash_fund/</field>
+        <field name="section">Entregas a rendir y caja chica</field>
+    </record>
+    <record id="help_l10n_pe_cash_settlement_document" model="al.docs.help">
+        <field name="key">l10n_pe.cash.settlement.document</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de una rendición</field>
+        <field name="module">al_l10n_pe_cash_fund</field>
+        <field name="path">applications/finance/accounting/cash_fund/</field>
+        <field name="section">Entregas a rendir y caja chica</field>
+    </record>
+    <record id="help_l10n_pe_cash_settlement_mobility" model="al.docs.help">
+        <field name="key">l10n_pe.cash.settlement.mobility</field>
+        <field name="kind">model</field>
+        <field name="name">Gasto de movilidad de una rendición</field>
+        <field name="module">al_l10n_pe_cash_fund</field>
+        <field name="path">applications/finance/accounting/cash_fund/</field>
+        <field name="section">Entregas a rendir y caja chica</field>
+    </record>
     <record id="help_l10n_pe_complaint" model="al.docs.help">
         <field name="key">l10n_pe.complaint</field>
         <field name="kind">model</field>
@@ -1259,6 +1307,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/complaints_book/</field>
         <field name="section">Libro de reclamaciones</field>
     </record>
+    <record id="help_l10n_pe_currency_exchange_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.currency.exchange.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Compra y venta de moneda</field>
+        <field name="module">al_account_payments</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/payment_methods/#comprar-y-vender-moneda</field>
+        <field name="section">Comprar y vender moneda</field>
+    </record>
     <record id="help_l10n_pe_destination_period_wizard" model="al.docs.help">
         <field name="key">l10n_pe.destination.period.wizard</field>
         <field name="kind">model</field>
@@ -1290,6 +1346,14 @@
         <field name="module">al_l10n_pe_detraction</field>
         <field name="path">applications/finance/fiscal_localizations/peru/detractions/</field>
         <field name="section">Detracciones (SPOT)</field>
+    </record>
+    <record id="help_l10n_pe_detraction_import_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.detraction.import.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar constancias de detracción</field>
+        <field name="module">al_l10n_pe_detraction</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/detractions/#importar-las-constancias-de-sunat</field>
+        <field name="section">Importar las constancias de SUNAT</field>
     </record>
     <record id="help_l10n_pe_detraction_txt_wizard" model="al.docs.help">
         <field name="key">l10n_pe.detraction.txt.wizard</field>
@@ -1370,6 +1434,38 @@
         <field name="module">al_l10n_pe_factoring</field>
         <field name="path">applications/finance/accounting/factoring/</field>
         <field name="section">Factoring</field>
+    </record>
+    <record id="help_l10n_pe_fourth_category_certificate" model="al.docs.help">
+        <field name="key">l10n_pe.fourth.category.certificate</field>
+        <field name="kind">model</field>
+        <field name="name">Certificado de rentas y retenciones de 4.ª categoría</field>
+        <field name="module">al_l10n_pe_fourth_category</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/fourth_category/</field>
+        <field name="section">Retención de renta de 4.ª categoría</field>
+    </record>
+    <record id="help_l10n_pe_fourth_category_report" model="al.docs.help">
+        <field name="key">l10n_pe.fourth.category.report</field>
+        <field name="kind">model</field>
+        <field name="name">Retenciones de 4.ª categoría del mes</field>
+        <field name="module">al_l10n_pe_fourth_category</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/fourth_category/#declarar-las-retenciones-del-mes</field>
+        <field name="section">Declarar las retenciones del mes</field>
+    </record>
+    <record id="help_l10n_pe_fourth_category_report_line" model="al.docs.help">
+        <field name="key">l10n_pe.fourth.category.report.line</field>
+        <field name="kind">model</field>
+        <field name="name">Recibo por honorarios del reporte de 4.ª</field>
+        <field name="module">al_l10n_pe_fourth_category</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/fourth_category/#registrar-un-recibo-por-honorarios</field>
+        <field name="section">Registrar un recibo por honorarios</field>
+    </record>
+    <record id="help_l10n_pe_fourth_category_suspension" model="al.docs.help">
+        <field name="key">l10n_pe.fourth.category.suspension</field>
+        <field name="kind">model</field>
+        <field name="name">Suspensión de retenciones de 4.ª categoría</field>
+        <field name="module">al_l10n_pe_fourth_category</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/fourth_category/</field>
+        <field name="section">Retención de renta de 4.ª categoría</field>
     </record>
     <record id="help_l10n_pe_hr_attendance_monitor" model="al.docs.help">
         <field name="key">l10n_pe.hr.attendance.monitor</field>
@@ -1843,6 +1939,38 @@
         <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/#actividades-económicas</field>
         <field name="section">Actividades económicas</field>
     </record>
+    <record id="help_l10n_pe_perception" model="al.docs.help">
+        <field name="key">l10n_pe.perception</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de percepción</field>
+        <field name="module">al_l10n_pe_perception</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/perceptions/#emitir-el-comprobante-de-percepción</field>
+        <field name="section">Emitir el comprobante de percepción</field>
+    </record>
+    <record id="help_l10n_pe_perception_line" model="al.docs.help">
+        <field name="key">l10n_pe.perception.line</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante cobrado en un comprobante de percepción</field>
+        <field name="module">al_l10n_pe_perception</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/perceptions/#emitir-el-comprobante-de-percepción</field>
+        <field name="section">Emitir el comprobante de percepción</field>
+    </record>
+    <record id="help_l10n_pe_perception_received" model="al.docs.help">
+        <field name="key">l10n_pe.perception.received</field>
+        <field name="kind">model</field>
+        <field name="name">Percepción del IGV que nos cobran</field>
+        <field name="module">al_l10n_pe_perception</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/perceptions/</field>
+        <field name="section">Percepciones del IGV</field>
+    </record>
+    <record id="help_l10n_pe_perception_received_line" model="al.docs.help">
+        <field name="key">l10n_pe.perception.received.line</field>
+        <field name="kind">model</field>
+        <field name="name">Comprobante de una percepción que nos cobran</field>
+        <field name="module">al_l10n_pe_perception</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/perceptions/</field>
+        <field name="section">Percepciones del IGV</field>
+    </record>
     <record id="help_l10n_pe_ple_asset_book" model="al.docs.help">
         <field name="key">l10n_pe.ple.asset.book</field>
         <field name="kind">model</field>
@@ -2226,6 +2354,14 @@
         <field name="module">al_hr_pe_public_holidays</field>
         <field name="path">applications/hr/payroll/peru/public_holidays/</field>
         <field name="section">Feriados</field>
+    </record>
+    <record id="help_report_al_l10n_pe_fourth_category_report_certificate" model="al.docs.help">
+        <field name="key">report.al_l10n_pe_fourth_category.report_certificate</field>
+        <field name="kind">model</field>
+        <field name="name">Certificado de rentas y retenciones de 4.ª categoría</field>
+        <field name="module">al_l10n_pe_fourth_category</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/fourth_category/</field>
+        <field name="section">Retención de renta de 4.ª categoría</field>
     </record>
     <record id="help_report_al_project_gantt_base_report_gantt" model="al.docs.help">
         <field name="key">report.al_project_gantt_base.report_gantt</field>

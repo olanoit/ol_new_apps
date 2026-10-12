@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_payments.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261011 — 11/10/2026
+
+- Diarios que exigen el número de operación del banco para confirmar pagos.
+- Asistente **Compra y venta de moneda**: dos pagos entre cuentas propias al tipo de cambio del banco y la diferencia con el del sistema como ganancia o pérdida por diferencia de cambio.
+
 ## 7.20261008 — 08/10/2026
 
 - Etiquetas en español: campos propios sin texto (Compañía, Moneda, Nombre del archivo…) y campos heredados (creado por, seguidores, actividades) traducidos con su i18n/es.po.

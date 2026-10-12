@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_pe_catalog_payment,al_account_payments.pe_catalog_payment,model_pe_catalog_payment,base.group_user,1,0,0,0
 access_pe_catalog_payment_manager,al_account_payments.pe_catalog_payment manager,model_pe_catalog_payment,account.group_account_manager,1,1,1,1
+access_currency_exchange_wizard,l10n_pe.currency.exchange.wizard,model_l10n_pe_currency_exchange_wizard,account.group_account_user,1,1,1,1

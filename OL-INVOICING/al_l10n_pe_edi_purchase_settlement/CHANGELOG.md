@@ -1,0 +1,14 @@
+Historial de cambios — PE - Liquidación de compra electrónica (AL)
+==================================================================
+
+Una entrada por versión publicada, la más reciente arriba; el número es
+el `version` de `__manifest__.py` (`N.AAAAMMDD`).
+
+Generado desde `docs/fichas/al_l10n_pe_edi_purchase_settlement.yml` (sección `novedades`) con
+`python3 scripts/gen_changelog.py`: no editar a mano.
+
+## 1.20261011 — 11/10/2026
+
+- Liquidación de compra electrónica (tipo 04): diario con serie L###, retención del IGV y de la renta (1,5 %, 4 % en el oro, nada hasta S/ 700) e importe total neto.
+- XML SelfBilledInvoice firmado y enviado con el operador de la compañía y resumen diario de reversiones.
+- Representación impresa, aviso de 75 UIT y total íntegro en los registros de compras (PLE y SIRE).

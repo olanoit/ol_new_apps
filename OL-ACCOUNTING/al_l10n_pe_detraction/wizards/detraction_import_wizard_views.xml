@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="detraction_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.detraction.import.wizard.form</field>
+        <field name="model">l10n_pe.detraction.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar constancias de detracción">
+                <div class="alert alert-info" role="alert">
+                    Suba el archivo de la consulta de constancias de depósito de SUNAT Operaciones en
+                    Línea (Excel o CSV). Cada fila se empareja por RUC y serie-número del comprobante:
+                    compras cuando el proveedor es un tercero, ventas cuando el proveedor es la compañía.
+                </div>
+                <group>
+                    <group>
+                        <field name="file" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="register_deposit"/>
+                        <field name="journal_id" invisible="not register_deposit"
+                               required="register_deposit" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <field name="preview_html" nolabel="1" invisible="not file"/>
+                <footer>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"
+                            invisible="not file"/>
+                    <button special="cancel" string="Descartar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_detraction_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar constancias</field>
+        <field name="res_model">l10n_pe.detraction.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

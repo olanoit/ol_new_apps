@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form_purchase_settlement" model="ir.ui.view">
+        <field name="name">account.journal.form.purchase.settlement.pe</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="l10n_latam_invoice_document.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <field name="l10n_latam_use_documents" position="after">
+                <field name="l10n_pe_lce_journal"
+                       invisible="type != 'purchase' or not l10n_latam_use_documents or country_code != 'PE'"/>
+                <field name="l10n_pe_lce_serie" invisible="not l10n_pe_lce_journal"
+                       required="l10n_pe_lce_journal"/>
+            </field>
+        </field>
+    </record>
+</odoo>

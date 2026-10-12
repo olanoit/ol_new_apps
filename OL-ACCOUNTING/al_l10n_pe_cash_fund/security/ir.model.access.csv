@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cash_fund_invoice,l10n_pe.cash.fund facturación,model_l10n_pe_cash_fund,account.group_account_invoice,1,1,1,0
+access_cash_fund_user,l10n_pe.cash.fund contable,model_l10n_pe_cash_fund,account.group_account_user,1,1,1,1
+access_cash_fund_readonly,l10n_pe.cash.fund auditor,model_l10n_pe_cash_fund,account.group_account_readonly,1,0,0,0
+access_cash_settlement_invoice,l10n_pe.cash.settlement facturación,model_l10n_pe_cash_settlement,account.group_account_invoice,1,1,1,1
+access_cash_settlement_readonly,l10n_pe.cash.settlement auditor,model_l10n_pe_cash_settlement,account.group_account_readonly,1,0,0,0
+access_cash_settlement_document_invoice,l10n_pe.cash.settlement.document facturación,model_l10n_pe_cash_settlement_document,account.group_account_invoice,1,1,1,1
+access_cash_settlement_document_readonly,l10n_pe.cash.settlement.document auditor,model_l10n_pe_cash_settlement_document,account.group_account_readonly,1,0,0,0
+access_cash_settlement_mobility_invoice,l10n_pe.cash.settlement.mobility facturación,model_l10n_pe_cash_settlement_mobility,account.group_account_invoice,1,1,1,1
+access_cash_settlement_mobility_readonly,l10n_pe.cash.settlement.mobility auditor,model_l10n_pe_cash_settlement_mobility,account.group_account_readonly,1,0,0,0

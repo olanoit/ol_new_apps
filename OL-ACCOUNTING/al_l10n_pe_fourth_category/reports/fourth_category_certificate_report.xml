@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_fourth_category_certificate" model="ir.actions.report">
+        <field name="name">Certificado de rentas y retenciones de 4.ª</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_fourth_category.report_certificate</field>
+        <field name="report_file">al_l10n_pe_fourth_category.report_certificate</field>
+        <field name="print_report_name">'Certificado 4ta %s - %s' % (object.vat or '', object.name)</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+    </record>
+
+    <template id="report_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="lines" t-value="rows.get(o.commercial_partner_id, [])"/>
+                <t t-set="cur" t-value="company.currency_id"/>
+                <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="doc_title" t-value="'Certificado de rentas y retenciones'"/>
+                    <t t-set="doc_extra" t-value="'Rentas de cuarta categoría · Ejercicio %s' % year"/>
+
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label" style="width: 18%;">Prestador</td>
+                            <td class="pe-doc-value" style="width: 52%;" t-out="o.name"/>
+                            <td class="pe-doc-label" style="width: 12%;">Documento</td>
+                            <td class="pe-doc-value" style="width: 18%;" t-out="o.vat"/>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Dirección</td>
+                            <td class="pe-doc-value" colspan="3" t-out="o.contact_address_inline"/>
+                        </tr>
+                    </table>
+
+                    <p class="pe-doc-text">
+                        <t t-out="company.name"/>, con R.U.C. <t t-out="company.vat"/>, en su calidad
+                        de agente de retención, certifica que durante el ejercicio <t t-out="year"/>
+                        pagó o acreditó al prestador las rentas de cuarta categoría y practicó las
+                        retenciones del impuesto a la renta que se detallan (art. 45 del Reglamento
+                        de la Ley del Impuesto a la Renta).
+                    </p>
+
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <td>Recibo por honorarios</td>
+                                <td>Emisión</td>
+                                <td>Pago</td>
+                                <td class="text-end">Honorarios</td>
+                                <td class="text-end">Retención</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines" t-as="row">
+                                <td t-out="row[0].l10n_latam_document_number or row[0].ref or row[0].name"/>
+                                <td><span t-out="row[0].invoice_date" t-options="date_fmt"/></td>
+                                <td><span t-out="row[1]" t-options="date_fmt"/></td>
+                                <td class="text-end"><span t-out="row[2]" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                                <td class="text-end"><span t-out="row[3]" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="pe-doc-total">
+                                <td colspan="3" class="text-end">Totales</td>
+                                <td class="text-end"><span t-out="sum(r[2] for r in lines)" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                                <td class="text-end"><span t-out="sum(r[3] for r in lines)" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+                        <tr>
+                            <td>
+                                <div t-out="company.name"/>
+                                <div class="pe-doc-sign-line">Agente de retención</div>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

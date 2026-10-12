@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fourth_category_report_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.fourth.category.report.form</field>
+        <field name="model">l10n_pe.fourth.category.report</field>
+        <field name="arch" type="xml">
+            <form string="Retenciones de 4.ª categoría">
+                <div class="alert alert-info" role="alert">
+                    Recibos por honorarios pagados en el mes y su retención, para la PLAME
+                    (formulario 0601). El archivo .4ta importa el detalle de comprobantes; los
+                    prestadores deben estar registrados antes en la PLAME.
+                </div>
+                <group>
+                    <group>
+                        <field name="year" options="{'enable_formatting': false}"/>
+                        <field name="month"/>
+                    </group>
+                    <group>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        <field name="amount_total"/>
+                        <field name="amount_withheld"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="file" filename="filename" invisible="not file"/>
+                    </group>
+                </group>
+                <field name="line_ids" readonly="1">
+                    <list>
+                        <field name="partner_id"/>
+                        <field name="partner_vat"/>
+                        <field name="series"/>
+                        <field name="number"/>
+                        <field name="date_issue"/>
+                        <field name="date_payment"/>
+                        <field name="amount_total" sum="Total"/>
+                        <field name="amount_withheld" sum="Total"/>
+                        <field name="status" optional="show"/>
+                        <field name="currency_id" column_invisible="True"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_compute" type="object" string="Calcular" class="btn-primary"/>
+                    <button name="action_export_txt" type="object" string="Generar archivo .4ta"
+                            invisible="not line_ids"/>
+                    <button name="action_view_moves" type="object" string="Ver recibos"
+                            invisible="not line_ids"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fourth_category_report" model="ir.actions.act_window">
+        <field name="name">Retenciones del mes (PLAME)</field>
+        <field name="res_model">l10n_pe.fourth.category.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="fourth_category_certificate_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.fourth.category.certificate.form</field>
+        <field name="model">l10n_pe.fourth.category.certificate</field>
+        <field name="arch" type="xml">
+            <form string="Certificado de rentas y retenciones">
+                <group>
+                    <field name="year" options="{'enable_formatting': false}"/>
+                    <field name="partner_ids" widget="many2many_tags"
+                           placeholder="Todos los prestadores con recibos pagados"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_print" type="object" string="Imprimir" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_fourth_category_certificate" model="ir.actions.act_window">
+        <field name="name">Certificado de rentas y retenciones</field>
+        <field name="res_model">l10n_pe.fourth.category.certificate</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+</odoo>

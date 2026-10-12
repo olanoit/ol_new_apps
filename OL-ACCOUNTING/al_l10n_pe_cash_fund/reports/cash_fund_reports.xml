@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Planilla de gastos de movilidad (art. 37 a1 de la Ley del Impuesto a la
+         Renta y art. 21 v de su Reglamento): número correlativo, empleador,
+         trabajador con su documento, fecha, motivo y destino de cada
+         desplazamiento, monto, total y firma del trabajador. -->
+    <template id="report_mobility_sheet_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="fund" t-value="o.fund_id"/>
+        <t t-set="limit" t-value="company._l10n_pe_mobility_daily_limit()"/>
+        <t t-set="dates" t-value="o.mobility_line_ids.mapped('date')"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="'Planilla de gastos de movilidad'"/>
+            <t t-set="doc_number" t-value="o.mobility_number or o.name"/>
+            <t t-set="doc_extra" t-value="dates and ('Del %s al %s' % (min(dates).strftime('%d/%m/%Y'), max(dates).strftime('%d/%m/%Y')))"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 20%;">Trabajador</td>
+                    <td class="pe-doc-value" style="width: 45%;"><span t-out="fund.partner_id.name"/></td>
+                    <td class="pe-doc-label" style="width: 15%;">Documento</td>
+                    <td class="pe-doc-value" style="width: 20%;"><span t-out="fund.partner_id.vat or '—'"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Fondo</td>
+                    <td class="pe-doc-value"><span t-out="fund.name"/> · <span t-out="fund.purpose"/></td>
+                    <td class="pe-doc-label">Tope diario</td>
+                    <td class="pe-doc-value"><span t-out="limit" t-options="{'widget': 'monetary', 'display_currency': company.currency_id}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Fecha de emisión</td>
+                    <td class="pe-doc-value"><span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                    <td class="pe-doc-label">Moneda</td>
+                    <td class="pe-doc-value"><span t-out="o.currency_id.name"/></td>
+                </tr>
+            </table>
+            <table class="pe-doc-table pe-doc-lines mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td style="width: 12%;">Fecha</td>
+                        <td>Motivo</td>
+                        <td>Destino</td>
+                        <td class="text-end" style="width: 16%;">Monto</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.mobility_line_ids" t-as="line">
+                        <td><span t-field="line.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                        <td><span t-out="line.reason"/></td>
+                        <td><span t-out="line.destination"/></td>
+                        <td class="text-end"><span t-out="line.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="pe-doc-total">
+                        <td colspan="3" class="text-end">Total</td>
+                        <td class="text-end"><span t-out="o.amount_mobility" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    </tr>
+                    <tr class="pe-doc-subtotal" t-if="o.amount_mobility_excess">
+                        <td colspan="3" class="text-end">Exceso sobre el tope diario (no deducible)</td>
+                        <td class="text-end"><span t-out="o.amount_mobility_excess" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    </tr>
+                    <tr class="pe-doc-note">
+                        <td colspan="4" class="pe-doc-fs-11">
+                            Declaro haber realizado los desplazamientos detallados en el cumplimiento de mis
+                            funciones. Planilla de gastos de movilidad según el artículo 37 inciso a1) de la
+                            Ley del Impuesto a la Renta y el artículo 21 inciso v) de su Reglamento.
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+            <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+                <tr>
+                    <td><div class="pe-doc-sign-line"><span t-out="fund.partner_id.name"/><br/>Trabajador</div></td>
+                    <td><div class="pe-doc-sign-line">Aprobado por<br/><span t-out="company.name"/></div></td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+    <template id="report_mobility_sheet">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_cash_fund.report_mobility_sheet_document"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_mobility_sheet" model="ir.actions.report">
+        <field name="name">Planilla de movilidad</field>
+        <field name="model">l10n_pe.cash.settlement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_cash_fund.report_mobility_sheet</field>
+        <field name="report_file">al_l10n_pe_cash_fund.report_mobility_sheet</field>
+        <field name="print_report_name">'Planilla de movilidad - %s' % (object.mobility_number or object.name)</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_l10n_pe_cash_settlement"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Liquidación del fondo: lo entregado, lo rendido y el saldo. -->
+    <template id="report_cash_fund_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="dict(o._fields['fund_type'].selection).get(o.fund_type)"/>
+            <t t-set="doc_number" t-value="o.name"/>
+            <t t-set="doc_extra" t-value="'Liquidación'"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 20%;">Responsable</td>
+                    <td class="pe-doc-value" style="width: 45%;"><span t-out="o.partner_id.name"/></td>
+                    <td class="pe-doc-label" style="width: 15%;">Fecha</td>
+                    <td class="pe-doc-value" style="width: 20%;"><span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Motivo</td>
+                    <td class="pe-doc-value"><span t-out="o.purpose"/></td>
+                    <td class="pe-doc-label">Monto</td>
+                    <td class="pe-doc-value"><span t-out="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                </tr>
+            </table>
+            <div class="pe-doc-section">Comprobantes y movilidad rendidos</div>
+            <table class="pe-doc-table pe-doc-lines mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Rendición</td>
+                        <td>Fecha</td>
+                        <td>Detalle</td>
+                        <td class="text-end">Monto</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="o.settlement_ids.filtered(lambda s: s.state == 'posted')" t-as="settlement">
+                        <tr t-foreach="settlement.document_line_ids" t-as="doc">
+                            <td><span t-out="settlement.name"/></td>
+                            <td><span t-field="doc.invoice_date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                            <td><span t-out="doc.move_id.name"/> · <span t-out="doc.partner_id.name"/></td>
+                            <td class="text-end"><span t-out="doc.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                        </tr>
+                        <tr t-if="settlement.amount_mobility">
+                            <td><span t-out="settlement.name"/></td>
+                            <td><span t-field="settlement.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                            <td>Planilla de movilidad <span t-out="settlement.mobility_number or ''"/></td>
+                            <td class="text-end"><span t-out="settlement.amount_mobility" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+                <tfoot>
+                    <tr class="pe-doc-subtotal"><td colspan="3" class="text-end">Entregado</td>
+                        <td class="text-end"><span t-out="o.amount_delivered" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                    <tr class="pe-doc-subtotal"><td colspan="3" class="text-end">Rendido</td>
+                        <td class="text-end"><span t-out="o.amount_settled" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                    <tr class="pe-doc-subtotal"><td colspan="3" class="text-end">Devuelto</td>
+                        <td class="text-end"><span t-out="o.amount_returned" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                    <tr class="pe-doc-total"><td colspan="3" class="text-end">Saldo por rendir</td>
+                        <td class="text-end"><span t-out="o.amount_balance" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td></tr>
+                </tfoot>
+            </table>
+            <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+                <tr>
+                    <td><div class="pe-doc-sign-line"><span t-out="o.partner_id.name"/><br/>Responsable</div></td>
+                    <td><div class="pe-doc-sign-line">Revisado por<br/><span t-out="company.name"/></div></td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+    <template id="report_cash_fund">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_cash_fund.report_cash_fund_document"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_cash_fund" model="ir.actions.report">
+        <field name="name">Liquidación del fondo</field>
+        <field name="model">l10n_pe.cash.fund</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_cash_fund.report_cash_fund</field>
+        <field name="report_file">al_l10n_pe_cash_fund.report_cash_fund</field>
+        <field name="print_report_name">'Liquidación - %s' % object.name</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_l10n_pe_cash_fund"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

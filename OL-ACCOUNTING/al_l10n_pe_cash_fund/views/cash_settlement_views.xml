@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cash_settlement_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.settlement.list</field>
+        <field name="model">l10n_pe.cash.settlement</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="fund_id"/>
+                <field name="partner_id"/>
+                <field name="date"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_documents" sum="Total"/>
+                <field name="amount_mobility" sum="Total"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'posted'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="cash_settlement_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.settlement.form</field>
+        <field name="model">l10n_pe.cash.settlement</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_post" type="object" string="Confirmar" class="btn-primary"
+                            invisible="state != 'draft'" groups="account.group_account_user"/>
+                    <button name="action_print_mobility" type="object" string="Planilla de movilidad"
+                            invisible="not mobility_line_ids"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state != 'posted'" groups="account.group_account_user"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="fund_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="fund_type"/>
+                            <field name="partner_id"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="move_id" invisible="not move_id"/>
+                            <field name="mobility_number" invisible="not mobility_number"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert" invisible="amount_mobility_excess == 0">
+                        La movilidad supera en <field name="amount_mobility_excess" class="oe_inline"/> el
+                        tope diario por trabajador (4 % de la RMV): ese exceso no es deducible para el
+                        Impuesto a la Renta.
+                    </div>
+                    <notebook>
+                        <page string="Comprobantes" name="documents">
+                            <field name="document_line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="move_id" options="{'no_create': True}"/>
+                                    <field name="partner_id"/>
+                                    <field name="invoice_date"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="amount_residual"/>
+                                    <field name="amount" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Planilla de movilidad" name="mobility">
+                            <field name="mobility_line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="reason"/>
+                                    <field name="destination"/>
+                                    <field name="analytic_distribution" widget="analytic_distribution"
+                                           optional="show" groups="analytic.group_analytic_accounting"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="company_id" column_invisible="True"/>
+                                    <field name="amount" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer">
+                        <field name="amount_documents"/>
+                        <field name="amount_mobility"/>
+                        <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="cash_settlement_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.settlement.search</field>
+        <field name="model">l10n_pe.cash.settlement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="fund_id"/>
+                <field name="partner_id"/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="posted" string="Confirmadas" domain="[('state', '=', 'posted')]"/>
+                <group>
+                    <filter name="group_fund" string="Fondo" context="{'group_by': 'fund_id'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cash_settlement" model="ir.actions.act_window">
+        <field name="name">Rendiciones</field>
+        <field name="res_model">l10n_pe.cash.settlement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Gastos de movilidad: consulta por trabajador y día (tope del 4 % de la RMV). -->
+    <record id="cash_settlement_mobility_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.settlement.mobility.list</field>
+        <field name="model">l10n_pe.cash.settlement.mobility</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0">
+                <field name="settlement_id"/>
+                <field name="date"/>
+                <field name="reason"/>
+                <field name="destination"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="cash_settlement_mobility_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.settlement.mobility.search</field>
+        <field name="model">l10n_pe.cash.settlement.mobility</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="settlement_id"/>
+                <field name="reason"/>
+                <group>
+                    <filter name="group_date" string="Día" context="{'group_by': 'date:day'}"/>
+                    <filter name="group_settlement" string="Rendición" context="{'group_by': 'settlement_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cash_settlement_mobility" model="ir.actions.act_window">
+        <field name="name">Gastos de movilidad</field>
+        <field name="res_model">l10n_pe.cash.settlement.mobility</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('settlement_id.state', '=', 'posted')]</field>
+    </record>
+</odoo>

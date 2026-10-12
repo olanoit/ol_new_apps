@@ -1,0 +1,8 @@
+flowchart TD
+  A[Factura de venta con bienes del Apéndice 1] --> B{¿Sujeta?}
+  B -- "No: cliente agente de retención o exceptuado,<br/>consumidor final, detracción" --> C[Venta normal]
+  B -- Sí --> D["Tasa: 2 %, 0,5 % al cliente agente<br/>o 1 % en combustibles"]
+  D --> E[XML: operación 2001, cargo 51/52/53<br/>y total con la percepción]
+  E --> F[Cobro de la factura más la percepción]
+  F --> G[Comprobante de percepción P001<br/>con su asiento]
+  G --> H[Envío a SUNAT y resumen F.V. 697]

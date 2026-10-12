@@ -1,0 +1,3 @@
+"id","name","sequence","country_id","name@es"
+"tax_group_lce_igv_withholding","IGV retenido (liquidación de compra)","110","base.pe","IGV retenido (liquidación de compra)"
+"tax_group_lce_ir_withholding","IR retenido (liquidación de compra)","111","base.pe","IR retenido (liquidación de compra)"

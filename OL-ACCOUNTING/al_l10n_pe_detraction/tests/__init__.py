@@ -4,3 +4,4 @@ from . import test_bn_txt
 from . import test_detraction_txt_wizard
 from . import test_detraction_check
 from . import test_detraction_foreign_currency
+from . import test_detraction_import

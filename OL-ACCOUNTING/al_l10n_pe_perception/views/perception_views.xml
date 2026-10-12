@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Comprobantes de percepción emitidos (tipo 40, serie P001) -->
+    <record id="view_perception_list" model="ir.ui.view">
+        <field name="name">l10n_pe.perception.list</field>
+        <field name="model">l10n_pe.perception</field>
+        <field name="arch" type="xml">
+            <list sample="1" decoration-muted="state == 'cancel'"
+                  decoration-danger="l10n_pe_edi_error_message">
+                <field name="l10n_pe_edi_error_message" column_invisible="1"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="name" string="Comprobante de percepción"/>
+                <field name="partner_id"/>
+                <field name="perception_code" optional="show"/>
+                <field name="payment_id" optional="hide"/>
+                <field name="amount_collected" sum="Cobrado"/>
+                <field name="amount_perception" sum="Percibido"/>
+                <field name="l10n_pe_edi_deadline" optional="hide"/>
+                <field name="l10n_pe_edi_status" widget="badge"
+                       decoration-success="l10n_pe_edi_status == 'sent'"
+                       decoration-warning="l10n_pe_edi_status in ('to_send', 'reversing')"
+                       decoration-muted="l10n_pe_edi_status == 'cancelled'"/>
+                <field name="state" widget="badge" optional="show"
+                       decoration-success="state == 'posted'" decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_perception_form" model="ir.ui.view">
+        <field name="name">l10n_pe.perception.form</field>
+        <field name="model">l10n_pe.perception</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_post" type="object" string="Emitir"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_l10n_pe_edi_send_retention" type="object"
+                            string="Enviar a SUNAT" class="btn-primary"
+                            invisible="not l10n_pe_edi_is_required"/>
+                    <button name="action_l10n_pe_generate_cre_xml" type="object"
+                            string="XML" invisible="not l10n_pe_edi_perception_number"/>
+                    <button name="action_l10n_pe_edi_reverse_retention" type="object" string="Revertir"
+                            confirm="¿Revertir en SUNAT el comprobante de percepción? Una vez aceptada, la reversión no se puede deshacer."
+                            invisible="not l10n_pe_edi_reversal_available or l10n_pe_edi_status != 'sent'"/>
+                    <button name="action_l10n_pe_edi_check_reversal" type="object"
+                            string="Consultar reversión" class="btn-primary"
+                            invisible="l10n_pe_edi_status != 'reversing'"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state != 'posted' or l10n_pe_edi_status in ('sent', 'reversing')"/>
+                    <button name="action_draft" type="object" string="Pasar a borrador"
+                            invisible="state != 'cancel' or l10n_pe_edi_perception_number"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <div class="alert alert-info mb-0" role="alert"
+                     invisible="not l10n_pe_edi_reversal_message">
+                    <strong>Reversión:</strong>
+                    <field name="l10n_pe_edi_reversal_message" readonly="1"/>
+                </div>
+                <div class="alert alert-danger mb-0" role="alert"
+                     invisible="not l10n_pe_edi_error_message">
+                    <strong>El comprobante de percepción no fue aceptado:</strong>
+                    <field name="l10n_pe_edi_error_message" readonly="1"/>
+                </div>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object" class="oe_stat_button"
+                                icon="fa-book" string="Asiento" invisible="not move_id"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="perception_code" readonly="state != 'draft'"/>
+                            <field name="rate"/>
+                            <field name="payment_id" readonly="state != 'draft'"
+                                   domain="[('partner_type', '=', 'customer'), ('payment_type', '=', 'inbound'), ('partner_id', 'child_of', partner_id)]"/>
+                        </group>
+                        <group>
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="move_id" invisible="not move_id"/>
+                            <field name="l10n_pe_edi_perception_number" invisible="not l10n_pe_edi_perception_number"/>
+                            <field name="l10n_pe_edi_status" invisible="not l10n_pe_edi_perception_number"/>
+                            <field name="l10n_pe_edi_deadline" invisible="l10n_pe_edi_status != 'to_send'"/>
+                            <field name="l10n_pe_edi_reversal_available" invisible="1"/>
+                            <field name="l10n_pe_edi_reversal_reason"
+                                   invisible="not l10n_pe_edi_reversal_available or l10n_pe_edi_status not in ('sent', 'reversing', 'cancelled')"
+                                   readonly="l10n_pe_edi_status != 'sent'"/>
+                            <field name="l10n_pe_edi_reversal_ticket" invisible="not l10n_pe_edi_reversal_ticket"/>
+                            <field name="l10n_pe_edi_attachment_file" filename="l10n_pe_edi_perception_number"
+                                   invisible="not l10n_pe_edi_attachment_file"/>
+                            <field name="l10n_pe_edi_is_required" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comprobantes cobrados" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="company_id" column_invisible="1"/>
+                                    <field name="invoice_currency_id" column_invisible="1"/>
+                                    <field name="company_currency_id" column_invisible="1"/>
+                                    <field name="invoice_id" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('l10n_pe_perception_code', '!=', False), ('commercial_partner_id', '=', parent.partner_id)]"/>
+                                    <field name="invoice_total" optional="show"/>
+                                    <field name="paid_amount"/>
+                                    <field name="subject_ratio" optional="hide"/>
+                                    <field name="exchange_rate" optional="hide"/>
+                                    <field name="subject_paid_pen" optional="show"/>
+                                    <field name="collected_pen" sum="Cobrado"/>
+                                    <field name="perception_pen" sum="Percibido"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_collected"/>
+                                <field name="amount_perception"/>
+                            </group>
+                        </page>
+                        <page string="Nota" name="note">
+                            <field name="note" readonly="state != 'draft'"
+                                   placeholder="Se informa en el comprobante de percepción."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_perception_search" model="ir.ui.view">
+        <field name="name">l10n_pe.perception.search</field>
+        <field name="model">l10n_pe.perception</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter string="Borrador" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Emitidos" name="posted" domain="[('state', '=', 'posted')]"/>
+                <filter string="Por enviar a SUNAT" name="to_send"
+                        domain="[('state', '=', 'posted'), ('l10n_pe_edi_status', '=', 'to_send')]"/>
+                <separator/>
+                <filter string="Fecha de cobro" name="date" date="date"/>
+                <group>
+                    <filter string="Cliente" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Régimen" name="group_code" context="{'group_by': 'perception_code'}"/>
+                    <filter string="Periodo" name="group_month" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- F.V. 697: base cobrada (casilla 502) y percepciones (casilla 401) por periodo -->
+    <record id="view_perception_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.perception.pivot</field>
+        <field name="model">l10n_pe.perception</field>
+        <field name="arch" type="xml">
+            <pivot string="Percepciones efectuadas (F.V. 697)" sample="1">
+                <field name="date" interval="month" type="row"/>
+                <field name="perception_code" type="col"/>
+                <field name="amount_collected" type="measure"/>
+                <field name="amount_perception" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_perception_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.perception.graph</field>
+        <field name="model">l10n_pe.perception</field>
+        <field name="arch" type="xml">
+            <graph string="Percepciones efectuadas" type="bar" sample="1">
+                <field name="date" interval="month"/>
+                <field name="amount_perception" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_perception" model="ir.actions.act_window">
+        <field name="name">Comprobantes de percepción</field>
+        <field name="res_model">l10n_pe.perception</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Emita su primer comprobante de percepción</p>
+            <p>Se emite al cobrar una factura sujeta a percepción: desde el cobro (botón
+               «Comprobante de percepción»), desde las facturas o aquí. Uno por cliente y
+               por tasa; serie P001.</p>
+        </field>
+    </record>
+
+    <record id="action_perception_fv697" model="ir.actions.act_window">
+        <field name="name">Resumen F.V. 697</field>
+        <field name="res_model">l10n_pe.perception</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="domain">[('state', '=', 'posted')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin percepciones efectuadas</p>
+            <p>Por periodo: el monto cobrado con la percepción (base, casilla 502) y las
+               percepciones efectuadas (casilla 401) que se declaran en el F.V. 697.</p>
+        </field>
+    </record>
+</odoo>

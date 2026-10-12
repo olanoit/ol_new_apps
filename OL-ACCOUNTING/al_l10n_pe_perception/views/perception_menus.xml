@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Perú ▸ Percepciones IGV (junto a Retenciones IGV) -->
+    <menuitem id="menu_perception_root" name="Percepciones IGV"
+              parent="al_account_base.al_l10n_pe_root" sequence="41"
+              groups="account.group_account_invoice"/>
+    <menuitem id="menu_perception_invoices" name="Facturas sujetas a percepción"
+              parent="menu_perception_root" action="action_perception_invoices" sequence="10"/>
+    <menuitem id="menu_perception" name="Comprobantes de percepción"
+              parent="menu_perception_root" action="action_perception" sequence="20"/>
+    <menuitem id="menu_perception_received" name="Percepciones que nos cobran"
+              parent="menu_perception_root" action="action_perception_received" sequence="30"
+              groups="account.group_account_user"/>
+    <menuitem id="menu_perception_fv697" name="Resumen F.V. 697"
+              parent="menu_perception_root" action="action_perception_fv697" sequence="40"/>
+    <menuitem id="menu_perception_fv621" name="Resumen F.V. 621"
+              parent="menu_perception_root" action="action_perception_received_fv621" sequence="50"
+              groups="account.group_account_user"/>
+</odoo>

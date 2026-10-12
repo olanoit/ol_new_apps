@@ -495,6 +495,10 @@ faq:
       reemplazo.
 
 novedades:
+  - version: 19.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "RCE: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV."
   - version: 18.20261009
     fecha: 09/10/2026
     cambios:

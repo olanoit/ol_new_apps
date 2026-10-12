@@ -128,6 +128,30 @@ El cliente paga el neto y deposita la detracción en la cuenta de la compañía 
 el Banco de la Nación. Registre el cobro de la detracción con el diario que
 representa esa cuenta.
 
+## Importar las constancias de SUNAT
+
+Cuando hay muchos depósitos, no hace falta copiar las constancias una a una:
+
+1. En SUNAT Operaciones en Línea, consulte las **constancias de depósito** del
+   periodo y descargue el resultado (Excel o CSV).
+2. Vaya a **Perú ‣ Detracciones ‣ Importar constancias** y suba el archivo. Las
+   columnas se reconocen por su encabezado: número de constancia, RUC del
+   proveedor, documento del adquiriente, fecha de pago, monto, tipo, serie y
+   número del comprobante.
+3. Revise la **vista previa**. Cada fila se empareja por RUC y serie-número:
+   como **compra** si el proveedor es un tercero, como **venta** si el
+   proveedor es la propia compañía (el adquiriente es el cliente). Los estados
+   son *Por registrar*, *Ya registrada*, *Otra constancia* (el comprobante ya
+   tiene una distinta y no se toca), *No encontrado* y *Fila no válida*; si el
+   monto del archivo difiere de la detracción calculada, se indica.
+4. Marque **Registrar el depósito** e indique el diario si también quiere
+   registrar el pago (compras) o el cobro (ventas), como con el botón
+   **Registrar depósito**. Sin marcarlo, solo se llenan el número y la fecha de
+   la constancia, que son los que pide el PLE 8.1.
+5. Pulse **Importar**: se abre la lista de comprobantes actualizados.
+
+![Vista previa de la importación de constancias](detractions/import-constancies.png)
+
 ## Seguimiento y contraste con SUNAT
 
 En **Perú ‣ Detracciones** están las listas de **Facturas**, **Depósitos** y

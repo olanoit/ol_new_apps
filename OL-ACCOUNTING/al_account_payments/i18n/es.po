@@ -11,28 +11,44 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: al_account_payments
+#: model:ir.model.fields,field_description:al_account_payments.field_l10n_pe_currency_exchange_wizard__create_uid
 #: model:ir.model.fields,field_description:al_account_payments.field_pe_catalog_payment__create_uid
 msgid "Created by"
 msgstr "Creado por"
 
 #. module: al_account_payments
+#: model:ir.model.fields,field_description:al_account_payments.field_l10n_pe_currency_exchange_wizard__create_date
 #: model:ir.model.fields,field_description:al_account_payments.field_pe_catalog_payment__create_date
 msgid "Created on"
 msgstr "Creado el"
 
 #. module: al_account_payments
+#: model:ir.model.fields,field_description:al_account_payments.field_l10n_pe_currency_exchange_wizard__company_currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: al_account_payments
+#: model:ir.model.fields,field_description:al_account_payments.field_account_journal__display_name
 #: model:ir.model.fields,field_description:al_account_payments.field_account_payment__display_name
 #: model:ir.model.fields,field_description:al_account_payments.field_account_payment_register__display_name
+#: model:ir.model.fields,field_description:al_account_payments.field_l10n_pe_currency_exchange_wizard__display_name
 #: model:ir.model.fields,field_description:al_account_payments.field_pe_catalog_payment__display_name
 msgid "Display Name"
 msgstr "Nombre en pantalla"
 
 #. module: al_account_payments
+#: model:ir.model,name:al_account_payments.model_account_journal
+msgid "Journal"
+msgstr "Diario"
+
+#. module: al_account_payments
+#: model:ir.model.fields,field_description:al_account_payments.field_l10n_pe_currency_exchange_wizard__write_uid
 #: model:ir.model.fields,field_description:al_account_payments.field_pe_catalog_payment__write_uid
 msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: al_account_payments
+#: model:ir.model.fields,field_description:al_account_payments.field_l10n_pe_currency_exchange_wizard__write_date
 #: model:ir.model.fields,field_description:al_account_payments.field_pe_catalog_payment__write_date
 msgid "Last Updated on"
 msgstr "Última actualización el"
@@ -46,3 +62,8 @@ msgstr "Pagar"
 #: model:ir.model,name:al_account_payments.model_account_payment
 msgid "Payments"
 msgstr "Pagos"
+
+#. module: al_account_payments
+#: code:addons/al_account_payments/wizards/currency_exchange_wizard.py:0
+msgid "id"
+msgstr "ID"

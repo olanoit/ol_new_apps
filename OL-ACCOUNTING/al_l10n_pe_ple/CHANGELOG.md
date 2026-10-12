@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261011 — 11/10/2026
+
+- RCE 8.1/8.4: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV.
+
 ## 23.20261009 — 09/10/2026
 
 - Etiqueta más corta en el activo: «Doc. de autorización» del cambio de método de depreciación.

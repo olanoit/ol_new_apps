@@ -403,6 +403,11 @@ faq:
       anterior.
 
 novedades:
+  - version: 21.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "El motor del comprobante electrónico (l10n_pe.retention.edi.mixin) admite otros tipos de comprobante: el tipo, el número, el XML y los mensajes se piden al documento. Lo usa el comprobante de percepción (tipo 40) de al_l10n_pe_perception; el CRE no cambia."
+      - "El resumen de reversiones (RR) informa el tipo del comprobante revertido (20 o 40)."
   - version: 20.20261011
     fecha: 11/10/2026
     cambios:

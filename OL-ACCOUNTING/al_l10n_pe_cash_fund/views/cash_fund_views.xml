@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="cash_fund_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.fund.list</field>
+        <field name="model">l10n_pe.cash.fund</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_overdue" decoration-muted="state in ('closed', 'cancel')">
+                <field name="name"/>
+                <field name="fund_type"/>
+                <field name="partner_id"/>
+                <field name="purpose"/>
+                <field name="date"/>
+                <field name="date_due" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="amount_settled" optional="show"/>
+                <field name="amount_balance" sum="Total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+                <field name="is_overdue" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-info="state == 'approved'"
+                       decoration-warning="state == 'open'" decoration-success="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="cash_fund_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.fund.form</field>
+        <field name="model">l10n_pe.cash.fund</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_approve" type="object" string="Aprobar" class="btn-primary"
+                            invisible="state != 'draft'" groups="account.group_account_user"/>
+                    <button name="action_deliver" type="object" string="Entregar" class="btn-primary"
+                            invisible="state != 'approved'" groups="account.group_account_user"/>
+                    <button name="action_new_settlement" type="object" string="Nueva rendición"
+                            class="btn-primary" invisible="state != 'open'"/>
+                    <button name="action_replenish" type="object" string="Reponer"
+                            invisible="state != 'open' or fund_type != 'petty_cash' or amount_settled == 0"
+                            groups="account.group_account_user"/>
+                    <button name="action_register_return" type="object" string="Registrar devolución"
+                            invisible="state != 'open' or amount_balance &lt;= 0"
+                            groups="account.group_account_user"/>
+                    <button name="action_register_reimbursement" type="object" string="Reembolsar"
+                            invisible="state != 'open' or amount_balance &gt;= 0"
+                            groups="account.group_account_user"/>
+                    <button name="action_close" type="object" string="Cerrar"
+                            invisible="state != 'open'" groups="account.group_account_user"/>
+                    <button name="action_reopen" type="object" string="Reabrir"
+                            invisible="state != 'closed'" groups="account.group_account_user"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state not in ('approved', 'cancel')"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state not in ('draft', 'approved', 'open')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,approved,open,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_payments" type="object" class="oe_stat_button"
+                                icon="fa-money" invisible="not payment_count">
+                            <field name="payment_count" widget="statinfo" string="Pagos"/>
+                        </button>
+                        <button name="action_view_settlements" type="object" class="oe_stat_button"
+                                icon="fa-file-text-o" invisible="not settlement_count">
+                            <field name="settlement_count" widget="statinfo" string="Rendiciones"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Vencida" bg_color="text-bg-danger" invisible="not is_overdue"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="fund_type" readonly="state != 'draft'"/>
+                            <field name="partner_id" readonly="state not in ('draft', 'approved')"/>
+                            <field name="purpose"/>
+                            <field name="user_id"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state not in ('draft', 'approved')"/>
+                            <field name="date_due"/>
+                            <field name="currency_id" readonly="state != 'draft'" groups="base.group_multi_currency"/>
+                            <field name="amount" readonly="state not in ('draft', 'approved')"/>
+                            <field name="journal_id" options="{'no_create': True}"/>
+                            <field name="account_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Saldo" invisible="state in ('draft', 'approved')">
+                        <group>
+                            <field name="amount_delivered"/>
+                            <field name="amount_settled"/>
+                            <field name="amount_returned"/>
+                            <field name="amount_balance"/>
+                        </group>
+                        <group>
+                            <field name="is_overdue" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rendiciones" name="settlements" invisible="state in ('draft', 'approved')">
+                            <field name="settlement_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount_documents"/>
+                                    <field name="amount_mobility"/>
+                                    <field name="amount_total" sum="Total"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'posted'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Pagos" name="payments" invisible="not payment_ids">
+                            <field name="payment_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="l10n_pe_cash_fund_kind"/>
+                                    <field name="journal_id"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="cash_fund_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.fund.search</field>
+        <field name="model">l10n_pe.cash.fund</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="purpose"/>
+                <filter name="advance" string="Entregas a rendir" domain="[('fund_type', '=', 'advance')]"/>
+                <filter name="petty_cash" string="Cajas chicas" domain="[('fund_type', '=', 'petty_cash')]"/>
+                <separator/>
+                <filter name="to_approve" string="Por aprobar" domain="[('state', '=', 'draft')]"/>
+                <filter name="open" string="Por rendir" domain="[('state', '=', 'open')]"/>
+                <filter name="overdue" string="Por rendir vencidas" domain="[('is_overdue', '=', True)]"/>
+                <group>
+                    <filter name="group_partner" string="Responsable" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Tipo" context="{'group_by': 'fund_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cash_fund" model="ir.actions.act_window">
+        <field name="name">Entregas a rendir y caja chica</field>
+        <field name="res_model">l10n_pe.cash.fund</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre una entrega a rendir o una caja chica</p>
+            <p>El dinero entregado a un trabajador queda en su cuenta por cobrar (1413) hasta que
+               lo rinde con comprobantes y planillas de movilidad, lo devuelve o se le reembolsa.</p>
+        </field>
+    </record>
+</odoo>

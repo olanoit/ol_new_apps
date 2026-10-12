@@ -455,13 +455,19 @@ class L10nPeSireMixin(models.AbstractModel):
         return abs(move.amount_total_signed / move.amount_total)
 
     def _sire_withheld(self, move):
-        """Retención del IGV (3 %) del comprobante, en soles: Odoo la resta
-        de ``amount_total``, pero el total del CP es el íntegro."""
-        group = self.env.ref(
-            'account.%s_tax_group_igv_withholding' % move.company_id.root_id.id,
-            raise_if_not_found=False)
+        """Retenciones del comprobante, en soles: Odoo las resta de
+        ``amount_total``, pero el total del CP es el íntegro. Son la del IGV
+        (3 %) y, en la liquidación de compra (04), el IGV y la renta que
+        retiene el comprador."""
+        groups = self.env['account.tax.group']
+        for key in ('igv_withholding', 'lce_igv_withholding', 'lce_ir_withholding'):
+            group = self.env.ref(
+                'account.%s_tax_group_%s' % (move.company_id.root_id.id, key),
+                raise_if_not_found=False)
+            if group:
+                groups |= group
         return abs(sum(line.balance for line in move.line_ids
-                       if group and line.tax_line_id.tax_group_id == group))
+                       if line.tax_line_id.tax_group_id in groups))
 
     def _sire_total(self, move):
         return abs(move.amount_total_signed) + self._sire_withheld(move)

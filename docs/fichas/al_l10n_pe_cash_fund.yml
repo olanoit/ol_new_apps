@@ -1,0 +1,232 @@
+titulo: Entregas a rendir y caja chica
+subtitulo: >-
+  Dinero entregado a un trabajador para gastos de la empresa: entrega,
+  rendición con comprobantes y planilla de movilidad, devolución o reembolso
+  del saldo y cierre. También la caja chica con su reposición.
+categoria: Localización Perú · Contabilidad
+etiquetas: [Tesorería, Entregas a rendir, Caja chica, Fondo fijo, Planilla de movilidad, PCGE 1413, Impuesto a la Renta]
+portada: screenshots/02-entrega.png
+
+destacados_intro: >-
+  Cada sol entregado a un trabajador queda a su nombre en la 1413 hasta que lo
+  sustenta, lo devuelve o la empresa le reembolsa lo que puso de más.
+destacados:
+  - icono: "⇄"
+    titulo: Entrega y rendición
+    texto: >-
+      La entrega es un pago al responsable; la rendición paga las facturas de
+      proveedor con el fondo y deja el saldo a la vista.
+  - icono: "🚕"
+    titulo: Planilla de movilidad
+    texto: >-
+      Gastos de movilidad sin comprobante con su planilla numerada e impresa,
+      tope diario del 4 % de la RMV y aviso del exceso no deducible.
+  - icono: "↺"
+    titulo: Caja chica
+    texto: >-
+      Fondo fijo con su custodio: cada rendición se repone con un clic por el
+      importe gastado.
+  - icono: "✓"
+    titulo: Conciliación automática
+    texto: >-
+      Las facturas rendidas quedan pagadas y, al cerrar, la 1413 del fondo queda
+      conciliada sin trabajo manual.
+  - icono: "⏰"
+    titulo: Plazo de rendición
+    texto: >-
+      Fecha límite por fondo, filtro de entregas vencidas y actividades en el
+      chatter.
+  - icono: "▤"
+    titulo: Liquidación impresa
+    texto: >-
+      Resumen del fondo con entregas, rendiciones, devoluciones y saldo para la
+      firma del responsable.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Los viáticos, las compras urgentes y la caja chica se llevan en hojas de
+    cálculo: el contador recibe las facturas semanas después, no sabe cuánto
+    debe rendir cada trabajador y la movilidad sin comprobante se pierde o se
+    registra sin planilla, con lo que SUNAT la repara. Aquí cada entrega tiene
+    su número, su responsable y su saldo; las facturas se pagan con el fondo y
+    la movilidad sale con la planilla que exige el Reglamento de la Ley del
+    Impuesto a la Renta.
+  nota: >-
+    **Necesita** un diario de banco o caja para las entregas. La cuenta del
+    fondo debe ser **conciliable**: por defecto la 1413 «Personal - Entregas a
+    rendir cuenta» del PCGE; la movilidad va por defecto a la 63112.
+
+requisitos_nota: >-
+  Funciona en Community y Enterprise con la localización peruana (l10n_pe).
+  Las facturas de proveedor se registran como siempre, con su tipo y número
+  de comprobante.
+
+flujos_intro: >-
+  Vida de una entrega a rendir y de una caja chica.
+flujos:
+  - id: entrega
+    titulo: Entrega a rendir
+    texto: >-
+      Se aprueba, se entrega con un pago y se rinde en una o varias
+      rendiciones; el saldo se devuelve o se reembolsa antes de cerrar.
+    mermaid: |
+      flowchart TD
+        A[Borrador<br/>responsable, motivo, monto] --> B[Aprobar<br/>número ER/año/…]
+        B --> C[Entregar<br/>pago: 1413 / banco]
+        C --> D[Rendición<br/>facturas + planilla de movilidad]
+        D --> E{Saldo por rendir}
+        E -- "> 0" --> F[Registrar devolución<br/>banco / 1413]
+        E -- "< 0" --> G[Registrar reembolso<br/>1413 / banco]
+        E -- "= 0" --> H[Cerrar<br/>1413 conciliada]
+        F --> H
+        G --> H
+  - id: caja
+    titulo: Caja chica
+    texto: >-
+      El fondo fijo se entrega una vez; cada rendición se repone por lo
+      gastado y el fondo vuelve a su monto.
+    mermaid: |
+      flowchart TD
+        A[Aprobar y entregar<br/>fondo fijo] --> B[Rendición<br/>comprobantes y movilidad]
+        B --> C[Reponer<br/>pago por lo rendido]
+        C --> B
+        B --> D[Cierre: devolver el saldo]
+
+pasos_intro: >-
+  Ejemplo: S/ 500 a Rosa Quispe para visitar la obra de Ate; rinde una factura
+  de combustible de S/ 300 y S/ 73 de movilidad (dos días, uno por encima del
+  tope de S/ 45,20).
+pasos:
+  - seccion: Entregas a rendir
+  - titulo: Fondos
+    ruta: Perú ▸ Entregas a rendir ▸ Fondos
+    texto: >-
+      Entregas a rendir y cajas chicas con su responsable, monto, saldo por
+      rendir y plazo. Filtros por tipo, estado y «Por rendir vencidas». También en
+      **Contabilidad ▸ Proveedores**.
+    imagen: screenshots/01-fondos.png
+  - titulo: La entrega
+    ruta: Fondos ▸ abrir uno
+    texto: >-
+      Responsable, motivo, monto, diario de pago y cuenta del fondo. **Aprobar**
+      la numera; **Entregar** prepara el pago al responsable, con su número de
+      operación. El bloque Saldo muestra lo entregado, rendido y devuelto.
+    imagen: screenshots/02-entrega.png
+  - titulo: La rendición
+    ruta: Fondo ▸ Nueva rendición
+    texto: >-
+      Facturas de proveedor publicadas y pendientes de pago, por su saldo o una
+      parte. Al confirmar, el asiento paga cada factura con el fondo y las deja
+      conciliadas.
+    imagen: screenshots/03-rendicion.png
+  - titulo: Gastos de movilidad
+    ruta: Rendición ▸ Planilla de movilidad
+    texto: >-
+      Fecha, motivo, destino y monto de cada desplazamiento, con distribución
+      analítica opcional. Si un día supera el tope (4 % de la RMV), el aviso
+      indica el exceso que no es deducible.
+    imagen: screenshots/04-movilidad.png
+  - titulo: Planilla de movilidad impresa
+    ruta: Rendición ▸ Planilla de movilidad
+    texto: >-
+      Número PM/año/…, trabajador con su documento, periodo, detalle, total,
+      exceso y la declaración del trabajador con las firmas: el sustento que
+      pide el artículo 21 inciso v) del Reglamento.
+    imagen: screenshots/05-planilla-movilidad.png
+  - titulo: Liquidación del fondo
+    ruta: Fondo ▸ Imprimir ▸ Liquidación del fondo
+    texto: >-
+      Pagos, rendiciones y saldo del fondo en una página para la firma del
+      responsable.
+    imagen: screenshots/06-liquidacion.png
+  - seccion: Caja chica
+  - titulo: Caja chica
+    ruta: Perú ▸ Entregas a rendir ▸ Fondos ▸ Nuevo (tipo Caja chica)
+    texto: >-
+      El custodio recibe el fondo fijo; tras cada rendición, **Reponer** crea el
+      pago por lo gastado para devolverlo a su monto.
+    imagen: screenshots/07-caja-chica.png
+  - seccion: Configuración
+  - titulo: Cuentas y tope de movilidad
+    ruta: Ajustes ▸ Perú ▸ Entregas a rendir y caja chica
+    texto: >-
+      Cuentas de entregas a rendir y de caja chica, diario de las rendiciones,
+      cuenta del gasto de movilidad, RMV vigente y tope diario. Vacías, se
+      usan la 1413 y la 63112 del plan contable.
+    imagen: screenshots/08-ajustes.png
+
+asientos_intro: >-
+  Asientos de la demostración (entrega a rendir ER/2026/0011 de S/ 500).
+asientos:
+  - titulo: Entrega
+    referencia: Pago al responsable
+    texto: >-
+      El pago sale del banco y deja la deuda del trabajador en la 1413.
+    lineas:
+      - [1413000, "Entregas a rendir — Rosa Quispe", "500,00", ""]
+      - [Banco, "Pagos pendientes de conciliar", "", "500,00"]
+  - titulo: Rendición
+    referencia: REN/2026/… (diario de operaciones varias)
+    texto: >-
+      La factura del grifo queda pagada con el fondo y la movilidad va al
+      gasto. El saldo por rendir baja a S/ 127.
+    lineas:
+      - [4212000, "Pago de la factura F025-00034567 con ER/2026/0011", "300,00", ""]
+      - [6311200, "Movilidad (planilla PM/2026/00004)", "73,00", ""]
+      - [1413000, "Rendición de ER/2026/0011", "", "373,00"]
+    nota: "Del día 2 (S/ 55) el exceso sobre S/ 45,20 son S/ 9,80, no deducibles: la planilla lo muestra."
+
+campos:
+  - grupo: Fondo
+    ruta: Perú ▸ Entregas a rendir ▸ Fondos
+    campos:
+      - [Tipo, Entrega a rendir o caja chica, Entrega a rendir, "Caja chica: se repone tras cada rendición"]
+      - [Responsable, Quien recibe el dinero y rinde, —, Tercero de la 1413]
+      - [Monto, Importe a entregar o fondo fijo, —, Mayor que cero]
+      - [Rendir hasta, Plazo de la rendición, —, "Pasado, la entrega figura como vencida"]
+      - [Diario de pago, Banco o caja de las entregas, —, —]
+      - [Cuenta del fondo, Cuenta por cobrar al responsable, "1413 / la de Ajustes", Debe ser conciliable]
+  - grupo: Rendición
+    ruta: Fondo ▸ Nueva rendición
+    campos:
+      - [Comprobantes, Facturas de proveedor pagadas con el fondo, —, "Publicadas, pendientes y en la moneda del fondo"]
+      - [Monto rendido, Parte del saldo de la factura, Saldo de la factura, "Pago parcial si es menor"]
+      - [Planilla de movilidad, "Fecha, motivo, destino y monto", —, "Numerada PM/año/… al confirmar"]
+  - grupo: Ajustes
+    ruta: Ajustes ▸ Perú ▸ Entregas a rendir y caja chica
+    campos:
+      - [Entregas a rendir, Cuenta del fondo, 1413 del plan contable, Conciliable]
+      - [Caja chica, Cuenta del fondo fijo, La de entregas a rendir, Conciliable]
+      - [Diario de rendiciones, Diario de los asientos de rendición, Operaciones varias, —]
+      - [Cuenta de gasto, Gasto de movilidad, 63112 del plan contable, Admite analítica por línea]
+      - [RMV, Remuneración mínima vital, "S/ 1.130", D.S. 006-2024-TR]
+      - [Tope diario (%), Porcentaje de la RMV por día y trabajador, "4", Art. 37 a1) LIR]
+
+faq:
+  - pregunta: ¿Puedo rendir una factura en dólares con un fondo en soles?
+    respuesta: >-
+      No: la rendición paga la factura con el fondo y ambos deben estar en la
+      misma moneda. Para gastos en otra moneda, cree un fondo en esa moneda.
+  - pregunta: ¿Y si el trabajador gastó más de lo entregado?
+    respuesta: >-
+      El saldo por rendir queda negativo: **Reembolsar** prepara el
+      pago al trabajador por la diferencia y después se puede cerrar.
+  - pregunta: ¿Qué pasa con la movilidad que supera el tope?
+    respuesta: >-
+      Se registra igual como gasto, pero la rendición y la planilla muestran el
+      exceso: es el importe que no se deduce para el Impuesto a la Renta y debe
+      adicionarse en la declaración anual.
+  - pregunta: Me equivoqué en una rendición confirmada, ¿cómo la corrijo?
+    respuesta: >-
+      **Anular** cancela su asiento y deja las facturas pendientes otra vez;
+      **Volver a borrador** permite corregirla y confirmarla de nuevo con el
+      mismo número.
+
+novedades:
+  - version: 1.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Primera versión: entregas a rendir y caja chica con entrega, rendición con facturas de proveedor, planilla de movilidad con tope diario (4 % de la RMV), devolución, reembolso, reposición y cierre conciliado; planilla y liquidación impresas."
+
+relacionados: [al_account_payments, al_account_base, al_report_base, al_l10n_pe_ple]

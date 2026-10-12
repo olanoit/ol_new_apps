@@ -35,7 +35,7 @@ Migrado de los módulos 17.0 ``al_ose_factory_hka`` y
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '3.20261011',
+    'version': '4.20261012',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['l10n_pe_edi', 'al_l10n_pe_retention'],

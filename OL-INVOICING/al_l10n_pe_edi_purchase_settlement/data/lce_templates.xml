@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Resumen diario de reversiones de la liquidación de compra electrónica
+         (anexo 17 de la R.S. 097-2012/SUNAT, sustituido por la
+         R.S. 244-2019/SUNAT): VoidedDocuments con identificador
+         RR-AAAAMMDD-N, tipo 04 y serie L###. Firma como la comunicación de
+         baja de l10n_pe_edi. Parámetros: company, reversal_number,
+         reference_date (emisión de las liquidaciones), issue_date y lines
+         (serie, folio, reason). -->
+    <template id="lce_reversal_summary">
+        <VoidedDocuments
+            xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:VoidedDocuments-1"
+            xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+            xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"
+            xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+            xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"
+            xmlns:sac="urn:sunat:names:specification:ubl:peru:schema:xsd:SunatAggregateComponents-1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <t t-call="l10n_pe_edi.ubl_pe_21_ubl_extensions_empty_signature"/>
+            <cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+            <cbc:CustomizationID>1.0</cbc:CustomizationID>
+            <cbc:ID t-out="reversal_number"/>
+            <cbc:ReferenceDate t-out="reference_date"/>
+            <cbc:IssueDate t-out="issue_date"/>
+            <cac:Signature>
+                <cbc:ID>IDSignKG</cbc:ID>
+                <cac:SignatoryParty>
+                    <cac:PartyIdentification>
+                        <cbc:ID t-out="company.vat"/>
+                    </cac:PartyIdentification>
+                    <cac:PartyName>
+                        <cbc:Name t-out="company.name.upper()"/>
+                    </cac:PartyName>
+                </cac:SignatoryParty>
+                <cac:DigitalSignatureAttachment>
+                    <cac:ExternalReference>
+                        <cbc:URI>#SignVX</cbc:URI>
+                    </cac:ExternalReference>
+                </cac:DigitalSignatureAttachment>
+            </cac:Signature>
+            <cac:AccountingSupplierParty>
+                <cbc:CustomerAssignedAccountID t-out="company.vat"/>
+                <cbc:AdditionalAccountID>6</cbc:AdditionalAccountID>
+                <cac:Party>
+                    <cac:PartyLegalEntity>
+                        <cbc:RegistrationName t-out="company.name.upper()"/>
+                    </cac:PartyLegalEntity>
+                </cac:Party>
+            </cac:AccountingSupplierParty>
+            <sac:VoidedDocumentsLine t-foreach="lines" t-as="line">
+                <cbc:LineID t-out="line_index + 1"/>
+                <cbc:DocumentTypeCode>04</cbc:DocumentTypeCode>
+                <sac:DocumentSerialID t-out="line['serie']"/>
+                <sac:DocumentNumberID t-out="line['folio']"/>
+                <sac:VoidReasonDescription t-out="line['reason']"/>
+            </sac:VoidedDocumentsLine>
+        </VoidedDocuments>
+    </template>
+</odoo>

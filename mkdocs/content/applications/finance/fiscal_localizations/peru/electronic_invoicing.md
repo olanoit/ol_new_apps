@@ -21,6 +21,7 @@ de remisión impresa.
 | Imprimir la guía de remisión electrónica | `al_l10n_pe_delivery_guide_report` (la envía `l10n_pe_edi_stock`) | [Guía de remisión impresa](electronic_invoicing/delivery_guide.md) |
 | Boletas y facturas desde el punto de venta | `al_l10n_pe_edi_pos` | [Comprobantes electrónicos en el TPV](../../../sales/point_of_sale/electronic_invoicing.md) |
 | Comprobante de retención (CRE) | `al_l10n_pe_retention` | [Retenciones del IGV](withholdings.md) |
+| Liquidación de compra a personas naturales sin RUC, con retención del IGV y de la renta | `al_l10n_pe_edi_purchase_settlement` | [Liquidación de compra](electronic_invoicing/purchase_settlement.md) |
 
 ## Configuración
 

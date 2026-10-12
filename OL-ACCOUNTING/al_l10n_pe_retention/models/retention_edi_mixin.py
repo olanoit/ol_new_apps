@@ -54,6 +54,28 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
         string='Reversión disponible', compute='_compute_l10n_pe_edi_reversal_available')
 
     # ------------------------------------------------------------------
+    # Tipo de comprobante (el mixin también lo usa el comprobante de
+    # percepción, tipo 40, de al_l10n_pe_perception)
+    # ------------------------------------------------------------------
+    def _l10n_pe_edi_cpe_type(self):
+        """Código SUNAT del comprobante (catálogo 01): 20 retención."""
+        return '20'
+
+    def _l10n_pe_edi_cpe_label(self):
+        """Nombre corto del comprobante en los mensajes."""
+        return 'CRE'
+
+    def _l10n_pe_edi_cpe_number(self):
+        """Serie-número del comprobante emitido."""
+        self.ensure_one()
+        return self.l10n_pe_edi_retention_number
+
+    def _l10n_pe_edi_cpe_export(self):
+        """XML UBL del comprobante, sin firma (bytes UTF-8)."""
+        self.ensure_one()
+        return self.env['account.edi.xml.ubl_pe_withholding']._export_retention(self)
+
+    # ------------------------------------------------------------------
     # Lo que aporta cada documento
     # ------------------------------------------------------------------
     def _l10n_pe_retention_bills(self):
@@ -119,7 +141,7 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
             raise UserError(self.env._(
                 '%(document)s no cita ninguna factura: el comprobante de retención debe '
                 'citar los comprobantes pagados.', document=self.display_name))
-        xml_content = self.env['account.edi.xml.ubl_pe_withholding']._export_retention(self)
+        xml_content = self._l10n_pe_edi_cpe_export()
         edi_tree = objectify.fromstring(xml_content)
         ubl_version = edi_tree.find('.//{*}UBLVersionID')
         ubl_version.addprevious(objectify.fromstring(self.env['ir.qweb']._render(
@@ -130,8 +152,8 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
     def _l10n_pe_edi_generate_retention_filename(self):
         """``RUC-20-R001-00000001``, como pide SUNAT para el ZIP y el XML."""
         self.ensure_one()
-        return '%s-20-%s' % (self.company_id.vat,
-                             (self.l10n_pe_edi_retention_number or self.display_name).replace('/', '-'))
+        return '%s-%s-%s' % (self.company_id.vat, self._l10n_pe_edi_cpe_type(),
+                             (self._l10n_pe_edi_cpe_number() or self.display_name).replace('/', '-'))
 
     def action_l10n_pe_generate_cre_xml(self):
         """Descarga el XML del CRE sin firmar (para revisión)."""
@@ -176,8 +198,7 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
                 document.invalidate_recordset(['l10n_pe_edi_attachment_file'])
                 document.write({'l10n_pe_edi_status': 'sent', 'l10n_pe_edi_warnings': False})
                 document.message_post(
-                    body=self.env._('Comprobante de retención %(number)s aceptado por SUNAT.',
-                                    number=document.l10n_pe_edi_retention_number),
+                    body=document._l10n_pe_edi_cpe_accepted_message(),
                     attachment_ids=attachment.ids)
             else:
                 document.write({'l10n_pe_edi_status': 'to_send', 'l10n_pe_edi_warnings': {
@@ -185,6 +206,11 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
                                   'message': result.get('message')
                                   or self.env._('Error desconocido')}}})
         return True
+
+    def _l10n_pe_edi_cpe_accepted_message(self):
+        self.ensure_one()
+        return self.env._('Comprobante de retención %(number)s aceptado por SUNAT.',
+                          number=self._l10n_pe_edi_cpe_number())
 
     def _l10n_pe_edi_post_retention(self, edi_str):
         """Firma y envía con el proveedor de la compañía. Devuelve, como el
@@ -210,10 +236,12 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
         módulos de otros operadores (p. ej. Factory HKA) lo extienden."""
         self.ensure_one()
         company = self.company_id
+        cpe_type = self._l10n_pe_edi_cpe_type()
         if company.l10n_pe_edi_provider == 'iap':
-            return edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, '20')
+            return edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, cpe_type)
         return edi_format._l10n_pe_edi_sign_service_sunat_digiflow_common(
-            company, filename, edi_str, self._l10n_pe_edi_retention_credentials(edi_format), '20')
+            company, filename, edi_str, self._l10n_pe_edi_retention_credentials(edi_format),
+            cpe_type)
 
     def _l10n_pe_edi_retention_credentials(self, edi_format):
         """Credenciales del servicio de retenciones: Digiflow recibe el CRE en
@@ -260,9 +288,10 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
 
     def _l10n_pe_edi_generate_reversal_bstr(self, values):
         self.ensure_one()
-        serie, _sep, folio = self.l10n_pe_edi_retention_number.partition('-')
+        serie, _sep, folio = self._l10n_pe_edi_cpe_number().partition('-')
         return self.env['ir.qweb']._render('al_l10n_pe_retention.cre_reversal_summary', {
             'company': self.company_id,
+            'document_type': self._l10n_pe_edi_cpe_type(),
             'reversal_number': values['number'],
             'reference_date': self.date,
             'issue_date': values['issue_date'],
@@ -321,8 +350,9 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
                 'l10n_pe_edi_reversal_message': False,
             })
             document.message_post(body=self.env._(
-                'Reversión del CRE %(number)s enviada a SUNAT (ticket %(ticket)s). Motivo: %(reason)s',
-                number=document.l10n_pe_edi_retention_number, ticket=res['cdr_number'],
+                'Reversión del %(label)s %(number)s enviada a SUNAT (ticket %(ticket)s). Motivo: %(reason)s',
+                label=document._l10n_pe_edi_cpe_label(),
+                number=document._l10n_pe_edi_cpe_number(), ticket=res['cdr_number'],
                 reason=document.l10n_pe_edi_reversal_reason), attachment_ids=attachment.ids)
         return True
 

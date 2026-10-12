@@ -336,6 +336,20 @@ pasos:
     imagen: screenshots/14-deposito-masivo.png
     pie: "Julio de 2026: tres facturas de proveedor en el archivo y una excluida por no tener cuenta del Banco de la Nación."
 
+  - titulo: Importar constancias de SUNAT
+    ruta: Perú ▸ Detracciones ▸ Importar constancias
+    texto: >-
+      Suba el Excel o CSV de la consulta de constancias de depósito de SUNAT
+      Operaciones en Línea. Cada fila se empareja por RUC y serie-número:
+      compras si el proveedor es un tercero, ventas si el proveedor es la
+      compañía. La vista previa dice qué se registrará antes de escribir nada.
+    puntos:
+      - "Llena el número y la fecha de la constancia (PLE 8.1, campos 32 y 33)."
+      - "Con **Registrar el depósito**, además registra el pago o el cobro de la detracción desde el diario indicado, igual que el botón «Registrar depósito»."
+      - "No toca los comprobantes que ya tienen otra constancia y avisa si el monto del archivo difiere del calculado."
+    imagen: screenshots/21-importar-constancias.png
+    pie: "Dos facturas de venta encontradas y una fila sin comprobante en Odoo."
+
   - seccion: El menú Perú ▸ Detracciones
     texto: >-
       Todo lo de la detracción a mano en la app Perú: facturas de venta y de
@@ -622,6 +636,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: 22.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "Importación de constancias de depósito desde el archivo de SUNAT (Excel o CSV) con vista previa: llena número y fecha de la constancia en compras y ventas y, opcionalmente, registra el depósito."
   - version: 21.20261008
     fecha: 08/10/2026
     cambios:

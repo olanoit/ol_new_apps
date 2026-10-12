@@ -1009,6 +1009,10 @@ faq:
       empresa revaluó, complete esos campos en el TXT.
 
 novedades:
+  - version: 24.20261011
+    fecha: 11/10/2026
+    cambios:
+      - "RCE 8.1/8.4: las retenciones de la liquidación de compra (IGV y renta, al_l10n_pe_edi_purchase_settlement) no reducen el importe total del comprobante, como ya pasaba con la retención del IGV."
   - version: 23.20261009
     fecha: 09/10/2026
     cambios:

@@ -121,6 +121,10 @@ campos:
       - [Ticket de la reversión, Ticket de SUNAT del resumen RR, —, Se consulta con «Consultar reversión»]
 
 novedades:
+  - version: 4.20261012
+    fecha: 12/10/2026
+    cambios:
+      - "La firma por The Factory HKA usa el tipo del comprobante que se envía (20 para el CRE, 40 para el comprobante de percepción de al_l10n_pe_perception) en lugar de fijar el 20."
   - version: 3.20261011
     fecha: 11/10/2026
     cambios:

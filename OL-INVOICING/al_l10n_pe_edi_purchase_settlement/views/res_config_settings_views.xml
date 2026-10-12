@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_purchase_settlement" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.purchase.settlement</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="64"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Liquidación de compra electrónica" name="pe_purchase_settlement_block">
+                    <setting company_dependent="1" string="Retenciones de la liquidación de compra"
+                             help="El comprador retiene el IGV (formulario 1662) y el impuesto a la renta (PDT 617): el vendedor recibe el importe total neto.">
+                        <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
+                        <div class="content-group">
+                            <div class="row">
+                                <label for="l10n_pe_lce_igv_tax_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_lce_igv_tax_id" readonly="not is_root_company"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_lce_ir_tax_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_lce_ir_tax_id" readonly="not is_root_company"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_lce_ir_gold_tax_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_lce_ir_gold_tax_id" readonly="not is_root_company"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_lce_ir_min_amount" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_lce_ir_min_amount" readonly="not is_root_company"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_lce_uit_amount" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_lce_uit_amount" readonly="not is_root_company"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Enviar al confirmar"
+                             help="SUNAT recibe la liquidación de compra solo el día de su emisión o el día siguiente.">
+                        <field name="l10n_pe_lce_send_on_post"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

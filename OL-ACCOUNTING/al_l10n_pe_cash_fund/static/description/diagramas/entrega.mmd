@@ -1,0 +1,10 @@
+flowchart TD
+  A[Borrador<br/>responsable, motivo, monto] --> B[Aprobar<br/>número ER/año/…]
+  B --> C[Entregar<br/>pago: 1413 / banco]
+  C --> D[Rendición<br/>facturas + planilla de movilidad]
+  D --> E{Saldo por rendir}
+  E -- "> 0" --> F[Registrar devolución<br/>banco / 1413]
+  E -- "< 0" --> G[Registrar reembolso<br/>1413 / banco]
+  E -- "= 0" --> H[Cerrar<br/>1413 conciliada]
+  F --> H
+  G --> H

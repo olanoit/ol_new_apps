@@ -1,0 +1,14 @@
+flowchart TD
+  A[Borrador en el diario<br/>de liquidaciones] --> B[Retenciones en las líneas:<br/>IGV retenido y renta]
+  B --> C{¿Datos completos?<br/>vendedor sin RUC, domicilio,<br/>lugar de la operación}
+  C -- No --> X[Error con lo que falta]
+  C -- Sí --> D[Confirmar: número L001-…<br/>y asiento por el neto]
+  D --> E[Enviar a SUNAT:<br/>XML firmado con el operador]
+  E --> F{¿Aceptada?}
+  F -- No --> G[Respuesta de SUNAT<br/>en la liquidación]
+  G --> E
+  F -- Sí --> H[Aceptada por SUNAT<br/>ZIP con XML y constancia]
+  H --> I{¿Error en vendedor<br/>o producto?}
+  I -- Sí --> J[Revertir en SUNAT:<br/>resumen RR, ticket]
+  J --> K[Consultar reversión]
+  K --> L[Revertida: el asiento<br/>se anula y el número no se reutiliza]
