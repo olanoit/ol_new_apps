@@ -656,10 +656,14 @@ ejemplos:
   - titulo: CTS de noviembre–abril de un trabajador con faltas
     texto: >-
       Sueldo S/ 2.500,00 con asignación familiar S/ 113,00, sin variables. En
-      el semestre computa 5 meses y 26 días, con 4 faltas:
+      el semestre computa 5 meses y 26 días, con 4 faltas. La demo no tiene
+      gratificación de diciembre 2025: el sexto sale en cero (con la
+      gratificación de S/ 2.119,43 procesada, el sexto sería 353,24 y la CTS
+      S/ 1.417,20).
     tabla:
       - [Concepto, Cálculo, Importe S/]
-      - [Remuneración computable, "2.500,00 + 113,00", "2.613,00"]
+      - [Sexto de la gratificación de diciembre, Sin gratificación procesada, "0,00"]
+      - [Remuneración computable, "2.500,00 + 113,00 + 0,00", "2.613,00"]
       - [Importe por mes completo, "2.613,00 ÷ 12", "217,75"]
       - [Importe por día, "217,75 ÷ 30", "7,26"]
       - [CTS por meses completos, "217,75 × 5", "1.088,75"]

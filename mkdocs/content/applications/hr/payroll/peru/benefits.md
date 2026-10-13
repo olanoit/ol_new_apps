@@ -67,12 +67,14 @@ gratificación del semestre.
 ![Línea de CTS de un trabajador con su remuneración computable](benefits/cts-line.png)
 
 Trabajador del régimen general con sueldo S/ 2 500 y asignación familiar
-S/ 113, sin variables, que en el semestre computa 5 meses y 26 días con 4
-faltas:
+S/ 113, sin variables, que en el semestre noviembre 2025 – abril 2026 computa
+5 meses y 26 días con 4 faltas. En la base de demostración no hay
+gratificación de diciembre 2025, así que el sexto sale en cero:
 
 | Concepto | Cálculo | S/ |
 |---|---|---:|
-| Remuneración computable | 2 500,00 + 113,00 | 2 613,00 |
+| Sexto de la gratificación de diciembre | Sin gratificación procesada | 0,00 |
+| Remuneración computable | 2 500,00 + 113,00 + 0,00 | 2 613,00 |
 | Importe por mes | 2 613,00 ÷ 12 | 217,75 |
 | Importe por día | 217,75 ÷ 30 | 7,2583 |
 | Meses completos | 217,75 × 5 | 1 088,75 |
@@ -80,12 +82,26 @@ faltas:
 | Faltas | 7,2583 × 4 | −29,03 |
 | **Total CTS** | | **1 248,44** |
 
+Con la gratificación de diciembre procesada (S/ 2 119,43, como el ejemplo de
+gratificación), el sexto es 2 119,43 ÷ 6 = 353,24 y la CTS sube:
+
+| Concepto | Cálculo | S/ |
+|---|---|---:|
+| Remuneración computable | 2 613,00 + 353,24 | 2 966,24 |
+| Importe por mes | 2 966,24 ÷ 12 | 247,1867 |
+| Importe por día | 247,1867 ÷ 30 | 8,2396 |
+| Meses completos | 247,1867 × 5 | 1 235,93 |
+| Días | 8,2396 × 26 | 214,23 |
+| Faltas | 8,2396 × 4 | −32,96 |
+| **Total CTS** | | **1 417,20** |
+
 !!! note "Nota"
     - Un trabajador con menos de un mes en el semestre no deposita: pasa al
       semestre siguiente.
     - El descanso médico que supera 60 días se descuenta de la CTS.
     - Si el 1/6 de gratificación sale en cero, procese antes la gratificación
-      del semestre.
+      que corresponde: la de diciembre para la CTS de mayo y la de julio para
+      la de noviembre.
 
 ## Gratificaciones
 

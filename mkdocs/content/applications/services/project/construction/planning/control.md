@@ -43,7 +43,7 @@ botón **Actualizar control**.
 
 - La pestaña **Control** del plan muestra, por etapa y dentro de ella por tipo
   de recurso, lo planificado, comprometido, real, saldo y % ejecutado.
-- **Reportes ‣ Control de saldo** y **Análisis de control** abren las mismas
+- **Informes ‣ Plan ‣ Control de saldo** y **Análisis de control** abren las mismas
   líneas en pivote y gráfico para agrupar por contrata, producto, actividad,
   nivel o estado.
 
