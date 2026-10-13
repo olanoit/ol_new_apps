@@ -36,5 +36,5 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_edi_purchase_settlement](al_l10n_pe_edi_purchase_settlement/) | 3.20261012 | OPL-1 | Liquidación de compra electrónica (tipo 04) a personas naturales sin RUC: XML UBL 2.1 firmado y enviado, retención del IGV y del impuesto a la renta, PDF y reversión.
 [al_l10n_pe_invoice](al_l10n_pe_invoice/) | 20.20261011 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [al_ose_factory_hka](al_ose_factory_hka/) | 4.20261012 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
-[al_sale_approval](al_sale_approval/) | 1.20261013 | OPL-1 | Las ventas de productos marcados no se confirman sin una solicitud aprobada en Aprobaciones.
+[al_sale_approval](al_sale_approval/) | 2.20261013 | OPL-1 | Las ventas de productos marcados no se confirman sin una solicitud aprobada en Aprobaciones.
 [//]: # (end addons)

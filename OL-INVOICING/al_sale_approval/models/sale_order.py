@@ -41,7 +41,7 @@ class SaleOrder(models.Model):
         return self.env['approval.request'].sudo().search(self._sale_approval_domain()) \
             if self.id else self.env['approval.request']
 
-    @api.depends('order_line.product_id', 'company_id', 'name')
+    @api.depends('order_line.product_id', 'company_id', 'name', 'sale_approval_exempt')
     @api.depends_context('uid')
     def _compute_sale_approval(self):
         for order in self:

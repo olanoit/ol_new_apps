@@ -21,7 +21,7 @@ Aprobación de órdenes de venta
     'website': 'https://www.altabpo.com',
     'category': 'OL-INVOICING/Apps',
     'icon': '/approvals/static/description/icon.png',
-    'version': '1.20261013',
+    'version': '2.20261013',
     'license': 'OPL-1',
     'depends': ['sale_management', 'approvals'],
     'data': [

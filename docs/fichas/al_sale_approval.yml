@@ -56,6 +56,10 @@ pasos:
       pasar la orden.
 
 novedades:
+  - version: 2.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Marcar «Sin aprobación (carga histórica)» en una orden ya creada actualiza su estado de aprobación."
   - version: 1.20261013
     fecha: 13/10/2026
     cambios:

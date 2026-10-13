@@ -33,23 +33,35 @@ import os
 
 FASE = os.environ.get('FASE', 'migrar')
 PROJECT_FIELDS = ['x_ubicacion_obra', 'x_obra_latitud', 'x_obra_longitud', 'x_obra_radio_m']
+# Cada personalización solo se quita si está instalado el módulo que la
+# reemplaza (None: se quita siempre).
 MANUAL_FIELDS = [
-    ('project.project', 'x_ubicacion_obra'), ('project.project', 'x_obra_latitud'),
-    ('project.project', 'x_obra_longitud'), ('project.project', 'x_obra_radio_m'),
-    ('sale.order', 'x_obra_nombre'), ('sale.order', 'x_carga_historica'),
-    ('hr.attendance', 'x_distancia_m'), ('hr.attendance', 'x_obra_cercana'),
-    ('hr.attendance', 'x_fuera_de_rango'),
+    ('project.project', 'x_ubicacion_obra', 'al_construction_material_request'),
+    ('project.project', 'x_obra_latitud', 'al_construction_attendance'),
+    ('project.project', 'x_obra_longitud', 'al_construction_attendance'),
+    ('project.project', 'x_obra_radio_m', 'al_construction_attendance'),
+    ('sale.order', 'x_obra_nombre', 'al_construction_planner'),
+    ('sale.order', 'x_carga_historica', 'al_sale_approval'),
+    ('hr.attendance', 'x_distancia_m', 'al_construction_attendance'),
+    ('hr.attendance', 'x_obra_cercana', 'al_construction_attendance'),
+    ('hr.attendance', 'x_fuera_de_rango', 'al_construction_attendance'),
 ]
 AUTOMATIONS = [
-    'Allcenter · Alta de obra: código, cuenta analítica y ubicación',
-    'Allcenter · Proyecto desde venta: código, nombre y ubicación',
-    'Allcenter · Bloquear confirmación de venta sin aprobación',
-    'Tareo de obra — foto obligatoria para marcar Hecha',
-    'Tareo de obra — marcar asistencia fuera de rango',
-    'Allcenter · Obra: ubicación Proyectos/<código> en el requerimiento',
+    ('Allcenter · Alta de obra: código, cuenta analítica y ubicación',
+     'al_construction_material_request'),
+    ('Allcenter · Proyecto desde venta: código, nombre y ubicación', 'al_construction_planner'),
+    ('Allcenter · Bloquear confirmación de venta sin aprobación', 'al_sale_approval'),
+    ('Tareo de obra — foto obligatoria para marcar Hecha', 'al_construction_planner'),
+    ('Tareo de obra — marcar asistencia fuera de rango', 'al_construction_attendance'),
+    ('Allcenter · Obra: ubicación Proyectos/<código> en el requerimiento',
+     'al_construction_material_request'),
 ]
-VIEWS = ['sale.order.form.allcenter.obra', 'project.form.tareo.obra.coords',
-         'hr.attendance.list.tareo.rango', 'hr.employee.form.pe.address.solo.rrhh']
+VIEWS = [
+    ('sale.order.form.allcenter.obra', 'al_construction_planner'),
+    ('project.form.tareo.obra.coords', 'al_construction_attendance'),
+    ('hr.attendance.list.tareo.rango', 'al_construction_attendance'),
+    ('hr.employee.form.pe.address.solo.rrhh', None),
+]
 SALE_APPROVAL_PRODUCT = 'Suministro e Instalación de Muebles de Melamina'
 SALE_APPROVAL_CATEGORY = 'Aprobación de orden de venta'
 
@@ -62,21 +74,28 @@ def has_field(model, name):
     return name in env[model]._fields
 
 
+def installed(module):
+    return not module or bool(env['ir.module.module'].search_count(
+        [('name', '=', module), ('state', '=', 'installed')]))
+
+
 def migrar():
     Project = env['project.project'].with_context(active_test=False)
     Location = env['stock.location'].with_context(active_test=False)
     # 1. Compañía: el código de obra es la primera palabra del nombre y las
     #    obras cuelgan de «Proyectos».
     root = env.ref('__allcenter__.loc_proyectos', raise_if_not_found=False) or Location.search(
-        [('name', '=', 'Proyectos'), ('usage', '=', 'view'), ('location_id', '=', False)], limit=1)
+        [('name', '=', 'Proyectos'), ('usage', '=', 'view')], limit=1)
     for company in env['res.company'].search([]):
         vals = {'construction_code_from_name': True}
         if root and (not root.company_id or root.company_id == company):
             vals['construction_sites_location_id'] = root.id
-        category = env['approval.category'].search([('name', '=', SALE_APPROVAL_CATEGORY),
-                                                     ('company_id', 'in', [company.id, False])], limit=1)
-        if category:
-            vals['sale_approval_category_id'] = category.id
+        if installed('al_sale_approval'):
+            category = env['approval.category'].search(
+                [('name', '=', SALE_APPROVAL_CATEGORY), ('company_id', 'in', [company.id, False])],
+                limit=1)
+            if category:
+                vals['sale_approval_category_id'] = category.id
         company.write(vals)
         log('compañía', company.name, vals)
     # Los proyectos sin compañía no siguen el cambio del ajuste: se recalcula
@@ -102,7 +121,7 @@ def migrar():
         log('obras', len(projects), 'ubicaciones corregidas', moved)
 
     # 3. Sedes de obra desde las coordenadas del proyecto.
-    if has_field('project.project', 'x_obra_latitud'):
+    if has_field('project.project', 'x_obra_latitud') and installed('al_construction_attendance'):
         Site = env['l10n_pe.hr.construction.site']
         created = 0
         for project in Project.search(['|', ('x_obra_latitud', '!=', 0), ('x_obra_longitud', '!=', 0)]):
@@ -114,51 +133,63 @@ def migrar():
                              'company_id': (project.company_id or env.company).id})
                 created += 1
         log('sedes creadas', created)
-    if has_field('hr.attendance', 'x_obra_cercana'):
+    if has_field('hr.attendance', 'x_obra_cercana') and installed('al_construction_attendance'):
         attendances = env['hr.attendance'].search([('x_obra_cercana', '!=', False)])
         attendances._construction_assign_nearest_site()
         log('marcaciones con sede', len(attendances.filtered('l10n_pe_construction_site_id')),
             'de', len(attendances))
 
     # 4. Ventas: nombre de la obra, carga histórica y productos.
-    if has_field('sale.order', 'x_obra_nombre'):
-        Sale = env['sale.order'].with_context(active_test=False)
+    Sale = env['sale.order'].with_context(active_test=False)
+    Template = env['product.template'].with_context(active_test=False)
+    if has_field('sale.order', 'x_obra_nombre') and installed('al_construction_planner'):
         named = Sale.search([('x_obra_nombre', '!=', False), ('construction_site_name', '=', False)])
         for order in named:
             order.construction_site_name = order.x_obra_nombre
+        creates_site = Template.search([('service_tracking', '=', 'project_only'),
+                                        ('construction_creates_site', '=', False)])
+        creates_site.write({'construction_creates_site': True})
+        log('ventas con nombre de obra', len(named), 'productos que crean obra',
+            creates_site.mapped('name'))
+    if has_field('sale.order', 'x_carga_historica') and installed('al_sale_approval'):
         historic = Sale.search([('x_carga_historica', '=', True), ('sale_approval_exempt', '=', False)])
         historic.write({'sale_approval_exempt': True})
-        log('ventas: nombre de obra', len(named), 'carga histórica', len(historic))
-    Template = env['product.template'].with_context(active_test=False)
-    creates_site = Template.search([('service_tracking', '=', 'project_only'),
-                                    ('construction_creates_site', '=', False)])
-    creates_site.write({'construction_creates_site': True})
-    guarded = Template.search([('name', '=', SALE_APPROVAL_PRODUCT)])
-    guarded.write({'sale_approval_required': True})
-    log('productos que crean obra', creates_site.mapped('name'), 'con aprobación', guarded.mapped('name'))
+        # El nombre de referencia es el original (en_US); en español se llama distinto.
+        guarded = Template.with_context(lang='en_US').search([('name', '=', SALE_APPROVAL_PRODUCT)])
+        guarded.write({'sale_approval_required': True})
+        log('ventas de carga histórica', len(historic), 'productos con aprobación',
+            guarded.mapped('name'))
 
     # 5. Etapas «Hecha»: exigen foto de evidencia.
-    stages = env['project.task.type'].with_context(active_test=False).search([('name', '=', 'Hecha')])
-    stages.write({'construction_requires_photo': True})
-    log('etapas con foto', len(stages))
+    if installed('al_construction_planner'):
+        stages = env['project.task.type'].with_context(active_test=False).search(
+            [('name', '=', 'Hecha')])
+        stages.write({'construction_requires_photo': True})
+        log('etapas con foto', len(stages))
 
-    # 6. Fuera lo manual: automatizaciones (y sus acciones) y vistas.
+    # 6. Fuera lo manual ya reemplazado: automatizaciones (y sus acciones) y vistas.
     automations = env['base.automation'].with_context(active_test=False).search(
-        [('name', 'in', AUTOMATIONS)])
+        [('name', 'in', [name for name, module in AUTOMATIONS if installed(module)])])
     actions = automations.action_server_ids
     automations.unlink()
     actions.exists().unlink()
-    views = env['ir.ui.view'].with_context(active_test=False).search([('name', 'in', VIEWS)])
+    views = env['ir.ui.view'].with_context(active_test=False).search(
+        [('name', 'in', [name for name, module in VIEWS if installed(module)])])
     views.unlink()
-    log('automatizaciones borradas', len(automations), 'vistas borradas', len(views))
+    log('automatizaciones borradas', len(automations),
+        'vistas borradas', len(views))
+    kept = env['base.automation'].with_context(active_test=False).search(
+        [('name', 'in', [name for name, _module in AUTOMATIONS])])
+    if kept:
+        log('quedan (falta su módulo)', kept.mapped('name'))
 
 
 def borrar():
     Field = env['ir.model.fields']
     fields_ = Field.browse()
-    for model, name in MANUAL_FIELDS:
+    for model, name, module in MANUAL_FIELDS:
         field = Field._get(model, name)
-        if field and field.state == 'manual':
+        if field and field.state == 'manual' and installed(module):
             fields_ |= field
     names = fields_.mapped(lambda f: '%s.%s' % (f.model, f.name))
     fields_.unlink()

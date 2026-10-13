@@ -72,6 +72,14 @@ class TestSaleApproval(TransactionCase):
         order.action_confirm()
         self.assertEqual(order.state, 'sale')
 
+    def test_exempt_marked_later(self):
+        order = self._order(self.guarded)
+        self.assertEqual(order.sale_approval_state, 'to_request')
+        order.sale_approval_exempt = True
+        self.assertEqual(order.sale_approval_state, 'not_required')
+        order.action_confirm()
+        self.assertEqual(order.state, 'sale')
+
     def test_refused(self):
         order = self._order(self.guarded)
         request = self.env['approval.request'].browse(order.action_request_sale_approval()['res_id'])
