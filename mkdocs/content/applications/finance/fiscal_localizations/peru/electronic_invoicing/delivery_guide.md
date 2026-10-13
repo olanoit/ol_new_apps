@@ -32,8 +32,7 @@ son de `l10n_pe_edi_stock`. No emite guía de remisión transportista.
 2. Complete la calle y el **distrito** del almacén (o de la compañía) y de los
    clientes: SUNAT rechaza la guía sin ubigeo.
 3. Registre los vehículos con placa y operador en **Perú ‣ Configuración ‣
-   Comprobantes electrónicos ‣ Vehículos (guías de remisión)**, también
-   disponible en **Perú ‣ Configuración ‣ Comprobantes electrónicos ‣ Vehículos (guías de remisión)**.
+   Comprobantes electrónicos ‣ Vehículos (guías de remisión)**.
 4. Configure el peso de los productos o indique el **peso para envío** en la
    entrega.
 

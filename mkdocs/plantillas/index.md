@@ -21,6 +21,13 @@ obras.</p>
 
     Cómo configurar y usar cada funcionalidad, por área de negocio.
 
+-   :material-clipboard-check:{ .lg .middle } **[Consultoría](consulting/index.md)**
+
+    ---
+
+    Ruta de pruebas funcionales: todos los módulos en orden, de las consultas
+    de RUC y tipo de cambio a las planillas y las obras.
+
 -   :material-server:{ .lg .middle } **[Instalación y mantenimiento](administration/index.md)**
 
     ---

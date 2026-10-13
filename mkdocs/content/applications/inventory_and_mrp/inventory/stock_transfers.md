@@ -34,8 +34,8 @@ transporte.
 3. **Compañía**: RUC y tipo de documento RUC en su contacto.
 4. **Bienes de terceros**: active **Inventario ‣ Configuración ‣ Ajustes ‣
    Consignación** para ver el campo **Propietario**.
-5. **Transporte**: registre los vehículos en **Inventario ‣ Configuración ‣
-   Perú ‣ Configuración ‣ Comprobantes electrónicos ‣ Vehículos (guías de remisión)** y, para transporte público, el transportista con su RUC y
+5. **Transporte**: registre los vehículos en **Perú ‣ Configuración ‣
+   Comprobantes electrónicos ‣ Vehículos (guías de remisión)** y, para transporte público, el transportista con su RUC y
    su número MTC.
 6. **Motivo por defecto** (opcional): en **Inventario ‣ Configuración ‣
    Gestión del almacén ‣ Tipos de operaciones**, complete **Motivo de traslado

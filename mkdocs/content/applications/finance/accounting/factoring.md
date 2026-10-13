@@ -35,7 +35,7 @@ factura negociable impresa (tercera copia física).
 6. Revise las cuentas de ganancia y pérdida por diferencia de cambio en los
    ajustes de Contabilidad.
 7. En **Perú ‣ Clientes ‣ Factoring ‣ Contratos**, registre las condiciones de
-   cada factor (ver [Contrato y simulación](#contrato-y-simulacion)).
+   cada factor (ver [Contrato y simulación](#contrato-y-simulación)).
 8. En **Ajustes ‣ Perú ‣ CAVALI (facturas negociables)**, elija la conexión
    (ver [CAVALI](#cavali)).
 

@@ -66,8 +66,9 @@ Percepciones. La reversión de un CRE aceptado la hace
    peruana**).
 
 !!! warning "Importante"
-    Si la compañía es agente sin impuesto de retención elegido, la factura no
-    se publica («Falta configurar el impuesto de retención»). Una factura
+    Si la compañía es agente sin impuesto de retención elegido, la factura
+    sujeta a retención no se publica («… falta configurar el Impuesto de
+    retención IGV en Ajustes ▸ Perú»). Una factura
     publicada antes de configurar no propone la retención: pásela a borrador y
     vuelva a publicarla.
 
