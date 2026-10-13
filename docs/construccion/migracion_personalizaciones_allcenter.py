@@ -62,7 +62,8 @@ VIEWS = [
     ('hr.attendance.list.tareo.rango', 'al_construction_attendance'),
     ('hr.employee.form.pe.address.solo.rrhh', None),
 ]
-SALE_APPROVAL_PRODUCT = 'Suministro e Instalación de Muebles de Melamina'
+# «Suministro e Instalación de Muebles de Melamina» (id 1346 en dev_1).
+SALE_APPROVAL_PRODUCT_CODE = '99990079001'
 SALE_APPROVAL_CATEGORY = 'Aprobación de orden de venta'
 
 
@@ -151,14 +152,15 @@ def migrar():
         creates_site.write({'construction_creates_site': True})
         log('ventas con nombre de obra', len(named), 'productos que crean obra',
             creates_site.mapped('name'))
-    if has_field('sale.order', 'x_carga_historica') and installed('al_sale_approval'):
-        historic = Sale.search([('x_carga_historica', '=', True), ('sale_approval_exempt', '=', False)])
-        historic.write({'sale_approval_exempt': True})
-        # El nombre de referencia es el original (en_US); en español se llama distinto.
-        guarded = Template.with_context(lang='en_US').search([('name', '=', SALE_APPROVAL_PRODUCT)])
+    if installed('al_sale_approval'):
+        if has_field('sale.order', 'x_carga_historica'):
+            historic = Sale.search([('x_carga_historica', '=', True),
+                                    ('sale_approval_exempt', '=', False)])
+            historic.write({'sale_approval_exempt': True})
+            log('ventas de carga histórica', len(historic))
+        guarded = Template.search([('default_code', '=', SALE_APPROVAL_PRODUCT_CODE)])
         guarded.write({'sale_approval_required': True})
-        log('ventas de carga histórica', len(historic), 'productos con aprobación',
-            guarded.mapped('name'))
+        log('productos con aprobación', guarded.mapped('name'))
 
     # 5. Etapas «Hecha»: exigen foto de evidencia.
     if installed('al_construction_planner'):
