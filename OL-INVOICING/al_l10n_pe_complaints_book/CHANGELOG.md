@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_complaints_book.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261013 — 13/10/2026
+
+- Ícono propio de la app «Libro de reclamaciones» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
+
 ## 8.20261011 — 11/10/2026
 
 - Hoja de reclamación y aviso del libro con el formato común de los documentos impresos (al_report_base): encabezado con el recuadro R.U.C./hoja/número, secciones en tablas con borde redondeado y pie con la numeración; textos y secciones legales sin cambios.

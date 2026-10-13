@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 14.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Ícono propio de la app «Requerimientos de obra» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo."
   - version: 13.20261013
     fecha: 13/10/2026
     cambios:

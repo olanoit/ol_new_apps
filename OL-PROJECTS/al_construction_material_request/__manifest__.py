@@ -22,9 +22,9 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/purchase/static/description/icon.png',
-    'version': '13.20261013',
+    # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
+    'icon': '/al_construction_material_request/static/description/icon.png',
+    'version': '14.20261013',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_ai.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261013 — 13/10/2026
+
+- Usa el ícono de la app Gantt de la suite.
+
 ## 7.20261011 — 11/10/2026
 
 - Modo oscuro: el panel del asistente, sus mensajes y las propuestas toman los colores del tema oscuro de Odoo (antes quedaban sobre fondo blanco).

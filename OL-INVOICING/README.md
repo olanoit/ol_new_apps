@@ -30,7 +30,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_complaints_book](al_l10n_pe_complaints_book/) | 8.20261011 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
+[al_l10n_pe_complaints_book](al_l10n_pe_complaints_book/) | 9.20261013 | OPL-1 | Libro de Reclamaciones físico y virtual conforme al Código del Consumidor y al D.S. 011-2011-PCM: hoja del Anexo I, constancia por correo, plazo de 15 días hábiles, respuesta, SIREC y multicompañía.
 [al_l10n_pe_delivery_guide_report](al_l10n_pe_delivery_guide_report/) | 12.20261012 | OPL-1 | Representación impresa propia de la guía de remisión electrónica remitente (SUNAT) para stock.picking.
 [al_l10n_pe_edi_downpayment_discount](al_l10n_pe_edi_downpayment_discount/) | 3.20261008 | OPL-1 | Corrige el XML UBL 2.1 de SUNAT con anticipos y descuentos globales: anticipos exonerados e inafectos, un anticipo por comprobante, descuentos de partes no gravadas y notas de crédito sin bloqueos.
 [al_l10n_pe_edi_purchase_settlement](al_l10n_pe_edi_purchase_settlement/) | 3.20261012 | OPL-1 | Liquidación de compra electrónica (tipo 04) a personas naturales sin RUC: XML UBL 2.1 firmado y enviado, retención del IGV y del impuesto a la renta, PDF y reversión.

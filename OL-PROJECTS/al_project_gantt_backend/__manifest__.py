@@ -25,9 +25,9 @@ ruta crítica, líneas base y exportación a Excel y PDF.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/project/static/description/icon.png',
-    'version': '16.20261011',
+    # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
+    'icon': '/al_project_gantt_backend/static/description/icon.png',
+    'version': '17.20261013',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_base',

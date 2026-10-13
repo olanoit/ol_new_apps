@@ -178,6 +178,10 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
+  - version: 8.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Usa el ícono de la app Gantt de la suite."
   - version: 7.20261011
     fecha: 11/10/2026
     cambios:

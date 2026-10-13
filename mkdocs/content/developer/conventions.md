@@ -42,6 +42,26 @@ Reglas que siguen todos los módulos de la suite, además de las
 - Textos de origen en español, con solo la primera letra en mayúscula.
   Comentarios en español.
 
+## Íconos de las aplicaciones
+
+Una aplicación con menú raíz propio lleva su ícono como lo hace Odoo 19 (por
+ejemplo `account/static/description`):
+
+- `static/description/icon.svg`: lienzo de 50 × 50, formas planas
+  superpuestas con esquinas redondeadas (radio 4), sin fondo y con la paleta
+  de Odoo: #985184, #1AD3BB, #005E7A, #FBB945, #F86126, #FC868B, #962B48,
+  #2EBCFA, #088BF5 y #144496. El blanco solo va sobre otra forma.
+- `static/description/icon.png`: el mismo dibujo en 100 × 100 con fondo
+  transparente.
+- El menú raíz usa `web_icon="<módulo>,static/description/icon.png"` y el
+  manifiesto `'icon': '/<módulo>/static/description/icon.png'`.
+- El dibujo es propio: no se copian íconos de Odoo ni logos o marcas
+  registradas.
+
+Los módulos que solo amplían una aplicación usan el ícono de esa aplicación
+(el nativo, como las localizaciones de Odoo, o el de la aplicación de la
+suite a la que pertenecen).
+
 ## Documentos impresos
 
 Todo reporte PDF usa el formato común de `al_report_base` (el del comprobante

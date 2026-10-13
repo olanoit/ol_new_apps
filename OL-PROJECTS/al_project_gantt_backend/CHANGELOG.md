@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261013 — 13/10/2026
+
+- Ícono propio de la app «Gantt» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
+
 ## 16.20261011 — 11/10/2026
 
 - Modo oscuro: el diagrama (dhtmlxGantt), la barra de herramientas, el formulario de tarea, el menú contextual y las marcas de la ruta crítica, la línea base y los días no laborables toman los colores del tema oscuro de Odoo; el modo claro no cambia.

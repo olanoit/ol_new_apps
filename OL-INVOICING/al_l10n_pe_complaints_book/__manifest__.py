@@ -35,9 +35,9 @@ las leyes 31435 y 32495, D.S. 011-2011-PCM y modificatorias hasta el D.S.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-INVOICING/Apps',
-    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/helpdesk/static/description/icon.png',
-    'version': '8.20261011',
+    # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
+    'icon': '/al_l10n_pe_complaints_book/static/description/icon.png',
+    'version': '9.20261013',
     'license': 'OPL-1',
     'depends': ['mail', 'portal', 'website', 'resource', 'al_report_base'],
     'data': [

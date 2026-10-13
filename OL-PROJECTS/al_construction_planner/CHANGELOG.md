@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261013 — 13/10/2026
+
+- Ícono propio de la app «Planificación de obra» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
+
 ## 21.20261013 — 13/10/2026
 
 - «Nombre de la obra» en la orden de venta: la obra creada desde la venta se llama «<referencia del cliente> <nombre de la obra>» y toma la referencia como código de obra.

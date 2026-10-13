@@ -31,8 +31,8 @@ Principios de diseño
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/project/static/description/icon.png',
-    'version': '7.20261011',
+    'icon': '/al_project_gantt_backend/static/description/icon.png',
+    'version': '8.20261013',
     'license': 'OPL-1',
     'depends': [
         'al_project_gantt_backend',

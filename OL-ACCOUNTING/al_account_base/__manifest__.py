@@ -26,9 +26,9 @@ campos sin uso.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
-    # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/account/static/description/icon.png',
-    'version': '16.20261012',
+    # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
+    'icon': '/al_account_base/static/description/icon.png',
+    'version': '17.20261013',
     'license': 'OPL-1',
     # El formato de los documentos impresos (encabezado, pie y estilos del
     # comprobante A4) vive en al_report_base, común a toda la suite.

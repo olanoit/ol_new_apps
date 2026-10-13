@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 17.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Ícono propio de la app «Perú» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo."
   - version: 16.20261012
     fecha: 12/10/2026
     cambios:

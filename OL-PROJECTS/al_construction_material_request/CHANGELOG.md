@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261013 — 13/10/2026
+
+- Ícono propio de la app «Requerimientos de obra» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
+
 ## 13.20261013 — 13/10/2026
 
 - Código de obra en la obra: nombra su ubicación y es el código de su cuenta analítica. Con «El nombre del proyecto empieza con el código de obra» (Ajustes) se toma de la primera palabra del nombre.
