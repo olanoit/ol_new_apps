@@ -226,7 +226,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono nativo de la app a la que pertenece; el menú raíz lleva el propio.
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '20.20261013',
+    'version': '21.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -276,6 +276,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_resource_plan_views.xml',
         'views/construction_settlement_views.xml',
         'views/project_views.xml',
+        'views/sale_order_views.xml',
         'views/res_config_settings_views.xml',
         'views/mrp_bom_views.xml',
         'views/construction_plan_tree_views.xml',

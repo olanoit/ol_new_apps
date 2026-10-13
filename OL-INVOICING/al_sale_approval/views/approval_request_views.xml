@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="approval_request_view_form_sale_order" model="ir.ui.view">
+        <field name="name">approval.request.form.sale.order</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <field name="reference" position="after">
+                <field name="sale_order_id" invisible="not sale_order_id" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

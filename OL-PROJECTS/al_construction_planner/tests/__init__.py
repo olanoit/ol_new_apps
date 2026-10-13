@@ -22,3 +22,4 @@ from . import test_analytic_v15
 from . import test_portal_v15
 from . import test_change_v15
 from . import test_planning_tab_v15
+from . import test_site_from_sale_code

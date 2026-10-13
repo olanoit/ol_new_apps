@@ -90,6 +90,12 @@ en 100 % (**Completa**) y la instalación de la cocina en 42.2 % (48.60 de
     revierte. Revertir un avance devuelve el módulo al estado que justifica el
     avance que queda.
 
+### Foto de evidencia en las tareas
+
+En **Proyecto ‣ Configuración ‣ Etapas de tareas**, una etapa con **Exige foto
+de evidencia** (por ejemplo **Hecha**) no acepta tareas sin adjuntos: antes de
+moverla, adjunte la foto del mueble con su etiqueta.
+
 ## Liquidar la semana
 
 1. Cada día de liquidación (jueves), una acción programada prepara en borrador
@@ -129,6 +135,7 @@ la liquidación del 12/11, junto con lo validado tarde de semanas anteriores.
 |---|---|---|
 | «No hay actividades de contrata por asignar» | Las líneas ya están asignadas o son de otra etapa | Revisar la etapa y la contrata de las líneas |
 | «Necesita al menos una foto» | El avance no tiene fotos | Adjuntar la foto |
+| «No se puede pasar … sin adjuntar la foto de evidencia» | La etapa exige foto y la tarea no tiene adjuntos | Adjuntar la foto a la tarea |
 | «Con este avance se reportan … de … presupuestados» | Lo reportado pasa lo planificado más la tolerancia | Corregir la cantidad o replanificar |
 | «Solo se corrige un avance reportado» | El avance ya está validado | **Volver a reportado**, si no está liquidado |
 | El avance no entra a la liquidación | Está sin validar, es de otra semana o su línea no tiene OC de servicio de esa contrata | Validarlo o asignar la contrata |

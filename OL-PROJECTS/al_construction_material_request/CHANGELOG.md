@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261013 — 13/10/2026
+
+- Código de obra en la obra: nombra su ubicación y es el código de su cuenta analítica. Con «El nombre del proyecto empieza con el código de obra» (Ajustes) se toma de la primera palabra del nombre.
+- Alta de obra: al crear o marcar una obra se crea su cuenta analítica (plan de proyectos) con el código y el nombre de la obra, y se reutiliza la ubicación de la obra si ya existe bajo la ubicación padre.
+
 ## 12.20261012 — 12/10/2026
 
 - Menú «Requerimientos» con Requerimientos y Materiales pedidos, como Compras ▸ Pedidos, en vez de dos acciones sueltas en el primer nivel.

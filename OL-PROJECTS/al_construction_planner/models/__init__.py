@@ -28,6 +28,7 @@ from . import gantt_data
 from . import product
 from . import construction_purchase_price_report
 from . import construction_supply_board
+from . import sale_order
 from . import sale_order_line
 from . import project_income
 from . import construction_weekly_delivery

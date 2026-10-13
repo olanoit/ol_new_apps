@@ -65,6 +65,10 @@ pasos:
       personal propio; al publicarlo crea los apuntes analíticos.
 
 novedades:
+  - version: 2.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "La marcación con ubicación (app o quiosco de Odoo) sin sede toma la sede más cercana de la compañía y calcula su distancia y si está fuera de rango."
   - version: 1.20261013
     fecha: 13/10/2026
     cambios:

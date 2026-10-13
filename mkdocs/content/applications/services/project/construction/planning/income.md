@@ -13,6 +13,14 @@ previstas de cada paso.
 
 ![Calendario e ingresos de la obra con las valorizaciones previstas](income/income-calendar.png)
 
+## Obra desde la venta
+
+Un servicio con **Crea obra** (producto, pestaña Ventas) crea la obra al
+confirmar la venta. Si la orden lleva la **referencia del cliente** (el código
+de obra, p. ej. `ROOFG-04-25`) y el **Nombre de la obra** (`ROOF GARDEN`), la
+obra se llama `ROOFG-04-25 ROOF GARDEN`, toma la referencia como código de
+obra y nace con su cuenta analítica y su ubicación.
+
 ## Configuración
 
 1. La orden de venta del contrato lleva una línea por **partida**, con cantidad

@@ -61,6 +61,16 @@ class L10nPeHrConstructionSite(models.Model):
             return 0.0
         return round(haversine_m(self.latitude, self.longitude, latitude, longitude), 1)
 
+    @api.model
+    def _construction_nearest_site(self, latitude, longitude, company):
+        """Sede con ubicación más cercana a una marcación de la compañía."""
+        if not (latitude or longitude):
+            return self.browse()
+        sites = self.search([
+            ('company_id', 'in', [company.id, False]),
+            '|', ('latitude', '!=', 0), ('longitude', '!=', 0)])
+        return min(sites, key=lambda s: s._distance_to(latitude, longitude), default=self.browse())
+
     def _out_of_range(self, latitude, longitude):
         self.ensure_one()
         if not (self.latitude or self.longitude) or not (latitude or longitude):

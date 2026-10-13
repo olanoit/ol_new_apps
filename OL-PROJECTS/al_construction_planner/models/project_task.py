@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 from .common import (
     DRIVER_TYPES, LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATE_RANK, UNIT_STATES, UNIT_TYPES,
@@ -121,7 +121,20 @@ class ProjectTask(models.Model):
 
     def write(self, vals):
         self._construction_level_from_line(vals)
+        if vals.get('stage_id'):
+            self._construction_check_evidence_photo(self.env['project.task.type'].browse(vals['stage_id']))
         return super().write(vals)
+
+    def _construction_check_evidence_photo(self, stage):
+        """Las etapas que exigen foto de evidencia no aceptan tareas sin
+        adjuntos (la foto del mueble con su etiqueta)."""
+        if not stage.construction_requires_photo:
+            return
+        missing = self.filtered(lambda t: t.stage_id != stage and not t.message_attachment_count)
+        if missing:
+            raise UserError(_(
+                'No se puede pasar «%(task)s» a «%(stage)s» sin adjuntar la foto de evidencia '
+                '(el mueble con su etiqueta).', task=missing[0].display_name, stage=stage.name))
 
     @api.model
     def _construction_level_from_line(self, vals):
@@ -299,3 +312,12 @@ class ProjectTask(models.Model):
             'construction_selection_task_ids': self.ids,
         }
         return action
+
+
+class ProjectTaskType(models.Model):
+    _inherit = 'project.task.type'
+
+    construction_requires_photo = fields.Boolean(
+        string='Exige foto de evidencia',
+        help='Una tarea solo pasa a esta etapa con al menos un adjunto (la foto del mueble '
+             'con su etiqueta).')

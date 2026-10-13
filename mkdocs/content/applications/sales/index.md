@@ -1,9 +1,15 @@
 # Ventas
 
-Lo que la suite agrega a las aplicaciones de ventas de Odoo. Hoy cubre el
-**punto de venta**: los comprobantes electrónicos peruanos desde la caja, el
-vendedor de cada venta, la búsqueda de productos, las impresoras térmicas de
-red y la marca de cada caja.
+Lo que la suite agrega a las aplicaciones de ventas de Odoo: la **aprobación
+de órdenes de venta** y el **punto de venta** (los comprobantes electrónicos
+peruanos desde la caja, el vendedor de cada venta, la búsqueda de productos,
+las impresoras térmicas de red y la marca de cada caja).
+
+## Ventas
+
+| Página | Qué resuelve |
+|---|---|
+| [Aprobación de órdenes de venta](sales/sale_approval.md) | Ventas de productos marcados que solo se confirman con una solicitud aprobada |
 
 ## Punto de venta
 

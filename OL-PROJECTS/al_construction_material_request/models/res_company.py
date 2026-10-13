@@ -14,6 +14,11 @@ class ResCompany(models.Model):
         'stock.location', string='Ubicación padre de las obras',
         domain="[('company_id', 'in', [id, False])]",
         help='Rama OBRAS: cada obra tiene una sububicación debajo.')
+    construction_code_from_name = fields.Boolean(
+        string='El nombre del proyecto empieza con el código de obra',
+        help='La primera palabra del nombre del proyecto es el código de la obra '
+             '(«ROOFG-04-25 ROOF GARDEN»): la ubicación de la obra se llama con el '
+             'código y la cuenta analítica toma el código y el resto del nombre.')
     construction_dispatch_type_id = fields.Many2one(
         'stock.picking.type', string='Tipo de operación del despacho a obra',
         domain="[('code', '=', 'internal'), ('company_id', '=', id)]")

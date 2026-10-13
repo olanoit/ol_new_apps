@@ -34,4 +34,19 @@ class SaleOrderLine(models.Model):
         if self.product_id.construction_creates_site:
             values.update(is_construction_site=True,
                           construction_sale_order_id=self.order_id.id)
+            code = (self.order_id.client_order_ref or '').strip()
+            if code:
+                values['construction_code'] = code
         return values
+
+    def _timesheet_create_project(self):
+        """Con la referencia del cliente como código de obra, la obra se llama
+        «<código> <nombre de la obra>» (Odoo le agrega el producto o la
+        plantilla al nombre)."""
+        project = super()._timesheet_create_project()
+        order = self.order_id
+        code = (order.client_order_ref or '').strip()
+        if self.product_id.construction_creates_site and code:
+            site_name = (order.construction_site_name or '').strip() or code
+            project.name = '%s %s' % (code, site_name)
+        return project

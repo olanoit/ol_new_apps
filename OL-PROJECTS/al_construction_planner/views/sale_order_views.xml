@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_view_form_construction_site" model="ir.ui.view">
+        <field name="name">sale.order.form.construction.site</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="construction_site_name" placeholder="p. ej. ROOF GARDEN"/>
+            </field>
+            <field name="client_order_ref" position="attributes">
+                <attribute name="placeholder">Código de obra, p. ej. ROOFG-04-25</attribute>
+            </field>
+        </field>
+    </record>
+
+    <record id="project_task_type_view_form_construction" model="ir.ui.view">
+        <field name="name">project.task.type.form.construction</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_edit"/>
+        <field name="arch" type="xml">
+            <field name="fold" position="after">
+                <field name="construction_requires_photo"/>
+            </field>
+        </field>
+    </record>
+</odoo>

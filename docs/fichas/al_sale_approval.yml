@@ -1,0 +1,62 @@
+titulo: Aprobación de órdenes de venta
+subtitulo: >-
+  Las ventas de productos marcados no se confirman sin una solicitud aprobada
+  en Aprobaciones.
+categoria: Ventas · Facturación
+etiquetas: [Ventas, Aprobaciones, Control, Carga histórica]
+
+destacados_intro: >-
+  Un control simple sobre la confirmación de la venta, con la app de
+  Aprobaciones de Odoo.
+destacados:
+  - icono: "✓"
+    titulo: Por producto
+    texto: >-
+      El producto dice si su venta requiere aprobación; las demás ventas se
+      confirman como siempre.
+  - icono: "→"
+    titulo: Solicitar aprobación
+    texto: >-
+      Un botón en la cotización crea la solicitud con la orden como
+      referencia y el monto.
+  - icono: "▣"
+    titulo: Estado a la vista
+    texto: >-
+      Por solicitar, en aprobación, rechazada o aprobada, con botón a las
+      solicitudes de la orden.
+  - icono: "⏱"
+    titulo: Carga histórica
+    texto: >-
+      La gerencia de ventas puede marcar órdenes cargadas de otro sistema
+      para confirmarlas sin aprobación.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La aprobación de las ventas se controlaba con una automatización manual
+    que tenía el producto escrito en el código y buscaba la solicitud por
+    texto; no había botón para pedirla ni se veía su estado en la orden.
+
+pasos_intro: >-
+  Requiere Ventas y Aprobaciones (Odoo Enterprise).
+pasos:
+  - titulo: La categoría de aprobación
+    ruta: Ajustes ▸ Ventas ▸ Aprobación de órdenes de venta
+    texto: >-
+      Elija la categoría de Aprobaciones (con sus aprobadores) con la que se
+      piden las aprobaciones de venta.
+  - titulo: Los productos que la requieren
+    ruta: Producto ▸ Requiere aprobación de venta
+    texto: >-
+      Marque los productos cuya venta debe aprobarse antes de confirmarse.
+  - titulo: Pedir la aprobación
+    ruta: Cotización ▸ Solicitar aprobación
+    texto: >-
+      Crea la solicitud enlazada a la orden; al aprobarse, Confirmar deja
+      pasar la orden.
+
+novedades:
+  - version: 1.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Módulo nuevo: aprobación de órdenes de venta por producto con la app de Aprobaciones, botón «Solicitar aprobación», estado en la orden y marca de carga histórica (reemplaza la automatización manual de New Allcenter)."

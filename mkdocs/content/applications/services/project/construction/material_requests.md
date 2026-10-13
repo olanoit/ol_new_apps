@@ -30,8 +30,15 @@ el plan de la obra lo agrega la [planificación de obra](planning.md).
    **Origen** (existencias del almacén central, incluidas sus sububicaciones),
    la ubicación padre **OBRAS**, el tipo de operación **Despacho a obra** y la
    recepción de compras. **Completar configuración** rellena lo que falte.
+   Si los proyectos se llaman «código nombre» (`ROOFG-04-25 ROOF GARDEN`),
+   active **El nombre del proyecto empieza con el código de obra**: el código
+   se toma de la primera palabra, la ubicación se llama `ROOFG-04-25` y la
+   cuenta analítica lleva ese código y el nombre `ROOF GARDEN`.
 3. En cada obra, vaya a **Proyecto ‣ (proyecto) ‣ Ajustes**, active **Es obra**
-   (crea la ubicación `OBRAS/<obra>`) y asigne el **Jefe de proyecto**.
+   y asigne el **Jefe de proyecto**. Al marcarla se hace el **alta de obra**:
+   la cuenta analítica de la obra (plan de proyectos) y su ubicación
+   `OBRAS/<código>`, o `OBRAS/<obra>` si no tiene **Código de obra**. Si ya
+   existe una ubicación con ese nombre bajo la ubicación padre, se reutiliza.
 4. En **Requerimientos de obra ‣ Configuración ‣ Reglas de aprobación**, defina
    los niveles, los revisores, el dominio por monto y **Aprobar por
    secuencia**.
@@ -52,7 +59,8 @@ el plan de la obra lo agrega la [planificación de obra](planning.md).
 
 | Término | Significado |
 |---|---|
-| Obra | Proyecto marcado como obra, con su ubicación `OBRAS/<obra>` |
+| Obra | Proyecto marcado como obra, con su ubicación `OBRAS/<código>` y su cuenta analítica |
+| Código de obra | Código corto de la obra (`ROOFG-04-25`): nombra su ubicación y es el código de su cuenta analítica |
 | Origen o almacén central | Existencias desde las que se despacha, con sus sububicaciones |
 | Disponible en central | Stock libre hoy (no reservado), en la unidad de la línea |
 | Disponible al procesar | Foto del stock libre en el momento de procesar |

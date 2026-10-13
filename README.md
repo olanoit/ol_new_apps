@@ -186,6 +186,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_edi_purchase_settlement](OL-INVOICING/al_l10n_pe_edi_purchase_settlement/) | 3.20261012 | OPL-1 | Liquidación de compra electrónica (tipo 04) a personas naturales sin RUC: XML UBL 2.1 firmado y enviado, retención del IGV y del impuesto a la renta, PDF y reversión.
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 20.20261011 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [al_ose_factory_hka](OL-INVOICING/al_ose_factory_hka/) | 4.20261012 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
+[al_sale_approval](OL-INVOICING/al_sale_approval/) | 1.20261013 | OPL-1 | Las ventas de productos marcados no se confirman sin una solicitud aprobada en Aprobaciones.
 
 ### OL-PAYROLL
 
@@ -222,9 +223,9 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_construction_attendance](OL-PROJECTS/al_construction_attendance/) | 1.20261013 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
-[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 12.20261012 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 20.20261013 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
+[al_construction_attendance](OL-PROJECTS/al_construction_attendance/) | 2.20261013 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
+[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 13.20261013 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 21.20261013 | LGPL-3 | Plan de recursos por obra, piso, departamento, ambiente y módulo: materiales, contratas a destajo, personal propio y producción, generado desde las tipologías de la obra.
 [al_construction_planner_spreadsheet](OL-PROJECTS/al_construction_planner_spreadsheet/) | 1.20261013 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».
 [al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 7.20261011 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 16.20261011 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.

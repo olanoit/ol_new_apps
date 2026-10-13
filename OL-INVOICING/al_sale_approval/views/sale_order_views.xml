@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sale_order_view_form_sale_approval" model="ir.ui.view">
+        <field name="name">sale.order.form.sale.approval</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_quotation_send']" position="before">
+                <button name="action_request_sale_approval" type="object" string="Solicitar aprobación"
+                        class="btn-primary"
+                        invisible="state not in ('draft', 'sent') or sale_approval_state not in ('to_request', 'refused')"/>
+            </xpath>
+            <div name="button_box" position="inside">
+                <button name="action_view_sale_approvals" type="object" class="oe_stat_button"
+                        icon="fa-check-square-o" invisible="not sale_approval_request_count">
+                    <field name="sale_approval_request_count" widget="statinfo" string="Aprobaciones"/>
+                </button>
+            </div>
+            <field name="payment_term_id" position="after">
+                <field name="sale_approval_required" invisible="1"/>
+                <field name="sale_approval_state" invisible="not sale_approval_required"
+                       decoration-success="sale_approval_state == 'approved'"
+                       decoration-warning="sale_approval_state in ('to_request', 'pending')"
+                       decoration-danger="sale_approval_state == 'refused'"
+                       widget="badge"/>
+                <field name="sale_approval_exempt" groups="sales_team.group_sale_manager"
+                       readonly="state not in ('draft', 'sent')"/>
+            </field>
+        </field>
+    </record>
+</odoo>

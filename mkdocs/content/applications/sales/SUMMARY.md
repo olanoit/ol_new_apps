@@ -1,4 +1,6 @@
 * [Ventas](index.md)
+* Ventas
+    * [Aprobación de órdenes de venta](sales/sale_approval.md)
 * Punto de venta
     * [Comprobantes electrónicos en el TPV](point_of_sale/electronic_invoicing.md)
     * [Vendedor por venta](point_of_sale/salesperson.md)

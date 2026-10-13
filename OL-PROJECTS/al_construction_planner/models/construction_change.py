@@ -591,7 +591,9 @@ class ProjectTask(models.Model):
         for task in self:
             unit = task if task.construction_level == 'apartment' \
                 else task.construction_apartment_task_id
-            task.construction_contract_id = unit and Contract.search([
-                ('task_ids', 'in', unit.ids), ('state', 'in', ('active', 'draft'))],
-                order='state, id', limit=1)
+            # Tarea nueva o sin unidad: sin contrato (y no la tarea vacía).
+            unit_ids = unit._origin.ids
+            task.construction_contract_id = Contract.search([
+                ('task_ids', 'in', unit_ids), ('state', 'in', ('active', 'draft'))],
+                order='state, id', limit=1) if unit_ids else Contract
 

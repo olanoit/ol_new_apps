@@ -1217,6 +1217,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 21.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "«Nombre de la obra» en la orden de venta: la obra creada desde la venta se llama «<referencia del cliente> <nombre de la obra>» y toma la referencia como código de obra."
+      - "Etapas de tarea con «Exige foto de evidencia»: la tarea no pasa a esa etapa sin un adjunto."
   - version: 20.20261013
     fecha: 13/10/2026
     cambios:

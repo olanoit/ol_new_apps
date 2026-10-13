@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_sale_approval" model="ir.ui.view">
+        <field name="name">res.config.settings.form.sale.approval</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale_management.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <setting id="online_signature" position="after">
+                <setting id="sale_approval_category" company_dependent="1"
+                         string="Aprobación de órdenes de venta"
+                         help="Las órdenes con productos que «Requieren aprobación de venta» se confirman solo con una solicitud aprobada de esta categoría.">
+                    <field name="sale_approval_category_id" options="{'no_create': True}"/>
+                </setting>
+            </setting>
+        </field>
+    </record>
+</odoo>

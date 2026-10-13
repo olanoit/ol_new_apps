@@ -44,6 +44,28 @@ class TestConstructionAttendance(HttpCase, PlannerCommon):
         self.assertEqual(self.project._construction_site(), self.site)
         self.assertEqual(self.project._construction_distance_m(-12.0464, -77.0428), 0.0)
 
+    def test_attendance_takes_nearest_site(self):
+        far = self.env['l10n_pe.hr.construction.site'].create({
+            'name': 'Sede lejana (test)', 'latitude': -12.1500, 'longitude': -77.0200,
+            'radius_m': 300, 'company_id': self.env.company.id})
+        attendance = self.env['hr.attendance'].create({
+            'employee_id': self.employee.id, 'check_in': datetime(2026, 9, 24, 12, 0),
+            'check_out': datetime(2026, 9, 24, 20, 0),
+            'in_latitude': -12.0470, 'in_longitude': -77.0428})
+        self.assertEqual(attendance.l10n_pe_construction_site_id, self.site)
+        self.assertAlmostEqual(attendance.l10n_pe_site_distance_m, 66.7, delta=1)
+        self.assertFalse(attendance.l10n_pe_site_out_of_range)
+        outside = self.env['hr.attendance'].create({
+            'employee_id': self.employee.id, 'check_in': datetime(2026, 9, 25, 12, 0),
+            'check_out': datetime(2026, 9, 25, 20, 0),
+            'in_latitude': -12.1450, 'in_longitude': -77.0200})
+        self.assertEqual(outside.l10n_pe_construction_site_id, far)
+        self.assertTrue(outside.l10n_pe_site_out_of_range)
+        # Sin ubicación no se asigna sede.
+        manual = self.env['hr.attendance'].create({
+            'employee_id': self.employee.id, 'check_in': datetime(2026, 9, 26, 12, 0)})
+        self.assertFalse(manual.l10n_pe_construction_site_id)
+
     def test_kiosk_marks_employee_and_contractor(self):
         url = '/obra/quiosco/%s/%s' % (self.site.id, self.site.sudo().kiosk_token)
         self.assertEqual(self.url_open(url).status_code, 200)

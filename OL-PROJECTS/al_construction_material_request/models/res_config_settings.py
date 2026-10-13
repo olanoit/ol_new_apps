@@ -11,6 +11,8 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_sites_location_id', readonly=False)
     construction_dispatch_type_id = fields.Many2one(
         related='company_id.construction_dispatch_type_id', readonly=False)
+    construction_code_from_name = fields.Boolean(
+        related='company_id.construction_code_from_name', readonly=False)
     construction_pr_picking_type_id = fields.Many2one(
         related='company_id.construction_pr_picking_type_id', readonly=False)
 

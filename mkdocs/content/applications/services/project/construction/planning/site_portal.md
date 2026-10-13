@@ -54,6 +54,10 @@ a la planilla ni al T-Registro.
 
 ## Asistencia diaria
 
+Una marcación con ubicación hecha desde la app o el quiosco de Odoo
+(Asistencias), sin sede, toma la **sede más cercana** de la compañía; con ella
+se calculan la distancia, si está fuera de rango y si llegó fuera de hora.
+
 **Ejecución ‣ Asistencia** reúne la marcación del personal propio (con
 distancia, fuera de rango y fuera de hora), la de las contratas y los
 **avances sin asistencia**: avances de una contrata en un día en que nadie de

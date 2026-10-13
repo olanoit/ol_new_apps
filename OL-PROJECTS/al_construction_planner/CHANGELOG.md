@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261013 — 13/10/2026
+
+- «Nombre de la obra» en la orden de venta: la obra creada desde la venta se llama «<referencia del cliente> <nombre de la obra>» y toma la referencia como código de obra.
+- Etapas de tarea con «Exige foto de evidencia»: la tarea no pasa a esa etapa sin un adjunto.
+
 ## 20.20261013 — 13/10/2026
 
 - Paquete de mejoras v1.5. Plantilla de niveles por obra (agrupadores como torre o etapa, unidad, ambiente, mueble y módulo) con tipo de unidad; árbol, cronograma e importador con niveles variables.

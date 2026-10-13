@@ -19,6 +19,8 @@
                        groups="al_construction_material_request.group_construction_requester">
                     <group>
                         <field name="is_construction_site"/>
+                        <field name="construction_code" invisible="not is_construction_site"
+                               placeholder="p. ej. ROOFG-04-25"/>
                         <field name="construction_location_id" invisible="not is_construction_site"
                                readonly="not is_construction_site"
                                groups="al_construction_material_request.group_construction_logistics"
