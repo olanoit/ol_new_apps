@@ -97,16 +97,38 @@ obligación, como en las letras.
 - **Reportes**: facturas cedidas (cartera por factor, cliente y vencimiento,
   cobrado y por cobrar), análisis y costo financiero por factor y mes.
 
+## Versión 8: proceso completo
+
+- **Contrato por factor** (`l10n_pe.factoring.contract`): adelanto, TEA (año
+  de 360 días), días mínimos, comisión (% del nominal con mínimo, fija e IGV),
+  gastos, cuenta del factor, línea de crédito y límite por cliente; la cesión
+  valida la línea y el límite.
+- **Simulación** de la liquidación en la operación; el desembolso propone los
+  cargos y muestra la diferencia con la liquidación real.
+- **Revisión previa** (`l10n_pe.factoring.eligibility`): todas las facturas
+  excluidas con todos sus motivos.
+- **Factura negociable en la factura** (`models/negotiable_invoice.py`):
+  conformidad (presunta por tarea diaria a los 8 días), anotación en CAVALI,
+  tenedor, fecha de pago y eventos (`l10n_pe.negotiable.event`) con orden
+  validado.
+- **CAVALI** (`models/cavali.py`): paquete para Factrack (XML e información
+  adicional), importación de estados (Excel o CSV) y servicios web con
+  registro de envíos (`l10n_pe.cavali.log`). CAVALI no publica la
+  especificación de sus servicios web: las rutas (`l10n_pe_cavali.path.*`),
+  la autenticación (básica) y los nombres de campo del JSON se ajustan con su
+  manual. Las operaciones y los datos siguen el Reglamento Interno (RIC v09,
+  DV 01 a 07).
+- **Desembolso parcial**, **cobro recibido por la empresa** y **transferencia
+  al factor** (sin recurso: PCGE 4699), **prórroga**, **notificación al
+  cliente** (PDF y correo) y **archivo de la cesión** (Excel).
+
 ### Fuera del alcance (y por qué)
 
-- **Integración con CAVALI/Factrack o con la plataforma de conformidad de
-  SUNAT**: requieren credenciales de participante y servicios propios de cada
-  entidad; aquí se registran los datos que devuelven.
+- **Plataforma de conformidad de SUNAT**: la conformidad de los CPE al crédito
+  se da allí y CAVALI la obtiene por interconexión; aquí se registra (a mano,
+  por la importación de Factrack o por la consulta a CAVALI).
 - **Factura negociable impresa** (tercera copia, constancia de presentación):
   la suite emite comprobantes electrónicos.
-- **Desembolsos parciales del factor** sobre una misma operación: se registra
-  un desembolso por operación (para desembolsos por partes, una operación por
-  tramo).
 - **Castigo tributario de la factura recomprada**: se usa la provisión de
   cobranza dudosa nativa; los requisitos del art. 37 de la LIR los evalúa el
   contador.

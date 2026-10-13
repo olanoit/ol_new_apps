@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contratos o líneas de factoring -->
+    <record id="view_factoring_contract_list" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.contract.list</field>
+        <field name="model">l10n_pe.factoring.contract</field>
+        <field name="arch" type="xml">
+            <list string="Contratos de factoring" sample="1">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="name"/>
+                <field name="factor_id"/>
+                <field name="modality"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="advance_percent" optional="show"/>
+                <field name="annual_rate" optional="show"/>
+                <field name="credit_limit" optional="show"/>
+                <field name="used_amount" optional="show"/>
+                <field name="available_amount" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_factoring_contract_form" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.contract.form</field>
+        <field name="model">l10n_pe.factoring.contract</field>
+        <field name="arch" type="xml">
+            <form string="Contrato de factoring">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Línea de factoring 2026"/></h1>
+                    </div>
+                    <group>
+                        <group string="Factor">
+                            <field name="factor_id" options="{'no_quick_create': True}"/>
+                            <field name="factor_bank_id" context="{'default_partner_id': factor_id}"/>
+                            <field name="modality" widget="radio"/>
+                            <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="require_cavali"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group string="Condiciones">
+                            <field name="advance_percent"/>
+                            <field name="annual_rate"/>
+                            <field name="min_days"/>
+                            <field name="fee_percent"/>
+                            <field name="fee_min"/>
+                            <field name="fee_fixed"/>
+                            <field name="fee_with_igv"/>
+                            <field name="expense_fixed"/>
+                        </group>
+                        <group string="Línea de crédito">
+                            <field name="credit_limit"/>
+                            <field name="debtor_limit"/>
+                            <field name="used_amount"/>
+                            <field name="available_amount" invisible="not credit_limit"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Operaciones" name="operations">
+                            <field name="operation_ids" readonly="1">
+                                <list>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="nominal_amount" sum="Nominal"/>
+                                    <field name="advance_amount" sum="Adelanto"/>
+                                    <field name="financial_cost" sum="Costo"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Condiciones" name="note">
+                            <field name="note" placeholder="Garantías, penalidades, contacto del factor…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_factoring_contract_search" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.contract.search</field>
+        <field name="model">l10n_pe.factoring.contract</field>
+        <field name="arch" type="xml">
+            <search string="Buscar contratos de factoring">
+                <field name="name"/>
+                <field name="factor_id"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_factor" string="Factor" context="{'group_by': 'factor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_factoring_contract" model="ir.actions.act_window">
+        <field name="name">Contratos de factoring</field>
+        <field name="res_model">l10n_pe.factoring.contract</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las condiciones de cada factor</p>
+            <p>Adelanto, tasa, comisión y línea de crédito: las operaciones las toman y la
+               simulación calcula la liquidación.</p>
+        </field>
+    </record>
+
+    <!-- Factura: factura negociable (conformidad, CAVALI y eventos) -->
+    <record id="view_move_form_negotiable" model="ir.ui.view">
+        <field name="name">account.move.form.negotiable.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="al_account_base.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[@name='l10n_pe_invoicing_notebook']" position="inside">
+                <page string="Factura negociable" name="l10n_pe_negotiable"
+                      invisible="move_type != 'out_invoice' or state != 'posted'">
+                    <div class="mb-2">
+                        <button name="action_l10n_pe_negotiable_event" type="object" string="Registrar evento"
+                                class="btn-secondary" groups="account.group_account_invoice"/>
+                        <button name="action_l10n_pe_cavali_register" type="object" string="Registrar en CAVALI"
+                                class="btn-secondary ms-2" groups="account.group_account_invoice"
+                                invisible="l10n_pe_negotiable_state not in ('none', 'cancelled')"/>
+                        <button name="action_l10n_pe_cavali_status" type="object" string="Consultar CAVALI"
+                                class="btn-secondary ms-2" groups="account.group_account_invoice"
+                                invisible="l10n_pe_negotiable_state in ('none', 'cancelled')"/>
+                    </div>
+                    <group>
+                        <group string="Conformidad del cliente">
+                            <field name="l10n_pe_is_credit"/>
+                            <field name="l10n_pe_conformity_state" readonly="1"
+                                   decoration-danger="l10n_pe_conformity_state == 'rejected'"
+                                   decoration-success="l10n_pe_conformity_state in ('accepted', 'presumed')"/>
+                            <field name="l10n_pe_conformity_date" readonly="1"/>
+                            <field name="l10n_pe_presumed_conformity_date"/>
+                        </group>
+                        <group string="CAVALI">
+                            <field name="l10n_pe_negotiable_state" readonly="1"/>
+                            <field name="l10n_pe_cavali_number" readonly="1"/>
+                            <field name="l10n_pe_cavali_date" readonly="1"/>
+                            <field name="l10n_pe_negotiable_holder_id" readonly="1"/>
+                            <field name="l10n_pe_negotiable_due_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="l10n_pe_negotiable_event_ids">
+                        <list create="false" delete="false">
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="date"/>
+                            <field name="event_type"/>
+                            <field name="partner_id" optional="show"/>
+                            <field name="reference" optional="show"/>
+                            <field name="amount" optional="show"/>
+                            <field name="due_date" optional="hide"/>
+                            <field name="source"/>
+                            <field name="note" optional="hide"/>
+                            <field name="user_id" optional="hide"/>
+                        </list>
+                    </field>
+                    <field name="l10n_pe_cavali_log_ids" groups="account.group_account_manager"
+                           invisible="not l10n_pe_cavali_log_ids">
+                        <list create="false" delete="false">
+                            <field name="create_date"/>
+                            <field name="operation"/>
+                            <field name="state" widget="badge" decoration-success="state == 'ok'"
+                                   decoration-danger="state == 'error'"/>
+                            <field name="message"/>
+                            <field name="reference"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_filter_negotiable" model="ir.ui.view">
+        <field name="name">account.move.search.negotiable.pe</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='late']" position="after">
+                <filter name="l10n_pe_conformity_pending" string="Conformidad pendiente"
+                        domain="[('l10n_pe_conformity_state', '=', 'pending'), ('move_type', '=', 'out_invoice'),
+                                 ('state', '=', 'posted'), ('payment_state', 'not in', ('paid', 'in_payment'))]"/>
+                <filter name="l10n_pe_cavali_registered" string="Anotadas en CAVALI"
+                        domain="[('l10n_pe_negotiable_state', 'not in', ('none', 'cancelled', False))]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_negotiable_event_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.negotiable.event.wizard.form</field>
+        <field name="model">l10n_pe.negotiable.event.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Evento de la factura negociable">
+                <div class="alert alert-info" role="alert">
+                    Registra lo que pasó con la factura negociable (por ejemplo, lo que muestra Factrack).
+                    El orden se valida: no se transfiere sin anotación ni sin conformidad.
+                </div>
+                <group>
+                    <group>
+                        <field name="move_ids" widget="many2many_tags" readonly="1"/>
+                        <field name="event_type"/>
+                        <field name="date"/>
+                    </group>
+                    <group>
+                        <field name="reference" invisible="event_type not in ('registered', 'transferred', 'paid', 'protested')"/>
+                        <field name="partner_id" invisible="event_type != 'transferred'"
+                               required="event_type == 'transferred'"/>
+                        <field name="due_date" invisible="event_type != 'extended'" required="event_type == 'extended'"/>
+                    </group>
+                </group>
+                <field name="note" placeholder="Motivo de la disconformidad, detalle del protesto…"/>
+                <footer>
+                    <button name="action_apply" type="object" string="Registrar" class="btn-primary"/>
+                    <button special="cancel" string="Descartar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Revisión previa de facturas -->
+    <record id="view_factoring_eligibility_form" model="ir.ui.view">
+        <field name="name">l10n_pe.factoring.eligibility.form</field>
+        <field name="model">l10n_pe.factoring.eligibility</field>
+        <field name="arch" type="xml">
+            <form string="Revisión de facturas para factoring">
+                <div class="alert alert-warning" role="alert" invisible="not excluded_count">
+                    <field name="excluded_count" class="oe_inline"/> factura(s) no se pueden ceder; se
+                    crea la operación con las <field name="eligible_count" class="oe_inline"/> restantes.
+                </div>
+                <group>
+                    <field name="contract_id" options="{'no_create': True}"/>
+                    <field name="company_id" invisible="1"/>
+                </group>
+                <field name="line_ids" readonly="1">
+                    <list decoration-danger="not eligible" decoration-success="eligible">
+                        <field name="currency_id" column_invisible="1"/>
+                        <field name="move_id"/>
+                        <field name="partner_id"/>
+                        <field name="invoice_date_due"/>
+                        <field name="amount_residual"/>
+                        <field name="eligible"/>
+                        <field name="errors"/>
+                        <field name="warnings" optional="show"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_create_operation" type="object" string="Crear operación"
+                            class="btn-primary" invisible="not eligible_count"/>
+                    <button special="cancel" string="Cerrar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- CAVALI: registro de envíos e importación de estados -->
+    <record id="view_cavali_log_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cavali.log.list</field>
+        <field name="model">l10n_pe.cavali.log</field>
+        <field name="arch" type="xml">
+            <list string="Envíos a CAVALI" create="false" edit="false"
+                  decoration-danger="state == 'error'">
+                <field name="create_date"/>
+                <field name="move_id"/>
+                <field name="operation"/>
+                <field name="environment"/>
+                <field name="http_status" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'ok'"
+                       decoration-danger="state == 'error'"/>
+                <field name="message"/>
+                <field name="reference" optional="show"/>
+                <field name="cavali_status" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cavali_log_form" model="ir.ui.view">
+        <field name="name">l10n_pe.cavali.log.form</field>
+        <field name="model">l10n_pe.cavali.log</field>
+        <field name="arch" type="xml">
+            <form string="Envío a CAVALI" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="move_id"/>
+                            <field name="operation"/>
+                            <field name="environment"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                            <field name="http_status"/>
+                            <field name="message"/>
+                            <field name="reference"/>
+                            <field name="cavali_status"/>
+                            <field name="url"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Solicitud" name="request"><field name="request_body"/></page>
+                        <page string="Respuesta" name="response"><field name="response_body"/></page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cavali_log" model="ir.actions.act_window">
+        <field name="name">Envíos a CAVALI</field>
+        <field name="res_model">l10n_pe.cavali.log</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_cavali_import_form" model="ir.ui.view">
+        <field name="name">l10n_pe.cavali.import.form</field>
+        <field name="model">l10n_pe.cavali.import</field>
+        <field name="arch" type="xml">
+            <form string="Importar estados de CAVALI">
+                <div class="alert alert-info" role="alert" invisible="result">
+                    Excel o CSV exportado de Factrack con las columnas <b>Serie</b>, <b>Número</b> y
+                    <b>Estado</b> (anotada, transferida, redimida o pagada, protestada, retirada, conforme,
+                    conformidad presunta, disconforme); opcionales <b>Fecha</b>, <b>Código anotación</b> y
+                    <b>RUC tenedor</b>.
+                </div>
+                <group invisible="result">
+                    <field name="file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <field name="result" invisible="not result"/>
+                <footer>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"
+                            invisible="result"/>
+                    <button special="cancel" string="Cerrar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cavali_import" model="ir.actions.act_window">
+        <field name="name">Importar estados de CAVALI</field>
+        <field name="res_model">l10n_pe.cavali.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Ajustes ▸ Perú ▸ CAVALI -->
+    <record id="res_config_settings_view_form_cavali" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.cavali</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="66"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="CAVALI (facturas negociables)" name="pe_cavali_block"
+                       groups="base.group_system">
+                    <setting company_dependent="1" string="Conexión con CAVALI"
+                             help="Factrack: paquete para el formulario masivo e importación de estados. Servicios web: envío directo con el manual y las credenciales que entrega CAVALI.">
+                        <field name="l10n_pe_cavali_mode" widget="radio"/>
+                        <div class="content-group" invisible="l10n_pe_cavali_mode != 'webservice'">
+                            <div class="row mt8">
+                                <label for="l10n_pe_cavali_environment" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_environment"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cavali_url_test" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_url_test"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cavali_url_production" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_url_production"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cavali_user" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_user"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cavali_password" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_password" password="True"/>
+                            </div>
+                            <button name="action_l10n_pe_cavali_test" type="object" string="Probar conexión"
+                                    icon="oi-arrow-right" class="btn-link"/>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Cuenta en CAVALI"
+                             help="Emisor con cuenta de emisor (anota en su propia cuenta) o mediante un participante (banco o factoring).">
+                        <field name="l10n_pe_cavali_account_type" widget="radio"/>
+                        <div class="content-group">
+                            <div class="row mt8" invisible="l10n_pe_cavali_account_type != 'participant'">
+                                <label for="l10n_pe_cavali_participant_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_participant_id"/>
+                            </div>
+                            <div class="row" invisible="l10n_pe_cavali_account_type != 'participant'">
+                                <label for="l10n_pe_cavali_participant_code" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_participant_code"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_cavali_rut" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_cavali_rut"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

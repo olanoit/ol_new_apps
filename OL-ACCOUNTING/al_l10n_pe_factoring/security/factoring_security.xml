@@ -18,5 +18,20 @@
             <field name="model_id" ref="model_l10n_pe_factoring_account_config"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <record id="factoring_contract_company_rule" model="ir.rule">
+            <field name="name">Factoring, contratos: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_factoring_contract"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="negotiable_event_company_rule" model="ir.rule">
+            <field name="name">Factura negociable, eventos: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_negotiable_event"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="cavali_log_company_rule" model="ir.rule">
+            <field name="name">CAVALI, envíos: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_cavali_log"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>

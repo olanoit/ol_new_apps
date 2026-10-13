@@ -59,3 +59,36 @@ with Captura(M) as c:
     # 11. Costo financiero por factor y mes
     c.abrir_accion(f'{M}.action_factoring_cost', ms=2500)
     c.foto('11-costo-financiero', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
+
+# Versión 8 (contrato DEMO FAC, ver tools/factoring_demo_data.py)
+CONTRACT, INVOICE_NEGOTIABLE = 5, 16772
+with Captura(M) as c:
+    # 12. Contrato del factor con su línea de crédito
+    c.abrir_registro('l10n_pe.factoring.contract', CONTRACT, ms=2000)
+    c.foto('12-contrato', selector=FORM)
+
+    # 13. Simulación de la liquidación en la operación en borrador
+    c.abrir_registro('l10n_pe.factoring', OP_DRAFT, ms=2000)
+    c.page.locator('a.nav-link:text-is("Simulación")').last.click()
+    c.esperar(900)
+    c.foto('13-simulacion', selector=FULL)
+
+    # 14. Factura negociable: conformidad, CAVALI y eventos
+    c.abrir_registro('account.move', INVOICE_NEGOTIABLE, ms=2500)
+    c.texto('Facturación PE', ms=1200)
+    c.page.locator('a.nav-link:text-is("Factura negociable")').last.click()
+    c.esperar(900)
+    c.foto('14-factura-negociable', selector=FORM)
+
+    # 15. Ajustes ▸ Perú ▸ CAVALI
+    c.abrir('/odoo/settings#al_account_base', ms=3000)
+    title = c.page.get_by_text('CAVALI (facturas negociables)', exact=True).first
+    title.scroll_into_view_if_needed()
+    c.esperar(900)
+    c.foto('15-ajustes-cavali', selector='.o_setting_container:has-text("CAVALI (facturas negociables)"), '
+           'div.o_settings_container:has-text("Conexión con CAVALI")', padding=8)
+
+    # 16. Operación con los botones nuevos (desembolsada)
+    c.abrir_accion(f'{M}.action_factoring', ms=1500)
+    c.abrir_registro('l10n_pe.factoring', OP_WITHOUT, ms=2000)
+    c.foto('16-operacion-v8', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 260})

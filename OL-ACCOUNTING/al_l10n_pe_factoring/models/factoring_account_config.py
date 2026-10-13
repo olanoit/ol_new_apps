@@ -41,6 +41,10 @@ class L10nPeFactoringAccountConfig(models.Model):
     fee_account_id = fields.Many2one(
         'account.account', string='Comisiones y gastos', required=True, check_company=True,
         help='Comisión del factor y gastos de la operación (PCGE 6391).')
+    transfer_account_id = fields.Many2one(
+        'account.account', string='Cobros por transferir al factor', check_company=True,
+        help='Sin recurso: lo que el cliente pagó a la empresa en vez de al factor y que hay que '
+             'entregarle (PCGE 4699, Otras cuentas por pagar diversas).')
     loss_account_id = fields.Many2one(
         'account.account', string='Pérdida del retenido', check_company=True,
         help='Sin recurso: retenido que el factor no libera porque el cliente no pagó '
@@ -58,6 +62,7 @@ class L10nPeFactoringAccountConfig(models.Model):
     }
     PCGE_WITHOUT_RECOURSE = {
         'loss_account_id': 'chart6741',
+        'transfer_account_id': 'chart4699',
     }
     PCGE_WITH_RECOURSE = {
         'obligation_account_id': 'chart4512',
@@ -95,6 +100,14 @@ class L10nPeFactoringAccountConfig(models.Model):
             account = self.env.ref('account.%s_chart6741' % config.company_id.id, raise_if_not_found=False)
             if account:
                 config.loss_account_id = account
+
+    @api.model
+    def _l10n_pe_fill_transfer_account(self):
+        """Versión 8: la cuenta de cobros por transferir al factor (sin recurso)."""
+        for config in self.search([('modality', '=', 'without_recourse'), ('transfer_account_id', '=', False)]):
+            account = self.env.ref('account.%s_chart4699' % config.company_id.id, raise_if_not_found=False)
+            if account:
+                config.transfer_account_id = account
 
     @api.model
     def _l10n_pe_get(self, company, modality, currency):

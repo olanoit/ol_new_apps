@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_factoring.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261013 — 13/10/2026
+
+- Contratos de factoring por factor: adelanto, TEA, días mínimos, comisión (% con mínimo, fija e IGV), gastos, cuenta del factor, línea de crédito y límite por cliente, con lo usado y lo disponible.
+- Simulación de la liquidación en la operación; el desembolso propone los cargos del contrato y muestra la diferencia con la liquidación real.
+- Revisión previa al ceder: todas las facturas excluidas con todos sus motivos (vencida, pagada, disconforme, ya cedida, otra moneda) y la operación con las demás.
+- Factura negociable en la factura: conformidad presunta automática a los 8 días (tarea diaria con aviso 2 días antes), anotación en CAVALI, tenedor, fecha de pago e historial de eventos con orden validado.
+- CAVALI: paquete para el formulario masivo de Factrack (XML e información adicional), importación de estados y servicios web configurables con registro de envíos (registro, transferencia, pago, reprogramación, conformidad y consulta).
+- Notificación al cliente en PDF por correo; cobro recibido por la empresa y transferencia al factor; prórroga del vencimiento; archivo de la cesión en Excel; desembolsos parciales.
+
 ## 7.20261012 — 12/10/2026
 
 - Menú en Perú ▸ Clientes ▸ Factoring; análisis y costo financiero en Informes ▸ Análisis.

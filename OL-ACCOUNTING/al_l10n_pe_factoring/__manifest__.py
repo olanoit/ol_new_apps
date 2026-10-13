@@ -22,6 +22,15 @@ la factura ni el cobro:
   anotación en CAVALI, monto neto pendiente de pago sin detracción ni
   retención; cobros parciales; comisión facturada por el factor; pérdida del
   retenido (sin recurso); diferencia de cambio de la obligación (con recurso).
+* Contratos por factor (adelanto, TEA, comisión, línea de crédito y límite
+  por cliente) con simulación de la liquidación; revisión previa de las
+  facturas; desembolsos parciales; prórroga; cobro recibido por la empresa y
+  transferencia al factor; notificación al cliente (PDF y correo); archivo de
+  la cesión para el factor.
+* Factura negociable en la factura: conformidad (presunta automática a los 8
+  días), anotación en CAVALI e historial de eventos con orden validado.
+* CAVALI: paquete para Factrack, importación de estados y servicios web
+  configurables con registro de envíos.
 * Cuentas por modalidad y moneda (PCGE por defecto), «Ceder a factoring»
   desde la lista de facturas, pestaña Factoring en la factura y menú
   Perú ▸ Clientes ▸ Factoring con análisis y costo financiero.
@@ -32,15 +41,18 @@ la factura ni el cobro:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '7.20261012',
+    'version': '8.20261013',
     'license': 'OPL-1',
     'countries': ['pe'],
-    'depends': ['account', 'l10n_pe', 'al_account_base'],
+    'depends': ['account', 'l10n_pe', 'al_account_base', 'al_report_base'],
+    'external_dependencies': {'python': ['xlsxwriter', 'openpyxl', 'requests']},
     'data': [
         'security/ir.model.access.csv',
         'security/factoring_security.xml',
         'data/ir_sequence_data.xml',
         'views/factoring_views.xml',
+        'views/factoring_contract_views.xml',
+        'reports/factoring_notice_report.xml',
         'views/factoring_account_config_views.xml',
         'views/factoring_wizard_views.xml',
         'views/account_move_views.xml',

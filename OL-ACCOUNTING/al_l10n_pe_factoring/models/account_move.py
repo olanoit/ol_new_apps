@@ -64,22 +64,38 @@ class AccountMove(models.Model):
         return super().action_register_payment()
 
     def action_l10n_pe_factoring_create(self):
-        """«Ceder a factoring» desde la lista de facturas: operación en borrador
-        con las facturas elegidas, para completar el factor y la modalidad."""
+        """«Ceder a factoring» desde la lista de facturas: si todas se pueden
+        ceder, crea la operación en borrador; si no, muestra la revisión con
+        los motivos de cada factura excluida."""
         invoices = self.filtered(lambda m: m.move_type == 'out_invoice')
         if not invoices:
             raise UserError(self.env._('Seleccione facturas de cliente.'))
-        invalid = invoices.filtered(lambda m: m.state != 'posted' or m.currency_id.is_zero(m.amount_residual))
-        if invalid:
-            raise UserError(self.env._('Estas facturas no están publicadas o ya están pagadas: %s',
-                                       ', '.join(invalid.mapped('name'))))
-        if len(invoices.company_id) > 1 or len(invoices.currency_id) > 1:
-            raise UserError(self.env._('Las facturas de una operación deben ser de la misma compañía y moneda.'))
+        review = self.env['l10n_pe.factoring.eligibility'].with_company(invoices[:1].company_id)._prepare(invoices)
+        if not review.excluded_count:
+            return invoices._l10n_pe_factoring_create_operation()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Revisión de facturas para factoring'),
+            'res_model': 'l10n_pe.factoring.eligibility',
+            'res_id': review.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+    def _l10n_pe_factoring_create_operation(self, contract=None):
+        invoices = self
         operation = self.env['l10n_pe.factoring'].with_company(invoices.company_id).create({
             'company_id': invoices.company_id.id,
-            'currency_id': invoices.currency_id.id,
+            'currency_id': (contract.currency_id if contract else invoices.currency_id).id,
+            'contract_id': contract.id if contract else False,
+            'factor_id': contract.factor_id.id if contract else False,
+            'modality': contract.modality if contract else 'without_recourse',
+            'contract_ref': contract.name if contract else False,
+            'default_advance_percent': contract.advance_percent if contract else 100.0,
             'line_ids': [(0, 0, {'move_id': invoice.id, 'nominal_amount': invoice._l10n_pe_factoring_net_pending(),
-                                 'due_date': invoice.invoice_date_due}) for invoice in invoices],
+                                 'due_date': invoice.invoice_date_due,
+                                 'advance_percent': contract.advance_percent if contract else 100.0})
+                         for invoice in invoices],
         })
         return {
             'type': 'ir.actions.act_window',

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Notificación al cliente (deudor): la factura se transfirió al factor y
+         se le debe pagar a él (Ley 29623; el factor es el tenedor). Una página
+         por cliente; con notice_partner_id en el contexto, solo ese cliente. -->
+    <record id="action_report_factoring_notice" model="ir.actions.report">
+        <field name="name">Notificación de transferencia</field>
+        <field name="model">l10n_pe.factoring</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_factoring.report_factoring_notice</field>
+        <field name="report_file">al_l10n_pe_factoring.report_factoring_notice</field>
+        <field name="print_report_name">'Notificación %s' % object.name</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_l10n_pe_factoring"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_factoring_notice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="all_lines" t-value="o._notice_lines()"/>
+                <t t-foreach="all_lines.partner_id" t-as="customer">
+                    <t t-set="lines" t-value="all_lines.filtered(lambda l: l.partner_id == customer)"/>
+                    <t t-call="al_report_base.report_pe_page">
+                        <t t-set="company" t-value="o.company_id"/>
+                        <t t-set="doc_title" t-value="'Notificación de transferencia'"/>
+                        <t t-set="doc_number" t-value="o.name"/>
+                        <t t-set="doc_extra" t-value="o.date.strftime('%d/%m/%Y')"/>
+                        <t t-set="page_class" t-value="'pe-doc-text'"/>
+                        <table class="pe-doc-table mb-3">
+                            <tr>
+                                <td class="pe-doc-label">Señores</td>
+                                <td class="pe-doc-value"><span t-out="customer.name"/></td>
+                                <td class="pe-doc-label">RUC</td>
+                                <td class="pe-doc-value"><span t-out="customer.vat"/></td>
+                            </tr>
+                            <tr>
+                                <td class="pe-doc-label">Dirección</td>
+                                <td class="pe-doc-value" colspan="3">
+                                    <span t-out="' '.join(filter(None, [customer.street, customer.city, customer.state_id.name]))"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <p>
+                            Les comunicamos que hemos transferido a
+                            <strong t-out="o.factor_id.name"/> (RUC <span t-out="o.factor_id.vat"/>)
+                            las facturas negociables que se detallan, conforme a la Ley N.º 29623 y al
+                            Decreto de Urgencia N.º 013-2020. Desde esta fecha el tenedor de las facturas es
+                            <strong t-out="o.factor_id.name"/>: el pago de cada una debe hacerse a su
+                            nombre, en la fecha de pago indicada.
+                        </p>
+                        <table class="pe-doc-table pe-doc-lines mb-3">
+                            <tr class="pe-doc-thead">
+                                <td>Factura</td>
+                                <td>Emisión</td>
+                                <td>Fecha de pago</td>
+                                <td>Anotación CAVALI</td>
+                                <td class="text-end">Monto neto pendiente</td>
+                            </tr>
+                            <tr t-foreach="lines" t-as="line">
+                                <td><span t-out="line.move_id.name"/></td>
+                                <td><span t-out="line.move_id.invoice_date" t-options="{'widget': 'date'}"/></td>
+                                <td><span t-out="line.due_date" t-options="{'widget': 'date'}"/></td>
+                                <td><span t-out="line.cavali_number or '—'"/></td>
+                                <td class="text-end">
+                                    <span t-out="line.nominal_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
+                            </tr>
+                            <tr class="pe-doc-total">
+                                <td colspan="4">Total</td>
+                                <td class="text-end pe-doc-highlight">
+                                    <span t-out="sum(lines.mapped('nominal_amount'))" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <t t-set="bank" t-value="o.contract_id.factor_bank_id"/>
+                        <div class="pe-doc-section">Datos para el pago</div>
+                        <table class="pe-doc-table mb-3">
+                            <tr>
+                                <td class="pe-doc-label">Beneficiario</td>
+                                <td class="pe-doc-value"><span t-out="o.factor_id.name"/></td>
+                            </tr>
+                            <tr t-if="bank">
+                                <td class="pe-doc-label">Banco y cuenta</td>
+                                <td class="pe-doc-value">
+                                    <span t-out="bank.bank_id.name"/> · <span t-out="bank.acc_number"/>
+                                    <t t-if="bank.currency_id"> (<span t-out="bank.currency_id.name"/>)</t>
+                                </td>
+                            </tr>
+                            <tr t-if="not bank">
+                                <td class="pe-doc-label">Cuenta</td>
+                                <td class="pe-doc-value">La que les indique <span t-out="o.factor_id.name"/></td>
+                            </tr>
+                        </table>
+                        <p>
+                            Los pagos hechos a una persona distinta del tenedor no liberan de la obligación.
+                            Ante cualquier consulta, comuníquense con nosotros.
+                        </p>
+                        <div class="pe-doc-signatures pe-doc-keep mt-5">
+                            <div>
+                                <div class="pe-doc-sign-line"/>
+                                <div t-out="o.company_id.name"/>
+                                <div>RUC <span t-out="o.company_id.vat"/></div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

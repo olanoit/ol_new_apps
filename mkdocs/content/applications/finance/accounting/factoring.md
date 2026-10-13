@@ -13,10 +13,10 @@ de cliente ya emitidas, sin duplicarlas, y genera los asientos de cada momento
 (cesión, desembolso, intereses, cobro, recompra o pérdida) con las cuentas del
 PCGE. Lo usan tesorería y contabilidad.
 
-Quedan fuera la comunicación con CAVALI (Factrack) y con la plataforma de
-conformidad de SUNAT, de las que se registran los datos que devuelven; la
-factura negociable impresa (tercera copia física), y los desembolsos parciales
-del factor dentro de una misma operación: se usa una operación por tramo.
+Además lleva la **factura negociable** en la propia factura (conformidad,
+anotación en CAVALI y su historial de eventos) y se conecta con **CAVALI**:
+paquete para Factrack, importación de estados y servicios web. Queda fuera la
+factura negociable impresa (tercera copia física).
 
 ## Configuración
 
@@ -34,6 +34,10 @@ del factor dentro de una misma operación: se usa una operación por tramo.
    (cuentas) y solo lectura (auditor).
 6. Revise las cuentas de ganancia y pérdida por diferencia de cambio en los
    ajustes de Contabilidad.
+7. En **Perú ‣ Clientes ‣ Factoring ‣ Contratos**, registre las condiciones de
+   cada factor (ver [Contrato y simulación](#contrato-y-simulacion)).
+8. En **Ajustes ‣ Perú ‣ CAVALI (facturas negociables)**, elija la conexión
+   (ver [CAVALI](#cavali)).
 
 ## Conceptos
 
@@ -233,6 +237,119 @@ Una obligación de USD 800 recibida a 3,75 (S/ 3 000) y cancelada cuando el
 dólar está a 3,80 se salda en la 4512 por S/ 3 000, al cambio histórico, y la
 diferencia de **S/ 40** va a pérdida por diferencia de cambio.
 
+## Contrato y simulación
+
+El **contrato** guarda las condiciones de un factor y la operación las toma al
+elegirlo:
+
+- **% de adelanto**, **TEA** y **días mínimos**: los intereses de cada factura
+  son `adelanto × ((1 + TEA) ^ (días / 360) − 1)`, con los días hasta su
+  vencimiento.
+- **Comisión**: porcentaje del valor nominal con un **mínimo por factura**,
+  más una **comisión fija** por operación. Si **la comisión lleva IGV**, se
+  suma el 18 % (los intereses no llevan IGV).
+- **Gastos por factura** (administrativos o de CAVALI).
+- **Cuenta del factor**: la que va en la notificación al cliente.
+- **Línea de crédito** y **límite por cliente**: el adelanto vigente de las
+  facturas cedidas que aún no se cobran. Ceder por encima del límite da error.
+- **Exige anotación en CAVALI**: solo se ceden facturas anotadas.
+
+![Contrato del factor con su línea de crédito](factoring/contract.png)
+
+En la operación, **Simular liquidación** calcula los intereses de cada factura,
+la comisión con su IGV y los gastos (pestaña **Simulación**). Al registrar el
+desembolso, el asistente propone esos importes y muestra la **diferencia con
+la simulación**, para revisar la liquidación real del factor.
+
+![Liquidación estimada con el contrato](factoring/simulation.png)
+
+## Revisar las facturas antes de ceder
+
+**Ceder a factoring** desde la lista de facturas revisa todas las elegidas. Si
+alguna no se puede ceder, muestra cada factura con **todos** sus motivos (no
+está publicada, otra moneda, ya pagada, vencida, disconforme, ya cedida o ya
+transferida) y los avisos (al contado, conformidad pendiente, sin anotación en
+CAVALI), y **Crear operación** usa solo las que sí se pueden ceder. Al ceder,
+la operación también junta todos los errores en un solo mensaje.
+
+## Factura negociable
+
+La pestaña **Facturación PE ‣ Factura negociable** de cada factura de cliente
+muestra:
+
+- **Conformidad del cliente**: pendiente, expresa, presunta o disconforme. Una
+  tarea diaria marca la **conformidad presunta** a los 8 días calendario de la
+  emisión en las facturas al crédito, y crea una actividad 2 días antes de que
+  venza el plazo.
+- **CAVALI**: situación de la factura negociable (sin anotar, anotada,
+  transferida, pagada, protestada, recomprada o anotación anulada), código y
+  fecha de anotación, **tenedor** y **fecha de pago**.
+- **Eventos**: cada cambio con su fecha, contraparte, referencia, importe y
+  origen (manual, CAVALI, operación de factoring o automático).
+
+**Registrar evento** (también en la lista de facturas: **Acción ‣ Evento de
+factura negociable**) anota lo que pasó. El orden se valida:
+
+| Evento | Requiere |
+|---|---|
+| Anotación en cuenta | Factura al crédito y sin disconformidad |
+| Transferencia | Anotación y conformidad (expresa o presunta) |
+| Prórroga, pago o protesto | Anotación |
+| Recompra | Transferencia o protesto |
+
+La operación de factoring registra sola la **transferencia** al ceder una
+factura anotada, el **pago** al cobrarla, la **prórroga** y la **recompra**; al
+cancelar la operación, revierte la transferencia.
+
+![Factura negociable con su conformidad y sus eventos](factoring/negotiable-invoice.png)
+
+## CAVALI
+
+CAVALI registra las facturas negociables por su aplicativo web **Factrack**
+(formulario individual o masivo) y por **servicios web** para los
+participantes (bancos y empresas de factoring) y los emisores con cuenta de
+emisor. La especificación de los servicios web la entrega CAVALI con las
+credenciales. En **Ajustes ‣ Perú ‣ CAVALI (facturas negociables)**:
+
+- **Factrack (archivos)**: en la lista de facturas, **Acción ‣ Paquete para
+  Factrack (CAVALI)** descarga un ZIP con el XML de cada comprobante y la
+  información adicional en Excel (domicilios, fecha de pago, monto neto
+  pendiente y cuotas) para el formulario masivo. Luego, **Perú ‣ Clientes ‣
+  Factoring ‣ Importar estados de CAVALI** lee el Excel o CSV de Factrack
+  (columnas **Serie**, **Número** y **Estado**; opcionales **Fecha**, **Código
+  anotación** y **RUC tenedor**) y registra los eventos.
+- **Servicios web**: ambiente (pruebas o producción), URL, usuario y clave.
+  **Registrar en CAVALI** envía la factura con su XML; la cesión envía la
+  transferencia, el cobro el pago y la prórroga la reprogramación; **Consultar
+  CAVALI** (y una tarea diaria) trae el estado y la conformidad. Cada envío
+  queda en **Envíos a CAVALI** con su solicitud y su respuesta, sin las
+  credenciales. Las rutas de cada operación se ajustan al manual de CAVALI en
+  los parámetros del sistema `l10n_pe_cavali.path.<operación>`.
+- **Cuenta en CAVALI**: emisor con cuenta de emisor o mediante un participante,
+  con su código y el código RUT de la empresa.
+
+![Conexión con CAVALI en los ajustes](factoring/cavali-settings.png)
+
+## Otras operaciones con el factor
+
+- **Desembolso parcial**: el asistente de desembolso deja elegir las facturas;
+  las demás quedan por desembolsar y se registran después. Solo se cobran,
+  recompran o prorrogan las facturas ya desembolsadas.
+- **Cobro recibido por la empresa**: si el cliente paga a la empresa en vez de
+  al factor, lo cobrado cubre primero el adelanto, que queda **por transferir
+  al factor** (sin recurso en la 4699; con recurso sigue en la 4512), y después
+  el retenido, que es de la empresa. **Transferir al factor** entrega ese
+  importe; la operación se liquida cuando no queda nada por transferir.
+- **Prórroga**: nueva fecha de pago con los intereses de los días adicionales
+  (propuestos con la TEA del contrato) y la comisión; la factura negociable
+  registra la nueva fecha.
+- **Notificar a los clientes**: un correo por cliente con el PDF de la
+  transferencia, las facturas, el monto neto pendiente y la cuenta del factor.
+- **Archivo para el factor**: Excel con las facturas, los clientes, los montos
+  netos, los vencimientos, el adelanto y la anotación en CAVALI.
+
+![Notificación de la transferencia al cliente](factoring/transfer-notice.png)
+
 ## Reportes
 
 - **Perú ‣ Clientes ‣ Factoring ‣ Facturas cedidas**: cartera cedida por factor, cliente y
@@ -258,6 +375,10 @@ diferencia de **S/ 40** va a pérdida por diferencia de cambio.
 | Nominal mayor que el saldo de la factura | Error al ceder | Corregir el valor nominal |
 | Intereses y comisiones mayores que el adelanto | Error en el desembolso | Revisar la liquidación del factor |
 | Se intenta **Pagar** una factura cedida | Bloqueado | Registrar el cobro desde la operación |
+| El cliente pagó a la empresa | El adelanto se debe al factor | **Cobro recibido por la empresa** y luego **Transferir al factor** |
+| «La línea de … es …» o «El límite por cliente …» | La cesión supera la línea de crédito o el límite por cliente | Esperar cobros, ampliar la línea o ceder menos facturas |
+| «No se transfiere sin conformidad» | La factura no tiene conformidad expresa ni presunta | Esperar los 8 días o registrar la conformidad expresa |
+| CAVALI responde con error | El envío no se registra como evento | Revisar el mensaje en **Envíos a CAVALI** y corregir los datos |
 
 ## Datos de demostración
 

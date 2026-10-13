@@ -30,20 +30,8 @@ Lo que paga el cliente se aplica primero al adelanto y luego al retenido.
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from datetime import timedelta
-
 from .factoring_account_config import MODALITIES
-
-#: DU 013-2020 (art. 7): el adquirente tiene 8 días calendario desde que la
-#: factura electrónica se pone a su disposición para dar su conformidad; si no
-#: la objeta, se presume conforme (sin prueba en contrario).
-CONFORMITY_DAYS = 8
-CONFORMITY_STATES = [
-    ('pending', 'Pendiente'),
-    ('accepted', 'Conforme (expresa)'),
-    ('presumed', 'Conforme (presunta)'),
-    ('rejected', 'Disconforme'),
-]
+from .negotiable_invoice import CONFORMITY_DAYS, CONFORMITY_STATES  # noqa: F401
 
 STATES = [
     ('draft', 'Borrador'),
@@ -80,7 +68,11 @@ class L10nPeFactoring(models.Model):
     factor_id = fields.Many2one(
         'res.partner', string='Factor', tracking=True, check_company=True,
         help='Banco o empresa de factoring que compra las facturas.')
-    contract_ref = fields.Char(string='Contrato', tracking=True)
+    contract_id = fields.Many2one(
+        'l10n_pe.factoring.contract', string='Contrato', tracking=True, check_company=True,
+        domain="[('factor_id', '=?', factor_id)]",
+        help='Condiciones del factor: adelanto, tasa, comisión y línea de crédito.')
+    contract_ref = fields.Char(string='Referencia del contrato', tracking=True)
     modality = fields.Selection(
         MODALITIES, string='Modalidad', required=True, default='without_recourse', tracking=True,
         help='Sin recurso: el factor asume el riesgo y la factura se da de baja. Con recurso: '
@@ -101,6 +93,20 @@ class L10nPeFactoring(models.Model):
              'hasta que el cliente paga. Se propone en cada factura.')
     line_ids = fields.One2many('l10n_pe.factoring.line', 'factoring_id', string='Facturas', copy=True)
     note = fields.Html(string='Notas')
+
+    # Simulación de la liquidación (con las condiciones del contrato)
+    estimated_interest = fields.Monetary(string='Intereses estimados', readonly=True, copy=False)
+    estimated_fee = fields.Monetary(string='Comisión estimada', readonly=True, copy=False)
+    estimated_fee_igv = fields.Monetary(string='IGV de la comisión', readonly=True, copy=False)
+    estimated_expense = fields.Monetary(string='Gastos estimados', readonly=True, copy=False)
+    estimated_net = fields.Monetary(
+        string='Neto estimado', readonly=True, copy=False,
+        help='Adelanto menos intereses, comisión con su IGV y gastos estimados.')
+    has_undisbursed = fields.Boolean(
+        string='Con facturas por desembolsar', compute='_compute_has_undisbursed')
+    transfer_pending_amount = fields.Monetary(
+        string='Por transferir al factor', compute='_compute_amounts', store=True,
+        help='Cobros que el cliente pagó a la empresa y que aún hay que transferir al factor.')
 
     # Importes
     nominal_amount = fields.Monetary(string='Valor nominal', compute='_compute_amounts', store=True)
@@ -142,7 +148,7 @@ class L10nPeFactoring(models.Model):
         'El porcentaje de adelanto debe estar entre 0 y 100.')
 
     @api.depends('line_ids.nominal_amount', 'line_ids.advance_amount', 'line_ids.state',
-                 'line_ids.collected_amount')
+                 'line_ids.collected_amount', 'line_ids.transfer_pending_amount')
     def _compute_amounts(self):
         for operation in self:
             lines = operation.line_ids.filtered(lambda l: l.state != 'cancelled')
@@ -150,7 +156,48 @@ class L10nPeFactoring(models.Model):
             operation.advance_amount = sum(lines.mapped('advance_amount'))
             operation.retained_amount = operation.nominal_amount - operation.advance_amount
             operation.collected_amount = sum(lines.mapped('collected_amount'))
+            operation.transfer_pending_amount = sum(lines.mapped('transfer_pending_amount'))
             operation.line_count = len(lines)
+
+    @api.depends('line_ids.state', 'line_ids.disbursed')
+    def _compute_has_undisbursed(self):
+        for operation in self:
+            operation.has_undisbursed = bool(operation.line_ids.filtered(
+                lambda l: l.state == 'assigned' and not l.disbursed))
+
+    @api.onchange('contract_id')
+    def _onchange_contract_id(self):
+        contract = self.contract_id
+        if contract:
+            self.factor_id = contract.factor_id
+            self.modality = contract.modality
+            self.currency_id = contract.currency_id
+            self.default_advance_percent = contract.advance_percent
+            self.contract_ref = contract.name
+            for line in self.line_ids:
+                line.advance_percent = contract.advance_percent
+
+    def action_simulate(self):
+        """Simula la liquidación con las condiciones del contrato: intereses por
+        factura según los días al vencimiento, comisión con su IGV y gastos."""
+        for operation in self:
+            contract = operation.contract_id
+            if not contract:
+                raise UserError(operation.env._('Elija el contrato del factor para simular la liquidación.'))
+            lines = operation.line_ids.filtered(lambda l: l.state in ('draft', 'assigned') and not l.disbursed)
+            by_line, totals = contract._simulate(lines, operation.date)
+            for line, values in by_line.items():
+                line.write({'estimated_days': values['days'], 'estimated_interest': values['interest'],
+                            'estimated_fee': values['fee']})
+            charges = totals['interest'] + totals['fee'] + totals['fee_igv'] + totals['expense']
+            operation.write({
+                'estimated_interest': totals['interest'],
+                'estimated_fee': totals['fee'],
+                'estimated_fee_igv': totals['fee_igv'],
+                'estimated_expense': totals['expense'],
+                'estimated_net': sum(lines.mapped('advance_amount')) - charges,
+            })
+        return True
 
     @api.depends('interest_amount', 'fee_amount', 'expense_amount', 'loss_amount')
     def _compute_financial_cost(self):
@@ -231,31 +278,37 @@ class L10nPeFactoring(models.Model):
     # ------------------------------------------------------------------
     # Cesión
     # ------------------------------------------------------------------
-    def _check_before_assign(self):
+    def _assignment_errors(self):
+        """Todo lo que impide ceder, junto (no solo el primer problema)."""
         self.ensure_one()
+        errors = []
         if not self.factor_id:
-            raise UserError(self.env._('Indique el factor.'))
+            errors.append(self.env._('Indique el factor.'))
         if not self.line_ids:
-            raise UserError(self.env._('Agregue las facturas que cede.'))
+            errors.append(self.env._('Agregue las facturas que cede.'))
+        if self.contract_id and self.contract_id.factor_id != self.factor_id:
+            errors.append(self.env._('El contrato %s es de otro factor.', self.contract_id.name))
         for line in self.line_ids:
+            errors += line._eligibility_errors(self.currency_id)
             invoice = line.move_id
-            if invoice.state != 'posted' or invoice.move_type != 'out_invoice':
-                raise UserError(self.env._('%s no es una factura de cliente publicada.', invoice.display_name))
-            if invoice.currency_id != self.currency_id:
-                raise UserError(self.env._(
-                    'La factura %(invoice)s está en %(currency)s y la operación en %(operation)s.',
-                    invoice=invoice.display_name, currency=invoice.currency_id.name,
-                    operation=self.currency_id.name))
             if self.currency_id.compare_amounts(line.nominal_amount, 0.0) <= 0:
-                raise UserError(self.env._('El valor nominal de %s debe ser mayor que cero.', invoice.display_name))
+                errors.append(self.env._('El valor nominal de %s debe ser mayor que cero.', invoice.display_name))
             if self.currency_id.compare_amounts(line.nominal_amount, invoice.amount_residual) > 0:
-                raise UserError(self.env._(
+                errors.append(self.env._(
                     'El valor nominal de %(invoice)s supera su saldo pendiente (%(residual)s).',
                     invoice=invoice.display_name, residual=invoice.amount_residual))
-            if line.conformity_state == 'rejected':
-                raise UserError(self.env._(
-                    'El cliente dio su disconformidad con %s: no se puede ceder hasta que se subsane '
-                    '(nota de crédito o débito o nuevo comprobante).', invoice.display_name))
+            if self.contract_id.require_cavali and invoice.l10n_pe_negotiable_state != 'registered':
+                errors.append(self.env._(
+                    '%s no está anotada en CAVALI (el contrato lo exige para transferirla).', invoice.name))
+        if self.contract_id:
+            errors += self.contract_id._check_limits(self)
+        return errors
+
+    def _check_before_assign(self):
+        self.ensure_one()
+        errors = self._assignment_errors()
+        if errors:
+            raise UserError(self.env._('No se puede ceder %s:', self.name) + '\n- ' + '\n- '.join(errors))
 
     def _assignment_warnings(self):
         """Avisos que no impiden ceder: factura al contado (la factura negociable
@@ -266,6 +319,11 @@ class L10nPeFactoring(models.Model):
         if cash:
             notes.append(self.env._('Facturas al contado (sin plazo de pago): %s.',
                                     ', '.join(cash.move_id.mapped('name'))))
+        unregistered = self.line_ids.filtered(lambda l: l.move_id.l10n_pe_negotiable_state != 'registered')
+        if unregistered:
+            notes.append(self.env._(
+                'Sin anotación en cuenta en CAVALI (la transferencia de la factura negociable se '
+                'anota allí): %s.', ', '.join(unregistered.move_id.mapped('name'))))
         pending = self.line_ids.filtered(lambda l: l.conformity_state == 'pending')
         if pending:
             notes.append(self.env._('Conformidad del cliente pendiente: %s.', ', '.join(
@@ -289,6 +347,7 @@ class L10nPeFactoring(models.Model):
             if not without_recourse:
                 operation.line_ids.write({'state': 'assigned'})
                 operation.state = 'assigned'
+                operation._after_assign()
                 operation.message_post(body=operation.env._(
                     'Facturas cedidas a %(factor)s (%(modality)s): siguen pendientes hasta el cobro.',
                     factor=operation.factor_id.name, modality=dict(MODALITIES)[operation.modality]))
@@ -317,10 +376,27 @@ class L10nPeFactoring(models.Model):
                 line.write({'state': 'assigned', 'assignment_line_id': (lines - credit).id,
                             'receivable_line_id': credit.id})
             operation.state = 'assigned'
+            operation._after_assign()
             operation.message_post(body=operation.env._(
                 'Facturas cedidas a %(factor)s (%(modality)s).', factor=operation.factor_id.name,
                 modality=dict(MODALITIES)[operation.modality]))
         return True
+
+    def _after_assign(self):
+        """Transferencia de las facturas negociables anotadas en CAVALI al
+        factor (evento; con la conexión activa, también la envía a CAVALI)."""
+        self.ensure_one()
+        registered = self.line_ids.move_id.filtered(lambda m: m.l10n_pe_negotiable_state == 'registered')
+        if not registered:
+            return
+        if self.company_id._l10n_pe_cavali_enabled():
+            registered._l10n_pe_cavali_transfer(self.factor_id, operation=self)
+        else:
+            for move in registered:
+                move._l10n_pe_add_negotiable_event(
+                    'transferred', date=self.date, partner=self.factor_id, source='factoring',
+                    reference=self.name, amount=self.line_ids.filtered(
+                        lambda l: l.move_id == move).nominal_amount)
 
     # ------------------------------------------------------------------
     # Cancelación
@@ -335,6 +411,12 @@ class L10nPeFactoring(models.Model):
                 move.line_ids.remove_move_reconcile()
                 move.button_draft()
                 move.button_cancel()
+            for move in operation.line_ids.move_id.filtered(
+                    lambda m: m.l10n_pe_negotiable_state == 'transferred'
+                    and m.l10n_pe_negotiable_holder_id == operation.factor_id):
+                move._l10n_pe_add_negotiable_event(
+                    'reverted', source='factoring', reference=operation.name,
+                    note=operation.env._('Operación de factoring cancelada.'))
             operation.line_ids.write({'state': 'cancelled'})
             operation.state = 'cancelled'
         return True
@@ -353,7 +435,8 @@ class L10nPeFactoring(models.Model):
     def _update_final_state(self):
         for operation in self:
             lines = operation.line_ids.filtered(lambda l: l.state != 'cancelled')
-            if lines.filtered(lambda l: l.state == 'assigned'):
+            if lines.filtered(lambda l: l.state == 'assigned') or not operation.currency_id.is_zero(
+                    sum(lines.mapped('transfer_pending_amount'))):
                 continue
             operation._accrue_pending_interest(fields.Date.context_today(operation))
             operation.state = 'repurchased' if all(l.state == 'repurchased' for l in lines) else 'done'
@@ -439,6 +522,118 @@ class L10nPeFactoring(models.Model):
     def action_write_off(self):
         return self._open_wizard('write_off')
 
+    def action_company_collect(self):
+        return self._open_wizard('company_collect')
+
+    def action_transfer(self):
+        return self._open_wizard('transfer')
+
+    def action_extend(self):
+        return self._open_wizard('extend')
+
+    def action_send_notice(self):
+        """Notificación al cliente (deudor) de que la factura se transfirió y la
+        debe pagar al factor: un correo por cliente con su PDF."""
+        self.ensure_one()
+        lines = self._notice_lines()
+        if not lines:
+            raise UserError(self.env._('No hay facturas cedidas que notificar.'))
+        report = self.env.ref('al_l10n_pe_factoring.action_report_factoring_notice')
+        for partner in lines.partner_id:
+            partner_lines = lines.filtered(lambda l: l.partner_id == partner)
+            pdf, _type = self.env['ir.actions.report'].with_context(notice_partner_id=partner.id)._render_qweb_pdf(
+                report, self.ids)
+            attachment = self.env['ir.attachment'].create({
+                'name': 'Notificación %s - %s.pdf' % (self.name.replace('/', '-'), partner.name),
+                'raw': pdf, 'res_model': self._name, 'res_id': self.id, 'mimetype': 'application/pdf'})
+            self.message_post(
+                body=self.env._(
+                    'Estimados %(customer)s: les comunicamos que transferimos a %(factor)s las facturas '
+                    '%(invoices)s. Desde ahora deben pagarlas a %(factor)s. Adjuntamos la notificación.',
+                    customer=partner.name, factor=self.factor_id.name,
+                    invoices=', '.join(partner_lines.move_id.mapped('name'))),
+                subject=self.env._('Transferencia de facturas a %s', self.factor_id.name),
+                partner_ids=partner.ids, attachment_ids=attachment.ids,
+                message_type='comment', subtype_xmlid='mail.mt_comment')
+            for move in partner_lines.move_id:
+                self.env['l10n_pe.negotiable.event'].create({
+                    'move_id': move.id, 'event_type': 'notified', 'partner_id': partner.id,
+                    'source': 'factoring', 'reference': self.name,
+                    'note': self.env._('Notificación de la transferencia a %s.', self.factor_id.name)})
+        return True
+
+    def _notice_lines(self, partner_id=None):
+        """Facturas de la notificación (todas o las de un cliente)."""
+        self.ensure_one()
+        lines = self.line_ids.filtered(lambda l: l.state in ('assigned', 'collected'))
+        partner_id = partner_id or self.env.context.get('notice_partner_id')
+        if partner_id:
+            lines = lines.filtered(lambda l: l.partner_id.id == partner_id)
+        return lines
+
+    def action_export_file(self):
+        """Archivo de la cesión para el factor (Excel): facturas, cliente, montos
+        netos, vencimientos y anotación en CAVALI."""
+        self.ensure_one()
+        attachment = self._export_attachment()
+        return {'type': 'ir.actions.act_url', 'target': 'self',
+                'url': '/web/content/%s?download=true' % attachment.id}
+
+    def _export_attachment(self):
+        import base64
+        import io
+
+        import xlsxwriter
+
+        self.ensure_one()
+        buffer = io.BytesIO()
+        book = xlsxwriter.Workbook(buffer, {'in_memory': True})
+        sheet = book.add_worksheet('Cesión')
+        bold = book.add_format({'bold': True})
+        money = book.add_format({'num_format': '#,##0.00'})
+        date_fmt = book.add_format({'num_format': 'dd/mm/yyyy'})
+        company = self.company_id
+        sheet.write_row(0, 0, ['Operación', self.name, 'Cedente', company.name, 'RUC', company.vat or ''], bold)
+        sheet.write_row(1, 0, ['Factor', self.factor_id.name, 'RUC', self.factor_id.vat or '',
+                               'Modalidad', dict(MODALITIES)[self.modality], 'Moneda', self.currency_id.name])
+        headers = ['RUC del cliente', 'Cliente', 'Tipo', 'Serie', 'Número', 'Fecha de emisión',
+                   'Fecha de pago', 'Monto neto pendiente', '% de adelanto', 'Adelanto', 'Anotación CAVALI',
+                   'Fecha de anotación', 'Conformidad']
+        sheet.write_row(3, 0, headers, bold)
+        conformity = dict(CONFORMITY_STATES)
+        row = 4
+        for line in self.line_ids.filtered(lambda l: l.state != 'cancelled'):
+            invoice = line.move_id
+            serie, _sep, number = (invoice.name or '').rpartition('-')
+            sheet.write(row, 0, invoice.commercial_partner_id.vat or '')
+            sheet.write(row, 1, invoice.commercial_partner_id.name)
+            sheet.write(row, 2, invoice.l10n_latam_document_type_id.code or '01'
+                        if 'l10n_latam_document_type_id' in invoice._fields else '01')
+            sheet.write(row, 3, serie.split(' ')[-1] if serie else '')
+            sheet.write(row, 4, number or invoice.name)
+            sheet.write_datetime(row, 5, fields.Datetime.to_datetime(invoice.invoice_date), date_fmt)
+            if line.due_date:
+                sheet.write_datetime(row, 6, fields.Datetime.to_datetime(line.due_date), date_fmt)
+            sheet.write_number(row, 7, line.nominal_amount, money)
+            sheet.write_number(row, 8, line.advance_percent)
+            sheet.write_number(row, 9, line.advance_amount, money)
+            sheet.write(row, 10, line.cavali_number or '')
+            if line.cavali_date:
+                sheet.write_datetime(row, 11, fields.Datetime.to_datetime(line.cavali_date), date_fmt)
+            sheet.write(row, 12, conformity.get(line.conformity_state, ''))
+            row += 1
+        sheet.write(row, 6, 'Total', bold)
+        sheet.write_number(row, 7, self.nominal_amount, money)
+        sheet.write_number(row, 9, self.advance_amount, money)
+        sheet.set_column(0, 12, 16)
+        book.close()
+        return self.env['ir.attachment'].create({
+            'name': '%s.xlsx' % self.name.replace('/', '-'),
+            'datas': base64.b64encode(buffer.getvalue()),
+            'res_model': self._name, 'res_id': self.id,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+
     def action_open_moves(self):
         self.ensure_one()
         return {
@@ -485,26 +680,28 @@ class L10nPeFactoringLine(models.Model):
     advance_amount = fields.Monetary(string='Adelanto', compute='_compute_advance', store=True)
     retained_amount = fields.Monetary(string='Retenido', compute='_compute_advance', store=True)
     due_date = fields.Date(string='Vencimiento')
-    cavali_number = fields.Char(
-        string='Anotación CAVALI',
-        help='Código de la anotación en cuenta de la factura negociable en CAVALI.')
-    cavali_date = fields.Date(
-        string='Fecha de anotación',
-        help='Fecha de la anotación en cuenta en CAVALI: desde ella la factura negociable '
-             'electrónica se puede transferir.')
-    is_credit = fields.Boolean(
-        string='Al crédito', compute='_compute_is_credit',
-        help='La factura tiene plazo de pago (forma de pago «crédito»): la factura negociable '
-             'nace de una venta al crédito.')
-    conformity_state = fields.Selection(
-        CONFORMITY_STATES, string='Conformidad', default='pending', required=True,
-        help='Conformidad del cliente con la factura (DU 013-2020, art. 7): expresa, presunta '
-             'a los 8 días calendario sin objeción, o disconformidad (impide ceder).')
-    conformity_date = fields.Date(string='Fecha de conformidad')
-    presumed_conformity_date = fields.Date(
-        string='Conformidad presunta', compute='_compute_presumed_conformity_date', store=True,
-        help='8 días calendario desde la emisión de la factura (la norma los cuenta desde que '
-             'se pone a disposición del cliente y de SUNAT, hasta 2 días después).')
+    # Factura negociable: datos de la factura (se editan desde aquí o desde ella).
+    cavali_number = fields.Char(related='move_id.l10n_pe_cavali_number', readonly=False)
+    cavali_date = fields.Date(related='move_id.l10n_pe_cavali_date', readonly=False)
+    negotiable_state = fields.Selection(related='move_id.l10n_pe_negotiable_state', string='En CAVALI')
+    is_credit = fields.Boolean(related='move_id.l10n_pe_is_credit')
+    conformity_state = fields.Selection(related='move_id.l10n_pe_conformity_state', readonly=False)
+    conformity_date = fields.Date(related='move_id.l10n_pe_conformity_date', readonly=False)
+    presumed_conformity_date = fields.Date(related='move_id.l10n_pe_presumed_conformity_date')
+    # Simulación y desembolso
+    estimated_days = fields.Integer(string='Días', readonly=True, copy=False)
+    estimated_interest = fields.Monetary(string='Intereses estimados', readonly=True, copy=False)
+    estimated_fee = fields.Monetary(string='Comisión estimada', readonly=True, copy=False)
+    disbursed = fields.Boolean(string='Desembolsada', readonly=True, copy=False,
+                               help='El factor ya abonó el adelanto de esta factura.')
+    disbursement_date = fields.Date(string='Fecha de desembolso', readonly=True, copy=False)
+    # Cobro que el cliente pagó a la empresa en vez de al factor
+    company_collected_amount = fields.Monetary(
+        string='Cobrado por la empresa', readonly=True, copy=False,
+        help='Lo que el cliente pagó a la empresa en vez de al factor.')
+    transfer_pending_amount = fields.Monetary(
+        string='Por transferir al factor', readonly=True, copy=False,
+        help='Parte del adelanto cobrada por la empresa que aún hay que entregar al factor.')
     collected_amount = fields.Monetary(
         string='Cobrado', readonly=True, copy=False,
         help='Lo que el cliente ya pagó al factor por esta factura.')
@@ -527,19 +724,6 @@ class L10nPeFactoringLine(models.Model):
         'CHECK(advance_percent >= 0 AND advance_percent <= 100)',
         'El porcentaje de adelanto debe estar entre 0 y 100.')
 
-    @api.depends('move_id.invoice_date', 'move_id.invoice_date_due')
-    def _compute_is_credit(self):
-        for line in self:
-            invoice = line.move_id
-            line.is_credit = bool(invoice.invoice_date_due and invoice.invoice_date
-                                  and invoice.invoice_date_due > invoice.invoice_date)
-
-    @api.depends('move_id.invoice_date')
-    def _compute_presumed_conformity_date(self):
-        for line in self:
-            date = line.move_id.invoice_date
-            line.presumed_conformity_date = date + timedelta(days=CONFORMITY_DAYS) if date else False
-
     @api.depends('nominal_amount', 'collected_amount')
     def _compute_pending_amount(self):
         for line in self:
@@ -552,6 +736,12 @@ class L10nPeFactoringLine(models.Model):
                 line.conformity_date = line.presumed_conformity_date
             elif line.conformity_state == 'accepted' and not line.conformity_date:
                 line.conformity_date = fields.Date.context_today(line)
+
+    def _eligibility_errors(self, currency=None):
+        """Motivos por los que la factura de la línea no se puede ceder."""
+        self.ensure_one()
+        return self.env['l10n_pe.factoring.eligibility']._invoice_errors(
+            self.move_id, currency or self.currency_id, exclude_line=self)
 
     @api.depends('nominal_amount', 'advance_percent', 'currency_id')
     def _compute_advance(self):
@@ -597,6 +787,23 @@ class L10nPeFactoringLine(models.Model):
                 raise ValidationError(self.env._(
                     'La factura %(invoice)s ya está en la operación de factoring %(operation)s.',
                     invoice=line.move_id.display_name, operation=other.factoring_id.name))
+
+    def _negotiable_event(self, event_type, date, amount=0.0, note=False, due_date=False):
+        """Evento de la factura negociable por un movimiento de la operación,
+        solo si la factura está anotada en CAVALI y el evento corresponde. Con
+        la conexión activa, el pago y la prórroga también se informan a CAVALI."""
+        self.ensure_one()
+        move = self.move_id
+        if move._l10n_pe_check_negotiable_event(event_type):
+            return self.env['l10n_pe.negotiable.event']
+        operation = self.factoring_id
+        if operation.company_id._l10n_pe_cavali_enabled() and event_type in ('paid', 'extended'):
+            return move._l10n_pe_cavali_send(
+                'payment' if event_type == 'paid' else 'reschedule', operation_record=operation,
+                amount=amount, date=date, due_date=due_date)
+        return move._l10n_pe_add_negotiable_event(
+            event_type, date=date, partner=operation.factor_id, source='factoring',
+            reference=operation.name, amount=amount, note=note, due_date=due_date)
 
     def _open_receivable_lines(self):
         self.ensure_one()

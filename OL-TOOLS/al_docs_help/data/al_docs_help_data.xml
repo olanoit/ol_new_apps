@@ -1459,6 +1459,22 @@
         <field name="path">applications/finance/accounting/cash_fund/</field>
         <field name="section">Entregas a rendir y caja chica</field>
     </record>
+    <record id="help_l10n_pe_cavali_import" model="al.docs.help">
+        <field name="key">l10n_pe.cavali.import</field>
+        <field name="kind">model</field>
+        <field name="name">Importar estados de CAVALI</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/#cavali</field>
+        <field name="section">CAVALI</field>
+    </record>
+    <record id="help_l10n_pe_cavali_log" model="al.docs.help">
+        <field name="key">l10n_pe.cavali.log</field>
+        <field name="kind">model</field>
+        <field name="name">Registro de envíos a CAVALI</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/</field>
+        <field name="section">Factoring</field>
+    </record>
     <record id="help_l10n_pe_complaint" model="al.docs.help">
         <field name="key">l10n_pe.complaint</field>
         <field name="kind">model</field>
@@ -1592,8 +1608,8 @@
         <field name="kind">model</field>
         <field name="name">Operación de factoring</field>
         <field name="module">al_l10n_pe_factoring</field>
-        <field name="path">applications/finance/accounting/factoring/#crear-la-operación</field>
-        <field name="section">Crear la operación</field>
+        <field name="path">applications/finance/accounting/factoring/#otras-operaciones-con-el-factor</field>
+        <field name="section">Otras operaciones con el factor</field>
     </record>
     <record id="help_l10n_pe_factoring_account_config" model="al.docs.help">
         <field name="key">l10n_pe.factoring.account.config</field>
@@ -1602,6 +1618,30 @@
         <field name="module">al_l10n_pe_factoring</field>
         <field name="path">applications/finance/accounting/factoring/</field>
         <field name="section">Factoring</field>
+    </record>
+    <record id="help_l10n_pe_factoring_contract" model="al.docs.help">
+        <field name="key">l10n_pe.factoring.contract</field>
+        <field name="kind">model</field>
+        <field name="name">Contrato de factoring</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/</field>
+        <field name="section">Factoring</field>
+    </record>
+    <record id="help_l10n_pe_factoring_eligibility" model="al.docs.help">
+        <field name="key">l10n_pe.factoring.eligibility</field>
+        <field name="kind">model</field>
+        <field name="name">Revisión de facturas para factoring</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/#revisar-las-facturas-antes-de-ceder</field>
+        <field name="section">Revisar las facturas antes de ceder</field>
+    </record>
+    <record id="help_l10n_pe_factoring_eligibility_line" model="al.docs.help">
+        <field name="key">l10n_pe.factoring.eligibility.line</field>
+        <field name="kind">model</field>
+        <field name="name">Factura revisada para factoring</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/#revisar-las-facturas-antes-de-ceder</field>
+        <field name="section">Revisar las facturas antes de ceder</field>
     </record>
     <record id="help_l10n_pe_factoring_line" model="al.docs.help">
         <field name="key">l10n_pe.factoring.line</field>
@@ -1616,8 +1656,8 @@
         <field name="kind">model</field>
         <field name="name">Operación con el factor</field>
         <field name="module">al_l10n_pe_factoring</field>
-        <field name="path">applications/finance/accounting/factoring/</field>
-        <field name="section">Factoring</field>
+        <field name="path">applications/finance/accounting/factoring/#otras-operaciones-con-el-factor</field>
+        <field name="section">Otras operaciones con el factor</field>
     </record>
     <record id="help_l10n_pe_fourth_category_certificate" model="al.docs.help">
         <field name="key">l10n_pe.fourth.category.certificate</field>
@@ -2122,6 +2162,22 @@
         <field name="module">al_l10n_pe_monthly_tax</field>
         <field name="path">applications/finance/fiscal_localizations/peru/monthly_tax/</field>
         <field name="section">Declaración mensual IGV y renta (621)</field>
+    </record>
+    <record id="help_l10n_pe_negotiable_event" model="al.docs.help">
+        <field name="key">l10n_pe.negotiable.event</field>
+        <field name="kind">model</field>
+        <field name="name">Evento de la factura negociable</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/#factura-negociable</field>
+        <field name="section">Factura negociable</field>
+    </record>
+    <record id="help_l10n_pe_negotiable_event_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.negotiable.event.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Registrar un evento de la factura negociable</field>
+        <field name="module">al_l10n_pe_factoring</field>
+        <field name="path">applications/finance/accounting/factoring/</field>
+        <field name="section">Factoring</field>
     </record>
     <record id="help_l10n_pe_partner_economic_activity" model="al.docs.help">
         <field name="key">l10n_pe.partner.economic.activity</field>

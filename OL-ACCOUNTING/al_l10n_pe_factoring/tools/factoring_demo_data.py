@@ -81,3 +81,35 @@ else:
     env.cr.commit()
     print('DEMO FAC:', env['l10n_pe.factoring'].search([('factor_id', '=', factor.id)]).mapped(
         lambda o: (o.name, o.modality, o.state, o.net_amount)))
+
+# Versión 8: contrato del factor con su cuenta, simulación de la operación en
+# borrador y factura negociable con sus eventos. Idempotente.
+factor = Partner.search([('name', '=', '%s Factor Capital S.A.' % PREFIX)], limit=1)
+Contract = env['l10n_pe.factoring.contract']
+if factor and not Contract.search([('factor_id', '=', factor.id)], limit=1):
+    bank = env['res.bank'].search([('name', 'ilike', 'Crédito')], limit=1) or env['res.bank'].create(
+        {'name': 'Banco de Crédito del Perú'})
+    account = env['res.partner.bank'].create({
+        'partner_id': factor.id, 'acc_number': '193-2456789-0-12', 'bank_id': bank.id,
+        'currency_id': company.currency_id.id})
+    contract = Contract.create({
+        'name': 'DEMO FAC Línea de factoring 2026', 'factor_id': factor.id, 'factor_bank_id': account.id,
+        'modality': 'without_recourse', 'currency_id': company.currency_id.id,
+        'date_start': fields.Date.context_today(env.user) - timedelta(days=60), 'advance_percent': 90.0,
+        'annual_rate': 14.5, 'fee_percent': 0.4, 'fee_min': 60.0, 'expense_fixed': 15.0,
+        'credit_limit': 100000.0, 'debtor_limit': 50000.0})
+    operations = env['l10n_pe.factoring'].search([('factor_id', '=', factor.id)])
+    operations.filtered(lambda o: o.modality == 'without_recourse').write({'contract_id': contract.id})
+    draft = operations.filtered(lambda o: o.state == 'draft')[:1]
+    if draft:
+        draft.action_simulate()
+    for move in operations.line_ids.move_id:
+        if not move.l10n_pe_negotiable_event_ids:
+            env['l10n_pe.negotiable.event'].create([
+                {'move_id': move.id, 'event_type': 'presumed', 'date': move.l10n_pe_conformity_date
+                 or move.invoice_date, 'source': 'cron'},
+                {'move_id': move.id, 'event_type': 'registered', 'date': move.l10n_pe_cavali_date
+                 or move.invoice_date, 'reference': move.l10n_pe_cavali_number, 'source': 'manual'},
+            ])
+    env.cr.commit()
+    print('DEMO FAC v8: contrato', contract.name, 'disponible', contract.available_amount)

@@ -24,6 +24,17 @@
                         cobrado.</span>
                     Para un cobro parcial, deje una sola factura e indique el importe cobrado.
                 </div>
+                <div class="alert alert-info" role="alert" invisible="operation != 'company_collect'">
+                    El cliente pagó a la empresa en vez de al factor. Lo cobrado cubre primero el adelanto,
+                    que queda por transferir al factor, y después el retenido, que es de la empresa.
+                </div>
+                <div class="alert alert-info" role="alert" invisible="operation != 'transfer'">
+                    Entrega al factor lo que el cliente pagó a la empresa por el adelanto.
+                </div>
+                <div class="alert alert-info" role="alert" invisible="operation != 'extend'">
+                    El factor prorroga el vencimiento y cobra intereses por los días adicionales. La factura
+                    negociable registra la nueva fecha de pago (reprogramación en CAVALI).
+                </div>
                 <div class="alert alert-warning" role="alert" invisible="operation != 'repurchase'">
                     El cliente no pagó: se devuelve al factor el adelanto que lo cobrado no cubrió. La
                     factura sigue pendiente de cobro a nombre del cliente.
@@ -38,19 +49,24 @@
                         <field name="bank_journal_id" invisible="operation == 'accrue'"
                                required="operation != 'accrue'" options="{'no_create': True}"/>
                         <field name="amount" invisible="operation != 'accrue'"/>
-                        <field name="collect_amount" invisible="operation != 'settle' or not single_line"/>
+                        <field name="collect_amount" invisible="operation not in ('settle', 'company_collect') or not single_line"/>
+                        <field name="new_due_date" invisible="operation != 'extend'" required="operation == 'extend'"/>
                     </group>
-                    <group invisible="operation in ('accrue', 'write_off')">
-                        <field name="advance_amount" invisible="operation != 'disburse'"/>
+                    <group invisible="operation in ('accrue', 'write_off', 'company_collect', 'transfer')">
                         <field name="interest_amount"/>
                         <field name="fee_bill_id" options="{'no_create': True}"/>
                         <field name="fee_amount"/>
                         <field name="expense_amount"/>
                         <field name="net_amount"/>
+                        <field name="estimated_charges" invisible="not estimated_charges"/>
+                        <field name="estimate_difference" invisible="not estimated_charges"
+                               decoration-danger="estimate_difference &gt; 0"/>
+                    </group>
+                    <group invisible="operation not in ('company_collect', 'transfer')">
+                        <field name="net_amount" string="Importe en el banco"/>
                     </group>
                 </group>
-                <field name="line_ids" invisible="operation not in ('settle', 'repurchase', 'write_off')"
-                       options="{'no_create': True}">
+                <field name="line_ids" invisible="operation == 'accrue'" options="{'no_create': True}">
                     <list>
                         <field name="currency_id" column_invisible="1"/>
                         <field name="move_id"/>
@@ -61,6 +77,7 @@
                         <field name="retained_amount" sum="Retenido"/>
                         <field name="collected_amount" sum="Cobrado"/>
                         <field name="pending_amount" sum="Por cobrar"/>
+                        <field name="transfer_pending_amount" sum="Por transferir" optional="hide"/>
                     </list>
                 </field>
                 <footer>

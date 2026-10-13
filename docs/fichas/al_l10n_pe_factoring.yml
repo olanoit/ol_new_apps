@@ -36,6 +36,21 @@ destacados:
     texto: >-
       Una factura no se cede dos veces; la pestaña Factoring de la factura
       muestra su operación y estado.
+  - icono: "▣"
+    titulo: Contrato y simulación
+    texto: >-
+      Adelanto, TEA, comisión con su IGV, gastos, línea de crédito y límite
+      por cliente; la operación simula la liquidación antes del desembolso.
+  - icono: "⌁"
+    titulo: CAVALI
+    texto: >-
+      Factura negociable con conformidad, anotación e historial de eventos;
+      paquete para Factrack, importación de estados y servicios web.
+  - icono: "✉"
+    titulo: Aviso al cliente
+    texto: >-
+      Notificación de la transferencia en PDF por correo, con la cuenta del
+      factor donde debe pagar.
   - icono: "▤"
     titulo: Cartera y análisis
     texto: >-
@@ -52,8 +67,11 @@ contexto:
     la 67); con recurso se mantiene y el adelanto es una obligación (45). La
     cesión del crédito no está gravada con IGV ni genera comprobante.
   nota: >-
-    **Factura negociable:** se guarda el número de anotación en CAVALI. La
-    integración con la API de CAVALI no está incluida.
+    **CAVALI:** sus servicios web se entregan con el manual y las credenciales
+    a los participantes y a los emisores con cuenta de emisor. El módulo trae
+    el cliente configurable (rutas, credenciales y ambiente) y, mientras tanto,
+    el paquete para el formulario masivo de Factrack y la importación de sus
+    estados.
 
 flujos:
   - id: factoring
@@ -162,6 +180,43 @@ pasos:
       Intereses, comisión, gastos y retenido perdido por factor y mes: el costo
       real de financiarse con factoring.
     imagen: screenshots/11-costo-financiero.png
+  - titulo: Contrato del factor
+    ruta: Perú ▸ Clientes ▸ Factoring ▸ Contratos
+    texto: >-
+      Condiciones del factor y línea de crédito: lo usado y lo disponible se
+      calculan con las facturas cedidas aún no cobradas.
+    imagen: screenshots/12-contrato.png
+  - titulo: Simular la liquidación
+    ruta: Operación ▸ Simular liquidación
+    texto: >-
+      Intereses por los días de cada factura con la TEA del contrato, comisión
+      con su IGV y gastos: el desembolso los propone y muestra la diferencia
+      con la liquidación real.
+    imagen: screenshots/13-simulacion.png
+  - titulo: Factura negociable
+    ruta: Factura ▸ Facturación PE ▸ Factura negociable
+    texto: >-
+      Conformidad (presunta sola a los 8 días), anotación en CAVALI, tenedor,
+      fecha de pago y el historial de eventos con su origen.
+    imagen: screenshots/14-factura-negociable.png
+  - titulo: Operación desembolsada
+    ruta: Perú ▸ Clientes ▸ Factoring ▸ Operaciones
+    texto: >-
+      Notificar a los clientes, cobro del factor o recibido por la empresa,
+      transferencia al factor, prórroga y archivo para el factor.
+    imagen: screenshots/16-operacion-v8.png
+  - titulo: Notificación al cliente
+    ruta: Operación ▸ Notificar a los clientes
+    texto: >-
+      Un correo por cliente con el PDF de la transferencia y la cuenta del
+      factor donde debe pagar.
+    imagen: screenshots/17-notificacion.png
+  - titulo: Conexión con CAVALI
+    ruta: Ajustes ▸ Perú ▸ CAVALI (facturas negociables)
+    texto: >-
+      Factrack (archivos) o servicios web con ambiente, URL y credenciales;
+      cuenta de emisor o mediante un participante.
+    imagen: screenshots/15-ajustes-cavali.png
   - titulo: Cuentas
     ruta: Perú ▸ Configuración ▸ Cuentas de la localización ▸ Factoring
     texto: >-
@@ -186,6 +241,15 @@ campos:
       - [Intereses diferidos, Intereses por devengar, 3731, Solo con recurso; vacía va directo a gasto]
       - [Comisiones y gastos, Comisión del factor y gastos, 6391, Si la comisión viene facturada se usa la factura del factor]
       - [Pérdida del retenido, Retenido que el factor no libera, 6741, Solo sin recurso]
+      - [Cobros por transferir al factor, Lo que el cliente pagó a la empresa, 4699, Solo sin recurso]
+  - grupo: Contrato
+    ruta: Perú ▸ Clientes ▸ Factoring ▸ Contratos
+    campos:
+      - ["% de adelanto", Adelanto sobre el valor nominal, 90, Se propone en la operación]
+      - ["TEA (%)", Tasa efectiva anual del descuento, —, "adelanto × ((1 + TEA)^(días/360) − 1)"]
+      - [Comisión, "% del nominal, mínimo por factura y fijo por operación", —, Con IGV si el factor la factura]
+      - [Línea de crédito / Límite por cliente, Adelanto vigente máximo, 0 (sin límite), Se valida al ceder]
+      - [Exige anotación en CAVALI, Solo se ceden facturas anotadas, "No", —]
   - grupo: Factura cedida
     ruta: Operación ▸ Facturas
     campos:
@@ -196,6 +260,15 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: 8.20261013
+    fecha: 13/10/2026
+    cambios:
+      - "Contratos de factoring por factor: adelanto, TEA, días mínimos, comisión (% con mínimo, fija e IGV), gastos, cuenta del factor, línea de crédito y límite por cliente, con lo usado y lo disponible."
+      - "Simulación de la liquidación en la operación; el desembolso propone los cargos del contrato y muestra la diferencia con la liquidación real."
+      - "Revisión previa al ceder: todas las facturas excluidas con todos sus motivos (vencida, pagada, disconforme, ya cedida, otra moneda) y la operación con las demás."
+      - "Factura negociable en la factura: conformidad presunta automática a los 8 días (tarea diaria con aviso 2 días antes), anotación en CAVALI, tenedor, fecha de pago e historial de eventos con orden validado."
+      - "CAVALI: paquete para el formulario masivo de Factrack (XML e información adicional), importación de estados y servicios web configurables con registro de envíos (registro, transferencia, pago, reprogramación, conformidad y consulta)."
+      - "Notificación al cliente en PDF por correo; cobro recibido por la empresa y transferencia al factor; prórroga del vencimiento; archivo de la cesión en Excel; desembolsos parciales."
   - version: 7.20261012
     fecha: 12/10/2026
     cambios:
