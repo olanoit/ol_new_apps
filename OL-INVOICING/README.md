@@ -37,4 +37,5 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_invoice](al_l10n_pe_invoice/) | 20.20261011 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [al_ose_factory_hka](al_ose_factory_hka/) | 4.20261012 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
 [al_sale_approval](al_sale_approval/) | 2.20261013 | OPL-1 | Las ventas de productos marcados no se confirman sin una solicitud aprobada en Aprobaciones.
+[al_website_sale_pe](al_website_sale_pe/) | 1.20261014 | OPL-1 | Checkout de la tienda en línea para Perú: el cliente elige boleta o factura, su RUC o DNI se consulta en SUNAT/RENIEC y llena el nombre y la dirección.
 [//]: # (end addons)

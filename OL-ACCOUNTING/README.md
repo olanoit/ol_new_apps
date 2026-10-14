@@ -56,6 +56,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_sire](al_l10n_pe_sire/) | 21.20261012 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_l10n_pe_term_deposit](al_l10n_pe_term_deposit/) | 4.20261012 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
 [al_payment_culqi](al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
+[al_payment_izipay](al_payment_izipay/) | 1.20261014 | OPL-1 | Izipay como proveedor de pago de Odoo: formulario emergente de Izipay con tarjetas y cuotas, confirmación por IPN firmada, anulaciones y devoluciones.
 [al_payment_niubiz](al_payment_niubiz/) | 2.20261009 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
-[l10n_pe_vat_sunat](l10n_pe_vat_sunat/) | 20.20261012 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
+[l10n_pe_vat_sunat](l10n_pe_vat_sunat/) | 21.20261012 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 [//]: # (end addons)

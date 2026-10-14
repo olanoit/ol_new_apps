@@ -173,8 +173,9 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_sire](OL-ACCOUNTING/al_l10n_pe_sire/) | 21.20261012 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_l10n_pe_term_deposit](OL-ACCOUNTING/al_l10n_pe_term_deposit/) | 4.20261012 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
 [al_payment_culqi](OL-ACCOUNTING/al_payment_culqi/) | 1.20261006 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
+[al_payment_izipay](OL-ACCOUNTING/al_payment_izipay/) | 1.20261014 | OPL-1 | Izipay como proveedor de pago de Odoo: formulario emergente de Izipay con tarjetas y cuotas, confirmación por IPN firmada, anulaciones y devoluciones.
 [al_payment_niubiz](OL-ACCOUNTING/al_payment_niubiz/) | 2.20261009 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
-[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 20.20261012 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
+[l10n_pe_vat_sunat](OL-ACCOUNTING/l10n_pe_vat_sunat/) | 21.20261012 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 
 ### OL-INVOICING
 
@@ -187,6 +188,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_invoice](OL-INVOICING/al_l10n_pe_invoice/) | 20.20261011 | OPL-1 | Presentación del comprobante electrónico: QR SUNAT, monto en letras, detalle tributario, detracción, cuotas de crédito, firmas y reportes propios A4 y ticket 80mm.
 [al_ose_factory_hka](OL-INVOICING/al_ose_factory_hka/) | 4.20261012 | OPL-1 | The Factory HKA como Operador de Servicios Electrónicos: facturas, boletas, notas, bajas, comprobantes de retención (CRE) y su reversión, con funciones que se activan en Ajustes.
 [al_sale_approval](OL-INVOICING/al_sale_approval/) | 2.20261013 | OPL-1 | Las ventas de productos marcados no se confirman sin una solicitud aprobada en Aprobaciones.
+[al_website_sale_pe](OL-INVOICING/al_website_sale_pe/) | 1.20261014 | OPL-1 | Checkout de la tienda en línea para Perú: el cliente elige boleta o factura, su RUC o DNI se consulta en SUNAT/RENIEC y llena el nombre y la dirección.
 
 ### OL-PAYROLL
 
@@ -205,8 +207,10 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 12.20261008 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 13.20261008 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
 [al_pos_network_printer](OL-POS/al_pos_network_printer/) | 4.20261009 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
+[al_pos_pe_partner_lookup](OL-POS/al_pos_pe_partner_lookup/) | 1.20261014 | OPL-1 | En la lista de clientes del TPV, un RUC o DNI que no está registrado se crea en un clic con los datos de SUNAT/RENIEC y queda elegido para la venta.
+[al_pos_pe_wallet_qr](OL-POS/al_pos_pe_wallet_qr/) | 1.20261014 | OPL-1 | El QR de cobro de Yape, Plin u otra billetera como método de pago QR del TPV: se muestra en la caja y en la pantalla del cliente, y el cajero confirma el pago.
 [al_pos_product_view](OL-POS/al_pos_product_view/) | 7.20261011 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
 [al_pos_theme](OL-POS/al_pos_theme/) | 2.20261008 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
 [al_pos_vendedor](OL-POS/al_pos_vendedor/) | 4.20261011 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.

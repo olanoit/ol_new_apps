@@ -333,10 +333,23 @@ Detalle: [Libro de reclamaciones](../applications/finance/fiscal_localizations/p
 
 Detalle: [Aprobación de órdenes de venta](../applications/sales/sales/sale_approval.md)
 
+### 2.9 Tienda en línea peruana (`al_website_sale_pe`)
+
+**Antes:** tienda en línea instalada; consulta de RUC/DNI activa (**Perú ‣ Configuración ‣ Consultas RUC / DNI ‣ Conexiones RUC/DNI**); una pasarela publicada.
+
+| N.º | Caso | Cómo | Resultado esperado |
+|---|---|---|---|
+| 2.9.1 | Factura con RUC | En el checkout, **Factura** y el RUC 20131312955 | El tipo pasa a RUC; se llenan la razón social de SUNAT, la calle, el código postal 150101 y Lima/Lima/Lima |
+| 2.9.2 | Boleta con DNI | Cambie a **Boleta** | El tipo pasa a DNI; con un DNI se emite boleta |
+| 2.9.3 | RUC inválido (error esperado) | Escriba 20131312954 y **Consultar en SUNAT** | «No se encontraron datos…»: no se gasta una consulta |
+| 2.9.4 | Comprobante emitido | Pague el pedido de 2.9.1 y facture | Factura electrónica (01) al RUC con la dirección consultada |
+
+Detalle: [Checkout peruano](../applications/sales/ecommerce/peruvian_checkout.md)
+
 !!! success "Para pasar a la etapa siguiente"
     - Facturas, boletas y notas aceptadas por el operador, con A4 y ticket que coinciden con el XML.
     - Detracción, retención y percepción calculadas y con su comprobante o constancia registrados.
-    - Libro de reclamaciones y aprobación de ventas probados de punta a punta.
+    - Libro de reclamaciones, aprobación de ventas y checkout peruano probados de punta a punta.
 
 ## Etapa 3: Compras y tesorería
 
@@ -503,10 +516,24 @@ Detalle: [Culqi](../applications/finance/payment_providers/culqi.md)
 
 Detalle: [Niubiz](../applications/finance/payment_providers/niubiz.md)
 
+### 3.12 Izipay (`al_payment_izipay`)
+
+**Antes:** identificador de la tienda, contraseña (`testpassword_…`) y clave pública (`<tienda>:testpublickey_…`) en **Contabilidad ‣ Configuración ‣ Proveedores de pago ‣ Izipay**; **Modo de prueba**; proveedor publicado.
+
+| N.º | Caso | Cómo | Resultado esperado |
+|---|---|---|---|
+| 3.12.1 | Validación de claves | Pasar el proveedor a **Activado** con las claves de test | Odoo rechaza el prefijo que no corresponde al modo |
+| 3.12.2 | Cobro con Visa | Pagar una factura de S/ 590 desde el enlace de pago con la tarjeta 4970100000000055 | Transacción confirmada con la referencia de Izipay y la marca Visa; 1041 contra 1212 por 590,00 |
+| 3.12.3 | Rechazo y reintento | Pagar con 4970100000000071 (fondos insuficientes) y luego con 4970100000000055 | El formulario muestra el motivo y deja reintentar; la transacción se confirma con la segunda tarjeta |
+| 3.12.4 | Devolución parcial el mismo día | Abrir la transacción y **Reembolsar** S/ 100 | Pago de salida de S/ 100; en Izipay el importe por capturar baja a S/ 490 (no se anula todo) |
+| 3.12.5 | Devolución total el mismo día | **Reembolsar** lo que queda | El pago queda anulado en Izipay y el pago de salida cubre el resto |
+
+Detalle: [Izipay](../applications/finance/payment_providers/izipay.md)
+
 !!! success "Para pasar a la etapa siguiente"
     - Liquidación de compra, recibos por honorarios y DUA publicados con los asientos e importes de la página.
     - Cheques, letras, lotes, fondos, depósitos y factoring recorridos hasta su estado final (cobrado, liquidado, cerrado o cancelado).
-    - Un cobro y una devolución de prueba en Culqi y en Niubiz conciliados con su factura.
+    - Un cobro y una devolución de prueba en Culqi, Niubiz e Izipay conciliados con su factura.
 
 ## Etapa 4: Inventario
 
@@ -762,10 +789,35 @@ Detalle: [Tema del TPV](../applications/sales/point_of_sale/theme.md)
 
 Detalle: [Impresoras de red](../applications/sales/point_of_sale/network_printers.md)
 
+### 6.6 Cliente por RUC o DNI (`al_pos_pe_partner_lookup`)
+
+**Antes:** consulta de RUC/DNI activa; caja abierta.
+
+| N.º | Caso | Cómo | Resultado esperado |
+|---|---|---|---|
+| 6.6.1 | RUC no registrado | Cliente ‣ buscar 20100130204 ‣ **Crear cliente … desde SUNAT** | Se crea «BANCO BBVA PERU» con su dirección y queda en la orden |
+| 6.6.2 | Ya registrado | Repita la búsqueda | Aparece el cliente; no hay botón ni duplicado |
+| 6.6.3 | Formato inválido (error esperado) | Busque un RUC con el dígito verificador mal | Aviso, sin consulta |
+
+Detalle: [Cliente por RUC o DNI](../applications/sales/point_of_sale/customer_lookup.md)
+
+### 6.7 Cobros con QR y pasarelas (`al_pos_pe_wallet_qr`)
+
+**Antes:** cuenta bancaria con el QR de la billetera en un diario de banco; método de pago QR «QR de billetera (Yape, Plin)»; para el pago en línea, Izipay (u otra pasarela) en modo de prueba y un método con **Pago en línea**. Datos DEMO: `docs/tpv_pe/preparar_demo_qr.py` y `docs/tpv_pe/preparar_demo_pasarelas.py`.
+
+| N.º | Caso | Cómo | Resultado esperado |
+|---|---|---|---|
+| 6.7.1 | Cobro con Yape | Venta de S/ 4,13 ‣ **Pago** ‣ método de la billetera ‣ **Enviar** ‣ **Confirmar pago** | El QR se ve en la caja y en la pantalla del cliente; la venta queda pagada en el diario de la billetera |
+| 6.7.2 | Cuenta sin QR (error esperado) | Cree el método con una cuenta sin imagen | «Suba la imagen del QR de billetera…» |
+| 6.7.3 | Pago en línea | Método de pago en línea ‣ **Validar**; pague desde el teléfono con la tarjeta de prueba 4970100000000055 | El TPV recibe el pago y muestra el ticket; la orden queda pagada con la transacción de Izipay |
+
+Detalle: [Cobros con QR y pasarelas](../applications/sales/point_of_sale/qr_payments.md)
+
 !!! success "Para pasar a la etapa siguiente"
     - Boletas y facturas del TPV publicadas en su diario y enviadas a SUNAT; ninguna queda retenida sin motivo.
     - Las órdenes muestran tipo, serie y vendedor, y el análisis por vendedor cuadra con el total de la sesión.
     - Recibos y comandas impresos en la red de la tienda con la marca de cada caja.
+    - Clientes creados por RUC desde la caja y ventas cobradas con QR de billetera y con pago en línea.
 
 ## Etapa 7: Planillas
 
