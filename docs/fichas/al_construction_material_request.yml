@@ -429,6 +429,11 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 15.20261013
+    fecha: 14/10/2026
+    cambios:
+      - "Compra masiva consolidada (v1.6, M16-01): nueva pantalla Compras ▸ Pedidos ▸ Compra masiva con las líneas aprobadas de todas las obras por producto; la orden suma exacto (corrige el asistente de OCA, que dejaba fuera la última solicitud), cada solicitud y su requerimiento muestran como comprado solo su parte, y el origen nombra todas las solicitudes con su obra."
+      - "La compra consolidada entra a stock general, sin analítica de las obras; la entrega directa en obra conserva su destino."
   - version: 14.20261013
     fecha: 13/10/2026
     cambios:

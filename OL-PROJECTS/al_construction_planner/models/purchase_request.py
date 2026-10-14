@@ -9,6 +9,11 @@ class PurchaseRequest(models.Model):
         'construction.resource.plan', string='Plan de recursos', readonly=True, copy=False,
         index='btree_not_null', check_company=True)
 
+    def _al_site_name(self):
+        """La compra masiva del plan no tiene requerimiento de obra: la obra
+        es la del plan."""
+        return super()._al_site_name() or self.construction_plan_id.project_id.name or ''
+
     def write(self, vals):
         res = super().write(vals)
         if 'state' in vals:

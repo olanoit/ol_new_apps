@@ -65,10 +65,11 @@ destacados:
       «Nueva versión» copia todo o solo saldos. La vigente sigue en uso hasta
       aprobar la nueva; entonces pasa a «Reemplazado».
   - icono: "🛒"
-    titulo: Compra masiva en dos modos
+    titulo: Compra masiva a stock general
     texto: >-
-      Desde el árbol: con la analítica de la obra o como stock general,
-      descontando lo libre en el central. Las planchas se redondean a entero.
+      Desde el árbol, para el almacén central, descontando lo libre y lo que
+      ya viene. Las planchas se redondean a entero; el costo cae a la obra al
+      consumir.
   - icono: "⚖"
     titulo: Pedir contra el saldo
     texto: >-
@@ -267,7 +268,7 @@ flujos:
         A[Árbol: selección de pisos, departamentos o ambientes] --> B[Compra masiva]
         A --> C[Requerimiento de obra]
         A --> D[Orden de fabricación]
-        B --> B1[Requerimiento de compra: con analítica o stock general]
+        B --> B1[Requerimiento de compra a stock general]
         B1 --> X[Asignaciones a las líneas del plan]
         C --> C1{Solicitar aprobación: ¿excede el saldo?}
         C1 -- No --> C2[Revisiones normales]
@@ -424,8 +425,8 @@ pasos:
     ruta: Plan ▸ Compra masiva (o Árbol de recursos ▸ Compra masiva)
     texto: >-
       Necesidad, libre en el central, lo que ya viene en compras y a comprar
-      por producto. Con analítica compra toda la necesidad con la cuenta de
-      la obra; en stock general descuenta lo libre y lo que ya viene.
+      por producto. Compra a stock general, sin analítica de la obra:
+      descuenta lo libre y lo que ya viene.
     puntos:
       - "Necesidad: lo planificado menos lo ya comprado o pedido por la obra."
       - "Planchas y demás unidades se redondean a entero hacia arriba: 17.66 planchas de melamina blanca → 18."
@@ -859,7 +860,7 @@ campos:
   - grupo: Compra masiva y orden de fabricación
     ruta: Requerimiento de compra · Fabricación ▸ Orden ▸ Plan de obra
     campos:
-      - [Modo de compra masiva, Con analítica de la obra o stock general., "—", En la línea del requerimiento de compra]
+      - [Modo de compra masiva, Stock general (las compras anteriores a la v1.6 pueden decir «con analítica de la obra»)., "—", En la línea del requerimiento de compra]
       - ["Plan, ambientes incluidos", Plan y ambientes de la OF., "—", Los pone «Orden de fabricación»]
       - ["Control de plan y justificación", Como en el requerimiento., En plan, "—"]
   - grupo: Avance reportado
@@ -999,7 +1000,7 @@ funcionalidades:
     items:
       - "Asignaciones de cada documento a las líneas del plan, con lo hecho repartido por fecha de necesidad y el estado del documento."
       - "Pedido, comprado, despachado, consumido, saldo, comprometido, real y estado de cada línea."
-      - "Compra masiva desde la selección, con analítica de la obra o como stock general, redondeada a la unidad de compra."
+      - "Compra masiva desde la selección como stock general, redondeada a la unidad de compra."
       - "Requerimiento de obra desde la selección, agrupado por ambiente, departamento o piso."
       - "Saldo del plan y control por línea en el requerimiento de obra; política de exceso al solicitar la aprobación con justificación y revisión adicional."
       - "Orden de fabricación por piso o selección desde la BOM de la tipología, con control al confirmar y consumo al cerrar."
@@ -1217,6 +1218,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 23.20261013
+    fecha: 14/10/2026
+    cambios:
+      - "La compra masiva entra siempre como stock general (v1.6, M16-02): se retiró el modo «con analítica de la obra»; el comprado sube en las líneas del plan y el costo cae a la obra al consumir."
+      - "El comprado de las líneas del plan cuenta solo la parte de cada solicitud en la orden de compra consolidada, no la línea entera."
   - version: 22.20261013
     fecha: 13/10/2026
     cambios:

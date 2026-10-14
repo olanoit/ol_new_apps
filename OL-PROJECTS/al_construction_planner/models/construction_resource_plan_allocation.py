@@ -230,12 +230,10 @@ class ConstructionResourcePlanAllocation(models.Model):
 
     @staticmethod
     def _confirmed_purchase_qty(pr_line):
-        """Cantidad de la línea OCA en OC confirmadas, en su unidad."""
-        qty = 0.0
-        for po_line in pr_line.purchase_lines.filtered(lambda l: l.state in ('purchase', 'done')):
-            qty += po_line.product_uom_id._compute_quantity(
-                po_line.product_qty, pr_line.product_uom_id or po_line.product_uom_id)
-        return qty
+        """Cantidad de la línea OCA en OC confirmadas, en su unidad: su parte
+        de la línea de OC según la tabla de asignación de OCA, no la línea
+        entera (la compra masiva consolidada suma varias solicitudes, M16-01)."""
+        return pr_line._al_ordered_qty(states=('purchase', 'done'))
 
     def _get_document_totals(self):
         """Totales del documento de ``self`` (primera asignación del grupo), en

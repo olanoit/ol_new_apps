@@ -15,3 +15,18 @@ class PurchaseOrderLine(models.Model):
         if site and direct_lines and direct_lines.request_id.location_dest_id == site:
             vals['location_dest_id'] = site.id
         return vals
+
+
+class PurchaseOrder(models.Model):
+    _inherit = 'purchase.order'
+
+    def _al_requests_origin(self):
+        """Origen de una orden que atiende solicitudes de compra: todas las
+        solicitudes con su obra, por ejemplo «PR00005 (ACACIAS 353), PR00006
+        (ZZ DEMO)» (compra masiva consolidada, v1.6, M16-01)."""
+        self.ensure_one()
+        labels = []
+        for request in self.order_line.purchase_request_lines.request_id.sorted('name'):
+            site = request._al_site_name()
+            labels.append('%s (%s)' % (request.name, site) if site else request.name)
+        return ', '.join(labels)

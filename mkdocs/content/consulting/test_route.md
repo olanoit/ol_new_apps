@@ -1007,6 +1007,7 @@ Detalle: [Asistente de IA del Gantt](../applications/services/project/gantt_ai.m
 | 8.4.4 | Procesar | Logística: **Procesar** | Despacho a obra reservado con 60 bolsas, 50 fierros y 5 m³; requerimiento de compra aprobado con 40 bolsas (vía central) y 3 m³ (directo a obra); transferencia central → obra de 40 bolsas en espera; estado **En proceso** |
 | 8.4.5 | Despachar, comprar y cerrar | Validar el despacho; desde **Req. de compra** crear y recibir la OC | Despacho con guía motivo 04 y sin asiento contable; al tener todo en `OBRAS/Colegio A`, el requerimiento pasa solo a **Hecho** |
 | 8.4.6 | Rechazo | Un revisor hace **Rechazar**; luego **Volver a borrador** | Queda **Rechazado**; al volver a borrador se borran las revisiones y se puede pedir aprobación de nuevo |
+| 8.4.7 | Compra masiva consolidada | Tres requerimientos de dos obras del mismo producto (100, 40 y 25) procesados sin stock; **Compras ‣ Pedidos ‣ Compra masiva**: marcar 100 y 40 ‣ **Acción ‣ Crear petición de oferta**; luego marcar la de 25 y agregarla a la misma orden | Una línea de 165 sin analítica; cada solicitud y cada requerimiento muestran comprado 100, 40 y 25; el origen nombra las tres solicitudes con su obra; las tres salen de la lista |
 
 Detalle: [Requerimientos de materiales](../applications/services/project/construction/material_requests.md)
 
@@ -1105,7 +1106,7 @@ Detalle: [Línea base y versiones](../applications/services/project/construction
 | N.º | Caso | Cómo | Resultado esperado |
 |---|---|---|---|
 | 8.11.1 | Precios de compra | **Planificación de obra ‣ Abastecimiento ‣ Precios de compra del producto** con la melamina blanca | Estadísticos en soles; compras atípicas en rojo; **Aplicar costo** solo escribe en un plan en borrador («Elija el plan en borrador» si no) |
-| 8.11.2 | Compra masiva | Árbol: etapa Producción del piso 05 ‣ **Compra masiva** ‣ **Con analítica de la obra** | Requerimiento de compra en borrador: 18, 9 y 3 planchas, con 24 asignaciones |
+| 8.11.2 | Compra masiva | Árbol: etapa Producción del piso 05 ‣ **Compra masiva** | Requerimiento de compra en borrador como stock general (sin analítica): 18, 9 y 3 planchas menos lo libre en el central y lo que ya viene, con sus asignaciones |
 | 8.11.3 | Requerimiento de obra en plan | Árbol ‣ **Requerimiento de obra** del piso 05: 1,100 tornillos 4×50 y 700 tapatornillos | Requerimiento en borrador con la tarea «Piso 05» y control **En plan** |
 | 8.11.4 | Exceso sobre el plan | Segundo requerimiento del Dpto 501 con 20 tornillos más, política **pedir aprobación** | Columna **Control** «Excede 20»; asistente de exceso con justificación obligatoria y revisión «Exceso sobre el plan: jefatura del planificador» |
 | 8.11.5 | Política bloquear (error esperado) | Repetir 8.11.4 con política **Bloquear** | «Pide más de lo que queda en el plan … bloquear»; no se envía |

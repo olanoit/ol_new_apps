@@ -51,9 +51,9 @@ Fase 4 (asignaciones y compras, P-10 y P-11):
   lo hecho se reparte por fecha de necesidad y su estado sigue al documento.
 * Pedido, comprado, despachado, consumido, saldo, comprometido, real y estado
   de cada línea (excedida, completa, en compra, parcial, planificada).
-* Compra masiva (W-02) en dos modos: con analítica de la obra o stock general
-  (descuenta lo libre en el central y lo que ya viene en compras), redondeada
-  a la unidad de compra.
+* Compra masiva (W-02) como stock general (descuenta lo libre en el central y
+  lo que ya viene en compras), redondeada a la unidad de compra; el costo cae
+  a la obra al consumir.
 * Requerimiento de obra (W-03) agrupado por ambiente, departamento o piso, con
   saldo del plan y control por línea; control de exceso al solicitar la
   aprobación según la política del plan (avisar, pedir aprobación, bloquear)
@@ -226,7 +226,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '22.20261013',
+    'version': '23.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',

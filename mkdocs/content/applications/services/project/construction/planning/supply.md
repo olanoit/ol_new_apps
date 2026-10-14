@@ -45,13 +45,15 @@ lo planificado sin una justificación.
 1. Seleccione en el árbol (o en el plan, el cronograma o el
    [abastecimiento de la obra](prices_supply.md)) y haga clic en **Compra
    masiva**.
-2. Elija el modo:
-    - **Con analítica de la obra**: cada línea del requerimiento de compra lleva
-      la cuenta de la obra;
-    - **Stock general**: compra para el almacén central, descontando lo libre en
-      el central y lo que ya viene en compras, sin analítica de obra.
-3. Revise las cantidades, redondeadas a la unidad de compra, y confirme. Se crea
+2. Revise las cantidades, redondeadas a la unidad de compra, y confirme. Se crea
    un requerimiento de compra (OCA) en borrador con sus asignaciones.
+
+La compra masiva entra siempre como **stock general**: compra para el almacén
+central, descontando lo libre en el central y lo que ya viene en compras, sin
+analítica de la obra. El comprado sube en las líneas del plan y el costo cae a
+la obra al consumir el material. Compras la junta con las de otras obras en una
+sola orden: vea
+[Compra masiva consolidada](../material_requests.md#compra-masiva-consolidada).
 
 ![Asistente de compra masiva con la necesidad y lo que se compra](supply/bulk-purchase.png)
 

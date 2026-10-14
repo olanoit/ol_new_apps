@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """W-02 «Compra masiva» (P-10): un requerimiento de compra (OCA) con la
-necesidad de la selección, en dos modos: con la analítica de la obra (compra
-toda la necesidad) o como stock general (descuenta lo libre en el central y
-lo que ya viene en compras). En los dos sube el comprado de las líneas."""
+necesidad de la selección, siempre como stock general (v1.6, M16-02): sin
+analítica, descontando lo libre en el central y lo que ya viene en compras.
+El comprado sube en las líneas del plan; el costo cae a la obra al consumir."""
 from collections import defaultdict
 from datetime import date
 
@@ -16,12 +16,14 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
     _inherit = 'construction.plan.supply.mixin'
     _description = 'Compra masiva desde el plan'
 
+    # Desde la v1.6 (M16-02) la compra masiva entra siempre como stock general:
+    # el modo «con analítica de la obra» se retiró. El campo queda para el
+    # texto del requerimiento y el modo guardado en sus líneas.
     mode = fields.Selection(
-        [('project', 'Con analítica de la obra'), ('general', 'Stock general')],
-        string='Modo', required=True, default='project',
-        help='Con analítica: cada línea lleva la distribución de la obra y se compra toda la '
-             'necesidad. Stock general: sin analítica y se compra la necesidad menos lo libre '
-             'en el central y lo que ya viene en compras.')
+        [('general', 'Stock general')],
+        string='Modo', required=True, default='general', readonly=True,
+        help='Sin analítica: se compra la necesidad menos lo libre en el central y lo que ya '
+             'viene en compras. El costo cae a la obra al consumir.')
     picking_type_id = fields.Many2one(
         'stock.picking.type', string='Destino', required=True, check_company=True,
         domain="[('code', '=', 'incoming'), ('company_id', '=', company_id)]",
@@ -115,15 +117,12 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 stock_left[product] = [max(ctx_product.free_qty, 0.0),
                                        max(ctx_product.incoming_qty, 0.0)]
             free, incoming = stock_left[product]
-            if self.mode == 'general':
-                # Lo libre y lo que ya viene cubren la necesidad, en ese orden;
-                # lo que cubre no vuelve a usarse en el grupo siguiente.
-                from_free = min(free, need)
-                from_incoming = min(incoming, need - from_free)
-                stock_left[product] = [free - from_free, incoming - from_incoming]
-                to_buy = need - from_free - from_incoming
-            else:
-                to_buy = need
+            # Lo libre y lo que ya viene cubren la necesidad, en ese orden; lo
+            # que cubre no vuelve a usarse en el grupo siguiente.
+            from_free = min(free, need)
+            from_incoming = min(incoming, need - from_free)
+            stock_left[product] = [free - from_free, incoming - from_incoming]
+            to_buy = need - from_free - from_incoming
             purchase_uom = self._get_purchase_uom(product)
             qty_to_buy = product.uom_id._compute_quantity(to_buy, purchase_uom, round=False)
             if self._is_whole_uom(purchase_uom):
@@ -141,16 +140,6 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 'plan_line_ids': [Command.set(plan_lines.ids)],
             })
         return result
-
-    def _get_analytic_distribution(self, plan_lines):
-        """Distribución de la obra: la de las líneas si todas comparten una; si
-        no, la cuenta analítica de la obra al 100 %."""
-        distributions = {tuple(sorted((line.analytic_distribution or {}).items()))
-                         for line in plan_lines}
-        if len(distributions) == 1 and next(iter(distributions)):
-            return dict(next(iter(distributions)))
-        account = self.plan_id.project_id.account_id
-        return {str(account.id): 100.0} if account else False
 
     def action_create(self):
         self.ensure_one()
@@ -180,8 +169,7 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 'product_uom_id': line.purchase_uom_id.id,
                 'product_qty': line.qty_to_buy,
                 'date_required': line.date_required or fields.Date.context_today(self),
-                'analytic_distribution': (self._get_analytic_distribution(line.plan_line_ids)
-                                          if self.mode == 'project' else False),
+                'analytic_distribution': False,
                 'construction_plan_mode': self.mode,
             })
             qty = line.purchase_uom_id._compute_quantity(line.qty_to_buy, line.product_id.uom_id)

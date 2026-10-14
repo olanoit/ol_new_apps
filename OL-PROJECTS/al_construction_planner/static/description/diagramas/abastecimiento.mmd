@@ -2,7 +2,7 @@ flowchart TD
   A[Árbol: selección de pisos, departamentos o ambientes] --> B[Compra masiva]
   A --> C[Requerimiento de obra]
   A --> D[Orden de fabricación]
-  B --> B1[Requerimiento de compra: con analítica o stock general]
+  B --> B1[Requerimiento de compra a stock general]
   B1 --> X[Asignaciones a las líneas del plan]
   C --> C1{Solicitar aprobación: ¿excede el saldo?}
   C1 -- No --> C2[Revisiones normales]

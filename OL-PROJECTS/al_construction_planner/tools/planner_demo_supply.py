@@ -5,7 +5,7 @@
 Requiere haber ejecutado antes ``planner_demo_data.py`` y
 ``planner_demo_baseline.py``. Deja:
 
-- una compra masiva con analítica de la obra (W-02) de los materiales de
+- una compra masiva como stock general (W-02) de los materiales de
   producción del piso 05;
 - un requerimiento de obra (W-03) del piso 05, agrupado por piso, con los
   materiales de instalación y acabado, aprobado;
@@ -42,7 +42,7 @@ else:
 
     print('=== Compra masiva (W-02) ===')
     wizard = env['construction.plan.purchase.wizard'].with_context(**ctx).create(
-        dict(stages(production=True), mode='project'))
+        dict(stages(production=True)))
     request = env['purchase.request'].browse(wizard.action_create()['res_id'])
     print(request.name, len(request.line_ids), 'productos')
 

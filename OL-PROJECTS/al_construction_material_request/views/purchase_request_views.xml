@@ -12,4 +12,41 @@
         </field>
     </record>
 
+    <!-- Compra masiva consolidada (v1.6, M16-01): las líneas aprobadas de
+         todas las obras con algo por ordenar, agrupadas por producto. Se
+         marcan las que se compran y «Acción ‣ Crear petición de oferta» (OCA) arma una
+         sola orden a stock general. -->
+    <record id="purchase_request_line_tree_mass" model="ir.ui.view">
+        <field name="name">purchase.request.line.list.mass.purchase</field>
+        <field name="model">purchase.request.line</field>
+        <field name="inherit_id" ref="purchase_request.purchase_request_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="purchased_qty" position="before">
+                <field name="al_qty_to_order" sum="Por ordenar" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_purchase_request_line_mass_purchase" model="ir.actions.act_window">
+        <field name="name">Compra masiva</field>
+        <field name="res_model">purchase.request.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="purchase_request.purchase_request_line_tree"/>
+        <field name="domain">[('request_state', 'in', ('approved', 'in_progress')), ('al_qty_to_order', '&gt;', 0)]</field>
+        <field name="context">{'group_by': ['product_id']}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay solicitudes aprobadas por ordenar</p>
+            <p>Las líneas de solicitudes de compra aprobadas de todas las obras aparecen aquí
+               agrupadas por producto. Marque las que va a comprar y use «Acción ‣ Crear petición de oferta»
+               para crear una sola orden de compra a stock general.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_purchase_request_line_mass_purchase"
+              name="Compra masiva"
+              parent="purchase.menu_procurement_management"
+              action="action_purchase_request_line_mass_purchase"
+              groups="purchase.group_purchase_user"
+              sequence="15"/>
+
 </odoo>

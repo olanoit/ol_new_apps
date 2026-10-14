@@ -68,7 +68,7 @@ class TestSupply(PlannerCommon):
     # ------------------------------------------------------------------
     # W-02 compra masiva
     # ------------------------------------------------------------------
-    def test_purchase_project_mode(self):
+    def test_purchase_whole_project(self):
         wizard = self.env['construction.plan.purchase.wizard'].with_user(self.buyer).with_context(
             default_plan_id=self.plan.id, construction_selection_project=True).create({})
         self.assertTrue(wizard.whole_project)
@@ -80,9 +80,10 @@ class TestSupply(PlannerCommon):
         request = self.env['purchase.request'].browse(action['res_id'])
         self.assertEqual(request.construction_plan_id, self.plan)
         pr_line = request.line_ids.filtered(lambda l: l.product_id == self.p_white)
-        self.assertEqual(pr_line.construction_plan_mode, 'project')
-        self.assertEqual(pr_line.analytic_distribution,
-                         {str(self.project.account_id.id): 100.0})
+        # Siempre stock general (v1.6, M16-02): sin analítica de la obra.
+        self.assertEqual(wizard.mode, 'general')
+        self.assertEqual(pr_line.construction_plan_mode, 'general')
+        self.assertFalse(pr_line.analytic_distribution)
         lines = self._lines(self.p_white)
         # Primero la línea que se necesita antes; el redondeo, a la última.
         self.assertEqual(sum(pr_line.construction_allocation_ids.mapped('qty_allocated')), 4.0)
@@ -107,8 +108,9 @@ class TestSupply(PlannerCommon):
         self.assertFalse(wizard.whole_project)
         central = wizard.picking_type_id.default_location_dest_id
         self.env['stock.quant']._update_available_quantity(self.p_white, central, 1.0)
-        wizard.mode = 'project'
-        wizard.mode = 'general'
+        # Recalcular la vista previa con el stock recién cargado.
+        wizard.group_by = 'date'
+        wizard.group_by = 'product'
         white = wizard.line_ids.filtered(lambda l: l.product_id == self.p_white)
         # Solo el Dpto 501: 1.96 de necesidad, 1 libre → 0.96 → 1 plancha.
         self.assertAlmostEqual(white.qty_need, 1.96)

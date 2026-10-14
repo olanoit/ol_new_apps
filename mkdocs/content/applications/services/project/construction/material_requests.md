@@ -137,6 +137,37 @@ analítica viaja en el movimiento solo como trazabilidad.
    solo a **Hecho**. Una devolución de la obra al almacén resta de **Recibido en
    obra**.
 
+### Compra masiva consolidada
+
+Compras junta en una sola orden lo que piden varias obras:
+
+1. Vaya a **Compras ‣ Pedidos ‣ Compra masiva**. Aparecen las líneas de las
+   solicitudes de compra aprobadas de todas las obras que todavía no están en
+   una orden, agrupadas por producto, con su total **Por ordenar**.
+2. Marque las líneas que va a comprar y use **Acción ‣ Crear petición de
+   oferta**. Elija el proveedor y, si quiere sumarlas a una orden en borrador,
+   la **Orden de compra**.
+3. Se crea una sola línea por producto con la suma exacta, a stock general, sin
+   analítica de las obras.
+
+| Solicitud | Obra | Pedido | Comprado |
+|---|---|---:|---:|
+| PR00005 | ACACIAS 353 | 100 | 100 |
+| PR00006 | ZZ DEMO | 40 | 40 |
+| PR00007 | ACACIAS 353 | 25 | 25 |
+| **Orden** | | | **165** |
+
+- Cada solicitud, y el requerimiento de obra que la originó, muestra como
+  comprado solo su parte, aunque la orden tenga una sola línea.
+- El origen de la orden nombra todas las solicitudes con su obra: «PR00005
+  (ACACIAS 353), PR00006 (ZZ DEMO), PR00007 (ACACIAS 353)».
+- Si la orden compra más que lo pedido (mínimo del proveedor, redondeo), el
+  exceso se reparte en proporción a lo que pidió cada solicitud.
+- Lo que va directo a una obra conserva su destino y no se mezcla con el stock
+  general.
+- Una línea ya puesta en una orden sale de la lista; si la orden se cancela,
+  vuelve.
+
 ### Cancelar
 
 Solo Logística cancela un requerimiento en proceso: se anulan las

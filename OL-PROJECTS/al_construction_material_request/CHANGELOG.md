@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261013 — 14/10/2026
+
+- Compra masiva consolidada (v1.6, M16-01): nueva pantalla Compras ▸ Pedidos ▸ Compra masiva con las líneas aprobadas de todas las obras por producto; la orden suma exacto (corrige el asistente de OCA, que dejaba fuera la última solicitud), cada solicitud y su requerimiento muestran como comprado solo su parte, y el origen nombra todas las solicitudes con su obra.
+- La compra consolidada entra a stock general, sin analítica de las obras; la entrega directa en obra conserva su destino.
+
 ## 14.20261013 — 13/10/2026
 
 - Ícono propio de la app «Requerimientos de obra» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.

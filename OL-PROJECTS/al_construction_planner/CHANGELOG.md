@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261013 — 14/10/2026
+
+- La compra masiva entra siempre como stock general (v1.6, M16-02): se retiró el modo «con analítica de la obra»; el comprado sube en las líneas del plan y el costo cae a la obra al consumir.
+- El comprado de las líneas del plan cuenta solo la parte de cada solicitud en la orden de compra consolidada, no la línea entera.
+
 ## 22.20261013 — 13/10/2026
 
 - Ícono propio de la app «Planificación de obra» con el estilo de Odoo 19: icon.svg de 50×50 con formas planas y la paleta de Odoo, e icon.png de 100×100 sin fondo.
