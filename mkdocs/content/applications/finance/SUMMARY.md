@@ -35,4 +35,5 @@
     * [DUA de importación](accounting/import_dua.md)
 * Proveedores de pago
     * [Culqi](payment_providers/culqi.md)
+    * [Izipay](payment_providers/izipay.md)
     * [Niubiz](payment_providers/niubiz.md)

@@ -1,0 +1,180 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+Seleccione Web Service
+Transaction/CancelOrRefund
+webService
+Parámetros principales
+uuid
+Opciones generales de la transacción
+amount
+currency
+resolutionMode
+comment
+Opciones relacionadas con la tarjeta
+transactionOptions
+mid
+Pruébame
+Documentación
+Web Service Transaction/CancelOrRefund
+La llamada a los Web Services requiere una autentificación HTTP Basic Authentication. Más información: " Fase de autenticación ".
+POST
+https://api.micuentaweb.pe/api-payment/V4/Transaction/CancelOrRefund
+El Servicio Web REST Transacción/CancelarOrRefund permite reembolsar (total o parcial si el comprador lo admite) o cancelar una transacción. Más información: Cancelar/reembolsar una transacción .
+Reembolsar
+Le remboursement est uniquement possible après la fermeture du lot et dépend de l'acquéreur.
+Vous pouvez rembourser une transaction uniquement si son statut est CAPTURED (Présenté).
+Pour chaque moyen de paiement Collect, un chapitre est disponible : Cycle de vie du remboursement pour comprendre le fonctionnement du remboursement et les notifications à activer.
+Vous pouvez aussi connaître le statut du remboursement grâce au Web Service Transaction/Get (paramètre 'detailedStatus').
+Reembolso parcial :
+Utilice el servicio Web Transaction/Refund para transmitir un monto inferior al de la transacción.
+Puede reembolsar parcialmente muchas veces una transacción hasta hacer el reembolso total.
+Reembolso completo:
+Utilice el servicio Web Transaction/Refund para transmitir un monto idéntico al de la transacción.
+Anular
+L'annulation est uniquement possible avant la fermeture du lot et dépend de l'acquéreur. Vous pouvez annuler une transaction si son statut a pour valeur :
+AUTHORISED_TO_VALIDATE(À valider).
+WAITING_AUTHORISATION_TO_VALIDATE(À valider et autoriser).
+WAITING_AUTHORISATION(En attente d'autorisation).
+AUTHORISED(En attente de remise).
+Vous pouvez connaître le statut d'une transaction grâce au Web Service Transaction/Get (paramètre detailedStatus,).
+Anulación parcial : utilice el servicio Web Transaction/Update para modificar el monto de la transacción.
+Anulación total : utilice el servicio Web Transaction/Cancel para anular una transacción.
+Respuesta
+Consulte la referencia de la respuesta para obtener más detalles.
+Parámetros de entrada
+uuid
+Referencia única de la transacción generada por la plataforma de pago.
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+amount
+Monto del pago en su fracción monetaria más pequeña (el céntimo para el sol peruano).
+Ejemplo: .
+30050 pour 300,50 PEN
+30050 por 30050 YEN
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+currency
+Devise du paiement. Code alphabétique en majuscule selon la norme ISO 4217 alpha-3. Exemple: "PEN" pour le sol péruvien.
+Valores posibles
+Devise	Código alfanumérico	Código numérico	Unidad fraccionaria
+Sol peruano	PEN	604	2
+Dollar des États-Unis	USD	840	2
+Formato
+tipo
+cadena
+Ejemplo
+EUR
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+resolutionMode
+Una transacción puede estar autorizada y en espera de depósito bancario, o haber sido depositada.
+Dependiendo del estado de la entrega, existen varias operaciones posibles:
+Si la transacción está pendiente de entrega:
+En este caso, es posible anular la transacción. La captura no se efectuará.
+El nuevo estado de la transacción será:
+status	UNPAID
+detailedStatus	CANCELLED
+Si la transacción fue guardada:
+En este caso, ya no es posible anular la transacción.
+Deberá crear una nueva transacción de reembolso (o "refund" en inglés).
+Qué hace exactamente Transaction/CancelOrRefund:
+El servicio Web REST Transaction/CancelOrRefund elige la operación que se realiza automáticamente.
+Pero es posible forzar el tipo de operación gracias al parámetro resolutionMode.
+Si el campo se envía vacío, el valor por defecto es AUTO.
+Valores posibles
+Valeur	Descripción	Anular	Reembolsar
+AUTO	VALORpor defecto.
+Effectue automatiquement une annulation ou un remboursement selon l'acquéreur :
+Si el lote no está cerrado: anulación.
+Si el lote está cerrado: reembolso.
+	✅	✅
+CANCELLATION_ONLY	Realiza una anulación. Si la transacción ha sido presentada, un error será devuelto.	✅	❌
+REFUND_ONLY	Realiza un reembolso Si la transacción no ha sido presentada, un error será devuelto.	❌	✅
+Formato
+tipo
+cadena
+Ejemplo
+CANCELLATION_ONLY
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+comment
+Comentario libre.
+Formato
+tipo
+cadena
+Ejemplo
+my personal comment
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.manualValidation
+Précise le mode de validation de la transaction.
+Pour plus d'informations sur le mode de validation d'une transaction, consultez le chapitre "Paramétrer le mode de validation par défaut" du manuel d'utilisation Paramétrages de la boutique .
+Valores posibles
+Valeur	Descripción
+NO	La transaction est validée automatiquement par la plateforme de paiement.
+YES	La transaction doit être validée manuellement par le marchand depuis son Back Office Marchand (ou automatiquement via le Web Service Transaction/Validate).
+null	Configuración por defecto de la tienda seleccionada (configurable en el Back Office Lyra Collect).
+Formato
+tipo
+cadena
+Ejemplo
+NO
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.captureDelay
+Fecha límite para aplicar en la fecha de captura.
+Descripción
+Indica el plazo en cantidad de días antes de la captura. Si este parámetro no se transmite, se utilizará el valor predeterminado establecido en el Back Office Vendedor. Este último es configurable en el Back Office Vendedor por todas las personas debidamente autorizadas. Si en la solicitud de pago el plazo antes de la captura es superior a 365 días, este se reposiciona automáticamente a 365 días.
+Formato
+tipo
+entero
+Ejemplo
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+mid
+Número de afiliación. Este campo no se puede utilizar y debe ser nulo.
+Referencia de la respuesta
+El Web Service devuelve el siguiente objeto:
+Respuesta	Contexto
+Transaction	Objeto que contiene la información de la transacción.
+Vea la referencia de la respuesta para más información.

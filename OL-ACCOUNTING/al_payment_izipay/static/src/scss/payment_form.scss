@@ -1,0 +1,5 @@
+// El formulario de Izipay se abre en su ventana emergente desde el botón
+// «Pagar» de Odoo: el botón propio de la ventana no se muestra en la página.
+#o_izipay_container .kr-popin-button {
+    display: none !important;
+}

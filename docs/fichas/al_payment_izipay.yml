@@ -1,0 +1,160 @@
+titulo: Pagos con Izipay
+subtitulo: >-
+  Izipay como proveedor de pago de Odoo: el formulario de Izipay en una
+  ventana sobre la página de pago, confirmación en el servidor y por IPN
+  firmada, anulación y devoluciones totales o parciales.
+categoria: Pagos · Perú
+etiquetas: [Izipay, Tarjetas, 3D Secure, Cuotas, IPN, Devoluciones, Soles y dólares]
+portada: screenshots/03-formulario.png
+
+destacados_intro: >-
+  Construido desde la documentación oficial de Izipay (API REST V4 de Mi
+  Cuenta Web) y validado con pagos reales en su tienda de prueba.
+destacados:
+  - icono: "▣"
+    titulo: Formulario de Izipay
+    texto: >-
+      El formulario oficial se abre en una ventana sobre la página de pago:
+      tarjeta, 3DS y cuotas sin salir de Odoo.
+  - icono: "🔒"
+    titulo: La tarjeta nunca toca Odoo
+    texto: >-
+      Los datos van del navegador a Izipay; Odoo solo crea la sesión de pago
+      por el importe exacto.
+  - icono: "✓"
+    titulo: Confirmación en el servidor
+    texto: >-
+      Odoo consulta el resultado a Izipay: no se fía de lo que diga el
+      navegador.
+  - icono: "IPN"
+    titulo: Aviso firmado
+    texto: >-
+      La IPN de Izipay confirma el pago aunque el cliente cierre la ventana;
+      la firma se verifica con la contraseña.
+  - icono: "−"
+    titulo: Anulación y devoluciones
+    texto: >-
+      Antes de la captura anula o reduce el importe; después, reembolsa.
+      Total o parcial.
+  - icono: "S/"
+    titulo: Soles y dólares
+    texto: Tienda en línea, portal y enlaces de pago de facturas y pedidos.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Izipay es una de las pasarelas más usadas por los comercios de Perú, pero
+    Odoo no la trae. Este módulo la agrega como proveedor de pago para la
+    tienda en línea, el portal y los enlaces de pago de facturas y pedidos.
+  nota: >-
+    **Requisito:** una tienda de Izipay con las claves de la API REST
+    (usuario, contraseña y clave pública) del Back Office Vendedor. Para
+    probar, las claves de test.
+
+flujos_intro: >-
+  El cobro y la confirmación, según la documentación oficial.
+flujos:
+  - id: cobro
+    titulo: Cobro con Izipay
+    texto: >-
+      Odoo crea el formToken por el importe exacto, el cliente paga en el
+      formulario de Izipay y Odoo confirma el resultado consultando a Izipay.
+      La IPN firmada lo confirma aunque el cliente cierre la ventana.
+    mermaid: |
+      flowchart TD
+        A[Cliente elige Izipay y pulsa Pagar] --> B[Odoo crea el formToken<br/>con la contraseña]
+        B --> C[Formulario de Izipay<br/>tarjeta, 3DS y cuotas]
+        C --> D{Resultado}
+        D -- Rechazo --> C
+        D -- Aprobado --> E[Odoo consulta el pedido<br/>Order/Get]
+        C -. IPN firmada .-> E
+        E --> F[Pago confirmado]
+
+pasos_intro: >-
+  La configuración del proveedor y el pago desde la página de pago de Odoo,
+  con el formulario real de Izipay en su tienda de prueba.
+pasos:
+  - seccion: Configuración
+  - titulo: Claves de Izipay
+    ruta: Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Izipay
+    texto: >-
+      Identificador de la tienda, contraseña y clave pública del Back Office
+      Vendedor ▸ Configuración ▸ Tienda ▸ Claves de la API REST. Odoo
+      comprueba que correspondan al modo: de test en «Modo de prueba», de
+      producción en «Activado».
+    puntos:
+      - La contraseña solo la ven los administradores y nunca se envía al navegador.
+      - La URL de notificación (IPN) se envía en cada pago.
+    imagen: screenshots/01-ajustes.png
+
+  - seccion: Pago
+  - titulo: Izipay en la página de pago
+    ruta: Tienda, portal o enlace de pago ▸ Método de pago
+    texto: >-
+      Izipay aparece como método de pago. El aviso recuerda que los datos de
+      la tarjeta van directamente a Izipay.
+    imagen: screenshots/02-pago.png
+  - titulo: Formulario de Izipay
+    ruta: Método de pago ▸ Izipay ▸ Pagar
+    texto: >-
+      Se abre el formulario de Izipay con el importe de la transacción. Si la
+      tarjeta se rechaza, muestra el motivo y deja reintentar; al aprobarse,
+      Odoo confirma el pago con Izipay y muestra la página de estado.
+    imagen: screenshots/03-formulario.png
+
+campos_intro: >-
+  Los campos que el módulo añade al proveedor.
+campos:
+  - grupo: Proveedor Izipay
+    ruta: Proveedores de pago ▸ Izipay ▸ Credenciales
+    campos:
+      - [Identificador de la tienda, Usuario de la API REST., "—", "—"]
+      - [Contraseña, "testpassword_… o prodpassword_…", "—", Solo administradores]
+      - [Clave pública, "<tienda>:testpublickey_… o <tienda>:publickey_…", "—", La usa el formulario]
+      - [URL de notificación (IPN), Se envía en cada pago., Calculada, "—"]
+
+funcionalidades:
+  - grupo: Pago
+    items:
+      - Formulario emergente de Izipay con tarjetas, 3DS y cuotas.
+      - formToken por el importe exacto en céntimos, con los datos del cliente para el antifraude.
+      - Confirmación en el servidor con Order/Get.
+      - IPN firmada con la contraseña.
+  - grupo: Después del pago
+    items:
+      - Anulación o reducción del importe antes de la captura.
+      - Reembolso total o parcial después de la captura.
+      - Motivo del rechazo de Izipay en la transacción.
+  - grupo: Seguridad
+    items:
+      - Ruta de retorno firmada y con bloqueo de la transacción.
+      - IPN rechazada si la firma no coincide.
+      - Contraseña solo para administradores y borrada al neutralizar la base.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
+  - "Indique las claves en **Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Izipay**."
+  - Publique el proveedor; la URL de la IPN debe ser accesible desde Internet.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. No incluye todavía la tarjeta guardada
+  ni la captura manual; los medios distintos de la tarjeta (Yape,
+  PagoEfectivo) aparecen si la tienda los tiene, pero no están probados.
+
+faq:
+  - pregunta: "¿Por qué Odoo consulta el pago a Izipay al terminar?"
+    respuesta: >-
+      Porque la respuesta del navegador se puede manipular. Odoo pregunta a
+      Izipay con la contraseña de la tienda y usa solo lo que Izipay
+      responde.
+  - pregunta: "¿Qué pasa si devuelvo una parte el mismo día del pago?"
+    respuesta: >-
+      Izipay aún no capturó el pago: Odoo reduce el importe que se capturará.
+      La opción automática de Izipay anularía el pago completo.
+
+novedades:
+  - version: 1.20261014
+    fecha: 14/10/2026
+    cambios:
+      - "Primera versión: formulario emergente de Izipay, confirmación en el servidor y por IPN firmada, anulación y devoluciones totales o parciales, soles y dólares."
+
+relacionados: [al_payment_culqi, al_payment_niubiz, al_l10n_pe_invoice]

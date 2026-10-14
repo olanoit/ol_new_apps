@@ -1,0 +1,174 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+FORMULARIO INCRUSTADO
+Presentación
+medios de pago compatibles
+Restricciones
+Migración version antigua (tarjetas)
+Inicio rápido
+Integración avanzada
+Introducción
+1. Requisitos previos
+2. Autentificación
+3. Crear el formToken
+4. Visualizar el formulario
+5. Analizar el pago
+Analizar el IPN
+Analyser le retour à la boutique
+6. Cambiar a producción
+Personalizar el formulario
+Tests i ejemplos de código
+Parametros JS
+Metodos y eventos JS
+Codigos de errores (CLIENT)
+FAQ
+API REST
+Presentación
+Lista de los Web Services
+Probar con el playground
+Creación de pagos
+Gestión de las transacciones
+Alias
+Suscripciones
+Solicitudes de pago
+Comprador de Wallet
+Códigos de error
+FAQ
+API REST PCI-DSS
+Presentación
+Lista de los Web Services
+Probar con el playground
+Crear un pago desde un sitio PCI-DSS
+Creación de tokens
+Actualización de la tarjeta asociada a un token
+Verificación de tarjeta
+Autenticatión del pagador (3DS, tarjetas privadas)
+Gestión de mensajes de autentificación
+Notificaciones
+Tarjetas de prueba
+Códigos de error
+Análisis de la IPN
+1. Prerrequisitos: Restricciones del servidor del vendedor
+Suivez les instructions du chapitre : Préparer son environnement.
+La regla principal es permitir el rango de direcciones IP 194.50.38.0/24, puerto predeterminado 443 (HTTPS) en tu servidor.
+2. Los datos transmitidos
+Paramètre	Descripción	VALOR
+kr-hash-key	Mot de passe de test ou de production selon le cas (2 ème clé du tableau des clés API REST ). Clé utilisée pour signer kr-answer.	password
+kr-hash-algorithm	Algoritmo utilizado para calcular el hash.	Su valor es sha256_hmac.
+kr-answer	Objeto que contiene el resultado del pago, codificado en JSON.	Ex : {"shopId":"89289758","orderCycle":"CLOSED","orderStatus":"PAID", (...)
+kr-answer-type	Tipo de objeto JSON contenido en kr-answer .	Ex : V4/Payment
+kr-hash	Hash del objeto JSON almacenado en kr-answer Te permite verificar la autenticidad de la respuesta.	Ex: c3c0323c748fdb7c2d24bd39ada99663526236828efa795193bebfdea022fe58
+kr-src	Origen de la notificación.	EMBEDDED_FORM para el formulario incrustado
+Advertencia
+Los datos transmitidos pueden cambiar.
+3. Verificar la autenticidad del IPN
+Debe verificar la autenticidad de los datos recibidos.
+Encriptarlo kr-answer recibido usando la función hash_hmac:
+Algoritmo de cifrado: sha256
+Clave secreta: la contraseña que empieza por testpassword o prodpassword ( 2ª clave de la tabla de claves de la API REST ).
+Base de codificación: hexadecimal ( base 16 ).
+Verifica la autenticidad del mensaje recibido:
+si el kr-hash es igual al cifrado de kr-answer, entonces el mensaje es auténtico.
+Código de ejemplo del archivo de ejemplo: ipn.php
+PHP
+Copy
+<div class="@empty-line"></div>
+    // STEP 1 : check the signature with the password
+    if (!checkHash($_POST, PASSWORD)) {
+        echo 'Invalid signature. <br/>';
+        echo '<pre>' . print_r($_POST, true) . '
+4. Verificar el estado de la transacción
+Comprueba la configuraciónorderStatus contenido enkr-answer .
+La valeur PAID du champ orderStatus signifie que la transaction a été acceptée. Voir : Cycle de vie d'une transaction.
+Para más detalles, consulte: Referencia del objeto: Pago.
+Ejemplo simplificado de kr-answer:
+JSON
+Copy
+{
+  "shopId": "89289758",
+  "orderCycle": "CLOSED",
+  "orderStatus": "PAID",
+  "serverDate": "2026-01-21T09:28:17+00:00",
+  "orderDetails": {
+    "orderTotalAmount": 180,
+    "orderEffectiveAmount": 180,
+    "orderCurrency": "PEN",
+    "mode": "TEST",
+    "orderId": "myOrderId-475882",
+    "metadata": null,
+    "_type": "V4/OrderDetails"
+  },
+  "customer": {
+    "billingDetails": {
+      "address": null,
+      "category": null,
+      "cellPhoneNumber": null,
+      "city": null,
+      "country": null,
+      "district": null,
+      "firstName": null,
+      "identityCode": null,
+      "language": "FR",
+      "lastName": null,
+      "phoneNumber": null,
+      "state": null,
+      "streetNumber": null,
+      "title": null,
+      "zipCode": null,
+      "legalName": null,
+      "_type": "V4/Customer/BillingDetails"
+    },
+    "email": "sample@example.com",
+    "reference": null,
+    "shippingDetails": {
+      (...)
+    },
+    "shoppingCart": {
+      "insuranceAmount": null,
+      "shippingAmount": null,
+      "taxAmount": null,
+      "cartItemInfo": null,
+      "_type": "V4/Customer/ShoppingCart"
+    },
+    "_type": "V4/Customer/Customer"
+  },
+  "transactions": [
+    {
+      "shopId": "89289758",
+      "uuid": "1c8356b0e24442b2acc579cf1ae4d814",
+      "amount": 180,
+      "currency": "PEN",
+      "paymentMethodType": "CARD",
+      "paymentMethodToken": null,
+      "status": "PAID",
+      (...)
+        "_type": "V4/TransactionDetails"
+      },
+      "_type": "V4/PaymentTransaction"
+    }
+  ],
+  "subMerchantDetails": null,
+  "_type": "V4/Payment"
+}
+5. Reproducción del IPN
+En cas d'échec, un mécanisme de rejeu automatique se configure lors du paramétrage de l'IPN : lien.
+Si habilita la reproducción, la plataforma reenvía automáticamente el IPN En caso de fallo, cada 15 minutos, hasta 4 veces.
+Si no desea esperar tanto tiempo, utilice el Servicio Web Order/Get para recuperar la lista de transacciones asociadas a una referencia de pedido ( ID del pedido).
+Se recomienda:
+Realizar solo una llamada por minuto.
+Esperar la respuesta antes de realizar otra llamada.
+EN ESTA PÁGINA
+1. Prerrequisitos: Restricciones del servidor del vendedor
+2. Los datos transmitidos
+3. Verificar la autenticidad del IPN
+4. Verificar el estado de la transacción
+5. Reproducción del IPN
+© 2026 Todos los derechos reservados de Mi Cuenta Web

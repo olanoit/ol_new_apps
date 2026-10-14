@@ -1,0 +1,104 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+FORMULARIO INCRUSTADO
+Presentación
+medios de pago compatibles
+Restricciones
+Migración version antigua (tarjetas)
+Inicio rápido
+Integración avanzada
+Personalizar el formulario
+Tests i ejemplos de código
+Parametros JS
+Metodos y eventos JS
+Codigos de errores (CLIENT)
+FAQ
+API REST
+Presentación
+Lista de los Web Services
+Probar con el playground
+Creación de pagos
+Gestión de las transacciones
+Alias
+Suscripciones
+Solicitudes de pago
+Comprador de Wallet
+Códigos de error
+FAQ
+API REST PCI-DSS
+Presentación
+Lista de los Web Services
+Probar con el playground
+Crear un pago desde un sitio PCI-DSS
+Creación de tokens
+Actualización de la tarjeta asociada a un token
+Verificación de tarjeta
+Autenticatión del pagador (3DS, tarjetas privadas)
+Gestión de mensajes de autentificación
+Notificaciones
+Tarjetas de prueba
+Códigos de error
+Etapa 2: Autentificarse
+Objetivo
+Proteger la transferencia de datos.
+I. Recuperación de claves
+Conéctese a Back Office Vendedor
+Recupere sus claves de API REST:
+desde el menú Configuración > Tienda , seleccione su tienda y vaya a la pestaña Claves de la API REST.
+Tabla de claves API REST : Para cada uso hay una clave para el modo TEST y una clave para el modo Producción.
+Número	NOMBRE DE LAS CLAVES	Descripción
+1	Usuario	Para las llamadas al Web Services REST.
+2	contraseña	Para las llamadas a los Web Services REST y para verificar las autenticidad de los datos enviados en la IPN.
+3	Clave pública	Para crear un formulario de pago en el navegador del cliente.
+4	Clave HMAC-SHA-256	Para verificar la autenticidad de los datos enviados de vuelta a la tienda.
+Esta acción la realizar un usuario habilitado para administrar claves y algoritmos de firma. Para acceder a la pestaña Claves de la API REST debe activar una funcionalidad específica. Contacte al servicio al cliente si no visualiza esta pestaña. Más información: claves de la API REST.
+II. Fase de autentificación
+Cree una cadena con el usuario y la contraseña separados por dos puntos (:)
+el nombre de usuario es el ID de la tienda: N° 1: usuario de la tabla de claves de la API REST
+ElContraseña, por ejemplo, para la tienda de prueba.testpassword_7vAtvN49E8Ad6e6ihMqIOvOHC6QV5YKmIXgxisMm0V7Eq:#2: Contraseña de la tabla de claves de la API REST
+Codificar la cadena obtenida en base64
+Agregue a su solicitud el encabezado “Authorization” que contenga “Basic” seguido de la cadena codificada en base64:
+HTML
+Copy
+    Authorization: Basic Njk4NzYzNTc6dGVzdHBhc3N3b3JkX0RFTU9QUklWQVRFS0VZMjNHNDQ3NXpYWlEyVUE1eDdN
+Por ejemplo, para el lenguaje PHP , el header Authorization se calcula de la siguiente manera:
+HTML
+Copy
+$header = "Authorization: Basic " . base64_encode($username . ':' . $password);
+.
+JSON
+Request
+Copy
+POST 
+https://api.micuentaweb.pe/api-payment/V4/Charge/SDKTest
+Headers
+Copy
+Authorization: 
+ODkyODk3NTg6dGVzdHBhc3N3b3JkXzd2QXR2TjQ5RThBZDZlNmloTXFJT3ZPSEM2UVY1WUttSVhneGlzTW0wVjdFcQ==
+Content-Type: 
+application/json
+Body
+Copy
+{
+    "value": "my testing value"
+}
+III. Ejemplos de código
+Hay ejemplos de código en diferentes lenguajes disponibles en Github.
+IV. Ejemplo simplificado de PHP
+Dans le dossier sample, le fichier de cette étape est config.php. Il permet de définir les clés d'authentification. Pour plus de détails, Fichier d'exemple : config.php.
+PRÓXIMO PASO N°3
+EN ESTA PÁGINA
+Objetivo
+I. Recuperación de claves
+II. Fase de autentificación
+III. Ejemplos de código
+IV. Ejemplo simplificado de PHP
+© 2026 Todos los derechos reservados de Mi Cuenta Web

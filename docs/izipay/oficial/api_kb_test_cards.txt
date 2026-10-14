@@ -1,0 +1,154 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+FORMULARIO INCRUSTADO
+Presentación
+medios de pago compatibles
+Restricciones
+Migración version antigua (tarjetas)
+Inicio rápido
+Integración avanzada
+Personalizar el formulario
+Tests i ejemplos de código
+Parametros JS
+Metodos y eventos JS
+Codigos de errores (CLIENT)
+FAQ
+API REST
+Presentación
+Lista de los Web Services
+Probar con el playground
+Creación de pagos
+Gestión de las transacciones
+Alias
+Suscripciones
+Solicitudes de pago
+Comprador de Wallet
+Códigos de error
+FAQ
+Base de conocimientos
+Códigos de retorno de la solicitud de autorización
+Notificationes
+Tarjetas de test
+API REST PCI-DSS
+Presentación
+Lista de los Web Services
+Probar con el playground
+Crear un pago desde un sitio PCI-DSS
+Creación de tokens
+Actualización de la tarjeta asociada a un token
+Verificación de tarjeta
+Autenticatión del pagador (3DS, tarjetas privadas)
+Gestión de mensajes de autentificación
+Notificaciones
+Tarjetas de prueba
+Códigos de error
+Tarjetas de test
+Esta es la lista de tarjetas de test que puede utilizar durante la fase de implementación. Estas tarjetas son válidas únicamente en el entorno de test. Para que los vendedores puedan testear la configuración de riesgos definida en su tienda, el país de las tarjetas de test DINERS, VISA et MASTERCARD es el país de la empresa, excepto con las siguientes tarjetas, en las que el país es GROENLANDIA (GRL):
+DINERS : 36230000000019
+VISA : 4970110000000062
+MASTERCARD : 5100010000000015
+Tarjetas VISA
+Número de tarjeta.	Caso de test verificado
+4970100000000055	Pago aceptado, Transferencia de responsabilidad = NO
+4970100000000113	Pago rechazado.
+4970100000000063	Pago rechazado debido a una autentificación 3DS fallida, el comprador no ha logrado autentificarse.
+4970100000000071	Pago rechazado, autorización denegada por fondos insuficientes
+4970100000000063	Pago rechazado debido a una autentificación 3DS2 fallida, el comprador no ha logrado autentificarse.
+4970110000001029	Pago aceptado con autentificación sin interacción y con fingerprinting
+4970110000001003	Pago aceptado con autentificación, con challenge y con fingerprinting
+4970110000000039	Pago rechazado tras un CHALLENGE
+4970110000000054	Pao rechazado tras un CHALLENGE con la expiración del plazo establecido
+4970100000000675 (token de red asociado a esta tarjeta 4990001500000031)	-CIT(Transacción iniciada por el cliente): iniciada por el comprador con interacción. La transacción esaceptadoEjemplo: Pago o registro de una tarjeta que requiere la introducción de datos.
+-MIT(Transacción iniciada por el comerciante): iniciada por el comerciante, sin la presencia del comprador, vinculada a una transacción CIT. La transacción esRechazadaEjemplo: Fecha de vencimiento de un pago a plazos o una suscripción, ...
+Tarjetas VISA ELECTRON
+Número de tarjeta.	Caso de test verificado
+4917480000000057	Pago aceptado, Transferencia de responsabilidad = NO
+4917480000000107	Pago rechazado.
+4917480000000065	Pago rechazado debido a un error en la autenticación 3D2 Secure, el comprador no se ha autenticado
+4917480000000073	Pago rechazado, autorización denegada por fondos insuficientes
+Tarjetas VPAY
+Número de tarjeta.	Caso de test verificado
+4666533000000031	Pago aceptado
+4666533000000007	Pago aceptado con autentificación 3-D Secure
+4666533000000064	Pago rechazado.
+4666533000000056	Pago rechazado, autorización denegada por fondos insuficientes
+Tarjetas VISA compatibles con DCC
+Número de tarjeta.	Caso de test verificado
+4005520000008411	Pago aceptado en USD después de un CHALLENGE
+4005520000008403	Pago aceptado en USD en FRICTIONLESS
+4761260000001249	Pago aceptado en CAD en FRICTIONLESS
+4300020000009784	Pago aceptado en EUR en FRICTIONLESS
+4300000000008267	Pago aceptado en GBP en FRICTIONLESS
+4761280000003607	Pago aceptado en IDR en FRICTIONLESS
+4051700000003926	Pago aceptado en JPY en FRICTIONLESS
+4515450000004140	Se acepta el pago en KWD en FRICTIONLESS
+4005520000018402	Pago rechazado.
+Tarjetas MASTERCARD
+Número de tarjeta.	Caso de test verificado
+5970100300000067	Pago aceptado, Transferencia de responsabilidad = NO
+5100010000002045	Pago aceptado en FRICTIONLESS sin el método 3-D Secure
+5970100300000109	Pago rechazado.
+5970100300000075	Pago rechazado debido a una autentificación 3DS fallida, el comprador no ha logrado autentificarse.
+5970100300000083	Pago rechazado, autorización denegada por fondos insuficientes
+5100010000000114	Pago aceptado en FRICTIONLESS y con el método 3-D Secure
+5100010000000106	Pago aceptado con CHALLENGE y con el método 3-D Secure
+5100010000000056	Pao rechazado tras un CHALLENGE con la expiración del plazo establecido
+5100010000000064	Pago rechazado tras un CHALLENGE
+5970100300000075	Pago rechazado debido a una autentificación 3DS2 fallida, el comprador no ha logrado autentificarse.
+5100010000002060	Pago rechazado tras la autentificación de Data Only
+5970100300000133 (token de red asociado a esta tarjeta 5990001500000202)	-CIT(Transacción iniciada por el cliente): iniciada por el comprador con interacción. La transacción esaceptadoEjemplo: Pago o registro de una tarjeta que requiere la introducción de datos.
+-MIT(Transacción iniciada por el comerciante): iniciada por el comerciante, sin la presencia del comprador, vinculada a una transacción CIT. La transacción esRechazadaEjemplo: Fecha de vencimiento de un pago a plazos o una suscripción, ...
+Tarjetas MAESTRO
+Número de tarjeta.	Caso de test verificado
+5000550000000052	Pago aceptado, Transferencia de responsabilidad = NO
+5000550000000102	Pago rechazado.
+5000550000000060	Pago rechazado debido a un error en la autenticación 3D2 Secure, el comprador no se ha autenticado
+5000550000000078	Pago rechazado, autorización denegada por fondos insuficientes
+Tarjetas American Express
+Número de tarjeta.	Caso de test verificado
+378282000000008	Pago AMEX aceptado
+378283000000022	Pago rechazado.
+375900000000008	Pago con autentificación sin interacción y con fingerprinting
+375900000010007	Pago con autentificación sin interacción y sin fingerprinting
+375900000000016	Pago con autentificación, con challenge y con fingerprinting
+375900000010015	Pago con autentificación, con challenge y sin fingerprinting
+375900000020006	Pago con autentificación, con fingerprinting y con timeout
+375900000020014	Pago con autentificación, con challenge y con time-out en el fingerprinting
+375900000010254	Pago con autentificación con time-out en el challenge
+378282000000024	Pago rechazado, no honrar
+Tarjetas Diners
+Número de tarjeta.	Caso de test verificado
+36000000000008	Pago aceptado
+36000000000057	Pago rechazado, no honrar
+36000100000049	Pago aceptado con autentificación sin interacción y sin fingerprinting
+36000100000106	Pago con autentificación, sin interacción y con fingerprinting
+36000100000023	Pago con autentificación, desafío (CHALLENGE) y sin hfingerprinting
+36000100000130	Pago con autentificación, desafío (CHALLENGE) y con fingerprinting
+36000100000114	Pago con autentificación, con huellas y con time-out
+36000100000148	Pago con autentificación, con desafío (CHALLENGE) y time-out en el fingerprinting,
+36000100000064	Pago con autentificación, con time-out en el desafío (CHALLENGE)
+Procesos Diners
+Número de tarjeta.	Caso de test verificado
+36230000000001	Pago Diners, con autentificación Procesos OTP, tarjeta afiliada
+36230000000019	Pago Diners, con autentificación Procesos OTP, tarjeta no afiliada a
+36230000000027	Pago Diners, con autentificación Procesos OTP, con time-out
+36230000000035	Pago Diners, con autentificación Procesos OTP, con error del Web Service
+36230000000043	Pago Diners, con autentificación Procesos OTP, con error de firma
+EN ESTA PÁGINA
+Tarjetas VISA
+Tarjetas VISA ELECTRON
+Tarjetas VPAY
+Tarjetas VISA compatibles con DCC
+Tarjetas MASTERCARD
+Tarjetas MAESTRO
+Tarjetas American Express
+Tarjetas Diners
+© 2026 Todos los derechos reservados de Mi Cuenta Web

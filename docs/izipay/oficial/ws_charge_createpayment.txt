@@ -1,0 +1,1741 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+Seleccione Web Service
+Charge/CreatePayment
+webService
+Parámetros principales
+amount
+currency
+orderId
+formAction
+paymentMethods
+excludedPaymentMethods
+preferredPaymentMethods
+Información sobre tu cliente
+customer
+reference
+email
+accountDetails
+billingDetails
+shippingDetails
+shoppingCart
+Extensions.ws_device_info_group_label
+device
+deviceType
+acceptHeader
+userAgent
+ip
+javaEnabled
+language
+colorDepth
+screenHeight
+screenWidth
+timeZoneOffset
+Opciones generales de la transacción
+acquirerTransientData
+contrib
+ipnTargetUrl
+fingerPrintId
+metadata
+overridePaymentCinematic
+paymentMethodToken
+strongAuthentication
+taxAmount
+taxRate
+useCase
+transactionInitiator
+Opciones relacionadas con la tarjeta
+transactionOptions
+cardOptions
+paymentSource
+mid
+mids
+manualValidation
+captureDelay
+firstInstallmentDelay
+installmentNumber
+retry
+restrictedInstallments
+initialIssuerTransactionIdentifier
+installmentOptions
+firstAmount
+count
+period
+schedules
+[1]
+amount
+date
+Información sobre el sub-vendedor
+subMerchantDetails
+companyType
+legalNumber
+name
+url
+phoneNumber
+address1
+address2
+zip
+city
+country
+mcc
+mid
+softDescriptor
+state
+facilitatorId
+Pruébame
+Documentación
+Web Service Charge/CreatePayment
+La llamada a los Web Services requiere una autentificación HTTP Basic Authentication. Más información: " Fase de autenticación ".
+POST
+https://api.micuentaweb.pe/api-payment/V4/Charge/CreatePayment
+Casos de uso
+Casos de uso	VALOR	Enlace
+Creación de un pago al contado	Complete el campoformActionaPAYMENT.	Inicio rápido
+Crear un alias con un pago	Complete el campoformActionaREGISTER_PAY.	Creación de un token con pago
+Pago con propuesta al titular para crear un token.	Complete el campoformActionaASK_REGISTER_PAY.	Creación de un token con pago
+Pago en 0 clics	Complete el campoformActionaSILENTy el campopaymentMethodTokenavec l'alias. Requiert l'option "API REST de paiement en mode champs embarqués". L'objetdeviceest requis pour une CIT en mode silencieux avec Data Share Only.	Pago en 0 clics
+Pago con 1 clic	Complete el campoformActionaPAYMENTy el campopaymentMethodTokencon el alias.	Pago en 1 clic
+Pago con Wallet (billetera electrónica)	Complete el campoformActionaCUSTOMER_WALLETy el campocustomer.reference.	Gestión de los wallets de comprador
+Respuesta
+Consulte la referencia de la respuesta para obtener más detalles.
+Parámetros de entrada
+amount
+Monto del pago en su fracción monetaria más pequeña (el céntimo para el sol peruano).
+Ejemplo: .
+30050 pour 300,50 PEN
+30050 por 30050 YEN
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+contrib
+Nombre de la solución de e-comercio utilizada en el sitio web comercial y su número de versión.
+Formato
+tipo
+cadena
+Ejemplo
+prestashop 1.7
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+currency
+Devise du paiement. Code alphabétique en majuscule selon la norme ISO 4217 alpha-3. Exemple: "PEN" pour le sol péruvien.
+Valores posibles
+Devise	Código alfanumérico	Código numérico	Unidad fraccionaria
+Sol peruano	PEN	604	2
+Dollar des États-Unis	USD	840	2
+Formato
+tipo
+cadena
+Ejemplo
+EUR
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+ipnTargetUrl
+Vous pouvez surcharger l'URL de notification instantanée (également appelée IPN). Plus d'infos : Analyse de l'IPN .
+Formato
+tipo
+cadena
+Ejemplo
+https://my.site/my-ipn
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+orderId
+Referencia de pedido definida por el vendedor. No admite los caracteres UTF-8.
+Los caracteres aceptados son:
+abcdefghijklmnopqrstu vwxyz
+ABCDEFGHIJKLMNOPQRSTU VWXYZ
+0 1 2 3 4 5 6 7 8 9
+_-
+Formato
+tipo
+cadena
+Ejemplo
+myOrderId-1234
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+metadata
+Valores personalizados de la transacción, en formato JSON.
+Ejemplo de llamada
+Por ejemplo, para transmitir un valor personalizado, agregue a su solicitud:
+JSON
+{
+  "metadata": {
+    "MyValueKey": "1234"
+  }
+}
+Este valor se devuelve en el objeto Transaction recién creado.
+También puede utilizar los metadatos " orderInfo ", " orderInfo2 " y " orderInfo3 " para transmitir información adicional sobre el pedido.
+Estos datos aparecerán en la pestaña Extra del detalle de la transacción desde su Back Office Vendedor.
+Formato
+tipo
+objeto
+Ejemplo
+{"MyValueKey": "1234"}
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Transmitir los datos para el análisis de riesgos
+Las transacciones se someten sistemáticamente a un análisis de riesgo para determinar si se necesita una autentificación 3D-Secure o si presentan un riesgo demasiado elevado para aceptarlas. Para que el análisis sea lo más pertinente posible, usted debe transmitir un máximo de informaciones en su formulario de pago. Para detallar el análisis, usted puede utilizar los campos descritos a continuación. Se devuelven estos campos en la notificación de fin de pago. Para ilustrar, aquí hay un ejemplo con el número de teléfono : cybersource_mdd_13.
+JSON
+{
+  "amount": 180,
+  "currency": "PEN",
+  "customer": {
+    "email": "[sample@example.com|mailto:sample@example.com]"
+  },
+  "metadata": {
+    "cybersource_mdd_13": "0606060606"
+  },
+  "orderId": "myOrderId-417842"
+}
+Valores posibles
+Los valores posibles son:
+Nombre del campo	Descripción	Opcional / Recomendado	Formato
+cybersource_mdd_12	Email que el cliente ingresó en el registro o el que coloca durante el proceso de compra.	R	String (255)
+cybersource_mdd_13	Numero de telefono utilizado.	R	String (255)
+cybersource_mdd_14	Información del cliente que realiza la compra, en el campo se registrará el tipo concatenado con el número de identidad.
+01-DNI
+02-CARNET DE EXTRANJERIA
+03-PASAPORTE
+10-RUC 10
+20-RUC 20
+15-RUC 15
+17-RUC 17
+30-PTT
+Ejm :
+01-07659002 (dni)
+20-20102034561 (ruc juridico)
+	R	String (255)
+cybersource_mdd_15	Identificador único del cliente de cara al comercio.	O	String (255)
+cybersource_mdd_16	¿Registro mediante Redes Soc u otras?
+SI
+NO
+	O	String (255)
+cybersource_mdd_17	Cliente Frecuente.
+SI
+NO
+	O	String (255)
+cybersource_mdd_18	Número de días transcurridos desde primera compra del cliente.	O	Float
+cybersource_mdd_19	Número de días transcurridos desde última compra del cliente.	O	Float
+cybersource_mdd_20	Número de cupón de descuento.	O	String (255)
+cybersource_mdd_21	Número de Giftcard.	O	String (255)
+cybersource_mdd_22	Indica si el cliente se ha registrado en la web del comercio y bajo qué modalidad Registrado.
+01=Invitado
+02=Empleado
+03=Registro directo
+	O	String (255)
+cybersource_mdd_23	Ticket promedio del cliente (sin incluir la compra actual).	O	Float
+cybersource_mdd_24	Riesgo de la transacción.
+BAJO
+MEDIO
+ALTO
+	O	String (255)
+cybersource_mdd_27	Información del beneficiario de la compra, en el campo se registrará el tipo concatenado con el número de identidad .
+01-DNI
+02-CARNET DE EXTRANJERIA
+03-PASAPORTE
+10-RUC 10
+20-RUC 20
+15-RUC 15
+17-RUC 17
+30-PTT
+Ejm :
+01-07659002 (dni)
+20-20102034561 (ruc juridico)
+	R	String (255)
+cybersource_mdd_28	Aplica a ventas telefónicas, identificado único de la persona que atendió al cliente durante el proceso de venta (Asistidas).	R	String (255)
+cybersource_mdd_29	Número de items que compra el cliente por pedido.	O	Float
+cybersource_mdd_30	Enviado/Pendiente.
+Enviado
+Pendiente
+	R	String (255)
+cybersource_mdd_31	Número de horas entre la compra y la entrega del producto / servicio.	R	Float
+cybersource_mdd_32	Número de días que se encuentra esa dirección registrada en sistemas.	R	Float
+cybersource_mdd_33	Número de pedidos realizados a esa dirección registrada en sistemas.	O	Float
+cybersource_mdd_34	Número de compras realizadas en los últimos 6 meses según historial del cliente.	O	Float
+cybersource_mdd_35	Identificador único del establecimiento del comercio. Aplica para delivery de productos/servicios y recoge en el establecimiento.	R	String (255)
+cybersource_mdd_36	Nombre del establecimiento del comercio. Aplica para delivery de productos/servicios y recoge en el establecimiento.	R	String (255)
+cybersource_mdd_37	Indica si la compra se enviará mediante delivery a la dirección del cliente o será recogida en el local del comercio Delivery / recoge en tienda.
+DELIVERY
+RECOJO EN TIENDA
+	R	String (255)
+cybersource_mdd_38	Cuenta de destino para la recarga de billeteras de criptomonedas y otros instrumentos financieros.	R	String (255)
+cybersource_mdd_39	Banco al cual pertenece la cuenta de destino.
+2= BCP,
+3= IBK PRIVADA,
+5= IBK,
+7= CITI,
+9= SBP,
+10= LOY,
+11= BBVA,
+18= BN,
+23= COMERCIO,
+35=PICHINCHA,
+38= BIF,
+41=SBP,
+43= CSF,
+49=MIBANCO
+	R	String (255)
+cybersource_mdd_40	Número de placa de auto.	R	String (255)
+cybersource_mdd_41	Indicar si el cliente ha adquirido o está recargando un número PREPAGO o POSTPAGO. Aplica para empresas de telefonía.
+PREPAGO
+POSTPAGO
+	R	String (255)
+cybersource_mdd_42	Identificador único del usuario final del servicio, de cara al comercio. En el caso de telcos, ese el número de celular a recargar.	R	String (255)
+cybersource_mdd_43	Número telefónico ingresado por el cliente al registrarse en la web/app del comercio.	R	String (255)
+cybersource_mdd_44	Código de Reserva.	R	String (255)
+cybersource_mdd_45	Número de código de fidelidad del viajero frecuente.	R	String (255)
+cybersource_mdd_46	Canal de venta ticket..
+OTA
+APP
+WEB
+	R	String (255)
+cybersource_mdd_47	Round Trip or One Way Trip
+OW
+RT
+	R	String (255)
+cybersource_mdd_48	Delta entre fecha de salida y fecha de regreso. Solo para vuelos de ida y vuelta (en días).	O	String (255)
+cybersource_mdd_49	Número de adultos viajando.	O	String (255)
+cybersource_mdd_50	Ciudad donde se inicia el viaje comprado por el cliente.	R	
+Código IATA
+cybersource_mdd_51	Ciudad donde finaliza el viaje comprado por el cliente.	R	
+Código IATA
+cybersource_mdd_52	Compra de millas/km.
+SI
+NO
+	R	String (255)
+cybersource_mdd_53	Vuelo internacional.
+SI
+NO
+	R	String (255)
+cybersource_mdd_54	Clase Tarifa. Letra que corresponde a la clase del billete.
+Ejm : W, Y, N.
+	O	String (255)
+cybersource_mdd_55	Fecha de inicio del primer vuelo.	R	DateTime (25)
+cybersource_mdd_56	Aeropuerto Origen	O	
+Código IATA
+cybersource_mdd_57	Aeropuerto Destino	O	
+Código IATA
+fingerPrintId
+Este campo lo utilizan los vendedores que implementan el analizador de riesgos en su página de pago.
+Permite transmitir el ID de la sesión (o fingerPrint Id) a la pasarela de pago para finalizar el análisis de riesgo.
+Los analizadores de riesgo admitidos son:
+NOTO
+Konduto
+Cybersource
+MonitorPlus
+ClearSale
+En el analizador de riesgo ClearSale este campo tiene una longitud fija de 128 caracteres, puede incluir mayúsculas, minúsculas, cifras y guiones ([A-Z][a-z], 0-9, \_, -).
+Con los otros analizadores, se recomienda indicar un UUID de una longitud estándar de 36 caracteres.
+Ejemplo: dd7a3898-2e1b-40d0-aaf7-5482c73bf0c4
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+formAction
+formAction Le permite definir el tipo de comportamiento deseado al crear la transacción.
+Valores posibles
+Valeur	Descripción
+PAYMENT	Creación de una transacción simple. Comportamiento predeterminado.
+REGISTER_PAY	Creación de un token de los medios de pago al mismo tiempo que la transacción. No permite crear un token asociado a un IBAN.
+ASK_REGISTER_PAY	Añade una casilla de verificación al formulario para la creación de un token. No permite crear un token asociado a un IBAN.
+SILENT	Transacción iniciada por el vendedor sin la presencia del comprador. Realiza un pago mediante un alias sin utilizar el formulario incrustado. Requiere la opción "Pago mediante API REST en modo de campos integrados".
+TRANSFER	Realizar una transferencia de fondos.
+CUSTOMER_WALLET	Añade una casilla de verificación al formulario para asociar la tarjeta al wallet.
+Le champ customer.reference est obligatoire pour ce cas d'utilisation. Consultez le guide d'intégration pour plus d'informations.
+null	Si el valor es nulo o no definido, se aplica PAYMENT.
+PAYMENT
+El Servicio Web devuelve un formToken .
+Este es el comportamiento por defecto. La llamada a Charge/CreatePayment crea una transacción sin realizar ninguna operación adicional.
+REGISTER_PAY
+El Servicio Web devuelve un formToken .
+Un alias (ou token) du moyen de paiement est créé en même temps que la transaction. Cet alias vous permet ensuite de créer des transactions en un clic . L'alias nouvellement créé est renseigné dans la propriété paymentMethodToken.
+Más información, consulte: Creación y uso de alias .
+ASK_REGISTER_PAY
+El Servicio Web devuelve un formToken .
+Este parámetro permite agregar una casilla de verificación al formulario de pago, preguntándole al comprador si desea registrar su tarjeta.
+Acción del comprador	Descripción
+La casilla está marcada	Registra un alias de tarjeta (formAction=REGISTER_PAY).
+La casilla no está marcada	El alias no se crea (formularioAcción=PAYMENT). Comportamiento por defecto.
+Más información, consulte: Creación y uso de alias .
+CUSTOMER_WALLET
+El Servicio Web devuelve un formToken .
+Este parámetro permite agregar una casilla de verificación al formulario de pago, preguntándole al comprador si desea registrar su tarjeta en su wallet. Requiere la referencia del comprador customer.reference .
+Acción del comprador	Descripción
+La casilla está marcada	Añadir una tarjeta al wallet.
+La casilla no está marcada	Comportamiento por defecto. La tarjeta no se agrega a la billetera.
+SILENT
+Se reserva para las transacciones iniciadas por el vendedor sin la presencia del comprador, especialmente para pagos recurrentes cuando es el vendedor quien gestiona la recurrencia.
+En el área de aplicación de la DSP2, la autentificación del titular es obligatoria cuando el titular está presente. Por lo tanto, el modo SILENT se reserva para aquellos casos en que el titular está ausente o para los vendedores que se encuentren fuera del área de la DSP2.
+En la zona de aplicación de la DSP2 se ignora el campo strongAuthentication y no se realiza la autentificación del titular.
+El Servicio Web devuelve directamente una transacción en vez de un formToken durante un pago por token. Por lo tanto, la transacción se realiza de servidor a servidor.
+Formato
+tipo
+cadena
+Ejemplo
+PAYMENT
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+paymentMethodToken
+Token asociado a un medio de pago.
+Formato
+tipo
+cadena
+Ejemplo
+c701ad46ef37493cab6a7b2b060e4a68
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+strongAuthentication
+Perite indicar la preferencia 3-D Secure del vendedor:
+Sin interacción del titular: Frictionnless (se requiere la opción Frictionless 3DS2 ).
+Con interacción del titular:Challenge.
+Sin preferencia del vendedor.
+El vendedor indica su preferencia. El emisor de la tarjeta es quien toma la decisión sobre la autentificación del titular.
+Caso particular: guardar una tarjeta
+Casos de uso	Valores posibles
+Con interacción del titular: Challenge	
+ENABLED : valor obsoleto.
+CHALLENGE_REQUESTED : valor que permite solicitar una autentificación fuerte.
+CHALLENGE_MANDATE : valor que permite solicitar una autentificación fuerte por razones reglamentarias.
+Sin interacción del titular: Frictionless	
+DISABLED: este valor permite solicitaruna exenciónde autenticación fuerte.
+Con la opción Frictionless 3DS2 :
+Si el emisor acepta la solicitud de frictionless, la transacción no está cubierta por la transferencia de responsabilidad en caso de disputa del titular de de tarjeta.
+Sin la opción Frictionless 3DS2 : la elección de preferencia se delega al emisor de la tarjeta (No preference).
+DATA_SHARE_ONLY : Solo para América latina, incluido Brasil. Este valor permite solicitar una transacción sin interacción del titular (no hay autentificación). Sin embargo, para reducir el riesgo de rechazo durante la autorización, usted desea compartir los datos de la transacción con el emisor usando el protocolo 3DS.
+Sin preferencia del vendedor	
+NO_PREFERENCE : Indica al DS que no hay "preferencia del vendedor". El pago está garantizado si el emisor decide realizar una autentificación sin interacción (frictionless).
+AUTO : Se delega la elección de la preferencia al emisor de la tarjeta (No Preference).
+Formato
+tipo
+cadena
+Ejemplo
+ENABLED
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+acquirerTransientData
+Permite la transmisión de información específica a determinados adquirentes/redes.
+Restringir los códigos BIN aceptados
+Para limitar las tarjetas de pago aceptadas según su código BIN, se requiere el formato siguiente:
+"acquirerTransientData":
+{"MULTI":{"bins": ["bin1","bin2","bin3"]}}
+NB : Admite códigos BIN de 6 dígitos y códigos BIN de 8 dígitos. Ejemplo: código BIN de 6 dígitos : 4012 34XX XXXX XXXX; código BIN de 8 dígitos : 4000 1234 XXXX XXXX.
+Formato
+tipo
+objeto
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+paymentMethods
+Tabla de medios de pago para ofrecer al comprador.
+Ejemplo: ["CARDS","PAYPAL"].
+En dicho caso, solo se ofrecen al comprador los pagos con tarjeta y con PayPal.
+Si este campo está vacío (recomendado), se ofrecen todos los medios de pago elegibles asociados a la tienda (monedas, restricciones técnicas, etc.).
+Encuentra los valores para cada método de pago en la siguiente tabla:
+Tabla de medios de pago
+Pour plus d'infos : Sélectionner les moyens de paiement .
+Formato
+tipo
+lista
+Ejemplo
+CARDS, PAYPAL
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+excludedPaymentMethods
+Tabla de los medios de pago para excluir. Ejemplo: ["CARDS", "PAYPAL"].
+En dicho caso, no se ofrecen al comprador los pagos con tarjeta ni con PayPal. Se ofrecen todos los demás medios de pago elegibles asociados a la tienda (monedas, restricciones técnicas, etc.).
+Encuentra los valores para cada método de pago en la siguiente tabla:
+Tabla de medios de pago
+Pour plus d'infos : Sélectionner les moyens de paiement .
+Formato
+tipo
+lista
+Ejemplo
+CARDS, PAYPAL
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+preferredPaymentMethods
+Tabla de los medios de pago preferidos.
+Ejemplo: ["PAYPAL"].
+En ese caso, PayPal es tu medio de pago preferido.
+Pour plus d'infos : Mettre en évidence un moyen de paiement .
+Formato
+tipo
+lista
+Ejemplo
+PAYPAL
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.reference
+Identificador del comprador en el comerciante. Obligatorio si formAction está establecido en CUSTOMER_WALLET. En este caso, la referencia del comprador se utiliza como identificador de la billetera.
+Formato
+tipo
+cadena
+Ejemplo
+myCustomerRef-123456
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.email
+Dirección de e-mail del comprador.
+Especificaciones de la estructura del correo electrónico: RFC-2822
+Parámetro obligatorio al crear un token (si el campo formAction tiene el valor REGISTER_PAY , ASK_REGISTER_PAY o CUSTOMER_WALLET ).
+Si ce paramètre est absent lors de la création du formToken ( Créer un formToken ), la plateforme affiche automatiquement un champ pour saisir l'e-mail acheteur.
+Formato
+tipo
+cadena
+Ejemplo
+sample@example.com
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.address
+Dirección de facturación. Importante : Los caracteres > y < no están permitidos.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.category
+Tipo de cliente.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+valeurs	Descripción
+PRIVATE	Cliente de tipo Particular
+COMPANY	Cliente de tipo Empresa
+customer.billingDetails.cellPhoneNumber
+Teléfono móvil del comprador. Acepta todos los formatos: Ejemplos:
++33623456789
+(+34) 824 65 43 21
+87 77 12 34
+Según el medio de pago, algunas restricciones pueden modificar el formato. Para más información, consulte la documentación técnica específica del medio de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.city
+Ciudad de facturación.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.country
+País del comprador (en letras mayúsculas, según la norma ISO 3166-1 alfa-2).
+Formato
+tipo
+cadena
+Ejemplo
+ES
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+Ejemplos de valores posibles:
+País	Code
+Argentina	AR
+Brasil	BR
+COLOMBIA	CO
+COSTA RICA	CR
+ECUADOR	EC
+GUATEMALA	GT
+MÉXICO	MX
+NICARAGUA	NI
+PERÚ	PE
+SALVADOR	SV
+ESTADOS UNIDOS DE AMÉRICA	US
+URUGUAY	UY
+customer.billingDetails.district
+Barrio de la dirección de facturación.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.firstName
+Nombre del comprador.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.identityCode
+Identificación nacional. Identifica de manera única a cada ciudadano en un país.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.identityType
+Tipo de documento de identidad. Solo en América Latina.
+Valores posibles
+Pays	Type	Description
+Argentina	DNI	Documento Nacional de Identidad.
+Brasil	CNPJ	Cadastro Nacional da Pessoa Jurídica.
+CPF	Cadastro de Pessoas Físicas.
+Colombia	CC	Cédula de ciudadania.
+TI	Tarjeta de Identidad.
+CE	Cédula de Extranjeria.
+NI	Número de Identificación Tributaria.
+PS	Pasaporte.
+Peru	DNI_PER	Documento National de Identidad.
+PAR	Partida de Nacimiento.
+PAS	Pasaporte.
+LMI	Libreta Militar.
+NAN	Otro.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.language
+Código del idioma del comprador según la norma ISO 639-1. Permite especificar el idioma en el que se envían los e-mails de confirmación de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+Ejemplos de valores posibles:
+Idioma	Code
+Alemán (Alemania)	DE
+Inglés (Reino Unido)	EN
+Inglés (Estados Unidos)	EN
+Chino (tradicional)	ZH
+Español (España)	ES
+Español (Chile)	ES
+Francés (Francia)	FR
+Italiano (Italia)	IT
+Japonés (Japón)	JP
+Holandés (Países Bajos)	NL
+Polaco (Polonia)	PL
+Portugués (Brasil)	PT
+Portugués (Portugal)	PT
+Ruso (Rusia)	RU
+customer.billingDetails.lastName
+Nombre del comprador.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.legalName
+Razón social.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.phoneNumber
+Número de teléfono del comprador. Acepta todos los formatos: Ejemplos:
++33123456789
+(00.571) 638.14.00
+40 41 42 42
+Según el medio de pago, algunas restricciones pueden modificar el formato. Para más información, consulte la documentación técnica específica del medio de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.state
+Región (estado) de la dirección de facturación. Es recomendable pero no obligatorio transmitir el valor ISO-3166-2.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.streetNumber
+Número de calle de la dirección de facturación. Carácteres aceptados:
+Caracteres alfabéticos (de la "A" a la "Z" y desde la "a" hasta la "z")
+Espacio
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.title
+Tratamiento del comprador. Ejemplos:
+Sr.
+Sr.
+Sra.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.billingDetails.zipCode
+Código postal de la dirección de facturación.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.accountDetails.creationDate
+Fecha y hora UTC de creación de la cuenta del cliente en el sitio web del comerciante, en formato AAAA MM DD HH MM SS.
+Formato
+tipo
+cadena
+Ejemplo
+2024-04-12T10:12:34+00:00
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.address
+Dirección de envío. Importante: Los caracteres > y < no están permitidos.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.address2
+Segunda línea de la dirección de envío. Importante: Los caracteres > y < no están permitidos.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.category
+Tipo de cliente.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+valeurs	Descripción
+PRIVATE	Cliente de tipo Particular
+COMPANY	Cliente de tipo Empresa
+customer.shippingDetails.city
+Ciudad de entrega.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.country
+País de entrega (en letras mayúsculas, según la norma ISO 3166-1 alfa-2).
+Formato
+tipo
+cadena
+Ejemplo
+FR
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+Ejemplos de valores posibles:
+País	Code
+AUSTRIA	AT
+Brasil	BR
+CÓRCEGA	FR
+COSTA DE MARFIL	CI
+FRANCIA	FR
+GUADALUPE	GP
+INDIA	IN
+MARTINICA	MQ
+NUEVA CALEDONIA	NC
+SAN PEDRO Y MIQUELÓN	PM
+POLINESIA FRANCESA	PF
+customer.shippingDetails.deliveryCompanyName
+Nombre de la empresa emisora del producto.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.district
+Barrio de la dirección de facturación.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.firstName
+Nombre del destinatario.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.identityCode
+Identificación nacional. Identifica de manera única a cada ciudadano en un país.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.lastName
+Nombre del comprador.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.legalName
+Razón social en caso de entrega a una empresa.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.phoneNumber
+Número de teléfono del comprador. Acepta todos los formatos: Ejemplos:
++33123456789
+(00.571) 638.14.00
+40 41 42 42
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.shippingMethod
+Tipo de envío.
+Formato
+tipo
+cadena
+Ejemplo
+PACKAGE_DELIVERY_COMPANY
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+Valeur	Descripción
+RECLAIM_IN_SHOP	Retiro en tienda.
+RELAY_POINT	Red de puntos de retiro de terceros (Kiala, Alveol, etc.).
+RECLAIM_IN_STATION	Retiro en un aeropuerto, una estación o una agencia de viajes.
+PACKAGE_DELIVERY_COMPANY	Entrega por transportista (Colissimo, UPS, etc.).
+ETICKET	Emisión de un ticket electrónico, descarga de producto virtual.
+CARD_HOLDER_ADDRESS	Entrega al comprador.
+VERIFIED_ADDRESS	Entrega a una dirección verificada
+NOT_VERIFIED_ADDRESS	Entrega a una dirección no verificada.
+SHIP_TO_STORE	Entrega en tienda
+DIGITAL_GOOD	Entrega digital.
+ETRAVEL_OR_ETICKET	Boleto electronico
+OTHER	Otro.
+PICKUP_POINT	Retiro en un punto de relevo.
+AUTOMATED_PICKUP_POINT	Recoger en el punto de relevo automático
+customer.shippingDetails.shippingSpeed
+Rapidez de envío.
+Formato
+tipo
+cadena
+Ejemplo
+EXPRESS
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Valores posibles
+Valeur	Descripción
+STANDARD	Entrega estándar
+EXPRESS	Envío en menos de 24 horas.
+PRIORITY	Entrega prioritaria (Click & Collect)
+ELECTRONIC_DELIVERY	Descargable.
+SAME_DAY_SHIPPING	Envío el mismo día.
+OVERNIGHT_SHIPPING	Envío nocturno.
+TWO_DAYS_OR_MORE_SHIPPING	Envío en 2 días o más.
+customer.shippingDetails.state
+Región de la dirección de facturación.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.streetNumber
+Número de calle de la dirección de facturación. Carácteres aceptados:
+Caracteres alfabéticos (de la "A" a la "Z" y desde la "a" hasta la "z")
+Espacio
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shippingDetails.zipCode
+Código postal de la dirección de facturación.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.insuranceAmount
+Montant de l'assurance pour l'ensemble de la commande exprimé dans sa plus petite unité monétaire (le centime pour le sol péruvien). Exemple: 30050 pour 300,50 PEN.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.shippingAmount
+Montant des frais de livraison pour l'ensemble de la commande exprimé dans sa plus petite unité monétaire (le centime pour le sol péruvien). Exemple: 30050 pour 300,50 PEN.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.taxAmount
+Montant des taxes pour l'ensemble de la commande exprimé dans sa plus petite unité monétaire (le centime pour le sol péruvien). Exemple: 30050 pour 300,50 PEN.
+Formato
+tipo
+entero
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo
+cardItemInfo es una lista que contiene objetos Customer/ShoppingCartItemInfo. Permite describir cada artículo del carrito.
+Formato
+tipo
+lista
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo.productAmount
+Montant du produit exprimé dans sa plus petite unité monétaire (le centime pour le sol péruvien). Exemple: 30050 pour 300,50 PEN.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo.productLabel
+Nombre del producto.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo.productQty
+Cantidad de producto.
+Formato
+tipo
+entero
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo.productRef
+Referencia del producto.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo.productType
+Tipo de producto.
+Valores posibles
+Valeur	Descripción
+FOOD_AND_GROCERY	Alimentos y productos comestibles.
+AUTOMOTIVE	Automotriz / Motocicleta
+ENTERTAINMENT	Entretenimiento / Cultura
+HOME_AND_GARDEN	Casa y jardín
+HOME_APPLIANCE	Equipo de la casa
+AUCTION_AND_GROUP_BUYING	Subastas y compras a granel
+FLOWERS_AND_GIFTS	Flores y regalos
+COMPUTER_AND_SOFTWARE	Computadoras y software
+HEALTH_AND_BEAUTY	Salud y belleza.
+SERVICE_FOR_INDIVIDUAL	Servicios a domicilio
+SERVICE_FOR_BUSINESS	Servicios de negocios
+SPORTS	Deportes
+CLOTHING_AND_ACCESSORIES	Ropa y accesorios
+TRAVEL	Viajes
+HOME_AUDIO_PHOTO_VIDEO	Sonido, imagen y video
+TELEPHONY	Telefonía
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+customer.shoppingCart.cartItemInfo.productVat
+Tipo de producto. Monto del impuesto sobre el producto (en la unidad más pequeña de la moneda).
+Valores posibles
+VALOR	Descripción
+Un número entero	Montant de la transaction. Sa valeur doit être un entier positif (ex: 1234 pour 12,34 PEN).
+Un número decimal, inferior a 100	Porcentaje aplicado sobre el importe. Ejemplos: 20,0 o 19,6532
+Para expresar un porcentaje aplicado al monto del producto en cuestión, el valor debe tener un máximo de 4 dígitos después del punto decimal. El decimal es obligatorio para expresar un porcentaje. La posición decimal está marcada por el carácter ".".
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+device.deviceType
+Tipo de dispositivo en el que se realiza la autentificación.
+Valores posibles
+Valeur	Descripción
+BROWSER	la autentificación se lleva a cabo en un navegador
+Formato
+tipo
+cadena
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.acceptHeader
+El contenido exacto del encabezado HTTP accept, tal como lo envió el navegador del cliente.
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.userAgent
+Contenido exacto del encabezado HTTP "user-agent" enviado por el navegador. Debe truncarse si el valor sobrepasa los 2048 caracteres. Obtenido del navegador del cliente a través de la propiedad “navigator.userAgent”. Código Javascript que permite obtener el valor:
+const language = navigator.userAgent;
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.ip
+Dirección IP del navegador tal como la devuelve el cliente en los encabezados HTTP. Formato IPV4 (ejemplo: 1.12.123.255) o IPV6 (ejemplo: 2011:0db8:85a3:0101:0101:8a2e:0370:7334). Longitud variable máximo 45 caracteres.
+Formato
+tipo
+cadena
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+device.javaEnabled
+Booleano que representa la capacidad del navegador para ejecutar Java. El valor es el que devuelve la función “navigator.javaEnabled()” y puede ser true o false. Código Javascript que permite obtener el valor:
+const javaEnabled = navigator.javaEnabled();
+Formato
+tipo
+booleano
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.language
+Cadena de caracteres que indica el idioma del navegador. Obtenido del navegador del cliente a través de la propiedad “navigator.language”. Ejemplos: "en", "en-US", "de", "fr", etc. Código JavaScript que permite recuperar el valor
+const language = navigator.language;
+Formato
+tipo
+cadena
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.colorDepth
+Este valor representa la profundidad de la paleta de colores utilizada para visualizar las imágenes en bits por pixel. Obtenido del navegador del cliente a través de la propiedad “screen.colorDepth”. Código Javascript que permite obtener el valor:
+const colorDepth = screen.colorDepth;
+Formato
+tipo
+cadena
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.screenHeight
+La altura total de la pantalla del cliente en píxeles. El valor es aquel devuelto por la propiedad “screen.height”. De 1 a 6 caracteres. Código Javascript que permite obtener el valor:
+const screenHeight = screen.height;
+Formato
+tipo
+entero
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.screenWidth
+El ancho total de la pantalla del cliente en píxeles. El valor es aquel devuelto por la propiedad “screen.width”. De 1 a 6 caracteres. Código Javascript que permite obtener el valor:
+const screenWidth = screen.width;
+Formato
+tipo
+entero
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+device.timeZoneOffset
+Diferencia de tiempo entre la hora UTC y la hora local del navegador del cliente, en minutos. Su valor es de -120 para un usuario en el huso horario UTC+2 y 570 para el huso horario UTC−09:30. Código Javascript que permite obtener el valor:
+const timeZoneOffset = new Date().getTimezoneOffset();
+Formato
+tipo
+entero
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+transactionOptions.cardOptions.paymentSource
+Origen del pago.
+Valores posibles
+Valeur	Descripción
+EC	E-Commerce: el comprador ingresa los datos del medio de pago. Este valor permite tener una autentificación fuerte al momento del pago.
+MOTO	MAIL OR TELEPHONE ORDER: Ingreso realizado por un operador. Los datos del medio de pago se envían por correo postal o electrónico. Requiere un contrato de tipo VAD.
+CC	Call Center: pago realizado a través de un centro de atención telefónico. Requiere un contrato de tipo VAD.
+MAIL_ORDER	Ingreso realizado por un operador. Los datos del medio de pago se envían por correo postal o electrónico. Requiere un contrato de tipo VAD.
+TELEPHONE_ORDER	Ingreso realizado por un operador. Los datos del medio de pago se envían por teléfono. Requiere un contrato de tipo VAD.
+OTHER	Otro canal de venta. Valor de salida devuelto para los pagos realizados desde el Back Office Vendedor, los pagos por archivo, los pagos recurrentes, los pagos de proximidad.
+Absent ou null	El valor predeterminado es “EC”.
+Formato
+tipo
+cadena
+Ejemplo
+EC
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.mid
+Número de afiliación. Si este campo está indicado, asegúrese de utilizar el contrato correcto en función de la red de la tarjeta. Un contrato de VISANET no puede utilizarse para una transacción de MASTERCARD.
+Formato
+tipo
+cadena
+Ejemplo
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.mids
+Permite especificar, para cada red de aceptación, el contrato comercial a utilizar, en el formato JSON.
+Ejemplo
+{
+   "network1":"idContrat1",
+   "network2":"idContrat2",
+   "..."
+}
+Consulte las redes disponibles desde este lien .
+Esta configuración es opcional y solo resulta útil si tiene varios contratos en la misma red y desea modificarlos dinámicamente en función del pago.
+.
+Formato
+tipo
+objeto
+Ejemplo
+{"AA": "1111111", "BB": "2222222"}
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.manualValidation
+Précise le mode de validation de la transaction.
+Pour plus d'informations sur le mode de validation d'une transaction, consultez le chapitre "Paramétrer le mode de validation par défaut" du manuel d'utilisation Paramétrages de la boutique .
+Valores posibles
+Valeur	Descripción
+NO	La transaction est validée automatiquement par la plateforme de paiement.
+YES	La transaction doit être validée manuellement par le marchand depuis son Back Office Marchand (ou automatiquement via le Web Service Transaction/Validate).
+null	Configuración por defecto de la tienda seleccionada (configurable en el Back Office Lyra Collect).
+Formato
+tipo
+cadena
+Ejemplo
+NO
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.captureDelay
+Fecha límite para aplicar en la fecha de captura.
+Descripción
+Indica el plazo en cantidad de días antes de la captura. Si este parámetro no se transmite, se utilizará el valor predeterminado establecido en el Back Office Vendedor. Este último es configurable en el Back Office Vendedor por todas las personas debidamente autorizadas. Si en la solicitud de pago el plazo antes de la captura es superior a 365 días, este se reposiciona automáticamente a 365 días.
+Formato
+tipo
+entero
+Ejemplo
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.firstInstallmentDelay
+Cantidad de meses en los que se aplaza el primer pago de un pago a plazos. Campo específico a los adquirentes en Latino américa.
+Formato
+tipo
+entero
+Ejemplo
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.installmentNumber
+Nombre d'échéances. Champ spécifique aux acquéreurs d'Amérique Latine.
+Formato
+tipo
+entero
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.retry
+Número de nuevos intentos disponibles en caso de rechazo del pago (3 por defecto).
+Formato
+tipo
+entero
+Ejemplo
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.restrictedInstallments
+Solo en América Latina.
+Champ pour restreindre les échéances proposées lors du paiement. Voir : Restreindre les échéances proposées lors du paiement .
+Por ejemplo, ofrezca al comprador la opción de pagar en 2, 4, 5 y 9 cuotas.
+Ejemplo de código
+JSON
+{
+  "amount": 10000,
+  "currency": "PEN",
+  "transactionOptions": {
+    "cardOptions": {
+      "restrictedInstallments": [
+        2,
+        4,
+        5,
+        9
+      ]
+    }
+  },
+  "customer": {
+    "email": "sample@example.com"
+  },
+  "orderId": "myOrderId-1234"
+}
+Formato
+tipo
+lista
+Ejemplo
+2,4,5,9
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.debitCreditSelector
+Este campo es específico de Brasil para la gestión de tarjetas multiparcela. Las tarjetas “Multiplo” son tarjetas de pago (Elo, Visa o Mastercard), que permiten pagar:
+ya sea en débito inmediato: el monto se debita inmediatamente y se acredita al vendedor al día siguiente.
+o en crédito: el débito se difiere y el monto puede debitarse en una o más cuotas. Al vendedor se le acredita posteriormente la totalidad o solo una parte del monto total.
+Este campo permite forzar el uso de la tarjeta como tarjeta de débito o de crédito.
+Valores posibles
+valeurs	Descripción
+DEBIT	Uso de la función “débito” de la tarjeta
+CREDIT	Uso de la función “crédito” de la tarjeta
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.cardOptions.initialIssuerTransactionIdentifier
+Referencia de encadenamiento.
+Formato
+tipo
+cadena
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.installmentOptions.firstAmount
+Primera cuota del pago en cuotas.
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.installmentOptions.count
+Cantidad de cuotas del pago en cuotas.
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.installmentOptions.period
+Intervalo (días) del pago en cuotas.
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.installmentOptions.schedules.amount
+Importe del vencimiento.
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionOptions.installmentOptions.schedules.date
+Fecha de vencimiento.
+Formato
+tipo
+cadena
+Ejemplo
+2018-11-14T14:57:37+00:00
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+taxAmount
+Utilisé par certains moyens de paiement uniquement en Colombie.
+Montant des taxes pour l'ensemble de la commande exprimé dans sa plus petite unité monétaire (le centime pour le sol péruvien). Exemple: 30050 pour 300,50 PEN.
+Formato
+tipo
+entero
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+taxRate
+Utilisé par certains moyens de paiement uniquement en Colombie.
+Permet de transmettre le taux de taxe appliqué sur l'ensemble de la commande. La valeur doit être le pourcentage à appliquer (21 pour 21%).
+Formato
+tipo
+float
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+useCase
+Permet de spécifier le cas d'utilisation.
+Valores posibles
+VALOR	Descripción
+INSTALLMENT	Pago en vencimientos.
+PAYMENT	Pago al contado.
+RECURRING_VARIABLE_TOTAL_AMOUNT	Suscripción con frecuencias y/o montos fijos.
+RECURRING_FIXED_TOTAL_AMOUNT	Suscripción con frecuencia y monto fijos.
+TOP_UP	Recargo de cuenta.
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+transactionInitiator
+Iniciador de la transacción.
+Valores posibles
+Valeur	Descripción
+CUSTOMER	Transacción iniciada por el comprador (CIT).
+MERCHANT	Transacción iniciada por el vendedor (MIT).
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+overridePaymentCinematic
+Permite cambiar el modo de captura. Específico de los adquirientes de América Latina. Esta característica no se puede usar en Colombia. Valores posibles:
+Valeur	Descripción
+IMMEDIATE_CAPTURE	Secuencia de captura inmediata: el adquiriente inicia la captura el día del pago.
+DELAYED_CAPTURE	Secuencia de captura diferida: la captura es iniciada por la plataforma de pago, siempre antes de que expire la solicitud de autorización.
+Formato
+tipo
+cadena
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+formTokenVersion
+formTokenVersion define la versión del formToken devuelto por el servicio web. Esta configuración se utiliza como parte del SDK móvil. Garantiza que la versión del formToken devuelto esté siempre en línea con la aplicación móvil implementada en el teléfono del comprador. El valor predeterminado es 4.
+Formato
+tipo
+entero
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.companyType
+Tipo de empresa del subvendedor. Transmitido por el facilitador de pago.
+Dependiendo del comprador, pueden aplicarse normas diferentes.
+Este campo se usa a menudo para especificar el tipo de legalNumber del subcomerciante.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.legalNumber
+Número legal del subcomerciante según el campo companyType. Transmitido por el facilitador de pagos.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.name
+Razón social del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro es obligatorio
+anulable
+este parámetro no puede ser nulo
+subMerchantDetails.url
+URL del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.phoneNumber
+Número de teléfono del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.address1
+Dirección del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.address2
+Complemento de la dirección del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.zip
+Código postal del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.city
+Ciudad del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.country
+Código del país de la dirección del subvendedor (norma ISO 3166 alpha-2). Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.mcc
+Código MCC del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+Ejemplo
+longitud mínima
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.mid
+Número de afiliación (MID) del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Campo obligatorio para los adquirentes Fiserv y Procesos. (Más información: Fiserv .)
+Formato
+tipo
+cadena
+Ejemplo
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.softDescriptor
+Descripción (soft-descriptor) del subvendedor que aparece en el extracto de operaciones bancarias del comprador. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.state
+Región de la dirección del subvendedor. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+subMerchantDetails.facilitatorId
+Identificador del facilitador de pago. Transmitido por el facilitador de pago.
+Los campos del objeto subMerchantDetails son obligatorios a partir de que al menos un campo del sub-comercio está presente en el formulario de pago.
+Formato
+tipo
+cadena
+longitud máxima
+obligatorio
+este parámetro no es obligatorio
+anulable
+este parámetro puede ser nulo
+Referencia de la respuesta
+Existen varias respuestas posibles dependiendo del contexto:
+Respuesta	Contexto
+Payment	Objeto que contiene la transacción generada. Este objeto se devuelve directamente durante un pago con autentificación simple.
+Charge/PaymentForm	El objeto contiene un hash para utilizar con el formulario incrustado para crear una nueva transacción.
+Consulte la referencia de cada respuesta para más información.

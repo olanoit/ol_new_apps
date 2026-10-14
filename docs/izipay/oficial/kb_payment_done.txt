@@ -1,0 +1,178 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+FORMULARIO INCRUSTADO
+Presentación
+medios de pago compatibles
+Restricciones
+Migración version antigua (tarjetas)
+Inicio rápido
+Integración avanzada
+Introducción
+1. Requisitos previos
+2. Autentificación
+3. Crear el formToken
+4. Visualizar el formulario
+5. Analizar el pago
+Analizar el IPN
+Analyser le retour à la boutique
+6. Cambiar a producción
+Personalizar el formulario
+Tests i ejemplos de código
+Parametros JS
+Metodos y eventos JS
+Codigos de errores (CLIENT)
+FAQ
+API REST
+Presentación
+Lista de los Web Services
+Probar con el playground
+Creación de pagos
+Gestión de las transacciones
+Alias
+Suscripciones
+Solicitudes de pago
+Comprador de Wallet
+Códigos de error
+FAQ
+API REST PCI-DSS
+Presentación
+Lista de los Web Services
+Probar con el playground
+Crear un pago desde un sitio PCI-DSS
+Creación de tokens
+Actualización de la tarjeta asociada a un token
+Verificación de tarjeta
+Autenticatión del pagador (3DS, tarjetas privadas)
+Gestión de mensajes de autentificación
+Notificaciones
+Tarjetas de prueba
+Códigos de error
+Análisis del resultado del pago con "regresar a la tienda"
+Si ha establecido el parámetro kr-post-url-success , la información de pago se transmitirá a la URL definida.
+Si l'acheteur paie avec un moyen de paiement différent de la carte (ou wallet), une fenêtre avec le ticket de paiement s'affiche. Pour masquer cette fenêtre, voir : lien.
+I. Los datos transmitidos
+Paramètre	Descripción	VALOR
+kr-hash	Hash del objeto JSON almacenado en kr-answer. Así podrá confirmar la autenticidad de la respuesta.	Ejemplo: c3c0323c748fdb7c2d24bd39ada99663526236828efa795193bebfdea022fe58
+kr-hash-algorithm	Algoritmo utilizado para calcular el hash.	Su valor es sha256_hmac
+kr-answer-type	Tipo del objeto JSON almacenado en kr-answer.	Ejemplo: V4/Payment
+kr-answer	Objeto que contiene el resultado del pago, codificado en JSON.	Ex : {"shopId":"89289758","orderCycle":"CLOSED","orderStatus":"PAID", (...)
+kr-hash-key	Clave HMAC-SHA-256 ( 4ª clave de la tabla de claves de la API REST ). Clave utilizada para firmar kr-answer.	sha256_hmac (regresar a la tienda).
+Advertencia
+Los datos transmitidos pueden cambiar.
+II. Verificar la autenticidad del proceso "volver a la tienda"
+Debe verificar la autenticidad de los datos recibidos.
+Cifrarlokr-answerrecibido utilizando la funciónhash_hmac
+Algoritmo de cifrado : sha256.
+Clave secreta: Clave HMAC-SHA-256 ( 4ª clave de la tabla de claves de la API REST ).
+Base de codificación: hexadecimal (base 16).
+Compruebe la autenticidad del mensaje recibido
+si el kr-hash es igual a la encriptación del kr-answer el mensaje es auténtico.
+Ejemplo de código del archivo de ejemplo: paid.php
+PHP
+Copy
+// STEP 1 : check the signature with the SHA_KEY on the file config.php
+if (!checkHash($_POST, SHA_KEY)) {
+    echo 'Invalid signature. <br/>';
+    die();
+}
+$answer = array();
+$answer['kr-hash'] = $_POST['kr-hash'];
+$answer['kr-hash-algorithm'] = $_POST['kr-hash-algorithm'];
+$answer['kr-answer-type'] = $_POST['kr-answer-type'];
+$answer['kr-answer'] = json_decode($_POST['kr-answer'], true);
+function checkHash($data, $key)
+{
+    $supported_sign_algos = array('sha256_hmac');
+    if (!in_array($data['kr-hash-algorithm'], $supported_sign_algos)) {
+        return false;
+    }
+    $kr_answer = str_replace('\/', '/', $data['kr-answer']);
+    $hash = hash_hmac('sha256', $kr_answer, $key);
+    return ($hash == $data['kr-hash']);
+}
+?>
+III. Verificar el estado de la transacción
+Compruebe el parámetro orderStatus que contiene kr-answer . Un valor PAID en el campo orderStatus significa que la transacción ha sido aceptada.
+Plus d'infos : références de status.
+Ejemplo de kr-answer :
+JSON
+Copy
+{
+  "shopId": "89289758",
+  "orderCycle": "CLOSED",
+  "orderStatus": "PAID",
+  "serverDate": "2026-01-21T09:28:17+00:00",
+  "orderDetails": {
+    "orderTotalAmount": 180,
+    "orderEffectiveAmount": 180,
+    "orderCurrency": "PEN",
+    "mode": "TEST",
+    "orderId": "myOrderId-475882",
+    "metadata": null,
+    "_type": "V4/OrderDetails"
+  },
+  "customer": {
+    "billingDetails": {
+      "address": null,
+      "category": null,
+      "cellPhoneNumber": null,
+      "city": null,
+      "country": null,
+      "district": null,
+      "firstName": null,
+      "identityCode": null,
+      "language": "FR",
+      "lastName": null,
+      "phoneNumber": null,
+      "state": null,
+      "streetNumber": null,
+      "title": null,
+      "zipCode": null,
+      "legalName": null,
+      "_type": "V4/Customer/BillingDetails"
+    },
+    "email": "sample@example.com",
+    "reference": null,
+    "shippingDetails": {
+      (...)
+    },
+    "shoppingCart": {
+      "insuranceAmount": null,
+      "shippingAmount": null,
+      "taxAmount": null,
+      "cartItemInfo": null,
+      "_type": "V4/Customer/ShoppingCart"
+    },
+    "_type": "V4/Customer/Customer"
+  },
+  "transactions": [
+    {
+      "shopId": "89289758",
+      "uuid": "1c8356b0e24442b2acc579cf1ae4d814",
+      "amount": 180,
+      "currency": "PEN",
+      "paymentMethodType": "CARD",
+      "paymentMethodToken": null,
+      "status": "PAID",
+      (...)
+        "_type": "V4/TransactionDetails"
+      },
+      "_type": "V4/PaymentTransaction"
+    }
+  ],
+  "subMerchantDetails": null,
+  "_type": "V4/Payment"
+}
+EN ESTA PÁGINA
+I. Los datos transmitidos
+II. Verificar la autenticidad del proceso "volver a la tienda"
+III. Verificar el estado de la transacción
+© 2026 Todos los derechos reservados de Mi Cuenta Web

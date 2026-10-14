@@ -1,0 +1,8 @@
+flowchart TD
+  A[Cliente elige Izipay y pulsa Pagar] --> B[Odoo crea el formToken<br/>con la contraseña]
+  B --> C[Formulario de Izipay<br/>tarjeta, 3DS y cuotas]
+  C --> D{Resultado}
+  D -- Rechazo --> C
+  D -- Aprobado --> E[Odoo consulta el pedido<br/>Order/Get]
+  C -. IPN firmada .-> E
+  E --> F[Pago confirmado]

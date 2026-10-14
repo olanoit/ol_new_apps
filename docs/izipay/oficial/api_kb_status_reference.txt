@@ -1,0 +1,89 @@
+Docs
+Buscar
+K
+Back Office Vendedor
+Asistencia
+Página principal
+Casos de uso
+Módulos de pago
+Guías
+Documentación API
+FORMULARIO INCRUSTADO
+Presentación
+medios de pago compatibles
+Restricciones
+Migración version antigua (tarjetas)
+Inicio rápido
+Integración avanzada
+Personalizar el formulario
+Tests i ejemplos de código
+Parametros JS
+Metodos y eventos JS
+Codigos de errores (CLIENT)
+FAQ
+API REST
+Presentación
+Lista de los Web Services
+Probar con el playground
+Creación de pagos
+Gestión de las transacciones
+Alias
+Suscripciones
+Solicitudes de pago
+Comprador de Wallet
+Códigos de error
+FAQ
+API REST PCI-DSS
+Presentación
+Lista de los Web Services
+Probar con el playground
+Crear un pago desde un sitio PCI-DSS
+Creación de tokens
+Actualización de la tarjeta asociada a un token
+Verificación de tarjeta
+Autenticatión del pagador (3DS, tarjetas privadas)
+Gestión de mensajes de autentificación
+Notificaciones
+Tarjetas de prueba
+Códigos de error
+Ciclo de vida de una transacción
+Cada transacción pasa por diferentes estados que se definen a partir de dos parámetros:
+status: estado simplificado de la transacción.
+detailedStatus : estado detallado de la transacción.
+Parámetro estado
+El parámetro status contiene el estado simplificado de la transacción:
+Simplemente, permite saber si la transacción está pagada o no,
+Es el mismo, cualquiera que sea el modo de pago.
+Los distintos valores posibles se describen en la siguiente tabla. Si la columna FIN está marcada, significa que el estado de la transacción ya no podrá cambiar sin la intervención específica del vendedor (como la anulación).
+status	Descripción	fin
+PAID	La transacción ha sido pagada.	✔
+RUNNING	El procesamiento de la transacción está en progreso.
+UNPAID	La transacción no se ha pagado.	✔
+ABANDONED	.	✔
+Parámetro detailedStatus
+El parámetro "detailedStatus" proporciona información detallada sobre el estado del pago. Cada uno de los estados es específico a los medios de pago utilizados.
+detailedStatus	status	Descripción	fin
+ACCEPTED	PAID	Estado de una transacción de tipo VERIFICATION cuya autorización o solicitud de información ha sido aceptada. Este estado no puede cambiar. Las transacciones con estado ACCEPTED no se capturan nunca. Se crea una transacción de tipo VERIFICATION al actualizar o crear un token sin pago.	✔
+AUTHORISED	PAID	El monto está autorizado y será retenido automáticamente.
+CAPTURED	PAID	El monto de la transacción ha sido autorizado. Estado final enviado en captura inmediata.	✔
+PRE_AUTHORISED	PAID	Estado de una transacción de tipo PRE_AUTHORISATION cuya autorización ha sido aceptada. Este estado no puede cambiar. Las transacciones con estado PRE_AUTHORISED no se capturan nunca.	✔
+AUTHORISED_TO_VALIDATE	RUNNING	La transacción, creada en validación manual, está autorizada. El vendedor debe validar manualmente la transacción para que sea capturada al banco. La transacción puede ser validada siempre y cuando la fecha de expiración de la solicitud de autorización no se haya vencida. Si esta fecha se supera, el pago toma el estado EXPIRED. El estado Expirado es definitivo.
+WAITING_AUTHORISATION	RUNNING	La transacción no se ha autorizado porque el plazo de captura es superior al período de validez de la autorización. La solicitud de autorización será activada automáticamente D-1 antes de la fecha de captura. La captura en el banco es automática.
+WAITING_AUTHORISATION_TO_VALIDATE	RUNNING	Se ha verificado el medio de pago pero aún no se ha autorizado la transacción porque el período de captura es superior al período de validez de la autorización. La solicitud de autorización se iniciará automáticamente D-1 antes de la fecha de captura y se requerirá una intervención manual para confirmar la autorización. No hay garantía de que la solicitud de autorización sea aceptada.
+WAITING_FOR_PAYMENT	RUNNING	La transacción ha sido creada en modo "en espera de pago". Este estado no es definitivo.
+UNDER_VERIFICATION	RUNNING	En attente de la réponse de l'acquéreur. Ce statut est temporaire.
+REFUSED	UNPAID	La transacción fue rechazada.	✔
+ERROR	UNPAID	Ocurrió un error inesperado.	✔
+CAPTURE_FAILED	UNPAID	La remesa de la transacción ha fallado. Contacte la asistencia.	✔
+CANCELLED	UNPAID	La transacción fue anulada.	✔
+EXPIRED	UNPAID	La transacción ha expirado (el vendedor no la validó dentro del período especificado).	✔
+Transacción y pedido
+Al crear una transacción, esta se encapsula en un objeto de alto nivel, el objeto Payment. Este objeto contiene diferentes estados del pedido y una lista de transacciones. El estado del pedido se define a partir de los dos parámetros siguientes:
+orderCycle : puede tener el valor OPEN o CLOSED.
+orderStatus : consolidación del parámetro status de las transacciones asociadas al pedido.
+Para más información, consulte: Estructura del objeto Payment.
+EN ESTA PÁGINA
+Parámetro estado
+Parámetro detailedStatus
+Transacción y pedido
+© 2026 Todos los derechos reservados de Mi Cuenta Web
