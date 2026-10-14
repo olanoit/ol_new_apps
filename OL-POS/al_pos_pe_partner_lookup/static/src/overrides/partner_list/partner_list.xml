@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Sin resultados y con un RUC o DNI en la búsqueda: crear el cliente
+         desde SUNAT/RENIEC en un clic. -->
+    <t t-name="al_pos_pe_partner_lookup.PartnerList" t-inherit="point_of_sale.PartnerList" t-inherit-mode="extension">
+        <xpath expr="//p[hasclass('mt-3')]" position="after">
+            <button t-if="l10nPeDocument and this.pos.cashier._role !== 'minimal'"
+                    class="btn btn-primary btn-lg mt-2 o_l10n_pe_create_from_document"
+                    t-att-disabled="state.loading"
+                    t-on-click="() => this.l10nPeCreateFromDocument()">
+                <i class="fa fa-search me-2"/>
+                Crear cliente <t t-out="l10nPeDocument"/> desde SUNAT
+            </button>
+        </xpath>
+    </t>
+
+</templates>

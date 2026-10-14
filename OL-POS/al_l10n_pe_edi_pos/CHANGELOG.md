@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261008 — 14/10/2026
+
+- Con el pago en línea del TPV (QR que el cliente paga en su teléfono), el ticket ya no deja el TPV en blanco: el encabezado de l10n_pe_edi_pos leía la factura antes de que llegara.
+
 ## 12.20261008 — 08/10/2026
 
 - Etiquetas en español: los campos sin etiqueta propia (Activo, Nombre, Compañía, contadores…) y los heredados de Odoo (Creado por, Mensajes, Actividades…) ya no se muestran en inglés.

@@ -31,3 +31,16 @@ class TestReceiptTemplate(TransactionCase):
         after = arch.xpath("//xpath[@position='after']/div[@t-if='peActive']")
         self.assertEqual(len(after), 1)
         self.assertIn('pos-receipt', after[0].get('class').split())
+
+    def test_encabezado_ee_sin_factura(self):
+        """El encabezado de l10n_pe_edi_pos (EE) se lee con «?.»: con el pago
+        en línea el ticket se dibuja antes de que llegue la factura. Si EE
+        cambia ese nodo, el xpath deja de encontrarlo y hay que revisarlo."""
+        ours = etree.parse(file_path('al_l10n_pe_edi_pos/static/src/overrides/receipt_header.xml'))
+        node = ours.xpath("//xpath/attribute[@name='t-out']")[0]
+        self.assertTrue(node.text.startswith('order.account_move?.'))
+        expr = ours.xpath('//xpath/@expr')[0]
+        ee = etree.parse(file_path(
+            'l10n_pe_edi_pos/static/src/app/components/receipt/receipt_header/receipt_header.xml'))
+        self.assertEqual(len(ee.xpath(expr)), 1,
+                         'el nodo de l10n_pe_edi_pos que se corrige ya no existe')

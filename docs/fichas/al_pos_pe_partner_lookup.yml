@@ -1,0 +1,88 @@
+titulo: Cliente por RUC o DNI en el TPV
+subtitulo: >-
+  El cajero escribe el RUC o el DNI en la búsqueda de clientes: si no está
+  registrado, lo crea en un clic con los datos de SUNAT y lo deja elegido
+  para la venta.
+categoria: Punto de venta · Perú
+etiquetas: [Punto de venta, RUC, DNI, SUNAT, Clientes]
+portada: screenshots/01-busqueda.png
+
+destacados_intro: >-
+  Usa las conexiones de consulta de RUC/DNI que la suite ya tiene
+  configuradas (l10n_pe_vat_sunat).
+destacados:
+  - icono: "🔍"
+    titulo: Desde la búsqueda
+    texto: >-
+      Sin abrir el formulario de cliente: el botón aparece cuando la búsqueda
+      es un RUC o un DNI que no está registrado.
+  - icono: "✓"
+    titulo: Datos de SUNAT
+    texto: >-
+      Razón social o nombre, dirección, departamento, provincia y distrito,
+      listos para emitir la factura o la boleta.
+  - icono: "11"
+    titulo: Sin consultas perdidas
+    texto: >-
+      Valida el formato y el dígito verificador del RUC antes de consultar:
+      un error de tipeo no gasta una consulta de pago.
+  - icono: "=1"
+    titulo: Sin duplicados
+    texto: >-
+      Si el documento ya existe pero no estaba cargado en la caja, lo trae en
+      vez de crearlo otra vez.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En la caja, el cliente dicta su RUC para la factura. Si no está
+    registrado, el TPV solo dice «No se encontraron clientes» y el cajero
+    tiene que abrir el formulario completo de cliente. Con este módulo lo
+    crea en un clic desde la misma búsqueda.
+  nota: >-
+    **Requisito:** las conexiones de consulta de RUC/DNI activas en Perú ▸
+    Configuración ▸ Consultas RUC / DNI (módulo l10n_pe_vat_sunat).
+
+pasos_intro: >-
+  El recorrido en la caja, con una consulta real a SUNAT.
+pasos:
+  - seccion: Venta
+  - titulo: RUC no registrado
+    ruta: TPV ▸ Cliente ▸ buscar el RUC
+    texto: >-
+      La búsqueda no encuentra el RUC y aparece el botón «Crear cliente …
+      desde SUNAT».
+    imagen: screenshots/01-busqueda.png
+  - titulo: Cliente listo para la venta
+    ruta: TPV ▸ Crear cliente desde SUNAT
+    texto: >-
+      Odoo consulta el RUC, crea el cliente con su razón social y su
+      dirección, y lo elige en la orden.
+    imagen: screenshots/02-cliente.png
+
+funcionalidades:
+  - grupo: Caja
+    items:
+      - Botón «Crear cliente desde SUNAT» cuando la búsqueda es un RUC (11 dígitos) o un DNI (8).
+      - El cliente creado queda elegido en la orden.
+  - grupo: Datos
+    items:
+      - Consulta con las conexiones de l10n_pe_vat_sunat (en cascada si están configuradas así).
+      - Valida el formato y el dígito verificador antes de consultar.
+      - Devuelve el cliente existente si el documento ya está registrado.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-POS).
+  - "Revise que la consulta de RUC y DNI esté activa en **Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Conexiones RUC/DNI**."
+requisitos_nota: >-
+  El formulario completo de cliente del TPV ya consulta SUNAT al escribir el
+  documento; este módulo agrega el atajo desde la búsqueda. Necesita conexión
+  a internet en la caja.
+
+novedades:
+  - version: 1.20261014
+    fecha: 14/10/2026
+    cambios:
+      - "Primera versión: crear el cliente del TPV desde su RUC o DNI con los datos de SUNAT, sin duplicados."
+
+relacionados: [l10n_pe_vat_sunat, al_l10n_pe_edi_pos, al_pos_pe_wallet_qr]

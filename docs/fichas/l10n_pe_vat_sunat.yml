@@ -440,6 +440,10 @@ faq:
       anterior.
 
 novedades:
+  - version: 21.20261012
+    fecha: 14/10/2026
+    cambios:
+      - "Consulta de RUC o DNI sin crear el contacto (nombre, dirección y ubigeo): la usan la tienda en línea peruana y la creación de clientes desde el TPV."
   - version: 20.20261012
     fecha: 12/10/2026
     cambios:

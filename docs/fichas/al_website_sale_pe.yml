@@ -1,0 +1,86 @@
+titulo: Tienda en línea peruana
+subtitulo: >-
+  Checkout para Perú: el cliente elige boleta o factura, su RUC o DNI se
+  consulta en SUNAT y su nombre y su dirección se llenan solos.
+categoria: Tienda en línea · Perú
+etiquetas: [Tienda en línea, Boleta, Factura, RUC, DNI, SUNAT]
+portada: screenshots/02-consulta.png
+
+destacados_intro: >-
+  Sobre lo que Odoo 19 ya trae (tipo y número de documento, provincia y
+  distrito), lo explícito y rápido para el cliente peruano.
+destacados:
+  - icono: "B|F"
+    titulo: Boleta o factura
+    texto: >-
+      El cliente elige el comprobante y el tipo de documento se ajusta solo
+      (factura → RUC; boleta → DNI u otro documento).
+  - icono: "🔍"
+    titulo: Consulta del RUC o DNI
+    texto: >-
+      Razón social o nombre, dirección, departamento, provincia y distrito
+      desde SUNAT, con las conexiones de la suite.
+  - icono: "🛡"
+    titulo: Límite por sesión
+    texto: >-
+      La consulta es pública: tiene un tope de consultas por sesión para que
+      nadie gaste las consultas de pago.
+  - icono: "✓"
+    titulo: Comprobante correcto
+    texto: >-
+      Con RUC, Odoo emite factura; con otro documento, boleta. El cliente lo
+      ve antes de pagar.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En una tienda peruana el cliente espera elegir «boleta o factura» y que su
+    RUC llene la razón social y la dirección. Odoo 19 pide el tipo y el número
+    de documento, pero no lo dice así ni consulta SUNAT: el cliente escribe
+    todo a mano y se equivoca en la dirección fiscal.
+  nota: >-
+    **Requisito:** las conexiones de consulta de RUC/DNI activas
+    (l10n_pe_vat_sunat) y la tienda en línea de Odoo (website_sale).
+
+pasos_intro: >-
+  La dirección de facturación del checkout, con una consulta real a SUNAT.
+pasos:
+  - seccion: Checkout
+  - titulo: Boleta o factura
+    ruta: Tienda ▸ Carrito ▸ Dirección de facturación
+    texto: >-
+      Antes del tipo de documento, el cliente elige el comprobante.
+    imagen: screenshots/01-comprobante.png
+  - titulo: RUC consultado en SUNAT
+    ruta: Dirección de facturación ▸ Número de identificación
+    texto: >-
+      Al escribir el RUC (o con «Consultar en SUNAT»), se llenan la razón
+      social, la dirección, el código postal, el departamento, la provincia y
+      el distrito.
+    imagen: screenshots/02-consulta.png
+
+funcionalidades:
+  - grupo: Checkout
+    items:
+      - Selector «Boleta | Factura» en la dirección de facturación (portal y tienda).
+      - Tipo de documento según el comprobante.
+      - Consulta automática al terminar de escribir un RUC o un DNI, o con el botón.
+  - grupo: Seguridad
+    items:
+      - Ruta de consulta pública con límite por sesión.
+      - Solo devuelve el nombre y la dirección del documento consultado.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-INVOICING).
+  - "Revise que la consulta de RUC y DNI esté activa en **Perú ▸ Configuración ▸ Consultas RUC / DNI ▸ Conexiones RUC/DNI**."
+requisitos_nota: >-
+  La consulta del DNI depende de que alguna conexión devuelva datos de
+  RENIEC; si no, el cliente escribe su nombre.
+
+novedades:
+  - version: 1.20261014
+    fecha: 14/10/2026
+    cambios:
+      - "Primera versión: boleta o factura en el checkout y consulta del RUC o DNI que llena el nombre y la dirección."
+
+relacionados: [l10n_pe_vat_sunat, al_payment_izipay, al_payment_culqi, al_payment_niubiz]

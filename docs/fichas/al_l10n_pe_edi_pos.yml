@@ -206,6 +206,10 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: 13.20261008
+    fecha: 14/10/2026
+    cambios:
+      - "Con el pago en línea del TPV (QR que el cliente paga en su teléfono), el ticket ya no deja el TPV en blanco: el encabezado de l10n_pe_edi_pos leía la factura antes de que llegara."
   - version: 12.20261008
     fecha: 08/10/2026
     cambios:

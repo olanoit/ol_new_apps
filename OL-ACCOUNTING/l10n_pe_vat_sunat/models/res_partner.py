@@ -250,6 +250,46 @@ class ResPartner(models.Model):
             return self._fetch_document('ruc', raise_on_fail=raise_on_fail)
         return None
 
+    # Datos que devuelve ``_l10n_pe_lookup_document``: los que la consulta
+    # escribe en el contacto y sirven para llenar un formulario.
+    _L10N_PE_LOOKUP_FIELDS = (
+        'name', 'company_type', 'street', 'city', 'city_id', 'state_id',
+        'country_id', 'zip', 'l10n_pe_district',
+    )
+
+    @api.model
+    def _l10n_pe_lookup_document(self, number, identification_type):
+        """Consulta un RUC o DNI sin crear el contacto, como el onchange del
+        formulario: la usan el TPV y la tienda en línea.
+
+        :param str number: número de documento.
+        :param identification_type: ``l10n_latam.identification.type``.
+        :return: ``{campo: valor}`` (Many2one como id) o ``{}`` si el número
+            no es válido, la consulta está desactivada o ninguna conexión
+            respondió.
+        """
+        partner = self.new({
+            'vat': (number or '').strip(),
+            'l10n_latam_identification_type_id': identification_type.id,
+        })
+        try:
+            partner._run_document_lookup(raise_on_fail=False)
+        except UserError:
+            return {}  # Formato o dígito verificador no válido.
+        if partner.alert_warning_vat or not partner.name:
+            return {}
+        if partner.city_id and not partner.city:
+            partner.city = partner.city_id.name
+        values = {}
+        for field_name in self._L10N_PE_LOOKUP_FIELDS:
+            value = partner[field_name]
+            if isinstance(value, models.BaseModel):
+                value = value.id
+            elif isinstance(value, str):
+                value = value.strip()
+            values[field_name] = value
+        return values
+
     def write(self, vals):
         """Una casilla del padrón escrita a mano que contradice al padrón
         queda como corrección manual (el cron no la toca); si coincide, deja

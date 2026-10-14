@@ -1,0 +1,107 @@
+titulo: Cobro con QR de Yape y Plin en el TPV
+subtitulo: >-
+  El QR de cobro de Yape, Plin u otra billetera como método de pago QR del
+  TPV: se muestra en la caja y en la pantalla del cliente, y el cajero
+  confirma el pago.
+categoria: Punto de venta · Perú
+etiquetas: [Punto de venta, Yape, Plin, QR, Billeteras]
+portada: screenshots/03-qr.png
+
+destacados_intro: >-
+  Usa el cobro por QR nativo del TPV de Odoo 19: el módulo agrega el formato
+  «QR de billetera».
+destacados:
+  - icono: "▣"
+    titulo: El QR de su negocio
+    texto: >-
+      La imagen que entregan Yape, Plin o el banco se sube en la cuenta
+      bancaria donde llegan los abonos.
+  - icono: "🖥"
+    titulo: En caja y en la pantalla del cliente
+    texto: >-
+      El TPV muestra el QR con el importe a pagar; el cliente escanea y paga
+      desde su app.
+  - icono: "✓"
+    titulo: El cajero confirma
+    texto: >-
+      Al ver la notificación del pago, confirma y la venta se cierra con el
+      método y el diario de la billetera.
+  - icono: "⚡"
+    titulo: También sin conexión
+    texto: >-
+      El QR no depende del importe: el TPV lo tiene guardado aunque se corte
+      internet.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En Perú casi todos los clientes pagan con Yape o Plin, y la mayoría de
+    tiendas cobra mostrando un QR impreso. El TPV de Odoo trae el cobro por
+    QR, pero solo para formatos que generan el código (por ejemplo EMV). Este
+    módulo agrega el QR de billetera como formato, para cobrar con el mismo
+    flujo y en el diario correcto.
+  nota: >-
+    **Límite:** Yape y Plin no publican una API para comercios que avise del
+    pago: el cajero confirma al ver la notificación. Para un cobro confirmado
+    solo, use el pago en línea con Culqi, Niubiz o Izipay.
+
+pasos_intro: >-
+  La configuración y el cobro en la caja, con datos DEMO.
+pasos:
+  - seccion: Configuración
+  - titulo: QR de la billetera en la cuenta bancaria
+    ruta: Contabilidad ▸ Configuración ▸ Cuentas bancarias ▸ QR de billetera
+    texto: >-
+      Suba la imagen del QR de cobro en la cuenta bancaria donde abona la
+      billetera.
+    imagen: screenshots/01-cuenta.png
+  - titulo: Método de pago QR
+    ruta: Punto de venta ▸ Configuración ▸ Métodos de pago
+    texto: >-
+      Integración «Aplicación bancaria (código QR)», formato «QR de billetera
+      (Yape, Plin)», en un diario de banco con esa cuenta.
+    imagen: screenshots/02-metodo.png
+  - seccion: Cobro
+  - titulo: El cliente escanea
+    ruta: TPV ▸ Pago ▸ Yape / Plin ▸ Enviar
+    texto: >-
+      El TPV muestra el QR con el importe; al recibir el pago, el cajero hace
+      clic en «Confirmar pago».
+    imagen: screenshots/03-qr.png
+
+campos_intro: >-
+  El campo que el módulo añade a la cuenta bancaria.
+campos:
+  - grupo: Cuenta bancaria
+    ruta: Cuentas bancarias ▸ QR de billetera
+    campos:
+      - [QR de billetera, Imagen del QR de cobro., "—", Solo soles]
+
+funcionalidades:
+  - grupo: TPV
+    items:
+      - Formato de QR «QR de billetera (Yape, Plin)» para los métodos de pago QR.
+      - QR en la caja y en la pantalla del cliente, con el importe.
+      - QR guardado para cobrar sin conexión.
+  - grupo: Facturas
+    items:
+      - Si la compañía muestra QR en las facturas, también puede usar el de la billetera.
+  - grupo: Controles
+    items:
+      - Avisa si la cuenta no tiene imagen.
+      - Solo soles.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-POS).
+  - Suba el QR en la cuenta bancaria de la billetera.
+  - "Cree el método de pago en **Punto de venta ▸ Configuración ▸ Métodos de pago** y agréguelo a la caja."
+requisitos_nota: >-
+  El QR fijo no lleva el importe: el cliente lo escribe en su app.
+
+novedades:
+  - version: 1.20261014
+    fecha: 14/10/2026
+    cambios:
+      - "Primera versión: QR de Yape, Plin u otra billetera como formato del cobro por QR del TPV, también sin conexión."
+
+relacionados: [al_pos_pe_partner_lookup, al_payment_izipay, al_payment_niubiz, al_payment_culqi]

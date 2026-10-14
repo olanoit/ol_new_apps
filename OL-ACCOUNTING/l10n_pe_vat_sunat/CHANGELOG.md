@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261012 — 14/10/2026
+
+- Consulta de RUC o DNI sin crear el contacto (nombre, dirección y ubigeo): la usan la tienda en línea peruana y la creación de clientes desde el TPV.
+
 ## 20.20261012 — 12/10/2026
 
 - La unicidad de ciudades (nombre y departamento) solo se valida en Perú: ya no impide instalar módulos oficiales con ciudades homónimas de otros países, como la nómina de EE. UU. que se instala sola en bases con demo.
