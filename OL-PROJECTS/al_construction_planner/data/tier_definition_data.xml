@@ -25,5 +25,16 @@
             <field name="sequence">10</field>
             <field name="approve_sequence" eval="True"/>
         </record>
+        <!-- Metrado con diferencia (v1.6, M16-04): la jefatura aprueba antes
+             de lanzar la orden de fabricación del ambiente. -->
+        <record id="tier_measurement_difference" model="tier.definition">
+            <field name="name">Metrado con diferencia: jefatura de proyectos</field>
+            <field name="model_id" ref="model_construction_measurement"/>
+            <field name="review_type">group</field>
+            <field name="reviewer_group_id" ref="group_planner_manager"/>
+            <field name="definition_domain">[('has_difference', '=', True)]</field>
+            <field name="sequence">10</field>
+            <field name="approve_sequence" eval="True"/>
+        </record>
     </data>
 </odoo>

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261013 — 14/10/2026
+
+- Metrado del ambiente (v1.6, M16-03): el supervisor registra la medida real en ML de mueble bajo, ML de mueble alto y módulos frente a lo planificado; el planificador muestra la diferencia en cantidad y en soles. «Generar metrados» crea los de un piso entero y las medidas se cargan en una lista editable o por Excel.
+- Aprobación del metrado (M16-04): un metrado con diferencia pasa por la validación por niveles de la jefatura de proyectos, y la orden de fabricación de ese ambiente espera la aprobación.
+
 ## 23.20261013 — 14/10/2026
 
 - La compra masiva entra siempre como stock general (v1.6, M16-02): se retiró el modo «con analítica de la obra»; el comprado sube en las líneas del plan y el costo cae a la obra al consumir.

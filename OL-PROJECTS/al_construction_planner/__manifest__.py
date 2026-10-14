@@ -60,6 +60,9 @@ Fase 4 (asignaciones y compras, P-10 y P-11):
   y justificación con revisión adicional (W-10).
 * Orden de fabricación (W-04) por piso o selección desde la BOM de la
   tipología, con control del saldo de producción y armado al confirmarla.
+* Metrado del ambiente (v1.6): medida real en ML de mueble bajo y alto y en
+  módulos frente a lo planificado, con la diferencia valorizada; con
+  diferencia, la jefatura lo aprueba antes de lanzar la OF del ambiente.
 * Las asignaciones abiertas pasan a la versión nueva al aprobarla y el plan no
   se cierra con documentos abiertos.
 
@@ -226,7 +229,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '23.20261013',
+    'version': '24.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -288,6 +291,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_contract_views.xml',
         'views/construction_analytic_rule_views.xml',
         'views/construction_change_views.xml',
+        'views/construction_measurement_views.xml',
         'views/portal_templates.xml',
         'views/menus.xml',
     ],

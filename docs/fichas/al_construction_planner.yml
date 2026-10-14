@@ -1218,6 +1218,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 24.20261013
+    fecha: 14/10/2026
+    cambios:
+      - "Metrado del ambiente (v1.6, M16-03): el supervisor registra la medida real en ML de mueble bajo, ML de mueble alto y módulos frente a lo planificado; el planificador muestra la diferencia en cantidad y en soles. «Generar metrados» crea los de un piso entero y las medidas se cargan en una lista editable o por Excel."
+      - "Aprobación del metrado (M16-04): un metrado con diferencia pasa por la validación por niveles de la jefatura de proyectos, y la orden de fabricación de ese ambiente espera la aprobación."
   - version: 23.20261013
     fecha: 14/10/2026
     cambios:

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Metrado del ambiente (v1.6, M16-03 y M16-04). -->
+    <record id="construction_measurement_view_form" model="ir.ui.view">
+        <field name="name">construction.measurement.form</field>
+        <field name="model">construction.measurement</field>
+        <field name="arch" type="xml">
+            <form string="Metrado">
+                <header>
+                    <button name="action_submit" type="object" string="Enviar" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state == 'draft'" groups="al_construction_planner.group_planner_planner"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="task_id" readonly="state != 'draft' or line_ids"
+                                   options="{'no_create': True}"/>
+                            <field name="project_id"/>
+                            <field name="floor_task_id"/>
+                            <field name="apartment_task_id"/>
+                            <field name="typology_id"/>
+                        </group>
+                        <group>
+                            <field name="user_id" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="plan_id"/>
+                            <field name="has_difference"/>
+                            <field name="amount_difference"/>
+                            <field name="company_id" readonly="1" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'draft'">
+                        <list editable="bottom" create="false" delete="false">
+                            <field name="driver" readonly="1"/>
+                            <field name="qty_planned"/>
+                            <field name="qty_measured"/>
+                            <field name="qty_difference" decoration-danger="qty_difference &gt; 0"
+                                   decoration-success="qty_difference &lt; 0"/>
+                            <field name="unit_amount" optional="show"/>
+                            <field name="amount_difference" sum="Diferencia"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Observaciones del supervisor…" readonly="state != 'draft'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_measurement_view_list" model="ir.ui.view">
+        <field name="name">construction.measurement.list</field>
+        <field name="model">construction.measurement</field>
+        <field name="arch" type="xml">
+            <list string="Metrados" decoration-warning="has_difference and state != 'approved'"
+                  decoration-muted="state == 'approved' and not has_difference">
+                <field name="name"/>
+                <field name="project_id" optional="show"/>
+                <field name="floor_task_id" optional="show"/>
+                <field name="task_id"/>
+                <field name="typology_id" optional="hide"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="date"/>
+                <field name="has_difference"/>
+                <field name="amount_difference" sum="Diferencia"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'"
+                       decoration-warning="state == 'submitted'" decoration-success="state == 'approved'"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_measurement_view_pivot" model="ir.ui.view">
+        <field name="name">construction.measurement.pivot</field>
+        <field name="model">construction.measurement</field>
+        <field name="arch" type="xml">
+            <pivot string="Metrados">
+                <field name="floor_task_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="amount_difference" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_measurement_view_search" model="ir.ui.view">
+        <field name="name">construction.measurement.search</field>
+        <field name="model">construction.measurement</field>
+        <field name="arch" type="xml">
+            <search string="Metrados">
+                <field name="name"/>
+                <field name="task_id"/>
+                <field name="project_id"/>
+                <field name="floor_task_id"/>
+                <field name="user_id"/>
+                <filter name="to_approve" string="Por aprobar"
+                        domain="[('state', '=', 'submitted')]"/>
+                <filter name="with_difference" string="Con diferencia"
+                        domain="[('has_difference', '=', True)]"/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                <filter name="group_floor" string="Piso" context="{'group_by': 'floor_task_id'}"/>
+                <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_measurement" model="ir.actions.act_window">
+        <field name="name">Metrados</field>
+        <field name="res_model">construction.measurement</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="search_view_id" ref="construction_measurement_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre el metrado de los ambientes</p>
+            <p>El supervisor anota la medida real de cada ambiente (ML de mueble bajo y alto,
+               módulos) frente a lo planificado. Con diferencia, la jefatura de proyectos la
+               aprueba antes de lanzar la orden de fabricación del ambiente. Use «Generar
+               metrados» para cargar un piso entero.</p>
+        </field>
+    </record>
+
+    <!-- Medidas en bloque: lista editable, agrupada por piso y ambiente. -->
+    <record id="construction_measurement_line_view_list" model="ir.ui.view">
+        <field name="name">construction.measurement.line.list</field>
+        <field name="model">construction.measurement.line</field>
+        <field name="arch" type="xml">
+            <list string="Medidas" editable="bottom" create="false" delete="false">
+                <field name="measurement_id" readonly="1"/>
+                <field name="floor_task_id" optional="show"/>
+                <field name="task_id" readonly="1"/>
+                <field name="driver" readonly="1"/>
+                <field name="qty_planned"/>
+                <field name="qty_measured" readonly="state != 'draft'"/>
+                <field name="qty_difference"/>
+                <field name="amount_difference" sum="Diferencia"/>
+                <field name="state" widget="badge" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_measurement_line" model="ir.actions.act_window">
+        <field name="name">Medidas</field>
+        <field name="res_model">construction.measurement.line</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="construction_measurement_line_view_list"/>
+        <field name="domain">[('state', '=', 'draft')]</field>
+        <field name="context">{'group_by': ['floor_task_id', 'task_id']}</field>
+    </record>
+
+    <record id="construction_measurement_generate_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.measurement.generate.wizard.form</field>
+        <field name="model">construction.measurement.generate.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar metrados">
+                <group>
+                    <field name="company_id" invisible="1"/>
+                    <field name="project_id" options="{'no_create': True}"/>
+                    <field name="task_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="space_count"/>
+                </group>
+                <p class="text-muted">
+                    Crea en borrador el metrado de cada ambiente sin metrado, con lo planificado como
+                    medida inicial, y abre las medidas en una lista para cargarlas. La lista también se
+                    exporta a Excel y se vuelve a importar con «Importar registros».
+                </p>
+                <footer>
+                    <button name="action_generate" type="object" string="Generar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_measurement_generate_wizard" model="ir.actions.act_window">
+        <field name="name">Generar metrados</field>
+        <field name="res_model">construction.measurement.generate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="action_construction_measurement_submit" model="ir.actions.server">
+        <field name="name">Enviar metrados</field>
+        <field name="model_id" ref="model_construction_measurement"/>
+        <field name="binding_model_id" ref="model_construction_measurement"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.filtered(lambda m: m.state == 'draft').action_submit()</field>
+    </record>
+
+</odoo>

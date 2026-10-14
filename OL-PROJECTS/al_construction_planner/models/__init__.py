@@ -41,3 +41,4 @@ from . import ir_ui_menu
 from . import resource_calendar_leaves
 from . import construction_change
 from . import project_planning
+from . import construction_measurement

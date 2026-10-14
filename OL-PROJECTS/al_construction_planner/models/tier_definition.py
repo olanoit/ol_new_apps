@@ -10,4 +10,5 @@ class TierDefinition(models.Model):
         res = super()._get_tier_validation_model_names()
         res.append('construction.resource.plan')
         res.append('construction.contract.settlement')
+        res.append('construction.measurement')
         return res

@@ -59,9 +59,12 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             ('state', '!=', 'cancel'),
             ('construction_space_task_ids', 'in', spaces.ids),
         ]).construction_space_task_ids
+        # Metrado con diferencia sin aprobar (v1.6, M16-04): la OF del
+        # ambiente espera la aprobación de la jefatura.
+        pending = self.env['construction.measurement']._construction_blocked_spaces(spaces - busy)
         groups = defaultdict(lambda: self.env['project.task'])
         no_bom = self.env['project.task']
-        for space in (spaces - busy).sorted(lambda t: (t.construction_floor_task_id.id, t.id)):
+        for space in (spaces - busy - pending).sorted(lambda t: (t.construction_floor_task_id.id, t.id)):
             typology = space.construction_typology_id
             if not (typology.bom_id and typology.product_tmpl_id.product_variant_id):
                 no_bom |= space
@@ -72,6 +75,9 @@ class ConstructionPlanProductionWizard(models.TransientModel):
         if spaces & busy:
             notes.append(self.env._('Ya en una OF: %s.', ', '.join(
                 (spaces & busy).mapped('display_name'))))
+        if pending:
+            notes.append(self.env._('Metrado con diferencia por aprobar: %s.', ', '.join(
+                pending.mapped('display_name'))))
         if no_bom:
             notes.append(self.env._('Sin tipología con producto y BOM: %s.', ', '.join(
                 no_bom.mapped('display_name'))))

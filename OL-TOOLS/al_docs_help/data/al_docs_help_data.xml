@@ -411,6 +411,30 @@
         <field name="path">applications/services/project/construction/material_requests/</field>
         <field name="section">Requerimientos de materiales</field>
     </record>
+    <record id="help_construction_measurement" model="al.docs.help">
+        <field name="key">construction.measurement</field>
+        <field name="kind">model</field>
+        <field name="name">Metrado del ambiente</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/measurement/</field>
+        <field name="section">Metrado del ambiente</field>
+    </record>
+    <record id="help_construction_measurement_generate_wizard" model="al.docs.help">
+        <field name="key">construction.measurement.generate.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Generar metrados</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/measurement/#registrar-el-metrado</field>
+        <field name="section">Registrar el metrado</field>
+    </record>
+    <record id="help_construction_measurement_line" model="al.docs.help">
+        <field name="key">construction.measurement.line</field>
+        <field name="kind">model</field>
+        <field name="name">Medida del metrado</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
     <record id="help_construction_milestone_template" model="al.docs.help">
         <field name="key">construction.milestone.template</field>
         <field name="kind">model</field>

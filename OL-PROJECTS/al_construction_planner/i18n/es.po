@@ -11,7 +11,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_needaction
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_needaction
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_needaction
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_needaction
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_needaction
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_needaction
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_needaction
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_needaction
@@ -21,7 +25,17 @@ msgid "Action Needed"
 msgstr "Se requiere una acción"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__active
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__active
+msgid "Active"
+msgstr "Activo"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_ids
@@ -30,7 +44,11 @@ msgid "Activities"
 msgstr "Actividades"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_exception_decoration
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_exception_decoration
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_exception_decoration
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_exception_decoration
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_exception_decoration
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_exception_decoration
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_exception_decoration
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_exception_decoration
@@ -39,7 +57,11 @@ msgid "Activity Exception Decoration"
 msgstr "Decoración de la actividad de excepción"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_state
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_state
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_state
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_state
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_state
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_state
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_state
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_state
@@ -48,7 +70,11 @@ msgid "Activity State"
 msgstr "Estado de la actividad"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_type_icon
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_type_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_type_icon
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_type_icon
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_type_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_type_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_type_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_type_icon
@@ -72,7 +98,11 @@ msgid "Analytic Precision"
 msgstr "Precisión analítica"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_attachment_count
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_attachment_count
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_attachment_count
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_attachment_count
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_attachment_count
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_attachment_count
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_attachment_count
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_attachment_count
@@ -88,6 +118,7 @@ msgstr "Línea de lista de materiales"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__can_review
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__can_review
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__can_review
 msgid "Can Review"
 msgstr "Puede revisar"
@@ -108,11 +139,27 @@ msgid "Create a Task"
 msgstr "Crear una tarea"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_activity_tranche__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_analytic_rule__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_document__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_price__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_unit_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_master_import_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_generate_wizard__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__create_uid
@@ -144,12 +191,17 @@ msgstr "Crear una tarea"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_alias__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_furniture__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_milestone__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_override__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_cutoff__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_line__create_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_milestone__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard_line__create_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_weekly_delivery__create_uid
@@ -158,11 +210,27 @@ msgid "Created by"
 msgstr "Creado por"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_activity_tranche__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_analytic_rule__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_document__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_price__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_unit_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_master_import_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_generate_wizard__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__create_date
@@ -194,12 +262,17 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_alias__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_furniture__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_milestone__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_override__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_cutoff__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_line__create_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_milestone__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard_line__create_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_weekly_delivery__create_date
@@ -211,13 +284,29 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_account_analytic_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_account_move__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_al_gantt_data__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_activity_tranche__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_analytic_rule__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_document__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_price__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_unit_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_master_import_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_material_request__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_material_request_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_generate_wizard__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__display_name
@@ -253,16 +342,22 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_alias__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_furniture__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_milestone__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_override__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_cutoff__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_milestone__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_weekly_delivery__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_weekly_delivery_line__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_ir_ui_menu__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_mrp_bom_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_mrp_production__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_planning_slot__display_name
@@ -270,12 +365,15 @@ msgstr "Creado el"
 #: model:ir.model.fields,field_description:al_construction_planner.field_product_template__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_project_project__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_project_task__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_project_task_type__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_purchase_order__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_purchase_order_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_purchase_request__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_purchase_request_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_res_company__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_resource_calendar_leaves__display_name
+#: model:ir.model.fields,field_description:al_construction_planner.field_sale_order__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_sale_order_line__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_stock_move__display_name
 #: model:ir.model.fields,field_description:al_construction_planner.field_tier_definition__display_name
@@ -288,7 +386,17 @@ msgid "Distribution Analytic Account"
 msgstr "Cuenta analítica de distribución"
 
 #. module: al_construction_planner
+#: code:addons/al_construction_planner/static/src/plan_tree/plan_tree.xml:0
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_line__driver
+msgid "Driver"
+msgstr "Conductor"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_follower_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_follower_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_follower_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_follower_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_follower_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_follower_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_follower_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_follower_ids
@@ -298,7 +406,11 @@ msgid "Followers"
 msgstr "Seguidores"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_partner_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_partner_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_partner_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_partner_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_partner_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_partner_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_partner_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_partner_ids
@@ -308,7 +420,11 @@ msgid "Followers (Partners)"
 msgstr "Seguidores (contactos)"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__activity_type_icon
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__activity_type_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__activity_type_icon
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__activity_type_icon
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__activity_type_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__activity_type_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__activity_type_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_valuation__activity_type_icon
@@ -318,12 +434,17 @@ msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__has_comment
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__has_comment
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__has_comment
 msgid "Has Comment"
 msgstr "Tiene comentario"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__has_message
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__has_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__has_message
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__has_message
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__has_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__has_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__has_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__has_message
@@ -334,12 +455,17 @@ msgstr "Tiene un mensaje"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__hide_reviews
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__hide_reviews
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__hide_reviews
 msgid "Hide Reviews"
 msgstr "Ocultar revisiones"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_exception_icon
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_exception_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_exception_icon
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_exception_icon
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_exception_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_exception_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_exception_icon
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_exception_icon
@@ -348,7 +474,11 @@ msgid "Icon"
 msgstr "Icono"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__activity_exception_icon
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__activity_exception_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__activity_exception_icon
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__activity_exception_icon
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__activity_exception_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__activity_exception_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__activity_exception_icon
 #: model:ir.model.fields,help:al_construction_planner.field_construction_valuation__activity_exception_icon
@@ -357,7 +487,11 @@ msgid "Icon to indicate an exception activity."
 msgstr "Icono que indica una actividad de excepción."
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__message_needaction
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__message_needaction
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__message_needaction
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__message_needaction
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__message_needaction
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__message_needaction
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__message_needaction
 #: model:ir.model.fields,help:al_construction_planner.field_construction_typology__message_needaction
@@ -367,8 +501,16 @@ msgid "If checked, new messages require your attention."
 msgstr "Si está seleccionado, hay nuevos mensajes que requieren tu atención."
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__message_has_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__message_has_sms_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__message_has_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__message_has_sms_error
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__message_has_error
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__message_has_sms_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__message_has_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__message_has_sms_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__message_has_error
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__message_has_sms_error
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__message_has_error
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__message_has_sms_error
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__message_has_error
@@ -384,13 +526,18 @@ msgstr "Si está seleccionado, algunos mensajes tienen error de envío."
 
 #. module: al_construction_planner
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__has_comment
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__has_comment
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__has_comment
 msgid "If set, Allow the reviewer to leave a comment on the review."
 msgstr ""
 "Si se establece, permite al revisor dejar un comentario sobre la reseña."
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_is_follower
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_is_follower
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_is_follower
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_is_follower
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_is_follower
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_is_follower
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_is_follower
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_is_follower
@@ -405,11 +552,27 @@ msgid "Journal Entry"
 msgstr "Asiento contable"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_activity_tranche__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_analytic_rule__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_document__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_price__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_unit_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_master_import_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_generate_wizard__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__write_uid
@@ -441,12 +604,17 @@ msgstr "Asiento contable"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_alias__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_furniture__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_milestone__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_override__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_cutoff__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_line__write_uid
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_milestone__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard_line__write_uid
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_weekly_delivery__write_uid
@@ -455,11 +623,27 @@ msgid "Last Updated by"
 msgstr "Última actualización por"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_activity_tranche__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_analytic_rule__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_document__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_price__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_unit_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_activity__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_labor_rate__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_master_import_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_generate_wizard__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_contract_wizard_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_plan_crew_wizard__write_date
@@ -491,12 +675,17 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_activity__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_alias__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_furniture__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology_module__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_milestone__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_override__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_confirm_wizard_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_cutoff__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_line__write_date
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_milestone__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation_prepare_wizard_line__write_date
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_weekly_delivery__write_date
@@ -510,7 +699,16 @@ msgid "Manufacturing Order"
 msgstr "Orden de fabricación"
 
 #. module: al_construction_planner
+#: model:ir.model,name:al_construction_planner.model_ir_ui_menu
+msgid "Menu"
+msgstr "Menú"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_has_error
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_has_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_has_error
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_has_error
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_has_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_has_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_has_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_has_error
@@ -520,7 +718,11 @@ msgid "Message Delivery error"
 msgstr "Error al enviar el mensaje"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_ids
@@ -530,7 +732,11 @@ msgid "Messages"
 msgstr "Mensajes"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__my_activity_date_deadline
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__my_activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__my_activity_date_deadline
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__my_activity_date_deadline
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__my_activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__my_activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__my_activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__my_activity_date_deadline
@@ -540,12 +746,17 @@ msgstr "Fecha límite de mi actividad"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__need_validation
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__need_validation
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__need_validation
 msgid "Need Validation"
 msgstr "Necesita validación"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_calendar_event_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_calendar_event_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_calendar_event_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_calendar_event_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_calendar_event_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_calendar_event_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_calendar_event_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_calendar_event_id
@@ -554,7 +765,11 @@ msgid "Next Activity Calendar Event"
 msgstr "Siguiente evento en el calendario de actividades"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_date_deadline
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_date_deadline
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_date_deadline
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_date_deadline
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_date_deadline
@@ -563,7 +778,11 @@ msgid "Next Activity Deadline"
 msgstr "Siguiente fecha límite de la actividad"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_summary
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_summary
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_summary
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_summary
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_summary
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_summary
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_summary
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_summary
@@ -572,7 +791,11 @@ msgid "Next Activity Summary"
 msgstr "Resumen de la siguiente actividad"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_type_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_type_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_type_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_type_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_type_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_type_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_type_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_type_id
@@ -582,12 +805,17 @@ msgstr "Siguiente tipo de actividad"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__next_review
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__next_review
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__next_review
 msgid "Next Review"
 msgstr "Siguiente revisión"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_needaction_counter
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_needaction_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_needaction_counter
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_needaction_counter
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_needaction_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_needaction_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_needaction_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_needaction_counter
@@ -597,7 +825,11 @@ msgid "Number of Actions"
 msgstr "Número de acciones"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_has_error_counter
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_has_error_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_has_error_counter
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_has_error_counter
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_has_error_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_has_error_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_has_error_counter
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_has_error_counter
@@ -607,7 +839,11 @@ msgid "Number of errors"
 msgstr "Número de errores"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__message_needaction_counter
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__message_needaction_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__message_needaction_counter
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__message_needaction_counter
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__message_needaction_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__message_needaction_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__message_needaction_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_typology__message_needaction_counter
@@ -617,7 +853,11 @@ msgid "Number of messages requiring action"
 msgstr "Número de mensajes que requieren una acción"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__message_has_error_counter
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__message_has_error_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__message_has_error_counter
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__message_has_error_counter
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__message_has_error_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__message_has_error_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__message_has_error_counter
 #: model:ir.model.fields,help:al_construction_planner.field_construction_typology__message_has_error_counter
@@ -643,6 +883,7 @@ msgstr "Categoría del producto"
 
 #. module: al_construction_planner
 #: model:ir.model,name:al_construction_planner.model_project_project
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_unit_override__project_id
 msgid "Project"
 msgstr "Proyecto"
 
@@ -667,7 +908,11 @@ msgid "Purchase Request Line"
 msgstr "Línea de requerimiento de compra"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__rating_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__rating_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__rating_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__rating_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__rating_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__rating_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__rating_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__rating_ids
@@ -678,12 +923,22 @@ msgstr "Calificaciones"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__rejected_message
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__rejected_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__rejected_message
 msgid "Rejected Message"
 msgstr "Mensaje de rechazo"
 
 #. module: al_construction_planner
+#: model:ir.model,name:al_construction_planner.model_resource_calendar_leaves
+msgid "Resource Time Off Detail"
+msgstr "Detalle de la pausa del recurso"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__activity_user_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__activity_user_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__activity_user_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__activity_user_id
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__activity_user_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__activity_user_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__activity_user_id
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_valuation__activity_user_id
@@ -693,12 +948,17 @@ msgstr "Usuario responsable"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__reviewer_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__reviewer_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__reviewer_ids
 msgid "Reviewers"
 msgstr "Revisores"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__message_has_sms_error
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__message_has_sms_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__message_has_sms_error
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__message_has_sms_error
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__message_has_sms_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__message_has_sms_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__message_has_sms_error
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__message_has_sms_error
@@ -708,9 +968,24 @@ msgid "SMS Delivery error"
 msgstr "Error en el envío del SMS"
 
 #. module: al_construction_planner
+#: model:ir.model,name:al_construction_planner.model_sale_order
+msgid "Sales Order"
+msgstr "Orden de venta"
+
+#. module: al_construction_planner
 #: model:ir.model,name:al_construction_planner.model_sale_order_line
 msgid "Sales Order Line"
 msgstr "Línea de Orden de Venta"
+
+#. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_analytic_rule__sequence
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order_line__sequence
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_document__sequence
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_price__sequence
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_level_template__sequence
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_milestone_template__sequence
+msgid "Sequence"
+msgstr "Secuencia"
 
 #. module: al_construction_planner
 #: code:addons/al_construction_planner/static/src/plan_tree/plan_tree.xml:0
@@ -718,7 +993,11 @@ msgid "Soles"
 msgstr "Sol"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__activity_state
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__activity_state
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__activity_state
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__activity_state
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__activity_state
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__activity_state
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__activity_state
 #: model:ir.model.fields,help:al_construction_planner.field_construction_valuation__activity_state
@@ -750,18 +1029,28 @@ msgid "Task"
 msgstr "Tarea"
 
 #. module: al_construction_planner
+#: model:ir.model,name:al_construction_planner.model_project_task_type
+msgid "Task Stage"
+msgstr "Etapa de la tarea"
+
+#. module: al_construction_planner
 #: model:ir.model,name:al_construction_planner.model_tier_definition
 msgid "Tier Definition"
 msgstr "Definición de Nivel"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__to_validate_message
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__to_validate_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__to_validate_message
 msgid "To Validate Message"
 msgstr "Mensaje por validar"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__activity_exception_decoration
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__activity_exception_decoration
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__activity_exception_decoration
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__activity_exception_decoration
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__activity_exception_decoration
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__activity_exception_decoration
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__activity_exception_decoration
 #: model:ir.model.fields,help:al_construction_planner.field_construction_valuation__activity_exception_decoration
@@ -796,24 +1085,31 @@ msgstr ""
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__validated_message
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__validated_message
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__validated_message
 msgid "Validated Message"
 msgstr "Mensaje de validación"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__validation_status
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__validation_status
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__validation_status
 msgid "Validation Status"
 msgstr "Estado de validación"
 
 #. module: al_construction_planner
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__review_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__review_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__review_ids
 msgid "Validations"
 msgstr "Validaciones"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_change_order__website_message_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract__website_message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_contract_settlement__website_message_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_dependency__website_message_ids
+#: model:ir.model.fields,field_description:al_construction_planner.field_construction_measurement__website_message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_resource_plan__website_message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_task_progress__website_message_ids
 #: model:ir.model.fields,field_description:al_construction_planner.field_construction_typology__website_message_ids
@@ -823,7 +1119,11 @@ msgid "Website Messages"
 msgstr "Mensajes del sitio web"
 
 #. module: al_construction_planner
+#: model:ir.model.fields,help:al_construction_planner.field_construction_change_order__website_message_ids
+#: model:ir.model.fields,help:al_construction_planner.field_construction_contract__website_message_ids
 #: model:ir.model.fields,help:al_construction_planner.field_construction_contract_settlement__website_message_ids
+#: model:ir.model.fields,help:al_construction_planner.field_construction_dependency__website_message_ids
+#: model:ir.model.fields,help:al_construction_planner.field_construction_measurement__website_message_ids
 #: model:ir.model.fields,help:al_construction_planner.field_construction_resource_plan__website_message_ids
 #: model:ir.model.fields,help:al_construction_planner.field_construction_task_progress__website_message_ids
 #: model:ir.model.fields,help:al_construction_planner.field_construction_typology__website_message_ids
@@ -839,7 +1139,18 @@ msgid "id"
 msgstr "ID"
 
 #. module: al_construction_planner
+#: code:addons/al_construction_planner/models/construction_schedule_report.py:0
+msgid "invoice"
+msgstr "factura"
+
+#. module: al_construction_planner
+#: code:addons/al_construction_planner/models/construction_planner_home.py:0
+msgid "state"
+msgstr "estado"
+
+#. module: al_construction_planner
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_exception_decoration__danger
+#: model:ir.model.fields.selection,name:mail.selection__construction_measurement__activity_exception_decoration__danger
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_exception_decoration__danger
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_exception_decoration__danger
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_exception_decoration__danger
@@ -849,6 +1160,7 @@ msgstr "Error"
 
 #. module: al_construction_planner
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_exception_decoration__warning
+#: model:ir.model.fields.selection,name:mail.selection__construction_measurement__activity_exception_decoration__warning
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_exception_decoration__warning
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_exception_decoration__warning
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_exception_decoration__warning
@@ -858,6 +1170,7 @@ msgstr "Alerta"
 
 #. module: al_construction_planner
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_state__overdue
+#: model:ir.model.fields.selection,name:mail.selection__construction_measurement__activity_state__overdue
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_state__overdue
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_state__overdue
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_state__overdue
@@ -867,6 +1180,7 @@ msgstr "Vencidas"
 
 #. module: al_construction_planner
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_state__planned
+#: model:ir.model.fields.selection,name:mail.selection__construction_measurement__activity_state__planned
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_state__planned
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_state__planned
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_state__planned
@@ -876,6 +1190,7 @@ msgstr "Planeado"
 
 #. module: al_construction_planner
 #: model:ir.model.fields.selection,name:mail.selection__construction_contract_settlement__activity_state__today
+#: model:ir.model.fields.selection,name:mail.selection__construction_measurement__activity_state__today
 #: model:ir.model.fields.selection,name:mail.selection__construction_resource_plan__activity_state__today
 #: model:ir.model.fields.selection,name:mail.selection__construction_task_progress__activity_state__today
 #: model:ir.model.fields.selection,name:mail.selection__construction_valuation__activity_state__today

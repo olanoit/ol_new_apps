@@ -61,6 +61,13 @@
                       action="action_construction_progress_to_validate" sequence="20"/>
             <menuitem id="menu_planner_progress_all" name="Avances"
                       action="action_construction_progress" sequence="30"/>
+            <menuitem id="menu_planner_measurements" name="Metrados"
+                      action="action_construction_measurement" sequence="40"/>
+            <menuitem id="menu_planner_measurement_lines" name="Cargar medidas"
+                      action="action_construction_measurement_line" sequence="45"/>
+            <menuitem id="menu_planner_measurement_generate" name="Generar metrados"
+                      action="action_construction_measurement_generate_wizard" sequence="50"
+                      groups="al_construction_planner.group_planner_user"/>
         </menuitem>
         <menuitem id="menu_planner_contracts" name="Contratas" sequence="20">
             <menuitem id="menu_planner_contract_assign" name="Asignar contrata"

@@ -13,6 +13,7 @@
             * [Árbol de recursos](project/construction/planning/resource_tree.md)
             * [Línea base y versiones](project/construction/planning/baseline.md)
             * [Asignaciones y compras](project/construction/planning/supply.md)
+            * [Metrado del ambiente](project/construction/planning/measurement.md)
             * [Contratas y liquidación semanal](project/construction/planning/contractors.md)
             * [Portal de obra, sedes y marcación](project/construction/planning/site_portal.md)
             * [Adicionales, deductivos y dependencias](project/construction/planning/changes.md)
