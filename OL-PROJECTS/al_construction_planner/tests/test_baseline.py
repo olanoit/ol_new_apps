@@ -13,7 +13,9 @@ class TestBaseline(PlannerCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.manager = new_test_user(
-            cls.env, 'plan_jefatura', groups='al_construction_planner.group_planner_manager',
+            cls.env, 'plan_jefatura',
+            groups='al_construction_planner.group_planner_manager,'
+                   'al_construction_planner.group_planner_project_head',
             name='Jefatura (test)')
         # Regla propia del test (PlannerCommon apaga las existentes).
         TierDefinition = cls.env['tier.definition']
@@ -22,7 +24,7 @@ class TestBaseline(PlannerCommon):
             'model_id': cls.env['ir.model']._get('construction.resource.plan').id,
             'review_type': 'group',
             'reviewer_group_id': cls.env.ref(
-                'al_construction_planner.group_planner_manager').id,
+                'al_construction_planner.group_planner_project_head').id,
             'definition_domain': "[('amount_total', '>', 0)]",
             'sequence': 20,
             'approve_sequence': True,

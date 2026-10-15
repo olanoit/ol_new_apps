@@ -20,6 +20,10 @@ contrata) ve en **Mi cuenta ‣ Mis obras**:
 | P-25 | Mis avances y liquidaciones | Historial de avances con su estado (por validar, validado, rechazado) y las liquidaciones de su empresa con su pago. |
 | P-26 | Parte diario de cuadrilla | Quién de su empresa marcó hoy, en qué sede, con ingreso, salida y observaciones. Lo agrega **Sedes, marcación y costo de personal de obra**. |
 
+Las contratas de armado reportan igual que las de instalación: en **Registrar
+avance** aparece una fila por módulo (Tarugo 1, Tornillo 1…) de cada ambiente,
+y se escribe 1 por cada módulo armado.
+
 El avance del portal entra **Por validar**, con origen *Portal*, la ubicación
 y la distancia a la sede. El supervisor lo valida o rechaza en **Ejecución ‣
 Avance ‣ Avances por validar**, como cualquier otro.

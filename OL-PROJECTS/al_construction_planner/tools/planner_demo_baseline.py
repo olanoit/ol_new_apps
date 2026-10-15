@@ -37,7 +37,7 @@ plan_model = env['ir.model']._get('construction.resource.plan')
 get_or_create('tier.definition', [('name', '=', f'{P} · Nivel 1: jefatura de proyectos')], {
     'name': f'{P} · Nivel 1: jefatura de proyectos', 'model_id': plan_model.id,
     'review_type': 'group',
-    'reviewer_group_id': env.ref('al_construction_planner.group_planner_manager').id,
+    'reviewer_group_id': env.ref('al_construction_planner.group_planner_project_head').id,
     'definition_domain': '[]', 'sequence': 20, 'approve_sequence': True, 'has_comment': True})
 get_or_create('tier.definition', [('name', '=', f'{P} · Nivel 2: gerencia (más de S/ 100 000)')], {
     'name': f'{P} · Nivel 2: gerencia (más de S/ 100 000)', 'model_id': plan_model.id,

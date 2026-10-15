@@ -8,6 +8,7 @@ revisión más (la OF y la OC las confirma la jefatura del planificador)."""
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
+from ..models.common import PROJECT_HEAD_GROUPS
 from ..models.purchase_order import POLICY_RANK
 
 
@@ -99,10 +100,9 @@ class ConstructionPlanExceedWizard(models.TransientModel):
             res = request.with_context(construction_exceed_checked=True).action_request_approval()
         else:
             document = self.production_id or self.purchase_order_id
-            if self.policy == 'approval' and not self.env.user.has_group(
-                    'al_construction_planner.group_planner_manager'):
+            if self.policy == 'approval' and not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
                 raise UserError(self.env._(
-                    'El exceso lo aprueba la jefatura del planificador: pídale que confirme '
+                    'El exceso lo aprueba la jefatura de proyectos: pídale que confirme '
                     '%s.', document.name))
             values = {'construction_exceed_state': (
                 'approved' if self.policy == 'approval' else 'exceeded')}

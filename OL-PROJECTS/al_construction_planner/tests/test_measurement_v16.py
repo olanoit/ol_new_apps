@@ -26,7 +26,7 @@ class TestMeasurement(PlannerCommon):
             cls.env, 'metrado_supervisor', groups='al_construction_planner.group_planner_user',
             name='Supervisor de obra (test)')
         cls.manager = new_test_user(
-            cls.env, 'metrado_jefatura', groups='al_construction_planner.group_planner_manager',
+            cls.env, 'metrado_jefatura', groups='al_construction_planner.group_planner_project_head',
             name='Jefatura de proyectos (test)')
 
     def setUp(self):

@@ -52,9 +52,22 @@ principales y, dentro de cada uno, secciones por tema.
         venta de origen.
 3. En **Ajustes ‣ Usuarios**, asigne los grupos de la aplicación:
     - **Planificador** a Oficina Técnica;
-    - **Administrador** a Jefatura de Proyectos;
+    - **Planificación de obra: jefatura de proyectos** a la jefatura y a quien
+      la reemplace: aprueba las reglas de validación del planificador (plan,
+      excesos, metrados, material extra y liquidaciones), los cambios, las
+      entregas semanales, la anulación de valorizaciones y el descuento a
+      contratas;
+    - **Planificación de obra: asistente de proyectos** al asistente: crea los
+      requerimientos a obra y los envía a aprobación, sin aprobarlos;
+    - **Administrador** a quien configura la aplicación (catálogo, ajustes y
+      cierre de planes). No aprueba las reglas de validación si no está también
+      en la jefatura;
     - **Reporte de avance** a capataces y supervisores;
     - **Planificación de obra: ingresos** a Administración y Finanzas.
+
+    El despacho a obra de un requerimiento lo valida solo el almacén (grupo
+    **Logística** de requerimientos de obra), aunque quien lo pidió tenga
+    acceso a Inventario.
 4. Para comprar y pedir desde el plan, el planificador necesita también los
    grupos de **requerimientos de compra** y de **requerimientos de obra** (y de
    **fabricación** para las órdenes de fabricación).

@@ -44,7 +44,8 @@ class TestContracts(TransactionCase):
             cls.env, 'plan_capataz_f5', name='Capataz de la contrata (test)',
             groups=f'{grp}progress')
         cls.manager = new_test_user(
-            cls.env, 'plan_jefatura_f6', name='Jefatura (test)', groups=f'{grp}manager')
+            cls.env, 'plan_jefatura_f6', name='Jefatura (test)',
+            groups=f'{grp}manager,{grp}project_head')
         # Solo la regla de liquidaciones del módulo (jefatura).
         cls.tier_settlement = cls.env.ref(
             'al_construction_planner.tier_contract_settlement_manager')

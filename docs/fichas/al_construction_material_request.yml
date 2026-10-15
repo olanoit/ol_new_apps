@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 17.20261013
+    fecha: 15/10/2026
+    cambios:
+      - "El despacho a obra de un requerimiento lo valida solo el almacén (grupo Logística), aunque quien lo pidió tenga acceso a Inventario (v1.6, M16-10)."
   - version: 16.20261013
     fecha: 15/10/2026
     cambios:

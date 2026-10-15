@@ -9,7 +9,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import formatLang
 
-from .common import EXCEED_STATES
+from .common import EXCEED_STATES, PROJECT_HEAD_GROUPS
 from .construction_resource_plan import OPEN_STATES
 
 SUPPLY_TYPES = ('material', 'service', 'production')
@@ -80,8 +80,7 @@ class ConstructionMaterialRequest(models.Model):
                     'El monto a descontar del extra %s debe ser mayor que cero.', request.name))
 
     def _check_discount_manager(self):
-        if not self.env.su and not self.env.user.has_group(
-                'al_construction_planner.group_planner_manager'):
+        if not self.env.su and not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
             raise UserError(self.env._(
                 'El descuento a la contrata lo decide la jefatura de proyectos.'))
 

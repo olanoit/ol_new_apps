@@ -34,10 +34,10 @@
                             groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"
                             invisible="state != 'draft' or not id"
-                            groups="al_construction_planner.group_planner_manager"/>
+                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
                     <button name="action_draft" type="object" string="Reabrir"
                             invisible="state != 'confirmed' or valuation_id"
-                            groups="al_construction_planner.group_planner_manager"/>
+                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -207,7 +207,7 @@
                             groups="al_construction_planner.group_planner_revenue"/>
                     <button name="action_cancel" type="object" string="Anular"
                             invisible="state not in ('draft', 'sent', 'observed') or not id"
-                            groups="al_construction_planner.group_planner_manager"/>
+                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,sent,observed,confirmed,invoiced"/>
                 </header>

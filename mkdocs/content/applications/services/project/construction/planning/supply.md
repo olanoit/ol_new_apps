@@ -127,7 +127,7 @@ sale de la ubicación de la obra a una ubicación de consumo.
 | El asistente no propone un material | Ya no tiene saldo o su etapa no está marcada | Revisar las etapas y las asignaciones de la línea |
 | «Pide más de lo que queda en el plan … bloquear» | La política del plan es bloquear | Reducir la cantidad o replanificar |
 | «Fuera de plan» en el requerimiento | El material no está en el plan bajo el nivel de la línea | Pedirlo en el nivel correcto o justificarlo |
-| «El exceso de una OF lo aprueba la jefatura» | Política «pedir aprobación» en una OF | Que el administrador del planificador confirme la OF |
+| «El exceso lo aprueba la jefatura de proyectos» | Política «pedir aprobación» en una OF | Que la jefatura de proyectos confirme la OF |
 | Consumido en cero en material de obra | No hay salidas de la ubicación de la obra a consumo | Registrar el consumo en obra |
 
 !!! info "Ver también"

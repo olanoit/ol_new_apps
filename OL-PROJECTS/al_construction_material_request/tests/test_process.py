@@ -2,8 +2,8 @@
 from unittest.mock import patch
 
 from odoo import fields
-from odoo.exceptions import AccessError
-from odoo.tests import tagged
+from odoo.exceptions import AccessError, UserError
+from odoo.tests import new_test_user, tagged
 from odoo.tools import formatLang
 
 from .common import ConstructionRequestCommon
@@ -340,6 +340,24 @@ class TestProcess(ConstructionRequestCommon):
         ).create({'supplier_id': self.vendor.id})
         wizard.make_purchase_order()
         self.assertEqual(len(prs.line_ids.purchase_lines), 2)
+
+    def test_only_warehouse_validates_dispatch(self):
+        """v1.6, M16-10: quien pide (aunque tenga Inventario, como el
+        asistente o el supervisor) no valida el despacho a obra."""
+        self._set_stock(self.cement, self.stock, 150)
+        request = self._approved_request()
+        self._process(request)
+        picking = request.picking_ids
+        picking.move_ids.picked = True
+        site_user = new_test_user(
+            self.env, 'rqo_supervisor_inventario', name='Supervisor con inventario (test)',
+            groups='al_construction_material_request.group_construction_requester,'
+                   'stock.group_stock_user')
+        with self.assertRaises(UserError):
+            picking.with_user(site_user).button_validate()
+        self.assertNotEqual(picking.state, 'done')
+        picking.with_user(self.logistics).button_validate()
+        self.assertEqual(picking.state, 'done')
 
     def test_only_logistics_processes(self):
         request = self._approved_request()

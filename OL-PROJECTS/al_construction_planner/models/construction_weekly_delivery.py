@@ -10,6 +10,7 @@ from datetime import timedelta
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+from .common import PROJECT_HEAD_GROUPS
 from .construction_resource_plan import OPEN_STATES
 
 DELIVERY_STATES = [
@@ -234,10 +235,9 @@ class ConstructionWeeklyDelivery(models.Model):
     # Estados
     # ------------------------------------------------------------------
     def _check_manager(self):
-        if not self.env.user.has_group('al_construction_planner.group_planner_manager'):
+        if not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
             raise UserError(self.env._(
-                'Confirma o reabre la entrega semanal la Jefatura de Proyectos (grupo '
-                'Administrador).'))
+                'Confirma o reabre la entrega semanal la jefatura de proyectos.'))
 
     def action_refresh(self):
         if self.filtered(lambda d: d.state != 'draft'):

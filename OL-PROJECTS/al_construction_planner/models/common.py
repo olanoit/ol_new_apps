@@ -145,3 +145,8 @@ GUARANTEE_RELEASES = [
     ('close', 'Al cierre de la obra'),
     ('date', 'En una fecha fija'),
 ]
+
+# Quien aprueba en nombre de la jefatura de proyectos (v1.6, M16-09): su
+# grupo o el administrador del planificador.
+PROJECT_HEAD_GROUPS = ('al_construction_planner.group_planner_project_head,'
+                       'al_construction_planner.group_planner_manager')

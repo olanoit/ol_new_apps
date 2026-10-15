@@ -28,7 +28,7 @@ from datetime import timedelta
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from .common import RESOURCE_TYPES, STAGES, UNIT_STATE_RANK, UNIT_STATES
+from .common import PROJECT_HEAD_GROUPS, RESOURCE_TYPES, STAGES, UNIT_STATE_RANK, UNIT_STATES
 
 CHANGE_KINDS = [
     ('additional', 'Adicional'),
@@ -173,8 +173,8 @@ class ConstructionChangeOrder(models.Model):
     def action_approve(self):
         """Aprueba el cambio: sus líneas entran al plan vigente con origen
         «Cambio» y su costo se suma al presupuesto analítico del plan."""
-        if not self.env.user.has_group('al_construction_planner.group_planner_manager'):
-            raise UserError(self.env._('Solo la jefatura de planificación aprueba cambios.'))
+        if not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
+            raise UserError(self.env._('Solo la jefatura de proyectos aprueba cambios.'))
         for change in self:
             if change.state != 'draft':
                 raise UserError(self.env._('%s ya no está en borrador.', change.display_name))

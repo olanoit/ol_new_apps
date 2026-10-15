@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 26.20261013 — 15/10/2026
+
+- Grupo «Planificación de obra: jefatura de proyectos» (v1.6, M16-09): aprueba las reglas de validación del planificador (excesos, liquidaciones, metrados, material extra y la regla del plan), así que funcionan con un reemplazo; el administrador deja de ser el aprobador por defecto. La actualización pasa las reglas existentes a la jefatura y suma a ella a los administradores actuales, que se pueden quitar después.
+- Aprobar cambios, confirmar entregas semanales, anular valorizaciones, aprobar excesos de OC y OF y decidir el descuento a la contrata: lo hace la jefatura (o el administrador).
+- Grupo «Planificación de obra: asistente de proyectos» (M16-10): crea los requerimientos a obra y los envía a aprobación, sin aprobarlos.
+- Avance de armado por el portal (M16-11): las contratas de armado reportan módulo por módulo, probado de punta a punta.
+
 ## 25.20261013 — 15/10/2026
 
 - Material extra con aprobación de la jefatura (v1.6, M16-05 y M16-07): todo requerimiento marcado como extra pasa por la regla «Material extra: jefatura de proyectos», esté o no dentro del plan.

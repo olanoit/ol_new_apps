@@ -40,6 +40,7 @@ env = env(context=dict(env.context, allowed_company_ids=company.ids))
 project = project.with_env(env)
 admin = env.user
 for group in ('al_construction_planner.group_planner_manager',
+              'al_construction_planner.group_planner_project_head',
               'al_construction_planner.group_planner_revenue'):
     if not admin.has_group(group):
         admin.group_ids = [Command.link(env.ref(group).id)]

@@ -110,7 +110,7 @@ obra del piso recibe la actividad para Logística.
 |---|---|---|
 | Comprometido y real en cero | Se llenan con las asignaciones y las horas | Generar los documentos desde el plan; **Actualizar control** |
 | «Pasa el presupuesto analítico … bloquear» | La OC lleva la combinación sobre su presupuesto | Reducir la OC, cambiar la política o replanificar |
-| «El exceso lo aprueba la jefatura del planificador» | Política «pedir aprobación» en una OC | Que el administrador del planificador confirme el aviso |
+| «El exceso lo aprueba la jefatura de proyectos» | Política «pedir aprobación» en una OC | Que la jefatura de proyectos confirme el aviso |
 | «Combinación fuera del presupuesto» | La OC usa una combinación sin línea en el presupuesto | Usar la combinación del plan o replanificar |
 | «La selección no tiene líneas de personal propio del rol» | No hay líneas de personal propio o tienen otro rol | Revisar la selección y el rol |
 | Las horas no suben el ejecutado | El empleado no tiene el rol o registró en otra tarea | Asignar la cuadrilla; registrar en la tarea del nivel o sus módulos |

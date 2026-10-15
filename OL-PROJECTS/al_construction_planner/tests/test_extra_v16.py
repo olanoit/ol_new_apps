@@ -40,8 +40,7 @@ class TestExtraMaterial(ExtraCommon, PlannerCommon):
         cls.company._al_construction_ensure_setup()
         cls.manager = new_test_user(
             cls.env, 'extra_jefatura', name='Jefatura (test)',
-            groups='al_construction_planner.group_planner_manager,'
-                   'al_construction_material_request.group_construction_approver')
+            groups='al_construction_planner.group_planner_project_head')
         cls.buyer = new_test_user(
             cls.env, 'extra_residente', name='Residente (test)',
             groups='al_construction_planner.group_planner_planner,'
@@ -101,8 +100,6 @@ class TestExtraDiscount(ExtraCommon, TestContracts):
         super().setUpClass()
         cls._only_extra_rule()
         cls.tier_extra.active = False
-        cls.manager.group_ids |= cls.env.ref(
-            'al_construction_material_request.group_construction_approver')
         cls.project.message_subscribe(partner_ids=cls.manager.partner_id.ids)
         cls.env.company._al_construction_ensure_setup()
         cls.discount_account = cls.env['account.account'].search([

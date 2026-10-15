@@ -8,7 +8,7 @@
         <field name="name">[DEMO] Plan · Nivel 1: jefatura de proyectos</field>
         <field name="model_id" ref="model_construction_resource_plan"/>
         <field name="review_type">group</field>
-        <field name="reviewer_group_id" ref="group_planner_manager"/>
+        <field name="reviewer_group_id" ref="group_planner_project_head"/>
         <field name="definition_domain">[]</field>
         <field name="sequence">20</field>
         <field name="approve_sequence" eval="True"/>

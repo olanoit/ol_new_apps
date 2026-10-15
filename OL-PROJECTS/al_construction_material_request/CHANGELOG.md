@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261013 — 15/10/2026
+
+- El despacho a obra de un requerimiento lo valida solo el almacén (grupo Logística), aunque quien lo pidió tenga acceso a Inventario (v1.6, M16-10).
+
 ## 16.20261013 — 15/10/2026
 
 - Material extra (v1.6, M16-05): casilla «Material extra» con su motivo (merma, error de medida, cambio del cliente o reposición), obligatorio para enviar el requerimiento, y filtro «Material extra» en la lista.

@@ -41,6 +41,22 @@
             <field name="comment">Jefatura de Proyectos: configuración, políticas, aprobación de liquidaciones y cierre de planes.</field>
         </record>
 
+        <!-- Jefatura y asistente de Proyectos (v1.6, M16-09 y M16-10): fuera
+             del privilegio, como ingresos. Las reglas de validación del
+             planificador las aprueba la jefatura, no el administrador, para
+             que funcionen con un reemplazo. -->
+        <record id="group_planner_project_head" model="res.groups">
+            <field name="name">Planificación de obra: jefatura de proyectos</field>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_planner')), Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
+            <field name="comment">Aprueba el plan, los excesos sobre el plan, los metrados con diferencia, el material extra y su descuento a la contrata, las liquidaciones, los cambios, las entregas semanales y la anulación de valorizaciones.</field>
+        </record>
+
+        <record id="group_planner_assistant" model="res.groups">
+            <field name="name">Planificación de obra: asistente de proyectos</field>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_user')), Command.link(ref('al_construction_material_request.group_construction_requester'))]"/>
+            <field name="comment">Crea los requerimientos a obra en borrador y los envía a aprobación; no aprueba ni valida el despacho, que valida el almacén.</field>
+        </record>
+
         <!-- Ingresos (Administración y Finanzas): fuera del privilegio porque no
              es un escalón del planificador; se suma a cualquier nivel. -->
         <record id="group_planner_revenue" model="res.groups">

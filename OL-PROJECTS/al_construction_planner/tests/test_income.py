@@ -45,7 +45,8 @@ class IncomeCommon(TransactionCase):
         cls.planner = new_test_user(
             cls.env, 'ing_supervisor', name='Supervisor (test)', groups=f'{grp}planner')
         cls.manager = new_test_user(
-            cls.env, 'ing_jefatura', name='Jefatura (test)', groups=f'{grp}manager')
+            cls.env, 'ing_jefatura', name='Jefatura (test)',
+            groups=f'{grp}manager,{grp}project_head')
         cls.projects_user = new_test_user(
             cls.env, 'ing_proyectos', name='Proyectos (test)', groups=f'{grp}user')
         cls.finance = new_test_user(

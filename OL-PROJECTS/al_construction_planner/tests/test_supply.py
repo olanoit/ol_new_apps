@@ -18,6 +18,7 @@ class TestSupply(PlannerCommon):
         cls.manager = new_test_user(
             cls.env, 'plan_jefatura_f4', name='Jefatura (test)',
             groups='al_construction_planner.group_planner_manager,'
+                   'al_construction_planner.group_planner_project_head,'
                    'al_construction_material_request.group_construction_approver')
         cls.buyer = new_test_user(
             cls.env, 'plan_compras_f4', name='Planificador comprador (test)',

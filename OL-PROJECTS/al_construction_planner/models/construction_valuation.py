@@ -10,6 +10,8 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_round
 
+from .common import PROJECT_HEAD_GROUPS
+
 VALUATION_STATES = [
     ('draft', 'Borrador'),
     ('sent', 'Enviada'),
@@ -382,7 +384,7 @@ class ConstructionValuation(models.Model):
                     name=valuation.display_name, state=labels[valuation.state].lower()))
 
     def _check_group(self, group, label):
-        if not self.env.user.has_group(group):
+        if not self.env.user.has_groups(group):
             raise UserError(label)
 
     def action_send(self):
@@ -462,8 +464,8 @@ class ConstructionValuation(models.Model):
 
     def action_cancel(self):
         """Anular (Jefatura): sin factura; las entregas vuelven a Confirmada."""
-        self._check_group('al_construction_planner.group_planner_manager', self.env._(
-            'Anula la valorización la Jefatura de Proyectos (grupo Administrador).'))
+        self._check_group(PROJECT_HEAD_GROUPS, self.env._(
+            'Anula la valorización la jefatura de proyectos.'))
         self._check_state(('draft', 'sent', 'observed'))
         if self.filtered(lambda v: v.invoice_id and v.invoice_id.state != 'cancel'):
             raise UserError(self.env._('Una valorización con factura no se anula.'))

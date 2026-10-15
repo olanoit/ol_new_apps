@@ -25,7 +25,7 @@ class TestControl(PlannerCommon):
         super().setUpClass()
         grp = 'al_construction_planner.group_planner_'
         cls.manager = new_test_user(
-            cls.env, 'plan_jefatura_f7', name='Jefatura (test)', groups=f'{grp}manager')
+            cls.env, 'plan_jefatura_f7', name='Jefatura (test)', groups=f'{grp}manager,{grp}project_head')
         cls.buyer = new_test_user(
             cls.env, 'plan_compras_f7', name='Comprador (test)',
             groups='purchase.group_purchase_user')
