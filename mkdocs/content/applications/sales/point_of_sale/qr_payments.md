@@ -1,5 +1,5 @@
 ---
-modulos: [al_pos_pe_wallet_qr]
+modulos: [al_pos_pe_wallet_qr, al_pos_online_payment]
 ---
 
 # Cobros con QR y pasarelas en el TPV
@@ -111,9 +111,11 @@ la venta solo.
     formulario.
 
 !!! note "Nota"
-    En Odoo 19, el ticket de una venta cobrada en línea puede mostrar la línea
-    de pago dos veces y un vuelto igual al importe. Es solo lo que dibuja el
-    TPV en ese momento: la orden queda en Odoo con un solo pago.
+    En Odoo 19, el ticket de una venta cobrada en línea muestra la línea de
+    pago dos veces y un vuelto igual al importe, aunque la orden queda con un
+    solo pago. El módulo `al_pos_online_payment`, que se instala solo con el
+    pago en línea, lo corrige: el ticket muestra únicamente el pago que
+    registró la pasarela.
 
 !!! info "Ver también"
     - [Cliente por RUC o DNI](customer_lookup.md)

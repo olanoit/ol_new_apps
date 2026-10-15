@@ -1,0 +1,56 @@
+titulo: Pago en línea del TPV sin pagos duplicados
+subtitulo: >-
+  Corrige el TPV de Odoo 19 que, tras un cobro en línea, muestra el pago dos
+  veces y un cambio igual al importe pagado.
+categoria: Punto de venta
+etiquetas: [Punto de venta, Pago en línea, Izipay, Culqi, Niubiz]
+
+destacados_intro: >-
+  Una corrección del pago en línea nativo del TPV (`pos_online_payment`).
+destacados:
+  - icono: "✓"
+    titulo: Un solo pago en el ticket
+    texto: >-
+      El ticket muestra solo el pago que registró la pasarela, sin la línea
+      que pidió el cobro.
+  - icono: "="
+    titulo: Sin vuelto falso
+    texto: >-
+      El cambio deja de mostrar el importe pagado: el total pagado coincide con
+      el de la orden.
+  - icono: "⚙"
+    titulo: Se instala solo
+    texto: >-
+      Se instala con el pago en línea del TPV y sirve con cualquier pasarela.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Con el pago en línea, el TPV crea una línea para pedir el cobro que nunca
+    envía a Odoo. Cuando el cliente paga, la pasarela registra el pago en la
+    orden y, al sincronizarla, el TPV lo suma a esa línea local: el ticket
+    muestra el pago dos veces y un cambio igual al importe. En la base hay un
+    solo pago.
+  nota: >-
+    El defecto es de Odoo 19 (`pos_online_payment`) y ocurre con cualquier
+    pasarela. El módulo no cambia los pagos ni la contabilidad: solo quita la
+    línea local del TPV cuando la orden ya está pagada en el servidor.
+
+funcionalidades:
+  - grupo: TPV
+    items:
+      - Con la orden pagada en el servidor, quita la línea local de pago en línea y deja los pagos de la pasarela.
+      - No toca los pagos en efectivo ni los de otros métodos.
+
+configuracion:
+  - Se instala solo con el pago en línea del TPV (`pos_online_payment`).
+requisitos_nota: >-
+  Sin configuración: actúa en toda caja con un método de pago en línea.
+
+novedades:
+  - version: 1.20261016
+    fecha: 16/10/2026
+    cambios:
+      - "Primera versión: el ticket de un cobro en línea muestra un solo pago, sin el vuelto igual al importe."
+
+relacionados: [al_payment_izipay, al_payment_culqi, al_payment_niubiz, al_pos_pe_wallet_qr]
