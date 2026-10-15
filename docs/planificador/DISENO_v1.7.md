@@ -1,6 +1,6 @@
 # Planificación de obra — diseño técnico del paquete 1.7 (configurabilidad)
 
-Requerimiento: [`docs/md/Planificación de obra — requerimiento de configurabilidad (paquete 1.7).md`](../md/Planificación%20de%20obra%20—%20requerimiento%20de%20configurabilidad%20(paquete%201.7).md).
+Requerimiento: [`docs/md/Planificación de obra — requerimiento de configurabilidad (paquete 1.7).md`](../md/Planificación%20de%20obra%20—%20requerimiento%20de%20configurabilidad%20%28paquete%201.7%29.md).
 Parte de la versión 27 del planificador (paquete 1.6 completo). Fecha: 15/10/2026.
 
 ## 1. Principio: catálogos configurables sobre comportamientos fijos

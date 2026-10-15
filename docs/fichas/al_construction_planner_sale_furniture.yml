@@ -1,0 +1,27 @@
+titulo: 'Planificación de obra: partidas por familia'
+subtitulo: 'Las partidas del contrato por familia de la tipología: la cocina va a la partida
+  «Cocinas» y el closet a «Closets».'
+categoria: Construcción · Proyectos
+etiquetas:
+- Partidas
+- Familia de la tipología
+- Contrato de obra
+destacados:
+- icono: 🏷
+  titulo: Familia en la partida
+  texto: La línea de la venta lleva la familia de mueble que le pertenece.
+- icono: ↳
+  titulo: Asignación automática
+  texto: Cada ambiente cae en la partida de su familia.
+configuracion:
+- Se instala solo cuando están la valorización e ingresos y el rubro mobiliario.
+requisitos_nota: Se instala automáticamente con `al_construction_planner_sale` y `al_construction_planner_furniture`.
+  Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-09): la partida por familia pasa de ventas a este enlace.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

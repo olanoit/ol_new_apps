@@ -1,0 +1,35 @@
+titulo: 'Planificación de obra: contratas'
+subtitulo: Contratas a destajo con su OC de servicio, avance por driver con foto, liquidación
+  semanal y portal de la contrata.
+categoria: Construcción · Proyectos
+etiquetas:
+- OC de servicio
+- Tarifas por obra
+- Avance por driver
+- Liquidación semanal
+- Portal de la contrata
+destacados:
+- icono: 🤝
+  titulo: Asignar contrata
+  texto: Contrata, tarifa y alcance; el alcance se suma a la OC de servicio en Compras.
+- icono: 📷
+  titulo: Avance con foto
+  texto: La contrata reporta desde el portal; el supervisor valida.
+- icono: 🗓
+  titulo: Liquidación semanal
+  texto: Lo validado de la semana, con retención, recibido en la OC y facturado en Contabilidad.
+configuracion:
+- Instale el núcleo **Planificación de obra** (`al_construction_planner`).
+- Active **Contratas** en **Planificación de obra ▸ Configuración ▸ Ajustes ▸ Funciones**,
+  o aplique un perfil de vertical que la incluya.
+requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
+  de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): las contratas salen del núcleo; la OC de servicio se gestiona
+    en Compras.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

@@ -1,0 +1,29 @@
+titulo: 'Planificación de obra: presupuesto analítico'
+subtitulo: El presupuesto analítico de la obra al aprobar el plan y el control de la OC contra
+  él.
+categoria: Construcción · Proyectos
+etiquetas:
+- Presupuesto analítico
+- Línea base
+- Control de la OC
+destacados:
+- icono: ▤
+  titulo: Presupuesto al aprobar
+  texto: Una línea por combinación de cuentas analíticas, con la versión anterior revisada.
+- icono: ✋
+  titulo: Control de la OC
+  texto: Las OC con la analítica de la obra se controlan contra el presupuesto vigente.
+configuracion:
+- Instale el núcleo **Planificación de obra** (`al_construction_planner`).
+- Active **Presupuesto analítico** en **Planificación de obra ▸ Configuración ▸ Ajustes ▸
+  Funciones**, o aplique un perfil de vertical que la incluya.
+requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
+  depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): el presupuesto analítico sale del núcleo.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

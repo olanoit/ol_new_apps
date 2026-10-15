@@ -1,0 +1,37 @@
+titulo: 'Planificación de obra: suite completa'
+subtitulo: Instala el planificador con todos sus puentes (el perfil mobiliario completo) y
+  reúne las pruebas de integración.
+categoria: Construcción · Proyectos
+etiquetas:
+- Todos los puentes
+- Pruebas de integración
+- Datos de demostración
+destacados:
+- icono: ▣
+  titulo: Todo de una vez
+  texto: Producción, compras, contratas, cuadrillas, presupuesto, ingresos y mobiliario.
+- icono: ✓
+  titulo: Pruebas de integración
+  texto: 'Los flujos que cruzan varios puentes: compras con tres proveedores, spools de tuberías,
+    cuadrillas por rol.'
+- icono: 🧪
+  titulo: Demostración
+  texto: Los scripts de `tools/` arman la obra demo de cocinas.
+configuracion:
+- 'Instale **Planificación de obra: suite completa** desde Aplicaciones.'
+- Las bases que ya tenían el planificador instalan la suite solas al actualizar a la v30.
+requisitos_nota: Requiere Enterprise y los módulos OCA de requerimientos de compra y de aprobación
+  por niveles. Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '2.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - Instala también `al_construction_planner_sale_furniture`; pruebas de operación nativa
+    (compras con tres proveedores, spools de tuberías, cuadrilla por rol) y del perfil mobiliario
+    sobre la demo.
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Módulo nuevo (v1.7, M17-07): reúne los puentes y las pruebas de integración.'
+relacionados:
+- al_construction_planner

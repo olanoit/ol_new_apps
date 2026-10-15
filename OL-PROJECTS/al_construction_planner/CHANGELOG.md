@@ -7,6 +7,30 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 32.20261013 — 15/10/2026
+
+- Perfiles de vertical (v1.7, M17-05): «Construcción por partidas» y «Mobiliario» reúnen plantilla de niveles, etapas, tipos de recurso, puentes, funciones, parámetros de la compañía y planes analíticos; **Aplicar el perfil** en Ajustes los deja en un paso, la pestaña «Desvíos de la compañía» muestra lo que difiere y **Exportar** / **Importar perfil** los pasan entre bases en JSON.
+- Cada obra guarda el perfil con el que nació y toma su plantilla de niveles.
+- Operación nativa (M17-08 a M17-11): la compra masiva agrupa por producto, nivel, etapa, partida o receta; la OF sale de cualquier nivel con etapa de producción; la cuadrilla se arma por rol, una fila por persona; los menús que operan otro documento son accesos directos a su aplicación.
+
+## 31.20261013 — 15/10/2026
+
+- Funciones activables (v1.7, M17-06): bloque «Funciones» en Ajustes para el control, el avance y metrados y cada puente (contratas, compras, cuadrillas, presupuesto, ingresos, producción y mobiliario).
+
+## 30.20261013 — 15/10/2026
+
+- Núcleo y puentes (v1.7, M17-07): el núcleo solo depende de Proyecto, el Gantt, la analítica, los productos y las aprobaciones; compras, contratas, cuadrillas, presupuesto, ventas, fabricación y mobiliario pasan a sus módulos `al_construction_planner_*`. La actualización instala todos los puentes y la suite, sin tocar los datos.
+
+## 29.20261013 — 15/10/2026
+
+- Control por nivel (v1.7): análisis por los niveles de la plantilla, línea base contra versión y desvío; destino de la compra masiva en la plantilla y en la obra; metrado por cantidad; portal en cualquier nivel.
+
+## 28.20261013 — 15/10/2026
+
+- Catálogos de etapas y de tipos de recurso (v1.7, M17-02 y M17-03), con el comportamiento «Equipo».
+- Niveles libres (M17-01): agrupador, unidad de entrega, nivel con etapas, subnivel y nivel de detalle, con las casillas lleva receta, se mide con metrado, se valoriza o factura y recibe avance.
+- Recetas (M17-04): plantillas de ejecución con «Generar desde la receta» e «Importar recetas y niveles» (Excel o Work Items).
+
 ## 27.20261013 — 15/10/2026
 
 - La ayuda de la compra masiva ya no menciona el modo «con analítica de la obra», retirado en la v1.6 (M16-02).

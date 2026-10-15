@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner, al_construction_attendance]
+modulos: [al_construction_planner, al_construction_attendance, al_construction_planner_subcontract]
 ---
 
 # Portal de obra, sedes y marcación

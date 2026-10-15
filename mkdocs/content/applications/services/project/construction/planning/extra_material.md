@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner, al_construction_material_request]
+modulos: [al_construction_planner, al_construction_material_request, al_construction_planner_purchase, al_construction_planner_subcontract_purchase]
 ---
 
 # Material extra y descuento a la contrata

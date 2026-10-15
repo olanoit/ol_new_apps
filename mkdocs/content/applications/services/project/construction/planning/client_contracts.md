@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner]
+modulos: [al_construction_planner, al_construction_planner_sale, al_construction_planner_sale_furniture]
 ---
 
 # Contratos de obra e hitos de cobro

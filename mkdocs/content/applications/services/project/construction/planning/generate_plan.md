@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner]
+modulos: [al_construction_planner, al_construction_planner_furniture]
 ---
 
 # Generar el plan

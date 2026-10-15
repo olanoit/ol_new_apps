@@ -1,0 +1,40 @@
+titulo: 'Planificación de obra: cuadrillas propias'
+subtitulo: Cuadrillas por rol con turnos de Planificación y las horas de la hoja de horas
+  como real del plan.
+categoria: Construcción · Proyectos
+etiquetas:
+- Asignar cuadrilla
+- Turnos
+- Rol
+- Hojas de horas
+- Personal propio
+destacados:
+- icono: 👷
+  titulo: Cuadrilla por rol
+  texto: 'Operario, oficial y peón: cada persona cubre la línea de personal propio de su rol.'
+- icono: 📅
+  titulo: Turnos
+  texto: Los turnos se publican en Planificación con su rol y su costo comprometido.
+- icono: ⏱
+  titulo: Horas como real
+  texto: Las horas registradas en la tarea suben el ejecutado y el real de la línea.
+configuracion:
+- Instale el núcleo **Planificación de obra** (`al_construction_planner`).
+- Active **Cuadrillas propias** en **Planificación de obra ▸ Configuración ▸ Ajustes ▸ Funciones**,
+  o aplique un perfil de vertical que la incluya.
+requisitos_nota: Requiere Enterprise (`project_forecast`) y Hojas de horas. Licencia LGPL-3
+  porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '2.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Cuadrilla por rol (M17-10): una fila por persona con su rol; cada una cubre la línea
+    de personal propio de su rol y el rol del asistente deja de ser obligatorio.'
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): la cuadrilla, sus turnos y las horas como real salen del
+    núcleo.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

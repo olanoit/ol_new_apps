@@ -1,0 +1,47 @@
+titulo: 'Planificación de obra: valorización e ingresos'
+subtitulo: Contratos de obra con hitos, entrega semanal, valorización con el cliente, cobranza
+  y cronograma valorizado.
+categoria: Construcción · Proyectos
+etiquetas:
+- Calendario e ingresos
+- Contratos de obra
+- Hitos por unidad
+- Entrega semanal
+- Valorización
+- Cronograma valorizado
+- Curva S
+- Adicionales y deductivos
+destacados:
+- icono: 📑
+  titulo: Contrato y partidas
+  texto: La orden de venta del contrato con una línea por partida y sus hitos de cobro.
+- icono: 🗓
+  titulo: Entrega semanal
+  texto: El avance valorizado de la semana como ingreso devengado.
+- icono: ✔
+  titulo: Valorización
+  texto: Conformidad del cliente con su PDF; la factura sale de la OV.
+- icono: 📈
+  titulo: Cronograma valorizado
+  texto: Planificado, devengado y cobrado con su curva S.
+configuracion:
+- Instale el núcleo **Planificación de obra** (`al_construction_planner`).
+- Active **Valorización e ingresos** en **Planificación de obra ▸ Configuración ▸ Ajustes
+  ▸ Funciones**, o aplique un perfil de vertical que la incluya.
+requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
+  LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '2.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - La partida por defecto de una línea del plan sale del producto de la receta; la de la
+    familia de mueble pasa a `al_construction_planner_sale_furniture`.
+  - La orden de venta de la valorización se llama «Orden de venta del contrato», distinta
+    del contrato de obra.
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): la ruta del ingreso y los cambios de obra salen del núcleo.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

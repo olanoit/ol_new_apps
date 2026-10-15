@@ -1,0 +1,48 @@
+titulo: 'Planificación de obra: compras y abastecimiento'
+subtitulo: Compra masiva, requerimiento de obra, abastecimiento, precios de compra y material
+  extra desde el plan de la obra.
+categoria: Construcción · Proyectos
+etiquetas:
+- Compra masiva
+- Requerimiento de obra
+- Abastecimiento
+- Precios de compra
+- Material extra
+- Control de exceso
+destacados:
+- icono: 🛒
+  titulo: Compra masiva
+  texto: Agrupa la necesidad por producto, nivel, etapa, partida o receta y crea el requerimiento
+    de compra; Compras cotiza y emite las OC.
+- icono: 📦
+  titulo: Requerimiento de obra
+  texto: Pide al almacén con el saldo del plan y controla el exceso con aprobación.
+- icono: 📅
+  titulo: Abastecimiento
+  texto: Necesidad por semana contra stock y compras de la obra.
+- icono: S/
+  titulo: Precios de compra
+  texto: Historial de precios del producto y alerta de precio al planificar.
+configuracion:
+- Instale el núcleo **Planificación de obra** (`al_construction_planner`).
+- Active **Compras, abastecimiento y requerimientos de obra** en **Planificación de obra ▸
+  Configuración ▸ Ajustes ▸ Funciones**, o aplique un perfil de vertical que la incluya.
+requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) y los requerimientos
+  de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
+  de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '2.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Compra masiva (M17-08): agrupa también por etapa, partida y receta, con el nombre del
+    grupo en cada línea del requerimiento.'
+  - El tipo de operación de la compra se llama «Tipo de recepción», para no confundirlo con
+    el destino.
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): compras, requerimientos de obra y abastecimiento salen del
+    núcleo.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

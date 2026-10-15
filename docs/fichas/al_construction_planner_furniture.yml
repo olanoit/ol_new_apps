@@ -1,0 +1,44 @@
+titulo: 'Planificación de obra: mobiliario'
+subtitulo: Tipologías de mueble con módulos, metros lineales y lista de materiales, generar
+  plan desde la tipología e importación del maestro y del ETO.
+categoria: Construcción · Proyectos
+etiquetas:
+- Tipologías
+- Módulos
+- ML bajo y alto
+- Generar plan
+- Importar maestro y ETO
+- Metrado del ambiente
+destacados:
+- icono: ▦
+  titulo: Tipologías
+  texto: Cada cocina o closet con sus módulos, actividades y lista de materiales.
+- icono: ⚙
+  titulo: Generar plan
+  texto: Crea los módulos del ambiente y las líneas de armado, contratas y materiales.
+- icono: 📐
+  titulo: Metros lineales
+  texto: ML bajo y alto, y el metrado del ambiente contra lo planificado.
+- icono: ⇪
+  titulo: Maestro y ETO
+  texto: Importa el maestro de costos y el ETO de la obra.
+configuracion:
+- Instale el núcleo **Planificación de obra** (`al_construction_planner`).
+- Active **Rubro mobiliario** en **Planificación de obra ▸ Configuración ▸ Ajustes ▸ Funciones**,
+  o aplique un perfil de vertical que la incluya.
+requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
+  LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '2.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - La OF del ambiente hereda la OF genérica del puente de producción; la familia de la partida
+    pasa a `al_construction_planner_sale_furniture`.
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): lo propio del mueble (familia, módulos, ML, BOM y ETO) sale
+    del núcleo.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

@@ -1,5 +1,16 @@
-# Registro de cambios
+Historial de cambios — Planificación de obra: todos los puentes (AL)
+====================================================================
 
-## 1.20261013
+Una entrada por versión publicada, la más reciente arriba; el número es
+el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 
-- Primera versión: instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
+Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
+`python3 scripts/gen_changelog.py`: no editar a mano.
+
+## 2.20261013 — 15/10/2026
+
+- Instala también `al_construction_planner_sale_furniture`; pruebas de operación nativa (compras con tres proveedores, spools de tuberías, cuadrilla por rol) y del perfil mobiliario sobre la demo.
+
+## 1.20261013 — 15/10/2026
+
+- Módulo nuevo (v1.7, M17-07): reúne los puentes y las pruebas de integración.

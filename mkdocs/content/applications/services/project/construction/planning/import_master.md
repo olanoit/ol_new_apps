@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner]
+modulos: [al_construction_planner, al_construction_planner_furniture]
 ---
 
 # Importar maestro y ETO
@@ -34,8 +34,8 @@ Tarifas de contrata**.
 El módulo trae un ejemplo de una obra genérica de 3 pisos con 4 departamentos
 por piso y, en cada departamento, cocina, closet y baño (datos ficticios con
 códigos `EJ-`):
-[maestro de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner/static/examples/maestro_planificacion_ejemplo.xlsx)
-y [ETO de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner/static/examples/eto_ejemplo.xlsx).
+[maestro de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner_furniture/static/examples/maestro_planificacion_ejemplo.xlsx)
+y [ETO de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner_furniture/static/examples/eto_ejemplo.xlsx).
 
 ## Importar el maestro
 

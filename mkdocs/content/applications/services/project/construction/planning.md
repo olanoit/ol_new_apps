@@ -1,22 +1,25 @@
 ---
-modulos: [al_construction_planner]
+modulos: [al_construction_planner, al_construction_planner_suite]
 ---
 
 # Planificación de obra
 
-La aplicación **Planificación de obra** lleva a Odoo el maestro con el que se
-costea una obra de muebles a medida (cocinas, closets, baños) y genera el
-**plan de recursos** de la obra sobre su propio árbol de tareas: piso ›
-departamento › ambiente › módulo, con el monto planificado de cada nivel. Desde
+La aplicación **Planificación de obra** genera el **plan de recursos** de una
+obra sobre su propio árbol de tareas, con el monto planificado de cada nivel.
+Los niveles, las etapas y los recursos los define cada rubro: piso ›
+departamento › ambiente › módulo en una obra de muebles a medida, disciplina ›
+subpartida › partida en una edificación, área › línea › spool en tuberías (ver
+[configuración por rubro](planning/vertical_configuration.md)). Desde
 ese plan se compra y se pide material, se fabrica, se paga a las contratas a
 destajo, se controla lo real contra el presupuesto y se cobra al cliente por
 valorizaciones. La usan Oficina Técnica (planificador), Jefatura de Proyectos,
 Logística, supervisores de obra y Administración y Finanzas.
 
-Está construida sobre el [diagrama de Gantt](../gantt.md) de la suite y usa
-los [requerimientos de materiales](material_requests.md), las compras, la
+Está construida sobre el [diagrama de Gantt](../gantt.md) de la suite. El
+núcleo solo necesita Proyecto; los
+[requerimientos de materiales](material_requests.md), las compras, la
 fabricación, la planificación de turnos, los presupuestos analíticos y las
-ventas de Odoo. No alimenta libros PLE ni archivos SUNAT.
+ventas de Odoo se suman con puentes que se activan en los Ajustes. No alimenta libros PLE ni archivos SUNAT.
 
 ![Árbol de recursos de una obra con los montos acumulados por nivel](planning/resource-tree.png)
 
@@ -32,13 +35,19 @@ principales y, dentro de cada uno, secciones por tema.
 | **Abastecimiento** | Tablero de abastecimiento, requerimientos de obra y de compra, órdenes de fabricación y asignaciones del plan |
 | **Ingresos** | Contratos de obra, hitos por unidad, entregas semanales, preparar valorización, valorizaciones y cobranza |
 | **Informes** | **Plan** (análisis, control de saldo), **Cronograma valorizado** y **Compras** (precios de compra, compras por producto) |
-| **Configuración** | Ajustes, **Plan de obra** (plantillas de niveles, tipologías, actividades, tarifas, reglas analíticas, importar maestro y ETO, sedes de obra), **Cobro al cliente** (plantillas de hitos) y **Aprobaciones y Gantt** |
+| **Configuración** | Ajustes, **Plan de obra** (perfiles de vertical, plantillas de niveles, etapas, tipos de recurso, recetas, tipologías, actividades, tarifas, reglas analíticas, importar recetas y niveles, importar maestro y ETO, sedes de obra), **Cobro al cliente** (plantillas de hitos) y **Aprobaciones y Gantt** |
 
 ## Configuración
 
 1. Instale **Planificación de obra** (`al_construction_planner`) desde
    **Aplicaciones**.
-2. En cada obra, vaya a **Proyecto ‣ (proyecto) ‣ Ajustes** y active **Es
+2. En **Planificación de obra ‣ Configuración ‣ Ajustes**, elija el **Perfil
+   de vertical** del rubro (**Mobiliario** o **Construcción por partidas**) y
+   pulse **Aplicar el perfil**: deja la plantilla de niveles, las etapas, los
+   tipos de recurso y las funciones del rubro, e instala sus puentes. Las
+   funciones se pueden ajustar después una por una. Ver [configuración por
+   rubro](planning/vertical_configuration.md).
+3. En cada obra, vaya a **Proyecto ‣ (proyecto) ‣ Ajustes** y active **Es
    obra**. La obra necesita su cuenta analítica (o cada línea su distribución)
    para crear el presupuesto del plan. Las obras de la aplicación están en
    **Planificación de obra ‣ Obras ‣ Obras y tareas ‣ Obras**.
@@ -50,7 +59,7 @@ principales y, dentro de cada uno, secciones por tema.
         crea ya marcado como obra y con esa venta como **Orden de venta del
         contrato**. Un proyecto que se marca como obra después también toma su
         venta de origen.
-3. En **Ajustes ‣ Usuarios**, asigne los grupos de la aplicación:
+4. En **Ajustes ‣ Usuarios**, asigne los grupos de la aplicación:
     - **Planificador** a Oficina Técnica;
     - **Planificación de obra: jefatura de proyectos** a la jefatura y a quien
       la reemplace: aprueba las reglas de validación del planificador (plan,
@@ -68,12 +77,13 @@ principales y, dentro de cada uno, secciones por tema.
     El despacho a obra de un requerimiento lo valida solo el almacén (grupo
     **Logística** de requerimientos de obra), aunque quien lo pidió tenga
     acceso a Inventario.
-4. Para comprar y pedir desde el plan, el planificador necesita también los
+5. Para comprar y pedir desde el plan, el planificador necesita también los
    grupos de **requerimientos de compra** y de **requerimientos de obra** (y de
    **fabricación** para las órdenes de fabricación).
-5. Cargue el catálogo (actividades, tarifas y tipologías) y el árbol de la
-   obra, a mano o con [Importar maestro y ETO](planning/import_master.md).
-6. Revise las reglas de aprobación en **Planificación de obra ‣ Configuración ‣
+6. Cargue el catálogo (actividades, tarifas, recetas o tipologías) y el árbol
+   de la obra, a mano, con **Importar recetas y niveles** o, en mobiliario, con
+   [Importar maestro y ETO](planning/import_master.md).
+7. Revise las reglas de aprobación en **Planificación de obra ‣ Configuración ‣
    Reglas de aprobación**. Sin reglas, el plan se aprueba al solicitarlo.
 
 Las demás opciones están en **Ajustes ‣ Planificación de obra** y se explican
@@ -86,11 +96,14 @@ del ingreso en [ruta del ingreso](planning/income.md).
 
 | Término | Significado |
 |---|---|
-| Tipología | Plantilla de un ambiente (p. ej. «Cocina 01»): módulos, actividades y lista de materiales |
+| Perfil de vertical | Configuración de un rubro: niveles, etapas, tipos de recurso, puentes y parámetros |
+| Receta | Recursos de una unidad del nivel con etapas (el APU de una partida) |
+| Tipología | En mobiliario, plantilla de un ambiente (p. ej. «Cocina 01»): módulos, actividades y lista de materiales |
 | Módulo | Mueble unitario (tornillo, tarugo, campana, cajonera…); el armado se paga por módulo |
 | Driver | Unidad con la que se paga una contrata: unidad, ML (metro lineal) o módulo |
 | ML bajo / alto | Suma de los anchos de los módulos bajos o altos |
-| Etapa | Producción, Armado, Instalación, Acabado y entrega |
+| Etapa | Fase del catálogo del rubro (en mobiliario: Producción, Armado, Instalación, Acabado y entrega) |
+| Tipo de recurso | Clase visible del recurso con su comportamiento: material, servicio, equipo, contrata, personal propio o producción |
 | Tarifa | Precio del driver por obra y contrata, con vigencia y retención |
 | Línea base | Versión aprobada del plan: sus montos quedan congelados como presupuesto |
 | Versión | Copia del plan para replanificar; la vigente sigue en uso hasta aprobar la nueva |
@@ -170,11 +183,12 @@ flowchart TD
 | P-31 | Plantilla de niveles | **Configuración ‣ Plan de obra ‣ Plantillas de niveles** | [Niveles de la obra y tipologías](planning/levels_typologies.md) |
 | P-32 | Adicionales y dependencias | **Ejecución ‣ Cambios** | [Adicionales, deductivos y dependencias](planning/changes.md) |
 | — | Reglas analíticas | **Configuración ‣ Plan de obra ‣ Reglas analíticas** | [Tramos, analítica y presupuesto](planning/analytic_budget.md) |
+| — | Perfiles de vertical, funciones, etapas, tipos de recurso y recetas | **Configuración ‣ Plan de obra**; **Ajustes ‣ Funciones** | [Configuración por rubro](planning/vertical_configuration.md) |
 | — | Pestaña Planificación y hoja de trabajo | Obra ‣ pestaña **Planificación** | [Pestaña Planificación y hoja de trabajo](planning/planning_worksheet.md) |
 
 ## Ejemplo de la demostración
 
-Los datos de demostración planifican el piso 05 de una obra de cocinas, con
+Los datos de demostración (perfil **Mobiliario**) planifican el piso 05 de una obra de cocinas, con
 ocho departamentos (tipologías 01 a 08). Tras generar el plan y aplicar los
 costos:
 

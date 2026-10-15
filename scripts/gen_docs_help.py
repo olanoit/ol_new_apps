@@ -216,7 +216,23 @@ def locate(key, description, candidates):
         heading = mentioned(key, description, guide_headings(path))
         if heading:
             return url, heading
-    return candidates[0][0], None
+    # Ninguna sección basta: el inicio de la página que más se le parece
+    # (y, en empate, la primera).
+    fallback, fallback_score = candidates[0][0], 0.0
+    for url, path in candidates:
+        score = raw_score(description, [(first_title(path), '', '')] + guide_headings(path))
+        if score > fallback_score:
+            fallback, fallback_score = url, score
+    return fallback, None
+
+
+def raw_score(description, headings):
+    """Mejor parecido de la descripción con los encabezados, sin umbral."""
+    words = tokens(description)
+    if not words:
+        return 0.0
+    return max((sum(1 for w in words if any(similar(w, t) for t in tokens(title))) / len(words)
+                for title, _anchor, _body in headings), default=0.0)
 
 
 def build_entries():

@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner]
+modulos: [al_construction_planner, al_construction_planner_furniture]
 ---
 
 # Niveles de la obra y tipologías
@@ -16,17 +16,21 @@ Cada obra tiene una **plantilla de niveles** (**Configuración ‣ Plan de obra 
 Plantillas de niveles**) que dice cómo se llaman sus niveles y qué papel
 cumple cada uno:
 
-| Papel | Ejemplos de nombre | Notas |
+| Función | Ejemplos de nombre | Notas |
 |---|---|---|
-| Agrupador | Torre, Etapa, Bloque, Sótano | Cero o más, por encima de la unidad. El último agrupador es el **piso**. |
-| Unidad | Departamento, Local, Oficina | Exactamente uno. |
-| Ambiente | Cocina, Closet, Baño | Exactamente uno; lleva la tipología. |
-| Mueble | Mueble bajo, Mueble alto | Opcional, entre el ambiente y el módulo. |
-| Módulo | MB01, MA03 | Exactamente uno, siempre al final. |
+| Agrupador | Torre, Etapa, Bloque, Sótano, Disciplina | Cero o más, por encima de los demás. En mobiliario, el último agrupador es el **piso**. |
+| Unidad de entrega | Departamento, Local, Oficina | Cero o uno; se cobra por hitos. |
+| Nivel con etapas | Cocina, Closet, Baño, Partida | Exactamente uno; lleva las etapas y, en mobiliario, la tipología. |
+| Subnivel | Mueble bajo, Mueble alto | Opcional, entre el nivel con etapas y el detalle. |
+| Nivel de detalle | MB01, MA03, Actividad | Opcional, siempre al final. |
 
-Vienen dos plantillas: **Edificio** (Piso › Departamento › Ambiente › Mueble ›
-Módulo) y **Torres** (Torre › Piso › Departamento › Ambiente › Mueble ›
-Módulo). La plantilla se elige en la obra y no se cambia cuando ya hay un plan
+Las casillas de cada nivel (receta, metrado, valorización y avance) y las
+plantillas de otros rubros se explican en [configuración por
+rubro](vertical_configuration.md).
+
+Para mobiliario vienen dos plantillas: **Edificio** (Piso › Departamento ›
+Ambiente › Mueble › Módulo) y **Torres** (Torre › Piso › Departamento ›
+Ambiente › Mueble › Módulo). La plantilla se elige en la obra y no se cambia cuando ya hay un plan
 aprobado.
 
 El árbol de recursos, el cronograma y los informes muestran el nombre del

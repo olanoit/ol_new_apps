@@ -1224,6 +1224,27 @@ Detalle: [Cronograma valorizado e inicio](../applications/services/project/const
 
 Detalle: [Adicionales, deductivos y dependencias](../applications/services/project/construction/planning/changes.md)
 
+### 8.19 Configuración por rubro (`al_construction_planner` y sus puentes)
+
+**Antes:** base de pruebas con el núcleo y `al_construction_planner_suite`; usuario **Administrador** del planificador.
+
+| N.º | Caso | Cómo | Resultado esperado |
+|---|---|---|---|
+| 8.19.1 | Perfil de construcción | **Planificación de obra ‣ Configuración ‣ Ajustes ‣ Perfil de vertical**: **Construcción por partidas** ‣ **Aplicar el perfil** | Funciones de contratas, compras, cuadrillas, presupuesto e ingresos activas, sin producción ni mobiliario; semana que empieza el lunes; planes analíticos Disciplina, Subpartida y Partida creados |
+| 8.19.2 | Obra nueva del perfil | Crear una obra con **Es obra** | Toma el perfil y la plantilla «Disciplina › Subpartida › Partida › Actividad»; la compra masiva va directo a la obra |
+| 8.19.3 | Aplicar dos veces (caso límite) | Volver a pulsar **Aplicar el perfil** | No se duplican los planes analíticos ni las etapas |
+| 8.19.4 | Desvíos | Cambiar el día de inicio de la semana en Ajustes y abrir el perfil, pestaña **Desvíos de la compañía** | Aparece el día de inicio de la semana; la plantilla de niveles no figura como desvío |
+| 8.19.5 | Exportar e importar | Perfil ‣ **Exportar**; en **Configuración ‣ Plan de obra ‣ Importar perfil**, cargar el JSON dos veces | Mismo resumen de niveles, puentes y parámetros; etapas con su etapa anterior; la segunda importación actualiza el mismo perfil |
+| 8.19.6 | Perfil mobiliario | Aplicar **Mobiliario** y cargar la demo (`suite/tools/planner_demo_data.py`) | Plantilla **Edificio**, semana jueves-jueves-sábado; piso 05 con 66 módulos, 41.33 ML y S/ 8,944.44 |
+| 8.19.7 | Permiso (error esperado) | Aplicar un perfil con un usuario **Planificador** | Aviso: solo el administrador del planificador aplica perfiles |
+| 8.19.8 | Receta y niveles libres | **Configuración ‣ Plan de obra ‣ Importar recetas y niveles** con un libro de hojas RECETAS y NIVELES; en el plan, **Generar desde la receta** | Las líneas salen de la receta por el metrado de cada nivel; importar de nuevo no duplica recetas ni tareas |
+| 8.19.9 | Compra masiva por partida | Plan aprobado con la placa en dos partidas (muro 66, luminarias 2); **Compra masiva** agrupada por partida; en Compras, cotizar el muro a tres proveedores y confirmar uno | Dos líneas de requerimiento (66 y 2); tres solicitudes de cotización; al confirmar una, el comprado del muro es 66 |
+| 8.19.10 | Spools de tuberías | Plantilla Área › Línea › Spool, etapas Prefabricación (producción) y Montaje (campo); **Orden de fabricación** desde el plan | Dos OF, una por línea con 3 spools; al terminarlas, el tubo consumido en las líneas del plan suma 18 m |
+| 8.19.11 | Cuadrilla por rol | **Asignar cuadrilla** con operario, oficial y peón, 1 semana de 40 h | Tres turnos con su rol (120 h); comprometido del operario 40 × 15.00; 8 h registradas suben el real a 120.00 |
+| 8.19.12 | Funciones | Desactivar **Control** en **Ajustes ‣ Funciones** | Desaparecen el menú **Control de saldo** y la pestaña **Control** del plan; al activarlo vuelven |
+
+Detalle: [Configuración por rubro](../applications/services/project/construction/planning/vertical_configuration.md)
+
 !!! success "Para pasar a la etapa siguiente"
     - El Gantt (backend, web e IA) edita, exporta y respeta los permisos de Proyecto.
     - Una obra completa recorre requerimiento, plan aprobado, compras, contratas liquidadas, valorización facturada y cambios, y el presupuesto analítico cuadra con el plan.

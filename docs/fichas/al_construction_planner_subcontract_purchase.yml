@@ -1,0 +1,29 @@
+titulo: 'Planificación de obra: descuento del material extra'
+subtitulo: Descuenta a la contrata el material extra aprobado en su siguiente liquidación
+  semanal.
+categoria: Construcción · Proyectos
+etiquetas:
+- Material extra
+- Descuento a la contrata
+- Liquidación semanal
+destacados:
+- icono: −
+  titulo: Descuento en la liquidación
+  texto: Al aprobar el extra, la jefatura decide descontarlo a una contrata; su liquidación
+    lo resta del neto.
+- icono: 🧾
+  titulo: Línea en la factura
+  texto: La factura lleva una línea negativa a la cuenta de Ajustes.
+configuracion:
+- Se instala solo cuando están las contratas y las compras del planificador.
+requisitos_nota: Se instala automáticamente con `al_construction_planner_subcontract` y `al_construction_planner_purchase`.
+  Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261013'
+  fecha: 15/10/2026
+  cambios:
+  - 'Puente nuevo (v1.7, M17-07): el descuento del material extra (M16-08) une las contratas
+    y las compras.'
+relacionados:
+- al_construction_planner
+- al_construction_planner_suite

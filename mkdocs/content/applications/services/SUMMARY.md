@@ -6,6 +6,7 @@
     * Obras
         * [Requerimientos de materiales](project/construction/material_requests.md)
         * [Planificación de obra](project/construction/planning.md)
+            * [Configuración por rubro](project/construction/planning/vertical_configuration.md)
             * [Catálogo y árbol de la obra](project/construction/planning/catalog.md)
             * [Niveles de la obra y tipologías](project/construction/planning/levels_typologies.md)
             * [Importar maestro y ETO](project/construction/planning/import_master.md)
