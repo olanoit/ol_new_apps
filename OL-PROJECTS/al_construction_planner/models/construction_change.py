@@ -28,7 +28,9 @@ from datetime import timedelta
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from .common import PROJECT_HEAD_GROUPS, RESOURCE_TYPES, STAGES, UNIT_STATE_RANK, UNIT_STATES
+from .common import (
+    PROJECT_HEAD_GROUPS, RESOURCE_TYPES, UNIT_STATE_RANK, UNIT_STATES, stage_selection,
+)
 
 CHANGE_KINDS = [
     ('additional', 'Adicional'),
@@ -232,6 +234,7 @@ class ConstructionChangeOrder(models.Model):
 
 class ConstructionChangeOrderLine(models.Model):
     _name = 'construction.change.order.line'
+    _inherit = ['construction.resource.type.mixin']
     _description = 'Línea del cambio de obra'
     _order = 'change_id, sequence, id'
     _check_company_auto = True
@@ -249,9 +252,9 @@ class ConstructionChangeOrderLine(models.Model):
     unit_state = fields.Selection(
         UNIT_STATES, string='Estado de la unidad', compute='_compute_unit_state',
         help='El más avanzado de los módulos del nivel.')
-    resource_type = fields.Selection(RESOURCE_TYPES, string='Tipo de recurso', required=True,
+    resource_type = fields.Selection(RESOURCE_TYPES, string='Comportamiento', required=True,
                                      default='material')
-    stage = fields.Selection(STAGES, string='Etapa')
+    stage = fields.Selection(stage_selection, string='Etapa')
     product_id = fields.Many2one('product.product', string='Producto', check_company=True)
     activity_id = fields.Many2one('construction.labor.activity', string='Actividad (driver)',
                                   check_company=True)
@@ -319,7 +322,7 @@ class ConstructionChangeOrderLine(models.Model):
             if line.resource_type == 'contract' and not line.activity_id:
                 raise ValidationError(self.env._(
                     'La línea de contrata de %s necesita la actividad.', line.change_id.name))
-            if line.resource_type in ('material', 'service') and not line.product_id:
+            if line.resource_type in ('material', 'service', 'equipment') and not line.product_id:
                 raise ValidationError(self.env._(
                     'La línea de %s necesita el producto.', line.change_id.name))
             if not line.qty:
@@ -335,6 +338,7 @@ class ConstructionChangeOrderLine(models.Model):
             'plan_id': plan.id,
             'task_id': self.task_id.id,
             'resource_type': self.resource_type,
+            'resource_type_id': self.resource_type_id.id,
             'stage': self.stage,
             'product_id': self.product_id.id,
             'activity_id': self.activity_id.id,
@@ -372,7 +376,7 @@ class ConstructionDependency(models.Model):
                "('construction_level', 'in', ('group', 'floor', 'apartment', 'space'))]",
         help='Agrupadores, pisos, unidades o ambientes que espera. Vacío: toda la obra.')
     stage = fields.Selection(
-        STAGES, string='Etapa que bloquea', required=True, default='installation')
+        stage_selection, string='Etapa que bloquea', required=True, default='installation')
     date_expected = fields.Date(
         string='Fecha prevista', tracking=True,
         help='Desde cuándo se espera cumplida: la etapa no se programa antes.')

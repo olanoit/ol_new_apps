@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import common
+from . import construction_stage
+from . import construction_execution_template
 from . import construction_labor
 from . import construction_typology
 from . import construction_level_template

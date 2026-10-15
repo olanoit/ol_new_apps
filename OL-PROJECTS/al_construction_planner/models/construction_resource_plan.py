@@ -10,7 +10,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import split_every
 from odoo.tools.misc import formatLang
 
-from .common import DRIVER_TYPES, RESOURCE_TYPES, STAGES
+from .common import DRIVER_TYPES, RESOURCE_TYPES, stage_selection
 
 PLAN_STATES = [
     ('draft', 'Borrador'),
@@ -100,6 +100,9 @@ class ConstructionResourcePlan(models.Model):
     amount_production = fields.Monetary(
         string='Producción', compute='_compute_amounts', store=True,
         currency_field='currency_id')
+    amount_equipment = fields.Monetary(
+        string='Equipos', compute='_compute_amounts', store=True,
+        currency_field='currency_id')
     amount_total = fields.Monetary(
         string='Planificado', compute='_compute_amounts', store=True,
         currency_field='currency_id')
@@ -162,6 +165,7 @@ class ConstructionResourcePlan(models.Model):
             plan.amount_contract = data.get('contract', (0.0, 0))[0]
             plan.amount_labor = data.get('labor', (0.0, 0))[0]
             plan.amount_production = data.get('production', (0.0, 0))[0]
+            plan.amount_equipment = data.get('equipment', (0.0, 0))[0]
             plan.amount_total = sum(amount for amount, _count in data.values())
             plan.line_count = sum(count for _amount, count in data.values())
 
@@ -231,7 +235,7 @@ class ConstructionResourcePlan(models.Model):
                    self.env._('Planificado'), self.env._('Presupuesto'),
                    self.env._('Diferencia'), self.env._('Comprometido'), self.env._('Real'),
                    self.env._('Saldo')]
-        stage_labels = dict(STAGES)
+        stage_labels = dict(self.env['construction.stage']._get_selection())
         for plan in self:
             stages = plan._get_stage_amounts()
             if not stages:
@@ -243,7 +247,7 @@ class ConstructionResourcePlan(models.Model):
 
             rows, total = [], dict.fromkeys(
                 ('material', 'contract', 'planned', 'budgeted', 'committed', 'actual'), 0.0)
-            for stage in [key for key, _label in STAGES] + [False]:
+            for stage in self.env['construction.stage']._codes() + [False]:
                 if stage not in stages:
                     continue
                 data = stages[stage]
@@ -272,15 +276,15 @@ class ConstructionResourcePlan(models.Model):
                 '<thead><tr>%s</tr></thead><tbody>%s</tbody></table>') % (head, body)
 
     def _get_control_data(self):
-        """Análisis de control (P-13): {(etapa, tipo de recurso): {planned,
-        committed, actual}} con los montos guardados en las líneas."""
+        """Análisis de control (P-13): {(etapa, tipo de recurso del catálogo):
+        {planned, committed, actual}} con los montos guardados en las líneas."""
         self.ensure_one()
         result = {}
         if not self.id:
             return result
         for stage, rtype, planned, committed, actual in self.env[
                 'construction.resource.plan.line']._read_group(
-                [('plan_id', '=', self.id)], groupby=['stage', 'resource_type'],
+                [('plan_id', '=', self.id)], groupby=['stage', 'resource_type_id'],
                 aggregates=['amount_planned:sum', 'amount_committed:sum', 'amount_actual:sum']):
             result[(stage, rtype)] = {
                 'planned': planned, 'committed': committed, 'actual': actual}
@@ -294,8 +298,7 @@ class ConstructionResourcePlan(models.Model):
         headers = [self.env._('Etapa › Tipo de recurso'), self.env._('Planificado'),
                    self.env._('Comprometido'), self.env._('Real'), self.env._('Saldo'),
                    self.env._('% ejecutado')]
-        stage_labels = dict(STAGES)
-        type_labels = dict(RESOURCE_TYPES)
+        stage_labels = dict(self.env['construction.stage']._get_selection())
         for plan in self:
             data = plan._get_control_data()
             if not data:
@@ -318,7 +321,7 @@ class ConstructionResourcePlan(models.Model):
 
             body = Markup('')
             grand = dict.fromkeys(('planned', 'committed', 'actual'), 0.0)
-            for stage in [key for key, _label in STAGES] + [False]:
+            for stage in self.env['construction.stage']._codes() + [False]:
                 rows = [(rtype, values) for (st, rtype), values in data.items() if st == stage]
                 if not rows:
                     continue
@@ -329,9 +332,9 @@ class ConstructionResourcePlan(models.Model):
                 body += Markup('<tr class="fw-bold%s"><td>%s</td>%s</tr>') % (
                     '' if stage else ' table-danger',
                     stage_labels.get(stage, self.env._('Sin etapa')), cells(subtotal))
-                for rtype, values in sorted(rows, key=lambda r: list(type_labels).index(r[0])):
+                for rtype, values in sorted(rows, key=lambda r: (r[0].sequence, r[0].id)):
                     body += Markup('<tr><td class="ps-4">%s</td>%s</tr>') % (
-                        type_labels.get(rtype, rtype), cells(values))
+                        rtype.name or self.env._('Sin tipo'), cells(values))
             body += Markup('<tr class="fw-bold table-active"><td>%s</td>%s</tr>') % (
                 self.env._('Total obra'), cells(grand))
             head = Markup('').join(
@@ -450,6 +453,18 @@ class ConstructionResourcePlan(models.Model):
             'type': 'ir.actions.act_window',
             'name': self.env._('Generar plan'),
             'res_model': 'construction.plan.generate.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_plan_id': self.id},
+        }
+
+    def action_open_recipe_wizard(self):
+        self.ensure_one()
+        self._check_draft()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Generar plan desde la receta'),
+            'res_model': 'construction.plan.recipe.wizard',
             'view_mode': 'form',
             'target': 'new',
             'context': {'default_plan_id': self.id},
@@ -831,7 +846,7 @@ class ConstructionResourcePlanLine(models.Model):
     contrata, personal propio o producción."""
     _name = 'construction.resource.plan.line'
     _description = 'Línea del plan de recursos'
-    _inherit = ['analytic.mixin']
+    _inherit = ['analytic.mixin', 'construction.resource.type.mixin']
     _order = 'plan_id, floor_task_id, apartment_task_id, space_task_id, module_task_id, stage, id'
     _check_company_auto = True
 
@@ -849,6 +864,8 @@ class ConstructionResourcePlanLine(models.Model):
         help='Tarea de piso, departamento, ambiente o módulo. Vacía: la obra.')
     task_level = fields.Selection(
         string='Tipo de nivel', related='task_id.construction_level', store=True)
+    task_path = fields.Char(
+        string='Ruta del nivel', related='task_id.construction_path', store=True, index=True)
     # Ancestros por nivel: base de la acumulación del árbol y del filtro por
     # selección (read_group por nivel, sin recursión en Python).
     floor_task_id = fields.Many2one(
@@ -867,8 +884,9 @@ class ConstructionResourcePlanLine(models.Model):
         'project.task', string='Módulo', compute='_compute_ancestors', store=True, index=True,
         check_company=True)
     resource_type = fields.Selection(
-        RESOURCE_TYPES, string='Tipo de recurso', required=True, default='material')
-    stage = fields.Selection(STAGES, string='Etapa')
+        RESOURCE_TYPES, string='Comportamiento', required=True, default='material',
+        help='Lo que hace el planificador con la línea; sale del tipo de recurso.')
+    stage = fields.Selection(stage_selection, string='Etapa')
     product_id = fields.Many2one(
         'product.product', string='Producto', check_company=True, index=True)
     activity_id = fields.Many2one(
@@ -922,7 +940,8 @@ class ConstructionResourcePlanLine(models.Model):
         [('central', 'Almacén central'), ('direct', 'Directo a obra')],
         string='Abastecimiento', default='central')
     source = fields.Selection(
-        [('generated', 'Generada'), ('manual', 'Manual'), ('replan', 'Replanificación')],
+        [('generated', 'Generada'), ('recipe', 'Receta'), ('manual', 'Manual'),
+         ('replan', 'Replanificación')],
         string='Origen', default='manual', readonly=True)
     source_ref = fields.Char(string='Referencia del origen', readonly=True)
     previous_line_id = fields.Many2one(
@@ -1000,7 +1019,7 @@ class ConstructionResourcePlanLine(models.Model):
     def _get_line_execution(self):
         """{línea: (comprometido, real)}.
 
-        Material, servicio y producción, al costo del plan: comprometido es lo
+        Material, servicio, equipo y producción, al costo del plan: comprometido es lo
         pedido o comprado aún no consumido; real, lo consumido. Contratas: lo
         asignado a la OC de servicio no recibido y lo recibido, a la tarifa de
         la OC. Personal propio: además, horas registradas por el costo hora
@@ -1008,7 +1027,7 @@ class ConstructionResourcePlanLine(models.Model):
         result = {}
         for line in self:
             committed = actual = 0.0
-            if line.resource_type in ('material', 'service', 'production'):
+            if line.resource_type in ('material', 'service', 'equipment', 'production'):
                 price = line.price_unit_planned
                 covered = max(line.qty_requested, line.qty_purchased)
                 committed = max(covered - line.qty_consumed, 0.0) * price
@@ -1389,6 +1408,10 @@ class ConstructionResourcePlanLine(models.Model):
             if not self.price_unit_planned:
                 self.price_unit_planned = activity._get_rate(
                     self.plan_id.project_id, self.partner_id)[0]
+
+    @api.constrains('stage')
+    def _check_stage_code(self):
+        self.env['construction.stage']._check_codes(self)
 
     @api.constrains('resource_type', 'activity_id')
     def _check_activity(self):

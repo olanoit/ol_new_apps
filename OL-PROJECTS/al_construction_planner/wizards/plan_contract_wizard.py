@@ -7,7 +7,7 @@ from collections import defaultdict
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.common import STAGES
+from ..models.common import stage_selection
 
 
 class ConstructionPlanContractWizard(models.TransientModel):
@@ -16,8 +16,8 @@ class ConstructionPlanContractWizard(models.TransientModel):
     _description = 'Asignar contrata desde el plan'
 
     stage = fields.Selection(
-        STAGES, string='Etapa', default='installation',
-        help='Vacía: todas las etapas de la selección.')
+        stage_selection, string='Etapa',
+        help='Vacía: todas las etapas de ejecución en campo de la selección.')
     available_activity_ids = fields.Many2many(
         'construction.labor.activity', string='Actividades de la selección',
         compute='_compute_available_activity_ids', check_company=True)
@@ -61,7 +61,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
 
     def _get_stages(self):
         self.ensure_one()
-        return [self.stage] if self.stage else [s for s, _label in STAGES]
+        return [self.stage] if self.stage else list(self.env['construction.stage']._field_codes())
 
     def _get_candidate_lines(self):
         """Líneas de contrata de la selección con saldo por asignar."""

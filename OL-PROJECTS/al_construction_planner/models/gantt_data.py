@@ -92,6 +92,8 @@ class GanttData(models.AbstractModel):
             'rows': schedule['rows'],
             'stage': schedule['stage'],
             'stage_labels': stage_labels,
+            'stage_colors': {stage.code: stage.color for stage in
+                             self.env['construction.stage'].search([]) if stage.color},
         }
         payload['construction_stages'] = []
         payload['construction_stage_links'] = []
@@ -144,6 +146,19 @@ class GanttData(models.AbstractModel):
                     if level == 'module' else '',
                     'alerts': alerts,
                 }
+        # Agrupadores (torre, disciplina, área): lo de su ruta (v1.7, M17-01).
+        for task in records.filtered(lambda t: t.construction_level == 'group'):
+            domain = [('plan_id', '=', plan.id),
+                      ('task_path', '=like', '%s%%' % task.construction_path)]
+            if stage:
+                domain.append(('stage', '=', stage))
+            amount = sum(Line.search(domain).mapped('amount_planned'))
+            progress = Plan._progress_amounts(domain)
+            result[task.id] = {
+                'level': 'group', 'amount': round(amount, 2),
+                'progress': round(Plan._progress_ratio(progress, False) * 100, 1),
+                'partners': '', 'unit_state': '', 'alerts': [],
+            }
         return result
 
     @api.model

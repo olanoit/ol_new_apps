@@ -15,9 +15,8 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.misc import format_date
 
-from .common import DRIVER_TYPES, STAGES
+from .common import DRIVER_TYPES, stage_selection
 
-STAGE_ORDER = [stage for stage, _label in STAGES]
 #: Días hábiles de una etapa por defecto (lunes a viernes de su semana).
 DEFAULT_STAGE_DAYS = 5
 
@@ -39,10 +38,10 @@ class ConstructionSpaceStage(models.Model):
         related='space_task_id.construction_apartment_task_id', string='Departamento')
     floor_task_id = fields.Many2one(
         related='space_task_id.construction_floor_task_id', string='Piso')
-    stage = fields.Selection(STAGES, string='Etapa', required=True)
+    stage = fields.Selection(stage_selection, string='Etapa', required=True)
     sequence = fields.Integer(
         string='Secuencia', compute='_compute_sequence', store=True,
-        help='Orden de la etapa: Producción, Armado, Instalación, Acabado y entrega.')
+        help='Orden de la etapa en el catálogo de etapas.')
     date_start = fields.Date(string='Inicio', required=True)
     date_end = fields.Date(string='Fin', required=True)
     predecessor_id = fields.Many2one(
@@ -70,8 +69,9 @@ class ConstructionSpaceStage(models.Model):
 
     @api.depends('stage')
     def _compute_sequence(self):
+        order = self.env['construction.stage']._codes()
         for record in self:
-            record.sequence = STAGE_ORDER.index(record.stage) if record.stage in STAGE_ORDER else 0
+            record.sequence = order.index(record.stage) if record.stage in order else 0
 
     @api.depends('space_task_id.display_name', 'stage')
     def _compute_display_name(self):
@@ -86,6 +86,10 @@ class ConstructionSpaceStage(models.Model):
             earlier = record.space_task_id.construction_stage_ids.filtered(
                 lambda s: s.sequence < record.sequence)
             record.predecessor_id = earlier.sorted('sequence')[-1:]
+
+    @api.constrains('stage')
+    def _check_stage_code(self):
+        self.env['construction.stage']._check_codes(self)
 
     @api.constrains('date_start', 'date_end')
     def _check_dates(self):
@@ -373,12 +377,12 @@ class ConstructionSpaceStage(models.Model):
     @api.model
     def _default_dates(self, space, stage, plan):
         """Fechas propuestas: desde el inicio del ambiente (o del plan), una
-        semana por etapa en el orden Producción → Acabado, de lunes a
-        viernes."""
+        semana por etapa en el orden del catálogo, de lunes a viernes."""
         start_field = self.env['al.gantt.field.map'].get_map().get('date_start')
         base = fields.Date.to_date(space[start_field]) if start_field and space[start_field] \
             else plan.date_start or fields.Date.context_today(self)
-        start = base + timedelta(days=7 * STAGE_ORDER.index(stage))
+        order = self.env['construction.stage']._codes()
+        start = base + timedelta(days=7 * (order.index(stage) if stage in order else 0))
         return start, start + timedelta(days=DEFAULT_STAGE_DAYS - 1)
 
     @api.model

@@ -16,13 +16,7 @@
                         <field name="whole_project"/>
                         <field name="task_ids" widget="many2many_tags" invisible="whole_project"
                                options="{'no_create': True}"/>
-                        <label for="stage_production" string="Etapas"/>
-                        <div class="o_row">
-                            <field name="stage_production"/><span>Producción</span>
-                            <field name="stage_assembly"/><span>Armado</span>
-                            <field name="stage_installation"/><span>Instalación</span>
-                            <field name="stage_finishing"/><span>Acabado</span>
-                        </div>
+                        <field name="stage_ids" widget="many2many_checkboxes"/>
                     </group>
                     <group string="Cuadrilla">
                         <field name="role_id" options="{'no_create': True}"/>
@@ -88,13 +82,7 @@
                         <field name="whole_project"/>
                         <field name="task_ids" widget="many2many_tags" invisible="whole_project"
                                options="{'no_create': True}"/>
-                        <label for="stage_production" string="Etapas"/>
-                        <div class="o_row">
-                            <field name="stage_production"/><span>Producción</span>
-                            <field name="stage_assembly"/><span>Armado</span>
-                            <field name="stage_installation"/><span>Instalación</span>
-                            <field name="stage_finishing"/><span>Acabado</span>
-                        </div>
+                        <field name="stage_ids" widget="many2many_checkboxes"/>
                     </group>
                     <group string="Fechas">
                         <field name="mode" widget="radio" options="{'horizontal': true}"/>

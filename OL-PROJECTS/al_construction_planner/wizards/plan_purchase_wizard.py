@@ -80,8 +80,7 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
         return sellers[:1].product_uom_id or product.uom_id
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'mode', 'picking_type_id',
-                 'product_ids', 'date_from', 'date_to', 'group_by', 'stage_production', 'stage_assembly',
-                 'stage_installation', 'stage_finishing')
+                 'product_ids', 'date_from', 'date_to', 'group_by', 'stage_ids')
     def _compute_line_ids(self):
         for wizard in self:
             commands = [Command.clear()]

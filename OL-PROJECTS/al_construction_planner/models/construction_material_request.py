@@ -12,7 +12,7 @@ from odoo.tools.misc import formatLang
 from .common import EXCEED_STATES, PROJECT_HEAD_GROUPS
 from .construction_resource_plan import OPEN_STATES
 
-SUPPLY_TYPES = ('material', 'service', 'production')
+SUPPLY_TYPES = ('material', 'service', 'equipment', 'production')
 
 
 class ConstructionMaterialRequest(models.Model):

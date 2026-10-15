@@ -27,6 +27,12 @@ class ProjectTask(models.Model):
              'se ve en el árbol y fija la función del nivel.')
     construction_level_name = fields.Char(
         string='Nombre del nivel', compute='_compute_construction_level_name')
+    # Ruta de ids de los niveles desde el primero (v1.7, M17-01): «12/34/56/».
+    # Base de la acumulación por cualquier nivel de la plantilla sin recorrer
+    # el árbol (=like ruta%).
+    construction_path = fields.Char(
+        string='Ruta en la obra', compute='_compute_construction_path', store=True,
+        recursive=True, index=True)
     construction_unit_type = fields.Selection(
         UNIT_TYPES, string='Tipo de unidad',
         help='Departamento, nivel de dúplex, ducto, estacionamiento, área común, depósito, '
@@ -52,6 +58,18 @@ class ProjectTask(models.Model):
     construction_typology_id = fields.Many2one(
         'construction.typology', string='Tipología', index=True, check_company=True,
         domain="[('project_id', '=', project_id)]", help='Tipología del ambiente.')
+    # Receta del nivel (v1.7, M17-04): la plantilla de ejecución y el metrado
+    # planificado en su unidad (120 m² de muro drywall).
+    construction_execution_template_id = fields.Many2one(
+        'construction.execution.template', string='Receta', index=True, check_company=True,
+        domain="['|', ('project_id', '=', False), ('project_id', '=', project_id)]",
+        help='Plantilla de ejecución del nivel: «Generar plan desde la receta» multiplica sus '
+             'recursos por el metrado.')
+    construction_qty = fields.Float(
+        string='Metrado planificado', digits='Product Unit',
+        help='Cantidad del nivel en la unidad de su receta (m², und, ml, kg).')
+    construction_qty_uom_id = fields.Many2one(
+        related='construction_execution_template_id.uom_id', string='Unidad del metrado')
     construction_module_code = fields.Char(string='Código del módulo')
     construction_module_type = fields.Selection(MODULE_TYPES, string='Tipo de módulo')
     construction_width_mm = fields.Integer(string='Ancho (mm)')
@@ -105,6 +123,15 @@ class ProjectTask(models.Model):
             task.construction_apartment_task_id = ancestors['apartment']
             task.construction_space_task_id = ancestors['space']
             task.construction_furniture_task_id = ancestors['furniture']
+
+    @api.depends('parent_id.construction_path', 'construction_level')
+    def _compute_construction_path(self):
+        for task in self:
+            if not task.construction_level or not isinstance(task.id, int):
+                task.construction_path = False
+                continue
+            parent = task.parent_id.construction_path if task.parent_id.construction_level else ''
+            task.construction_path = '%s%s/' % (parent or '', task.id)
 
     @api.depends('construction_level', 'construction_level_line_id.name')
     def _compute_construction_level_name(self):

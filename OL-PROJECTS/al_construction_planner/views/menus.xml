@@ -157,6 +157,14 @@
             <menuitem id="menu_planner_level_templates" name="Plantillas de niveles"
                       action="action_construction_level_template" sequence="5"
                       groups="group_planner_manager"/>
+            <menuitem id="menu_planner_stages" name="Etapas"
+                      action="action_construction_stage" sequence="6"
+                      groups="group_planner_manager"/>
+            <menuitem id="menu_planner_resource_types" name="Tipos de recurso"
+                      action="action_construction_resource_type" sequence="7"
+                      groups="group_planner_manager"/>
+            <menuitem id="menu_planner_recipes" name="Recetas"
+                      action="action_construction_execution_template" sequence="9"/>
             <menuitem id="menu_planner_typologies" name="Tipologías"
                       action="action_construction_typology" sequence="10"/>
             <menuitem id="menu_planner_activities" name="Actividades de obra"
@@ -169,6 +177,8 @@
                       groups="group_planner_manager"/>
             <menuitem id="menu_planner_master_import" name="Importar maestro y ETO"
                       action="action_construction_master_import_wizard" sequence="40"/>
+            <menuitem id="menu_planner_recipe_import" name="Importar recetas y niveles"
+                      action="action_construction_recipe_import_wizard" sequence="45"/>
         </menuitem>
         <menuitem id="menu_planner_config_income" name="Cobro al cliente" sequence="15">
             <menuitem id="menu_planner_milestone_templates" name="Plantillas de hitos de cobro"

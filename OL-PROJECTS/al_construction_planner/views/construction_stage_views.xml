@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Catálogos de etapas y tipos de recurso (v1.7, M17-02 y M17-03). -->
+    <record id="construction_stage_view_list" model="ir.ui.view">
+        <field name="name">construction.stage.list</field>
+        <field name="model">construction.stage</field>
+        <field name="arch" type="xml">
+            <list string="Etapas" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="kind"/>
+                <field name="production_consumption" optional="show"/>
+                <field name="previous_stage_id" options="{'no_create': True}" optional="show"/>
+                <field name="duration_days" optional="show"/>
+                <field name="color" widget="color" optional="show"/>
+                <field name="level_line_ids" widget="many2many_tags" optional="hide"
+                       options="{'no_create': True}"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_stage_view_search" model="ir.ui.view">
+        <field name="name">construction.stage.search</field>
+        <field name="model">construction.stage</field>
+        <field name="arch" type="xml">
+            <search string="Etapas">
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="production" string="Fabricación" domain="[('kind', '=', 'production')]"/>
+                <filter name="field" string="Ejecución en campo" domain="[('kind', '=', 'field')]"/>
+                <filter name="control" string="Control" domain="[('kind', '=', 'control')]"/>
+                <separator/>
+                <filter name="archived" string="Archivadas" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_stage" model="ir.actions.act_window">
+        <field name="name">Etapas</field>
+        <field name="res_model">construction.stage</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree las etapas de ejecución</p>
+            <p>Las etapas que programa el cronograma y que llevan las líneas del plan: producción,
+               armado e instalación en mobiliario; trazo, emplacado y masillado en una partida de
+               drywall. El tipo decide qué asistentes aplican: una etapa de fabricación habilita
+               la orden de fabricación; una de campo, la contrata o la cuadrilla.</p>
+        </field>
+    </record>
+
+    <record id="construction_resource_type_view_list" model="ir.ui.view">
+        <field name="name">construction.resource.type.list</field>
+        <field name="model">construction.resource.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de recurso" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="behavior"/>
+                <field name="supply_method"/>
+                <field name="is_default"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_resource_type" model="ir.actions.act_window">
+        <field name="name">Tipos de recurso</field>
+        <field name="res_model">construction.resource.type</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree los tipos de recurso</p>
+            <p>Material, mano de obra de contrata, cuadrilla propia, equipo… Cada tipo dice qué
+               hace el planificador con la línea (comportamiento) y cómo se abastece.</p>
+        </field>
+    </record>
+</odoo>

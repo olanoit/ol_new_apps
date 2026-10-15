@@ -463,7 +463,7 @@ class TestPricesSupply(PlannerCommon):
             action['context']).create({})
         self.assertEqual(wizard.product_ids, self.p_white)
         self.assertTrue(wizard.whole_project)
-        self.assertFalse(wizard.stage_assembly)
+        self.assertEqual(wizard.stage_ids.mapped('code'), ['production'])
         self.assertEqual(wizard.line_ids.product_id, self.p_white)
         self.assertAlmostEqual(wizard.line_ids.qty_need, 36.07 + 52.02, places=2)
 

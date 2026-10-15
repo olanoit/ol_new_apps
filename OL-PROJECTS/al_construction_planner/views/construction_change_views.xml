@@ -80,10 +80,11 @@
                                     <field name="project_id" column_invisible="True"/>
                                     <field name="task_id" options="{'no_create': True}"/>
                                     <field name="unit_state" optional="show"/>
-                                    <field name="resource_type"/>
+                                    <field name="resource_type_id" options="{'no_create': True}"/>
+                                    <field name="resource_type" column_invisible="True"/>
                                     <field name="stage"/>
                                     <field name="product_id" options="{'no_create': True}"
-                                           required="resource_type in ('material', 'service')"/>
+                                           required="resource_type in ('material', 'service', 'equipment')"/>
                                     <field name="activity_id" options="{'no_create': True}"
                                            required="resource_type == 'contract'"/>
                                     <field name="partner_id" optional="hide"/>

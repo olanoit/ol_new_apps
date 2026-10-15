@@ -26,7 +26,6 @@ from odoo.exceptions import UserError
 from odoo.tools import float_round
 from odoo.tools.misc import formatLang
 
-from .common import STAGES
 
 DEFAULT_WEEKS = 4
 MAX_WEEKS = 12
@@ -264,7 +263,7 @@ class ConstructionSupplyBoard(models.AbstractModel):
             project, weeks=options.get('weeks') or DEFAULT_WEEKS,
             stages=options.get('stages') or None)
         data['alerts'] = self._alerts_from_rows(project, data['rows'])
-        data['stages'] = [list(stage) for stage in STAGES] + [['none', self.env._('Sin etapa')]]
+        data['stages'] = [list(stage) for stage in self.env['construction.stage']._get_selection()] + [['none', self.env._('Sin etapa')]]
         data['currency_symbol'] = (
             self.env['construction.resource.plan'].browse(data['plan_id']).currency_id.symbol
             or self.env.company.currency_id.symbol)

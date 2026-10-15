@@ -26,3 +26,6 @@ from . import test_site_from_sale_code
 from . import test_measurement_v16
 from . import test_extra_v16
 from . import test_roles_v16
+from . import test_catalogs_v17
+from . import test_levels_v17
+from . import test_recipe_v17

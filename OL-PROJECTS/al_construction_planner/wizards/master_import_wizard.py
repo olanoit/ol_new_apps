@@ -193,6 +193,8 @@ class ConstructionMasterImportWizard(models.TransientModel):
         company = self._company()
         Activity = self.env['construction.labor.activity'].with_context(active_test=False)
         is_manager = self.env.user.has_group('al_construction_planner.group_planner_manager')
+        stage_values = {code: (name, *STAGE_VALUES.get(code, ()))
+                        for code, name in self.env['construction.stage']._get_selection()}
 
         def invalid(sheet, row, column, value):
             warn['invalid_value'].append(self.env._(
@@ -212,7 +214,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             warn['catalog_no_rights'] = [_text(r['code']) for r in rows]
         for row in rows if is_manager else []:
             code = _text(row['code'])
-            stage = selection_value(STAGE_VALUES, row['stage'])
+            stage = selection_value(stage_values, row['stage'])
             uom = self._uom(row['uom'])
             measure = selection_value(MEASURE_VALUES, row.get('measure')) or 'space'
             ml_group = selection_value(ML_GROUP_VALUES, row.get('ml_group')) or 'none'
@@ -469,7 +471,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             qty = _number(row['qty'])
             cost = _number(row.get('cost'))
             stage_text = _text(row.get('stage'))
-            stage = selection_value(STAGE_VALUES, stage_text) if stage_text else False
+            stage = selection_value(stage_values, stage_text) if stage_text else False
             if not code:
                 invalid('BOM', row, self.env._('Código del producto'), code)
                 continue

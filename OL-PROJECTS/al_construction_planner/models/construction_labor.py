@@ -3,7 +3,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.fields import Domain
 
-from .common import ML_GROUPS, STAGES
+from .common import ML_GROUPS, stage_selection
 
 
 class ConstructionLaborActivity(models.Model):
@@ -21,7 +21,7 @@ class ConstructionLaborActivity(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Compañía', index=True, default=lambda self: self.env.company,
         help='La activa al crearla. Vacía (solo por importación): se comparte entre compañías.')
-    stage = fields.Selection(STAGES, string='Etapa', required=True)
+    stage = fields.Selection(stage_selection, string='Etapa', required=True)
     uom_id = fields.Many2one(
         'uom.uom', string='Unidad del driver', required=True,
         help='Unidad en la que la contrata reporta su avance y cobra (UND, ML…).')
@@ -72,6 +72,10 @@ class ConstructionLaborActivity(models.Model):
         for activity in self:
             activity.currency_id = (activity.company_id or self.env.company).currency_id
 
+    @api.constrains('stage')
+    def _check_stage_code(self):
+        self.env['construction.stage']._check_codes(self)
+
     @api.constrains('module_level', 'ml_based')
     def _check_measure(self):
         for activity in self:
@@ -97,10 +101,11 @@ class ConstructionLaborActivity(models.Model):
         de la categoría."""
         Product = self.env['product.product']
         created = Product
+        production_stages = self.env['construction.stage']._production_codes()
         for activity in self.filtered(lambda a: not a.product_id):
             company = activity.company_id or self.env.company
             categ = company.construction_categ_assembly_id \
-                if activity.stage in ('production', 'assembly') \
+                if activity.stage in production_stages \
                 else company.construction_categ_installation_id
             vals = {
                 'name': activity.name, 'default_code': activity.code, 'type': 'service',

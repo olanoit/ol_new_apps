@@ -15,7 +15,7 @@ la partida de otra por categoría.
 """
 from odoo import api, fields, models
 
-from .common import RESOURCE_TYPES, STAGES
+from .common import RESOURCE_TYPES, stage_selection
 
 
 class ConstructionAnalyticRule(models.Model):
@@ -29,7 +29,7 @@ class ConstructionAnalyticRule(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     resource_type = fields.Selection(RESOURCE_TYPES, string='Recurso')
-    stage = fields.Selection(STAGES, string='Etapa del plan')
+    stage = fields.Selection(stage_selection, string='Etapa del plan')
     product_categ_id = fields.Many2one(
         'product.category', string='Categoría del producto',
         help='Incluye sus subcategorías.')

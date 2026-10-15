@@ -65,10 +65,12 @@ class TestLevelsV15(PlannerCommon):
 
     def test_template_rules(self):
         Template = self.env['construction.level.template']
+        # Desde la v1.7 (M17-01) la unidad y el módulo son opcionales; el
+        # nivel con etapas sigue siendo uno solo.
         with self.assertRaises(ValidationError):
-            Template.create({'name': 'Sin unidad', 'line_ids': [
+            Template.create({'name': 'Sin nivel con etapas', 'line_ids': [
                 (0, 0, {'sequence': 1, 'name': 'Piso', 'role': 'group'}),
-                (0, 0, {'sequence': 2, 'name': 'Ambiente', 'role': 'space'}),
+                (0, 0, {'sequence': 2, 'name': 'Departamento', 'role': 'unit'}),
                 (0, 0, {'sequence': 3, 'name': 'Módulo', 'role': 'module'})]})
         with self.assertRaises(ValidationError):
             Template.create({'name': 'Desordenada', 'line_ids': [

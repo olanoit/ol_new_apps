@@ -25,10 +25,11 @@
                 <field name="apartment_task_id" optional="show"/>
                 <field name="space_task_id" optional="hide"/>
                 <field name="module_task_id" optional="hide"/>
-                <field name="resource_type"/>
+                <field name="resource_type_id" options="{'no_create': True}"/>
+                <field name="resource_type" column_invisible="True"/>
                 <field name="stage"/>
                 <field name="product_id" options="{'no_create': True}"
-                       required="resource_type in ('material', 'service', 'production')"/>
+                       required="resource_type in ('material', 'service', 'equipment', 'production')"/>
                 <field name="activity_id" options="{'no_create': True}"
                        required="resource_type in ('contract', 'labor')"/>
                 <field name="partner_id" optional="hide" options="{'no_create': True}"/>
@@ -41,7 +42,7 @@
                         groups="al_construction_planner.group_planner_planner"/>
                 <button name="action_open_product_create" type="object" icon="fa-plus-square"
                         title="Crear producto desde el plan"
-                        invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service')"
+                        invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
                         groups="al_construction_planner.group_planner_planner"/>
                 <field name="amount_planned" sum="Total"/>
                 <field name="qty_requested" optional="hide"/>
@@ -83,7 +84,7 @@
             <list string="Recursos y avance" default_group_by="stage" create="0" edit="0">
                 <field name="stage"/>
                 <field name="task_id" optional="hide"/>
-                <field name="resource_type" optional="hide"/>
+                <field name="resource_type_id" optional="hide"/>
                 <field name="resource_name"/>
                 <field name="partner_id" optional="show"/>
                 <field name="qty_planned" string="Presupuestado"/>
@@ -107,7 +108,7 @@
                             invisible="not product_id"
                             groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_open_product_create" type="object" string="Crear producto"
-                            invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service')"
+                            invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
                             groups="al_construction_planner.group_planner_planner"/>
                     <field name="plan_state" invisible="1"/>
                 </header>
@@ -126,6 +127,7 @@
                             <field name="typology_id"/>
                         </group>
                         <group string="Qué">
+                            <field name="resource_type_id" options="{'no_create': True}"/>
                             <field name="resource_type"/>
                             <field name="stage"/>
                             <field name="product_id" options="{'no_create': True}"/>
@@ -193,7 +195,7 @@
         <field name="arch" type="xml">
             <graph string="Plan de recursos" type="bar" stacked="1" sample="1">
                 <field name="stage"/>
-                <field name="resource_type"/>
+                <field name="resource_type_id"/>
                 <field name="amount_planned" type="measure"/>
             </graph>
         </field>
@@ -212,6 +214,7 @@
                 <filter string="Materiales" name="material" domain="[('resource_type', '=', 'material')]"/>
                 <filter string="Contratas" name="contract" domain="[('resource_type', '=', 'contract')]"/>
                 <filter string="Personal propio" name="labor" domain="[('resource_type', '=', 'labor')]"/>
+                <filter string="Equipos" name="equipment" domain="[('resource_type', '=', 'equipment')]"/>
                 <separator/>
                 <filter string="Sin etapa" name="no_stage" domain="[('stage', '=', False)]"/>
                 <separator/>
@@ -226,7 +229,7 @@
                         domain="[('plan_state', 'in', ('approved', 'in_progress'))]"/>
                 <group>
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>
-                    <filter string="Tipo de recurso" name="group_type" context="{'group_by': 'resource_type'}"/>
+                    <filter string="Tipo de recurso" name="group_type" context="{'group_by': 'resource_type_id'}"/>
                     <filter string="Estado" name="group_line_state" context="{'group_by': 'line_state'}"/>
                     <filter string="Contrata o proveedor" name="group_partner" context="{'group_by': 'partner_id'}"/>
                     <filter string="Producto" name="group_product" context="{'group_by': 'product_id'}"/>
@@ -320,6 +323,9 @@
                 <header>
                     <button name="action_open_generate_wizard" type="object" string="Generar plan"
                             class="btn-primary" invisible="state != 'draft'"
+                            groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_open_recipe_wizard" type="object"
+                            string="Generar desde la receta" invisible="state != 'draft'"
                             groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_open_price_wizard" type="object" string="Aplicar costo"
                             invisible="state != 'draft'"
@@ -447,6 +453,7 @@
                             <field name="amount_service"/>
                             <field name="amount_contract"/>
                             <field name="amount_labor"/>
+                            <field name="amount_equipment" invisible="not amount_equipment"/>
                             <field name="amount_production"/>
                             <field name="amount_total" class="fw-bold"/>
                             <field name="amount_budgeted" invisible="not budget_analytic_id"/>

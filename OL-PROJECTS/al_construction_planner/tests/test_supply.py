@@ -118,7 +118,7 @@ class TestSupply(PlannerCommon):
         self.assertEqual(white.qty_free, 1.0)
         self.assertEqual(white.qty_to_buy, 1.0)
         # Sin etapas de instalación: no hay tornillos.
-        wizard.stage_installation = False
+        wizard.stage_ids -= self.env.ref('al_construction_planner.stage_installation')
         self.assertFalse(wizard.line_ids.filtered(lambda l: l.product_id == self.p_screw))
         action = wizard.action_create()
         request = self.env['purchase.request'].browse(action['res_id'])

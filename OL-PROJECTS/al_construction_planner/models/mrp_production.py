@@ -11,9 +11,9 @@ from odoo.tools.misc import formatLang
 
 from .common import EXCEED_STATES
 
-# Etapas que consume la OF: el resto de la BOM (instalación, acabado) se pide
-# a la obra con el requerimiento de obra.
-PRODUCTION_STAGES = ('production', 'assembly')
+# Las etapas que consume la OF son las de fabricación y las marcadas «Consume
+# en la orden de fabricación» del catálogo (en mobiliario, producción y
+# armado); el resto de la BOM se pide a la obra con el requerimiento de obra.
 
 
 class MrpProduction(models.Model):
@@ -46,7 +46,7 @@ class MrpProduction(models.Model):
             ('plan_id', '=', self.construction_plan_id.id),
             ('product_id', '=', product.id),
             ('resource_type', '=', 'material'),
-            ('stage', 'in', PRODUCTION_STAGES),
+            ('stage', 'in', self.env['construction.stage']._production_codes()),
             ('space_task_id', 'in', self.construction_space_task_ids.ids),
         ])
 
@@ -56,9 +56,10 @@ class MrpProduction(models.Model):
         esas etapas)."""
         self.ensure_one()
         result = defaultdict(float)
+        production_stages = self.env['construction.stage']._production_codes()
         for move in self.move_raw_ids.filtered(lambda m: m.state != 'cancel'):
             stage = move.bom_line_id.construction_consumption_stage
-            if stage and stage not in PRODUCTION_STAGES:
+            if stage and stage not in production_stages:
                 continue
             result[move.product_id] += move.product_qty
         return result

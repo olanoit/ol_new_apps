@@ -6,7 +6,6 @@ from markupsafe import Markup, escape
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.common import STAGES
 
 STAGE_FIELDS = {
     'production': 'stage_production',
@@ -451,4 +450,5 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
 
     @api.model
     def _get_stage_label(self, stage):
-        return dict(STAGES).get(stage, self.env._('Sin etapa'))
+        return dict(self.env['construction.stage']._get_selection()).get(
+            stage, self.env._('Sin etapa'))

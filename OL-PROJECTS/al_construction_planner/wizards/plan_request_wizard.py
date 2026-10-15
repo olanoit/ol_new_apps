@@ -36,7 +36,7 @@ class ConstructionPlanRequestWizard(models.TransientModel):
         compute='_compute_line_ids', store=True, readonly=False)
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'group_by', 'location_src_id',
-                 'stage_production', 'stage_assembly', 'stage_installation', 'stage_finishing')
+                 'stage_ids')
     def _compute_line_ids(self):
         for wizard in self:
             commands = [Command.clear()]

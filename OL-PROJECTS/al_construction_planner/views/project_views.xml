@@ -146,6 +146,15 @@
                             <field name="construction_typology_id" invisible="construction_level != 'space'"
                                    options="{'no_create': True}"/>
                         </group>
+                        <group string="Receta">
+                            <field name="construction_execution_template_id"
+                                   options="{'no_create': True}"/>
+                            <label for="construction_qty"/>
+                            <div class="o_row">
+                                <field name="construction_qty"/>
+                                <field name="construction_qty_uom_id"/>
+                            </div>
+                        </group>
                         <group string="Mueble" invisible="construction_level != 'furniture'">
                             <field name="construction_furniture_ml"/>
                         </group>

@@ -33,13 +33,8 @@ import { escapeText } from "@al_project_gantt_base/js/gantt_setup";
 const PLAN = "construction.resource.plan";
 const STAGE = "construction.space.stage";
 
-/** Color de la barra por etapa (la clara es la que no tiene contrata). */
-const STAGE_COLORS = {
-    production: "#8e7cc3",
-    assembly: "#e69138",
-    installation: "#3d85c6",
-    finishing: "#6aa84f",
-};
+/** Color de la barra si la etapa del catálogo no tiene uno propio. */
+const DEFAULT_STAGE_COLOR = "#3d85c6";
 
 export function isStageRow(id) {
     return /^s\d+$/.test(String(id));
@@ -123,7 +118,7 @@ export function buildStageRows(ganttData, payload) {
             // dhtmlxGantt toma el fin como exclusivo: el día siguiente a las 0 h.
             end_date: addDays(toPlainDate(stage.end), 1),
             progress: (stage.progress || 0) / 100,
-            color: STAGE_COLORS[stage.stage],
+            color: (payload.construction?.stage_colors || {})[stage.stage] || DEFAULT_STAGE_COLOR,
             readonly: !stage.editable,
             al_users: resource,
             cp_stage: true,

@@ -179,7 +179,7 @@ class ConstructionProductCreateWizard(models.TransientModel):
         if line.plan_id.state != 'draft':
             raise UserError(self.env._(
                 'La línea es de %s, que ya no está en borrador.', line.plan_id.display_name))
-        if line.resource_type not in ('material', 'service'):
+        if line.resource_type not in ('material', 'service', 'equipment'):
             raise UserError(self.env._(
                 'Solo las líneas de material o servicio llevan un producto comprado.'))
 

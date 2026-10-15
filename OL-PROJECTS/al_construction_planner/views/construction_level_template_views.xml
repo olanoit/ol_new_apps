@@ -32,13 +32,24 @@
                             <field name="sequence" widget="handle"/>
                             <field name="name"/>
                             <field name="role"/>
+                            <field name="has_stages" optional="show"/>
+                            <field name="has_recipe" optional="show"/>
+                            <field name="is_measured" optional="show"/>
+                            <field name="measure_uom_id" optional="show"
+                                   invisible="not is_measured" options="{'no_create': True}"/>
+                            <field name="is_billable" optional="show"/>
+                            <field name="receives_progress" optional="show"/>
+                            <field name="is_delivery_unit" optional="hide"/>
+                            <field name="stage_ids" widget="many2many_tags" optional="show"
+                                   invisible="not has_stages" options="{'no_create': True}"/>
                             <field name="level" optional="hide"/>
                         </list>
                     </field>
                     <p class="text-muted">
-                        Una sola Unidad, un solo Ambiente y un solo Módulo; el Mueble es
-                        opcional y los agrupadores (torre, etapa, piso…) van encima de la
-                        unidad. El último agrupador es el que agrupa las unidades.
+                        Un solo nivel con etapas (ambiente, partida, spool), que es el que
+                        programa el cronograma. La unidad de entrega, el subnivel y el nivel de
+                        detalle son opcionales y van en ese orden; los agrupadores (torre, piso,
+                        disciplina, área…) van arriba y el último es el que agrupa las unidades.
                     </p>
                 </sheet>
             </form>
@@ -52,8 +63,9 @@
         <field name="context">{'active_test': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Cree una plantilla de niveles</p>
-            <p>Los niveles del árbol de la obra con su nombre: Torre › Piso › Departamento ›
-               Ambiente › Mueble › Módulo.</p>
+            <p>Los niveles del árbol de la obra con su nombre y su comportamiento: Torre › Piso ›
+               Departamento › Ambiente › Mueble › Módulo en mobiliario, Disciplina › Subpartida ›
+               Partida › Actividad en una constructora.</p>
         </field>
     </record>
 </odoo>

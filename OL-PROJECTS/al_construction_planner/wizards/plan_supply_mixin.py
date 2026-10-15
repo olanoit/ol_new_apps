@@ -4,8 +4,6 @@ selección del árbol (P-02) en el contexto, la expanden a sus descendientes y
 filtran las líneas del plan vigente."""
 from odoo import Command, api, fields, models
 
-from .plan_generate_wizard import STAGE_FIELDS
-
 # Unidades «de medida»: se compran con decimales (m de tapacanto). Las demás
 # (planchas, juegos, unidades) se redondean a entero hacia arriba (P-10).
 MEASURE_UOMS = (
@@ -30,10 +28,10 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
         domain="[('project_id', '=', project_id), ('construction_level', '!=', False)]",
         help='Niveles marcados en el árbol; incluyen todo lo que cuelga de ellos.')
     whole_project = fields.Boolean(string='Toda la obra')
-    stage_production = fields.Boolean(string='Producción', default=True)
-    stage_assembly = fields.Boolean(string='Armado', default=True)
-    stage_installation = fields.Boolean(string='Instalación', default=True)
-    stage_finishing = fields.Boolean(string='Acabado y entrega', default=True)
+    stage_ids = fields.Many2many(
+        'construction.stage', string='Etapas',
+        default=lambda self: self.env['construction.stage'].search([]),
+        help='Etapas del catálogo que entran en la selección.')
 
     @api.model
     def default_get(self, fields_list):
@@ -50,16 +48,15 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
         if 'whole_project' in fields_list:
             res['whole_project'] = bool(ctx.get('construction_selection_project')) or not task_ids
         # Etapas marcadas en el cronograma (P-15): solo esas quedan activas.
-        stages = [s for s in ctx.get('construction_selection_stages') or [] if s in STAGE_FIELDS]
-        if stages:
-            for stage, field in STAGE_FIELDS.items():
-                if field in fields_list:
-                    res[field] = stage in stages
+        stages = ctx.get('construction_selection_stages') or []
+        if stages and 'stage_ids' in fields_list:
+            res['stage_ids'] = [Command.set(self.env['construction.stage'].search(
+                [('code', 'in', stages)]).ids)]
         return res
 
     def _get_stages(self):
         self.ensure_one()
-        return [stage for stage, field in STAGE_FIELDS.items() if self[field]]
+        return self.stage_ids.mapped('code')
 
     def _get_selected_tasks(self):
         """Tareas de la selección con sus descendientes; ``None`` = toda la obra."""

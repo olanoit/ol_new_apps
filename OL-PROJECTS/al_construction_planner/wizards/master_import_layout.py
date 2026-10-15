@@ -114,6 +114,8 @@ SHEETS = {
 }
 
 # Valores de las listas: clave del campo → textos aceptados (además de la clave).
+# Las etapas salen del catálogo (código y nombre); estos son otros nombres
+# aceptados para las de mobiliario.
 STAGE_VALUES = {
     'production': ('Producción',),
     'assembly': ('Armado',),

@@ -170,7 +170,7 @@ class TestControl(PlannerCommon):
                                sum(c for c, _a in live.values()))
         self.assertAlmostEqual(sum(v['actual'] for v in data.values()),
                                sum(a for _c, a in live.values()))
-        installation = data[('installation', 'material')]
+        installation = data[('installation', self.env.ref('al_construction_planner.resource_type_material'))]
         self.assertAlmostEqual(installation['committed'], 2420.0)
         html = self.plan.control_html
         self.assertIn('Total obra', html)
@@ -273,8 +273,8 @@ class TestControl(PlannerCommon):
         wizard = self.env['construction.plan.reschedule.wizard'].with_user(
             self.planner).with_context(
             default_plan_id=self.plan.id, construction_selection_task_ids=[self.floor.id],
-        ).create({'mode': 'shift', 'days': 14, 'stage_production': False,
-                  'stage_assembly': False, 'stage_finishing': False})
+        ).create({'mode': 'shift', 'days': 14, 'stage_ids': [Command.set(
+            self.env.ref('al_construction_planner.stage_installation').ids)]})
         self.assertFalse(wizard.move_tasks)
         self.assertEqual(wizard.delta_days, 14)
         self.assertEqual(set(wizard.line_ids.mapped('stage')), {'installation'})

@@ -18,3 +18,5 @@ from . import valuation_wizard
 from . import master_import_wizard
 from . import contract_unit_wizard
 from . import measurement_wizard
+from . import plan_recipe_wizard
+from . import recipe_import_wizard

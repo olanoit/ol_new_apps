@@ -255,8 +255,7 @@ class TestSchedule(TransactionCase):
             default_plan_id=self.plan.id, construction_selection_task_ids=self.floor.ids,
             construction_selection_stages=['installation'],
         ).create({'mode': 'shift', 'days': 14})
-        self.assertFalse(wizard.stage_assembly)
-        self.assertTrue(wizard.stage_installation)
+        self.assertEqual(wizard.stage_ids.mapped('code'), ['installation'])
         wizard.action_apply()
         for stage in stages:
             self.assertEqual(stage.date_start, before[stage.id] + timedelta(days=14))
@@ -284,8 +283,7 @@ class TestSchedule(TransactionCase):
             construction_selection_stages=['assembly', 'installation'],
         ).create({'partner_id': self.leandro.id})
         self.assertFalse(wizard.stage)
-        self.assertFalse(wizard.stage_production)
-        self.assertTrue(wizard.stage_assembly and wizard.stage_installation)
+        self.assertEqual(wizard.stage_ids.mapped('code'), ['assembly', 'installation'])
 
     def test_selection_summary_by_stage(self):
         summary = self.plan.get_selection_summary(

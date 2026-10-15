@@ -19,7 +19,7 @@ valorización de siempre, y un hito puede cobrarse en dos valorizaciones.
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from .common import STAGES, UNIT_STATE_RANK
+from .common import UNIT_STATE_RANK, stage_selection
 
 CONTRACT_SCOPES = [
     ('supply', 'Suministro'),
@@ -92,7 +92,7 @@ class ConstructionMilestoneTemplateLine(models.Model):
         help='Etapa terminada: el avance de esa etapa en la unidad. Llegada a obra: módulos en '
              'obra o más allá. Acta de entrega: módulos entregados. Postventa y manual: se '
              'escribe el avance en el hito de cada unidad.')
-    stage = fields.Selection(STAGES, string='Etapa', help='Solo con «Etapa terminada».')
+    stage = fields.Selection(stage_selection, string='Etapa', help='Solo con «Etapa terminada».')
 
     @api.constrains('trigger', 'stage')
     def _check_stage(self):

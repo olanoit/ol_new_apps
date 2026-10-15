@@ -16,12 +16,16 @@ LEVELS = [
 ]
 
 # Función de cada nivel de la plantilla (construction.level.template.line).
+# Es el lugar que ocupa el nivel en el árbol del planificador, con nombres de
+# cualquier rubro (v1.7, M17-01): en mobiliario, torre y piso › departamento
+# › ambiente › mueble › módulo; en una constructora, disciplina y subpartida
+# › partida › actividad; en tuberías, área y línea › spool.
 LEVEL_ROLES = [
     ('group', 'Agrupador'),
-    ('unit', 'Unidad'),
-    ('space', 'Ambiente'),
-    ('furniture', 'Mueble'),
-    ('module', 'Módulo'),
+    ('unit', 'Unidad de entrega'),
+    ('space', 'Nivel con etapas'),
+    ('furniture', 'Subnivel'),
+    ('module', 'Nivel de detalle'),
 ]
 
 # Tipo de unidad (M15-02): casuística de las 29 obras vendidas.
@@ -36,17 +40,22 @@ UNIT_TYPES = [
     ('pilot', 'Piloto'),
 ]
 
-# Etapas de ejecución: líneas del plan, actividades y consumo de la BOM.
-STAGES = [
-    ('production', 'Producción'),
-    ('assembly', 'Armado'),
-    ('installation', 'Instalación'),
-    ('finishing', 'Acabado y entrega'),
-]
+# Las etapas de ejecución son un catálogo (construction.stage, v1.7): los
+# campos de etapa guardan su código y toman la lista de stage_selection.
 
+
+def stage_selection(model):
+    """Lista de los campos de etapa: el catálogo con sus códigos."""
+    return model.env['construction.stage']._get_selection()
+
+
+# Comportamiento del tipo de recurso (v1.7, M17-03): el tipo visible es el del
+# catálogo construction.resource.type; esto es lo que hace el planificador
+# con la línea.
 RESOURCE_TYPES = [
     ('material', 'Material'),
     ('service', 'Servicio'),
+    ('equipment', 'Equipo'),
     ('contract', 'Contrata'),
     ('labor', 'Personal propio'),
     ('production', 'Producción'),

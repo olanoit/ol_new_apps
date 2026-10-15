@@ -10,7 +10,6 @@ from datetime import timedelta
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
-from .plan_generate_wizard import STAGE_FIELDS
 
 
 class ConstructionPlanRescheduleWizard(models.TransientModel):
@@ -68,14 +67,16 @@ class ConstructionPlanRescheduleWizard(models.TransientModel):
         return min(needs) if needs else False
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'mode', 'days', 'date_new',
-                 *STAGE_FIELDS.values())
+                 'stage_ids')
     def _compute_preview(self):
+        all_stages = self.env['construction.stage'].search([])
         for wizard in self:
             commands = [Command.clear()]
             wizard.date_current = False
             wizard.delta_days = 0
             wizard.task_count = 0
-            wizard.move_tasks = all(wizard[field] for field in STAGE_FIELDS.values())
+            # Con todas las etapas del catálogo se mueven también las tareas.
+            wizard.move_tasks = not (all_stages - wizard.stage_ids)
             if not wizard.plan_id:
                 wizard.line_ids = commands
                 continue

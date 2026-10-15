@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Catálogos de etapas y tipos de recurso (v1.7, M17-02 y M17-03). Las
+     etapas de mobiliario conservan los códigos que ya guardan los planes.
+     noupdate para no pisar lo que configure cada cliente. -->
+<odoo noupdate="1">
+    <record id="stage_production" model="construction.stage">
+        <field name="name">Producción</field>
+        <field name="code">production</field>
+        <field name="sequence">10</field>
+        <field name="kind">production</field>
+        <field name="production_consumption" eval="True"/>
+        <field name="color">#8e7cc3</field>
+    </record>
+    <record id="stage_assembly" model="construction.stage">
+        <field name="name">Armado</field>
+        <field name="code">assembly</field>
+        <field name="sequence">20</field>
+        <field name="kind">field</field>
+        <field name="production_consumption" eval="True"/>
+        <field name="previous_stage_id" ref="stage_production"/>
+        <field name="color">#e69138</field>
+    </record>
+    <record id="stage_installation" model="construction.stage">
+        <field name="name">Instalación</field>
+        <field name="code">installation</field>
+        <field name="sequence">30</field>
+        <field name="kind">field</field>
+        <field name="previous_stage_id" ref="stage_assembly"/>
+        <field name="color">#3d85c6</field>
+    </record>
+    <record id="stage_finishing" model="construction.stage">
+        <field name="name">Acabado y entrega</field>
+        <field name="code">finishing</field>
+        <field name="sequence">40</field>
+        <field name="kind">field</field>
+        <field name="previous_stage_id" ref="stage_installation"/>
+        <field name="color">#6aa84f</field>
+    </record>
+
+    <record id="resource_type_material" model="construction.resource.type">
+        <field name="name">Material</field>
+        <field name="code">material</field>
+        <field name="sequence">10</field>
+        <field name="behavior">material</field>
+        <field name="supply_method">purchase</field>
+        <field name="is_default" eval="True"/>
+    </record>
+    <record id="resource_type_service" model="construction.resource.type">
+        <field name="name">Servicio</field>
+        <field name="code">service</field>
+        <field name="sequence">20</field>
+        <field name="behavior">service</field>
+        <field name="supply_method">purchase</field>
+        <field name="is_default" eval="True"/>
+    </record>
+    <record id="resource_type_equipment" model="construction.resource.type">
+        <field name="name">Equipo</field>
+        <field name="code">equipment</field>
+        <field name="sequence">30</field>
+        <field name="behavior">equipment</field>
+        <field name="supply_method">purchase</field>
+        <field name="is_default" eval="True"/>
+    </record>
+    <record id="resource_type_contract" model="construction.resource.type">
+        <field name="name">Contrata</field>
+        <field name="code">contract</field>
+        <field name="sequence">40</field>
+        <field name="behavior">contract</field>
+        <field name="supply_method">contract</field>
+        <field name="is_default" eval="True"/>
+    </record>
+    <record id="resource_type_labor" model="construction.resource.type">
+        <field name="name">Personal propio</field>
+        <field name="code">labor</field>
+        <field name="sequence">50</field>
+        <field name="behavior">labor</field>
+        <field name="supply_method">crew</field>
+        <field name="is_default" eval="True"/>
+    </record>
+    <record id="resource_type_production" model="construction.resource.type">
+        <field name="name">Producción</field>
+        <field name="code">production</field>
+        <field name="sequence">60</field>
+        <field name="behavior">production</field>
+        <field name="supply_method">production</field>
+        <field name="is_default" eval="True"/>
+    </record>
+</odoo>

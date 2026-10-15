@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Plantilla de ejecución: la receta del nivel (v1.7, M17-04). -->
+    <record id="construction_execution_template_view_list" model="ir.ui.view">
+        <field name="name">construction.execution.template.list</field>
+        <field name="model">construction.execution.template</field>
+        <field name="arch" type="xml">
+            <list string="Recetas">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="uom_id"/>
+                <field name="project_id" optional="show"/>
+                <field name="amount_unit"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="source" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_execution_template_view_form" model="ir.ui.view">
+        <field name="name">construction.execution.template.form</field>
+        <field name="model">construction.execution.template</field>
+        <field name="arch" type="xml">
+            <form string="Receta">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="code" placeholder="ARQ-03.02.01" class="oe_inline"/>
+                            <field name="name" placeholder="Muro drywall RF" class="oe_inline"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="uom_id" options="{'no_create': True}"/>
+                            <field name="product_id" options="{'no_create': True}"/>
+                            <field name="project_id" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="amount_unit"/>
+                            <field name="source"/>
+                            <field name="source_ref" invisible="not source_ref"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Recursos por unidad" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="resource_type_id" options="{'no_create': True}"/>
+                                    <field name="resource_type" column_invisible="1"/>
+                                    <field name="stage"/>
+                                    <field name="product_id" options="{'no_create': True}"
+                                           required="resource_type in ('material', 'service', 'equipment', 'production')"/>
+                                    <field name="activity_id" options="{'no_create': True}"
+                                           required="resource_type in ('contract', 'labor')"/>
+                                    <field name="role_id" optional="show" options="{'no_create': True}"/>
+                                    <field name="qty"/>
+                                    <field name="product_uom_id" options="{'no_create': True}"/>
+                                    <field name="price_unit"/>
+                                    <field name="productivity" optional="show"/>
+                                    <field name="crew_size" optional="hide"/>
+                                    <field name="amount_unit" sum="Por unidad"/>
+                                    <field name="note" optional="hide"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="company_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_execution_template_view_search" model="ir.ui.view">
+        <field name="name">construction.execution.template.search</field>
+        <field name="model">construction.execution.template</field>
+        <field name="arch" type="xml">
+            <search string="Recetas">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="product_id"/>
+                <filter name="from_work_item" string="Desde Work Items" domain="[('source', '=', 'work_item')]"/>
+                <filter name="archived" string="Archivadas" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_execution_template" model="ir.actions.act_window">
+        <field name="name">Recetas</field>
+        <field name="res_model">construction.execution.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="construction_execution_template_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree la receta de una partida</p>
+            <p>El APU por unidad del nivel: materiales, mano de obra de contrata o de cuadrilla
+               propia y equipos, con su etapa y rendimiento. «Generar desde la receta» del plan
+               los multiplica por el metrado de cada tarea. También se importan desde Excel o se
+               copian desde los Work Items.</p>
+        </field>
+    </record>
+
+    <record id="construction_plan_recipe_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.recipe.wizard.form</field>
+        <field name="model">construction.plan.recipe.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar plan desde la receta">
+                <group>
+                    <field name="plan_id" readonly="1"/>
+                    <field name="project_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="task_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="stage_ids" widget="many2many_checkboxes"/>
+                    <field name="mode" widget="radio"/>
+                </group>
+                <field name="preview_html" readonly="1"/>
+                <footer>
+                    <button name="action_generate" type="object" string="Generar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_recipe_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.recipe.import.wizard.form</field>
+        <field name="model">construction.recipe.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar recetas y niveles">
+                <group>
+                    <group>
+                        <field name="source" widget="radio"/>
+                        <field name="project_id" options="{'no_create': True}"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="work_item_available" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="file" filename="filename" invisible="source != 'excel'"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="work_item_scope" invisible="source != 'work_item'"/>
+                        <field name="labor_behavior"/>
+                        <field name="default_stage_id" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <div class="alert alert-warning" role="alert"
+                     invisible="source != 'work_item' or work_item_available">
+                    Esta base no tiene los Work Items del paquete Construction de Odoo.
+                </div>
+                <p class="text-muted" invisible="source != 'excel'">
+                    Hoja RECETAS: una fila por recurso (código de la receta, tipo de recurso, código
+                    del producto o de la actividad, cantidad por unidad, etapa…). Hoja NIVELES: una
+                    columna por nivel de la plantilla de la obra, más la receta y el metrado de la
+                    tarea. Volver a importar no duplica: la receta queda como en el libro.
+                </p>
+                <field name="result_html" readonly="1" invisible="not result_html"/>
+                <footer>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"/>
+                    <button name="action_download_template" type="object" string="Descargar plantilla"
+                            invisible="source != 'excel'"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_recipe_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar recetas y niveles</field>
+        <field name="res_model">construction.recipe.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -66,8 +66,7 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         return [start + timedelta(weeks=week) for week in range(max(self.weeks, 0))]
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'role_id', 'resource_ids',
-                 'date_start', 'weeks', 'hours_per_week', 'stage_production', 'stage_assembly',
-                 'stage_installation', 'stage_finishing')
+                 'date_start', 'weeks', 'hours_per_week', 'stage_ids')
     def _compute_line_ids(self):
         for wizard in self:
             commands, notes = [Command.clear()], []

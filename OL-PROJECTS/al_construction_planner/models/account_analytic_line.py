@@ -22,9 +22,10 @@ class AccountAnalyticLine(models.Model):
         """Apuntes de una obra sin etapa o sin partida (v1.5, M15-15): Odoo
         pone solo la cuenta de la obra en el consumo de la OF y en el consumo
         en obra. La regla analítica del planificador completa las columnas
-        vacías: etapa producción en la OF, instalación en el consumo en obra,
-        la de la actividad en la factura de una contrata, y la partida según
-        la categoría del producto."""
+        vacías: la etapa de fabricación en la OF, la primera de campo que no
+        consume en la OF en el consumo en obra (producción e instalación en
+        mobiliario), la de la actividad en la factura de una contrata y la
+        partida según la categoría del producto."""
         lines = self.filtered(lambda l: l.account_id and l.product_id)
         if not lines:
             return
@@ -36,6 +37,7 @@ class AccountAnalyticLine(models.Model):
             return
         Rule = self.env['construction.analytic.rule']
         Activity = self.env['construction.labor.activity']
+        Stage = self.env['construction.stage']
         activities = {a.product_id.id: a for a in Activity.search(
             [('product_id', 'in', lines.product_id.ids)])}
         for line in lines:
@@ -49,9 +51,9 @@ class AccountAnalyticLine(models.Model):
                     if 'stock_move_id' in line.move_line_id.move_id._fields else False
                 if line.category == 'manufacturing_order' or (
                         stock_move and stock_move.raw_material_production_id):
-                    stage = 'production'
+                    stage = Stage._consumption_code('production')
                 elif stock_move:
-                    stage = 'installation'
+                    stage = Stage._consumption_code('site')
                 else:
                     stage = False
             accounts = Rule._accounts_for(line.company_id, resource_type, stage, product.categ_id)
