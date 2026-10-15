@@ -10,6 +10,7 @@ Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `noveda
 ## 2.20261013 — 15/10/2026
 
 - Instala también `al_construction_planner_sale_furniture`; pruebas de operación nativa (compras con tres proveedores, spools de tuberías, cuadrilla por rol) y del perfil mobiliario sobre la demo.
+- Obra de prueba de la contrata eléctrica: tablero con dos sistemas y cuatro partidas, compra masiva por partida, contrata de cableado por punto y control por tablero y sistema.
 
 ## 1.20261013 — 15/10/2026
 

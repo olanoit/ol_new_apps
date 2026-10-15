@@ -15,6 +15,7 @@ from markupsafe import Markup
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import SQL
 
 FEATURE_FIELDS = {
     'control': 'group_construction_control',
@@ -161,6 +162,40 @@ class ConstructionVerticalProfile(models.Model):
             settings_vals = {k: v for k, v in settings_vals.items() if not k.startswith('module_')}
         settings = self.env['res.config.settings'].create(settings_vals)
         return settings.execute()
+
+    @api.model
+    def _assign_legacy_companies(self):
+        """Actualización a la v1.7 (migración de Allcenter): antes del paquete
+        el planificador solo servía para mobiliario, así que una compañía sin
+        perfil que ya tiene obras o tipologías pasa al perfil Mobiliario, y sus
+        obras con ella. No toca su plantilla, sus parámetros ni los módulos (los
+        puentes ya se instalaron en la v30): lo que usaba sigue igual, y una
+        obra sin plantilla conserva el árbol clásico. Devuelve las compañías."""
+        profile = self.env.ref('al_construction_planner.profile_furniture',
+                               raise_if_not_found=False)
+        if not profile:
+            return self.env['res.company']
+        Project = self.env['project.project'].with_context(active_test=False)
+        Typology = self.env['construction.typology'].with_context(active_test=False)
+        companies = self.env['res.company'].with_context(active_test=False).search(
+            [('construction_profile_id', '=', False)]).filtered(
+            lambda company: Project.search_count(
+                [('company_id', '=', company.id), ('is_construction_site', '=', True)], limit=1)
+            or Typology.search_count([('company_id', '=', company.id)], limit=1))
+        if not companies:
+            return companies
+        profile.stage_ids.filtered(lambda r: not r.active).active = True
+        profile.resource_type_ids.filtered(lambda r: not r.active).active = True
+        companies.construction_profile_id = profile
+        # Por SQL: con el ORM, el perfil recalcularía la plantilla de las obras
+        # que no tienen una y les cambiaría el árbol.
+        self.env.cr.execute(SQL("""
+            UPDATE project_project SET construction_profile_id = %s
+             WHERE construction_profile_id IS NULL AND is_construction_site
+               AND company_id = ANY(%s)
+        """, profile.id, companies.ids))
+        Project.invalidate_model(['construction_profile_id'])
+        return companies
 
     # ------------------------------------------------------------------
     # Exportar e importar

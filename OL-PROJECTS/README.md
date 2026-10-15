@@ -31,7 +31,7 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_attendance](al_construction_attendance/) | 2.20261013 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
 [al_construction_material_request](al_construction_material_request/) | 18.20261013 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](al_construction_planner/) | 32.20261013 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
+[al_construction_planner](al_construction_planner/) | 33.20261013 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
 [al_construction_planner_budget](al_construction_planner_budget/) | 1.20261013 | LGPL-3 | Presupuesto analítico al aprobar el plan y control de la OC contra el presupuesto.
 [al_construction_planner_crew](al_construction_planner_crew/) | 2.20261013 | LGPL-3 | Asignar cuadrilla con turnos de Planificación y horas de la hoja de horas como real.
 [al_construction_planner_furniture](al_construction_planner_furniture/) | 2.20261013 | LGPL-3 | Tipologías de mueble con módulos, metros lineales y lista de materiales, generar plan desde la tipología e importación del maestro y del ETO.

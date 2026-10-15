@@ -234,7 +234,8 @@ Paquete de configurabilidad v1.7 (fases 26 a 34):
   al_construction_planner_suite los instala todos.
 * Perfiles de vertical (Construcción por partidas, Mobiliario) que aplican
   plantilla, etapas, recursos, funciones, puentes y parámetros, y se exportan
-  e importan en JSON.
+  e importan en JSON. Al actualizar, una compañía que ya usaba el
+  planificador queda con el perfil Mobiliario.
 
 Especificación: docs/planificador/ESPECIFICACION_v1.4.md y
 docs/planificador/DISENO_v1.7.md. Diseño técnico y
@@ -246,7 +247,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '32.20261013',
+    'version': '33.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',

@@ -18,8 +18,8 @@ class ProjectProject(models.Model):
                                'materiales y la ubicación de obra.')
     construction_profile_id = fields.Many2one(
         'construction.vertical.profile', string='Perfil de vertical',
-        help='El rubro de la obra (v1.7, M17-05): al crearla da su plantilla de niveles. Por '
-             'defecto, el de la compañía.')
+        help='El rubro de la obra (v1.7, M17-05). Por defecto, el de la compañía; una obra de '
+             'otro perfil toma al crearla la plantilla de niveles de ese perfil.')
     construction_level_template_id = fields.Many2one(
         'construction.level.template', string='Plantilla de niveles',
         compute='_compute_construction_level_template_id', store=True, readonly=False,
@@ -52,11 +52,18 @@ class ProjectProject(models.Model):
 
     @api.depends('construction_profile_id')
     def _compute_construction_level_template_id(self):
+        # La de la compañía (aplicar un perfil la deja con la suya); una obra
+        # de otro perfil, la de ese perfil. Una compañía que recibió su perfil
+        # al actualizar a la v1.7 sin plantilla sigue con el árbol clásico.
         for project in self:
             if not project.construction_level_template_id:
-                project.construction_level_template_id = \
-                    project.construction_profile_id.level_template_id \
-                    or (project.company_id or self.env.company).construction_level_template_id
+                company = project.company_id or self.env.company
+                profile = project.construction_profile_id
+                if profile and profile != company.construction_profile_id:
+                    template = profile.level_template_id
+                else:
+                    template = company.construction_level_template_id
+                project.construction_level_template_id = template
 
     @api.depends('construction_level_template_id.purchase_destination')
     def _compute_construction_purchase_destination(self):

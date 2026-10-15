@@ -47,8 +47,17 @@ configuración actual (parámetros, funciones y puentes) y muestra las
 diferencias. La pestaña **Por decidir** apunta lo que falta acordar con el
 cliente.
 
-Cada obra guarda el perfil con el que nació y toma su plantilla de niveles: la
-del perfil o, si no tiene, la **Plantilla de niveles** de los Ajustes.
+Cada obra guarda el perfil con el que nació. Las obras nuevas reciben la
+**Plantilla de niveles** de los Ajustes, que aplicar el perfil deja con la
+suya; una obra a la que se le elige otro perfil toma la plantilla de ese
+perfil.
+
+!!! note "Bases que ya usaban el planificador"
+    Al actualizar a la versión 1.7, una compañía sin perfil que ya tiene obras
+    o tipologías queda con el perfil **Mobiliario**, y sus obras con él. Sus
+    plantillas, parámetros y funciones no cambian: una obra sin plantilla
+    conserva el árbol piso › departamento › ambiente › módulo. Las compañías
+    que no usaban el planificador eligen su perfil en los Ajustes.
 
 !!! tip "Consejo"
     Un perfil se pasa de una base a otra con **Exportar** (descarga un JSON

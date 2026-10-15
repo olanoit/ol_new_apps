@@ -13,7 +13,7 @@
                      groups="al_construction_planner.group_planner_manager">
                     <block title="Perfil de vertical" name="construction_planner_profile"
                            help="El rubro de la compañía deja configurado el planificador completo: niveles, etapas, recursos, funciones, puentes y parámetros. Después todo se puede ajustar.">
-                        <setting id="construction_profile" help="Las obras nuevas toman su plantilla de niveles.">
+                        <setting id="construction_profile" help="Aplicarlo deja su plantilla de niveles para las obras nuevas.">
                             <field name="construction_profile_id" options="{'no_create': True}"/>
                             <div class="mt-2">
                                 <button name="action_construction_apply_profile" type="object"
@@ -21,7 +21,7 @@
                                         invisible="not construction_profile_id"/>
                             </div>
                         </setting>
-                        <setting id="construction_level_template" help="La que reciben las obras nuevas si su perfil no tiene una.">
+                        <setting id="construction_level_template" help="La que reciben las obras nuevas. Vacía: piso › departamento › ambiente › módulo.">
                             <field name="construction_level_template_id" options="{'no_create': True}"/>
                         </setting>
                     </block>

@@ -71,3 +71,35 @@ class TestProfiles(TransactionCase):
         again = self.env['construction.vertical.profile']._import_data(data)
         self.assertEqual(again, copy)
         self.assertEqual(copy.name, 'Constructora copiada 2 (test)')
+
+    def test_legacy_companies_get_the_furniture_profile(self):
+        """Migración de Allcenter: la compañía con obras pasa a Mobiliario sin
+        que sus obras sin plantilla cambien de árbol; la que no usaba el
+        planificador y la que ya tiene perfil no cambian."""
+        Company = self.env['res.company']
+        legacy, unused, chosen = Company.create([
+            {'name': 'Mobiliario antiguo (test)'}, {'name': 'Sin obras (test)'},
+            {'name': 'Ya elegida (test)', 'construction_profile_id': self.construction.id}])
+        Project = self.env['project.project']
+        site = Project.with_company(legacy).create(
+            {'name': 'Obra antigua (test)', 'is_construction_site': True, 'company_id': legacy.id})
+        other = Project.with_company(chosen).create(
+            {'name': 'Obra elegida (test)', 'is_construction_site': True, 'company_id': chosen.id})
+        self.assertFalse(site.construction_level_template_id)
+        companies = self.env['construction.vertical.profile']._assign_legacy_companies()
+        self.assertIn(legacy, companies)
+        self.assertNotIn(unused, companies)
+        self.assertEqual(legacy.construction_profile_id, self.furniture)
+        self.assertFalse(unused.construction_profile_id)
+        self.assertEqual(chosen.construction_profile_id, self.construction)
+        self.assertEqual(site.construction_profile_id, self.furniture)
+        self.assertFalse(site.construction_level_template_id)
+        self.assertEqual(other.construction_profile_id, self.construction)
+        # Una obra nueva de la compañía actualizada sigue con el árbol clásico.
+        new_site = Project.with_company(legacy).create(
+            {'name': 'Obra nueva (test)', 'is_construction_site': True, 'company_id': legacy.id})
+        self.assertEqual(new_site.construction_profile_id, self.furniture)
+        self.assertFalse(new_site.construction_level_template_id)
+        # Otra pasada no cambia nada.
+        self.assertFalse(self.env['construction.vertical.profile']._assign_legacy_companies()
+                         & (legacy | unused | chosen))

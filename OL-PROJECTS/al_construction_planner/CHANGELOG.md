@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 33.20261013 — 15/10/2026
+
+- Migración de las bases que ya usaban el planificador (v1.7): una compañía sin perfil con obras o tipologías queda con el perfil «Mobiliario», y sus obras con él, sin cambiar su plantilla, sus parámetros ni sus funciones; una obra sin plantilla conserva el árbol clásico.
+- La plantilla de las obras nuevas sale de la compañía (aplicar un perfil la deja con la suya); solo una obra de otro perfil toma la plantilla de ese perfil.
+
 ## 32.20261013 — 15/10/2026
 
 - Perfiles de vertical (v1.7, M17-05): «Construcción por partidas» y «Mobiliario» reúnen plantilla de niveles, etapas, tipos de recurso, puentes, funciones, parámetros de la compañía y planes analíticos; **Aplicar el perfil** en Ajustes los deja en un paso, la pestaña «Desvíos de la compañía» muestra lo que difiere y **Exportar** / **Importar perfil** los pasan entre bases en JSON.
