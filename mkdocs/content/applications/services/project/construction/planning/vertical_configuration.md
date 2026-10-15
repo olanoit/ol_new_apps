@@ -54,10 +54,16 @@ perfil.
 
 !!! note "Bases que ya usaban el planificador"
     Al actualizar a la versión 1.7, una compañía sin perfil que ya tiene obras
-    o tipologías queda con el perfil **Mobiliario**, y sus obras con él. Sus
-    plantillas, parámetros y funciones no cambian: una obra sin plantilla
-    conserva el árbol piso › departamento › ambiente › módulo. Las compañías
-    que no usaban el planificador eligen su perfil en los Ajustes.
+    o tipologías queda con el perfil **Mobiliario**, y sus obras con él. Las
+    obras sin compañía también lo reciben cuando todas las compañías de la base
+    quedan en Mobiliario. Sus plantillas, parámetros y funciones no cambian:
+    una obra sin plantilla conserva el árbol piso › departamento › ambiente ›
+    módulo. Las compañías que no usaban el planificador eligen su perfil en los
+    Ajustes.
+
+Cada obra tiene su cuenta analítica, por la que va el control del plan: si
+nadie se la crea (Hojas de horas o el requerimiento de obra), el planificador
+la crea al marcar el proyecto como obra.
 
 !!! tip "Consejo"
     Un perfil se pasa de una base a otra con **Exportar** (descarga un JSON

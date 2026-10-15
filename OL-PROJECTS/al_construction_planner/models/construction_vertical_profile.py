@@ -194,6 +194,16 @@ class ConstructionVerticalProfile(models.Model):
              WHERE construction_profile_id IS NULL AND is_construction_site
                AND company_id = ANY(%s)
         """, profile.id, companies.ids))
+        # Las obras sin compañía, si todas las compañías quedan con este perfil
+        # (Allcenter es una sola compañía); con perfiles distintos no hay a
+        # cuál atribuirlas.
+        all_companies = self.env['res.company'].with_context(active_test=False).search([])
+        if all(company.construction_profile_id == profile for company in all_companies):
+            self.env.cr.execute(SQL("""
+                UPDATE project_project SET construction_profile_id = %s
+                 WHERE construction_profile_id IS NULL AND is_construction_site
+                   AND company_id IS NULL
+            """, profile.id))
         Project.invalidate_model(['construction_profile_id'])
         return companies
 

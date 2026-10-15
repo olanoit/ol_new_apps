@@ -11,6 +11,8 @@ Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) 
 
 - Migración de las bases que ya usaban el planificador (v1.7): una compañía sin perfil con obras o tipologías queda con el perfil «Mobiliario», y sus obras con él, sin cambiar su plantilla, sus parámetros ni sus funciones; una obra sin plantilla conserva el árbol clásico.
 - La plantilla de las obras nuevas sale de la compañía (aplicar un perfil la deja con la suya); solo una obra de otro perfil toma la plantilla de ese perfil.
+- Las obras sin compañía reciben el perfil «Mobiliario» cuando todas las compañías de la base quedan con él.
+- Con el núcleo solo, la obra recibe su cuenta analítica al marcarse como obra: sin ella el plan no se podía aprobar.
 
 ## 32.20261013 — 15/10/2026
 

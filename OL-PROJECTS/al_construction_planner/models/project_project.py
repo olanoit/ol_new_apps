@@ -48,7 +48,22 @@ class ProjectProject(models.Model):
                 company = self.env['res.company'].browse(vals.get('company_id')) \
                     if vals.get('company_id') else self.env.company
                 vals['construction_profile_id'] = company.construction_profile_id.id
-        return super().create(vals_list)
+        projects = super().create(vals_list)
+        projects._construction_ensure_account()
+        return projects
+
+    def write(self, vals):
+        res = super().write(vals)
+        if vals.get('is_construction_site'):
+            self._construction_ensure_account()
+        return res
+
+    def _construction_ensure_account(self):
+        """Cuenta analítica de la obra: el control del plan (comprometido y
+        real) va por ella. Sin Hojas de horas ni el requerimiento de obra,
+        nadie más la crea."""
+        self.filtered(lambda p: p.is_construction_site and not p.account_id
+                      and not p.is_template)._create_analytic_account()
 
     @api.depends('construction_profile_id')
     def _compute_construction_level_template_id(self):

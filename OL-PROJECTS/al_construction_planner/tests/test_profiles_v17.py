@@ -85,6 +85,9 @@ class TestProfiles(TransactionCase):
             {'name': 'Obra antigua (test)', 'is_construction_site': True, 'company_id': legacy.id})
         other = Project.with_company(chosen).create(
             {'name': 'Obra elegida (test)', 'is_construction_site': True, 'company_id': chosen.id})
+        # Sin compañía, con compañías de perfiles distintos: no se toca.
+        shared = Project.create({'name': 'Obra sin compañía (test)', 'is_construction_site': True,
+                                 'company_id': False, 'construction_profile_id': False})
         self.assertFalse(site.construction_level_template_id)
         companies = self.env['construction.vertical.profile']._assign_legacy_companies()
         self.assertIn(legacy, companies)
@@ -95,6 +98,7 @@ class TestProfiles(TransactionCase):
         self.assertEqual(site.construction_profile_id, self.furniture)
         self.assertFalse(site.construction_level_template_id)
         self.assertEqual(other.construction_profile_id, self.construction)
+        self.assertFalse(shared.construction_profile_id)
         # Una obra nueva de la compañía actualizada sigue con el árbol clásico.
         new_site = Project.with_company(legacy).create(
             {'name': 'Obra nueva (test)', 'is_construction_site': True, 'company_id': legacy.id})
@@ -103,3 +107,19 @@ class TestProfiles(TransactionCase):
         # Otra pasada no cambia nada.
         self.assertFalse(self.env['construction.vertical.profile']._assign_legacy_companies()
                          & (legacy | unused | chosen))
+
+    def test_legacy_sites_without_company(self):
+        """Si todas las compañías quedan en Mobiliario (Allcenter), las obras
+        sin compañía también, sin cambiar de árbol."""
+        Company = self.env['res.company'].with_context(active_test=False)
+        legacy = Company.create({'name': 'Única antigua (test)'})
+        Company.search([('id', '!=', legacy.id)]).construction_profile_id = self.furniture
+        Project = self.env['project.project']
+        Project.with_company(legacy).create(
+            {'name': 'Obra antigua (test)', 'is_construction_site': True, 'company_id': legacy.id})
+        shared = Project.create({'name': 'Obra sin compañía (test)', 'is_construction_site': True,
+                                 'company_id': False, 'construction_profile_id': False})
+        self.assertEqual(self.env['construction.vertical.profile']._assign_legacy_companies(),
+                         legacy)
+        self.assertEqual(shared.construction_profile_id, self.furniture)
+        self.assertFalse(shared.construction_level_template_id)
