@@ -36,7 +36,7 @@
     </menuitem>
 
     <menuitem id="menu_planner_execution" name="Ejecución" parent="menu_planner_root" sequence="20">
-        <menuitem id="menu_planner_progress" name="Avance" sequence="10">
+        <menuitem id="menu_planner_progress" name="Avance" groups="group_planner_feature_progress" sequence="10">
             <menuitem id="menu_planner_progress_register" name="Registrar avance" action="action_plan_progress_wizard" sequence="10"/>
             <menuitem id="menu_planner_progress_to_validate" name="Avances por validar" action="action_construction_progress_to_validate" sequence="20"/>
             <menuitem id="menu_planner_progress_all" name="Avances" action="action_construction_progress" sequence="30"/>
@@ -58,7 +58,7 @@
     <menuitem id="menu_planner_reports" name="Informes" parent="menu_planner_root" sequence="60" groups="group_planner_planner,group_planner_revenue">
         <menuitem id="menu_planner_reports_plan" name="Plan" sequence="10" groups="group_planner_planner">
             <menuitem id="menu_planner_analysis" name="Análisis del plan" action="action_construction_resource_plan_line_analysis" sequence="10"/>
-            <menuitem id="menu_planner_control" name="Control de saldo" action="action_construction_plan_control" sequence="20"/>
+            <menuitem id="menu_planner_control" name="Control de saldo" action="action_construction_plan_control" groups="group_planner_feature_control" sequence="20"/>
         </menuitem>
         </menuitem>
 

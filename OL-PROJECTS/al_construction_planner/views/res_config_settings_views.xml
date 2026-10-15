@@ -11,6 +11,37 @@
                 <app data-string="Planificación de obra" string="Planificación de obra"
                      name="al_construction_planner"
                      groups="al_construction_planner.group_planner_manager">
+                    <!-- Funciones (v1.7, M17-06): cada puente se instala al activarlo. -->
+                    <block title="Funciones" name="construction_planner_features"
+                           help="Siempre activos: Proyectos, la planificación (árbol, plan de recursos y línea base) y el cronograma. Lo que no se activa no se instala.">
+                        <setting id="construction_feature_control" help="Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso.">
+                            <field name="group_construction_control"/>
+                        </setting>
+                        <setting id="construction_feature_progress" help="Avance por driver con fotos, validación y metrado de los niveles.">
+                            <field name="group_construction_progress"/>
+                        </setting>
+                        <setting id="construction_feature_subcontract" help="OC de servicio de la contrata, liquidación semanal y portal (Compras).">
+                            <field name="module_al_construction_planner_subcontract"/>
+                        </setting>
+                        <setting id="construction_feature_purchase" help="Compra masiva, requerimientos de obra, abastecimiento, precios de compra y material extra.">
+                            <field name="module_al_construction_planner_purchase"/>
+                        </setting>
+                        <setting id="construction_feature_crew" help="Turnos de Planificación y horas de la hoja de horas como real.">
+                            <field name="module_al_construction_planner_crew"/>
+                        </setting>
+                        <setting id="construction_feature_budget" help="Presupuesto analítico al aprobar y control de la OC contra él.">
+                            <field name="module_al_construction_planner_budget"/>
+                        </setting>
+                        <setting id="construction_feature_sale" help="Calendario e ingresos, contratos, entrega semanal, valorización y cronograma valorizado (Ventas).">
+                            <field name="module_al_construction_planner_sale"/>
+                        </setting>
+                        <setting id="construction_feature_mrp" help="Órdenes de fabricación desde el plan (Fabricación).">
+                            <field name="module_al_construction_planner_mrp"/>
+                        </setting>
+                        <setting id="construction_feature_furniture" help="Tipologías de mueble, metros lineales, módulos e importación del ETO.">
+                            <field name="module_al_construction_planner_furniture"/>
+                        </setting>
+                    </block>
                     <block title="Obra" name="construction_planner_contracts">
                         <setting company_dependent="1" id="construction_week_days" string="Semana de liquidación"
                                  help="Valores por defecto de las obras nuevas; cada obra puede cambiarlos. Si el día de liquidación o de pago es feriado del calendario de la compañía, se corre al día hábil anterior.">

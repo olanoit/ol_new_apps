@@ -22,9 +22,14 @@ TASK_FIELD = {
 # no llevan un ancestro propio en las líneas.
 GROUP_LEVEL = 'group'
 ROOT_KEY = 'p'
+TREE_ACTION_FEATURES = {
+    'al_construction_planner.action_plan_progress_wizard':
+        'al_construction_planner.group_planner_feature_progress',
+}
 
-# Acciones de la barra de selección (W-02 a W-08). Las que aún no existen
-# (fases siguientes) no se muestran.
+# Acciones de la barra de selección (W-02 a W-08). Las de un puente que no
+# está instalado no se muestran; las de una función apagada en Ajustes,
+# tampoco (TREE_ACTION_FEATURES).
 TREE_ACTIONS = [
     ('al_construction_planner_purchase.action_plan_purchase_wizard', 'Compra masiva', 'fa-shopping-cart'),
     ('al_construction_planner_purchase.action_plan_request_wizard', 'Requerimiento de obra', 'fa-truck'),
@@ -450,6 +455,9 @@ class ConstructionResourcePlan(models.Model):
             # miran para mostrar el botón a quien puede abrirla.
             action_sudo = self.env.ref(xmlid, raise_if_not_found=False)
             action_sudo = action_sudo.sudo() if action_sudo else action_sudo
+            feature = TREE_ACTION_FEATURES.get(xmlid)
+            if feature and not self.env.user.has_group(feature):
+                continue
             if action_sudo and (not action_sudo.group_ids
                                 or action_sudo.group_ids & user_groups):
                 actions.append({'xmlid': xmlid, 'name': label, 'icon': icon})

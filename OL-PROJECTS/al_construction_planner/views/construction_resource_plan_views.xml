@@ -330,7 +330,7 @@
                             string="Registrar avance"
                             invisible="state not in ('approved', 'in_progress')"
                             context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_progress"/>
+                            groups="al_construction_planner.group_planner_feature_progress"/>
                     <button name="action_sync_space_stages" type="object"
                             string="Crear etapas del cronograma"
                             invisible="not line_count or state in ('closed', 'replaced', 'cancel')"
@@ -366,7 +366,8 @@
                         <button name="action_open_control_analysis" type="object"
                                 class="oe_stat_button" icon="fa-bar-chart"
                                 string="Análisis de control"
-                                invisible="state in ('draft', 'to_approve', 'cancel')"/>
+                                invisible="state in ('draft', 'to_approve', 'cancel')"
+                                groups="al_construction_planner.group_planner_feature_control"/>
                         <button name="action_view_versions" type="object"
                                 class="oe_stat_button" icon="fa-history"
                                 invisible="version_count &lt; 2">
@@ -422,7 +423,7 @@
                                 producción; «Sin etapa» impide aprobar el plan.
                             </p>
                         </page>
-                        <page string="Control" name="control"
+                        <page string="Control" name="control" groups="al_construction_planner.group_planner_feature_control"
                               invisible="state in ('draft', 'to_approve', 'cancel')">
                             <div class="d-flex justify-content-end mb-2">
                                 <button name="action_refresh_control" type="object"
