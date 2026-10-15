@@ -37,9 +37,15 @@ class ConstructionPortal(CustomerPortal):
         # sudo: el usuario portal no lee el plan; el dominio lo limita a sus
         # líneas (contrata = su empresa) en planes vigentes.
         Line_sudo = request.env['construction.resource.plan.line'].sudo()
+        # Solo las etapas de campo y los niveles que reciben avance en la
+        # plantilla de la obra (v1.7, M17-17).
+        field_stages = list(request.env['construction.stage'].sudo()._field_codes())
         domain = [('partner_id', 'child_of', self._construction_partner().id),
                   ('resource_type', 'in', DRIVER_TYPES), ('activity_id', '!=', False),
-                  ('task_id', '!=', False), ('plan_id.state', 'in', OPEN_STATES)]
+                  ('task_id', '!=', False), ('plan_id.state', 'in', OPEN_STATES),
+                  ('stage', 'in', field_stages + [False]),
+                  '|', ('task_id.construction_level_line_id', '=', False),
+                  ('task_id.construction_level_line_id.receives_progress', '=', True)]
         return Line_sudo.search(domain + (extra_domain or []))
 
     def _construction_progress(self):
@@ -104,8 +110,7 @@ class ConstructionPortal(CustomerPortal):
         values.update({
             'page_name': 'construction_progress', 'activity': activity,
             'project': lines.project_id[:1], 'lines': lines.sorted(
-                lambda l: (l.floor_task_id.sequence, l.apartment_task_id.name or '',
-                           l.task_id.name or '')),
+                lambda l: (l.task_path or '', l.task_id.name or '')),
             'tranches': activity.tranche_ids, 'error': error, 'done': done,
             'today': fields.Date.context_today(request.env.user),
         })
@@ -191,11 +196,15 @@ class ConstructionPortal(CustomerPortal):
     # Material extra (v1.6, M16-06)
     # ------------------------------------------------------------------
     def _construction_extra_scope(self, project_id):
-        """Pisos y ambientes donde trabaja la empresa del usuario en la obra, y
-        los materiales del plan vigente de esa obra (no todo el catálogo)."""
+        """Niveles donde trabaja la empresa del usuario en la obra (los de sus
+        líneas y todos los superiores: piso, ambiente, partida, spool…; v1.7,
+        M17-16) y los materiales del plan vigente de esa obra (no todo el
+        catálogo)."""
         lines = self._construction_lines([('project_id', '=', project_id)])
-        places = (lines.floor_task_id | lines.space_task_id).sorted(
-            lambda t: (t.construction_floor_task_id.sequence or t.sequence, t.display_name))
+        ids = {int(i) for path in lines.mapped('task_path') for i in (path or '').split('/') if i}
+        places = lines.task_id.browse(ids).filtered(
+            lambda t: t.construction_level != 'module').sorted(
+            lambda t: (t.construction_path or '', t.id))
         # sudo: el usuario portal no lee el plan; solo los productos de las
         # líneas de material del plan vigente de una obra donde trabaja.
         materials_sudo = request.env['construction.resource.plan.line'].sudo().search([
@@ -237,7 +246,7 @@ class ConstructionPortal(CustomerPortal):
     def _construction_create_extra(self, project, places, products, post):
         place = places.filtered(lambda t: str(t.id) == str(post.get('task_id')))
         if not place:
-            raise UserError(_('Elija el piso o ambiente del pedido.'))
+            raise UserError(_('Elija el nivel de la obra donde se usa el material.'))
         product = products.filtered(lambda p: str(p.id) == str(post.get('product_id')))
         if not product:
             raise UserError(_('Elija el material.'))
@@ -260,8 +269,8 @@ class ConstructionPortal(CustomerPortal):
                 raise UserError(_('La foto %s pesa más de 12 MB.', upload.filename))
             photo = (upload.filename, content, upload.mimetype)
         # sudo: el usuario portal no tiene acceso a los requerimientos de obra;
-        # se crea en borrador (sin reservar stock) en una obra, un piso o
-        # ambiente y un material de su alcance, filtrados arriba.
+        # se crea en borrador (sin reservar stock) en una obra, un nivel y un
+        # material de su alcance, filtrados arriba.
         Request_sudo = Request_model.sudo()
         extra_sudo = Request_sudo.create({
             'project_id': project.id,

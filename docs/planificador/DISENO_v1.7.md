@@ -38,7 +38,7 @@ defecto de ese comportamiento.
 | Fuente de la receta para constructoras (M17-04) | Receta propia del planificador (plantilla de ejecución), que se escribe a mano, se importa desde Excel o se copia desde un Work Item. La copia es en un solo sentido y se puede repetir; no hay sincronización | Los Work Items son modelos `x_` del paquete de industria (`construction_developer`, 303 en `construccion_dev_1`): no se puede depender de ellos en Python ni garantizar sus campos. Copiar evita que un cambio de la industria rompa el plan aprobado |
 | Destino por defecto de la compra masiva en Construcción por partidas (M17-14) | Configurable por plantilla y por obra; el perfil de construcción arranca con «directo a la obra» y mobiliario con «stock general» | La constructora compra por obra con su analítica (planes Proyecto, Disciplina, Partida en `construccion_dev_1`) |
 | Semana de contratas y valorización del perfil de construcción | Se deja con los valores de la compañía (lunes a domingo, liquidación y pago editables) y valorización por avance de partida, marcados «por validar» en el perfil | Hay que validarlo con CREVAL y Montegrande; el perfil se puede reaplicar |
-| Orden de entrega | Estructura (fases 26 a 28) › núcleo con puentes e interruptores (29 y 30) › perfiles (31) › operación nativa y menús (32) › control por nivel y generalizaciones 1.6 (33) › obras de prueba por rubro (34) | Los perfiles activan interruptores y puentes, así que van después de ellos; la estructura va primero porque los puentes se cortan sobre el modelo ya generalizado |
+| Orden de entrega | Estructura (fases 26 a 28) › control por nivel y generalizaciones 1.6 (29) › núcleo con puentes (30) › interruptores (31) › perfiles (32) › operación nativa y menús (33) › obras de prueba por rubro (34) | Los perfiles activan interruptores y puentes, así que van después de ellos. Las generalizaciones van antes del corte: el núcleo no puede quedarse con lo que solo sirve al mueble (metrado en ML, portal por piso o ambiente) |
 | Numeración y nombres | M17-01 a M17-17 como en el requerimiento; puentes `al_construction_planner_<función>` (§4) | Sigue la convención del repositorio |
 
 ## 3. Fases
@@ -48,17 +48,17 @@ defecto de ese comportamiento.
 | 26 | M17-02, M17-03 | Catálogos de etapas y de tipos de recurso; selección dinámica en los 13 campos de etapa; `resource_type_id` y comportamiento equipo; las reglas que dependían de códigos (OF con producción y armado, contrata en instalación) pasan al `kind` de la etapa |
 | 27 | M17-01 | Niveles libres: casillas de comportamiento en el nivel, nivel genérico, `construction_path` y nivel superior almacenados en la tarea y la línea; el árbol, el cronograma y el importador leen la plantilla |
 | 28 | M17-04 | Plantilla de ejecución (receta por unidad del nivel con rendimiento, cuadrilla y etapa), importación Excel y copia desde Work Items; «Generar plan» desde la receta; la tipología de mueble queda como extensión |
-| 29 | M17-07 | Núcleo con dependencias mínimas y puentes; script de migración que instala los puentes que la base ya usa y reasigna sus `ir.model.data` |
-| 30 | M17-06 | Interruptores `module_*` en Ajustes y visibilidad de menús, botones del árbol y asistentes |
-| 31 | M17-05 | Perfiles de vertical (datos), aplicar, desvíos, exportar e importar; perfiles Construcción por partidas y Mobiliario |
-| 32 | M17-08 a M17-12 | Operación en la aplicación nativa y tabla de clasificación de menús |
-| 33 | M17-13 a M17-17 | Control por cualquier nivel, destino de la compra masiva, metrado en la unidad del nivel, material extra y avance por portal en cualquier nivel |
+| 29 | M17-13 a M17-17 | Control por cualquier nivel (niveles 1 a 6 en la línea, línea base y desvío), destino de la compra masiva, metrado en la unidad del nivel, material extra y avance por portal en cualquier nivel |
+| 30 | M17-07 | Núcleo con dependencias mínimas y puentes; script de migración que instala los puentes que la base ya usa y reasigna sus `ir.model.data` |
+| 31 | M17-06 | Interruptores `module_*` en Ajustes y visibilidad de menús, botones del árbol y asistentes |
+| 32 | M17-05 | Perfiles de vertical (datos), aplicar, desvíos, exportar e importar; perfiles Construcción por partidas y Mobiliario |
+| 33 | M17-08 a M17-12 | Operación en la aplicación nativa y tabla de clasificación de menús |
 | 34 | Casos de prueba | Obras de prueba por rubro, documentación y criterios de aceptación |
 
 Cada fase se cierra con la batería completa en verde (hoy 260 pruebas), sin
 cambiar las cifras de las pruebas del paquete 1.6 ni de `ACEPTACION.md`.
 
-## 4. Núcleo y puentes (fase 29)
+## 4. Núcleo y puentes (fase 30)
 
 | Módulo | Depende de | Contenido |
 |---|---|---|
@@ -71,5 +71,5 @@ cambiar las cifras de las pruebas del paquete 1.6 ni de `ACEPTACION.md`.
 | `al_construction_planner_sale` | núcleo, `sale_project` | Calendario e ingresos, entrega semanal, valorización, hitos, cronograma valorizado |
 | `al_construction_planner_furniture` | `al_construction_planner_mrp` | Tipología de mueble, ML, módulos con ancho, ETO |
 
-El corte exacto (qué campo va a qué puente) se fija al empezar la fase 29
+El corte exacto (qué campo va a qué puente) se fija al empezar la fase 30
 con el inventario de dependencias de cada archivo.

@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
-"""Metrado del ambiente (v1.6, M16-03 y M16-04).
+"""Metrado del nivel (v1.6, M16-03 y M16-04; en la unidad del nivel en v1.7,
+M17-15).
 
-El supervisor registra la medida real del ambiente en la unidad de cada
-driver (ML de mueble bajo, ML de mueble alto y módulos) frente a lo
-planificado. La diferencia se valoriza con el costo por unidad de driver de
-las líneas de contrata y personal propio del plan vigente que dependen de ese
-driver. Un metrado con diferencia pasa por la validación por niveles antes de
-lanzar la orden de fabricación del ambiente (W-04)."""
+El supervisor registra la medida real del nivel con etapas (el ambiente, la
+partida, el spool) frente a lo planificado:
+
+* En mobiliario, en la unidad de cada driver (ML de mueble bajo, ML de mueble
+  alto y módulos); la diferencia se valoriza con el costo por unidad de
+  driver de las líneas de contrata y personal propio que dependen de él.
+* En cualquier rubro, el metrado del nivel en la unidad de su receta (m²,
+  und, ml, kg); la diferencia se valoriza con todo lo planificado del nivel
+  entre su metrado.
+
+Un metrado con diferencia pasa por la validación por niveles antes de lanzar
+la orden de fabricación del nivel (W-04)."""
 from lxml import etree
 from markupsafe import Markup
 
@@ -30,6 +37,7 @@ def _is_zero(qty):
 
 
 MEASUREMENT_DRIVERS = [
+    ('qty', 'Metrado del nivel'),
     ('ml_low', 'ML de mueble bajo'),
     ('ml_high', 'ML de mueble alto'),
     ('units', 'Módulos'),
@@ -38,7 +46,7 @@ MEASUREMENT_DRIVERS = [
 
 class ConstructionMeasurement(models.Model):
     _name = 'construction.measurement'
-    _description = 'Metrado del ambiente'
+    _description = 'Metrado del nivel'
     _inherit = ['mail.thread', 'mail.activity.mixin', 'tier.validation']
     _order = 'date desc, id desc'
     _check_company_auto = True
@@ -50,12 +58,13 @@ class ConstructionMeasurement(models.Model):
     _tier_validation_manual_config = False
 
     _task_unique = models.Constraint(
-        'unique(task_id)', 'Cada ambiente tiene un solo metrado: corrija el existente.')
+        'unique(task_id)', 'Cada nivel tiene un solo metrado: corrija el existente.')
 
     name = fields.Char(string='Número', required=True, readonly=True, copy=False, default='/')
     task_id = fields.Many2one(
-        'project.task', string='Ambiente', required=True, index=True, check_company=True,
-        domain="[('construction_level', '=', 'space')]", tracking=True)
+        'project.task', string='Nivel', required=True, index=True, check_company=True,
+        domain="[('construction_level', '=', 'space')]", tracking=True,
+        help='El nivel con etapas de la plantilla: ambiente, partida, spool.')
     project_id = fields.Many2one(
         related='task_id.project_id', string='Obra', store=True, index=True)
     floor_task_id = fields.Many2one(
@@ -123,19 +132,26 @@ class ConstructionMeasurement(models.Model):
             ('project_id', '=', self.project_id.id), ('state', 'in', OPEN_STATES)], limit=1)
 
     def _planned_driver_qty(self):
-        """{driver: cantidad planificada} del ambiente: los ML de su
-        tipología y la cantidad de módulos del ambiente."""
+        """{driver: cantidad planificada} del nivel: su metrado (con receta) o
+        los ML de su tipología y la cantidad de módulos del ambiente."""
         self.ensure_one()
         space = self.task_id
+        if space.construction_execution_template_id or space.construction_qty:
+            return {'qty': space.construction_qty}
         typology = space.construction_typology_id
         modules = self.env['project.task'].search_count([
             ('construction_space_task_id', '=', space.id), ('construction_level', '=', 'module')])
         return {'ml_low': typology.ml_low, 'ml_high': typology.ml_high, 'units': modules}
 
     def _driver_lines(self, plan, driver):
-        """Líneas de contrata y personal propio del ambiente que dependen del
-        driver en ``plan``."""
+        """Líneas de ``plan`` que dependen del driver: todo lo del nivel para el
+        metrado; las de contrata y personal propio del ambiente para ML y
+        módulos."""
         self.ensure_one()
+        if driver == 'qty':
+            return self.env['construction.resource.plan.line'].search([
+                ('plan_id', '=', plan.id),
+                ('task_path', '=like', '%s%%' % self.task_id.construction_path)])
         lines = self.env['construction.resource.plan.line'].search([
             ('plan_id', '=', plan.id), ('space_task_id', '=', self.task_id.id),
             ('resource_type', 'in', ('contract', 'labor')), ('activity_id', '!=', False)])
@@ -152,7 +168,7 @@ class ConstructionMeasurement(models.Model):
         planned = self._planned_driver_qty()
         values = []
         for driver, _label in MEASUREMENT_DRIVERS:
-            qty = planned[driver]
+            qty = planned.get(driver)
             if not qty:
                 continue
             amount = sum(self._driver_lines(plan, driver).mapped('amount_planned')) if plan else 0.0
@@ -278,21 +294,25 @@ class ConstructionMeasurementLine(models.Model):
     company_id = fields.Many2one(
         related='measurement_id.company_id', string='Compañía', store=True, index=True)
     task_id = fields.Many2one(
-        related='measurement_id.task_id', string='Ambiente', store=True, index=True)
+        related='measurement_id.task_id', string='Nivel', store=True, index=True)
     floor_task_id = fields.Many2one(
         related='measurement_id.floor_task_id', string='Piso', store=True)
     state = fields.Selection(related='measurement_id.state', string='Estado', store=True)
     driver = fields.Selection(MEASUREMENT_DRIVERS, string='Driver', required=True)
+    uom_id = fields.Many2one(
+        'uom.uom', string='Unidad', compute='_compute_uom_id',
+        help='La del metrado del nivel (la de su receta o la del nivel de la plantilla); ML y '
+             'módulos en mobiliario.')
     qty_planned = fields.Float(string='Planificado', digits=(16, 2), readonly=True)
     qty_measured = fields.Float(
         string='Medido', digits=(16, 2), required=True,
-        help='La medida real del ambiente en la unidad del driver.')
+        help='La medida real del nivel en la unidad del driver.')
     qty_difference = fields.Float(
         string='Diferencia', digits=(16, 2), compute='_compute_difference', store=True)
     unit_amount = fields.Float(
         string='Costo por unidad', readonly=True, digits=(16, 4),
-        help='Monto planificado de las líneas de contrata y personal propio que dependen de este '
-             'driver, entre lo planificado.')
+        help='Monto planificado de las líneas que dependen de este driver, entre lo '
+             'planificado.')
     amount_difference = fields.Monetary(
         string='Diferencia en soles', compute='_compute_difference', store=True,
         currency_field='currency_id')
@@ -300,6 +320,17 @@ class ConstructionMeasurementLine(models.Model):
 
     _driver_unique = models.Constraint(
         'unique(measurement_id, driver)', 'Cada driver va una sola vez en el metrado.')
+
+    @api.depends('driver', 'task_id.construction_qty_uom_id',
+                 'task_id.construction_level_line_id.measure_uom_id')
+    def _compute_uom_id(self):
+        meter, unit = self.env.ref('uom.product_uom_meter'), self.env.ref('uom.product_uom_unit')
+        for line in self:
+            if line.driver == 'qty':
+                line.uom_id = line.task_id.construction_qty_uom_id \
+                    or line.task_id.construction_level_line_id.measure_uom_id
+            else:
+                line.uom_id = unit if line.driver == 'units' else meter
 
     @api.depends('qty_planned', 'qty_measured', 'unit_amount')
     def _compute_difference(self):

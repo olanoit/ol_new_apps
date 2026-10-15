@@ -4,7 +4,7 @@ from datetime import timedelta
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .common import WEEKDAYS
+from .common import PURCHASE_DESTINATIONS, WEEKDAYS
 from .construction_resource_plan import DRAFT_STATES, OPEN_STATES
 
 
@@ -16,6 +16,10 @@ class ProjectProject(models.Model):
         help='Niveles del árbol de la obra y su nombre (Torre › Piso › Departamento › '
              'Ambiente › Mueble › Módulo). Vacía: Piso › Departamento › Ambiente › Módulo. '
              'No se cambia con un plan aprobado.')
+    construction_purchase_destination = fields.Selection(
+        PURCHASE_DESTINATIONS, string='Destino de la compra masiva',
+        compute='_compute_construction_purchase_destination', store=True, readonly=False,
+        help='El de la plantilla de niveles; se puede cambiar en cada obra (v1.7, M17-14).')
     construction_plan_ids = fields.One2many(
         'construction.resource.plan', 'project_id', string='Planes de recursos')
     construction_plan_count = fields.Integer(
@@ -24,6 +28,13 @@ class ProjectProject(models.Model):
         'construction.typology', 'project_id', string='Tipologías')
     construction_typology_count = fields.Integer(
         string='Nº de tipologías', compute='_compute_construction_plan_count')
+
+    @api.depends('construction_level_template_id.purchase_destination')
+    def _compute_construction_purchase_destination(self):
+        for project in self:
+            project.construction_purchase_destination = \
+                project.construction_level_template_id.purchase_destination or \
+                project.construction_purchase_destination or 'general'
 
     # Semana de la obra (especificación: jueves a miércoles, liquidación el
     # jueves y pago el sábado; configurable por obra con valor por defecto de

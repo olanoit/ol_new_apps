@@ -115,8 +115,6 @@
                 <t t-call="portal.portal_table">
                     <thead>
                         <tr>
-                            <th>Piso</th>
-                            <th>Unidad</th>
                             <th>Nivel</th>
                             <th class="text-end">Planificado</th>
                             <th class="text-end">Validado</th>
@@ -125,9 +123,7 @@
                     </thead>
                     <tbody>
                         <tr t-foreach="lines" t-as="line">
-                            <td t-out="line.floor_task_id.name"/>
-                            <td t-out="line.apartment_task_id.name"/>
-                            <td t-out="line.task_id.name"/>
+                            <td t-out="line.task_id._construction_path_name()"/>
                             <td class="text-end"><t t-out="'%.2f' % line.qty_planned"/> <t t-out="line.product_uom_id.name"/></td>
                             <td class="text-end" t-out="'%.2f' % line.qty_executed"/>
                             <td class="text-end">
@@ -233,10 +229,10 @@
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label class="form-label" for="task_id">Piso o ambiente</label>
+                        <label class="form-label" for="task_id">Dónde se usa</label>
                         <select class="form-select" name="task_id" id="task_id" required="required">
                             <option value="">Elija dónde se usa</option>
-                            <option t-foreach="places" t-as="place" t-att-value="place.id" t-out="place.display_name"/>
+                            <option t-foreach="places" t-as="place" t-att-value="place.id" t-out="place._construction_path_name()"/>
                         </select>
                     </div>
                     <div class="col-md-6">

@@ -25,6 +25,7 @@
                     </div>
                     <group>
                         <field name="summary"/>
+                        <field name="purchase_destination"/>
                         <field name="active" invisible="1"/>
                     </group>
                     <field name="line_ids">

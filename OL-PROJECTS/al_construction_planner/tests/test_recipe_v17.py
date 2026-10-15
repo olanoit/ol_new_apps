@@ -194,5 +194,6 @@ class TestRecipe(TestFreeLevels):
 
 # Solo las pruebas propias: las de TestFreeLevels ya corren en su clase.
 for _name in dir(TestFreeLevels):
-    if _name.startswith('test_') and _name not in vars(TestRecipe):
+    if _name.startswith('test_') and callable(getattr(TestFreeLevels, _name)) \
+                and _name not in vars(TestRecipe):
         setattr(TestRecipe, _name, None)

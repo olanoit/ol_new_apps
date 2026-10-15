@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 """W-02 «Compra masiva» (P-10): un requerimiento de compra (OCA) con la
-necesidad de la selección, siempre como stock general (v1.6, M16-02): sin
-analítica, descontando lo libre en el central y lo que ya viene en compras.
-El comprado sube en las líneas del plan; el costo cae a la obra al consumir."""
+necesidad de la selección, con el destino de la obra (v1.7, M17-14):
+
+* Stock general (mobiliario, v1.6 M16-02): sin analítica, descontando lo
+  libre en el central y lo que ya viene en compras; el costo cae a la obra al
+  consumir.
+* Directo a la obra con su analítica (constructora): toda la necesidad, con
+  la distribución de las líneas, y la OC entrega en la ubicación de la obra.
+
+En los dos sube el comprado de las líneas del plan."""
 from collections import defaultdict
 from datetime import date
 
@@ -10,20 +16,20 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_round
 
+from ..models.common import PURCHASE_DESTINATIONS
+
 
 class ConstructionPlanPurchaseWizard(models.TransientModel):
     _name = 'construction.plan.purchase.wizard'
     _inherit = 'construction.plan.supply.mixin'
     _description = 'Compra masiva desde el plan'
 
-    # Desde la v1.6 (M16-02) la compra masiva entra siempre como stock general:
-    # el modo «con analítica de la obra» se retiró. El campo queda para el
-    # texto del requerimiento y el modo guardado en sus líneas.
     mode = fields.Selection(
-        [('general', 'Stock general')],
-        string='Modo', required=True, default='general', readonly=True,
-        help='Sin analítica: se compra la necesidad menos lo libre en el central y lo que ya '
-             'viene en compras. El costo cae a la obra al consumir.')
+        PURCHASE_DESTINATIONS, string='Destino', required=True,
+        compute='_compute_mode', store=True, readonly=False, precompute=True,
+        help='El de la obra. Stock general: sin analítica, se compra la necesidad menos lo '
+             'libre en el central y lo que ya viene en compras. Directo a la obra: con la '
+             'analítica de la obra, toda la necesidad, entregada en la obra.')
     picking_type_id = fields.Many2one(
         'stock.picking.type', string='Destino', required=True, check_company=True,
         domain="[('code', '=', 'incoming'), ('company_id', '=', company_id)]",
@@ -53,6 +59,22 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
         if product_ids and 'product_ids' in fields_list:
             res['product_ids'] = [Command.set(product_ids)]
         return res
+
+    @api.depends('plan_id.project_id.construction_purchase_destination')
+    def _compute_mode(self):
+        for wizard in self:
+            wizard.mode = wizard.plan_id.project_id.construction_purchase_destination \
+                or wizard.mode or 'general'
+
+    def _get_analytic_distribution(self, plan_lines):
+        """Distribución de la obra: la de las líneas si todas comparten una; si
+        no, la cuenta analítica de la obra al 100 %."""
+        distributions = {tuple(sorted((line.analytic_distribution or {}).items()))
+                         for line in plan_lines}
+        if len(distributions) == 1 and next(iter(distributions)):
+            return dict(next(iter(distributions)))
+        account = self.plan_id.project_id.account_id
+        return {str(account.id): 100.0} if account else False
 
     @api.model
     def _default_picking_type(self):
@@ -116,12 +138,15 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 stock_left[product] = [max(ctx_product.free_qty, 0.0),
                                        max(ctx_product.incoming_qty, 0.0)]
             free, incoming = stock_left[product]
-            # Lo libre y lo que ya viene cubren la necesidad, en ese orden; lo
-            # que cubre no vuelve a usarse en el grupo siguiente.
-            from_free = min(free, need)
-            from_incoming = min(incoming, need - from_free)
-            stock_left[product] = [free - from_free, incoming - from_incoming]
-            to_buy = need - from_free - from_incoming
+            if self.mode == 'general':
+                # Lo libre y lo que ya viene cubren la necesidad, en ese orden;
+                # lo que cubre no vuelve a usarse en el grupo siguiente.
+                from_free = min(free, need)
+                from_incoming = min(incoming, need - from_free)
+                stock_left[product] = [free - from_free, incoming - from_incoming]
+                to_buy = need - from_free - from_incoming
+            else:
+                to_buy = need
             purchase_uom = self._get_purchase_uom(product)
             qty_to_buy = product.uom_id._compute_quantity(to_buy, purchase_uom, round=False)
             if self._is_whole_uom(purchase_uom):
@@ -168,7 +193,8 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 'product_uom_id': line.purchase_uom_id.id,
                 'product_qty': line.qty_to_buy,
                 'date_required': line.date_required or fields.Date.context_today(self),
-                'analytic_distribution': False,
+                'analytic_distribution': (self._get_analytic_distribution(line.plan_line_ids)
+                                          if self.mode == 'project' else False),
                 'construction_plan_mode': self.mode,
             })
             qty = line.purchase_uom_id._compute_quantity(line.qty_to_buy, line.product_id.uom_id)

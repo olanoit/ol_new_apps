@@ -357,7 +357,18 @@ class ConstructionResourcePlan(models.Model):
             'al_construction_planner.action_construction_plan_control')
         action['name'] = self.env._('Análisis de control · %s', self.display_name)
         action['domain'] = [('plan_id', '=', self.id)]
-        action['context'] = {'search_default_group_stage': 1, 'search_default_group_type': 1}
+        # Filas por los niveles de la plantilla hasta el nivel con etapas
+        # (disciplina › subpartida › partida; piso › departamento › ambiente).
+        lines = self.project_id.construction_level_template_id.line_ids.sorted(
+            lambda l: (l.sequence, l.id))
+        depth = next((index for index, line in enumerate(lines, start=1)
+                      if line.role == 'space'), 3)
+        action['context'] = {
+            'pivot_row_groupby': ['level_%s_id' % depth for depth in range(1, min(depth, 6) + 1)],
+            'pivot_column_groupby': ['resource_type_id'],
+            'pivot_measures': ['amount_planned', 'amount_baseline', 'amount_committed',
+                               'amount_actual', 'amount_deviation'],
+        }
         return action
 
     def _compute_version_count(self):
@@ -866,6 +877,22 @@ class ConstructionResourcePlanLine(models.Model):
         string='Tipo de nivel', related='task_id.construction_level', store=True)
     task_path = fields.Char(
         string='Ruta del nivel', related='task_id.construction_path', store=True, index=True)
+    # Control por cualquier nivel de la plantilla (v1.7, M17-13): el ancestro
+    # de cada profundidad (torre o disciplina, piso o subpartida, unidad o
+    # partida…), para agrupar el análisis sin recorrer el árbol.
+    level_1_id = fields.Many2one(
+        'project.task', string='Nivel 1', compute='_compute_level_ids', store=True, index=True,
+        help='Primer nivel de la plantilla de la obra (torre, disciplina, área).')
+    level_2_id = fields.Many2one(
+        'project.task', string='Nivel 2', compute='_compute_level_ids', store=True, index=True)
+    level_3_id = fields.Many2one(
+        'project.task', string='Nivel 3', compute='_compute_level_ids', store=True, index=True)
+    level_4_id = fields.Many2one(
+        'project.task', string='Nivel 4', compute='_compute_level_ids', store=True, index=True)
+    level_5_id = fields.Many2one(
+        'project.task', string='Nivel 5', compute='_compute_level_ids', store=True, index=True)
+    level_6_id = fields.Many2one(
+        'project.task', string='Nivel 6', compute='_compute_level_ids', store=True, index=True)
     # Ancestros por nivel: base de la acumulación del árbol y del filtro por
     # selección (read_group por nivel, sin recursión en Python).
     floor_task_id = fields.Many2one(
@@ -914,6 +941,18 @@ class ConstructionResourcePlanLine(models.Model):
     amount_budgeted = fields.Monetary(
         string='Presupuesto', readonly=True, copy=False, currency_field='currency_id',
         help='Monto de la línea congelado al aprobar el plan.')
+    amount_baseline = fields.Monetary(
+        string='Línea base', compute='_compute_baseline', store=True,
+        currency_field='currency_id',
+        help='Presupuesto de la versión aprobada: el congelado de la línea o, en una versión '
+             'en preparación, el de su línea anterior.')
+    amount_version_diff = fields.Monetary(
+        string='Cambio contra la línea base', compute='_compute_baseline', store=True,
+        currency_field='currency_id', help='Planificado menos línea base.')
+    amount_deviation = fields.Monetary(
+        string='Desvío', compute='_compute_deviation', store=True, currency_field='currency_id',
+        help='Comprometido más real menos la línea base: positivo es gasto por encima de lo '
+             'aprobado.')
     # Control (P-13): almacenados para filtrar, agrupar y analizar en pivote.
     # No dependen de campos almacenados (salen de compras, inventario,
     # fabricación, avances, turnos y hojas de horas): los actualiza
@@ -1408,6 +1447,30 @@ class ConstructionResourcePlanLine(models.Model):
             if not self.price_unit_planned:
                 self.price_unit_planned = activity._get_rate(
                     self.plan_id.project_id, self.partner_id)[0]
+
+    @api.depends('task_path')
+    def _compute_level_ids(self):
+        Task = self.env['project.task']
+        for line in self:
+            ids = [int(i) for i in (line.task_path or '').split('/') if i]
+            ids += [False] * (6 - len(ids))
+            for depth, task_id in enumerate(ids[:6], start=1):
+                line['level_%s_id' % depth] = Task.browse(task_id) if task_id else Task
+
+    @api.depends('amount_budgeted', 'previous_line_id.amount_budgeted', 'amount_planned',
+                 'plan_id.budget_analytic_id')
+    def _compute_baseline(self):
+        for line in self:
+            baseline = line.amount_budgeted if line.plan_id.budget_analytic_id \
+                else line.previous_line_id.amount_budgeted
+            line.amount_baseline = baseline
+            line.amount_version_diff = line.amount_planned - baseline
+
+    @api.depends('amount_baseline', 'amount_committed', 'amount_actual')
+    def _compute_deviation(self):
+        for line in self:
+            line.amount_deviation = line.amount_committed + line.amount_actual \
+                - line.amount_baseline
 
     @api.constrains('stage')
     def _check_stage_code(self):

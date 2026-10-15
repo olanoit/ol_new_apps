@@ -229,6 +229,10 @@
                         domain="[('plan_state', 'in', ('approved', 'in_progress'))]"/>
                 <group>
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>
+                    <filter string="Nivel 1" name="group_level_1" context="{'group_by': 'level_1_id'}"/>
+                    <filter string="Nivel 2" name="group_level_2" context="{'group_by': 'level_2_id'}"/>
+                    <filter string="Nivel 3" name="group_level_3" context="{'group_by': 'level_3_id'}"/>
+                    <filter string="Nivel 4" name="group_level_4" context="{'group_by': 'level_4_id'}"/>
                     <filter string="Tipo de recurso" name="group_type" context="{'group_by': 'resource_type_id'}"/>
                     <filter string="Estado" name="group_line_state" context="{'group_by': 'line_state'}"/>
                     <filter string="Contrata o proveedor" name="group_partner" context="{'group_by': 'partner_id'}"/>
@@ -252,9 +256,11 @@
             <pivot string="Análisis de control" sample="1">
                 <field name="stage" type="row"/>
                 <field name="amount_planned" type="measure" string="Planificado"/>
+                <field name="amount_baseline" type="measure"/>
                 <field name="amount_committed" type="measure"/>
                 <field name="amount_actual" type="measure"/>
                 <field name="amount_remaining" type="measure"/>
+                <field name="amount_deviation" type="measure"/>
             </pivot>
         </field>
     </record>
@@ -283,9 +289,9 @@
         <field name="context">{'search_default_current_plan': 1, 'search_default_group_stage': 1, 'search_default_group_type': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Aún no hay líneas en planes vigentes</p>
-            <p>Planificado, comprometido, real y saldo por etapa y tipo de recurso, por contrata
-               o por producto. El % ejecutado de cada etapa está en la pestaña «Control» del
-               plan.</p>
+            <p>Planificado, línea base, comprometido, real, saldo y desvío por los niveles de la
+               plantilla de la obra, por etapa y tipo de recurso, por contrata o por producto.
+               El % ejecutado de cada etapa está en la pestaña «Control» del plan.</p>
         </field>
     </record>
 

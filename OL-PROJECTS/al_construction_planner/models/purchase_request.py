@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
 
+from .common import PURCHASE_DESTINATIONS
+
 
 class PurchaseRequest(models.Model):
     _inherit = 'purchase.request'
@@ -29,7 +31,7 @@ class PurchaseRequestLine(models.Model):
         'construction.resource.plan.allocation', 'purchase_request_line_id',
         string='Asignaciones del plan')
     construction_plan_mode = fields.Selection(
-        [('project', 'Con analítica de la obra'), ('general', 'Stock general')],
+        PURCHASE_DESTINATIONS,
         string='Modo de compra masiva', readonly=True, copy=False)
 
     def write(self, vals):
@@ -38,3 +40,21 @@ class PurchaseRequestLine(models.Model):
             self.env['construction.resource.plan.allocation']._refresh_for_documents(
                 'purchase_request_line_id', self)
         return res
+
+
+class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
+    _inherit = 'purchase.request.line.make.purchase.order'
+
+    def _al_is_general_stock(self, item):
+        """La compra masiva del plan directo a la obra (v1.7, M17-14) conserva
+        la analítica de la obra."""
+        if item.line_id.construction_plan_mode == 'project':
+            return False
+        return super()._al_is_general_stock(item)
+
+    def _al_final_location(self, item):
+        """Directo a la obra: la OC entrega en la ubicación de la obra."""
+        line = item.line_id
+        if line.construction_plan_mode == 'project':
+            return line.request_id.construction_plan_id.project_id.construction_location_id
+        return super()._al_final_location(item)

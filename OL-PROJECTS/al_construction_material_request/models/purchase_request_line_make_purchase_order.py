@@ -13,19 +13,24 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         vals['product_qty'] = line.al_qty_to_order
         return vals
 
-    @staticmethod
-    def _al_is_general_stock(item):
+    def _al_is_general_stock(self, item):
         """La compra masiva entra como stock general (v1.6, M16-02): sin
         analítica de la obra. La entrega directa en obra conserva su destino y
         su analítica."""
         return item.line_id.construction_request_line_id.supply_mode != 'direct'
 
+    def _al_final_location(self, item):
+        """Ubicación final de la entrega directa en obra (vacía: el almacén)."""
+        line = item.line_id.construction_request_line_id
+        return line.request_id.location_dest_id if line.supply_mode == 'direct' \
+            else self.env['stock.location']
+
     @api.model
     def _prepare_purchase_order_line(self, po, item):
         vals = super()._prepare_purchase_order_line(po, item)
-        line = item.line_id.construction_request_line_id
-        if line.supply_mode == 'direct':
-            vals['location_final_id'] = line.request_id.location_dest_id.id
+        site = self._al_final_location(item)
+        if site:
+            vals['location_final_id'] = site.id
         if self._al_is_general_stock(item):
             vals['analytic_distribution'] = False
         return vals
@@ -41,8 +46,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             domain = [leaf for leaf in domain
                       if not (isinstance(leaf, (list, tuple)) and leaf[0] == 'analytic_distribution')]
             domain.append(('analytic_distribution', '=', False))
-        line = item.line_id.construction_request_line_id
-        site = line.supply_mode == 'direct' and line.request_id.location_dest_id
+        site = self._al_final_location(item)
         domain.append(('location_final_id', '=', site.id if site else False))
         return domain
 

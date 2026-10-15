@@ -124,6 +124,16 @@ class ProjectTask(models.Model):
             task.construction_space_task_id = ancestors['space']
             task.construction_furniture_task_id = ancestors['furniture']
 
+    def _construction_path_name(self):
+        """Nombres de los niveles de la tarea, de arriba abajo: «Torre A › Piso 01
+        › Dpto 101 › Cocina», «ARQ › ARQ-03 › Muro drywall RF»."""
+        self.ensure_one()
+        ids = [int(i) for i in (self.construction_path or '').split('/') if i]
+        # sudo: solo los nombres de los niveles superiores de una tarea que el
+        # usuario ya ve (el portal no lee las tareas de la obra).
+        tasks_sudo = self.sudo().browse(ids)
+        return ' › '.join(tasks_sudo.mapped('name')) or self.name
+
     @api.depends('parent_id.construction_path', 'construction_level')
     def _compute_construction_path(self):
         for task in self:

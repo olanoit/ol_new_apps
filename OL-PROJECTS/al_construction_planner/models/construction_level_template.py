@@ -17,7 +17,7 @@ subnivel y un nivel de detalle; los agrupadores van siempre arriba y el
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-from .common import LEVEL_ROLES, LEVELS
+from .common import LEVEL_ROLES, LEVELS, PURCHASE_DESTINATIONS
 
 ROLE_ORDER = {'group': 0, 'unit': 1, 'space': 2, 'furniture': 3, 'module': 4}
 
@@ -33,6 +33,12 @@ class ConstructionLevelTemplate(models.Model):
     line_ids = fields.One2many(
         'construction.level.template.line', 'template_id', string='Niveles', copy=True)
     summary = fields.Char(string='Niveles en orden', compute='_compute_summary')
+    purchase_destination = fields.Selection(
+        PURCHASE_DESTINATIONS, string='Destino de la compra masiva', default='general',
+        required=True,
+        help='Valor por defecto de las obras con esta plantilla. Stock general: sin analítica, '
+             'descuenta lo libre en el central y el costo cae a la obra al consumir. Directo a '
+             'la obra: con la analítica de la obra y sin descontar el central.')
 
     @api.depends('line_ids.name', 'line_ids.sequence')
     def _compute_summary(self):

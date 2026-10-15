@@ -49,6 +49,13 @@ def stage_selection(model):
     return model.env['construction.stage']._get_selection()
 
 
+# Destino de la compra masiva (v1.7, M17-14): stock general (mobiliario) o
+# directo a la obra con su analítica (constructora).
+PURCHASE_DESTINATIONS = [
+    ('general', 'Stock general'),
+    ('project', 'Directo a la obra con su analítica'),
+]
+
 # Comportamiento del tipo de recurso (v1.7, M17-03): el tipo visible es el del
 # catálogo construction.resource.type; esto es lo que hace el planificador
 # con la línea.

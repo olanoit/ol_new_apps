@@ -27,7 +27,7 @@
                         </div>
                     </group>
                     <group string="Compra">
-                        <field name="mode" invisible="1"/>
+                        <field name="mode" widget="radio"/>
                         <field name="picking_type_id" options="{'no_create': True}"/>
                         <field name="group_by" widget="radio"/>
                         <field name="amount_need" widget="monetary"/>

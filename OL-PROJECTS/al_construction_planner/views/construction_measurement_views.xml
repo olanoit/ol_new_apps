@@ -40,6 +40,7 @@
                     <field name="line_ids" readonly="state != 'draft'">
                         <list editable="bottom" create="false" delete="false">
                             <field name="driver" readonly="1"/>
+                            <field name="uom_id"/>
                             <field name="qty_planned"/>
                             <field name="qty_measured"/>
                             <field name="qty_difference" decoration-danger="qty_difference &gt; 0"
@@ -120,9 +121,10 @@
         <field name="view_mode">list,form,pivot</field>
         <field name="search_view_id" ref="construction_measurement_view_search"/>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Registre el metrado de los ambientes</p>
-            <p>El supervisor anota la medida real de cada ambiente (ML de mueble bajo y alto,
-               módulos) frente a lo planificado. Con diferencia, la jefatura de proyectos la
+            <p class="o_view_nocontent_smiling_face">Registre el metrado de los niveles</p>
+            <p>El supervisor anota la medida real de cada ambiente, partida o spool frente a lo
+               planificado: el metrado en la unidad de su receta (m², und, ml, kg) o, en
+               mobiliario, los ML de mueble bajo y alto y los módulos. Con diferencia, la jefatura de proyectos la
                aprueba antes de lanzar la orden de fabricación del ambiente. Use «Generar
                metrados» para cargar un piso entero.</p>
         </field>
@@ -138,6 +140,7 @@
                 <field name="floor_task_id" optional="show"/>
                 <field name="task_id" readonly="1"/>
                 <field name="driver" readonly="1"/>
+                <field name="uom_id" optional="show"/>
                 <field name="qty_planned"/>
                 <field name="qty_measured" readonly="state != 'draft'"/>
                 <field name="qty_difference"/>
