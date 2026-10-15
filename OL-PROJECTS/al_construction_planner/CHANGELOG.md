@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 27.20261013 — 15/10/2026
+
+- La ayuda de la compra masiva ya no menciona el modo «con analítica de la obra», retirado en la v1.6 (M16-02).
+
 ## 26.20261013 — 15/10/2026
 
 - Grupo «Planificación de obra: jefatura de proyectos» (v1.6, M16-09): aprueba las reglas de validación del planificador (excesos, liquidaciones, metrados, material extra y la regla del plan), así que funcionan con un reemplazo; el administrador deja de ser el aprobador por defecto. La actualización pasa las reglas existentes a la jefatura y suma a ella a los administradores actuales, que se pueden quitar después.

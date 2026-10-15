@@ -54,10 +54,9 @@
                     </list>
                 </field>
                 <p class="text-muted small">
-                    Necesidad: lo planificado menos lo ya comprado o pedido por la obra.
-                    Con analítica se compra toda la necesidad; en stock general, la necesidad
-                    menos lo libre en el central y lo que ya viene en compras. Las planchas y
-                    demás unidades se redondean a entero.
+                    Necesidad: lo planificado menos lo ya comprado o pedido por la obra. Se compra
+                    como stock general: la necesidad menos lo libre en el central y lo que ya
+                    viene en compras. Las planchas y demás unidades se redondean a entero.
                 </p>
                 <footer>
                     <button name="action_create" type="object" string="Crear requerimiento de compra"

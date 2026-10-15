@@ -1218,6 +1218,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: 27.20261013
+    fecha: 15/10/2026
+    cambios:
+      - "La ayuda de la compra masiva ya no menciona el modo «con analítica de la obra», retirado en la v1.6 (M16-02)."
   - version: 26.20261013
     fecha: 15/10/2026
     cambios:
