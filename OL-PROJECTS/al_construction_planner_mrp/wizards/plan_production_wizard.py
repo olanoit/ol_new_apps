@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-"""W-04 «Orden de fabricación»: una OF por piso (o por toda la selección) y
-tipología, con el producto de la tipología por la cantidad de ambientes y los
-componentes de su BOM."""
+"""W-04 «Orden de fabricación» (en su puente desde la v1.7, M17-09): una OF por
+agrupador (o por toda la selección) y producto, para los niveles con etapas
+de la selección. El producto sale de la línea de producción del plan del
+nivel (el spool con su lista de materiales) o, en mobiliario, de la
+tipología del ambiente; los componentes de las etapas de fabricación suben
+lo consumido de las líneas del plan."""
 from collections import defaultdict
 
 from odoo import Command, api, fields, models
@@ -16,8 +19,8 @@ class ConstructionPlanProductionWizard(models.TransientModel):
     group_by = fields.Selection(
         [('floor', 'Piso'), ('selection', 'Selección')], string='Una OF por',
         required=True, default='floor',
-        help='Piso: una OF por piso y tipología. Selección: una OF por tipología para todo '
-             'lo seleccionado.')
+        help='Piso: una OF por agrupador (piso, línea) y producto. Selección: una OF por '
+             'producto para todo lo seleccionado.')
     picking_type_id = fields.Many2one(
         'stock.picking.type', string='Planta', required=True, check_company=True,
         domain="[('code', '=', 'mrp_operation'), ('company_id', '=', company_id)]",
@@ -62,15 +65,18 @@ class ConstructionPlanProductionWizard(models.TransientModel):
         # Metrado con diferencia sin aprobar (v1.6, M16-04): la OF del
         # ambiente espera la aprobación de la jefatura.
         pending = self.env['construction.measurement']._construction_blocked_spaces(spaces - busy)
-        groups = defaultdict(lambda: self.env['project.task'])
+        groups = defaultdict(lambda: [self.env['project.task'], 0.0])
         no_bom = self.env['project.task']
         for space in (spaces - busy - pending).sorted(lambda t: (t.construction_floor_task_id.id, t.id)):
-            typology = space.construction_typology_id
-            if not (typology.bom_id and typology.product_tmpl_id.product_variant_id):
+            source = self._production_source(space)
+            if not source:
                 no_bom |= space
                 continue
+            product, bom, qty, typology = source
             floor = space.construction_floor_task_id if self.group_by == 'floor' else False
-            groups[(floor or self.env['project.task'], typology)] |= space
+            group = groups[(floor or self.env['project.task'], product, bom, typology)]
+            group[0] |= space
+            group[1] += qty
         notes = []
         if spaces & busy:
             notes.append(self.env._('Ya en una OF: %s.', ', '.join(
@@ -79,17 +85,35 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             notes.append(self.env._('Metrado con diferencia por aprobar: %s.', ', '.join(
                 pending.mapped('display_name'))))
         if no_bom:
-            notes.append(self.env._('Sin tipología con producto y BOM: %s.', ', '.join(
+            notes.append(self.env._('Sin producto con lista de materiales: %s.', ', '.join(
                 no_bom.mapped('display_name'))))
         values = [{
             'group_task_id': floor.id,
-            'typology_id': typology.id,
-            'product_id': typology.product_tmpl_id.product_variant_id.id,
-            'bom_id': typology.bom_id.id,
+            'typology_id': typology.id if typology else False,
+            'product_id': product.id,
+            'bom_id': bom.id,
             'space_task_ids': [Command.set(group_spaces.ids)],
             'space_count': len(group_spaces),
-        } for (floor, typology), group_spaces in groups.items()]
+            'qty': qty,
+        } for (floor, product, bom, typology), (group_spaces, qty) in groups.items()]
         return values, notes
+
+    def _production_source(self, space):
+        """(producto, BOM, cantidad, tipología) que fabrica el nivel: la línea de
+        producción del plan del nivel con su lista de materiales. ``None`` si no
+        fabrica nada."""
+        lines = self.env['construction.resource.plan.line'].search([
+            ('plan_id', '=', self.plan_id.id), ('space_task_id', '=', space.id),
+            ('resource_type', '=', 'production'), ('product_id', '!=', False)])
+        if not lines:
+            return None
+        product = lines[0].product_id
+        bom = self.env['mrp.bom']._bom_find(product, company_id=self.company_id.id)[product]
+        if not bom:
+            return None
+        qty = sum(line._qty_to_product_uom(line.qty_planned)
+                  for line in lines.filtered(lambda l: l.product_id == product))
+        return product, bom, qty, self.env['construction.typology']
 
     def action_create(self):
         self.ensure_one()
@@ -104,12 +128,13 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             vals = {
                 'product_id': line.product_id.id,
                 'bom_id': bom.id,
-                'product_qty': line.space_count,
+                'product_qty': line.qty,
                 'product_uom_id': bom.product_uom_id.id,
                 'picking_type_id': self.picking_type_id.id,
                 'date_start': self.date_start,
                 'origin': ' · '.join(filter(None, [
-                    plan.display_name, line.group_task_id.display_name, line.typology_id.code])),
+                    plan.display_name, line.group_task_id.display_name,
+                    line.typology_id.code or line.product_id.default_code])),
                 'company_id': plan.company_id.id,
                 'construction_plan_id': plan.id,
                 'construction_space_task_ids': [Command.set(line.space_task_ids.ids)],
@@ -139,11 +164,12 @@ class ConstructionPlanProductionWizardLine(models.TransientModel):
     wizard_id = fields.Many2one(
         'construction.plan.production.wizard', string='Asistente', required=True,
         ondelete='cascade')
-    group_task_id = fields.Many2one('project.task', string='Piso')
+    group_task_id = fields.Many2one('project.task', string='Agrupador')
     typology_id = fields.Many2one('construction.typology', string='Tipología')
-    product_id = fields.Many2one('product.product', string='Producto de la tipología')
+    product_id = fields.Many2one('product.product', string='Producto')
     bom_id = fields.Many2one('mrp.bom', string='Lista de materiales')
     space_task_ids = fields.Many2many(
         'project.task', 'construction_plan_prod_wiz_line_space_rel', 'wizard_line_id',
         'task_id', string='Ambientes')
-    space_count = fields.Integer(string='Cantidad de ambientes')
+    space_count = fields.Integer(string='Niveles')
+    qty = fields.Float(string='Cantidad a fabricar', digits='Product Unit')

@@ -49,7 +49,8 @@ class ConstructionValuation(models.Model):
     milestone_line_ids = fields.One2many(
         'construction.valuation.milestone', 'valuation_id', string='Hitos valorizados')
     sale_order_id = fields.Many2one(
-        'sale.order', string='Contrato', required=True, check_company=True, readonly=True)
+        'sale.order', string='Orden de venta del contrato', required=True, check_company=True,
+        readonly=True)
     partner_id = fields.Many2one(related='sale_order_id.partner_id', string='Cliente', store=True)
     delivery_ids = fields.One2many(
         'construction.weekly.delivery', 'valuation_id', string='Entregas incluidas',

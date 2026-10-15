@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Perfiles de vertical (v1.7, M17-05): reproducen el diseño de operación que
+     ya funciona en cada rubro. noupdate: cada cliente los ajusta y los puede
+     volver a aplicar. -->
+<odoo noupdate="1">
+    <!-- Constructora por partidas (CREVAL, Montegrande): la partida lleva su
+         receta (APU), se mide en su unidad y programa sus actividades. -->
+    <record id="stage_works_layout" model="construction.stage">
+        <field name="name">Trazo y replanteo</field>
+        <field name="code">works_layout</field>
+        <field name="sequence">110</field>
+        <field name="kind">field</field>
+        <field name="duration_days">2</field>
+        <field name="color">#93c47d</field>
+    </record>
+    <record id="stage_works_execution" model="construction.stage">
+        <field name="name">Ejecución</field>
+        <field name="code">works_execution</field>
+        <field name="sequence">120</field>
+        <field name="kind">field</field>
+        <field name="previous_stage_id" ref="stage_works_layout"/>
+        <field name="color">#3d85c6</field>
+    </record>
+    <record id="stage_works_finishing" model="construction.stage">
+        <field name="name">Acabados</field>
+        <field name="code">works_finishing</field>
+        <field name="sequence">130</field>
+        <field name="kind">field</field>
+        <field name="previous_stage_id" ref="stage_works_execution"/>
+        <field name="duration_days">3</field>
+        <field name="color">#e69138</field>
+    </record>
+    <record id="stage_works_test" model="construction.stage">
+        <field name="name">Pruebas y entrega</field>
+        <field name="code">works_test</field>
+        <field name="sequence">140</field>
+        <field name="kind">control</field>
+        <field name="previous_stage_id" ref="stage_works_finishing"/>
+        <field name="duration_days">1</field>
+        <field name="color">#6aa84f</field>
+    </record>
+
+    <record id="level_template_works" model="construction.level.template">
+        <field name="name">Construcción por partidas</field>
+        <field name="sequence">30</field>
+        <field name="purchase_destination">project</field>
+    </record>
+    <record id="level_template_works_discipline" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_works"/>
+        <field name="sequence">10</field><field name="name">Disciplina</field><field name="role">group</field>
+    </record>
+    <record id="level_template_works_subpartida" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_works"/>
+        <field name="sequence">20</field><field name="name">Subpartida</field><field name="role">group</field>
+    </record>
+    <record id="level_template_works_partida" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_works"/>
+        <field name="sequence">30</field><field name="name">Partida</field><field name="role">space</field>
+        <field name="is_billable" eval="True"/>
+        <field name="stage_ids" eval="[Command.set([ref('stage_works_layout'), ref('stage_works_execution'), ref('stage_works_finishing'), ref('stage_works_test')])]"/>
+    </record>
+    <record id="level_template_works_activity" model="construction.level.template.line">
+        <field name="template_id" ref="level_template_works"/>
+        <field name="sequence">40</field><field name="name">Actividad</field><field name="role">module</field>
+    </record>
+
+    <record id="profile_construction" model="construction.vertical.profile">
+        <field name="name">Construcción por partidas</field>
+        <field name="code">construction</field>
+        <field name="sequence">10</field>
+        <field name="description">Constructoras que planifican por disciplina, subpartida y partida, con el APU de cada partida (CREVAL, Montegrande). Sin fabricación.</field>
+        <field name="level_template_id" ref="level_template_works"/>
+        <field name="stage_ids" eval="[Command.set([ref('stage_works_layout'), ref('stage_works_execution'), ref('stage_works_finishing'), ref('stage_works_test')])]"/>
+        <field name="resource_type_ids" eval="[Command.set([ref('resource_type_material'), ref('resource_type_service'), ref('resource_type_equipment'), ref('resource_type_contract'), ref('resource_type_labor')])]"/>
+        <field name="module_ids" eval="[Command.set(ref('base.module_al_construction_planner_purchase', False) and [ref('base.module_al_construction_planner_purchase'), ref('base.module_al_construction_planner_subcontract'), ref('base.module_al_construction_planner_crew'), ref('base.module_al_construction_planner_budget'), ref('base.module_al_construction_planner_sale')] or [])]"/>
+        <field name="analytic_plan_names">Disciplina, Subpartida, Partida</field>
+        <field name="note">Por decidir con CREVAL y Montegrande: la semana y el día de liquidación de las contratas, la forma de valorizar (por avance de partida) y si la receta sale de los Work Items o de la receta del planificador.</field>
+    </record>
+    <record id="profile_construction_week_start" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_construction"/>
+        <field name="name">construction_week_start_day</field>
+        <field name="value">0</field>
+    </record>
+
+    <!-- Mobiliario (Allcenter): el diseño de operación de los paquetes 1.4 a 1.6. -->
+    <record id="profile_furniture" model="construction.vertical.profile">
+        <field name="name">Mobiliario</field>
+        <field name="code">furniture</field>
+        <field name="sequence">20</field>
+        <field name="description">Contratas de mobiliario que fabrican e instalan muebles por torre, piso, departamento, ambiente, mueble y módulo (Allcenter).</field>
+        <field name="level_template_id" ref="level_template_building"/>
+        <field name="stage_ids" eval="[Command.set([ref('stage_production'), ref('stage_assembly'), ref('stage_installation'), ref('stage_finishing')])]"/>
+        <field name="resource_type_ids" eval="[Command.set([ref('resource_type_material'), ref('resource_type_service'), ref('resource_type_contract'), ref('resource_type_labor'), ref('resource_type_production')])]"/>
+        <field name="module_ids" eval="[Command.set(ref('base.module_al_construction_planner_suite', False) and [ref('base.module_al_construction_planner_mrp'), ref('base.module_al_construction_planner_purchase'), ref('base.module_al_construction_planner_subcontract'), ref('base.module_al_construction_planner_crew'), ref('base.module_al_construction_planner_budget'), ref('base.module_al_construction_planner_sale'), ref('base.module_al_construction_planner_furniture')] or [])]"/>
+    </record>
+    <record id="profile_furniture_week_start" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_furniture"/>
+        <field name="name">construction_week_start_day</field>
+        <field name="value">3</field>
+    </record>
+    <record id="profile_furniture_settlement_day" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_furniture"/>
+        <field name="name">construction_settlement_day</field>
+        <field name="value">3</field>
+    </record>
+    <record id="profile_furniture_payment_day" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_furniture"/>
+        <field name="name">construction_payment_day</field>
+        <field name="value">5</field>
+    </record>
+</odoo>

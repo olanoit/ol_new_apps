@@ -16,8 +16,13 @@ class ProjectProject(models.Model):
     is_construction_site = fields.Boolean(
         string='Es obra', help='Habilita el planificador y, con compras, los requerimientos de '
                                'materiales y la ubicación de obra.')
+    construction_profile_id = fields.Many2one(
+        'construction.vertical.profile', string='Perfil de vertical',
+        help='El rubro de la obra (v1.7, M17-05): al crearla da su plantilla de niveles. Por '
+             'defecto, el de la compañía.')
     construction_level_template_id = fields.Many2one(
         'construction.level.template', string='Plantilla de niveles',
+        compute='_compute_construction_level_template_id', store=True, readonly=False,
         help='Niveles del árbol de la obra y su nombre (Torre › Piso › Departamento › '
              'Ambiente › Mueble › Módulo). Vacía: Piso › Departamento › Ambiente › Módulo. '
              'No se cambia con un plan aprobado.')
@@ -33,6 +38,25 @@ class ProjectProject(models.Model):
         'construction.typology', 'project_id', string='Tipologías')
     construction_typology_count = fields.Integer(
         string='Nº de tipologías', compute='_compute_construction_plan_count')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Por defecto, el perfil de la compañía (no como default del campo: la
+        # columna de la compañía aún no existe al instalar).
+        for vals in vals_list:
+            if 'construction_profile_id' not in vals:
+                company = self.env['res.company'].browse(vals.get('company_id')) \
+                    if vals.get('company_id') else self.env.company
+                vals['construction_profile_id'] = company.construction_profile_id.id
+        return super().create(vals_list)
+
+    @api.depends('construction_profile_id')
+    def _compute_construction_level_template_id(self):
+        for project in self:
+            if not project.construction_level_template_id:
+                project.construction_level_template_id = \
+                    project.construction_profile_id.level_template_id \
+                    or (project.company_id or self.env.company).construction_level_template_id
 
     @api.depends('construction_level_template_id.purchase_destination')
     def _compute_construction_purchase_destination(self):

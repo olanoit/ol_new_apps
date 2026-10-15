@@ -1,0 +1,73 @@
+# -*- coding: utf-8 -*-
+"""Perfiles de vertical (v1.7, M17-05)."""
+from odoo.tests import TransactionCase, tagged
+
+REF = 'al_construction_planner.'
+
+
+@tagged('post_install', '-at_install')
+class TestProfiles(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.construction = cls.env.ref(REF + 'profile_construction')
+        cls.furniture = cls.env.ref(REF + 'profile_furniture')
+        cls.company = cls.env.company
+
+    def _apply(self, profile):
+        profile.with_context(construction_profile_no_install=True).action_apply()
+
+    def test_construction_profile_without_production(self):
+        modules = self.construction.module_ids.mapped('name')
+        self.assertIn('al_construction_planner_subcontract', modules)
+        self.assertIn('al_construction_planner_sale', modules)
+        self.assertNotIn('al_construction_planner_mrp', modules)
+        self.assertNotIn('al_construction_planner_furniture', modules)
+        self._apply(self.construction)
+        self.assertEqual(self.company.construction_profile_id, self.construction)
+        self.assertEqual(self.company.construction_week_start_day, '0')
+        self.assertEqual(self.company.construction_level_template_id,
+                         self.env.ref(REF + 'level_template_works'))
+        plans = self.env['account.analytic.plan'].search([]).mapped('name')
+        for name in ('Disciplina', 'Subpartida', 'Partida'):
+            self.assertIn(name, plans)
+        # Volver a aplicar no duplica los planes.
+        count = len(plans)
+        self._apply(self.construction)
+        self.assertEqual(self.env['account.analytic.plan'].search_count([]), count)
+        site = self.env['project.project'].create({
+            'name': 'Obra de constructora (test)', 'is_construction_site': True})
+        self.assertEqual(site.construction_profile_id, self.construction)
+        self.assertEqual(site.construction_level_template_id.summary,
+                         'Disciplina › Subpartida › Partida › Actividad')
+        self.assertEqual(site.construction_purchase_destination, 'project')
+        deviations = [row[0] for row in self.construction._get_deviations()]
+        self.assertNotIn('Plantilla de niveles', deviations)
+        self.company.construction_week_start_day = '3'
+        self.assertIn(self.company._fields['construction_week_start_day'].string,
+                      [row[0] for row in self.construction._get_deviations()])
+
+    def test_export_import_keeps_the_configuration(self):
+        data = self.construction._export_data()
+        self.assertEqual(data['level_template']['lines'][2]['stages'],
+                         ['works_layout', 'works_execution', 'works_finishing', 'works_test'])
+        data.update(code='construction_copy', name='Constructora copiada (test)')
+        data['level_template']['name'] = 'Partidas copiadas (test)'
+        data['stages'].append({'code': 'test17_pressure', 'name': 'Prueba hidrostática (test)',
+                               'sequence': 300, 'kind': 'control',
+                               'production_consumption': False, 'previous': 'works_test',
+                               'duration_days': 1, 'color': False})
+        copy = self.env['construction.vertical.profile']._import_data(data)
+        self.assertEqual(copy.level_template_id.summary,
+                         'Disciplina › Subpartida › Partida › Actividad')
+        self.assertEqual(copy.module_ids, self.construction.module_ids)
+        self.assertEqual(copy.parameter_ids.mapped('name'), ['construction_week_start_day'])
+        pressure = self.env['construction.stage'].search([('code', '=', 'test17_pressure')])
+        self.assertEqual(pressure.previous_stage_id.code, 'works_test')
+        self.assertIn(pressure, copy.stage_ids)
+        # Importarlo otra vez lo actualiza (por su código), no lo duplica.
+        data['name'] = 'Constructora copiada 2 (test)'
+        again = self.env['construction.vertical.profile']._import_data(data)
+        self.assertEqual(again, copy)
+        self.assertEqual(copy.name, 'Constructora copiada 2 (test)')

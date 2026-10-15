@@ -30,3 +30,5 @@ from . import test_catalogs_v17
 from . import test_levels_v17
 from . import test_recipe_v17
 from . import test_generalized_v17
+from . import test_profile_furniture_v17
+from . import test_native_v17

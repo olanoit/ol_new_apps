@@ -29,6 +29,12 @@
                         <field name="hours_total"/>
                     </group>
                 </group>
+                <field name="member_ids" nolabel="1">
+                    <list editable="bottom">
+                        <field name="role_id" options="{'no_create': True}"/>
+                        <field name="resource_id" options="{'no_create': True}"/>
+                    </list>
+                </field>
                 <div class="alert alert-warning" role="alert" invisible="not note">
                     <field name="note" nolabel="1"/>
                 </div>
@@ -36,6 +42,7 @@
                     <list>
                         <field name="week_start"/>
                         <field name="resource_id"/>
+                        <field name="role_id"/>
                         <field name="apartment_task_id"/>
                         <field name="task_id"/>
                         <field name="activity_id"/>

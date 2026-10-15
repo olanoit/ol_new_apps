@@ -27,6 +27,7 @@
                         <field name="product_id"/>
                         <field name="bom_id" optional="hide"/>
                         <field name="space_count" sum="Total"/>
+                        <field name="qty"/>
                         <field name="space_task_ids" widget="many2many_tags" optional="show"/>
                     </list>
                 </field>

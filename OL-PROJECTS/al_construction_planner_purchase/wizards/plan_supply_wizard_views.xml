@@ -39,6 +39,7 @@
                         <field name="qty_incoming" readonly="1" force_save="1" column_invisible="parent.mode != 'general'"/>
                         <field name="qty_to_buy"/>
                         <field name="purchase_uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
+                        <field name="group_label" optional="show" readonly="1" force_save="1"/>
                         <field name="date_required"/>
                         <field name="plan_line_ids" column_invisible="1"/>
                     </list>

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Planificación de obra (AL)',
-    'summary': 'Plan de recursos por obra, piso, departamento, ambiente y módulo: '
-               'materiales, contratas a destajo, personal propio y producción, '
-               'generado desde las tipologías de la obra.',
+    'summary': 'Plan de recursos de la obra para cualquier rubro: niveles, etapas, '
+               'tipos de recurso y recetas configurables, con perfiles de vertical y '
+               'funciones que se activan por puentes.',
     'description': """
 Planificación de obra
 =====================
@@ -220,7 +220,24 @@ Paquete de mejoras v1.5 (fases 12 a 21 de la especificación v1.5):
 * Sedes, marcación y costo de personal: al_construction_attendance. Hoja de
   trabajo en Documentos: al_construction_planner_spreadsheet.
 
-Especificación: docs/planificador/ESPECIFICACION_v1.4.md. Diseño técnico y
+Paquete de configurabilidad v1.7 (fases 26 a 34):
+
+* Catálogos de etapas y de tipos de recurso (con su comportamiento: material,
+  servicio, equipo, contrata, personal propio o producción).
+* Niveles libres: agrupadores, unidad de entrega, nivel con etapas, subnivel y
+  nivel de detalle, con casillas de receta, metrado, valorización y avance.
+* Recetas (plantillas de ejecución) con «Generar desde la receta» e
+  importación de recetas y niveles por Excel o desde los Work Items.
+* Control por cualquier nivel, línea base contra versión y desvío.
+* Núcleo sin Compras, Ventas ni Fabricación: cada función es un puente
+  (al_construction_planner_*) que se activa en Ajustes ‣ Funciones;
+  al_construction_planner_suite los instala todos.
+* Perfiles de vertical (Construcción por partidas, Mobiliario) que aplican
+  plantilla, etapas, recursos, funciones, puentes y parámetros, y se exportan
+  e importan en JSON.
+
+Especificación: docs/planificador/ESPECIFICACION_v1.4.md y
+docs/planificador/DISENO_v1.7.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -229,7 +246,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '31.20261013',
+    'version': '32.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -250,6 +267,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'data/ir_sequence_data.xml',
         'data/construction_level_template_data.xml',
         'data/construction_stage_data.xml',
+        'data/construction_vertical_profile_data.xml',
         'data/tier_definition_data.xml',
         'data/ir_cron_data.xml',
         'wizards/plan_replan_wizard_views.xml',
@@ -259,6 +277,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_labor_views.xml',
         'views/construction_level_template_views.xml',
         'views/construction_stage_views.xml',
+        'views/construction_vertical_profile_views.xml',
         'views/construction_execution_template_views.xml',
         'views/construction_progress_views.xml',
         'views/construction_resource_plan_views.xml',

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Perfiles de vertical (v1.7, M17-05). -->
+    <record id="construction_vertical_profile_view_list" model="ir.ui.view">
+        <field name="name">construction.vertical.profile.list</field>
+        <field name="model">construction.vertical.profile</field>
+        <field name="arch" type="xml">
+            <list string="Perfiles de vertical">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="level_template_id"/>
+                <field name="module_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_vertical_profile_view_form" model="ir.ui.view">
+        <field name="name">construction.vertical.profile.form</field>
+        <field name="model">construction.vertical.profile</field>
+        <field name="arch" type="xml">
+            <form string="Perfil de vertical">
+                <header>
+                    <button name="action_apply" type="object" string="Aplicar a la compañía"
+                            class="btn-primary"
+                            confirm="Se configura la compañía activa con este perfil e instala los puentes que activa (la aplicación se recarga). No se borra nada."/>
+                    <button name="action_export" type="object" string="Exportar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Construcción por partidas"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="level_template_id" options="{'no_create': True}"/>
+                            <field name="analytic_plan_names"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Funciones">
+                            <field name="feature_control"/>
+                            <field name="feature_progress"/>
+                            <field name="module_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Para qué rubro es el perfil…"/>
+                    <notebook>
+                        <page string="Desvíos de la compañía" name="deviations">
+                            <field name="deviation_html" readonly="1"/>
+                        </page>
+                        <page string="Etapas y recursos" name="catalogs">
+                            <group>
+                                <field name="stage_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                                <field name="resource_type_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            </group>
+                        </page>
+                        <page string="Parámetros" name="parameters">
+                            <field name="parameter_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="label"/>
+                                    <field name="value"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Por decidir" name="note">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_vertical_profile" model="ir.actions.act_window">
+        <field name="name">Perfiles de vertical</field>
+        <field name="res_model">construction.vertical.profile</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree el perfil de un rubro</p>
+            <p>Un perfil deja el planificador listo para un rubro: plantilla de niveles, etapas,
+               tipos de recurso, funciones y puentes, parámetros de la compañía y planes
+               analíticos. Se aplica a la compañía, se puede volver a aplicar y se exporta e
+               importa entre bases.</p>
+        </field>
+    </record>
+
+    <record id="construction_profile_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.profile.import.wizard.form</field>
+        <field name="model">construction.profile.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar perfil">
+                <group>
+                    <field name="file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <p class="text-muted">
+                    El archivo exportado desde otra base: crea o actualiza el perfil por su código,
+                    con su plantilla de niveles, sus etapas y sus tipos de recurso.
+                </p>
+                <footer>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_profile_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar perfil</field>
+        <field name="res_model">construction.profile.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -11,6 +11,20 @@
                 <app data-string="Planificación de obra" string="Planificación de obra"
                      name="al_construction_planner"
                      groups="al_construction_planner.group_planner_manager">
+                    <block title="Perfil de vertical" name="construction_planner_profile"
+                           help="El rubro de la compañía deja configurado el planificador completo: niveles, etapas, recursos, funciones, puentes y parámetros. Después todo se puede ajustar.">
+                        <setting id="construction_profile" help="Las obras nuevas toman su plantilla de niveles.">
+                            <field name="construction_profile_id" options="{'no_create': True}"/>
+                            <div class="mt-2">
+                                <button name="action_construction_apply_profile" type="object"
+                                        string="Aplicar el perfil" icon="oi-arrow-right" class="btn-link"
+                                        invisible="not construction_profile_id"/>
+                            </div>
+                        </setting>
+                        <setting id="construction_level_template" help="La que reciben las obras nuevas si su perfil no tiene una.">
+                            <field name="construction_level_template_id" options="{'no_create': True}"/>
+                        </setting>
+                    </block>
                     <!-- Funciones (v1.7, M17-06): cada puente se instala al activarlo. -->
                     <block title="Funciones" name="construction_planner_features"
                            help="Siempre activos: Proyectos, la planificación (árbol, plan de recursos y línea base) y el cronograma. Lo que no se activa no se instala.">

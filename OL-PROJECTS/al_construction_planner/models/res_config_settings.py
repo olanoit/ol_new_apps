@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
+from odoo.exceptions import UserError
 
 
 class ResConfigSettings(models.TransientModel):
@@ -41,6 +42,10 @@ class ResConfigSettings(models.TransientModel):
         help='Tipologías de mueble con módulos, metros lineales y lista de materiales, e '
              'importación del maestro y del ETO (instala Producción).')
 
+    construction_profile_id = fields.Many2one(
+        related='company_id.construction_profile_id', readonly=False)
+    construction_level_template_id = fields.Many2one(
+        related='company_id.construction_level_template_id', readonly=False)
     construction_week_start_day = fields.Selection(
         related='company_id.construction_week_start_day', readonly=False)
     construction_settlement_day = fields.Selection(
@@ -51,3 +56,12 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_categ_assembly_id', readonly=False)
     construction_categ_installation_id = fields.Many2one(
         related='company_id.construction_categ_installation_id', readonly=False)
+
+    def action_construction_apply_profile(self):
+        """Guarda los Ajustes y aplica el perfil elegido a la compañía."""
+        self.ensure_one()
+        profile = self.construction_profile_id
+        if not profile:
+            raise UserError(self.env._('Elija el perfil de vertical.'))
+        self.execute()
+        return profile.action_apply()

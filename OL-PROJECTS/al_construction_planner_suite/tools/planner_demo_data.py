@@ -194,9 +194,11 @@ def node(name, level, parent=None, **vals):
     domain = [('project_id', '=', project.id), ('name', '=', name),
               ('construction_level', '=', level),
               ('parent_id', '=', parent.id if parent else False)]
-    return Task.search(domain, limit=1) or Task.create(dict({
-        'name': name, 'project_id': project.id, 'construction_level': level,
-        'parent_id': parent.id if parent else False, 'user_ids': False}, **vals))
+    # Con plantilla de niveles (la del perfil de la compañía), su nivel.
+    return Task.search(domain, limit=1) or Task.create(dict(
+        project._construction_level_vals(level), **dict({
+            'name': name, 'project_id': project.id,
+            'parent_id': parent.id if parent else False, 'user_ids': False}, **vals)))
 
 
 floor = node('Piso 05', 'floor')

@@ -31,7 +31,7 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
              'libre en el central y lo que ya viene en compras. Directo a la obra: con la '
              'analítica de la obra, toda la necesidad, entregada en la obra.')
     picking_type_id = fields.Many2one(
-        'stock.picking.type', string='Destino', required=True, check_company=True,
+        'stock.picking.type', string='Tipo de recepción', required=True, check_company=True,
         domain="[('code', '=', 'incoming'), ('company_id', '=', company_id)]",
         default=lambda self: self._default_picking_type(),
         help='Recepción del almacén central donde entra la compra.')
@@ -43,8 +43,12 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
     date_from = fields.Date(string='Necesidad desde')
     date_to = fields.Date(string='Necesidad hasta')
     group_by = fields.Selection(
-        [('product', 'Producto'), ('date', 'Producto y fecha de necesidad')],
-        string='Agrupar por', required=True, default='product')
+        [('product', 'Producto'), ('date', 'Producto y fecha de necesidad'),
+         ('stage', 'Producto y etapa'), ('task', 'Producto y partida (nivel con etapas)'),
+         ('recipe', 'Producto y receta')],
+        string='Agrupar por', required=True, default='product',
+        help='Una línea del requerimiento de compra por producto o, además, por fecha de '
+             'necesidad, etapa, partida o receta (v1.7, M17-08).')
     line_ids = fields.One2many(
         'construction.plan.purchase.wizard.line', 'wizard_id', string='Vista previa',
         compute='_compute_line_ids', store=True, readonly=False)
@@ -125,13 +129,13 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 continue
             if line._product_uom().is_zero(self._get_need(line)):
                 continue
-            key_date = line.date_needed if self.group_by == 'date' else False
-            groups[(line.product_id, key_date)] |= line
+            groups[(line.product_id, self._group_key(line))] |= line
         location = self.picking_type_id.default_location_dest_id
         stock_left = {}
         result = []
-        for (product, key_date), plan_lines in sorted(
-                groups.items(), key=lambda kv: (kv[0][0].display_name, kv[0][1] or date.min)):
+        for (product, key), plan_lines in sorted(
+                groups.items(), key=lambda kv: (kv[0][0].display_name, self._sort_key(kv[0][1]))):
+            key_date = key if self.group_by == 'date' else False
             need = sum(self._get_need(line) for line in plan_lines)
             if product not in stock_left:
                 ctx_product = product.with_context(location=location.id) if location else product
@@ -162,8 +166,38 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 'qty_incoming': incoming,
                 'qty_to_buy': qty_to_buy,
                 'plan_line_ids': [Command.set(plan_lines.ids)],
+                'group_label': self._group_label(key),
             })
         return result
+
+    def _group_key(self, line):
+        """Lo que separa las líneas de un mismo producto según «Agrupar por»."""
+        if self.group_by == 'date':
+            return line.date_needed or False
+        if self.group_by == 'stage':
+            return line.stage or False
+        if self.group_by == 'task':
+            return line.space_task_id or line.task_id
+        if self.group_by == 'recipe':
+            return line.source_ref if line.source == 'recipe' else False
+        return False
+
+    @staticmethod
+    def _sort_key(key):
+        if isinstance(key, date):
+            return (0, key.isoformat())
+        if isinstance(key, models.BaseModel):
+            return (1, key.display_name or '')
+        return (2, key or '')
+
+    def _group_label(self, key):
+        if not key or self.group_by in ('product', 'date'):
+            return False
+        if self.group_by == 'stage':
+            return dict(self.env['construction.stage']._get_selection()).get(key, key)
+        if isinstance(key, models.BaseModel):
+            return key.display_name
+        return key
 
     def action_create(self):
         self.ensure_one()
@@ -189,7 +223,7 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
             pr_line = self.env['purchase.request.line'].create({
                 'request_id': request.id,
                 'product_id': line.product_id.id,
-                'name': line.product_id.display_name,
+                'name': ' · '.join(filter(None, [line.product_id.display_name, line.group_label])),
                 'product_uom_id': line.purchase_uom_id.id,
                 'product_qty': line.qty_to_buy,
                 'date_required': line.date_required or fields.Date.context_today(self),
@@ -234,6 +268,7 @@ class ConstructionPlanPurchaseWizardLine(models.TransientModel):
     qty_free = fields.Float(string='Libre en central', digits='Product Unit')
     qty_incoming = fields.Float(string='Ya en compras', digits='Product Unit')
     qty_to_buy = fields.Float(string='A comprar', digits='Product Unit')
+    group_label = fields.Char(string='Grupo', help='Etapa, partida o receta de la línea.')
     plan_line_ids = fields.Many2many(
         'construction.resource.plan.line', 'construction_plan_purchase_wiz_line_rel',
         'wizard_line_id', 'plan_line_id', string='Líneas del plan')

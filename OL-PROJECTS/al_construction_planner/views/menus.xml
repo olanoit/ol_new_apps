@@ -65,6 +65,8 @@
     <menuitem id="menu_planner_config" name="Configuración" parent="menu_planner_root" sequence="90" groups="group_planner_planner">
         <menuitem id="menu_planner_settings" name="Ajustes" action="action_construction_planner_settings" sequence="5" groups="group_planner_manager"/>
         <menuitem id="menu_planner_config_plan" name="Plan de obra" sequence="10">
+            <menuitem id="menu_planner_profiles" name="Perfiles de vertical" action="action_construction_vertical_profile" sequence="1" groups="group_planner_manager"/>
+            <menuitem id="menu_planner_profile_import" name="Importar perfil" action="action_construction_profile_import_wizard" sequence="2" groups="group_planner_manager"/>
             <menuitem id="menu_planner_level_templates" name="Plantillas de niveles" action="action_construction_level_template" sequence="5" groups="group_planner_manager"/>
             <menuitem id="menu_planner_stages" name="Etapas" action="action_construction_stage" sequence="6" groups="group_planner_manager"/>
             <menuitem id="menu_planner_resource_types" name="Tipos de recurso" action="action_construction_resource_type" sequence="7" groups="group_planner_manager"/>

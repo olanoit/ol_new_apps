@@ -22,13 +22,17 @@ class ConstructionPlanCrewWizard(models.TransientModel):
     _description = 'Asignar cuadrilla desde el plan'
 
     role_id = fields.Many2one(
-        'planning.role', string='Rol', required=True,
+        'planning.role', string='Rol',
         help='Rol de las líneas de personal propio; los recursos lo reciben si no lo tienen, '
              'para que sus horas cuenten en la línea.')
     resource_ids = fields.Many2many(
         'resource.resource', string='Recursos', check_company=True,
         domain="[('resource_type', '=', 'user'), ('company_id', 'in', (company_id, False))]",
         help='Obreros de la cuadrilla (empleados con su costo hora).')
+    member_ids = fields.One2many(
+        'construction.plan.crew.wizard.member', 'wizard_id', string='Cuadrilla por rol',
+        help='Composición de la cuadrilla (v1.7, M17-11): cada integrante con su rol va a las '
+             'líneas de personal propio de ese rol. Vacía: los recursos con el rol de arriba.')
     date_start = fields.Date(
         string='Primera semana', compute='_compute_date_start', store=True, readonly=False,
         precompute=True, required=True, help='Se ajusta al inicio de la semana de la obra.')
@@ -52,12 +56,22 @@ class ConstructionPlanCrewWizard(models.TransientModel):
             project = wizard.plan_id.project_id
             wizard.date_start = project._construction_period(today)[0] if project else today
 
-    def _get_candidate_lines(self):
-        """Líneas de personal propio de la selección con el rol elegido (o
-        sin rol)."""
+    def _get_candidate_lines(self, role=None):
+        """Líneas de personal propio de la selección con el rol (o sin rol)."""
         self.ensure_one()
+        role = role or self.role_id
         lines = self._get_selected_lines([('resource_type', '=', 'labor')])
-        return lines.filtered(lambda l: not l._get_role() or l._get_role() == self.role_id)
+        return lines.filtered(lambda l: not l._get_role() or l._get_role() == role)
+
+    def _get_members(self):
+        """[(recurso, rol)] de la cuadrilla: su composición por rol o los
+        recursos con el rol del asistente."""
+        self.ensure_one()
+        if self.member_ids:
+            return [(member.resource_id, member.role_id) for member in self.member_ids
+                    if member.resource_id and member.role_id]
+        return [(resource, self.role_id) for resource in self.resource_ids] \
+            if self.role_id else []
 
     def _get_weeks(self):
         self.ensure_one()
@@ -66,30 +80,38 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         return [start + timedelta(weeks=week) for week in range(max(self.weeks, 0))]
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'role_id', 'resource_ids',
+                 'member_ids.role_id', 'member_ids.resource_id',
                  'date_start', 'weeks', 'hours_per_week', 'stage_ids')
     def _compute_line_ids(self):
         for wizard in self:
             commands, notes = [Command.clear()], []
-            lines = wizard._get_candidate_lines() if wizard.plan_id and wizard.role_id \
-                else self.env['construction.resource.plan.line']
-            if wizard.plan_id and wizard.role_id and not lines:
-                notes.append(self.env._(
-                    'La selección no tiene líneas de personal propio del rol %s.',
-                    wizard.role_id.display_name))
+            members = wizard._get_members() if wizard.plan_id else []
             # sudo: el empleado del recurso es de RR. HH.; solo se mira si
             # existe para avisar.
-            no_employee = wizard.resource_ids.sudo().filtered(
-                lambda r: not r.employee_id).sudo(False)
+            resources_sudo = self.env['resource.resource'].union(
+                *(resource for resource, _role in members)).sudo()
+            no_employee = resources_sudo.filtered(lambda r: not r.employee_id).sudo(False)
             if no_employee:
                 notes.append(self.env._(
                     'Sin empleado (no registran horas ni tienen costo hora): %s.',
                     ', '.join(no_employee.mapped('name'))))
+            all_lines = self.env['construction.resource.plan.line']
             hours_total = 0.0
-            if lines and wizard.date_start and wizard.hours_per_week > 0:
+            for role in dict.fromkeys(role for _resource, role in members):
+                lines = wizard._get_candidate_lines(role)
+                all_lines |= lines
+                if not lines:
+                    notes.append(self.env._(
+                        'La selección no tiene líneas de personal propio del rol %s.',
+                        role.display_name))
+                    continue
+                if not wizard.date_start or wizard.hours_per_week <= 0:
+                    continue
                 total_amount = sum(lines.mapped('amount_planned'))
                 shares = {line: (line.amount_planned / total_amount if total_amount
                                  else 1.0 / len(lines)) for line in lines}
-                for resource in wizard.resource_ids - no_employee:
+                for resource in [r for r, member_role in members
+                                 if member_role == role and r not in no_employee]:
                     for week in wizard._get_weeks():
                         for line, share in shares.items():
                             hours = round(wizard.hours_per_week * share, 2)
@@ -98,12 +120,13 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                             hours_total += hours
                             commands.append(Command.create({
                                 'resource_id': resource.id,
+                                'role_id': role.id,
                                 'week_start': week,
                                 'plan_line_id': line.id,
                                 'hours': hours,
                             }))
             wizard.line_ids = commands
-            wizard.plan_line_count = len(lines)
+            wizard.plan_line_count = len(all_lines)
             wizard.hours_total = hours_total
             wizard.note = '\n'.join(notes) or False
 
@@ -135,16 +158,17 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         # sudo: los turnos y los roles de los recursos son de Planificación;
         # la cuadrilla la asigna Proyectos desde el plan, sin ser
         # administrador de turnos. Los valores salen de la vista previa.
-        resources_sudo = rows.resource_id.sudo()
-        resources_sudo.filtered(lambda r: self.role_id not in r.role_ids).write(
-            {'role_ids': [Command.link(self.role_id.id)]})
+        for row in rows:
+            resource_sudo = row.resource_id.sudo()
+            if row.role_id not in resource_sudo.role_ids:
+                resource_sudo.write({'role_ids': [Command.link(row.role_id.id)]})
         slot_values = []
         for row in rows:
             start, end = self._slot_datetimes(row.week_start)
             line = row.plan_line_id
             slot_values.append({
                 'resource_id': row.resource_id.id,
-                'role_id': self.role_id.id,
+                'role_id': row.role_id.id,
                 'project_id': plan.project_id.id,
                 'company_id': plan.company_id.id,
                 'start_datetime': start,
@@ -173,7 +197,8 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         plan._mark_in_progress()
         plan.message_post(body=self.env._(
             'Cuadrilla %(role)s asignada (%(selection)s): %(resources)s, %(weeks)s semanas, '
-            '%(count)s turnos y %(hours)s horas.', role=self.role_id.display_name,
+            '%(count)s turnos y %(hours)s horas.',
+            role=', '.join(rows.role_id.mapped('display_name')),
             selection=self._get_selection_label(),
             resources=', '.join(rows.resource_id.mapped('name')), weeks=self.weeks,
             count=len(slots_sudo), hours=round(sum(rows.mapped('hours')), 2)))
@@ -197,6 +222,7 @@ class ConstructionPlanCrewWizardLine(models.TransientModel):
     wizard_id = fields.Many2one(
         'construction.plan.crew.wizard', string='Asistente', required=True, ondelete='cascade')
     resource_id = fields.Many2one('resource.resource', string='Recurso', required=True)
+    role_id = fields.Many2one('planning.role', string='Rol')
     week_start = fields.Date(string='Semana', required=True)
     plan_line_id = fields.Many2one(
         'construction.resource.plan.line', string='Línea del plan', required=True)
@@ -205,3 +231,15 @@ class ConstructionPlanCrewWizardLine(models.TransientModel):
     task_id = fields.Many2one(related='plan_line_id.task_id', string='Nivel')
     activity_id = fields.Many2one(related='plan_line_id.activity_id', string='Actividad')
     hours = fields.Float(string='Horas', digits=(16, 2))
+
+
+class ConstructionPlanCrewWizardMember(models.TransientModel):
+    _name = 'construction.plan.crew.wizard.member'
+    _description = 'Integrante de la cuadrilla'
+
+    wizard_id = fields.Many2one(
+        'construction.plan.crew.wizard', string='Asistente', required=True, ondelete='cascade')
+    role_id = fields.Many2one('planning.role', string='Rol', required=True)
+    resource_id = fields.Many2one(
+        'resource.resource', string='Recurso', required=True,
+        domain="[('resource_type', '=', 'user')]")

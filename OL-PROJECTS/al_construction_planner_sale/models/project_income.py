@@ -174,36 +174,58 @@ class ProjectProject(models.Model):
             lambda l: not l.display_type and not l.is_downpayment and l.product_id)
 
     def _construction_lines_by_partida(self, plan=None):
-        """{línea de la OV: líneas del plan de su partida}. La partida con
-        familia toma las líneas cuyo ambiente (o la propia línea) tiene una
-        tipología de esa familia; la única partida sin familia, el resto."""
+        """{línea de la OV: líneas del plan de su partida}."""
         self.ensure_one()
         partidas = self._construction_partida_lines()
         plan = plan if plan is not None else self._construction_current_plan()
         result = {sale_line: self.env['construction.resource.plan.line'] for sale_line in partidas}
         if not partidas:
             return result
-        catch_all = partidas.filtered(lambda l: not l.construction_family)
-        if len(catch_all) > 1:
-            raise UserError(self.env._(
-                'La orden de venta %(order)s tiene %(count)s partidas sin familia: solo una '
-                'puede tomar el resto de la obra. Indique la familia de cada partida.',
-                order=self.construction_sale_order_id.name, count=len(catch_all)))
-        by_family = {line.construction_family: line for line in partidas
-                     if line.construction_family}
+        resolve = self._construction_partida_resolver(partidas)
         # Ids por partida y un solo browse al final: unir las líneas de una en
         # una (``|=``) crecía de forma cuadrática (2,5 s con 7.200 líneas).
         ids = defaultdict(list)
         for plan_line in plan.line_ids:
-            family = (plan_line.space_task_id.construction_typology_id.family
-                      or plan_line.typology_id.family)
-            sale_line = by_family.get(family) or catch_all
+            sale_line = resolve(plan_line)
             if sale_line:
                 ids[sale_line].append(plan_line.id)
         PlanLine = self.env['construction.resource.plan.line']
         for sale_line, line_ids in ids.items():
             result[sale_line] = PlanLine.browse(line_ids)
         return result
+
+    def _construction_partida_resolver(self, partidas):
+        """Función línea del plan → partida (línea de la OV). Por defecto, la
+        partida cuyo producto es el de la receta del nivel de la línea o de un
+        nivel superior (v1.7, M17-04); lo que no tiene receta va a la única
+        partida sin receta."""
+        self.ensure_one()
+        by_product = {}
+        for line in partidas:
+            by_product.setdefault(line.product_id, line)
+        recipe_products = self.env['project.task'].search([
+            ('project_id', '=', self.id),
+            ('construction_execution_template_id.product_id', '!=', False),
+        ]).construction_execution_template_id.product_id
+        loose = partidas.filtered(lambda l: l.product_id not in recipe_products)
+        catch_all = loose if len(loose) == 1 else partidas[:0]
+        cache = {}
+
+        def resolve(plan_line):
+            task = plan_line.task_id
+            if task.id in cache:
+                return cache[task.id]
+            sale_line = catch_all
+            node = task
+            while node:
+                product = node.construction_execution_template_id.product_id
+                if product and product in by_product:
+                    sale_line = by_product[product]
+                    break
+                node = node.parent_id
+            cache[task.id] = sale_line
+            return sale_line
+        return resolve
 
     # ------------------------------------------------------------------
     # Fechas del ingreso (P-21)

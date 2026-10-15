@@ -21,6 +21,14 @@ class ResCompany(models.Model):
         WEEKDAYS, string='Día de liquidación de contratas', default='3')
     construction_payment_day = fields.Selection(
         WEEKDAYS, string='Día de pago de contratas', default='5')
+    # Perfil de vertical (v1.7, M17-05): el que se aplicó y la plantilla de
+    # niveles de las obras nuevas.
+    construction_profile_id = fields.Many2one(
+        'construction.vertical.profile', string='Perfil de vertical',
+        help='El rubro de la compañía: deja configurado el planificador al aplicarlo.')
+    construction_level_template_id = fields.Many2one(
+        'construction.level.template', string='Plantilla de niveles de las obras nuevas')
+
     construction_categ_assembly_id = fields.Many2one(
         'product.category', string='Categoría de los servicios de armado',
         help='Categoría (p. ej. 601) de los productos de servicio de las actividades de '
