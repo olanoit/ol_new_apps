@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tools import convert_file
 
@@ -25,6 +25,17 @@ class TestApproval(ConstructionRequestCommon):
         request.with_user(self.approver).validate_tier()
         self.assertEqual(request.validation_status, 'validated')
         self.assertEqual(request.state, 'approved')
+
+    def test_extra_needs_reason(self):
+        """Material extra (v1.6, M16-05): sin motivo no se envía."""
+        request = self._new_request(user=self.requester)
+        request.is_extra = True
+        with self.assertRaises(UserError):
+            request.action_request_approval()
+        self.assertEqual(request.state, 'draft')
+        request.extra_reason = 'waste'
+        request.action_request_approval()
+        self.assertEqual(request.state, 'to_approve')
 
     def test_two_levels_above_threshold_in_sequence(self):
         # 400 bolsas × 30 = 12 000 > 10 000

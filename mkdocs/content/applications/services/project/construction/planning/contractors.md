@@ -129,6 +129,10 @@ con pago el sábado 07/11:
 Un avance hecho el jueves 05/11 ya es del periodo del 05/11 al 11/11 y entra en
 la liquidación del 12/11, junto con lo validado tarde de semanas anteriores.
 
+Si la Jefatura decidió descontar a la contrata un material extra de la obra, la
+liquidación lo resta del neto y la factura lleva la línea negativa: vea
+[Material extra y descuento a la contrata](extra_material.md).
+
 ## Casos especiales
 
 | Situación | Qué pasa | Qué hacer |
@@ -145,5 +149,6 @@ la liquidación del 12/11, junto con lo validado tarde de semanas anteriores.
 
 !!! info "Ver también"
     - [Árbol de recursos](resource_tree.md)
+    - [Material extra y descuento a la contrata](extra_material.md)
     - [Control y personal propio](control.md)
     - [Compras en Odoo 19](https://www.odoo.com/documentation/19.0/applications/inventory_and_mrp/purchase.html)

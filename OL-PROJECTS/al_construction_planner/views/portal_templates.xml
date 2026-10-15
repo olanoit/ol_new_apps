@@ -18,13 +18,14 @@
 
     <template id="portal_breadcrumbs_construction" inherit_id="portal.portal_breadcrumbs">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
-            <li t-if="page_name in ('construction', 'construction_progress', 'construction_history')"
+            <li t-if="page_name in ('construction', 'construction_progress', 'construction_history', 'construction_extra')"
                 t-attf-class="breadcrumb-item #{'active' if page_name == 'construction' else ''}">
                 <a t-if="page_name != 'construction'" href="/my/obra">Mis obras</a>
                 <t t-else="">Mis obras</t>
             </li>
             <li t-if="page_name == 'construction_progress'" class="breadcrumb-item active">Registrar avance</li>
             <li t-if="page_name == 'construction_history'" class="breadcrumb-item active">Avances y liquidaciones</li>
+            <li t-if="page_name == 'construction_extra'" class="breadcrumb-item active">Material extra</li>
         </xpath>
     </template>
 
@@ -34,7 +35,10 @@
             <t t-set="breadcrumbs_searchbar" t-value="True"/>
             <div class="d-flex justify-content-between align-items-center my-3 flex-wrap gap-2">
                 <h3 class="mb-0">Mis obras · <t t-out="partner.name"/></h3>
-                <a href="/my/obra/avances" class="btn btn-secondary">Avances y liquidaciones</a>
+                <div class="d-flex gap-2">
+                    <a t-if="rows" href="/my/obra/material" class="btn btn-primary">Pedir material extra</a>
+                    <a href="/my/obra/avances" class="btn btn-secondary">Avances y liquidaciones</a>
+                </div>
             </div>
             <div t-if="not rows" class="alert alert-info">No tiene actividades asignadas en obras vigentes.</div>
             <t t-if="rows" t-call="portal.portal_table">
@@ -204,4 +208,73 @@
             </t>
         </t>
     </template>
+
+    <!-- Material extra pedido por el capataz (v1.6, M16-06) -->
+    <template id="portal_construction_extra" name="Material extra">
+        <t t-call="portal.portal_layout">
+            <h3 class="my-3">Pedir material extra · <t t-out="project.name"/></h3>
+            <div t-if="error" class="alert alert-danger" role="alert" t-out="error"/>
+            <div t-if="done" class="alert alert-success" role="alert">
+                Pedido <t t-out="done.name"/> registrado: queda en borrador hasta que la jefatura de
+                proyectos lo revise. No reserva material del almacén.
+            </div>
+            <form t-if="len(projects) &gt; 1" method="get" action="/my/obra/material" class="mb-3">
+                <label class="form-label" for="project_id">Obra</label>
+                <select class="form-select" name="project_id" id="project_id" onchange="this.form.submit()">
+                    <option t-foreach="projects" t-as="p" t-att-value="p.id"
+                            t-att-selected="p.id == project.id" t-out="p.name"/>
+                </select>
+            </form>
+            <div t-if="not places or not products" class="alert alert-info">
+                No hay pisos o materiales del plan vigente de esta obra para pedir.
+            </div>
+            <form t-else="" id="o_construction_extra_form" method="post" enctype="multipart/form-data"
+                  t-attf-action="/my/obra/material?project_id=#{project.id}">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="task_id">Piso o ambiente</label>
+                        <select class="form-select" name="task_id" id="task_id" required="required">
+                            <option value="">Elija dónde se usa</option>
+                            <option t-foreach="places" t-as="place" t-att-value="place.id" t-out="place.display_name"/>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="reason">Motivo</label>
+                        <select class="form-select" name="reason" id="reason" required="required">
+                            <option value="">Elija el motivo</option>
+                            <option t-foreach="reasons" t-as="reason" t-att-value="reason[0]" t-out="reason[1]"/>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label" for="product_id">Material</label>
+                        <select class="form-select" name="product_id" id="product_id" required="required">
+                            <option value="">Elija el material</option>
+                            <option t-foreach="products" t-as="product" t-att-value="product.id" t-out="product.display_name"/>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="qty">Cantidad</label>
+                        <input type="number" step="any" min="0" inputmode="decimal" class="form-control"
+                               name="qty" id="qty" required="required"/>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label" for="note">Detalle</label>
+                        <textarea class="form-control" name="note" id="note" rows="2"
+                                  placeholder="Qué pasó y para qué se necesita"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="photo">Foto (opcional)</label>
+                        <input type="file" class="form-control" name="photo" id="photo"
+                               accept="image/*" capture="environment"/>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Enviar pedido</button>
+                    <a href="/my/obra" class="btn btn-secondary">Volver</a>
+                </div>
+            </form>
+        </t>
+    </template>
+
 </odoo>

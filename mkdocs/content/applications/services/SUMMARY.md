@@ -15,6 +15,7 @@
             * [Asignaciones y compras](project/construction/planning/supply.md)
             * [Metrado del ambiente](project/construction/planning/measurement.md)
             * [Contratas y liquidación semanal](project/construction/planning/contractors.md)
+            * [Material extra y descuento a la contrata](project/construction/planning/extra_material.md)
             * [Portal de obra, sedes y marcación](project/construction/planning/site_portal.md)
             * [Adicionales, deductivos y dependencias](project/construction/planning/changes.md)
             * [Control y personal propio](project/construction/planning/control.md)

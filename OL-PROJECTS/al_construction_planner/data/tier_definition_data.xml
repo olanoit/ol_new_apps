@@ -36,5 +36,17 @@
             <field name="sequence">10</field>
             <field name="approve_sequence" eval="True"/>
         </record>
+        <!-- Todo material extra (v1.6, M16-07): lo aprueba la jefatura de
+             proyectos, esté o no dentro del plan; al aprobar decide si se
+             descuenta a la contrata (M16-08). -->
+        <record id="tier_material_request_extra" model="tier.definition">
+            <field name="name">Material extra: jefatura de proyectos</field>
+            <field name="model_id" ref="al_construction_material_request.model_construction_material_request"/>
+            <field name="review_type">group</field>
+            <field name="reviewer_group_id" ref="group_planner_manager"/>
+            <field name="definition_domain">[('is_extra', '=', True)]</field>
+            <field name="sequence">4</field>
+            <field name="approve_sequence" eval="True"/>
+        </record>
     </data>
 </odoo>

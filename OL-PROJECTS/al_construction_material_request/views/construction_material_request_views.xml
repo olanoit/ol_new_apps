@@ -58,6 +58,9 @@
                                    options="{'no_create': True}" placeholder="¿Para qué obra?"/>
                             <field name="task_id" readonly="state != 'draft'"
                                    options="{'no_create': True}" invisible="not project_id"/>
+                            <field name="is_extra" readonly="state != 'draft'"/>
+                            <field name="extra_reason" readonly="state != 'draft'"
+                                   invisible="not is_extra" required="is_extra"/>
                             <field name="location_dest_id"
                                    readonly="not user_is_logistics or state in ('done', 'cancel')"
                                    options="{'no_create': True}"/>
@@ -202,6 +205,7 @@
                 <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
                 <field name="amount_estimated" sum="Total" widget="monetary" optional="show"/>
+                <field name="extra_reason" optional="show" string="Extra"/>
                 <field name="currency_id" column_invisible="1"/>
                 <field name="state" widget="badge"
                        decoration-info="state in ('to_approve', 'approved')"
@@ -303,6 +307,7 @@
                 <filter name="needs_my_review" string="Necesita mi revisión"
                         domain="[('can_review', '=', True)]"/>
                 <filter name="urgent" string="Urgentes" domain="[('priority', '=', '1')]"/>
+                <filter name="extra" string="Material extra" domain="[('is_extra', '=', True)]"/>
                 <separator/>
                 <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
                 <filter name="to_approve" string="En aprobación" domain="[('state', '=', 'to_approve')]"/>

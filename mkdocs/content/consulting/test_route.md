@@ -1127,8 +1127,11 @@ Detalle: [Metrado del ambiente](../applications/services/project/construction/pl
 | 8.12.4 | Avance sobre lo presupuestado (caso límite) | Reportar más que lo planificado más la tolerancia | «Con este avance se reportan … de … presupuestados» |
 | 8.12.5 | Liquidar la semana | **Contratas ‣ Liquidaciones semanales** ‣ **Actualizar avances**, **Presentar**, **Validar** y aprobar | Bruto 380.88, retención 38.09, neto 342.79; recepción en la OC y factura con vencimiento el sábado 07/11 |
 | 8.12.6 | OC de servicio sin confirmar (error esperado) | Aprobar la liquidación con la OC en borrador | «Confirme la OC de servicio … antes de aprobar» |
+| 8.12.7 | Material extra desde el portal | Capataz de Leandro: **Mi cuenta ‣ Mis obras ‣ Pedir material extra**, cocina del Dpto 501, 2 planchas de melamina, motivo **Merma**, con foto | Requerimiento extra en borrador con la foto y una actividad al responsable de la obra; sin transferencia |
+| 8.12.8 | Extra sin motivo (error esperado) | En el backend, marcar **Material extra** sin motivo y **Solicitar aprobación** | «Indique el motivo del material extra» |
+| 8.12.9 | Descuento a la contrata | La Jefatura aprueba el extra con **Descontar a la contrata** Leandro por S/ 50.00; **Actualizar avances** de la liquidación del 05/11 y aprobarla | Pestaña **Descuentos** con el extra; neto 292.79; factura con la línea negativa de S/ 50.00 a la cuenta de descuento |
 
-Detalle: [Contratas y liquidación semanal](../applications/services/project/construction/planning/contractors.md)
+Detalle: [Contratas y liquidación semanal](../applications/services/project/construction/planning/contractors.md) y [Material extra y descuento a la contrata](../applications/services/project/construction/planning/extra_material.md)
 
 ### 8.13 Control y personal propio (`al_construction_planner`)
 

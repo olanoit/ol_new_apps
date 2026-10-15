@@ -24,3 +24,4 @@ from . import test_change_v15
 from . import test_planning_tab_v15
 from . import test_site_from_sale_code
 from . import test_measurement_v16
+from . import test_extra_v16

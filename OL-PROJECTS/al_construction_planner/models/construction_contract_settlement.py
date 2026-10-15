@@ -88,6 +88,14 @@ class ConstructionContractSettlement(models.Model):
     retention_amount = fields.Monetary(
         string='Retención', compute='_compute_amounts', store=True,
         currency_field='currency_id', help='Según el porcentaje de la tarifa de cada línea.')
+    discount_request_ids = fields.One2many(
+        'construction.material.request', 'construction_discount_settlement_id',
+        string='Material extra descontado', readonly=True,
+        help='Extras aprobados con «Descontar a la contrata» (v1.6, M16-08): entran como líneas '
+             'negativas y bajan el neto.')
+    amount_discount = fields.Monetary(
+        string='Descuento por material extra', compute='_compute_amounts', store=True,
+        currency_field='currency_id')
     amount_net = fields.Monetary(
         string='Neto', compute='_compute_amounts', store=True, currency_field='currency_id')
     amount_planned = fields.Monetary(
@@ -145,7 +153,8 @@ class ConstructionContractSettlement(models.Model):
         for settlement in self:
             settlement.progress_count = counts.get(settlement, 0)
 
-    @api.depends('line_ids.amount', 'line_ids.retention_pct')
+    @api.depends('line_ids.amount', 'line_ids.retention_pct',
+                 'discount_request_ids.construction_discount_amount')
     def _compute_amounts(self):
         for settlement in self:
             currency = settlement.currency_id
@@ -156,9 +165,11 @@ class ConstructionContractSettlement(models.Model):
             for line in settlement.line_ids:
                 by_pct[line.retention_pct] += line.amount
             retention = sum(currency.round(amount * pct / 100.0) for pct, amount in by_pct.items())
+            discount = sum(settlement.discount_request_ids.mapped('construction_discount_amount'))
             settlement.amount_gross = gross
             settlement.retention_amount = retention
-            settlement.amount_net = gross - retention
+            settlement.amount_discount = discount
+            settlement.amount_net = gross - retention - discount
 
     def _compute_progress(self):
         for settlement in self:
@@ -257,6 +268,7 @@ class ConstructionContractSettlement(models.Model):
                 }))
             orders = Progress.env['purchase.order.line'].union(*by_po_line).order_id \
                 if by_po_line else self.env['purchase.order']
+            settlement._refresh_discounts()
             settlement_sudo.write({
                 'line_ids': commands,
                 'purchase_order_id': orders.sorted('id', reverse=True)[:1].id
@@ -272,6 +284,25 @@ class ConstructionContractSettlement(models.Model):
         if self.filtered(lambda s: s.state != 'draft'):
             raise UserError(self.env._('Solo se actualizan liquidaciones en borrador.'))
         self._refresh_lines()
+
+    def _refresh_discounts(self):
+        """Toma los extras aprobados con descuento a esta contrata en la obra
+        que aún no se descontaron (v1.6, M16-08)."""
+        self.ensure_one()
+        # sudo: quien prepara la liquidación (supervisor o cron) no siempre ve
+        # los requerimientos de obra; solo se enlazan los de esta contrata y
+        # esta obra.
+        Request_sudo = self.env['construction.material.request'].sudo()
+        pending_sudo = Request_sudo.search([
+            ('construction_discount', '=', True),
+            ('construction_discount_partner_id', 'child_of', self.partner_id.commercial_partner_id.id),
+            ('project_id', '=', self.project_id.id),
+            ('state', 'in', ('approved', 'in_progress', 'done')),
+            '|', ('construction_discount_settlement_id', '=', False),
+            ('construction_discount_settlement_id.state', '=', 'cancel'),
+        ])
+        if pending_sudo:
+            pending_sudo.write({'construction_discount_settlement_id': self.id})
 
     @api.model
     def _prepare_settlements(self, today=None, projects=None):
@@ -471,6 +502,12 @@ class ConstructionContractSettlement(models.Model):
             values = line.purchase_line_id._prepare_account_move_line(invoice)
             values['quantity'] = line.qty_period
             line_vals.append(values)
+        invoice.write({'invoice_line_ids': [Command.create(v) for v in line_vals]})
+        # Las líneas negativas van en otra escritura: si todas las líneas
+        # nuevas carecen de impuestos y alguna ya trae importe (las de la OC),
+        # la sincronización de v19 no recalcula el asiento y una línea sin
+        # producto queda con importe 0 (_sync_tax_lines).
+        line_vals = []
         account = self.company_id.construction_retention_account_id
         if account and not self.currency_id.is_zero(self.retention_amount):
             line_vals.append({
@@ -481,7 +518,23 @@ class ConstructionContractSettlement(models.Model):
                 'price_unit': -self.retention_amount,
                 'tax_ids': [Command.clear()],
             })
-        invoice.write({'invoice_line_ids': [Command.create(v) for v in line_vals]})
+        if not self.currency_id.is_zero(self.amount_discount):
+            discount_account = self.company_id.construction_discount_account_id
+            if not discount_account:
+                raise UserError(self.env._(
+                    'Configure la cuenta del descuento de material a contratas (Ajustes ▸ '
+                    'Planificación de obra) para aprobar la liquidación %s.', self.name))
+            for request in self.discount_request_ids:
+                line_vals.append({
+                    'display_type': 'product',
+                    'name': self.env._('Descuento por material extra %s', request.name),
+                    'account_id': discount_account.id,
+                    'quantity': 1.0,
+                    'price_unit': -request.construction_discount_amount,
+                    'tax_ids': [Command.clear()],
+                })
+        if line_vals:
+            invoice.write({'invoice_line_ids': [Command.create(v) for v in line_vals]})
         if invoice.invoice_date_due != self.payment_date:
             invoice.invoice_date_due = self.payment_date
         return invoice
@@ -501,6 +554,9 @@ class ConstructionContractSettlement(models.Model):
         self.filtered(lambda s: s.state == 'validated').restart_validation()
         self.write({'state': 'cancel'})
         self.progress_ids.write({'settlement_id': False})
+        # sudo: el supervisor puede no ver los requerimientos; vuelven a quedar
+        # pendientes para la siguiente liquidación de la contrata.
+        self.sudo().discount_request_ids.write({'construction_discount_settlement_id': False})
 
     def action_draft(self):
         self._check_supervisor()

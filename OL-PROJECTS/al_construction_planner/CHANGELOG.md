@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 25.20261013 — 15/10/2026
+
+- Material extra con aprobación de la jefatura (v1.6, M16-05 y M16-07): todo requerimiento marcado como extra pasa por la regla «Material extra: jefatura de proyectos», esté o no dentro del plan.
+- Pedido de material extra desde el portal (M16-06): el capataz de la contrata elige piso o ambiente, material del plan, cantidad, motivo y foto; queda un requerimiento en borrador, sin reservar stock, con una actividad al responsable de la obra.
+- Corrección: la línea de retención de la factura de la liquidación podía quedar con importe 0 en el asiento (la sincronización de v19 no la recalculaba junto con las líneas de la OC); ahora la factura cuadra con el neto.
+- Descuento a la contrata (M16-08): al aprobar el extra, la jefatura decide descontarlo a una contrata; su siguiente liquidación semanal en la obra lo resta del neto y la factura lleva una línea negativa a la cuenta configurada en Ajustes.
+
 ## 24.20261013 — 14/10/2026
 
 - Metrado del ambiente (v1.6, M16-03): el supervisor registra la medida real en ML de mueble bajo, ML de mueble alto y módulos frente a lo planificado; el planificador muestra la diferencia en cantidad y en soles. «Generar metrados» crea los de un piso entero y las medidas se cargan en una lista editable o por Excel.

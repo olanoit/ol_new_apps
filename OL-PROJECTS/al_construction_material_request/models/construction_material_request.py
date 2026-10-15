@@ -8,6 +8,15 @@ from odoo.exceptions import UserError
 # Campos que Logística puede ajustar durante y después de la aprobación.
 LOGISTICS_EDITABLE_FIELDS = ['location_dest_id', 'date_required', 'priority']
 
+# Motivo del material extra (v1.6, M16-05): lo que se pide fuera de lo
+# previsto para reponer o corregir en obra.
+EXTRA_REASONS = [
+    ('waste', 'Merma'),
+    ('measure_error', 'Error de medida'),
+    ('client_change', 'Cambio del cliente'),
+    ('replacement', 'Reposición'),
+]
+
 STATES = [
     ('draft', 'Borrador'),
     ('to_approve', 'En aprobación'),
@@ -69,6 +78,12 @@ class ConstructionMaterialRequest(models.Model):
     date_required = fields.Date(string='Fecha requerida', tracking=True)
     priority = fields.Selection(
         [('0', 'Normal'), ('1', 'Urgente')], string='Prioridad', default='0')
+    is_extra = fields.Boolean(
+        string='Material extra', tracking=True, copy=False,
+        help='Material que no estaba previsto (merma, error de medida, cambio del cliente o '
+             'reposición): necesita un motivo.')
+    extra_reason = fields.Selection(
+        EXTRA_REASONS, string='Motivo del extra', tracking=True, copy=False)
     note = fields.Html(string='Notas')
     line_ids = fields.One2many(
         'construction.material.request.line', 'request_id', string='Materiales',
@@ -168,6 +183,9 @@ class ConstructionMaterialRequest(models.Model):
             if not request.location_dest_id:
                 raise UserError(_(
                     'La obra %s no tiene ubicación de obra.', request.project_id.name))
+            if request.is_extra and not request.extra_reason:
+                raise UserError(_(
+                    'Indique el motivo del material extra de %s.', request.name))
 
     def _check_state(self, allowed):
         if any(request.state not in allowed for request in self):

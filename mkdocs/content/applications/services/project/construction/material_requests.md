@@ -87,6 +87,13 @@ electrónica salga correcta.
 El formulario y las líneas se adaptan al celular: los materiales se muestran
 como tarjetas.
 
+Para material no previsto, marque **Material extra** y elija el **Motivo del
+extra** (**Merma**, **Error de medida**, **Cambio del cliente** o
+**Reposición**): sin motivo no se envía. El filtro **Material extra** los
+separa en la lista. Con el planificador de obra, todo extra lo revisa la
+Jefatura de Proyectos y se puede descontar a una contrata: vea
+[Material extra y descuento a la contrata](planning/extra_material.md).
+
 ## Aprobar
 
 1. Los revisores filtran **Necesita mi revisión** y abren el requerimiento.
@@ -231,6 +238,7 @@ bolsas (S/ 11 800,00) pasaría además por gerencia.
 | No se pidió aprobación | Ninguna regla aplicó (sin jefe de proyecto o bajo el umbral) | Revisar las reglas y el jefe de proyecto de la obra |
 | **Disponible en central** en 0 aunque hay stock | El stock está reservado por otro documento o fuera del origen | Revisar reservas y sububicaciones del origen |
 | El residente no ve el requerimiento | Solo ve los suyos y los de obras que sigue o dirige | Hacerlo seguidor de la obra o asignarlo |
+| «Indique el motivo del material extra» | Es un extra sin motivo | Elegir el **Motivo del extra** |
 
 Cada compañía tiene su configuración y sus reglas.
 

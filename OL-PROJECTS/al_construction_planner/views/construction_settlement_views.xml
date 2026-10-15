@@ -18,6 +18,7 @@
                 <field name="purchase_order_id" optional="hide"/>
                 <field name="amount_gross" sum="Total" optional="show"/>
                 <field name="retention_amount" sum="Total" optional="show"/>
+                <field name="amount_discount" sum="Total" optional="hide"/>
                 <field name="amount_net" sum="Total"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="invoice_id" optional="hide"/>
@@ -114,11 +115,24 @@
                             <group class="oe_subtotal_footer">
                                 <field name="amount_gross"/>
                                 <field name="retention_amount"/>
+                                <field name="amount_discount" invisible="not amount_discount"/>
                                 <field name="amount_net" class="oe_subtotal_footer_separator"/>
                                 <field name="amount_planned"/>
                                 <field name="progress_pct" widget="percentage"/>
                                 <field name="currency_id" invisible="1"/>
                             </group>
+                        </page>
+                        <page string="Descuentos" name="discounts" invisible="not discount_request_ids">
+                            <field name="discount_request_ids" nolabel="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="task_id"/>
+                                    <field name="extra_reason"/>
+                                    <field name="date_request"/>
+                                    <field name="construction_discount_amount" string="Descuento" sum="Total"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Avances liquidados" name="progress">
                             <field name="progress_ids" nolabel="1"

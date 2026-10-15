@@ -33,6 +33,10 @@
                                  help="Con una cuenta, la factura de cada liquidación lleva la retención como línea negativa y su total es el neto a pagar. Sin cuenta, la factura va por el bruto.">
                             <field name="construction_retention_account_id" options="{'no_create': True}"/>
                         </setting>
+                        <setting company_dependent="1" id="construction_discount_account" string="Descuento de material extra"
+                                 help="Material extra descontado a una contrata: la factura de su siguiente liquidación lleva el descuento como línea negativa a esta cuenta.">
+                            <field name="construction_discount_account_id" options="{'no_create': True}"/>
+                        </setting>
                     </block>
                     <block title="Ingresos" name="construction_planner_income">
                         <setting company_dependent="1" id="construction_valuation_calendar" string="Calendario de valorización"

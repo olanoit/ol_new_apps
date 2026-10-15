@@ -98,6 +98,20 @@
                     <field name="construction_exceed_reason" readonly="state != 'draft'"
                            placeholder="Por qué se pide más de lo que queda en el plan"/>
                 </group>
+                <!-- Descuento del material extra a la contrata (v1.6, M16-08):
+                     lo decide la jefatura de proyectos al aprobar. -->
+                <group string="Descuento a la contrata" name="construction_discount"
+                       invisible="not is_extra or state in ('draft', 'rejected', 'cancel')"
+                       groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_discount"
+                           readonly="construction_discount_settlement_id or state in ('done', 'cancel')"/>
+                    <field name="construction_discount_partner_id" invisible="not construction_discount"
+                           required="construction_discount" options="{'no_create': True}"
+                           readonly="construction_discount_settlement_id or state in ('done', 'cancel')"/>
+                    <field name="construction_discount_amount" invisible="not construction_discount"
+                           readonly="construction_discount_settlement_id or state in ('done', 'cancel')"/>
+                    <field name="construction_discount_settlement_id" invisible="not construction_discount_settlement_id"/>
+                </group>
             </xpath>
             <xpath expr="//field[@name='line_ids']/list/field[@name='product_uom_id']" position="after">
                 <field name="construction_plan_remaining" optional="show"
