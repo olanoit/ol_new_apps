@@ -260,16 +260,18 @@ class ConstructionResourcePlan(models.Model):
         stage_labels = dict(Stage._fields['stage']._description_selection(self.env))
         unassigned = self.env._('Sin asignar')
         rows = {}
-        for space, line_stage, partner, role, amount in Line._read_group(
-                line_domain, ['space_task_id', 'stage', 'partner_id', 'role_id'],
-                ['amount_planned:sum']):
+        # Quién ejecuta: la contrata o, con el puente de cuadrillas, el rol.
+        groupby = ['space_task_id', 'stage', 'partner_id'] + Line._weekly_load_groupby()
+        for space, line_stage, *resources, amount in Line._read_group(
+                line_domain, groupby, ['amount_planned:sum']):
             period = dates.get((space.id, line_stage))
             if not period or not amount:
                 continue
             days = [period[0] + timedelta(days=offset)
                     for offset in range((period[1] - period[0]).days + 1)]
             workdays = [day for day in days if day.weekday() < 5] or days[:1]
-            name = partner.display_name if partner else role.display_name if role else unassigned
+            who = next((record for record in resources if record), None)
+            name = who.display_name if who else unassigned
             row = rows.setdefault((name, line_stage), {})
             share = amount / len(workdays)
             for day in workdays:

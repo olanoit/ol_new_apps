@@ -17,7 +17,6 @@
                 <field name="ml_group" optional="hide"/>
                 <field name="default_price" optional="show"/>
                 <field name="currency_id" column_invisible="True"/>
-                <field name="role_id" optional="hide"/>
                 <field name="productivity" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
             </list>
@@ -54,7 +53,6 @@
                             <field name="currency_id" invisible="1"/>
                         </group>
                         <group string="Personal propio">
-                            <field name="role_id" options="{'no_create': True}"/>
                             <field name="productivity"/>
                             <field name="productivity_source"/>
                         </group>

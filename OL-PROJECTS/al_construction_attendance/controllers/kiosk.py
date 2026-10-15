@@ -11,7 +11,7 @@ import hmac
 from odoo import _, fields, http
 from odoo.http import request
 
-from odoo.addons.al_construction_planner.controllers.portal import ConstructionPortal
+from odoo.addons.al_construction_planner_subcontract.controllers.portal import ConstructionPortal
 
 
 class ConstructionKiosk(http.Controller):

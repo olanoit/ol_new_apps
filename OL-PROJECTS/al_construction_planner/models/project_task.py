@@ -2,9 +2,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from .common import (
-    DRIVER_TYPES, LEVELS, ML_GROUPS, MODULE_TYPES, UNIT_STATE_RANK, UNIT_STATES, UNIT_TYPES,
-)
+from .common import DRIVER_TYPES, LEVELS, UNIT_STATE_RANK, UNIT_STATES, UNIT_TYPES
 
 # Estados del módulo que pone el avance validado (y que su reversión quita).
 PROGRESS_UNIT_STATES = ('produced', 'installed')
@@ -37,9 +35,6 @@ class ProjectTask(models.Model):
         UNIT_TYPES, string='Tipo de unidad',
         help='Departamento, nivel de dúplex, ducto, estacionamiento, área común, depósito, '
              'local o piloto (solo en el nivel Unidad).')
-    construction_furniture_ml = fields.Float(
-        string='Metros lineales del mueble', digits=(16, 2),
-        help='Los del mueble de la tipología; con módulos con ancho, el árbol suma sus anchos.')
     construction_override_ids = fields.One2many(
         'construction.unit.override', 'task_id', string='Variantes de la unidad',
         help='Otro color, un componente excluido o un metrado distinto que la tipología.')
@@ -70,10 +65,6 @@ class ProjectTask(models.Model):
         help='Cantidad del nivel en la unidad de su receta (m², und, ml, kg).')
     construction_qty_uom_id = fields.Many2one(
         related='construction_execution_template_id.uom_id', string='Unidad del metrado')
-    construction_module_code = fields.Char(string='Código del módulo')
-    construction_module_type = fields.Selection(MODULE_TYPES, string='Tipo de módulo')
-    construction_width_mm = fields.Integer(string='Ancho (mm)')
-    construction_ml_group = fields.Selection(ML_GROUPS, string='Grupo ML')
     construction_unit_state = fields.Selection(
         UNIT_STATES, string='Estado del módulo', tracking=True,
         help='Avance físico del módulo: planificado, en producción, producido, en obra, '
@@ -218,31 +209,6 @@ class ProjectTask(models.Model):
             node = node.parent_id
         return tuple(names)
 
-    def _construction_furniture_for(self, ml_group, module_type=False):
-        """Mueble del ambiente donde va un módulo sin mueble en su plantilla:
-        el de su grupo ML o, sin grupo, el de su tipo (mueble bajo o alto; los
-        demás en «Otros muebles»)."""
-        self.ensure_one()
-        names = {'low': self.env._('Mueble bajo'), 'high': self.env._('Mueble alto')}
-        key = ml_group if ml_group in names else module_type
-        return self._construction_furniture_named(names.get(key, self.env._('Otros muebles')))
-
-    def _construction_furniture_named(self, name, ml=0.0):
-        """Mueble ``name`` del ambiente; se crea con el nivel Mueble de la
-        plantilla de la obra si aún no existe."""
-        self.ensure_one()
-        furniture = self.search([('parent_id', '=', self.id),
-                                 ('construction_level', '=', 'furniture'), ('name', '=', name)],
-                                limit=1)
-        if not furniture:
-            furniture = self.with_context(mail_create_nolog=True, tracking_disable=True).create(dict(
-                self.project_id._construction_level_vals('furniture'), name=name,
-                project_id=self.project_id.id, parent_id=self.id, user_ids=False,
-                construction_furniture_ml=ml))
-        elif ml and not furniture.construction_furniture_ml:
-            furniture.construction_furniture_ml = ml
-        return furniture
-
     def _construction_overrides(self):
         """Variantes que aplican a un ambiente: las suyas y las de su unidad."""
         self.ensure_one()
@@ -259,9 +225,9 @@ class ProjectTask(models.Model):
         }.get(self.construction_level)
         plan = self.project_id._construction_current_plan()
         if self.construction_level == 'group':
-            # Agrupador (torre, etapa): lo de los pisos que tiene debajo.
-            floors = self.search([('id', 'child_of', self.id), ('construction_level', '=', 'floor')])
-            return [('floor_task_id', 'in', floors.ids), ('plan_id', '=', plan.id)]
+            # Agrupador (torre, disciplina, área): lo de su ruta (v1.7).
+            return [('task_path', '=like', '%s%%' % self.construction_path),
+                    ('plan_id', '=', plan.id)]
         if not field:
             return [('task_id', '=', self.id)]
         return [(field, '=', self.id), ('plan_id', '=', plan.id)]
@@ -307,14 +273,20 @@ class ProjectTask(models.Model):
             modules |= self.search([('construction_space_task_id', 'in', spaces.ids),
                                     ('construction_level', '=', 'module')])
         Line = self.env['construction.resource.plan.line']
+        Stage = self.env['construction.stage']
+        production_stages = Stage._production_codes()
+        site_stage = Stage._consumption_code('site')
         for module in modules:
             plan = module.project_id._construction_current_plan()
             space = module.construction_space_task_id
             lines = Line.search([
                 ('plan_id', '=', plan.id), ('resource_type', 'in', DRIVER_TYPES),
                 '|', ('task_id', '=', module.id), ('task_id', '=', space.id)])
-            assembly = lines.filtered(lambda l: l.stage == 'assembly' and l.task_id == module)
-            installation = lines.filtered(lambda l: l.stage == 'installation')
+            # Producido: las etapas que consume la OF (el armado); instalado:
+            # la primera de campo que no la consume (la instalación).
+            assembly = lines.filtered(
+                lambda l: l.stage in production_stages and l.task_id == module)
+            installation = lines.filtered(lambda l: l.stage == site_stage)
 
             def complete(group):
                 return bool(group) and all(

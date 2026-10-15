@@ -3,7 +3,7 @@
 import { registry } from "@web/core/registry";
 
 const row = (name) => `.gantt_row:has(.gantt_tree_content:contains("${name}"))`;
-const CONTRACT = "al_construction_planner.action_plan_contract_wizard";
+const CONTRACT = "al_construction_planner_subcontract.action_plan_contract_wizard";
 
 /**
  * Cronograma con recursos (P-15), criterio 11: con el filtro «Instalación»,

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- W-04 · Orden de fabricación -->
+    <record id="construction_plan_production_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.production.wizard.form</field>
+        <field name="model">construction.plan.production.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Orden de fabricación">
+                <field name="plan_id" invisible="1"/>
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
+                        <field name="group_by" widget="radio"/>
+                    </group>
+                    <group string="Fabricación">
+                        <field name="picking_type_id" options="{'no_create': True}"/>
+                        <field name="date_start"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1">
+                    <list create="0">
+                        <field name="group_task_id"/>
+                        <field name="typology_id"/>
+                        <field name="product_id"/>
+                        <field name="bom_id" optional="hide"/>
+                        <field name="space_count" sum="Total"/>
+                        <field name="space_task_ids" widget="many2many_tags" optional="show"/>
+                    </list>
+                </field>
+                <div class="alert alert-warning" role="alert" invisible="not note">
+                    <field name="note" nolabel="1"/>
+                </div>
+                <p class="text-muted small">
+                    Las OF quedan en borrador con los componentes de la BOM. Al confirmarlas se
+                    controla el saldo de las líneas de producción y armado de sus ambientes.
+                </p>
+                <footer>
+                    <button name="action_create" type="object" string="Crear órdenes de fabricación" class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_production_wizard" model="ir.actions.act_window">
+        <field name="name">Orden de fabricación</field>
+        <field name="res_model">construction.plan.production.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    </odoo>

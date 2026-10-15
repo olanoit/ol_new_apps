@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="portal_my_construction_crew_link" inherit_id="al_construction_planner.portal_my_construction">
+    <template id="portal_my_construction_crew_link" inherit_id="al_construction_planner_subcontract.portal_my_construction">
         <xpath expr="//a[@href='/my/obra/avances']" position="before">
             <a href="/my/obra/parte" class="btn btn-secondary">Parte diario</a>
         </xpath>

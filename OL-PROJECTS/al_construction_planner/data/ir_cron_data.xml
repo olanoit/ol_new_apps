@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-    <!-- Cada día, a primera hora: en el día de liquidación de cada obra crea
-         en borrador (06:00 en Lima) las liquidaciones de las contratas con avances validados
-         por liquidar, y pasa a «Pagada» las de factura pagada. Desde la fase 10
-         prepara también la entrega semanal de la obra y, pasado el corte, la
-         valorización en borrador. -->
-    <record id="ir_cron_prepare_settlements" model="ir.cron">
-        <field name="name">Planificación de obra: preparar liquidaciones de contratas</field>
-        <field name="model_id" ref="model_construction_contract_settlement"/>
-        <field name="state">code</field>
-        <field name="code">model._cron_prepare_settlements()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">days</field>
-        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 11:00:00')"/>
-        <field name="active" eval="True"/>
-    </record>
-
     <!-- Cada hora: estado y montos de control de las líneas de los planes
          vigentes (los turnos terminan con el paso del tiempo; red de
          seguridad de los eventos de los documentos). -->
@@ -29,16 +13,4 @@
         <field name="active" eval="True"/>
     </record>
 
-    <!-- Cada día: cronograma valorizado (P-22) de las obras con plan, para
-         el pivote y el gráfico (la pantalla recalcula la obra al abrirla). -->
-    <record id="ir_cron_refresh_schedule_report" model="ir.cron">
-        <field name="name">Planificación de obra: actualizar el cronograma valorizado</field>
-        <field name="model_id" ref="model_construction_schedule_report"/>
-        <field name="state">code</field>
-        <field name="code">model._cron_refresh()</field>
-        <field name="interval_number">1</field>
-        <field name="interval_type">days</field>
-        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 10:30:00')"/>
-        <field name="active" eval="True"/>
-    </record>
-</odoo>
+    </odoo>

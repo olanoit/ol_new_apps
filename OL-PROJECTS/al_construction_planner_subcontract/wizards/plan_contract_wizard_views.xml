@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- W-05 · Asignar contrata (P-05) -->
+    <record id="construction_plan_contract_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.contract.wizard.form</field>
+        <field name="model">construction.plan.contract.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asignar contrata">
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="available_activity_ids" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="plan_id" options="{'no_create': True}" readonly="context.get('default_plan_id')"/>
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
+                        <field name="stage"/>
+                        <field name="activity_ids" widget="many2many_tags" options="{'no_create': True}" placeholder="Todas"/>
+                    </group>
+                    <group string="Contrata">
+                        <field name="partner_id" options="{'no_create': True}"/>
+                        <label for="date_start" string="Ejecución"/>
+                        <div class="o_row">
+                            <field name="date_start"/>
+                            <span>—</span>
+                            <field name="date_end"/>
+                        </div>
+                        <field name="purchase_order_id" placeholder="Se creará una en borrador"/>
+                        <field name="plan_line_count"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1">
+                    <list create="0" delete="0" editable="bottom">
+                        <field name="activity_id" readonly="1" force_save="1"/>
+                        <field name="uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
+                        <field name="qty" readonly="1" force_save="1"/>
+                        <field name="price_unit" readonly="1" force_save="1"/>
+                        <field name="amount" sum="Total"/>
+                        <field name="retention_pct" readonly="1" force_save="1" optional="show"/>
+                        <field name="retention_amount" sum="Total"/>
+                        <field name="rate_id" readonly="1" force_save="1" optional="hide"/>
+                        <field name="plan_line_ids" column_invisible="1"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+                <group class="oe_subtotal_footer">
+                    <field name="amount_total"/>
+                    <field name="retention_total"/>
+                    <field name="amount_net" class="oe_subtotal_footer_separator"/>
+                </group>
+                <div class="alert alert-warning" role="alert" invisible="not note">
+                    <field name="note" nolabel="1"/>
+                </div>
+                <p class="text-muted small">
+                    Tarifa vigente de la actividad con su prioridad: obra y contrata, solo obra, solo
+                    contrata y tarifa base. La contrata queda en las líneas del plan y su alcance se
+                    suma a la OC de servicio abierta de la contrata en la obra (una por contrata y
+                    obra; si no existe, se crea en borrador).
+                </p>
+                <footer>
+                    <button name="action_assign" type="object" string="Asignar contrata" class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_contract_wizard" model="ir.actions.act_window">
+        <field name="name">Asignar contrata</field>
+        <field name="res_model">construction.plan.contract.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+
+    </odoo>

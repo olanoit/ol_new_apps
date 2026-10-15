@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_planner_productions" name="&#xD3;rdenes de fabricaci&#xF3;n" parent="al_construction_planner.menu_planner_supply" action="mrp.mrp_production_action" sequence="30" groups="mrp.group_mrp_user"/>
+</odoo>

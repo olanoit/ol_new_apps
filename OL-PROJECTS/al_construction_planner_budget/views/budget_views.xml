@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Presupuesto analítico del plan y control de la OC (v1.7, puente de presupuesto). -->
+    <record id="construction_resource_plan_view_form_budget" model="ir.ui.view">
+        <field name="name">construction.resource.plan.form.budget</field>
+        <field name="model">construction.resource.plan</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_control_analysis']" position="after">
+                <button name="action_view_budget" type="object"
+                        class="oe_stat_button" icon="fa-money" string="Presupuesto"
+                        invisible="not budget_analytic_id"/>
+            </xpath>
+            <field name="exceed_tolerance" position="after">
+                <field name="budget_analytic_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="purchase_order_view_form_construction_budget" model="ir.ui.view">
+        <field name="name">purchase.order.form.construction.budget</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_ref']" position="after">
+                <field name="construction_exceed_state" widget="badge"
+                       invisible="construction_exceed_state == 'ok'"
+                       decoration-danger="construction_exceed_state == 'exceeded'"
+                       decoration-info="construction_exceed_state == 'approved'"/>
+                <field name="construction_exceed_reason"
+                       invisible="construction_exceed_state == 'ok'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

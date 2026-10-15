@@ -4,7 +4,7 @@ import json
 
 from odoo import models
 
-from odoo.addons.al_construction_planner.wizards.master_import_layout import SHEETS
+from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
 
 SPREADSHEET_VERSION = '18.5.10'
 REFERENCE_SHEET = 'REFERENCIAS'

@@ -26,6 +26,16 @@ LICENSE_EXCEPTIONS = {
     # Extienden el planificador y, con él, base_tier_validation (AGPL-3).
     'al_construction_attendance': 'LGPL-3',
     'al_construction_planner_spreadsheet': 'LGPL-3',
+    # Puentes del planificador (paquete 1.7, M17-07): extienden el núcleo.
+    'al_construction_planner_mrp': 'LGPL-3',
+    'al_construction_planner_purchase': 'LGPL-3',
+    'al_construction_planner_subcontract': 'LGPL-3',
+    'al_construction_planner_subcontract_purchase': 'LGPL-3',
+    'al_construction_planner_crew': 'LGPL-3',
+    'al_construction_planner_budget': 'LGPL-3',
+    'al_construction_planner_sale': 'LGPL-3',
+    'al_construction_planner_furniture': 'LGPL-3',
+    'al_construction_planner_suite': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts', 'mkdocs'}

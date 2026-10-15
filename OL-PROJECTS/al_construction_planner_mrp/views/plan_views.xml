@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_resource_plan_view_form_mrp" model="ir.ui.view">
+        <field name="name">construction.resource.plan.form.mrp</field>
+        <field name="model">construction.resource.plan</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_replan_wizard']" position="after">
+                <button name="%(action_plan_production_wizard)d" type="action"
+                        string="Orden de fabricación"
+                        invisible="state not in ('approved', 'in_progress')"
+                        context="{'default_plan_id': id}"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

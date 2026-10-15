@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_construction_subcontract" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.subcontract</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <block name="construction_planner_contracts" position="inside">
+                        <setting company_dependent="1" id="construction_retention_account" string="Retención en la factura"
+                                 help="Con una cuenta, la factura de cada liquidación lleva la retención como línea negativa y su total es el neto a pagar. Sin cuenta, la factura va por el bruto.">
+                            <field name="construction_retention_account_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_discount_account" string="Descuento de material extra"
+                                 help="Material extra descontado a una contrata: la factura de su siguiente liquidación lleva el descuento como línea negativa a esta cuenta.">
+                            <field name="construction_discount_account_id" options="{'no_create': True}"/>
+                        </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

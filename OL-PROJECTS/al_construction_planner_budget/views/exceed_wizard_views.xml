@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_plan_exceed_wizard_view_form_budget" model="ir.ui.view">
+        <field name="name">construction.plan.exceed.wizard.form.budget</field>
+        <field name="model">construction.plan.exceed.wizard</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_plan_exceed_wizard_view_form"/>
+        <field name="arch" type="xml">
+            <field name="policy" position="before">
+                <field name="purchase_order_id" invisible="not purchase_order_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>

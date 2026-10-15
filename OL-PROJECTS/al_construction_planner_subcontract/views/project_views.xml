@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_project_view_form_construction_subcontract" model="ir.ui.view">
+        <field name="name">project.project.form.construction.subcontract</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_settlements" type="object"
+                        class="oe_stat_button" icon="fa-calendar-check-o"
+                        invisible="not is_construction_site or not construction_settlement_count"
+                        groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_settlement_count" widget="statinfo" string="Liquidaciones"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

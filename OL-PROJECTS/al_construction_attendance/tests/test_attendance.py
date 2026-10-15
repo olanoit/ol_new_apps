@@ -5,7 +5,7 @@ from datetime import date, datetime
 
 from odoo.tests import HttpCase, tagged
 
-from odoo.addons.al_construction_planner.tests.common import PlannerCommon
+from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
 
 
 @tagged('post_install', '-at_install')

@@ -62,14 +62,26 @@ cambiar las cifras de las pruebas del paquete 1.6 ni de `ACEPTACION.md`.
 
 | Módulo | Depende de | Contenido |
 |---|---|---|
-| `al_construction_planner` (núcleo) | `al_project_gantt_base`, `al_project_gantt_backend`, `base_tier_validation`, `al_report_base` | Plantillas, catálogos, árbol, plan de recursos, línea base, cronograma, control de la línea, inicio |
-| `al_construction_planner_mrp` | núcleo, `project_mrp` | OF desde el plan, etapa de consumo de la BOM, espera del metrado |
-| `al_construction_planner_purchase` | núcleo, `al_construction_material_request`, `purchase_request` | Compra masiva, requerimiento de obra, abastecimiento, precios, crear producto, material extra |
-| `al_construction_planner_subcontract` | núcleo, `purchase`, `portal` | Contrata, tarifas, avance por driver, liquidación semanal, descuento, portal |
+| `al_construction_planner` (núcleo) | `al_project_gantt_base`, `al_project_gantt_backend`, `base_tier_validation`, `analytic`, `product` | Plantillas, catálogos de etapas y tipos de recurso, recetas, árbol, plan de recursos y línea base, asignaciones (base), cronograma, avances, metrado, dependencias de terceros, control de la línea, inicio |
+| `al_construction_planner_mrp` | núcleo, `project_mrp` | OF desde el plan, etapa de consumo de la BOM, espera del metrado, asignación «Orden de fabricación» |
+| `al_construction_planner_purchase` | núcleo, `al_construction_material_request`, `purchase_request` | Compra masiva, requerimiento de obra, abastecimiento, precios de compra, aplicar costo, crear producto, asignaciones de compra masiva y requerimiento |
+| `al_construction_planner_subcontract` | núcleo, `purchase`, `portal` | Asignar contrata y OC de servicio, liquidación semanal, portal de la contrata |
+| `al_construction_planner_subcontract_purchase` (automático) | contratas, compras | Material extra desde el portal y su descuento a la contrata |
 | `al_construction_planner_crew` | núcleo, `project_forecast`, `hr_timesheet` | Asignar cuadrilla, turnos, horas como real |
-| `al_construction_planner_budget` | núcleo, `account_budget_purchase` | Presupuesto analítico, control de OC, análisis |
-| `al_construction_planner_sale` | núcleo, `sale_project` | Calendario e ingresos, entrega semanal, valorización, hitos, cronograma valorizado |
-| `al_construction_planner_furniture` | `al_construction_planner_mrp` | Tipología de mueble, ML, módulos con ancho, ETO |
+| `al_construction_planner_budget` | núcleo, `account_budget_purchase` | Presupuesto analítico al aprobar, control de la OC, completar la analítica de los apuntes |
+| `al_construction_planner_sale` | núcleo, `sale_project`, `al_report_base` | Calendario e ingresos, contratos con hitos, cambios de obra, entrega semanal, valorización, cronograma valorizado, márgenes de la obra |
+| `al_construction_planner_furniture` | `al_construction_planner_mrp` | Tipología de mueble (familia, módulos, ML, BOM), generar plan desde la tipología, importar maestro y ETO |
+| `al_construction_planner_suite` | todos los puentes | Instala el perfil mobiliario completo y reúne las pruebas de integración |
 
-El corte exacto (qué campo va a qué puente) se fija al empezar la fase 30
-con el inventario de dependencias de cada archivo.
+El núcleo deja ganchos que cada puente extiende: tipos de asignación
+(`_kind_fields`, `_get_document_state`, `_get_document_totals`), montos de la
+mano de obra (`_get_driver_amounts`, `_get_labor_amounts`), aprobación y
+cierre del plan (`_construction_on_approve`, `_construction_lines_added`,
+`_construction_on_close`, `_construction_check_closable`), pendientes e hitos
+del inicio, metros lineales del árbol y drivers del metrado.
+
+Migración (`al_construction_planner/migrations/30.20261013/pre-migrate.py`):
+una base con el planificador instala todos los puentes en la misma pasada,
+les pasa los xmlid de sus registros, modelos y campos y vuelve a cargar las
+vistas. `al_construction_planner_spreadsheet` pasa a depender de mobiliario y
+`al_construction_attendance` de contratas y cuadrillas.

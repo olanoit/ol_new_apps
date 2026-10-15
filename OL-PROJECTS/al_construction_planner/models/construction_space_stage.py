@@ -52,9 +52,6 @@ class ConstructionSpaceStage(models.Model):
         'res.partner', string='Contrata', compute='_compute_resources',
         help='La contrata de las líneas de contrata de la etapa (la de mayor monto si hay '
              'varias).')
-    role_id = fields.Many2one(
-        'planning.role', string='Cuadrilla', compute='_compute_resources',
-        help='El rol de las líneas de personal propio de la etapa.')
     amount_planned = fields.Monetary(
         string='Monto', compute='_compute_resources', currency_field='currency_id',
         help='Monto planificado de las líneas de la etapa en el ambiente y sus módulos.')
@@ -150,11 +147,13 @@ class ConstructionSpaceStage(models.Model):
                 item = result.setdefault((space.id, stage), {})
                 if amount >= item.get('_partner_amount', -1):
                     item.update(partner=partner, _partner_amount=amount)
-            for space, stage, role in Line._read_group(
-                    base + [('resource_type', '=', 'labor'), ('role_id', '!=', False)],
-                    ['space_task_id', 'stage', 'role_id']):
-                result.setdefault((space.id, stage), {}).setdefault('role', role)
+            self._resources_by_stage_extra(result, base)
         return result
+
+    @api.model
+    def _resources_by_stage_extra(self, result, base):
+        """Gancho de los puentes: agregan a ``result`` otros recursos de la
+        etapa (la cuadrilla del personal propio)."""
 
     @api.depends('space_task_id', 'stage')
     def _compute_resources(self):
@@ -162,7 +161,6 @@ class ConstructionSpaceStage(models.Model):
         for record in self:
             item = resources.get((record.space_task_id.id, record.stage), {})
             record.partner_id = item.get('partner')
-            record.role_id = item.get('role')
             record.amount_planned = item.get('amount', 0.0)
 
     @api.model
@@ -502,8 +500,8 @@ class ConstructionResourcePlan(models.Model):
 
     def _get_open_documents(self, lines):
         """{documento: (fecha del documento, fecha de necesidad más temprana de
-        sus líneas)} de los requerimientos de obra, compras masivas y OC
-        abiertos de las líneas."""
+        sus líneas)} de los documentos abiertos de las líneas (requerimientos de
+        obra, compras masivas y OC: los dan sus puentes)."""
         documents = {}
 
         def add(document, doc_date, need):
@@ -517,18 +515,8 @@ class ConstructionResourcePlan(models.Model):
         # fechas para avisar a Logística.
         for allocation in lines.sudo().allocation_ids.filtered(lambda a: a.state == 'open'):
             need = allocation.plan_line_id.date_needed
-            if allocation.kind == 'material_request':
-                request = allocation.material_request_line_id.request_id
-                add(request, request.date_required, need)
-            elif allocation.kind == 'purchase_request':
-                pr_line = allocation.purchase_request_line_id
-                add(pr_line.request_id, pr_line.date_required, need)
-                for po_line in pr_line.purchase_lines.filtered(
-                        lambda l: l.state not in ('cancel', 'done')):
-                    add(po_line.order_id, po_line.date_planned, need)
-            elif allocation.kind == 'service_order':
-                po_line = allocation.purchase_line_id
-                add(po_line.order_id, po_line.date_planned, need)
+            for document, doc_date in allocation._get_open_document_dates():
+                add(document, doc_date, need)
         return documents
 
     def _notify_logistics(self, lines, delta):

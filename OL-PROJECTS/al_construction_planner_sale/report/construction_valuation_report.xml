@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_construction_valuation" model="ir.actions.report">
+        <field name="name">Valorización</field>
+        <field name="model">construction.valuation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_planner_sale.report_construction_valuation</field>
+        <field name="report_file">al_construction_planner_sale.report_construction_valuation</field>
+        <field name="print_report_name">'Valorización %s - %s' % (object.sequence_number, object.name)</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_construction_valuation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Formato común de la suite (al_report_base, el del comprobante A4). -->
+    <template id="report_construction_valuation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_construction_planner_sale.report_construction_valuation_document"
+                   t-lang="o.partner_id.lang or o.env.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_construction_valuation_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="cur" t-value="o.currency_id"/>
+        <t t-set="state_label" t-value="dict(o._fields['state']._description_selection(o.env)).get(o.state)"/>
+        <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="'Valorización %s' % o.sequence_number"/>
+            <t t-set="doc_number" t-value="o.name"/>
+            <t t-set="doc_extra" t-value="'Estado: %s' % state_label"/>
+
+            <!-- Datos de la obra y del contrato -->
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 15%;">Cliente</td>
+                    <td class="pe-doc-value" style="width: 45%;" t-out="o.partner_id.display_name"/>
+                    <td class="pe-doc-label" style="width: 18%;">Corte</td>
+                    <td class="pe-doc-value" style="width: 22%;"><span t-out="o.cutoff_date" t-options="date_fmt"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Obra</td>
+                    <td class="pe-doc-value" t-out="o.project_id.display_name"/>
+                    <td class="pe-doc-label">Enviada al cliente</td>
+                    <td class="pe-doc-value"><span t-if="o.submit_date" t-out="o.submit_date" t-options="date_fmt"/><t t-else="">—</t></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Contrato</td>
+                    <td class="pe-doc-value" t-out="o.sale_order_id.name"/>
+                    <td class="pe-doc-label">Moneda</td>
+                    <td class="pe-doc-value" t-out="cur.name"/>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Entregas</td>
+                    <td class="pe-doc-value" colspan="3" t-out="', '.join(o.delivery_ids.sorted('period_start').mapped('name'))"/>
+                </tr>
+            </table>
+
+            <!-- Detalle por partida -->
+            <table class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Partida</td>
+                        <td class="text-end">Precio</td>
+                        <td class="text-end">% anterior</td>
+                        <td class="text-end">% periodo</td>
+                        <td class="text-end">% acumulado</td>
+                        <td class="text-end">Entregado</td>
+                        <td class="text-end">Confirmado</td>
+                        <td class="text-end" t-if="o.amount_amortization">Amortización</td>
+                        <td class="text-end">Fondo de garantía <t t-out="'%.2f' % o.guarantee_pct"/> %</td>
+                        <td class="text-end">Neto</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.line_ids" t-as="line">
+                        <td><t t-out="line.sale_line_id.name.splitlines()[0]"/></td>
+                        <td class="text-end"><t t-out="line.price" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><t t-out="'%.2f' % (line.progress_prev * 100)"/> %</td>
+                        <td class="text-end"><t t-out="'%.2f' % (line.progress_period * 100)"/> %</td>
+                        <td class="text-end"><t t-out="'%.2f' % (line.progress_cumulative * 100)"/> %</td>
+                        <td class="text-end"><t t-out="line.amount_delivered" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><t t-out="line.amount_confirmed" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end" t-if="o.amount_amortization"><t t-out="line.amount_amortization" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><t t-out="line.amount_guarantee" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><t t-out="line.amount_net" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <t t-set="span" t-value="8 if o.amount_amortization else 7"/>
+                    <tr class="pe-doc-first">
+                        <td t-att-colspan="span" class="text-end">Entregado</td>
+                        <td colspan="2" class="text-end"><t t-out="o.amount_delivered" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                    <tr>
+                        <td t-att-colspan="span" class="text-end">Confirmado</td>
+                        <td colspan="2" class="text-end"><t t-out="o.amount_confirmed" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                    <tr t-if="o.amount_pending">
+                        <td t-att-colspan="span" class="text-end">Por valorizar</td>
+                        <td colspan="2" class="text-end"><t t-out="o.amount_pending" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                    <tr t-if="o.amount_amortization">
+                        <td t-att-colspan="span" class="text-end">Amortización del adelanto</td>
+                        <td colspan="2" class="text-end"><t t-out="o.amount_amortization" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                    <tr>
+                        <td t-att-colspan="span" class="text-end">Fondo de garantía (<t t-out="'%.2f' % o.guarantee_pct"/> %)</td>
+                        <td colspan="2" class="text-end"><t t-out="o.amount_guarantee" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                    <tr class="pe-doc-total">
+                        <td t-att-colspan="span" class="text-end">NETO A COBRAR</td>
+                        <td colspan="2" class="text-end"><t t-out="o.amount_net" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Conformidad del cliente y firmas -->
+            <table class="pe-doc-table mb-3 pe-doc-keep" t-if="o.confirm_date">
+                <tr>
+                    <td class="pe-doc-label" style="width: 25%;">Conformidad del cliente</td>
+                    <td class="pe-doc-value">
+                        <span t-out="o.confirm_date" t-options="date_fmt"/> ·
+                        <t t-out="o.confirm_name"/><t t-if="o.confirm_role"> (<t t-out="o.confirm_role"/>)</t>
+                    </td>
+                </tr>
+            </table>
+            <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+                <tr>
+                    <td><div t-out="company.name"/></td>
+                    <td><div t-out="o.confirm_name or o.partner_id.display_name"/></td>
+                </tr>
+                <tr>
+                    <td><div class="pe-doc-sign-line">Por la empresa</div></td>
+                    <td><div class="pe-doc-sign-line">Conformidad del cliente<t t-if="o.confirm_role"> · <t t-out="o.confirm_role"/></t></div></td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+</odoo>

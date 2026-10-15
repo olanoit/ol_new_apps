@@ -1,5 +1,14 @@
 # -*- coding: utf-8 -*-
 """Valores compartidos del planificador (especificación v1.4, «Modelo de datos»)."""
+import unicodedata
+
+
+def norm(text):
+    """Texto comparable: sin tildes, en minúsculas y con un solo espacio."""
+    text = unicodedata.normalize('NFKD', str(text or ''))
+    text = ''.join(c for c in text if not unicodedata.combining(c))
+    return ' '.join(text.lower().split())
+
 
 # Niveles de la jerarquía de la obra en project.task (la obra es el proyecto).
 # Es la *función* del nivel; su nombre visible (Torre, Etapa, Sótano…) sale

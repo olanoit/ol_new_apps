@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+        <record id="rule_construction_purchase_price_report_company" model="ir.rule">
+            <field name="name">Precios de compra: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_purchase_price_report"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    <record id="rule_construction_purchase_price_analysis_company" model="ir.rule">
+            <field name="name">Precios de compra del producto: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_purchase_price_analysis"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    <record id="rule_construction_product_create_wizard_company" model="ir.rule">
+            <field name="name">Crear producto desde el plan: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_product_create_wizard"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

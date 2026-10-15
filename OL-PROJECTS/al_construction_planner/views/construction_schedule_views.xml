@@ -23,7 +23,6 @@
                 <field name="date_start"/>
                 <field name="date_end"/>
                 <field name="partner_id"/>
-                <field name="role_id" optional="hide"/>
                 <field name="amount_planned" sum="Total"/>
                 <field name="progress_pct" widget="percentage"/>
                 <field name="predecessor_id" optional="hide"/>
@@ -54,7 +53,6 @@
                             <field name="date_start"/>
                             <field name="date_end"/>
                             <field name="partner_id"/>
-                            <field name="role_id"/>
                             <field name="amount_planned"/>
                             <field name="progress_pct" widget="percentage"/>
                             <field name="currency_id" invisible="1"/>

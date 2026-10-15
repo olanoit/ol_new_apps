@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- El planificador lanza las órdenes de fabricación desde el plan. -->
+    <record id="al_construction_planner.group_planner_planner" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('mrp.group_mrp_user'))]"/>
+    </record>
+</odoo>

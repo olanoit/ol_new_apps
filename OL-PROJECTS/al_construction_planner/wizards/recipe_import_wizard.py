@@ -24,7 +24,7 @@ from markupsafe import Markup
 from odoo import Command, fields, models
 from odoo.exceptions import UserError
 
-from .master_import_layout import norm
+from ..models.common import norm
 
 _logger = logging.getLogger(__name__)
 

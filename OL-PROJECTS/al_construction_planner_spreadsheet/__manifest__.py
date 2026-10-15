@@ -30,7 +30,7 @@ cuando están el planificador y Documentos.
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],
-    'depends': ['al_construction_planner', 'documents_spreadsheet'],
+    'depends': ['al_construction_planner_furniture', 'documents_spreadsheet'],
     'data': [
         'views/project_views.xml',
     ],

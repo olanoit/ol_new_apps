@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- P-01 · Inicio de la aplicación. -->
+    <record id="action_construction_planner_home" model="ir.actions.client">
+        <field name="name">Inicio</field>
+        <field name="tag">al_construction_planner.home</field>
+    </record>
+
+    </odoo>

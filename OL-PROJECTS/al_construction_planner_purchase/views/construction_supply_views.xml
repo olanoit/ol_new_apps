@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Requerimiento de obra con control de plan (P-11) -->
+    <record id="construction_material_request_view_form_planner" model="ir.ui.view">
+        <field name="name">construction.material.request.form.planner</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="al_construction_material_request.construction_material_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+                <field name="construction_plan_id" readonly="1" groups="al_construction_planner.group_planner_progress"/>
+                <field name="construction_exceed_state" widget="badge" invisible="not construction_plan_id" decoration-success="construction_exceed_state == 'ok'" decoration-danger="construction_exceed_state == 'exceeded'" decoration-info="construction_exceed_state == 'approved'"/>
+            </xpath>
+            <xpath expr="//group[@name='dates']/.." position="after">
+                <group invisible="construction_exceed_state == 'ok' and not construction_exceed_reason">
+                    <field name="construction_exceed_reason" readonly="state != 'draft'" placeholder="Por qué se pide más de lo que queda en el plan"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='product_uom_id']" position="after">
+                <field name="construction_plan_remaining" optional="show" column_invisible="not parent.construction_plan_id"/>
+                <field name="construction_plan_exceeded" column_invisible="1"/>
+                <field name="construction_plan_control" optional="show" column_invisible="not parent.construction_plan_id" decoration-danger="construction_plan_exceeded" decoration-success="not construction_plan_exceeded"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Compra masiva en el requerimiento de compra (OCA) -->
+    <record id="view_purchase_request_form_planner" model="ir.ui.view">
+        <field name="name">purchase.request.form.planner</field>
+        <field name="model">purchase.request</field>
+        <field name="inherit_id" ref="purchase_request.view_purchase_request_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/list/field[@name='date_required']" position="after">
+                <field name="construction_plan_mode" optional="show" column_invisible="not parent.construction_plan_id"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="construction_plan_id" invisible="not construction_plan_id" groups="al_construction_planner.group_planner_progress"/>
+            </xpath>
+        </field>
+    </record>
+
+    </odoo>

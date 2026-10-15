@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_project_view_form_construction_furniture" model="ir.ui.view">
+        <field name="name">project.project.form.construction.furniture</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(al_construction_planner_furniture.action_construction_master_import_wizard)d"
+                        type="action" string="Importar maestro y ETO"
+                        context="{'default_project_id': id}"
+                        invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="project_task_view_form_construction_furniture" model="ir.ui.view">
+        <field name="name">project.task.form.construction.furniture</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="al_construction_planner.project_task_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <group name="construction_detail" position="before">
+                <group string="Mueble" invisible="construction_level != 'furniture'">
+                    <field name="construction_furniture_ml"/>
+                </group>
+            </group>
+            <field name="construction_unit_state" position="before">
+                <field name="construction_module_code"/>
+                <field name="construction_module_type"/>
+                <field name="construction_width_mm"/>
+                <field name="construction_ml_group"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="project_task_view_list_construction_tree_furniture" model="ir.ui.view">
+        <field name="name">project.task.list.construction.tree.furniture</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="al_construction_planner.project_task_view_list_construction_tree"/>
+        <field name="arch" type="xml">
+            <field name="construction_typology_id" position="after">
+                <field name="construction_module_code" optional="hide"/>
+            </field>
+        </field>
+    </record>
+</odoo>

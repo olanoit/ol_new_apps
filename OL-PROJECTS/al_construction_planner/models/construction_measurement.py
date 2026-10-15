@@ -36,11 +36,9 @@ def _is_zero(qty):
     return abs(qty) < DIFFERENCE_TOLERANCE
 
 
+# Mobiliario agrega ML de mueble bajo, ML de mueble alto y módulos.
 MEASUREMENT_DRIVERS = [
     ('qty', 'Metrado del nivel'),
-    ('ml_low', 'ML de mueble bajo'),
-    ('ml_high', 'ML de mueble alto'),
-    ('units', 'Módulos'),
 ]
 
 
@@ -132,33 +130,20 @@ class ConstructionMeasurement(models.Model):
             ('project_id', '=', self.project_id.id), ('state', 'in', OPEN_STATES)], limit=1)
 
     def _planned_driver_qty(self):
-        """{driver: cantidad planificada} del nivel: su metrado (con receta) o
-        los ML de su tipología y la cantidad de módulos del ambiente."""
+        """{driver: cantidad planificada} del nivel: su metrado (mobiliario
+        agrega los ML de la tipología y los módulos del ambiente)."""
         self.ensure_one()
-        space = self.task_id
-        if space.construction_execution_template_id or space.construction_qty:
-            return {'qty': space.construction_qty}
-        typology = space.construction_typology_id
-        modules = self.env['project.task'].search_count([
-            ('construction_space_task_id', '=', space.id), ('construction_level', '=', 'module')])
-        return {'ml_low': typology.ml_low, 'ml_high': typology.ml_high, 'units': modules}
+        return {'qty': self.task_id.construction_qty} if self.task_id.construction_qty else {}
 
     def _driver_lines(self, plan, driver):
         """Líneas de ``plan`` que dependen del driver: todo lo del nivel para el
-        metrado; las de contrata y personal propio del ambiente para ML y
-        módulos."""
+        metrado."""
         self.ensure_one()
         if driver == 'qty':
             return self.env['construction.resource.plan.line'].search([
                 ('plan_id', '=', plan.id),
                 ('task_path', '=like', '%s%%' % self.task_id.construction_path)])
-        lines = self.env['construction.resource.plan.line'].search([
-            ('plan_id', '=', plan.id), ('space_task_id', '=', self.task_id.id),
-            ('resource_type', 'in', ('contract', 'labor')), ('activity_id', '!=', False)])
-        if driver == 'units':
-            return lines.filtered(lambda l: l.activity_id.module_level)
-        group = 'low' if driver == 'ml_low' else 'high'
-        return lines.filtered(lambda l: l.activity_id.ml_based and l.activity_id.ml_group == group)
+        return self.env['construction.resource.plan.line']
 
     def _fill_from_plan(self):
         """Una medida por driver con lo planificado y el costo por unidad de
@@ -167,7 +152,8 @@ class ConstructionMeasurement(models.Model):
         plan = self._current_plan()
         planned = self._planned_driver_qty()
         values = []
-        for driver, _label in MEASUREMENT_DRIVERS:
+        for driver, _label in self.env['construction.measurement.line']._fields[
+                'driver']._description_selection(self.env):
             qty = planned.get(driver)
             if not qty:
                 continue
@@ -238,12 +224,13 @@ class ConstructionMeasurement(models.Model):
         """Volver a borrador para corregir la medida: se descartan las
         revisiones y hay que enviarlo de nuevo."""
         self._check_state(('submitted', 'approved'))
-        if self.env['mrp.production'].search_count([
-                ('construction_space_task_ids', 'in', self.task_id.ids), ('state', '!=', 'cancel')]):
-            raise UserError(self.env._(
-                'El ambiente ya tiene una orden de fabricación: el metrado no se puede reabrir.'))
+        self._construction_check_reopen()
         self.restart_validation()
         self.write({'state': 'draft'})
+
+    def _construction_check_reopen(self):
+        """Gancho: el puente de producción no reabre un metrado con orden de
+        fabricación."""
 
     @api.ondelete(at_uninstall=False)
     def _unlink_only_draft(self):

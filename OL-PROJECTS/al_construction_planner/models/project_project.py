@@ -2,7 +2,7 @@
 from datetime import timedelta
 
 from odoo import api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 from .common import PURCHASE_DESTINATIONS, WEEKDAYS
 from .construction_resource_plan import DRAFT_STATES, OPEN_STATES
@@ -11,6 +11,11 @@ from .construction_resource_plan import DRAFT_STATES, OPEN_STATES
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
+    # También lo define al_construction_material_request (con la ubicación de
+    # la obra); el núcleo lo necesita sin depender de él.
+    is_construction_site = fields.Boolean(
+        string='Es obra', help='Habilita el planificador y, con compras, los requerimientos de '
+                               'materiales y la ubicación de obra.')
     construction_level_template_id = fields.Many2one(
         'construction.level.template', string='Plantilla de niveles',
         help='Niveles del árbol de la obra y su nombre (Torre › Piso › Departamento › '
@@ -54,8 +59,9 @@ class ProjectProject(models.Model):
         store=True, readonly=False,
         help='Primer día con este nombre desde la liquidación: es el vencimiento de la '
              'factura de la contrata. Si es feriado, se corre al día hábil anterior.')
-    construction_settlement_count = fields.Integer(
-        string='Nº de liquidaciones', compute='_compute_construction_settlement_count')
+    construction_current_plan_id = fields.Many2one(
+        'construction.resource.plan', string='Plan vigente',
+        compute='_compute_construction_current_plan_id')
     construction_supervisor_ids = fields.Many2many(
         'res.users', 'project_construction_supervisor_rel', 'project_id', 'user_id',
         string='Supervisores de obra', domain=[('share', '=', False)],
@@ -72,12 +78,6 @@ class ProjectProject(models.Model):
                 project.construction_settlement_day or company.construction_settlement_day or '3')
             project.construction_payment_day = (
                 project.construction_payment_day or company.construction_payment_day or '5')
-
-    def _compute_construction_settlement_count(self):
-        counts = dict(self.env['construction.contract.settlement']._read_group(
-            [('project_id', 'in', self.ids)], ['project_id'], ['__count']))
-        for project in self:
-            project.construction_settlement_count = counts.get(project, 0)
 
     def _construction_period(self, day):
         """Semana de liquidación que contiene ``day``: (inicio, fin)."""
@@ -100,17 +100,6 @@ class ProjectProject(models.Model):
         payment = settlement + timedelta(days=(payment_day - settlement.weekday()) % 7)
         return (company._construction_previous_working_day(settlement),
                 company._construction_previous_working_day(payment))
-
-    def action_view_construction_settlements(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': self.env._('Liquidaciones de %s', self.display_name),
-            'res_model': 'construction.contract.settlement',
-            'view_mode': 'list,form',
-            'domain': [('project_id', '=', self.id)],
-            'context': {'default_project_id': self.id},
-        }
 
     def _compute_construction_plan_count(self):
         plans = dict(self.env['construction.resource.plan']._read_group(
@@ -188,16 +177,6 @@ class ProjectProject(models.Model):
         user = user or self.env.user
         return ['|', ('user_id', '=', user.id), ('construction_supervisor_ids', 'in', user.ids)]
 
-    def action_view_construction_schedule_report(self):
-        """Cronograma valorizado (P-22) de la obra."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'al_construction_planner.schedule_report',
-            'name': self.env._('Cronograma valorizado'),
-            'context': {'construction_project_id': self.id},
-        }
-
     def action_view_construction_plans(self):
         self.ensure_one()
         return {
@@ -219,3 +198,23 @@ class ProjectProject(models.Model):
             'domain': [('project_id', '=', self.id)],
             'context': {'default_project_id': self.id},
         }
+
+    def _compute_construction_current_plan_id(self):
+        Plan = self.env['construction.resource.plan']
+        for project in self:
+            project.construction_current_plan_id = project._construction_current_plan() \
+                if project.is_construction_site and project.id else Plan
+
+    def _construction_plan_or_raise(self):
+        self.ensure_one()
+        plan = self._construction_current_plan()
+        if not plan:
+            raise UserError(self.env._('La obra %s aún no tiene plan de recursos.',
+                                       self.display_name))
+        return plan
+
+    def action_construction_open_tree(self):
+        return self._construction_plan_or_raise().action_open_tree()
+
+    def action_construction_open_schedule(self):
+        return self._construction_plan_or_raise().action_open_schedule()

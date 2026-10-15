@@ -83,24 +83,28 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
             for recipe_line in recipe.line_ids:
                 if recipe_line.stage and recipe_line.stage not in codes:
                     continue
-                activity = recipe_line.activity_id
-                vals_list.append({
-                    'plan_id': plan.id,
-                    'task_id': task.id,
-                    'resource_type': recipe_line.resource_type,
-                    'resource_type_id': recipe_line.resource_type_id.id,
-                    'stage': recipe_line.stage or activity.stage or False,
-                    'product_id': (recipe_line.product_id or activity.product_id).id,
-                    'activity_id': activity.id,
-                    'role_id': (recipe_line.role_id or activity.role_id).id,
-                    'product_uom_id': recipe_line.product_uom_id.id,
-                    'qty_planned': recipe_line.qty * task.construction_qty,
-                    'price_unit_planned': self._price(recipe_line, prices),
-                    'source': 'recipe',
-                    'source_ref': recipe.code,
-                    'analytic_distribution': analytic,
-                })
+                vals = self._prepare_line_vals(task, recipe_line, prices)
+                vals['analytic_distribution'] = analytic
+                vals_list.append(vals)
         return vals_list, warnings
+
+    def _prepare_line_vals(self, task, recipe_line, prices):
+        """Línea del plan de un recurso de la receta en ``task``."""
+        activity = recipe_line.activity_id
+        return {
+            'plan_id': self.plan_id.id,
+            'task_id': task.id,
+            'resource_type': recipe_line.resource_type,
+            'resource_type_id': recipe_line.resource_type_id.id,
+            'stage': recipe_line.stage or activity.stage or False,
+            'product_id': (recipe_line.product_id or activity.product_id).id,
+            'activity_id': activity.id,
+            'product_uom_id': recipe_line.product_uom_id.id,
+            'qty_planned': recipe_line.qty * task.construction_qty,
+            'price_unit_planned': self._price(recipe_line, prices),
+            'source': 'recipe',
+            'source_ref': recipe_line.template_id.code,
+        }
 
     @api.depends('plan_id', 'task_ids', 'stage_ids', 'mode')
     def _compute_preview(self):

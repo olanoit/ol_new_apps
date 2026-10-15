@@ -48,7 +48,8 @@
                                         <td t-esc="work.milestone or '—'"/>
                                         <td><span t-att-class="'badge ' + badge(work.state)" t-esc="work.state_label"/></td>
                                         <td class="text-end">
-                                            <button class="btn btn-sm btn-link o_cp_home_schedule" title="Cronograma valorizado"
+                                            <button t-if="state.data.has_schedule_report"
+                                                    class="btn btn-sm btn-link o_cp_home_schedule" title="Cronograma valorizado"
                                                     t-on-click.stop="() => this.openSchedule(work)">
                                                 <i class="fa fa-line-chart"/>
                                             </button>

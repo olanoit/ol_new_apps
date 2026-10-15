@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_construction_plan_crew_wizard_planner,construction.plan.crew.wizard planner,model_construction_plan_crew_wizard,al_construction_planner.group_planner_planner,1,1,1,1
+access_construction_plan_crew_wizard_line_planner,construction.plan.crew.wizard.line planner,model_construction_plan_crew_wizard_line,al_construction_planner.group_planner_planner,1,1,1,1

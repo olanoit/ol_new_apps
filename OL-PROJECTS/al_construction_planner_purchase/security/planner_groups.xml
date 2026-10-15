@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Con compras y requerimientos de obra: la jefatura aprueba los
+         requerimientos y el asistente los crea (v1.6, M16-09 y M16-10). -->
+    <record id="al_construction_planner.group_planner_project_head" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
+    </record>
+    <record id="al_construction_planner.group_planner_assistant" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_requester'))]"/>
+    </record>
+</odoo>

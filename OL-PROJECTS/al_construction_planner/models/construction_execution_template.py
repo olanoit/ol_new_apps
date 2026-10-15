@@ -96,8 +96,6 @@ class ConstructionExecutionTemplateLine(models.Model):
     activity_id = fields.Many2one(
         'construction.labor.activity', string='Actividad (driver)', check_company=True,
         help='Contrata y personal propio: lo que se reporta y se paga.')
-    role_id = fields.Many2one('planning.role', string='Rol de la cuadrilla',
-                              help='Personal propio: operario, oficial, peón…')
     # Seis decimales: el APU trae rendimientos como 0.042105 h por m².
     qty = fields.Float(string='Cantidad por unidad', digits=(16, 6), required=True,
                        default=1.0)

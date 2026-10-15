@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_planner_typologies" name="Tipolog&#xED;as" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_typology" sequence="10"/>
+
+    <menuitem id="menu_planner_master_import" name="Importar maestro y ETO" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_master_import_wizard" sequence="40"/>
+</odoo>

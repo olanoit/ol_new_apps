@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_material_request_view_form_discount" model="ir.ui.view">
+        <field name="name">construction.material.request.form.discount</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="al_construction_planner_purchase.construction_material_request_view_form_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='dates']/.." position="after">
+                <!-- Descuento del material extra a la contrata (v1.6, M16-08):
+                     lo decide la jefatura de proyectos al aprobar. -->
+                <group string="Descuento a la contrata" name="construction_discount" invisible="not is_extra or state in ('draft', 'rejected', 'cancel')" groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_discount" readonly="construction_discount_settlement_id or state in ('done', 'cancel')"/>
+                    <field name="construction_discount_partner_id" invisible="not construction_discount" required="construction_discount" options="{'no_create': True}" readonly="construction_discount_settlement_id or state in ('done', 'cancel')"/>
+                    <field name="construction_discount_amount" invisible="not construction_discount" readonly="construction_discount_settlement_id or state in ('done', 'cancel')"/>
+                    <field name="construction_discount_settlement_id" invisible="not construction_discount_settlement_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_contract_settlement_view_form_discount" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.form.discount</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="inherit_id" ref="al_construction_planner_subcontract.construction_contract_settlement_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                        <page string="Descuentos" name="discounts" invisible="not discount_request_ids">
+                            <field name="discount_request_ids" nolabel="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="task_id"/>
+                                    <field name="extra_reason"/>
+                                    <field name="date_request"/>
+                                    <field name="construction_discount_amount" string="Descuento" sum="Total"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

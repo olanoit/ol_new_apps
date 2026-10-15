@@ -11,8 +11,6 @@ from odoo.exceptions import UserError
 from odoo.tools.misc import format_date
 from odoo.tools.safe_eval import safe_eval
 
-from .construction_supply_board import SOON_DAYS
-
 GROUP = 'al_construction_planner.group_planner_'
 #: Días hacia adelante para las etapas sin contrata (P-01).
 STAGE_HORIZON_DAYS = 14
@@ -65,23 +63,7 @@ class ConstructionPlannerHome(models.AbstractModel):
             return {'label': self.env._('Aprobar el plan'), 'date': False}
         if plan.state == 'to_approve':
             return {'label': self.env._('Aprobación del plan'), 'date': False}
-        candidates = []
-        labels = {
-            'cutoff': self.env._('Valorización %s · corte'),
-            'submit': self.env._('Valorización %s · presentación'),
-            'confirm': self.env._('Valorización %s · confirmación'),
-            'invoice': self.env._('Valorización %s · factura'),
-            'collection': self.env._('Valorización %s · cobro'),
-        }
-        try:
-            forecast = project._construction_get_valuation_forecast() \
-                if project.construction_sale_order_id else {'rows': []}
-        except UserError:
-            forecast = {'rows': []}
-        for row in forecast['rows']:
-            for key, label in labels.items():
-                if row.get(key) and row[key] >= today:
-                    candidates.append((row[key], label % row['number']))
+        candidates = self._next_milestone_candidates(project, today)
         stage = self.env['construction.space.stage'].search(
             [('project_id', '=', project.id), ('date_end', '>=', today)],
             order='date_end, sequence', limit=1)
@@ -96,6 +78,12 @@ class ConstructionPlannerHome(models.AbstractModel):
         day, label = min(candidates, key=lambda c: c[0])
         return {'label': '%s %s' % (label, format_date(self.env, day, date_format='dd/MM')),
                 'date': day}
+
+    @api.model
+    def _next_milestone_candidates(self, project, today):
+        """[(fecha, etiqueta)] de los hitos de la obra desde hoy: el puente de
+        ventas agrega los de las valorizaciones previstas."""
+        return []
 
     # ------------------------------------------------------------------
     # Pendientes de hoy
@@ -112,38 +100,24 @@ class ConstructionPlannerHome(models.AbstractModel):
         return projects or None
 
     @api.model
+    def _pending_mine(self):
+        """Dominio de las obras del supervisor (vacío: todas)."""
+        supervised = self._supervised_projects()
+        return [('project_id', 'in', supervised.ids)] if supervised is not None else []
+
+    @api.model
     def _pending_definitions(self, today):
         """Pendientes posibles: (clave, grupo, etiqueta, dónde, modelo,
         dominio, acción base). El dominio puede ser una función (se calcula
         solo para quien atiende el pendiente) y, en las alertas de
         abastecimiento, el tipo de alerta."""
-        supervised = self._supervised_projects()
-        mine = [('project_id', 'in', supervised.ids)] if supervised is not None else []
+        mine = self._pending_mine()
         soon = today + timedelta(days=STAGE_HORIZON_DAYS)
         return [
             ('progress_to_validate', 'planner', self.env._('Avances reportados por validar'),
              self.env._('Avance'), 'construction.task.progress',
              [('state', '=', 'draft')] + mine,
              'al_construction_planner.action_construction_progress_to_validate'),
-            ('settlements_to_validate', 'planner', self.env._('Liquidaciones por validar'),
-             self.env._('Contratas'), 'construction.contract.settlement',
-             [('state', '=', 'submitted')] + mine,
-             'al_construction_planner.action_construction_contract_settlement'),
-            ('deliveries_to_confirm', 'manager', self.env._('Entregas semanales por confirmar'),
-             self.env._('Ingresos'), 'construction.weekly.delivery',
-             [('state', '=', 'draft')],
-             'al_construction_planner.action_construction_weekly_delivery'),
-            ('valuations_to_invoice', 'revenue',
-             self.env._('Valorizaciones confirmadas por facturar'), self.env._('Ingresos'),
-             'construction.valuation', [('state', '=', 'confirmed')],
-             'al_construction_planner.action_construction_valuation'),
-            ('supply_no_po', 'planner',
-             self.env._('Necesidades sin OC en menos de %s días', SOON_DAYS),
-             self.env._('Abastecimiento'), 'supply', 'no_po',
-             'al_construction_planner.action_construction_supply_board'),
-            ('supply_price', 'planner', self.env._('Último precio sobre el costo del plan'),
-             self.env._('Abastecimiento'), 'supply', 'price',
-             'al_construction_planner.action_construction_supply_board'),
             ('stages_without_contract', 'planner',
              self.env._('Etapas sin contrata que empiezan en 2 semanas'),
              self.env._('Cronograma'), 'construction.space.stage',
@@ -168,47 +142,42 @@ class ConstructionPlannerHome(models.AbstractModel):
                 and not resources[(stage.space_task_id.id, stage.stage)].get('role')]
 
     @api.model
-    def _supply_alerts(self, today):
-        plans = self.env['construction.resource.plan'].search(
-            [('state', 'in', ('approved', 'in_progress'))])
-        return self.env['construction.supply.board']._get_supply_alerts(
-            plans.project_id, date_ref=today)
-
-    @api.model
     def _get_pending(self, today):
         user = self.env.user
-        alerts = None
+        cache = {}
         result = []
         for key, group, label, where, model, domain, action_ref in \
                 self._pending_definitions(today):
             if not user.has_group(GROUP + group):
                 continue
-            if model == 'supply':
-                if alerts is None:
-                    alerts = self._supply_alerts(today)
-                matching = [a for a in alerts if a['type'] == domain]
-                count = len(matching)
-                action = self.env['ir.actions.actions']._for_xml_id(action_ref)
-                if matching:
-                    action['context'] = {'construction_project_id': matching[0]['project_id']}
-            else:
-                Model = self.env[model]
-                if not Model.has_access('read'):
-                    continue
-                if callable(domain):
-                    # Solo se calcula si el usuario atiende ese pendiente.
-                    domain = domain()
-                count = Model.search_count(domain)
-                action = self.env['ir.actions.actions']._for_xml_id(action_ref)
-                action.update({'domain': domain, 'name': label})
-                # Sin los filtros por defecto de la acción: la lista muestra
-                # exactamente lo pendiente.
-                context = {k: v for k, v in self._eval_context(action).items()
-                           if not k.startswith('search_default_')}
-                action['context'] = context
+            entry = self._pending_entry(model, domain, label, action_ref, today, cache)
+            if entry is None:
+                continue
+            count, action = entry
             result.append({'key': key, 'label': label, 'where': where, 'count': count,
                            'action': action})
         return result
+
+    @api.model
+    def _pending_entry(self, model, domain, label, action_ref, today, cache):
+        """(cantidad, acción) de un pendiente sobre ``model``, o ``None`` si el
+        usuario no lo ve. Los puentes resuelven sus pendientes especiales (las
+        alertas de abastecimiento)."""
+        Model = self.env.get(model)
+        if Model is None or not Model.has_access('read'):
+            return None
+        if callable(domain):
+            # Solo se calcula si el usuario atiende ese pendiente.
+            domain = domain()
+        count = Model.search_count(domain)
+        action = self.env['ir.actions.actions']._for_xml_id(action_ref)
+        action.update({'domain': domain, 'name': label})
+        # Sin los filtros por defecto de la acción: la lista muestra
+        # exactamente lo pendiente.
+        context = {k: v for k, v in self._eval_context(action).items()
+                   if not k.startswith('search_default_')}
+        action['context'] = context
+        return count, action
 
     @api.model
     def _eval_context(self, action):
@@ -226,6 +195,8 @@ class ConstructionPlannerHome(models.AbstractModel):
             'works': self._get_works(today),
             'pending': self._get_pending(today),
             'can_plan': self.env.user.has_group(GROUP + 'planner'),
+            # El cronograma valorizado es del puente de ventas.
+            'has_schedule_report': 'construction.schedule.report' in self.env,
         }
 
     @api.model

@@ -5,7 +5,7 @@ from io import BytesIO
 from odoo import fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.al_construction_planner.wizards.master_import_layout import sheet_key
+from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import sheet_key
 
 
 class DocumentsDocument(models.Model):

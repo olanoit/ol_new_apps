@@ -26,11 +26,11 @@ ROOT_KEY = 'p'
 # Acciones de la barra de selección (W-02 a W-08). Las que aún no existen
 # (fases siguientes) no se muestran.
 TREE_ACTIONS = [
-    ('al_construction_planner.action_plan_purchase_wizard', 'Compra masiva', 'fa-shopping-cart'),
-    ('al_construction_planner.action_plan_request_wizard', 'Requerimiento de obra', 'fa-truck'),
-    ('al_construction_planner.action_plan_production_wizard', 'Orden de fabricación', 'fa-industry'),
-    ('al_construction_planner.action_plan_contract_wizard', 'Asignar contrata', 'fa-handshake-o'),
-    ('al_construction_planner.action_plan_crew_wizard', 'Asignar cuadrilla', 'fa-users'),
+    ('al_construction_planner_purchase.action_plan_purchase_wizard', 'Compra masiva', 'fa-shopping-cart'),
+    ('al_construction_planner_purchase.action_plan_request_wizard', 'Requerimiento de obra', 'fa-truck'),
+    ('al_construction_planner_mrp.action_plan_production_wizard', 'Orden de fabricación', 'fa-industry'),
+    ('al_construction_planner_subcontract.action_plan_contract_wizard', 'Asignar contrata', 'fa-handshake-o'),
+    ('al_construction_planner_crew.action_plan_crew_wizard', 'Asignar cuadrilla', 'fa-users'),
     ('al_construction_planner.action_plan_progress_wizard', 'Registrar avance', 'fa-check-square-o'),
     ('al_construction_planner.action_plan_reschedule_wizard', 'Cambiar fechas', 'fa-calendar'),
 ]
@@ -219,11 +219,27 @@ class ConstructionResourcePlan(models.Model):
             data['qty_total'] += qty
         return {k: round(v, 2) if isinstance(v, float) else v for k, v in data.items()}
 
-    @staticmethod
-    def _tree_space_ml(spaces):
-        """ML de cada ambiente: bajo + alto de su tipología."""
-        return {space.id: (space.construction_typology_id.ml_low or 0.0)
-                + (space.construction_typology_id.ml_high or 0.0) for space in spaces}
+    @api.model
+    def _tree_space_ml(self, spaces):
+        """Metros lineales de cada ambiente: los calcula el rubro mobiliario."""
+        return dict.fromkeys(spaces.ids, 0.0)
+
+    @api.model
+    def _tree_module_info(self, task):
+        """(metros lineales, etiqueta) de un nodo de nivel de detalle: el ancho
+        y el código del módulo en mobiliario."""
+        return 0.0, ''
+
+    @api.model
+    def _tree_furniture_ml(self, children, task_field):
+        """{subnivel: metros lineales} (los muebles en mobiliario)."""
+        return {}
+
+    @api.model
+    def _tree_loose_ml(self, module_domain, spaces):
+        """Metros lineales de los módulos sueltos de la selección (su ambiente
+        no está entero en ella)."""
+        return 0.0
 
     def _tree_nodes(self, children, level, filters):
         if not children:
@@ -244,25 +260,14 @@ class ConstructionResourcePlan(models.Model):
         if level == 'module':
             for task in children:
                 modules[task.id] = 1
-                ml[task.id] = (task.construction_width_mm or 0) / 1000.0 \
-                    if task.construction_ml_group in ('low', 'high') else 0.0
-                typology[task.id] = task.construction_module_code or ''
+                ml[task.id], typology[task.id] = self._tree_module_info(task)
         else:
             task_field = TASK_FIELD[level]
             modules = {task.id: count for task, count in Task._read_group(
                 self._tree_module_domain(filters) + [(task_field, 'in', ids)],
                 [task_field], ['__count'])}
             if level == 'furniture':
-                # ML del mueble: la suma de los anchos de sus módulos o, sin
-                # anchos, los del mueble de la tipología.
-                for module in Task.search([('construction_level', '=', 'module'),
-                                           (task_field, 'in', ids)]):
-                    if module.construction_ml_group in ('low', 'high'):
-                        key = module[task_field].id
-                        ml[key] = ml.get(key, 0.0) + (module.construction_width_mm or 0) / 1000.0
-                for task in children:
-                    if not ml.get(task.id):
-                        ml[task.id] = task.construction_furniture_ml or 0.0
+                ml.update(self._tree_furniture_ml(children, task_field))
             spaces = Task.search([('construction_level', '=', 'space'), (task_field, 'in', ids)])
             space_ml = self._tree_space_ml(spaces)
             codes = {}
@@ -375,12 +380,7 @@ class ConstructionResourcePlan(models.Model):
         spaces = Task.search(space_domain)
         ml = sum(self._tree_space_ml(spaces).values())
         if tasks is not None:
-            # Módulos sueltos (su ambiente no está entero en la selección):
-            # su ancho si es de un grupo ML.
-            loose = Task.search(module_domain + [
-                ('construction_space_task_id', 'not in', spaces.ids),
-                ('construction_ml_group', 'in', ('low', 'high'))])
-            ml += sum(loose.mapped('construction_width_mm')) / 1000.0
+            ml += self._tree_loose_ml(module_domain, spaces)
         totals.update({
             'empty': False,
             'modules': Task.search_count(module_domain),
@@ -390,12 +390,12 @@ class ConstructionResourcePlan(models.Model):
 
         type_labels = dict(RESOURCE_TYPES)
         resources = {}
-        for rtype, activity, product, role, uom, partner, amount, qty in Line._read_group(
+        # Las líneas de contrata y personal propio siempre tienen actividad.
+        for rtype, activity, product, uom, partner, amount, qty in Line._read_group(
                 line_domain,
-                ['resource_type', 'activity_id', 'product_id', 'role_id', 'product_uom_id',
-                 'partner_id'],
+                ['resource_type', 'activity_id', 'product_id', 'product_uom_id', 'partner_id'],
                 ['amount_planned:sum', 'qty_planned:sum']):
-            record = activity or product or role
+            record = activity or product
             key = (rtype, record._name if record else '', record.id if record else 0, uom.id)
             item = resources.setdefault(key, {
                 'resource_type': rtype, 'type_label': type_labels.get(rtype, ''),

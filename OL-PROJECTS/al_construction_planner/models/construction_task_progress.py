@@ -13,8 +13,6 @@ PROGRESS_STATES = [
     ('validated', 'Validado'),
     ('rejected', 'Rechazado'),
 ]
-# Liquidación que deja el avance como «liquidado» (no se revierte).
-SETTLED_STATES = ('approved', 'paid')
 # Campos que solo cambian mientras el avance está reportado.
 LOCKED_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'date', 'qty', 'attachment_ids'}
 
@@ -108,11 +106,9 @@ class ConstructionTaskProgress(models.Model):
     validator_id = fields.Many2one('res.users', string='Validado por', readonly=True, copy=False)
     validation_date = fields.Datetime(string='Fecha de validación', readonly=True, copy=False)
     reject_reason = fields.Text(string='Motivo del rechazo', readonly=True, copy=False)
-    settlement_id = fields.Many2one(
-        'construction.contract.settlement', string='Liquidación', readonly=True, copy=False,
-        index='btree_not_null', check_company=True)
+    # Lo calcula el puente de contratas con la liquidación del avance.
     settled = fields.Boolean(
-        string='Liquidado', compute='_compute_settled', store=True,
+        string='Liquidado', readonly=True, copy=False,
         help='Entró a una liquidación aprobada: ya no se revierte.')
     period_start = fields.Date(
         string='Semana de liquidación', compute='_compute_period', store=True,
@@ -162,11 +158,6 @@ class ConstructionTaskProgress(models.Model):
             progress.distance_m = progress.project_id._construction_distance_m(
                 progress.latitude, progress.longitude) if progress.latitude or progress.longitude \
                 else 0.0
-
-    @api.depends('settlement_id.state')
-    def _compute_settled(self):
-        for progress in self:
-            progress.settled = progress.settlement_id.state in SETTLED_STATES
 
     @api.depends('date', 'project_id.construction_week_start_day',
                  'project_id.construction_settlement_day')
@@ -279,7 +270,7 @@ class ConstructionTaskProgress(models.Model):
         before = self.plan_line_id
         res = super().write(vals)
         # Lo validado es el ejecutado de la línea (estado y control).
-        if {'state', 'qty', 'plan_line_id', 'settlement_id'} & set(vals):
+        if {'state', 'qty', 'plan_line_id', 'settled'} & set(vals):
             (before | self.plan_line_id)._refresh_control()
         return res
 
@@ -341,17 +332,17 @@ class ConstructionTaskProgress(models.Model):
             raise UserError(self.env._(
                 'Estos avances ya se liquidaron y no se revierten: %s.',
                 ', '.join(settled.mapped('name'))))
-        busy = self.filtered(lambda p: p.settlement_id.state in ('submitted', 'validated'))
-        if busy:
-            raise UserError(self.env._(
-                'Estos avances están en una liquidación presentada o validada; devuélvala '
-                'antes: %s.', ', '.join(busy.mapped('name'))))
-        settlements = self.settlement_id
+        self._construction_check_resettable()
         validated = self.filtered(lambda p: p.state == 'validated')
-        self.write({'state': 'draft', 'settlement_id': False, 'validator_id': False,
-                    'validation_date': False})
-        settlements._refresh_lines()
+        self.write(self._construction_reset_values())
         validated.task_id._construction_update_unit_state(revert=True)
+
+    def _construction_check_resettable(self):
+        """Gancho: el puente de contratas no deja revertir un avance de una
+        liquidación presentada o validada."""
+
+    def _construction_reset_values(self):
+        return {'state': 'draft', 'validator_id': False, 'validation_date': False}
 
     def action_view_photos(self):
         self.ensure_one()

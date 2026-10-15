@@ -13,32 +13,10 @@ from datetime import date, datetime, time
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
-KINDS = [
-    ('purchase_request', 'Compra masiva'),
-    ('material_request', 'Requerimiento de obra'),
-    ('production', 'Orden de fabricación'),
-    ('service_order', 'OC de servicio'),
-    ('planning_slot', 'Turno'),
-]
-# Campo del documento enlazado según el tipo de asignación.
-DOCUMENT_FIELDS = {
-    'purchase_request': 'purchase_request_line_id',
-    'material_request': 'material_request_line_id',
-    'production': 'production_id',
-    'service_order': 'purchase_line_id',
-    'planning_slot': 'slot_id',
-}
-# Medida que es el «Ejecutado» de cada tipo.
-DONE_MEASURE = {
-    'purchase_request': 'done',
-    'material_request': 'dispatched',
-    'production': 'consumed',
-    'service_order': 'done',
-    'planning_slot': 'done',
-}
+# Los tipos de documento (compra masiva, requerimiento de obra, OF, OC de
+# servicio, turno) los agrega cada puente (v1.7, M17-07) con su campo, su
+# estado y sus cantidades: ver _kind_fields y los ganchos _get_document_*.
 MEASURES = ('purchased', 'dispatched', 'consumed', 'done')
-# Ubicaciones de consumo: lo que sale de la obra hacia ellas es «Consumo en obra».
-CONSUMPTION_USAGES = ('production',)
 
 
 def distribute(total, items):
@@ -78,22 +56,7 @@ class ConstructionResourcePlanAllocation(models.Model):
     product_uom_id = fields.Many2one(related='plan_line_id.product_uom_id', string='Unidad')
     date_needed = fields.Date(
         related='plan_line_id.date_needed', string='Fecha de necesidad', store=True)
-    kind = fields.Selection(KINDS, string='Documento', required=True)
-    purchase_request_line_id = fields.Many2one(
-        'purchase.request.line', string='Línea de requerimiento de compra',
-        ondelete='cascade', index='btree_not_null', check_company=True)
-    material_request_line_id = fields.Many2one(
-        'construction.material.request.line', string='Línea de requerimiento de obra',
-        ondelete='cascade', index='btree_not_null', check_company=True)
-    production_id = fields.Many2one(
-        'mrp.production', string='Orden de fabricación', ondelete='cascade',
-        index='btree_not_null', check_company=True)
-    purchase_line_id = fields.Many2one(
-        'purchase.order.line', string='Línea de la OC', ondelete='cascade',
-        index='btree_not_null', check_company=True)
-    slot_id = fields.Many2one(
-        'planning.slot', string='Turno', ondelete='cascade', index='btree_not_null',
-        check_company=True)
+    kind = fields.Selection([], string='Documento', required=True)
     document_name = fields.Char(string='Referencia', compute='_compute_document_name')
     qty_allocated = fields.Float(string='Asignado', digits='Product Unit', required=True)
     # Quien consulta el plan (planificador, capataz) puede no tener acceso a
@@ -116,87 +79,57 @@ class ConstructionResourcePlanAllocation(models.Model):
         string='Estado', compute='_compute_state', compute_sudo=True,
         help='Sigue al documento enlazado.')
 
-    _one_document = models.Constraint(
-        'CHECK(num_nonnulls(purchase_request_line_id, material_request_line_id, '
-        'production_id, purchase_line_id, slot_id) = 1)',
-        'Cada asignación enlaza exactamente un documento.')
     _qty_allocated_positive = models.Constraint(
         'CHECK(qty_allocated >= 0)', 'La cantidad asignada no puede ser negativa.')
 
-    @api.constrains('kind', *DOCUMENT_FIELDS.values())
+    @api.model
+    def _kind_fields(self):
+        """{tipo: campo del documento enlazado}; cada puente agrega el suyo."""
+        return {}
+
+    @api.model
+    def _kind_done_measures(self):
+        """{tipo: medida que es su «Ejecutado»} (por defecto «done»)."""
+        return {}
+
+    @api.constrains('kind')
     def _check_kind(self):
+        fields_by_kind = self._kind_fields()
         for allocation in self:
-            if not allocation[DOCUMENT_FIELDS[allocation.kind]]:
+            linked = [f for f in fields_by_kind.values() if allocation[f]]
+            if len(linked) != 1 or not allocation[fields_by_kind[allocation.kind]]:
                 raise ValidationError(self.env._(
-                    'La asignación de tipo «%s» debe enlazar ese documento.',
-                    dict(KINDS)[allocation.kind]))
+                    'La asignación de tipo «%s» debe enlazar ese documento y ningún otro.',
+                    dict(self._fields['kind']._description_selection(self.env)).get(
+                        allocation.kind, allocation.kind)))
 
     def _document(self):
         self.ensure_one()
-        return self[DOCUMENT_FIELDS[self.kind]]
+        field = self._kind_fields().get(self.kind)
+        return self[field] if field else False
 
-    @api.depends('kind', *DOCUMENT_FIELDS.values())
+    def _document_record(self):
+        """El documento que se abre (la cabecera: requerimiento, OC…)."""
+        return self._document()
+
+    @api.depends('kind')
     def _compute_document_name(self):
         for allocation in self:
-            document = allocation._document() if allocation.kind else False
-            if allocation.kind == 'purchase_request':
-                name = document.request_id.name
-            elif allocation.kind == 'material_request':
-                name = document.request_id.name
-            elif allocation.kind == 'service_order':
-                name = document.order_id.name
-            else:
-                name = document.display_name if document else False
-            allocation.document_name = name
+            document = allocation._document_record() if allocation.kind else False
+            allocation.document_name = document.display_name if document else False
 
     # ------------------------------------------------------------------
     # Estado
     # ------------------------------------------------------------------
-    @api.depends('kind', 'purchase_request_line_id.cancelled',
-                 'purchase_request_line_id.request_state',
-                 'purchase_request_line_id.purchase_lines.state',
-                 'material_request_line_id.cancelled', 'material_request_line_id.line_state',
-                 'material_request_line_id.request_id.state', 'production_id.state',
-                 'purchase_line_id.order_id.state', 'purchase_line_id.qty_received',
-                 'slot_id.end_datetime')
+    @api.depends('kind')
     def _compute_state(self):
         now = fields.Datetime.now()
         for allocation in self:
             allocation.state = allocation._get_document_state(now)
 
     def _get_document_state(self, now):
-        kind = self.kind
-        if kind == 'purchase_request':
-            line = self.purchase_request_line_id
-            if line.cancelled or line.request_state == 'rejected':
-                return 'cancel'
-            confirmed = self._confirmed_purchase_qty(line)
-            if line.request_state == 'done' or (
-                    line.product_uom_id and line.product_uom_id.compare(
-                        confirmed, line.product_qty) >= 0):
-                return 'done'
-            return 'open'
-        if kind == 'material_request':
-            line = self.material_request_line_id
-            request_state = line.request_id.state
-            if line.cancelled or request_state in ('cancel', 'rejected'):
-                return 'cancel'
-            if request_state == 'done' or line.line_state == 'done':
-                return 'done'
-            return 'open'
-        if kind == 'production':
-            state = self.production_id.state
-            return {'cancel': 'cancel', 'done': 'done'}.get(state, 'open')
-        if kind == 'service_order':
-            line = self.purchase_line_id
-            if line.order_id.state == 'cancel':
-                return 'cancel'
-            if line.product_uom_id.compare(line.qty_received, line.product_qty) >= 0:
-                return 'done'
-            return 'open'
-        if kind == 'planning_slot':
-            end = self.slot_id.end_datetime
-            return 'done' if end and end <= now else 'open'
+        """Estado de la asignación según su documento: cada puente resuelve el
+        suyo y llama a super() para los demás."""
         return 'open'
 
     # ------------------------------------------------------------------
@@ -222,56 +155,21 @@ class ConstructionResourcePlanAllocation(models.Model):
         return qty
 
     def _get_document_key(self):
-        """Clave del documento que se reparte: la OF se reparte por componente."""
+        """Clave del documento que se reparte (la OF, por componente)."""
         self.ensure_one()
-        if self.kind == 'production':
-            return ('production', self.production_id.id, self.plan_line_id.product_id.id)
         return (self.kind, self._document().id)
 
-    @staticmethod
-    def _confirmed_purchase_qty(pr_line):
-        """Cantidad de la línea OCA en OC confirmadas, en su unidad: su parte
-        de la línea de OC según la tabla de asignación de OCA, no la línea
-        entera (la compra masiva consolidada suma varias solicitudes, M16-01)."""
-        return pr_line._al_ordered_qty(states=('purchase', 'done'))
+    def _to_uom(self, qty, from_uom):
+        """``qty`` de ``from_uom`` a la UdM del producto de la línea."""
+        uom = self._product_uom()
+        if from_uom and uom and from_uom != uom:
+            return from_uom._compute_quantity(qty, uom, rounding_method='HALF-UP')
+        return qty
 
     def _get_document_totals(self):
         """Totales del documento de ``self`` (primera asignación del grupo), en
-        la UdM del producto: {medida: cantidad}."""
+        la UdM del producto: {medida: cantidad}. Los da el puente del tipo."""
         self.ensure_one()
-        product = self.plan_line_id.product_id
-        uom = self._product_uom()
-
-        def to_uom(qty, from_uom):
-            if from_uom and uom and from_uom != uom:
-                return from_uom._compute_quantity(qty, uom, rounding_method='HALF-UP')
-            return qty
-
-        kind = self.kind
-        if kind == 'purchase_request':
-            line = self.purchase_request_line_id
-            confirmed = self._confirmed_purchase_qty(line)
-            active = not (line.cancelled or line.request_state == 'rejected')
-            # La compra masiva sube el comprado al crearse (especificación,
-            # P-10); si se cancela, queda solo lo que ya llegó a una OC.
-            purchased = max(line.product_qty, confirmed) if active else confirmed
-            return {'purchased': to_uom(purchased, line.product_uom_id),
-                    'done': to_uom(confirmed, line.product_uom_id)}
-        if kind == 'material_request':
-            line = self.material_request_line_id
-            return {'purchased': to_uom(line.qty_purchased, line.product_uom_id),
-                    'dispatched': to_uom(line.qty_received_on_site, line.product_uom_id)}
-        if kind == 'production':
-            date_to = self._construction_date_to()
-            moves = self.production_id.move_raw_ids.filtered(
-                lambda m: m.state == 'done' and m.product_id == product
-                and (not date_to or m.date <= date_to))
-            consumed = sum(to_uom(m.quantity, m.product_uom) for m in moves)
-            # Lo que la OF consume ya se entregó en planta.
-            return {'dispatched': consumed, 'consumed': consumed}
-        if kind == 'service_order':
-            line = self.purchase_line_id
-            return {'done': to_uom(line.qty_received, line.product_uom_id)}
         return {}
 
     def _construction_date_to(self):
@@ -295,7 +193,7 @@ class ConstructionResourcePlanAllocation(models.Model):
     def _get_siblings(self):
         """Todas las asignaciones de los documentos de ``self``."""
         domain = []
-        for kind, field in DOCUMENT_FIELDS.items():
+        for kind, field in self._kind_fields().items():
             ids = self.filtered(lambda a, k=kind: a.kind == k)[field].ids
             if ids:
                 domain = domain and ['|'] + domain + [(field, 'in', ids)] or [(field, 'in', ids)]
@@ -303,59 +201,12 @@ class ConstructionResourcePlanAllocation(models.Model):
             return self
         return self.search(domain) | self
 
-    def _get_site_consumption(self):
-        """Consumo en obra de las asignaciones de requerimientos de obra:
-        movimientos hechos desde la ubicación de la obra hacia una ubicación
-        de consumo (menos las devoluciones), por obra y producto, repartidos
-        entre todas las asignaciones de esa obra y producto."""
-        allocations = self.filtered(lambda a: a.kind == 'material_request')
-        result = {}
-        if not allocations:
-            return result
-        groups = defaultdict(lambda: self.browse())
-        for allocation in allocations:
-            site = allocation.material_request_line_id.request_id.location_dest_id
-            product = allocation.plan_line_id.product_id
-            if site and product:
-                groups[(site, product)] |= allocation
-        Move = self.env['stock.move']
-        date_to = self._construction_date_to()
-        date_domain = [('date', '<=', date_to)] if date_to else []
-        for (site, product), _group in groups.items():
-            siblings = self.search([
-                ('kind', '=', 'material_request'),
-                ('material_request_line_id.request_id.location_dest_id', '=', site.id),
-                ('plan_line_id.product_id', '=', product.id),
-            ]) | _group
-            consumed = 0.0
-            for moves, sign in (
-                (Move.search([('state', '=', 'done'), ('product_id', '=', product.id),
-                              ('location_id', 'child_of', site.id),
-                              ('location_dest_id.usage', 'in', CONSUMPTION_USAGES)]
-                             + date_domain), 1),
-                (Move.search([('state', '=', 'done'), ('product_id', '=', product.id),
-                              ('location_dest_id', 'child_of', site.id),
-                              ('location_id.usage', 'in', CONSUMPTION_USAGES)]
-                             + date_domain), -1),
-            ):
-                consumed += sign * sum(
-                    m.product_uom._compute_quantity(m.quantity, product.uom_id,
-                                                    rounding_method='HALF-UP')
-                    for m in moves)
-            ordered = siblings.sorted(lambda a: (a.date_needed or date.max, a.id))
-            shares = distribute(consumed, [(a, a._to_product_uom(a.qty_allocated))
-                                           for a in ordered])
-            result.update(shares)
-        return result
+    def _get_extra_measures(self):
+        """{asignación: {medida: cantidad en la UdM del producto}} que no salen
+        del reparto del documento (el consumo en obra de los requerimientos)."""
+        return {}
 
-    @api.depends('kind', 'qty_allocated', 'plan_line_id.date_needed',
-                 'purchase_request_line_id.product_qty', 'purchase_request_line_id.cancelled',
-                 'purchase_request_line_id.request_state',
-                 'purchase_request_line_id.purchase_lines.state',
-                 'material_request_line_id.qty_purchased',
-                 'material_request_line_id.qty_received_on_site',
-                 'production_id.move_raw_ids.state', 'production_id.move_raw_ids.quantity',
-                 'purchase_line_id.qty_received')
+    @api.depends('kind', 'qty_allocated', 'plan_line_id.date_needed')
     def _compute_quantities(self):
         real = self.filtered('id')
         values = defaultdict(dict)
@@ -372,15 +223,16 @@ class ConstructionResourcePlanAllocation(models.Model):
                 for measure, total in ordered[0]._get_document_totals().items():
                     for allocation, qty in distribute(total, items).items():
                         values[allocation][measure] = qty
-            for allocation, qty in real._get_site_consumption().items():
-                values[allocation]['consumed'] = qty
+            for allocation, measures in real._get_extra_measures().items():
+                values[allocation].update(measures)
+        done_measures = self._kind_done_measures()
         for allocation in self:
             vals = values.get(allocation, {})
             converted = {m: allocation._from_product_uom(vals.get(m, 0.0)) for m in MEASURES}
             allocation.qty_purchased = converted['purchased']
             allocation.qty_dispatched = converted['dispatched']
             allocation.qty_consumed = converted['consumed']
-            allocation.qty_done = converted[DONE_MEASURE.get(allocation.kind, 'done')]
+            allocation.qty_done = converted[done_measures.get(allocation.kind, 'done')]
 
     # ------------------------------------------------------------------
     # Control de las líneas (estado y montos almacenados)
@@ -421,21 +273,24 @@ class ConstructionResourcePlanAllocation(models.Model):
         allocations_sudo = self.sudo().search([(field, 'in', documents.ids)])
         allocations_sudo._refresh_plan_lines()
 
+    def _get_open_document_dates(self):
+        """[(documento, fecha)] que Logística revisa si cambian las fechas del
+        plan (requerimiento, compra masiva y sus OC, OC de servicio)."""
+        return []
+
+    def _is_purchasing(self):
+        """La asignación está en compras (estado «En compra» de la línea)."""
+        return False
+
     def _get_requested_qty(self):
         """Lo que la asignación cuenta como «Pedido» de su línea (en la unidad
         de la línea): lo asignado; si el documento se canceló, solo lo hecho."""
         self.ensure_one()
-        if self.kind == 'purchase_request':
-            return 0.0
         return self.qty_done if self.state == 'cancel' else self.qty_allocated
 
     def action_open_document(self):
         self.ensure_one()
-        document = self._document()
-        if self.kind in ('purchase_request', 'material_request'):
-            document = document.request_id
-        elif self.kind == 'service_order':
-            document = document.order_id
+        document = self._document_record()
         return {
             'type': 'ir.actions.act_window',
             'res_model': document._name,

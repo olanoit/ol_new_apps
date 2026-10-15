@@ -9,10 +9,6 @@
             <list string="Líneas del plan" editable="bottom"
                   decoration-warning="not stage" decoration-muted="line_state == 'cancel'">
                 <header>
-                    <button name="action_open_price_wizard" type="object" string="Aplicar costo"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="action_open_purchase_prices" type="object" string="Precios de compra"
-                            groups="al_construction_planner.group_planner_planner"/>
                 </header>
                 <field name="plan_id" column_invisible="context.get('default_plan_id')"
                        options="{'no_create': True}"/>
@@ -33,17 +29,9 @@
                 <field name="activity_id" options="{'no_create': True}"
                        required="resource_type in ('contract', 'labor')"/>
                 <field name="partner_id" optional="hide" options="{'no_create': True}"/>
-                <field name="role_id" optional="hide" options="{'no_create': True}"/>
                 <field name="qty_planned"/>
                 <field name="product_uom_id" options="{'no_create': True}"/>
                 <field name="price_unit_planned"/>
-                <button name="action_open_purchase_prices" type="object" icon="fa-line-chart"
-                        title="Precios de compra del producto" invisible="not product_id"
-                        groups="al_construction_planner.group_planner_planner"/>
-                <button name="action_open_product_create" type="object" icon="fa-plus-square"
-                        title="Crear producto desde el plan"
-                        invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
-                        groups="al_construction_planner.group_planner_planner"/>
                 <field name="amount_planned" sum="Total"/>
                 <field name="qty_requested" optional="hide"/>
                 <field name="qty_purchased" optional="hide"/>
@@ -104,12 +92,6 @@
         <field name="arch" type="xml">
             <form string="Línea del plan">
                 <header>
-                    <button name="action_open_purchase_prices" type="object" string="Precios de compra"
-                            invisible="not product_id"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="action_open_product_create" type="object" string="Crear producto"
-                            invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
-                            groups="al_construction_planner.group_planner_planner"/>
                     <field name="plan_state" invisible="1"/>
                 </header>
                 <sheet>
@@ -133,7 +115,6 @@
                             <field name="product_id" options="{'no_create': True}"/>
                             <field name="activity_id" options="{'no_create': True}"/>
                             <field name="partner_id" options="{'no_create': True}"/>
-                            <field name="role_id" options="{'no_create': True}"/>
                             <field name="supply_mode"/>
                         </group>
                         <group string="Cuánto">
@@ -327,14 +308,8 @@
         <field name="arch" type="xml">
             <form string="Plan de recursos">
                 <header>
-                    <button name="action_open_generate_wizard" type="object" string="Generar plan"
-                            class="btn-primary" invisible="state != 'draft'"
-                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_open_recipe_wizard" type="object"
                             string="Generar desde la receta" invisible="state != 'draft'"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="action_open_price_wizard" type="object" string="Aplicar costo"
-                            invisible="state != 'draft'"
                             groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_apply_analytic_rules" type="object"
                             string="Aplicar reglas analíticas" invisible="state != 'draft'"
@@ -343,35 +318,8 @@
                             string="Solicitar aprobación" class="btn-primary"
                             invisible="state != 'draft' or not line_count"
                             groups="al_construction_planner.group_planner_planner"/>
-                    <button name="action_open_product_create" type="object" string="Crear producto"
-                            invisible="state != 'draft'"
-                            groups="al_construction_planner.group_planner_planner"/>
                     <button name="action_open_replan_wizard" type="object" string="Nueva versión"
                             invisible="state not in ('approved', 'in_progress')"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="%(action_plan_purchase_wizard)d" type="action" string="Compra masiva"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="%(action_plan_request_wizard)d" type="action"
-                            string="Requerimiento de obra"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="%(action_plan_production_wizard)d" type="action"
-                            string="Orden de fabricación"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="%(action_plan_contract_wizard)d" type="action"
-                            string="Asignar contrata"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_planner"/>
-                    <button name="%(action_plan_crew_wizard)d" type="action"
-                            string="Asignar cuadrilla"
-                            invisible="state not in ('approved', 'in_progress')"
-                            context="{'default_plan_id': id}"
                             groups="al_construction_planner.group_planner_planner"/>
                     <button name="%(action_plan_reschedule_wizard)d" type="action"
                             string="Cambiar fechas"
@@ -404,9 +352,6 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_tree" type="object"
                                 class="oe_stat_button" icon="fa-sitemap" string="Árbol de recursos"/>
-                        <button name="action_open_supply_board" type="object"
-                                class="oe_stat_button" icon="fa-truck" string="Abastecimiento"
-                                groups="al_construction_planner.group_planner_planner"/>
                         <button name="action_open_schedule" type="object"
                                 class="oe_stat_button" icon="fa-tasks" string="Cronograma"
                                 groups="al_project_gantt_base.group_gantt_user"/>
@@ -422,9 +367,6 @@
                                 class="oe_stat_button" icon="fa-bar-chart"
                                 string="Análisis de control"
                                 invisible="state in ('draft', 'to_approve', 'cancel')"/>
-                        <button name="action_view_budget" type="object"
-                                class="oe_stat_button" icon="fa-money" string="Presupuesto"
-                                invisible="not budget_analytic_id"/>
                         <button name="action_view_versions" type="object"
                                 class="oe_stat_button" icon="fa-history"
                                 invisible="version_count &lt; 2">
@@ -462,7 +404,7 @@
                             <field name="amount_equipment" invisible="not amount_equipment"/>
                             <field name="amount_production"/>
                             <field name="amount_total" class="fw-bold"/>
-                            <field name="amount_budgeted" invisible="not budget_analytic_id"/>
+                            <field name="amount_budgeted" invisible="not date_approved"/>
                             <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
@@ -502,7 +444,6 @@
                                 <group string="Exceso sobre lo planificado">
                                     <field name="exceed_policy" readonly="state != 'draft'"/>
                                     <field name="exceed_tolerance" readonly="state != 'draft'"/>
-                                    <field name="budget_analytic_id" options="{'no_create': True}"/>
                                     <field name="date_approved" invisible="not date_approved"/>
                                     <field name="date_closed" invisible="not date_closed"/>
                                 </group>

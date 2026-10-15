@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_planner_change_orders" name="Adicionales y deductivos" parent="al_construction_planner.menu_planner_changes" action="action_construction_change_order" sequence="10"/>
+
+    <menuitem id="menu_planner_income" name="Ingresos" parent="al_construction_planner.menu_planner_root" sequence="40" groups="al_construction_planner.group_planner_user">
+        <menuitem id="menu_planner_contracts_income" name="Contratos de obra" action="action_construction_contract" sequence="5"/>
+        <menuitem id="menu_planner_unit_milestones" name="Hitos por unidad" action="action_construction_unit_milestone" sequence="7"/>
+        <menuitem id="menu_planner_deliveries" name="Entregas semanales" action="action_construction_weekly_delivery" sequence="10"/>
+        <menuitem id="menu_planner_valuation_prepare" name="Preparar valorización" action="action_construction_valuation_prepare_wizard" sequence="20"/>
+        <menuitem id="menu_planner_valuations" name="Valorizaciones" action="action_construction_valuation" sequence="30"/>
+        <menuitem id="menu_planner_collections" name="Cobranza de la obra" action="action_construction_collections" sequence="40" groups="account.group_account_invoice"/>
+    </menuitem>
+
+    <menuitem id="menu_planner_reports_schedule" name="Cronograma valorizado" parent="al_construction_planner.menu_planner_reports" sequence="20" groups="al_construction_planner.group_planner_manager,al_construction_planner.group_planner_revenue">
+            <menuitem id="menu_planner_schedule_report" name="Cronograma valorizado" action="action_construction_schedule_report_screen" sequence="10"/>
+            <menuitem id="menu_planner_schedule_report_analysis" name="Análisis del cronograma valorizado" action="action_construction_schedule_report" sequence="20"/>
+        </menuitem>
+
+    <menuitem id="menu_planner_config_income" name="Cobro al cliente" parent="al_construction_planner.menu_planner_config" sequence="15">
+            <menuitem id="menu_planner_milestone_templates" name="Plantillas de hitos de cobro" action="action_construction_milestone_template" sequence="10" groups="al_construction_planner.group_planner_manager"/>
+        </menuitem>
+</odoo>

@@ -5,7 +5,7 @@ from datetime import timedelta
 from lxml import etree
 from markupsafe import Markup
 
-from odoo import Command, api, fields, models
+from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import split_every
 from odoo.tools.misc import formatLang
@@ -78,9 +78,6 @@ class ConstructionResourcePlan(models.Model):
         help='Días antes del inicio de la tarea en que se necesita el material.')
     lead_days_contract = fields.Integer(string='Anticipación de contrata (días)', default=3)
     lead_days_production = fields.Integer(string='Anticipación de producción (días)', default=7)
-    budget_analytic_id = fields.Many2one(
-        'budget.analytic', string='Presupuesto analítico', readonly=True, copy=False,
-        check_company=True, help='Lo crea la aprobación del plan.')
     line_ids = fields.One2many(
         'construction.resource.plan.line', 'plan_id', string='Líneas', copy=True)
     line_count = fields.Integer(string='Nº de líneas', compute='_compute_amounts', store=True)
@@ -204,8 +201,7 @@ class ConstructionResourcePlan(models.Model):
         # Presupuesto: el de este plan si ya se aprobó; en una versión en
         # preparación, el de la versión vigente (la diferencia es lo que
         # cambia la versión nueva).
-        budget_plan = self if self.budget_analytic_id else self.parent_id.filtered(
-            'budget_analytic_id')
+        budget_plan = self if self.date_approved else self.parent_id.filtered('date_approved')
         if budget_plan:
             for stage, budgeted in Line._read_group(
                     [('plan_id', '=', budget_plan.id)], groupby=['stage'],
@@ -457,18 +453,6 @@ class ConstructionResourcePlan(models.Model):
                 raise UserError(self.env._(
                     'El plan %s ya no está en borrador: créele una versión nueva.', plan.name))
 
-    def action_open_generate_wizard(self):
-        self.ensure_one()
-        self._check_draft()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': self.env._('Generar plan'),
-            'res_model': 'construction.plan.generate.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_plan_id': self.id},
-        }
-
     def action_open_recipe_wizard(self):
         self.ensure_one()
         self._check_draft()
@@ -535,17 +519,18 @@ class ConstructionResourcePlan(models.Model):
                 plan._write_approved()
 
     def _write_approved(self):
-        """Última aprobación: presupuesto analítico, montos congelados en las
-        líneas y la versión vigente anterior pasa a «Reemplazado»."""
+        """Última aprobación: montos congelados en las líneas (y, con el puente
+        de presupuesto, el presupuesto analítico) y la versión vigente
+        anterior pasa a «Reemplazado»."""
         # need_validation no tiene depends: su caché conserva el valor de
         # antes de crear las revisiones y OCA intentaría pedirlas de nuevo.
         self.invalidate_recordset(['need_validation', 'review_ids', 'validation_status'])
         for plan in self:
             previous = plan._get_previous_open_version()
-            budget = plan._create_budget(parent_budget=previous.budget_analytic_id)
             lines = plan.line_ids.with_context(construction_plan_force=True)
             for amount, same_amount in lines.grouped('amount_planned').items():
                 same_amount.write({'amount_budgeted': amount})
+            values = plan._construction_on_approve(previous)
             if previous:
                 previous._transfer_to_new_version(plan)
                 previous.write({'state': 'replaced'})
@@ -553,11 +538,15 @@ class ConstructionResourcePlan(models.Model):
                     'Reemplazado por la versión %s.', plan.display_name))
             # Guarda de reentrada: al escribir «Aprobado», tier.validation
             # puede volver a llamar a _validate_tier.
-            plan.with_context(al_construction_approving=True).write({
-                'state': 'approved',
-                'budget_analytic_id': budget.id,
-                'date_approved': fields.Datetime.now(),
-            })
+            plan.with_context(al_construction_approving=True).write(dict(
+                values, state='approved', date_approved=fields.Datetime.now()))
+
+    def _construction_on_approve(self, previous):
+        """Gancho de la aprobación (antes de reemplazar ``previous``): devuelve
+        valores que se escriben con el estado «Aprobado». El puente de
+        presupuesto crea aquí el presupuesto analítico."""
+        self.ensure_one()
+        return {}
 
     def _get_previous_open_version(self):
         self.ensure_one()
@@ -613,75 +602,6 @@ class ConstructionResourcePlan(models.Model):
                     docs=', '.join(sorted(set(left.mapped('document_name')))[:10]))
             new_plan.message_post(body=body)
 
-    def _get_budget_line_values(self):
-        """Una línea de presupuesto por combinación de cuentas analíticas.
-
-        La distribución de cada línea del plan (o, vacía, la cuenta de la
-        obra al 100 %) se reparte por sus claves «id1,id2,…»; cada cuenta va
-        a la columna de su plan raíz (``account_id`` para el plan de
-        proyectos, ``x_plan<N>_id`` para los demás). El redondeo se corrige
-        en la combinación mayor para que el total cuadre con el plan."""
-        self.ensure_one()
-        Account = self.env['account.analytic.account']
-        project_account = self.project_id.account_id
-        default = {str(project_account.id): 100.0} if project_account else {}
-        combos = defaultdict(float)
-        key_cache = {}
-        for line in self.line_ids.filtered(lambda l: l.line_state != 'cancel'):
-            for key, percentage in (line.analytic_distribution or default).items():
-                if key not in key_cache:
-                    accounts = Account.browse(int(a) for a in key.split(',') if a).exists()
-                    key_cache[key] = tuple(sorted(
-                        (account.root_plan_id._column_name(), account.id)
-                        for account in accounts))
-                combos[key_cache[key]] += line.amount_planned * percentage / 100.0
-        currency = self.currency_id
-        values = [{**dict(combo), 'budget_amount': currency.round(amount)}
-                  for combo, amount in combos.items() if combo]
-        if values:
-            difference = currency.round(sum(combos.values())) - sum(
-                v['budget_amount'] for v in values)
-            if not currency.is_zero(difference):
-                biggest = max(values, key=lambda v: abs(v['budget_amount']))
-                biggest['budget_amount'] = currency.round(biggest['budget_amount'] + difference)
-        return values
-
-    def _construction_match_budget_line(self, combo):
-        """Línea del presupuesto analítico del plan que cubre una combinación
-        de cuentas ({columna: id}): la que tiene todas sus cuentas en la
-        combinación (sus columnas vacías no filtran, como en el informe de
-        presupuesto de Odoo) y, entre ellas, la más específica."""
-        self.ensure_one()
-        best, best_size = self.env['budget.line'], 0
-        for budget_line in self.budget_analytic_id.budget_line_ids:
-            values = {fname: budget_line[fname].id for fname in budget_line._get_plan_fnames()
-                      if budget_line[fname]}
-            if values and len(values) > best_size and all(
-                    combo.get(fname) == value for fname, value in values.items()):
-                best, best_size = budget_line, len(values)
-        return best
-
-    def _create_budget(self, parent_budget=False):
-        self.ensure_one()
-        line_values = self._get_budget_line_values()
-        # sudo: quien aprueba el plan (jefatura) no suele tener permisos de
-        # contabilidad; el presupuesto es una consecuencia de la aprobación y
-        # sus valores salen del plan, no del usuario.
-        budget_sudo = self.env['budget.analytic'].sudo().create({
-            'name': '%s · %s' % (self.project_id.name, self.display_name),
-            'date_from': self.date_start,
-            'date_to': self.date_end,
-            'budget_type': 'expense',
-            'company_id': self.company_id.id,
-            'user_id': self.user_id.id,
-            'parent_id': parent_budget.id if parent_budget else False,
-            'budget_line_ids': [Command.create(vals) for vals in line_values],
-        })
-        # Con versión anterior, su presupuesto pasa a «Revisado» (archivado):
-        # es el mecanismo de revisiones de account_budget.
-        budget_sudo.action_budget_confirm()
-        return budget_sudo.sudo(False)
-
     def _validate_tier(self, tiers=False):
         res = super()._validate_tier(tiers)
         if not self.env.context.get('al_construction_approving'):
@@ -733,22 +653,23 @@ class ConstructionResourcePlan(models.Model):
                     'cancélelos antes de cerrar el plan.',
                     plan=plan.display_name,
                     docs=', '.join(docs[:10]) + (' …' if len(docs) > 10 else '')))
-            pending = self.env['construction.contract.settlement'].search([
-                ('project_id', '=', plan.project_id.id),
-                ('state', 'in', ('draft', 'submitted', 'validated'))])
-            unsettled = self.env['construction.task.progress'].search_count([
-                ('plan_id', '=', plan.id), ('state', '=', 'validated'),
-                '|', ('settlement_id', '=', False), ('settlement_id.state', '=', 'cancel')])
-            if pending or unsettled:
-                raise UserError(self.env._(
-                    'El plan %(plan)s tiene liquidaciones de contrata pendientes (%(names)s) o '
-                    '%(count)s avances validados sin liquidar. Apruébelas o anúlelas antes de '
-                    'cerrar el plan.', plan=plan.display_name,
-                    names=', '.join(pending.mapped('name')[:10]) or '—', count=unsettled))
+            plan._construction_check_closable()
         self.write({'state': 'closed', 'date_closed': fields.Date.context_today(self)})
-        # sudo: mismo motivo que al crearlo (permisos de contabilidad).
-        self.budget_analytic_id.sudo().filtered(
-            lambda b: b.state == 'confirmed').action_budget_done()
+        self._construction_on_close()
+
+    def _construction_lines_added(self, lines):
+        """Gancho de las líneas que entran a un plan aprobado (cambio de obra):
+        el puente de presupuesto las suma al presupuesto analítico."""
+        self.ensure_one()
+
+    def _construction_check_closable(self):
+        """Gancho del cierre: el puente de contratas no cierra con
+        liquidaciones pendientes."""
+        self.ensure_one()
+
+    def _construction_on_close(self):
+        """Gancho después del cierre: el puente de presupuesto da por hecho
+        el presupuesto analítico."""
 
     def action_open_replan_wizard(self):
         self.ensure_one()
@@ -760,28 +681,6 @@ class ConstructionResourcePlan(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'context': {'default_plan_id': self.id},
-        }
-
-    def action_open_price_wizard(self):
-        self.ensure_one()
-        self._check_draft()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': self.env._('Aplicar costo'),
-            'res_model': 'construction.plan.price.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_plan_id': self.id},
-        }
-
-    def action_view_budget(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': self.env._('Presupuesto analítico'),
-            'res_model': 'budget.analytic',
-            'view_mode': 'form',
-            'res_id': self.budget_analytic_id.id,
         }
 
     def action_view_versions(self):
@@ -921,7 +820,6 @@ class ConstructionResourcePlanLine(models.Model):
         index=True)
     partner_id = fields.Many2one(
         'res.partner', string='Contrata o proveedor', check_company=True, index=True)
-    role_id = fields.Many2one('planning.role', string='Rol')
     typology_id = fields.Many2one(
         'construction.typology', string='Tipología', check_company=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unidad', required=True)
@@ -1072,16 +970,7 @@ class ConstructionResourcePlanLine(models.Model):
                 committed = max(covered - line.qty_consumed, 0.0) * price
                 actual = line.qty_consumed * price
             else:
-                if line.resource_type == 'labor':
-                    committed, actual = line._get_labor_amounts()
-                for allocation in line.allocation_ids.filtered(
-                        lambda a: a.kind == 'service_order' and a.state != 'cancel'):
-                    # La tarifa de la OC se lee aunque el usuario del plan no
-                    # tenga acceso a compras: solo para valorizar.
-                    po_line_sudo = allocation.sudo().purchase_line_id
-                    price = po_line_sudo.price_unit
-                    committed += max(allocation.qty_allocated - allocation.qty_done, 0.0) * price
-                    actual += allocation.qty_done * price
+                committed, actual = line._get_driver_amounts()
             currency = line.currency_id
             result[line] = (currency.round(committed) if currency else committed,
                             currency.round(actual) if currency else actual)
@@ -1106,29 +995,18 @@ class ConstructionResourcePlanLine(models.Model):
         return bool(self.resource_type == 'labor' and hour and self.product_uom_id
                     and self.product_uom_id._has_common_reference(hour))
 
-    def _get_role(self):
+    def _get_driver_amounts(self):
+        """(comprometido, real) de una línea de contrata o de personal propio:
+        el personal propio por sus horas; las OC de servicio las suma el puente
+        de contratas."""
         self.ensure_one()
-        return self.role_id or self.activity_id.role_id
+        return self._get_labor_amounts() if self.resource_type == 'labor' else (0.0, 0.0)
 
     def _get_timesheet_by_employee(self):
-        """{empleado: horas} de la hoja de horas del nivel de la línea y sus
-        descendientes con empleados del rol de la línea (o de su actividad)."""
+        """{empleado: horas} registradas en la línea: las da el puente de
+        cuadrillas propias (hoja de horas)."""
         self.ensure_one()
-        if not self.task_id:
-            return {}
-        domain = [('task_id', 'child_of', self.task_id.id), ('project_id', '=', self.project_id.id),
-                  ('employee_id', '!=', False)]
-        # Hasta una fecha de corte: la entrega semanal (fase 10).
-        if self.env.context.get('construction_date_to'):
-            domain.append(('date', '<=', self.env.context['construction_date_to']))
-        role = self._get_role()
-        if role:
-            domain.append(('employee_id.planning_role_ids', 'in', role.ids))
-        # sudo: las horas de otros empleados se suman sin dar acceso a sus
-        # registros; solo para el avance y el costo de la línea.
-        lines_sudo = self.env['account.analytic.line'].sudo()
-        return {employee: hours or 0.0 for employee, hours in lines_sudo._read_group(
-            domain, ['employee_id'], ['unit_amount:sum'])}
+        return {}
 
     def _get_timesheet_hours(self):
         """Horas registradas de la línea, en su unidad."""
@@ -1138,30 +1016,31 @@ class ConstructionResourcePlanLine(models.Model):
         return hour._compute_quantity(hours, self.product_uom_id) if self.product_uom_id else hours
 
     def _get_labor_amounts(self):
-        """(comprometido, real) del personal propio: real = horas registradas
-        por el costo hora de cada empleado; comprometido = horas de sus turnos
-        de la línea aún no registradas, al mismo costo."""
+        """(comprometido, real) del personal propio: lo calcula el puente de
+        cuadrillas propias con los turnos y el costo hora."""
         self.ensure_one()
-        registered = self._get_timesheet_by_employee()
-        # sudo: el costo hora y los turnos son de RR. HH. y Planificación; se
-        # leen solo para valorizar la línea.
-        actual = sum(employee.sudo().hourly_cost * hours for employee, hours in registered.items())
-        planned = defaultdict(float)
-        for allocation in self.allocation_ids.filtered(
-                lambda a: a.kind == 'planning_slot' and a.state != 'cancel'):
-            slot_sudo = allocation.sudo().slot_id
-            employee = slot_sudo.employee_id
-            if employee:
-                planned[employee] += slot_sudo.allocated_hours
-        committed = sum(
-            max(hours - registered.get(employee, 0.0), 0.0) * employee.sudo().hourly_cost
-            for employee, hours in planned.items())
-        return committed, actual
+        return 0.0, 0.0
 
-    @api.depends('activity_id', 'product_id', 'role_id')
+    def _get_labor_actual(self, day):
+        """Real del personal propio por horas hasta ``day`` (horas por costo
+        hora): lo calcula el puente de cuadrillas propias."""
+        self.ensure_one()
+        return 0.0
+
+    @api.depends('activity_id', 'product_id')
     def _compute_resource_name(self):
         for line in self:
-            line.resource_name = (line.activity_id or line.product_id or line.role_id).display_name
+            line.resource_name = line._get_resource_record().display_name
+
+    @api.model
+    def _weekly_load_groupby(self):
+        """Campos de la línea, después de la contrata, que dicen quién ejecuta
+        en la carga semanal del cronograma."""
+        return []
+
+    def _get_resource_record(self):
+        self.ensure_one()
+        return self.activity_id or self.product_id
 
     @api.depends('qty_planned', 'resource_type', 'qty_consumed', 'progress_ids.state',
                  'progress_ids.qty_weighted', 'progress_ids.settled')
@@ -1213,11 +1092,7 @@ class ConstructionResourcePlanLine(models.Model):
                 line = self.browse(line.id)
                 result[line][line.resource_type] += (qty or 0.0) * line.price_unit_planned
         for line in hour_based:
-            registered = line.with_context(
-                construction_date_to=day)._get_timesheet_by_employee()
-            # sudo: el costo hora es de RR. HH.; solo para valorizar la línea.
-            result[line]['labor'] += sum(
-                employee.sudo().hourly_cost * hours for employee, hours in registered.items())
+            result[line]['labor'] += line._get_labor_actual(day)
         materials = self - drivers
         allocations = materials.allocation_ids
         if allocations:
@@ -1295,11 +1170,7 @@ class ConstructionResourcePlanLine(models.Model):
                 return 'done'
         elif not uom.is_zero(planned) and uom.compare(self.qty_dispatched, planned) >= 0:
             return 'done'
-        purchasing = allocations.filtered(
-            lambda a: a.state == 'open' and (
-                a.kind == 'purchase_request'
-                or (a.kind == 'material_request'
-                    and a.material_request_line_id.line_state == 'purchasing')))
+        purchasing = allocations.filtered(lambda a: a.state == 'open' and a._is_purchasing())
         if purchasing:
             return 'purchasing'
         if any(not uom.is_zero(qty) for qty in (
@@ -1324,7 +1195,7 @@ class ConstructionResourcePlanLine(models.Model):
         'qty_executed', 'qty_settled', 'progress_pct')
     # Campos de la línea que cambian su control.
     _CONTROL_TRIGGERS = {
-        'qty_planned', 'price_unit_planned', 'product_uom_id', 'resource_type', 'role_id',
+        'qty_planned', 'price_unit_planned', 'product_uom_id', 'resource_type',
         'activity_id', 'task_id', 'plan_id'}
 
     def _refresh_control(self):
@@ -1458,10 +1329,10 @@ class ConstructionResourcePlanLine(models.Model):
                 line['level_%s_id' % depth] = Task.browse(task_id) if task_id else Task
 
     @api.depends('amount_budgeted', 'previous_line_id.amount_budgeted', 'amount_planned',
-                 'plan_id.budget_analytic_id')
+                 'plan_id.date_approved')
     def _compute_baseline(self):
         for line in self:
-            baseline = line.amount_budgeted if line.plan_id.budget_analytic_id \
+            baseline = line.amount_budgeted if line.plan_id.date_approved \
                 else line.previous_line_id.amount_budgeted
             line.amount_baseline = baseline
             line.amount_version_diff = line.amount_planned - baseline
@@ -1548,18 +1419,3 @@ class ConstructionResourcePlanLine(models.Model):
     def unlink(self):
         self._check_plan_editable()
         return super().unlink()
-
-    def action_open_price_wizard(self):
-        """«Aplicar costo» desde la lista de líneas: las seleccionadas, que
-        deben ser de un solo plan y un solo producto."""
-        plan = self.plan_id
-        if len(plan) != 1 or len(self.product_id) != 1 or not all(self.mapped('product_id')):
-            raise UserError(self.env._(
-                'Seleccione líneas de un solo plan y de un solo producto.'))
-        action = plan.action_open_price_wizard()
-        action['context'] = {
-            'default_plan_id': plan.id,
-            'default_product_id': self.product_id.id,
-            'default_line_ids': [Command.set(self.ids)],
-        }
-        return action

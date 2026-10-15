@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- W-07 · Registrar avance (P-06) -->
+    <record id="construction_plan_progress_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.plan.progress.wizard.form</field>
+        <field name="model">construction.plan.progress.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Registrar avance">
+                <field name="project_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="available_activity_ids" invisible="1"/>
+                <group>
+                    <group string="Selección">
+                        <field name="plan_id" options="{'no_create': True}" readonly="context.get('default_plan_id')"/>
+                        <field name="whole_project"/>
+                        <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
+                        <field name="partner_id" options="{'no_create': True}"/>
+                    </group>
+                    <group string="Avance">
+                        <field name="activity_id" options="{'no_create': True}"/>
+                        <field name="has_tranches" invisible="1"/>
+                        <field name="tranche_id" options="{'no_create': True}" invisible="not has_tranches" required="has_tranches"/>
+                        <field name="date"/>
+                        <label for="qty_total"/>
+                        <div class="o_row">
+                            <field name="qty_total"/>
+                            <field name="uom_id" groups="uom.group_uom"/>
+                        </div>
+                        <field name="attachment_ids" widget="many2many_binary"/>
+                    </group>
+                </group>
+                <field name="line_ids" nolabel="1" invisible="not activity_id">
+                    <list create="0" editable="bottom">
+                        <field name="plan_line_id" column_invisible="1"/>
+                        <field name="apartment_task_id"/>
+                        <field name="task_id"/>
+                        <field name="typology_id" optional="show"/>
+                        <field name="partner_id" optional="hide"/>
+                        <field name="qty_planned" readonly="1" force_save="1"/>
+                        <field name="qty_executed" readonly="1" force_save="1"/>
+                        <field name="qty_pending" readonly="1" force_save="1" optional="show"/>
+                        <field name="qty_balance" readonly="1" force_save="1"/>
+                        <field name="qty_report" sum="Total" decoration-danger="qty_report &gt; qty_balance"/>
+                        <field name="progress_pct" widget="percentage"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Se reportan unidades del driver (las mismas que se pagan); el porcentaje lo
+                    calcula el sistema. Por defecto, el saldo; no se acepta más que el saldo más
+                    la tolerancia del plan. Los avances quedan en «Reportado» hasta que el
+                    supervisor los valide.
+                </p>
+                <footer>
+                    <button name="action_register" type="object" string="Registrar avance" class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_plan_progress_wizard" model="ir.actions.act_window">
+        <field name="name">Registrar avance</field>
+        <field name="res_model">construction.plan.progress.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_progress'))]"/>
+    </record>
+
+    <!-- Motivo del rechazo o la devolución -->
+    <record id="construction_reason_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.reason.wizard.form</field>
+        <field name="model">construction.reason.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Motivo">
+                <field name="reason" placeholder="Qué hay que corregir…"/>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary" data-hotkey="q"/>
+                    <button string="Descartar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    </odoo>

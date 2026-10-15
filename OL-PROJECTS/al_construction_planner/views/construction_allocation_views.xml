@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Asignaciones del plan -->
+    <record id="construction_resource_plan_allocation_view_list" model="ir.ui.view">
+        <field name="name">construction.resource.plan.allocation.list</field>
+        <field name="model">construction.resource.plan.allocation</field>
+        <field name="arch" type="xml">
+            <list string="Asignaciones" create="0" edit="0" decoration-muted="state == 'cancel'" decoration-success="state == 'done'">
+                <field name="plan_id" optional="hide"/>
+                <field name="kind"/>
+                <field name="document_name"/>
+                <field name="task_id"/>
+                <field name="stage" optional="show"/>
+                <field name="product_id"/>
+                <field name="activity_id" optional="hide"/>
+                <field name="date_needed" optional="show"/>
+                <field name="qty_allocated" sum="Total"/>
+                <field name="qty_done"/>
+                <field name="qty_purchased" optional="hide"/>
+                <field name="qty_dispatched" optional="hide"/>
+                <field name="qty_consumed" optional="hide"/>
+                <field name="product_uom_id" groups="uom.group_uom"/>
+                <field name="state" widget="badge" decoration-info="state == 'open'" decoration-success="state == 'done'"/>
+                <field name="company_id" column_invisible="1"/>
+                <button name="action_open_document" type="object" icon="fa-external-link" title="Abrir el documento"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_allocation_view_pivot" model="ir.ui.view">
+        <field name="name">construction.resource.plan.allocation.pivot</field>
+        <field name="model">construction.resource.plan.allocation</field>
+        <field name="arch" type="xml">
+            <pivot string="Asignaciones" sample="1">
+                <field name="product_id" type="row"/>
+                <field name="kind" type="col"/>
+                <field name="qty_allocated" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_allocation_view_search" model="ir.ui.view">
+        <field name="name">construction.resource.plan.allocation.search</field>
+        <field name="model">construction.resource.plan.allocation</field>
+        <field name="arch" type="xml">
+            <search string="Asignaciones">
+                <field name="product_id"/>
+                <field name="task_id"/>
+                <field name="plan_id"/>
+                <filter string="Compra masiva" name="purchase_request" domain="[('kind', '=', 'purchase_request')]"/>
+                <filter string="Requerimiento de obra" name="material_request" domain="[('kind', '=', 'material_request')]"/>
+                <filter string="Orden de fabricación" name="production" domain="[('kind', '=', 'production')]"/>
+                <group>
+                    <filter string="Documento" name="group_kind" context="{'group_by': 'kind'}"/>
+                    <filter string="Producto" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Plan" name="group_plan" context="{'group_by': 'plan_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_resource_plan_allocation" model="ir.actions.act_window">
+        <field name="name">Asignaciones</field>
+        <field name="res_model">construction.resource.plan.allocation</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="context">{'create': False, 'search_default_group_kind': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay documentos generados desde el plan</p>
+            <p>La compra masiva, los requerimientos de obra y las órdenes de fabricación que
+               nacen del árbol de recursos dejan aquí qué parte corresponde a cada línea.</p>
+        </field>
+    </record>
+
+    </odoo>

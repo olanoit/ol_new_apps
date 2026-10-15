@@ -6,90 +6,38 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="%(al_construction_planner.action_construction_master_import_wizard)d"
-                        type="action" string="Importar maestro y ETO"
-                        context="{'default_project_id': id}"
-                        invisible="not is_construction_site"
-                        groups="al_construction_planner.group_planner_planner"/>
-            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_construction_plans" type="object"
-                        class="oe_stat_button" icon="fa-sitemap"
-                        invisible="not is_construction_site"
-                        groups="al_construction_planner.group_planner_progress">
+                <button name="action_view_construction_plans" type="object" class="oe_stat_button" icon="fa-sitemap" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
                 </button>
-                <button name="action_view_construction_settlements" type="object"
-                        class="oe_stat_button" icon="fa-calendar-check-o"
-                        invisible="not is_construction_site or not construction_settlement_count"
-                        groups="al_construction_planner.group_planner_progress">
-                    <field name="construction_settlement_count" widget="statinfo" string="Liquidaciones"/>
-                </button>
-                <button name="action_view_construction_typologies" type="object"
-                        class="oe_stat_button" icon="fa-th"
-                        invisible="not is_construction_site"
-                        groups="al_construction_planner.group_planner_progress">
+                <button name="action_view_construction_typologies" type="object" class="oe_stat_button" icon="fa-th" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_typology_count" widget="statinfo" string="Tipologías"/>
                 </button>
-                <button name="action_view_construction_schedule_report" type="object"
-                        class="oe_stat_button" icon="fa-line-chart" string="Cronograma valorizado"
-                        invisible="not is_construction_site or not construction_plan_count"
-                        groups="al_construction_planner.group_planner_manager,al_construction_planner.group_planner_revenue"/>
             </xpath>
             <xpath expr="//page[@name='settings']" position="before">
-                <page string="Planificación" name="construction_planning"
-                      invisible="not is_construction_site"
-                      groups="al_construction_planner.group_planner_user">
+                <page string="Planificación" name="construction_planning" invisible="not is_construction_site" groups="al_construction_planner.group_planner_user">
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <field name="construction_current_plan_id" invisible="1"/>
-                        <button name="action_construction_open_tree" type="object"
-                                string="Árbol de recursos" icon="fa-sitemap" class="btn-secondary"
-                                invisible="not construction_current_plan_id"/>
-                        <button name="action_construction_open_schedule" type="object"
-                                string="Cronograma" icon="fa-tasks" class="btn-secondary"
-                                invisible="not construction_current_plan_id"/>
-                        <button name="action_view_construction_plans" type="object"
-                                string="Planes de recursos" icon="fa-list" class="btn-link"/>
+                        <button name="action_construction_open_tree" type="object" string="Árbol de recursos" icon="fa-sitemap" class="btn-secondary" invisible="not construction_current_plan_id"/>
+                        <button name="action_construction_open_schedule" type="object" string="Cronograma" icon="fa-tasks" class="btn-secondary" invisible="not construction_current_plan_id"/>
+                        <button name="action_view_construction_plans" type="object" string="Planes de recursos" icon="fa-list" class="btn-link"/>
                         <span class="text-muted align-self-center" invisible="construction_current_plan_id">
                             La obra aún no tiene plan de recursos.
                         </span>
                     </div>
-                    <group>
-                        <group string="Planificado" name="margin_planned">
-                            <field name="construction_income_planned"/>
-                            <field name="construction_cost_planned"/>
-                            <field name="construction_margin_planned"
-                                   decoration-danger="construction_margin_planned &lt; 0"/>
-                            <field name="construction_margin_planned_pct" widget="percentage"/>
-                        </group>
-                        <group string="Devengado" name="margin_accrued">
-                            <field name="construction_income_earned"/>
-                            <field name="construction_cost_accrued"/>
-                            <field name="construction_margin_accrued"
-                                   decoration-danger="construction_margin_accrued &lt; 0"/>
-                            <field name="construction_margin_accrued_pct" widget="percentage"/>
-                        </group>
-                        <group string="Contable" name="margin_accounting">
-                            <field name="construction_income_accounting"/>
-                            <field name="construction_cost_accounting"/>
-                            <field name="construction_margin_accounting"
-                                   decoration-danger="construction_margin_accounting &lt; 0"/>
-                            <field name="construction_margin_accounting_pct" widget="percentage"/>
-                            <field name="construction_margin_currency_id" invisible="1"/>
+                    <group name="construction_structure">
+                        <group string="Estructura de la obra">
+                            <field name="construction_level_template_id"
+                                   options="{'no_create': True}"
+                                   groups="al_construction_planner.group_planner_planner"/>
+                            <field name="construction_purchase_destination"
+                                   groups="al_construction_planner.group_planner_planner"/>
                         </group>
                     </group>
-                    <div class="text-muted small">
-                        Planificado: contratos de obra con sus cambios aprobados (o la orden de venta)
-                        contra el plan vigente. Devengado: valorizaciones confirmadas contra el costo real
-                        del plan. Contable: apuntes analíticos de la cuenta de la obra.
-                    </div>
                 </page>
             </xpath>
             <xpath expr="//page[@name='settings']" position="inside">
-                <group string="Supervisión de obra" name="construction_supervision"
-                       invisible="not is_construction_site"
-                       groups="al_construction_planner.group_planner_manager">
+                <group string="Supervisión de obra" name="construction_supervision" invisible="not is_construction_site" groups="al_construction_planner.group_planner_manager">
                     <group>
                         <field name="construction_supervisor_ids" widget="many2many_tags"/>
                     </group>
@@ -100,9 +48,7 @@
                         </div>
                     </group>
                 </group>
-                <group string="Semana de liquidación de contratas" name="construction_week"
-                       invisible="not is_construction_site"
-                       groups="al_construction_planner.group_planner_manager">
+                <group string="Semana de liquidación de contratas" name="construction_week" invisible="not is_construction_site" groups="al_construction_planner.group_planner_manager">
                     <group>
                         <field name="construction_week_start_day"/>
                         <field name="construction_settlement_day"/>
@@ -127,42 +73,27 @@
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='description_page']" position="after">
-                <page string="Obra" name="construction_planner"
-                      invisible="not construction_level"
-                      groups="al_construction_planner.group_planner_progress">
+                <page string="Obra" name="construction_planner" invisible="not construction_level" groups="al_construction_planner.group_planner_progress">
                     <group>
                         <group string="Jerarquía">
-                            <field name="construction_level_line_id" invisible="not construction_level_line_id"
-                                   readonly="1"/>
+                            <field name="construction_level_line_id" invisible="not construction_level_line_id" readonly="1"/>
                             <field name="construction_level" invisible="construction_level_line_id"/>
                             <field name="construction_unit_type" invisible="construction_level != 'apartment'"/>
                             <field name="construction_floor_task_id" invisible="construction_level == 'floor'"/>
-                            <field name="construction_apartment_task_id"
-                                   invisible="construction_level in ('floor', 'apartment')"/>
-                            <field name="construction_space_task_id"
-                                   invisible="construction_level not in ('furniture', 'module')"/>
-                            <field name="construction_furniture_task_id"
-                                   invisible="construction_level != 'module' or not construction_furniture_task_id"/>
-                            <field name="construction_typology_id" invisible="construction_level != 'space'"
-                                   options="{'no_create': True}"/>
+                            <field name="construction_apartment_task_id" invisible="construction_level in ('floor', 'apartment')"/>
+                            <field name="construction_space_task_id" invisible="construction_level not in ('furniture', 'module')"/>
+                            <field name="construction_furniture_task_id" invisible="construction_level != 'module' or not construction_furniture_task_id"/>
+                            <field name="construction_typology_id" invisible="construction_level != 'space'" options="{'no_create': True}"/>
                         </group>
                         <group string="Receta">
-                            <field name="construction_execution_template_id"
-                                   options="{'no_create': True}"/>
+                            <field name="construction_execution_template_id" options="{'no_create': True}"/>
                             <label for="construction_qty"/>
                             <div class="o_row">
                                 <field name="construction_qty"/>
                                 <field name="construction_qty_uom_id"/>
                             </div>
                         </group>
-                        <group string="Mueble" invisible="construction_level != 'furniture'">
-                            <field name="construction_furniture_ml"/>
-                        </group>
-                        <group string="Módulo" invisible="construction_level != 'module'">
-                            <field name="construction_module_code"/>
-                            <field name="construction_module_type"/>
-                            <field name="construction_width_mm"/>
-                            <field name="construction_ml_group"/>
+                        <group string="Detalle" name="construction_detail" invisible="construction_level != 'module'">
                             <field name="construction_unit_state"/>
                         </group>
                         <group string="Plan">
@@ -172,39 +103,28 @@
                         </group>
                     </group>
                                     <separator string="Variantes de la unidad" invisible="construction_level not in ('apartment', 'space')"/>
-                    <field name="construction_override_ids" invisible="construction_level not in ('apartment', 'space')"
-                           groups="al_construction_planner.group_planner_planner">
+                    <field name="construction_override_ids" invisible="construction_level not in ('apartment', 'space')" groups="al_construction_planner.group_planner_planner">
                         <list editable="bottom">
                             <field name="kind"/>
                             <field name="product_id" options="{'no_create': True}"/>
-                            <field name="new_product_id" options="{'no_create': True}"
-                                   invisible="kind != 'color'" required="kind == 'color'"/>
+                            <field name="new_product_id" options="{'no_create': True}" invisible="kind != 'color'" required="kind == 'color'"/>
                             <field name="qty" invisible="kind != 'qty'"/>
                             <field name="note"/>
                         </list>
                     </field>
                 </page>
-                <page string="Recursos y avance" name="construction_resources"
-                      invisible="not construction_level"
-                      groups="al_construction_planner.group_planner_progress">
+                <page string="Recursos y avance" name="construction_resources" invisible="not construction_level" groups="al_construction_planner.group_planner_progress">
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <span class="fw-bold">Avance valorizado:</span>
                         <field name="construction_progress_pct" widget="percentage" class="oe_inline"/>
-                        <button name="action_construction_register_progress" type="object"
-                                string="Registrar avance" class="btn-secondary btn-sm"
-                                icon="fa-check-square-o"
-                                invisible="construction_level not in ('floor', 'apartment', 'space', 'module')"/>
+                        <button name="action_construction_register_progress" type="object" string="Registrar avance" class="btn-secondary btn-sm" icon="fa-check-square-o" invisible="construction_level not in ('floor', 'apartment', 'space', 'module')"/>
                     </div>
-                    <field name="construction_current_line_ids" readonly="1"
-                           context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list_progress'}"/>
-                    <field name="construction_progress_ids" readonly="1"
-                           invisible="not construction_progress_ids"
-                           context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>
+                    <field name="construction_current_line_ids" readonly="1" context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list_progress'}"/>
+                    <field name="construction_progress_ids" readonly="1" invisible="not construction_progress_ids" context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>
                 </page>
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="after">
-                <field name="construction_level" invisible="not project_id"
-                       groups="al_construction_planner.group_planner_planner"/>
+                <field name="construction_level" invisible="not project_id" groups="al_construction_planner.group_planner_planner"/>
             </xpath>
         </field>
     </record>
@@ -223,7 +143,6 @@
                 <field name="construction_apartment_task_id" optional="show"/>
                 <field name="construction_space_task_id" optional="hide"/>
                 <field name="construction_typology_id" optional="show"/>
-                <field name="construction_module_code" optional="hide"/>
                 <field name="construction_unit_state" optional="show"/>
                 <field name="construction_plan_amount"/>
                 <field name="construction_progress_pct" widget="percentage" optional="show"/>
@@ -265,9 +184,7 @@
         <field name="domain">[('construction_level', '!=', False)]</field>
         <field name="context">{'search_default_spaces': 1, 'search_default_group_project': 1, 'search_default_group_floor': 1}</field>
         <field name="search_view_id" ref="project_task_view_search_construction_tree"/>
-        <field name="view_ids" eval="[Command.clear(),
-            Command.create({'view_mode': 'list', 'view_id': ref('project_task_view_list_construction_tree')}),
-            Command.create({'view_mode': 'form', 'view_id': ref('project.view_task_form2')})]"/>
+        <field name="view_ids" eval="[Command.clear(),             Command.create({'view_mode': 'list', 'view_id': ref('project_task_view_list_construction_tree')}),             Command.create({'view_mode': 'form', 'view_id': ref('project.view_task_form2')})]"/>
     </record>
 
     <!-- Obras desde la propia aplicación (el menú abría la acción del módulo de
@@ -280,19 +197,4 @@
         <field name="context">{'default_is_construction_site': True}</field>
     </record>
 
-    <!-- Servicio que crea una obra al confirmar la venta. -->
-    <record id="product_template_form_view_construction_site" model="ir.ui.view">
-        <field name="name">product.template.form.construction.site</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="sale_project.product_template_form_view_invoice_policy_inherit_sale_project"/>
-        <field name="arch" type="xml">
-            <field name="project_template_id" position="after">
-                <div class="o_td_label d-inline-flex" invisible="service_tracking not in ['task_in_project', 'project_only']">
-                    <label for="construction_creates_site"/>
-                </div>
-                <field name="construction_creates_site" nolabel="1"
-                       invisible="service_tracking not in ['task_in_project', 'project_only']"/>
-            </field>
-        </field>
-    </record>
-</odoo>
+    </odoo>

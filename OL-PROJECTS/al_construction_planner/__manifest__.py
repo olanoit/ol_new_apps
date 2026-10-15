@@ -229,29 +229,19 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '29.20261013',
+    'version': '30.20261013',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
+    # Núcleo del paquete 1.7 (M17-07): solo Proyectos, el Gantt de la suite y
+    # las aprobaciones por niveles (la línea base se aprueba). Cada función que
+    # opera en otra aplicación vive en su puente (al_construction_planner_*).
     'depends': [
         'al_project_gantt_base',
         'al_project_gantt_backend',
-        'al_construction_material_request',
-        # Formato común de los documentos impresos (el del comprobante A4).
-        'al_report_base',
-        'purchase_request',
         'base_tier_validation',
-        'project_mrp',
-        'project_forecast',
-        'hr_timesheet',
-        'account_budget',
-        # Comprometido de la línea de presupuesto (OC confirmadas sin facturar):
-        # base del control de la OC con analítica de la obra (fase 7).
-        'account_budget_purchase',
-        'sale_management',
-        # Obra creada al confirmar la venta de un servicio (sale.order.line
-        # _timesheet_create_project_prepare_values).
-        'sale_project',
+        'analytic',
+        'product',
     ],
     'data': [
         'security/planner_groups.xml',
@@ -260,59 +250,35 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'data/ir_sequence_data.xml',
         'data/construction_level_template_data.xml',
         'data/construction_stage_data.xml',
-        'data/construction_milestone_template_data.xml',
         'data/tier_definition_data.xml',
         'data/ir_cron_data.xml',
-        'data/mail_message_subtype_data.xml',
-        'report/construction_valuation_report.xml',
-        'wizards/plan_generate_wizard_views.xml',
         'wizards/plan_replan_wizard_views.xml',
-        'wizards/plan_price_wizard_views.xml',
+        'wizards/plan_reschedule_wizard_views.xml',
+        'wizards/plan_progress_wizard_views.xml',
         'wizards/plan_supply_wizard_views.xml',
-        'wizards/plan_contract_wizard_views.xml',
-        'wizards/plan_crew_wizard_views.xml',
-        'wizards/valuation_wizard_views.xml',
-        'wizards/master_import_wizard_views.xml',
         'views/construction_labor_views.xml',
         'views/construction_level_template_views.xml',
         'views/construction_stage_views.xml',
         'views/construction_execution_template_views.xml',
-        'views/construction_typology_views.xml',
         'views/construction_progress_views.xml',
         'views/construction_resource_plan_views.xml',
-        'views/construction_settlement_views.xml',
+        'views/construction_allocation_views.xml',
+        'views/construction_planner_home_views.xml',
         'views/project_views.xml',
-        'views/sale_order_views.xml',
         'views/res_config_settings_views.xml',
-        'views/mrp_bom_views.xml',
         'views/construction_plan_tree_views.xml',
         'views/construction_schedule_views.xml',
-        'views/construction_supply_views.xml',
-        'views/construction_price_views.xml',
-        'views/construction_income_views.xml',
-        'views/construction_schedule_report_views.xml',
-        'views/construction_contract_views.xml',
         'views/construction_analytic_rule_views.xml',
-        'views/construction_change_views.xml',
+        'views/construction_dependency_views.xml',
         'views/construction_measurement_views.xml',
-        'views/portal_templates.xml',
         'views/menus.xml',
-    ],
-    'demo': [
-        'demo/planner_demo.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'al_construction_planner/static/src/plan_tree/*',
             'al_construction_planner/static/src/schedule/*',
-            'al_construction_planner/static/src/supply_board/*',
-            'al_construction_planner/static/src/schedule_report/*',
             'al_construction_planner/static/src/home/*',
             ('remove', 'al_construction_planner/static/src/**/*.dark.scss'),
-        ],
-        # Portal de obra: ubicación del celular al registrar el avance.
-        'web.assets_frontend': [
-            'al_construction_planner/static/src/portal/construction_portal.js',
         ],
         # Modo oscuro: se compila con las variables oscuras de Odoo.
         'web.assets_web_dark': [

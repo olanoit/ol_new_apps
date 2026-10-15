@@ -5,8 +5,8 @@ import json
 from odoo.exceptions import UserError
 from odoo.tests import new_test_user, tagged
 
-from odoo.addons.al_construction_planner.tests.common import PlannerCommon
-from odoo.addons.al_construction_planner.wizards.master_import_layout import SHEETS
+from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
+from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
 
 
 @tagged('post_install', '-at_install')

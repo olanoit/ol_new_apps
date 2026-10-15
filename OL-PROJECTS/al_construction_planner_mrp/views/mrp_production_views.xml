@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Orden de fabricación desde el plan (W-04) -->
+    <record id="mrp_production_form_view_planner" model="ir.ui.view">
+        <field name="name">mrp.production.form.planner</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='miscellaneous']" position="before">
+                <page string="Plan de obra" name="construction_plan" invisible="not construction_plan_id">
+                    <group>
+                        <group>
+                            <field name="construction_plan_id" groups="al_construction_planner.group_planner_progress"/>
+                            <field name="construction_space_task_ids" widget="many2many_tags" readonly="state != 'draft'" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="construction_exceed_state" widget="badge" decoration-success="construction_exceed_state == 'ok'" decoration-danger="construction_exceed_state == 'exceeded'" decoration-info="construction_exceed_state == 'approved'"/>
+                            <field name="construction_exceed_reason" invisible="construction_exceed_state == 'ok'"/>
+                        </group>
+                    </group>
+                    <field name="construction_allocation_ids" readonly="1" groups="al_construction_planner.group_planner_progress" context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_allocation_view_list'}"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    </odoo>

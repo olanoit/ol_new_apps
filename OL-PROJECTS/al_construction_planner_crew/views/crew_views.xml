@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- La cuadrilla en las vistas del planificador (v1.7, puente de cuadrillas propias). -->
+    <record id="construction_resource_plan_line_view_list_crew" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.list.crew</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_line_view_list"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="role_id" optional="hide" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_line_view_form_crew" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.form.crew</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_line_view_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="role_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="construction_labor_activity_view_list_crew" model="ir.ui.view">
+        <field name="name">construction.labor.activity.list.crew</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_labor_activity_view_list"/>
+        <field name="arch" type="xml">
+            <field name="productivity" position="before">
+                <field name="role_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="construction_labor_activity_view_form_crew" model="ir.ui.view">
+        <field name="name">construction.labor.activity.form.crew</field>
+        <field name="model">construction.labor.activity</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_labor_activity_view_form"/>
+        <field name="arch" type="xml">
+            <field name="productivity" position="before">
+                <field name="role_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="construction_execution_template_view_form_crew" model="ir.ui.view">
+        <field name="name">construction.execution.template.form.crew</field>
+        <field name="model">construction.execution.template</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_execution_template_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/list/field[@name='activity_id']" position="after">
+                <field name="role_id" optional="show" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_space_stage_view_list_crew" model="ir.ui.view">
+        <field name="name">construction.space.stage.list.crew</field>
+        <field name="model">construction.space.stage</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_space_stage_view_list"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="role_id" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="construction_space_stage_view_form_crew" model="ir.ui.view">
+        <field name="name">construction.space.stage.form.crew</field>
+        <field name="model">construction.space.stage</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_space_stage_view_form"/>
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="role_id"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_view_form_crew" model="ir.ui.view">
+        <field name="name">construction.resource.plan.form.crew</field>
+        <field name="model">construction.resource.plan</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(action_plan_crew_wizard)d" type="action"
+                        string="Asignar cuadrilla"
+                        invisible="state not in ('approved', 'in_progress')"
+                        context="{'default_plan_id': id}"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_planner_crew_assign" name="Asignar cuadrilla"
+              parent="al_construction_planner.menu_planner_contracts"
+              action="action_plan_crew_wizard" sequence="15"
+              groups="al_construction_planner.group_planner_planner"/>
+</odoo>

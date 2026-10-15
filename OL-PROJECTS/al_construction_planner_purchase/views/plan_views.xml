@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Botones de compras en el plan (v1.7, puente de compras y abastecimiento). -->
+    <record id="construction_resource_plan_line_view_list_purchase" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.list.purchase</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_line_view_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_price_wizard" type="object" string="Aplicar costo"
+                        groups="al_construction_planner.group_planner_planner"/>
+                <button name="action_open_purchase_prices" type="object" string="Precios de compra"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+            <xpath expr="//field[@name='price_unit_planned']" position="after">
+                <button name="action_open_purchase_prices" type="object" icon="fa-line-chart"
+                        title="Precios de compra del producto" invisible="not product_id"
+                        groups="al_construction_planner.group_planner_planner"/>
+                <button name="action_open_product_create" type="object" icon="fa-plus-square"
+                        title="Crear producto desde el plan"
+                        invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_line_view_form_purchase" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.form.purchase</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_line_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_purchase_prices" type="object" string="Precios de compra"
+                        invisible="not product_id"
+                        groups="al_construction_planner.group_planner_planner"/>
+                <button name="action_open_product_create" type="object" string="Crear producto"
+                        invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_view_form_purchase" model="ir.ui.view">
+        <field name="name">construction.resource.plan.form.purchase</field>
+        <field name="model">construction.resource.plan</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_recipe_wizard']" position="after">
+                <button name="action_open_price_wizard" type="object" string="Aplicar costo"
+                        invisible="state != 'draft'"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+            <xpath expr="//button[@name='action_open_replan_wizard']" position="before">
+                <button name="action_open_product_create" type="object" string="Crear producto"
+                        invisible="state != 'draft'"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+            <xpath expr="//button[@name='action_open_replan_wizard']" position="after">
+                <button name="%(action_plan_purchase_wizard)d" type="action" string="Compra masiva"
+                        invisible="state not in ('approved', 'in_progress')"
+                        context="{'default_plan_id': id}"
+                        groups="al_construction_planner.group_planner_planner"/>
+                <button name="%(action_plan_request_wizard)d" type="action"
+                        string="Requerimiento de obra"
+                        invisible="state not in ('approved', 'in_progress')"
+                        context="{'default_plan_id': id}"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+            <xpath expr="//button[@name='action_open_tree']" position="after">
+                <button name="action_open_supply_board" type="object"
+                        class="oe_stat_button" icon="fa-truck" string="Abastecimiento"
+                        groups="al_construction_planner.group_planner_planner"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

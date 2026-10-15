@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_project_view_form_construction_sale" model="ir.ui.view">
+        <field name="name">project.project.form.construction.sale</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_schedule_report" type="object" class="oe_stat_button" icon="fa-line-chart" string="Cronograma valorizado" invisible="not is_construction_site or not construction_plan_count" groups="al_construction_planner.group_planner_manager,al_construction_planner.group_planner_revenue"/>
+            </xpath>
+            <xpath expr="//page[@name='construction_planning']/div[1]" position="after">
+                    <group>
+                        <group string="Planificado" name="margin_planned">
+                            <field name="construction_income_planned"/>
+                            <field name="construction_cost_planned"/>
+                            <field name="construction_margin_planned" decoration-danger="construction_margin_planned &lt; 0"/>
+                            <field name="construction_margin_planned_pct" widget="percentage"/>
+                        </group>
+                        <group string="Devengado" name="margin_accrued">
+                            <field name="construction_income_earned"/>
+                            <field name="construction_cost_accrued"/>
+                            <field name="construction_margin_accrued" decoration-danger="construction_margin_accrued &lt; 0"/>
+                            <field name="construction_margin_accrued_pct" widget="percentage"/>
+                        </group>
+                        <group string="Contable" name="margin_accounting">
+                            <field name="construction_income_accounting"/>
+                            <field name="construction_cost_accounting"/>
+                            <field name="construction_margin_accounting" decoration-danger="construction_margin_accounting &lt; 0"/>
+                            <field name="construction_margin_accounting_pct" widget="percentage"/>
+                            <field name="construction_margin_currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="text-muted small">
+                        Planificado: contratos de obra con sus cambios aprobados (o la orden de venta)
+                        contra el plan vigente. Devengado: valorizaciones confirmadas contra el costo real
+                        del plan. Contable: apuntes analíticos de la cuenta de la obra.
+                    </div>
+            </xpath>
+        </field>
+    </record>
+<!-- Servicio que crea una obra al confirmar la venta. -->
+    <record id="product_template_form_view_construction_site" model="ir.ui.view">
+        <field name="name">product.template.form.construction.site</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="sale_project.product_template_form_view_invoice_policy_inherit_sale_project"/>
+        <field name="arch" type="xml">
+            <field name="project_template_id" position="after">
+                <div class="o_td_label d-inline-flex" invisible="service_tracking not in ['task_in_project', 'project_only']">
+                    <label for="construction_creates_site"/>
+                </div>
+                <field name="construction_creates_site" nolabel="1" invisible="service_tracking not in ['task_in_project', 'project_only']"/>
+            </field>
+        </field>
+    </record>
+
+    </odoo>

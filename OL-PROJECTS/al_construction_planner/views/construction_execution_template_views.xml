@@ -57,7 +57,6 @@
                                            required="resource_type in ('material', 'service', 'equipment', 'production')"/>
                                     <field name="activity_id" options="{'no_create': True}"
                                            required="resource_type in ('contract', 'labor')"/>
-                                    <field name="role_id" optional="show" options="{'no_create': True}"/>
                                     <field name="qty"/>
                                     <field name="product_uom_id" options="{'no_create': True}"/>
                                     <field name="price_unit"/>

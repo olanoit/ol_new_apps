@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tarjeta en «Mi cuenta» -->
+    <template id="portal_my_home_construction" name="Obras" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+            <t t-set="portal_service_category_enable" t-value="True"/>
+        </xpath>
+        <div id="portal_service_category" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="icon" t-value="'/al_construction_planner/static/description/icon.png'"/>
+                <t t-set="title">Mis obras</t>
+                <t t-set="url" t-value="'/my/obra'"/>
+                <t t-set="text">Lo asignado a su empresa y el registro de avance</t>
+                <t t-set="placeholder_count" t-value="'construction_line_count'"/>
+            </t>
+        </div>
+    </template>
+
+    <template id="portal_breadcrumbs_construction" inherit_id="portal.portal_breadcrumbs">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name in ('construction', 'construction_progress', 'construction_history', 'construction_extra')"
+                t-attf-class="breadcrumb-item #{'active' if page_name == 'construction' else ''}">
+                <a t-if="page_name != 'construction'" href="/my/obra">Mis obras</a>
+                <t t-else="">Mis obras</t>
+            </li>
+            <li t-if="page_name == 'construction_progress'" class="breadcrumb-item active">Registrar avance</li>
+            <li t-if="page_name == 'construction_history'" class="breadcrumb-item active">Avances y liquidaciones</li>
+            <li t-if="page_name == 'construction_extra'" class="breadcrumb-item active">Material extra</li>
+        </xpath>
+    </template>
+
+    <!-- P-23 · Mis obras y tareas -->
+    <template id="portal_my_construction" name="Mis obras">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <div class="d-flex justify-content-between align-items-center my-3 flex-wrap gap-2">
+                <h3 class="mb-0">Mis obras · <t t-out="partner.name"/></h3>
+                <div class="d-flex gap-2">
+                    <a href="/my/obra/avances" class="btn btn-secondary">Avances y liquidaciones</a>
+                </div>
+            </div>
+            <div t-if="not rows" class="alert alert-info">No tiene actividades asignadas en obras vigentes.</div>
+            <t t-if="rows" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Obra</th>
+                        <th>Actividad</th>
+                        <th class="text-end">Unidades</th>
+                        <th class="text-end">Planificado</th>
+                        <th class="text-end">Validado</th>
+                        <th class="text-end">Por validar</th>
+                        <th class="text-end">Saldo</th>
+                        <th/>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="rows" t-as="row">
+                        <td t-out="row['project'].name"/>
+                        <td t-out="row['activity'].display_name"/>
+                        <td class="text-end" t-out="len(row['units'])"/>
+                        <td class="text-end"><t t-out="'%.2f' % row['planned']"/> <t t-out="row['uom'].name"/></td>
+                        <td class="text-end" t-out="'%.2f' % row['executed']"/>
+                        <td class="text-end" t-out="'%.2f' % row['pending']"/>
+                        <td class="text-end fw-bold" t-out="'%.2f' % (row['planned'] - row['executed'] - row['pending'])"/>
+                        <td class="text-end">
+                            <a class="btn btn-primary btn-sm"
+                               t-attf-href="/my/obra/avance?project_id=#{row['project'].id}&amp;activity_id=#{row['activity'].id}">
+                                Registrar avance
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- P-24 · Registrar avance -->
+    <template id="portal_construction_progress" name="Registrar avance">
+        <t t-call="portal.portal_layout">
+            <h3 class="my-3"><t t-out="activity.display_name"/> · <t t-out="project.name"/></h3>
+            <div t-if="error" class="alert alert-danger" role="alert" t-out="error"/>
+            <div t-if="done" class="alert alert-success" role="alert">
+                Avance registrado: <t t-out="len(done)"/> unidades quedan por validar por el supervisor.
+            </div>
+            <form id="o_construction_progress_form" method="post" enctype="multipart/form-data"
+                  t-attf-action="/my/obra/avance?project_id=#{project.id}&amp;activity_id=#{activity.id}">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="latitude"/>
+                <input type="hidden" name="longitude"/>
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-4">
+                        <label class="form-label" for="date">Fecha de ejecución</label>
+                        <input type="date" class="form-control" name="date" id="date" t-att-value="today"/>
+                    </div>
+                    <div class="col-sm-4" t-if="tranches">
+                        <label class="form-label" for="tranche_id">Tramo</label>
+                        <select class="form-select" name="tranche_id" id="tranche_id" required="required">
+                            <option value="">Elija el tramo</option>
+                            <option t-foreach="tranches" t-as="tranche" t-att-value="tranche.id">
+                                <t t-out="tranche.name"/> (<t t-out="'%g' % tranche.pct"/> %)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label" for="photos">Fotos</label>
+                        <input type="file" class="form-control" name="photos" id="photos"
+                               accept="image/*" capture="environment" multiple="multiple" required="required"/>
+                    </div>
+                </div>
+                <p class="small text-muted o_construction_geo_status"
+                   data-ok="Ubicación tomada del celular." data-ko="Sin ubicación: el supervisor verá el avance sin distancia a la obra.">
+                    Tomando la ubicación del celular…
+                </p>
+                <t t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Nivel</th>
+                            <th class="text-end">Planificado</th>
+                            <th class="text-end">Validado</th>
+                            <th class="text-end" style="width: 9rem;">Avance de hoy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="lines" t-as="line">
+                            <td t-out="line.task_id._construction_path_name()"/>
+                            <td class="text-end"><t t-out="'%.2f' % line.qty_planned"/> <t t-out="line.product_uom_id.name"/></td>
+                            <td class="text-end" t-out="'%.2f' % line.qty_executed"/>
+                            <td class="text-end">
+                                <input type="number" step="any" min="0" inputmode="decimal"
+                                       class="form-control form-control-sm text-end" t-attf-name="qty_#{line.id}"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </t>
+                <div class="d-flex gap-2 my-3">
+                    <button type="submit" class="btn btn-primary">Enviar avance</button>
+                    <a href="/my/obra" class="btn btn-secondary">Volver</a>
+                </div>
+            </form>
+        </t>
+    </template>
+
+    <!-- P-25 · Mis avances y liquidaciones -->
+    <template id="portal_my_construction_progress" name="Mis avances y liquidaciones">
+        <t t-call="portal.portal_layout">
+            <h3 class="my-3">Avances</h3>
+            <div t-if="not progresses" class="alert alert-info">Aún no hay avances registrados.</div>
+            <t t-if="progresses" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Obra</th>
+                        <th>Unidad</th>
+                        <th>Actividad</th>
+                        <th class="text-end">Cantidad</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="progresses" t-as="progress">
+                        <td t-out="progress.date" t-options="{'widget': 'date'}"/>
+                        <td t-out="progress.project_id.name"/>
+                        <td t-out="progress.apartment_task_id.name or progress.task_id.name"/>
+                        <td>
+                            <t t-out="progress.activity_id.display_name"/>
+                            <span t-if="progress.tranche_id" class="text-muted"> · <t t-out="progress.tranche_id.name"/></span>
+                        </td>
+                        <td class="text-end" t-out="'%.2f' % progress.qty"/>
+                        <td>
+                            <span t-if="progress.state == 'draft'" class="badge text-bg-warning">Por validar</span>
+                            <span t-elif="progress.state == 'validated'" class="badge text-bg-success">Validado</span>
+                            <t t-else="">
+                                <span class="badge text-bg-danger">Observado</span>
+                                <div class="small text-muted" t-out="progress.reject_reason"/>
+                            </t>
+                        </td>
+                    </tr>
+                </tbody>
+            </t>
+            <h3 class="my-3">Liquidaciones</h3>
+            <div t-if="not settlements" class="alert alert-info">Aún no hay liquidaciones.</div>
+            <t t-if="settlements" t-call="portal.portal_table">
+                <thead>
+                    <tr>
+                        <th>Periodo</th>
+                        <th>Obra</th>
+                        <th>Pago previsto</th>
+                        <th class="text-end">Bruto</th>
+                        <th class="text-end">Neto</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="settlements" t-as="settlement">
+                        <td><t t-out="settlement.period_start" t-options="{'widget': 'date'}"/> – <t t-out="settlement.period_end" t-options="{'widget': 'date'}"/></td>
+                        <td t-out="settlement.project_id.name"/>
+                        <td t-out="settlement.payment_date" t-options="{'widget': 'date'}"/>
+                        <td class="text-end" t-out="settlement.amount_gross" t-options="{'widget': 'monetary', 'display_currency': settlement.currency_id}"/>
+                        <td class="text-end" t-out="settlement.amount_net" t-options="{'widget': 'monetary', 'display_currency': settlement.currency_id}"/>
+                        <td t-out="dict(settlement._fields['state']._description_selection(settlement.env)).get(settlement.state)"/>
+                    </tr>
+                </tbody>
+            </t>
+        </t>
+    </template>
+
+    <!-- Material extra pedido por el capataz (v1.6, M16-06) -->
+</odoo>

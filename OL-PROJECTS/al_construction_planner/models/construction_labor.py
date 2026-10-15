@@ -44,7 +44,6 @@ class ConstructionLaborActivity(models.Model):
         help='Tarifa si no hay una tarifa vigente de la obra o de la contrata.')
     currency_id = fields.Many2one(
         'res.currency', string='Moneda', compute='_compute_currency_id')
-    role_id = fields.Many2one('planning.role', string='Rol', help='Personal propio.')
     productivity = fields.Float(string='Rendimiento', help='Unidades de driver por hora.')
     productivity_source = fields.Selection(
         [('estimated', 'Estimado'), ('measured', 'Medido')], string='Origen del rendimiento',
