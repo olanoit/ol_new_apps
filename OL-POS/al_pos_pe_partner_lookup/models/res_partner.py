@@ -34,6 +34,12 @@ class ResPartner(models.Model):
         if existing:
             return existing.id
 
+        # Sin token no hay consulta: se dice qué falta en vez de «no se
+        # encontraron datos».
+        company = self.env.company
+        doc_type = 'ruc' if len(number) == 11 else 'dni'
+        if not company._l10n_pe_lookup_ready(doc_type):
+            raise UserError(company._l10n_pe_lookup_not_ready_message(doc_type))
         values = self._l10n_pe_lookup_document(number, identification_type)
         if not values:
             raise UserError(_(

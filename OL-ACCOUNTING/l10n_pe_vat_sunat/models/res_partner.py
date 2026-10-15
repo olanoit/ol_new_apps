@@ -104,6 +104,13 @@ class ResPartner(models.Model):
         help='Se marca cuando la última consulta a SUNAT/API falló. '
              'El usuario debe completar los datos manualmente.',
     )
+    l10n_pe_lookup_state = fields.Selection(
+        [('na', 'Sin consulta'), ('ready', 'Lista'), ('missing', 'Sin configurar')],
+        string='Consulta RUC/DNI', compute='_compute_l10n_pe_lookup_state',
+        help='Lista: el tipo de documento se consulta en la API. Sin configurar: la compañía '
+             'valida ese documento, pero ninguna conexión habilitada tiene su token.')
+    l10n_pe_lookup_message = fields.Char(
+        string='Aviso de la consulta', compute='_compute_l10n_pe_lookup_state')
     is_good_taxpayer = fields.Boolean(
         string='Buen contribuyente',
         help='Verificado contra el padrón SUNAT (caché diaria).',
@@ -169,6 +176,34 @@ class ResPartner(models.Model):
         for partner in self:
             main = partner.l10n_pe_economic_activity_ids.filtered(lambda l: l.kind == 'principal')[:1]
             partner.l10n_pe_main_activity_id = main.activity_id
+
+    @api.depends('l10n_latam_identification_type_id')
+    @api.depends_context('company')
+    def _compute_l10n_pe_lookup_state(self):
+        company = self.env.company
+        for partner in self:
+            doc_type = partner._l10n_pe_lookup_doc_type()
+            if not doc_type:
+                partner.l10n_pe_lookup_state = 'na'
+                partner.l10n_pe_lookup_message = False
+            elif company._l10n_pe_lookup_ready(doc_type):
+                partner.l10n_pe_lookup_state = 'ready'
+                partner.l10n_pe_lookup_message = False
+            else:
+                partner.l10n_pe_lookup_state = 'missing'
+                partner.l10n_pe_lookup_message = company._l10n_pe_lookup_not_ready_message(doc_type)
+
+    def _l10n_pe_lookup_doc_type(self):
+        """'ruc' o 'dni' si la compañía consulta el tipo de documento del
+        contacto; vacío si no."""
+        self.ensure_one()
+        company = self.env.company
+        vat_code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
+        if vat_code == '1' and company.l10n_pe_dni_validation:
+            return 'dni'
+        if vat_code == '6' and company.l10n_pe_ruc_validation:
+            return 'ruc'
+        return ''
 
     @api.model
     def default_get(self, fields_list):
@@ -379,12 +414,11 @@ class ResPartner(models.Model):
         company = self.env.company
         connections = company._get_pe_api_connections(doc_type)
         if not connections:
-            self.alert_warning_vat = True
-            msg = self.env._(
-                'No hay ninguna conexión de %(doc)s activa y utilizable. '
-                'Configúrala en Ajustes ▸ Conexiones RUC/DNI.',
-                doc=doc_type.upper())
-            _logger.warning(msg)
+            # Sin conexión utilizable no hubo consulta: no se marca la alerta
+            # de «el servicio no respondió»; el formulario ya muestra qué falta
+            # (l10n_pe_lookup_state).
+            msg = company._l10n_pe_lookup_not_ready_message(doc_type)
+            _logger.info(msg)
             if raise_on_fail:
                 raise UserError(msg)
             return

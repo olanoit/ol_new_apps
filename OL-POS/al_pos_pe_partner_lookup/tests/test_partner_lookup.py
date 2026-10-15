@@ -32,6 +32,11 @@ class TestPartnerLookup(TransactionCase):
             'company_type': 'company', 'street': 'AV. GARCILASO DE LA VEGA NRO. 1472',
         }
 
+    def setUp(self):
+        super().setUp()
+        # Las pruebas simulan la consulta: las conexiones se dan por configuradas.
+        self.patch(type(self.env['res.company']), '_l10n_pe_lookup_ready', lambda company, doc: True)
+
     def test_creates_partner_from_ruc(self):
         with patch(LOOKUP, return_value=self.ruc_values) as lookup:
             partner_id = self.Partner.l10n_pe_pos_create_from_document(self.ruc)
@@ -69,3 +74,11 @@ class TestPartnerLookup(TransactionCase):
             'group_ids': [(6, 0, [self.env.ref('base.group_portal').id])]})
         with self.assertRaises(Exception):
             self.Partner.with_user(user).l10n_pe_pos_create_from_document(self.ruc)
+
+    def test_lookup_without_token_says_what_is_missing(self):
+        """Sin una conexión con token no se consulta: el cajero lee qué falta,
+        no «no se encontraron datos»."""
+        self.patch(type(self.env['res.company']), '_l10n_pe_lookup_ready', lambda company, doc: False)
+        with patch(LOOKUP) as lookup, self.assertRaisesRegex(UserError, 'no está configurada'):
+            self.Partner.l10n_pe_pos_create_from_document('45678901')
+        lookup.assert_not_called()

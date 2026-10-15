@@ -27,7 +27,41 @@
                         <field name="l10n_pe_api_use_fallback"/>
                     </setting>
                     <setting company_dependent="1" id="api_connections" string="Conexiones de API"
-                             help="Configura las APIs de consulta, su prioridad y el mapeo de campos.">
+                             help="Configura las APIs de consulta, su prioridad, su token y el mapeo de campos.">
+                        <field name="l10n_pe_ruc_lookup_ready" invisible="1"/>
+                        <field name="l10n_pe_dni_lookup_ready" invisible="1"/>
+                        <field name="l10n_pe_lookup_missing_token" invisible="1"/>
+                        <div class="alert alert-danger mt-2 mb-2" role="alert"
+                             invisible="not l10n_pe_ruc_validation or l10n_pe_ruc_lookup_ready">
+                            La consulta de <strong>RUC</strong> no funcionará: ninguna conexión
+                            habilitada para RUC tiene su token.
+                        </div>
+                        <div class="alert alert-danger mt-2 mb-2" role="alert"
+                             invisible="not l10n_pe_dni_validation or l10n_pe_dni_lookup_ready">
+                            La consulta de <strong>DNI</strong> no funcionará: ninguna conexión
+                            habilitada para DNI tiene su token. La consulta de DNI siempre
+                            necesita una API con token (RENIEC no tiene consulta pública).
+                        </div>
+                        <div class="text-muted mt-2" invisible="not l10n_pe_lookup_missing_token">
+                            Sin token, no se consultan: <field name="l10n_pe_lookup_missing_token"
+                                class="fw-bold d-inline" readonly="1"/>
+                        </div>
+                        <div class="mt-2">
+                            <strong>Cómo obtener el token</strong>
+                            <ol class="mb-1">
+                                <li>Cree una cuenta en la web del proveedor (enlace «Registro del
+                                    token» de cada conexión). Por ejemplo,
+                                    <a href="https://decolecta.com/profile/" target="_blank">Decolecta</a>
+                                    da 1,000 consultas al mes gratis y su token sirve también para
+                                    el tipo de cambio.</li>
+                                <li>Copie el token de su panel o del correo de bienvenida.</li>
+                                <li>Péguelo en «Token / clave» de la conexión y déjela
+                                    habilitada.</li>
+                            </ol>
+                            <span class="text-muted">El RUC también se consulta sin token en el
+                                portal de SUNAT (conexión «SUNAT (oficial)»), que solo responde a
+                                servidores con dirección del Perú.</span>
+                        </div>
                         <button name="action_open_pe_api_connections"
                                 type="object" class="btn-link"
                                 string="Configurar conexiones RUC/DNI"

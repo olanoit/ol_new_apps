@@ -99,6 +99,16 @@ class L10nPeApiConnection(models.Model):
     # Solo administradores: el token es una credencial de pago. El resto de
     # usuarios consulta igual, porque el motor lo lee con sudo().
     token = fields.Char(string='Token / clave', groups='base.group_system')
+    signup_url = fields.Char(
+        string='Registro del token',
+        help="Página del proveedor donde se crea la cuenta y se obtiene el token. Sin token, "
+             "la conexión no se consulta.")
+    needs_token = fields.Boolean(
+        string='Necesita token', compute='_compute_token_state', compute_sudo=True,
+        help="API REST con autenticación: no responde sin token.")
+    missing_token = fields.Boolean(
+        string='Falta el token', compute='_compute_token_state', compute_sudo=True,
+        help="Necesita token y aún no lo tiene: no se consulta hasta configurarlo.")
 
     # --- Interpretación de la respuesta (rest_json) ---
     success_path = fields.Char(
@@ -130,6 +140,15 @@ class L10nPeApiConnection(models.Model):
     # ==================================================================== #
     # Entry point: consulta + mapeo a valores de partner                   #
     # ==================================================================== #
+
+    # compute_sudo: ``token`` es solo de administradores, pero cualquiera que
+    # consulta debe saber si falta.
+    @api.depends('engine', 'auth_type', 'token')
+    def _compute_token_state(self):
+        for connection in self:
+            connection.needs_token = (connection.engine == 'rest_json'
+                                      and connection.auth_type != 'none')
+            connection.missing_token = connection.needs_token and not connection._is_usable()
 
     def _is_usable(self):
         """Una conexión REST que exige token pero no lo tiene nunca funcionará

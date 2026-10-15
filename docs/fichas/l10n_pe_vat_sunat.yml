@@ -440,6 +440,11 @@ faq:
       anterior.
 
 novedades:
+  - version: 22.20261012
+    fecha: 16/10/2026
+    cambios:
+      - "Sin token no se habilita la consulta: el contacto oculta «Actualizar desde API» y avisa qué falta y dónde se configura; los Ajustes dicen si la consulta de RUC o de DNI no podrá funcionar y qué conexiones no tienen token."
+      - "Cada conexión trae el enlace de registro del proveedor («Registro del token») y avisa en su formulario y en la lista cuando le falta el token."
   - version: 21.20261012
     fecha: 14/10/2026
     cambios:

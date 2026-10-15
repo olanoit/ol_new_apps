@@ -40,15 +40,46 @@ reciente revisada: R.S. 000367-2025/SUNAT).
 1. Vaya a **Perú ‣ Configuración ‣ Ajustes**, sección **Validación RUC/DNI
    (PE)**, y active **Validar RUC**, **Validar DNI** y, si lo necesita,
    **Fallback en cascada**.
-2. Vaya a **Perú ‣ Configuración ‣ Consultas RUC / DNI ‣ Conexiones RUC/DNI**.
-   El sistema crea cinco conexiones por compañía; escriba el **token** de las
-   que va a usar y ordénelas por prioridad. Una conexión sin token se salta;
-   la consulta oficial de SUNAT no lo necesita. El token de **Decolecta** lo
-   reutiliza también el [tipo de cambio](exchange_rates.md).
-3. Compruebe que la acción planificada **SUNAT: Sincronizar padrón** está
+2. Obtenga el **token** de al menos un servicio (ver
+   [Obtener el token](#obtener-el-token)). Sin token, la consulta de DNI no
+   funciona.
+3. Vaya a **Perú ‣ Configuración ‣ Consultas RUC / DNI ‣ Conexiones RUC/DNI**.
+   El sistema crea cinco conexiones por compañía; pegue el token en
+   **Token / clave** de las que va a usar y ordénelas por prioridad. Una
+   conexión habilitada sin token se marca en rojo con **Sin token** y no se
+   consulta; la consulta oficial de SUNAT no lo necesita. El token de
+   **Decolecta** lo reutiliza también el [tipo de cambio](exchange_rates.md).
+4. Compruebe que la acción planificada **SUNAT: Sincronizar padrón** está
    activa (**Ajustes ‣ Técnico ‣ Acciones planificadas**).
 
 ![Lista de conexiones RUC/DNI por prioridad](ruc_dni_lookup/connections.png)
+
+### Obtener el token
+
+Los servicios de consulta son privados: cada uno pide crear una cuenta y da un
+**token** (una clave) que se pega en la conexión. El consultor lo tramita con
+el cliente, porque la cuenta queda a nombre de la empresa y algunos planes se
+pagan.
+
+| Conexión | Dónde se registra | Plan gratuito | Qué consulta |
+|---|---|---|---|
+| **Decolecta** | [decolecta.com](https://decolecta.com/profile/): cree la cuenta con su correo; el token llega por correo y está en su perfil | 1,000 consultas al mes | RUC, DNI y tipo de cambio |
+| **apis.net.pe** | Migró a Decolecta: el registro es el mismo | — | RUC y DNI |
+| **apiperu.dev** | [app.apiperu.dev](https://app.apiperu.dev/auth/register) | Plan Free | RUC y DNI |
+| **json.pe** | [app.json.pe](https://app.json.pe/signup) | 100 créditos por 30 días | RUC y DNI |
+| **SUNAT (oficial)** | No necesita registro | — | Solo RUC, y solo desde servidores con dirección del Perú |
+
+Cada conexión trae su enlace en **Registro del token**. Mientras le falte el
+token, su formulario muestra el aviso «Esta conexión no consulta: le falta el
+token», y en **Ajustes** el bloque **Validación RUC/DNI (PE)** dice qué
+conexiones no tienen token y si la consulta de RUC o de DNI no podrá
+funcionar.
+
+!!! tip "Consejo"
+    Para empezar basta con **Decolecta**: su plan gratuito cubre RUC y DNI y
+    el mismo token sirve para el tipo de cambio. Para muchas consultas al mes,
+    contrate un plan de pago o active el **Fallback en cascada** con varios
+    servicios.
 
 ### Agregar un servicio de consulta
 
@@ -81,7 +112,9 @@ es agente, sus facturas a este proveedor no se retienen
 ### Volver a consultar
 
 Haga clic en **Actualizar desde API** en el contacto para traer los datos al
-día. Si la consulta falla, el contacto muestra «No hay conexión con SUNAT/API o
+día. El botón solo aparece si el tipo de documento se puede consultar: si a la
+compañía le falta el token, el contacto muestra en su lugar un aviso con lo que
+falta y dónde se configura, y los datos se completan a mano. Si la consulta falla, el contacto muestra «No hay conexión con SUNAT/API o
 los datos no existen» y el botón explica el motivo (por ejemplo, el plan del
 servicio vencido); complete los datos a mano. El aviso desaparece con la
 siguiente consulta correcta.
@@ -173,7 +206,7 @@ conserva el padrón anterior y se anota el error.
 
 | Situación | Qué pasa | Qué hacer |
 |---|---|---|
-| Ninguna conexión con token | No se consulta nada | Configure al menos un token o la conexión SUNAT oficial |
+| Ninguna conexión con token | El contacto y el TPV avisan que la consulta no está configurada; el botón **Actualizar desde API** no aparece | [Obtenga un token](#obtener-el-token) y péguelo en la conexión; para RUC basta la conexión SUNAT oficial |
 | Plan del servicio vencido | La consulta falla | **Actualizar desde API** muestra el motivo; renueve el plan o cambie la prioridad |
 | Descarga del padrón fallida | Se conserva el padrón anterior y se anota el error | Ejecute la acción a mano más tarde |
 

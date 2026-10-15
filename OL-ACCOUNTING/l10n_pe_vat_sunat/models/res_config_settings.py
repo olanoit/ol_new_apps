@@ -6,7 +6,7 @@ One2many ``l10n_pe_api_connection_ids`` de la compañía; aquí solo se
 exponen los interruptores de activación y un acceso directo a la lista
 de conexiones.
 """
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ResConfigSettings(models.TransientModel):
@@ -21,6 +21,23 @@ class ResConfigSettings(models.TransientModel):
     l10n_pe_api_use_fallback = fields.Boolean(
         string='Usar fallback en cascada',
         related='company_id.l10n_pe_api_use_fallback', readonly=False)
+
+    l10n_pe_ruc_lookup_ready = fields.Boolean(
+        string='Consulta de RUC lista', compute='_compute_l10n_pe_lookup_status')
+    l10n_pe_dni_lookup_ready = fields.Boolean(
+        string='Consulta de DNI lista', compute='_compute_l10n_pe_lookup_status')
+    l10n_pe_lookup_missing_token = fields.Char(
+        string='Conexiones sin token', compute='_compute_l10n_pe_lookup_status')
+
+    @api.depends('company_id')
+    def _compute_l10n_pe_lookup_status(self):
+        for settings in self:
+            company = settings.company_id
+            settings.l10n_pe_ruc_lookup_ready = company._l10n_pe_lookup_ready('ruc')
+            settings.l10n_pe_dni_lookup_ready = company._l10n_pe_lookup_ready('dni')
+            missing = (company._l10n_pe_enabled_connections('ruc')
+                       | company._l10n_pe_enabled_connections('dni')).filtered('missing_token')
+            settings.l10n_pe_lookup_missing_token = ', '.join(missing.mapped('name'))
 
     def action_open_pe_api_connections(self):
         self.ensure_one()

@@ -49,17 +49,47 @@ class ResCompany(models.Model):
         ficha RUC con otra fuente).
         """
         self.ensure_one()
+        connections = self._l10n_pe_enabled_connections(doc_type).filtered(
+            lambda c: c._is_usable())
+        if not self.l10n_pe_api_use_fallback and not all_connections:
+            return connections[:1]
+        return connections
+
+    def _l10n_pe_enabled_connections(self, doc_type):
+        """Conexiones habilitadas para el tipo de documento, por prioridad,
+        tengan o no su token."""
+        self.ensure_one()
         # Una sucursal sin conexiones propias usa las de su compañía
         # superior más cercana: el token se contrata una vez por RUC.
         owner = next((company for company in reversed(self.sudo().parent_ids)
                       if company.l10n_pe_api_connection_ids), self)
-        connections = self.env['res.company'].browse(owner.id).l10n_pe_api_connection_ids.filtered(
+        return self.env['res.company'].browse(owner.id).l10n_pe_api_connection_ids.filtered(
             lambda c: c.enabled and c.document_type in (doc_type, 'both')
-            and c._is_usable()
         ).sorted(lambda c: (c.sequence, c.id))
-        if not self.l10n_pe_api_use_fallback and not all_connections:
-            return connections[:1]
-        return connections
+
+    def _l10n_pe_lookup_ready(self, doc_type):
+        """La consulta del tipo de documento puede funcionar: alguna conexión
+        habilitada no necesita token o ya lo tiene."""
+        self.ensure_one()
+        return bool(self._get_pe_api_connections(doc_type, all_connections=True))
+
+    def _l10n_pe_lookup_not_ready_message(self, doc_type):
+        """Aviso para quien consulta un documento que no se puede consultar:
+        qué falta y dónde se configura."""
+        self.ensure_one()
+        missing = self._l10n_pe_enabled_connections(doc_type).filtered('missing_token')
+        if missing:
+            return self.env._(
+                'La consulta de %(doc)s no está configurada: a %(names)s le falta el token. Un '
+                'administrador debe registrarse en la web del proveedor, copiar el token y '
+                'pegarlo en Contactos ▸ Configuración ▸ Conexiones RUC/DNI. Mientras tanto, '
+                'complete los datos a mano.',
+                doc=doc_type.upper(), names=', '.join(missing.mapped('name')))
+        return self.env._(
+            'La consulta de %(doc)s no está configurada: no hay ninguna conexión habilitada '
+            'para ese documento. Un administrador debe habilitarla en Contactos ▸ '
+            'Configuración ▸ Conexiones RUC/DNI. Mientras tanto, complete los datos a mano.',
+            doc=doc_type.upper())
 
     # ------------------------------------------------------------------ #
     # Semilla de conexiones por defecto (replican los proveedores previos)
@@ -129,6 +159,7 @@ class ResCompany(models.Model):
 DEFAULT_CONNECTIONS = [
     {
         'name': 'apiperu.dev',
+        'signup_url': 'https://app.apiperu.dev/auth/register',
         'engine': 'rest_json',
         'document_type': 'both',
         'sequence': 10,
@@ -156,6 +187,7 @@ DEFAULT_CONNECTIONS = [
     },
     {
         'name': 'json.pe',
+        'signup_url': 'https://app.json.pe/signup',
         'engine': 'rest_json',
         'document_type': 'both',
         'sequence': 15,
@@ -185,6 +217,7 @@ DEFAULT_CONNECTIONS = [
     },
     {
         'name': 'apis.net.pe',
+        'signup_url': 'https://decolecta.com/profile/',  # apis.net.pe migró a Decolecta
         'engine': 'rest_json',
         'document_type': 'both',
         'sequence': 20,
@@ -214,6 +247,7 @@ DEFAULT_CONNECTIONS = [
         # reutiliza ``al_l10n_pe_currency`` para traer compra y venta.
         # Respuesta plana: sin envoltorio de datos ni indicador de éxito.
         'name': 'Decolecta',
+        'signup_url': 'https://decolecta.com/profile/',
         'engine': 'rest_json',
         'document_type': 'both',
         'sequence': 25,

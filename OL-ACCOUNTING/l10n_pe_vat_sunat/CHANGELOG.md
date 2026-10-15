@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261012 — 16/10/2026
+
+- Sin token no se habilita la consulta: el contacto oculta «Actualizar desde API» y avisa qué falta y dónde se configura; los Ajustes dicen si la consulta de RUC o de DNI no podrá funcionar y qué conexiones no tienen token.
+- Cada conexión trae el enlace de registro del proveedor («Registro del token») y avisa en su formulario y en la lista cuando le falta el token.
+
 ## 21.20261012 — 14/10/2026
 
 - Consulta de RUC o DNI sin crear el contacto (nombre, dirección y ubigeo): la usan la tienda en línea peruana y la creación de clientes desde el TPV.

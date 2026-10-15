@@ -13,7 +13,7 @@
                     <button string="Actualizar desde API"
                             type="object" name="action_update_document"
                             class="oe_highlight"
-                            invisible="country_code != 'PE'"
+                            invisible="country_code != 'PE' or l10n_pe_lookup_state != 'ready'"
                             />
                     <field name="state" widget="statusbar" nolabel="1"
                            statusbar_visible="ACTIVO,BAJA DE OFICIO"
@@ -37,6 +37,7 @@
             <xpath expr="//field[@name='category_id']" position="before">
                 <field name="sunat_condition" invisible="1"/>
                 <field name="alert_warning_vat" invisible="1"/>
+                <field name="l10n_pe_lookup_state" invisible="1"/>
             </xpath>
 
             <!-- Nombre comercial debajo del título -->
@@ -62,6 +63,10 @@
                     no existen.</strong> Complete los datos
                     manualmente; el servicio externo no respondió en
                     la última consulta.
+                </div>
+                <div class="alert alert-info" role="alert"
+                     invisible="l10n_pe_lookup_state != 'missing'">
+                    <field name="l10n_pe_lookup_message" readonly="1"/>
                 </div>
             </xpath>
 
