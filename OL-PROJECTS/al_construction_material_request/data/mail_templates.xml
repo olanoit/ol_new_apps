@@ -21,13 +21,13 @@
                         (<t t-out="row['mode']"/>)</span>
                 </li>
             </ul>
-            <div t-if="picking">
-                Transferencia a la obra:
-                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="picking.id" t-out="picking.name"/>
+            <div t-foreach="picking" t-as="one_picking">
+                Transferencia a <t t-out="one_picking.location_dest_id.display_name"/>:
+                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="one_picking.id" t-out="one_picking.name"/>
             </div>
-            <div t-if="pending_picking">
-                En espera de la compra:
-                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="pending_picking.id" t-out="pending_picking.name"/>
+            <div t-foreach="pending_picking" t-as="one_pending">
+                En espera de la compra (<t t-out="one_pending.location_dest_id.display_name"/>):
+                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="one_pending.id" t-out="one_pending.name"/>
             </div>
             <div t-if="purchase_request">
                 Requerimiento de compra:

@@ -12,3 +12,4 @@ from . import construction_supply_board
 from . import construction_planner_home
 from . import plan_exceed_wizard
 from . import construction_amounts
+from . import construction_material_request_scope

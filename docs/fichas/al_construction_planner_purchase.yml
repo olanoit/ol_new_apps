@@ -31,6 +31,11 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Requerimiento de obra con selección de nivel y etapa: niveles en cascada según la plantilla de la obra, etapas, tareas del Gantt y botón «Traer materiales del plan» (una línea por material, nivel y etapa con el saldo, enlazada al plan)."
+  - "Material de la etapa Producción a la preproducción de la planta, en su propia transferencia, con ajuste para permitirlo o no."
 - version: '3.20261016'
   fecha: 16/10/2026
   cambios:

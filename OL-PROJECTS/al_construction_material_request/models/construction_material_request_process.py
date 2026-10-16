@@ -87,13 +87,13 @@ class ConstructionMaterialRequest(models.Model):
             self.stock_reference_id = self.env['stock.reference'].create({'name': self.name})
         return self.stock_reference_id
 
-    def _prepare_picking_vals(self):
+    def _prepare_picking_vals(self, location_dest=None):
         self.ensure_one()
         picking_type = self.company_id.construction_dispatch_type_id
         vals = {
             'picking_type_id': picking_type.id,
             'location_id': self.location_src_id.id,
-            'location_dest_id': self.location_dest_id.id,
+            'location_dest_id': (location_dest or self.location_dest_id).id,
             'origin': self.name,
             'construction_request_id': self.id,
             'project_id': self.project_id.id,
@@ -129,17 +129,29 @@ class ConstructionMaterialRequest(models.Model):
             'construction_analytic_distribution': line.analytic_distribution,
         }
 
-    def _create_dispatch_picking(self, lines):
+    def _group_by_destination(self, lines):
+        """[(destino, líneas)]: una transferencia por destino, la obra primero."""
         self.ensure_one()
-        if not lines:
-            return self.env['stock.picking']
-        picking = self.env['stock.picking'].create(self._prepare_picking_vals())
-        self.env['stock.move'].create([
-            self._prepare_move_vals(line, line.qty_to_dispatch, picking) for line in lines
-        ])
-        picking.action_confirm()
-        picking.action_assign()
-        return picking
+        groups = {}
+        for line in lines:
+            location = line._get_site_location()
+            groups[location] = groups.get(location, line.browse()) | line
+        return sorted(groups.items(), key=lambda item: item[0] != self.location_dest_id)
+
+    def _create_dispatch_picking(self, lines):
+        """Transferencias de lo disponible: una por destino de las líneas."""
+        self.ensure_one()
+        pickings = self.env['stock.picking']
+        for location, group in self._group_by_destination(lines):
+            picking = self.env['stock.picking'].create(self._prepare_picking_vals(location))
+            self.env['stock.move'].create([
+                self._prepare_move_vals(line, line.qty_to_dispatch, picking) for line in group
+            ])
+            pickings |= picking
+        if pickings:
+            pickings.action_confirm()
+            pickings.action_assign()
+        return pickings
 
     def _reserve_and_adjust(self, picking):
         """Condición de carrera: si se reservó menos de lo previsto (otro
@@ -214,22 +226,24 @@ class ConstructionMaterialRequest(models.Model):
         """Vía almacén central: movimiento central → obra que espera la compra.
         El asistente de OCA copia ``move_dest_ids`` a la línea de OC y, al
         recibir, este movimiento reserva exactamente lo recibido."""
-        vals = self._prepare_picking_vals()
-        picking = self.env['stock.picking'].create(vals)
         pr_line_by_line = {
             pr_line.construction_request_line_id: pr_line
             for pr_line in purchase_request.line_ids
         }
+        pickings = self.env['stock.picking']
         move_vals = []
-        for line in lines:
-            vals = self._prepare_move_vals(
-                line, line.qty_to_purchase, picking, procure_method='make_to_order')
-            vals['created_purchase_request_line_id'] = pr_line_by_line[line].id
-            move_vals.append(vals)
+        for location, group in self._group_by_destination(lines):
+            picking = self.env['stock.picking'].create(self._prepare_picking_vals(location))
+            pickings |= picking
+            for line in group:
+                vals = self._prepare_move_vals(
+                    line, line.qty_to_purchase, picking, procure_method='make_to_order')
+                vals['created_purchase_request_line_id'] = pr_line_by_line[line].id
+                move_vals.append(vals)
         moves = self.env['stock.move'].create(move_vals)
         # Sin abastecimiento: la compra la gestiona el requerimiento de compra.
         moves._action_confirm(merge=False, create_proc=False)
-        return picking
+        return pickings
 
     def _format_qty(self, value, uom):
         return f'{formatLang(self.env, value, digits=2)} {uom.name}'

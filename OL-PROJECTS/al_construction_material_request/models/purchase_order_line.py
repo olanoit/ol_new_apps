@@ -12,7 +12,8 @@ class PurchaseOrderLine(models.Model):
         site = self.location_final_id
         direct_lines = self.purchase_request_lines.construction_request_line_id.filtered(
             lambda l: l.supply_mode == 'direct')
-        if site and direct_lines and direct_lines.request_id.location_dest_id == site:
+        if site and direct_lines and site in direct_lines.mapped(
+                lambda l: l._get_site_location()):
             vals['location_dest_id'] = site.id
         return vals
 

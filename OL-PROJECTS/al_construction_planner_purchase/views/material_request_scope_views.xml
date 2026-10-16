@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Alcance del requerimiento de obra (RQ-01 a RQ-07): niveles en
+         cascada, etapas, tareas del Gantt y «Traer materiales del plan».
+         Hereda la vista del control de plan para ordenar sus columnas. -->
+    <record id="construction_material_request_view_form_scope" model="ir.ui.view">
+        <field name="name">construction.material.request.form.scope</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="construction_material_request_view_form_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='location_dest_id']" position="after">
+                <field name="construction_needs_plant" invisible="1"/>
+                <field name="construction_production_location_id"
+                       invisible="not construction_needs_plant and not construction_production_location_id"
+                       required="construction_needs_plant and state == 'draft'"
+                       readonly="state != 'draft'" options="{'no_create': True}"/>
+            </xpath>
+            <xpath expr="//notebook" position="before">
+                <div name="construction_scope" class="border border-primary rounded p-3 mb-3"
+                     invisible="state != 'draft' or not project_id">
+                    <field name="construction_has_levels" invisible="1"/>
+                    <field name="construction_allowed_stage_ids" invisible="1"/>
+                    <field name="construction_default_stage" invisible="1"/>
+                    <field name="construction_default_task_id" invisible="1"/>
+                    <field name="construction_plan_id" invisible="1"/>
+                    <h5 class="mb-3">¿Para qué es el material?</h5>
+                    <div class="row mb-2" invisible="not construction_scope_1_label">
+                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_1_label"/></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_1_allowed_ids" invisible="1"/>
+                            <field name="construction_scope_1_ids" widget="many2many_tags" placeholder="Todos"
+                                   domain="[('id', 'in', construction_scope_1_allowed_ids)]"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2" invisible="not construction_scope_2_label">
+                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_2_label"/></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_2_allowed_ids" invisible="1"/>
+                            <field name="construction_scope_2_ids" widget="many2many_tags" placeholder="Todos"
+                                   domain="[('id', 'in', construction_scope_2_allowed_ids)]"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2" invisible="not construction_scope_3_label">
+                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_3_label"/></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_3_allowed_ids" invisible="1"/>
+                            <field name="construction_scope_3_ids" widget="many2many_tags" placeholder="Todos"
+                                   domain="[('id', 'in', construction_scope_3_allowed_ids)]"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2" invisible="not construction_scope_4_label">
+                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_4_label"/></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_4_allowed_ids" invisible="1"/>
+                            <field name="construction_scope_4_ids" widget="many2many_tags" placeholder="Todos"
+                                   domain="[('id', 'in', construction_scope_4_allowed_ids)]"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2" invisible="not construction_scope_5_label">
+                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_5_label"/></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_5_allowed_ids" invisible="1"/>
+                            <field name="construction_scope_5_ids" widget="many2many_tags" placeholder="Todos"
+                                   domain="[('id', 'in', construction_scope_5_allowed_ids)]"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2" invisible="not construction_scope_6_label">
+                        <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_6_label"/></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_scope_6_allowed_ids" invisible="1"/>
+                            <field name="construction_scope_6_ids" widget="many2many_tags" placeholder="Todos"
+                                   domain="[('id', 'in', construction_scope_6_allowed_ids)]"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-3 fw-bold">Etapas</div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_stage_ids" widget="many2many_tags" placeholder="Todas"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-3 fw-bold">Tareas del Gantt <span class="text-muted fw-normal">(opcional)</span></div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_gantt_task_ids" widget="many2many_tags"
+                                   placeholder="Para material de una tarea que no es nivel del plan"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <button name="action_construction_fetch_plan" type="object"
+                            string="Traer materiales del plan" class="btn-primary mt-2"
+                            icon="fa-download" invisible="not construction_plan_id"/>
+                    <div class="text-muted small mt-2" invisible="construction_plan_id">
+                        La obra no tiene plan de recursos vigente: agregue los materiales a mano.
+                    </div>
+                </div>
+            </xpath>
+            <!-- Columnas (RQ-05): Material, Nivel, Etapa, Saldo, Cantidad,
+                 Unidad, Disponible. -->
+            <xpath expr="//field[@name='line_ids']" position="attributes">
+                <attribute name="context">{'default_task_id': construction_default_task_id or task_id, 'default_construction_stage': construction_default_stage}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='product_id']" position="after">
+                <field name="construction_level_label" optional="show"/>
+                <field name="construction_stage" optional="show"/>
+                <field name="location_dest_id" optional="hide" options="{'no_create': True}"
+                       groups="stock.group_stock_multi_locations"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='product_qty']" position="before">
+                <xpath expr="//field[@name='line_ids']/list/field[@name='construction_plan_remaining']" position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='product_uom_id']" position="after">
+                <xpath expr="//field[@name='line_ids']/list/field[@name='qty_available_now']" position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/form//field[@name='task_id']" position="after">
+                <field name="construction_stage"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ajuste de la etapa Producción (RQ-07) -->
+    <record id="res_config_settings_view_form_construction_request_scope" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.request.scope</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="res_config_settings_view_form_construction_purchase"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='construction_planner_supply']" position="inside">
+                <setting company_dependent="1" id="construction_request_production_stage"
+                         string="Permitir la etapa Producción en el requerimiento de obra"
+                         help="Mientras la orden de fabricación no esté en uso, el jefe de producción pide su material por el requerimiento de obra; se despacha a la preproducción de la planta (ubicaciones marcadas como «Preproducción de planta»).">
+                    <field name="construction_request_production_stage"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ubicación de preproducción de la planta (RQ-07) -->
+    <record id="view_location_form_construction_preproduction" model="ir.ui.view">
+        <field name="name">stock.location.form.construction.preproduction</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='replenish_location']" position="after">
+                <field name="construction_preproduction" invisible="usage != 'internal'"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

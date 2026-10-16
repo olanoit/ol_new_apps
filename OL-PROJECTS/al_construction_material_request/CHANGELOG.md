@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261016 — 16/10/2026
+
+- Destino por línea: el despacho y la transferencia en espera de la compra salen en una transferencia por destino (base del material de producción a la preproducción de la planta).
+
 ## 17.20261013 — 15/10/2026
 
 - El despacho a obra de un requerimiento lo valida solo el almacén (grupo Logística), aunque quien lo pidió tenga acceso a Inventario (v1.6, M16-10).

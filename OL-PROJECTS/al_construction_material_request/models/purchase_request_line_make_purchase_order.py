@@ -22,7 +22,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _al_final_location(self, item):
         """Ubicación final de la entrega directa en obra (vacía: el almacén)."""
         line = item.line_id.construction_request_line_id
-        return line.request_id.location_dest_id if line.supply_mode == 'direct' \
+        return line._get_site_location() if line.supply_mode == 'direct' \
             else self.env['stock.location']
 
     @api.model

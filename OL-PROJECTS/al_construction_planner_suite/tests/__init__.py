@@ -44,3 +44,4 @@ from . import test_furniture_v18
 from . import test_module_product_v18
 from . import test_projection_import_v18
 from . import test_amounts_v18
+from . import test_request_scope

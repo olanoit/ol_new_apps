@@ -48,6 +48,14 @@ class ConstructionMaterialRequestLine(models.Model):
         'project.task', string='Tarea', check_company=True,
         compute='_compute_task_id', store=True, readonly=False, precompute=True,
         domain="[('project_id', '=', parent.project_id)]")
+    # Destino por línea (v19): normalmente la ubicación de la obra; un puente
+    # puede mandar algunas líneas a otro destino (preproducción de la planta)
+    # y el despacho sale en una transferencia por destino.
+    location_dest_id = fields.Many2one(
+        'stock.location', string='Destino', check_company=True,
+        compute='_compute_location_dest_id', store=True, readonly=False, precompute=True,
+        domain="[('usage', '=', 'internal')]",
+        help='Adónde se despacha la línea. Vacío: la ubicación de obra del requerimiento.')
     supply_mode = fields.Selection(
         [('central', 'Vía almacén central'), ('direct', 'Directo a obra')],
         string='Si hay que comprar', default='central', required=True,
@@ -111,6 +119,21 @@ class ConstructionMaterialRequestLine(models.Model):
             if not line.task_id:
                 line.task_id = line.request_id.task_id
 
+    @api.depends('request_id.location_dest_id')
+    def _compute_location_dest_id(self):
+        for line in self:
+            line.location_dest_id = line._get_default_location_dest()
+
+    def _get_default_location_dest(self):
+        """Destino de la línea: la ubicación de obra del requerimiento."""
+        self.ensure_one()
+        return self.request_id.location_dest_id
+
+    def _get_site_location(self):
+        """Ubicación que cuenta como «recibido» de la línea."""
+        self.ensure_one()
+        return self.location_dest_id or self.request_id.location_dest_id
+
     @api.depends('request_id.analytic_distribution')
     def _compute_analytic_distribution(self):
         for line in self:
@@ -156,10 +179,11 @@ class ConstructionMaterialRequestLine(models.Model):
                  'move_ids.location_dest_id', 'supply_mode',
                  'purchase_request_line_ids.purchased_qty',
                  'purchase_request_line_ids.qty_done',
-                 'request_id.location_dest_id', 'request_id.location_src_id')
+                 'location_dest_id', 'request_id.location_dest_id',
+                 'request_id.location_src_id')
     def _compute_qties(self):
         for line in self:
-            site = line.request_id.location_dest_id
+            site = line._get_site_location()
             source = line.request_id.location_src_id
             dispatched = received = 0.0
             # Como purchase_stock (_prepare_qty_received): movimientos hechos
