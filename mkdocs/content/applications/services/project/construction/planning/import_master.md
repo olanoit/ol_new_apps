@@ -21,15 +21,22 @@ opcionales: se puede importar el maestro y, semanas después, el ETO de un piso.
 |---|---|
 | CATALOGO | Actividades de obra con su driver y su tarifa base |
 | TIPOLOGIAS | Tipologías de la obra con su familia |
-| MODULOS | Plantilla de módulos de cada tipología, con su ancho y su actividad de armado |
+| MODULOS | Plantilla de módulos de cada tipología, con su nombre, ancho, tipo de módulo (estándar o especial), método de unión y actividad de armado (vacía: la del catálogo según el método o el tipo) |
 | ACTIVIDADES | Actividades por ambiente de cada tipología, con su cantidad |
-| BOM | Materiales de un ambiente con su etapa de consumo y su costo |
+| BOM | Materiales con su etapa de consumo, su costo y su categoría. Con la columna *Módulo*, la línea va a la receta de ese módulo; vacía, a la lista de materiales de la tipología |
+| PIEZAS | Despiece de cada módulo: cantidad, largo, ancho, tipo de pieza, color, categoría, tablero y cantos |
+| PRODUCTOS NUEVOS | Productos que aún no están en el maestro, con código provisional, nombre, unidad, categoría y costo estimado |
+| TARIFAS | Tarifas de contrata pactadas para la obra, con contratista, retención, vigencia y familia |
+| OBRA | Datos de la obra: inicio, fin, cliente, adelanto % y fondo de garantía % |
+| CONTRATOS, HITOS y VENTA | Contratos de la obra con el cliente, plantillas de hitos de cobro y precio por ambiente de cada tipología (con **Valorización e ingresos**) |
+| MO PROPIA | Roles de la cuadrilla con su categoría, sub etapa, jornal y rendimiento |
 | ARBOL | Piso › departamento › ambiente, con su tipología |
 | ETO | Módulos reales de cada ambiente (código y ancho), del despiece de ingeniería |
 
-La hoja **LEEME** de la plantilla explica cada columna. Las tarifas de la obra
-y de las contratas no forman parte del maestro: se cargan en **Configuración ‣
-Tarifas de contrata**.
+La hoja **LEEME** de la plantilla explica cada columna. La etapa se escribe
+con el número y el nombre de la sub etapa («1.1 Producción de piezas»), con su
+nombre o con otro nombre conocido de la etapa («Producción», «Acabado y
+entrega»).
 
 El módulo trae un ejemplo de una obra genérica de 3 pisos con 4 departamentos
 por piso y, en cada departamento, cocina, closet y baño (datos ficticios con
@@ -52,6 +59,23 @@ y [ETO de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner_furn
    una con su lista de materiales, y el historial de la obra registra la
    importación.
 
+Además de las tipologías y el árbol, el maestro deja:
+
+- la receta de cada módulo (BOM con módulo) y su despiece (PIEZAS): lo que
+  trae el libro reemplaza lo del módulo;
+- con **Crear los productos que no existen**, los productos de PRODUCTOS
+  NUEVOS con su nombre, unidad, categoría y costo, y el código de su familia (el
+  correlativo de la categoría, como **Crear producto**) en lugar del
+  provisional, que se reemplaza en BOM y PIEZAS. Un producto que ya existe con
+  ese nombre conserva su código;
+- la lista de tarifas de la obra de cada familia, con las tarifas de TARIFAS
+  (ver [listas de tarifas](furniture.md#listas-de-tarifas));
+- las fechas y el cliente de la obra, su adelanto y su fondo de garantía
+  (OBRA);
+- los roles de cuadrilla con su jornal y su categoría (MO PROPIA);
+- con **Valorización e ingresos**, los contratos de la obra con su plantilla de
+  hitos y el precio por tipología (CONTRATOS, HITOS y VENTA).
+
 !!! note "Nota"
     La hoja CATALOGO solo la aplica un **Administrador** del planificador. Un
     planificador ve el aviso y carga las actividades antes, en **Configuración ‣
@@ -63,7 +87,10 @@ y [ETO de ejemplo](../../../../../../../OL-PROJECTS/al_construction_planner_furn
 |---|---|---|
 | «No tiene las columnas obligatorias» | No se importa nada | Corregir el encabezado de la hoja (ver LEEME) |
 | Material sin etapa | Se importa, pero el plan no se aprueba hasta indicarla; el aviso da su monto en la obra | Indicar la etapa en la lista de materiales |
-| Producto que no existe | Esa fila se omite | Marcar **Crear los productos que no existen** o crearlo antes con su referencia interna |
+| Producto que no existe | Esa fila se omite | Marcar **Crear los productos que no existen**, listarlo en PRODUCTOS NUEVOS o crearlo antes con su referencia interna |
+| Productos nuevos parecidos a otros del maestro | Se crean al importar, como los demás | Revisar si ya existe y usar su código |
+| Hojas de contratos y venta sin el puente de Ventas | CONTRATOS, HITOS y VENTA se omiten | Activar **Valorización e ingresos** |
+| El presupuesto de la obra no está aprobado por el cliente | Se importa igual; la orden de venta de la obra no está confirmada | Confirmar la venta o esperar la aprobación del cliente |
 | Producto sin costo | Se importa sin costo | Escribir el costo con **Aplicar costo** |
 | Producto repetido en una tipología | Las filas se suman en una sola línea | Revisar el maestro si no era intencional |
 | Actividad que no existe | La fila del módulo o de la actividad se omite | Cargarla en CATALOGO o en **Actividades de obra** |

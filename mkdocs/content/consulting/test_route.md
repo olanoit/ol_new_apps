@@ -1113,7 +1113,7 @@ Detalle: [Línea base y versiones](../applications/services/project/construction
 | 8.11.6 | Orden de fabricación y tablero | Árbol ‣ **Orden de fabricación** del Dpto 502; luego **Abastecimiento ‣ Abastecimiento de la obra** | OF de 1 «Cocina tipo 02» asignada a producción y armado (sin tornillos); el tablero muestra necesidad por semana, stock libre, OC en camino y alertas de precio |
 | 8.11.7 | Metrado con diferencia | **Ejecución ‣ Avance ‣ Generar metrados** del piso 05; en **Cargar medidas**, 2.90 ML de mueble bajo en la cocina del Dpto 501; **Enviar metrados**; abrir **Orden de fabricación** del piso | Diferencia 0.78 ML y S/ 14.04; el metrado queda **En aprobación** y la OF deja fuera ese ambiente con «Metrado con diferencia por aprobar»; al aprobarlo la Jefatura, vuelve a aparecer |
 
-Detalle: [Metrado del ambiente](../applications/services/project/construction/planning/measurement.md), [Precios y abastecimiento](../applications/services/project/construction/planning/prices_supply.md) y [Asignaciones y compras](../applications/services/project/construction/planning/supply.md)
+Detalle: [Metrado](../applications/services/project/construction/planning/measurement.md), [Precios y abastecimiento](../applications/services/project/construction/planning/prices_supply.md) y [Asignaciones y compras](../applications/services/project/construction/planning/supply.md)
 
 ### 8.12 Contratas y liquidación semanal (`al_construction_planner`)
 

@@ -25,21 +25,42 @@ avance** aparece una fila por módulo (Tarugo 1, Tornillo 1…) de cada ambiente
 y se escribe 1 por cada módulo armado.
 
 El avance del portal entra **Por validar**, con origen *Portal*, la ubicación
-y la distancia a la sede. El supervisor lo valida o rechaza en **Ejecución ‣
-Avance ‣ Avances por validar**, como cualquier otro.
+y la distancia a la sede. Sus fotos quedan en el historial del mismo avance,
+con la contrata como autor, junto con la evaluación del supervisor, la
+validación o el rechazo (ver [el avance en su
+formulario](contractors.md#el-avance-en-su-formulario)). El supervisor lo
+valida o rechaza en **Ejecución ‣ Avance ‣ Avances por validar**, como
+cualquier otro.
 
 ## Sedes de obra
 
 El módulo **Sedes, marcación y costo de personal de obra**
 (`al_construction_attendance`) se instala solo con el planificador y la
 planilla de construcción civil. En **Configuración ‣ Plan de obra ‣ Sedes de
-obra**, cada sede (una obra, la planta, un área) tiene:
+obra**, cada sede tiene:
 
-- su **obra**, **latitud**, **longitud** y **radio** (200 m por defecto);
+- su **Tipo de sede**: **Obra** (de un proyecto: su costo de personal es de la
+  obra) o **Planta** (producción central de la compañía, sin proyecto: su
+  costo es de fabricación y llega a las obras con las órdenes de
+  fabricación). Una sede de planta no se vincula a ninguna obra;
+- su **obra** (solo las sedes de obra), **latitud**, **longitud** y **radio**
+  (200 m por defecto);
 - la **hora límite de ingreso** (7:50 por defecto);
 - la **cuenta de etapa por defecto**: instalación en la obra, producción en la
   planta;
 - el enlace del **quiosco**, con una clave propia.
+
+### Crear la sede con la obra
+
+En **Ajustes ‣ Planificación de obra**, active **Crear la sede de obra con la
+obra** y escriba la **Latitud por defecto**, la **Longitud por defecto**, el
+**Radio por defecto (m)** y la **Hora límite por defecto**. Al marcar un
+proyecto como obra, se crea su sede con el nombre y la cuenta analítica de la
+obra y esos valores, que luego se corrigen en la sede. Si la obra ya tiene una
+sede, no se crea otra. Los dos perfiles de vertical dejan esta opción activa.
+
+La marcación en la sede de la obra da los jornales ejecutados de las
+[cuadrillas propias](control.md#cuadrillas-en-jornales).
 
 ## Quiosco de marcación
 

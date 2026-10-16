@@ -98,14 +98,32 @@ el costo S/ 25,338.96 y el margen −S/ 1,711.31.
    confirmadas hasta esa fecha (o **Ingresos ‣ Preparar valorización**). Entrega
    el avance de la última entrega menos lo ya confirmado, con el fondo de
    garantía y la amortización del adelanto.
-2. Haga clic en **Enviar al cliente**: el PDF queda en el historial.
-3. Si el cliente observa, registre la **Observación del cliente** con fecha y
+2. Si hace falta, valorice una partida a otro porcentaje (ver [Porcentaje
+   escrito a mano](#porcentaje-escrito-a-mano)).
+3. Haga clic en **Enviar al cliente**: el PDF queda en el historial. Además de
+   las partidas, muestra el avance por etapa y sub etapa de la obra, en el
+   orden del árbol de etapas, y los porcentajes escritos a mano.
+4. Si el cliente observa, registre la **Observación del cliente** con fecha y
    autor, levante las observaciones y reenvíe.
-4. Con la conformidad, haga clic en **Confirmar** y registre la fecha, el nombre,
+5. Con la conformidad, haga clic en **Confirmar** y registre la fecha, el nombre,
    el cargo y el documento del cliente. Las entregas pasan a **Valorizadas**. Lo
    que el cliente no confirma queda «por valorizar» y vuelve en la siguiente.
 
 ![Confirmación de la valorización con los datos de la conformidad del cliente](income/client-approval.png)
+
+### Porcentaje escrito a mano
+
+Cada partida de la valorización en borrador propone el **% de la regla** de la
+vertical (el avance acumulado de la partida o sus hitos por unidad) y admite
+otro en **% escrito**, con su **Motivo del porcentaje** obligatorio. La línea
+queda **Manual**, con quién la escribió y cuándo; lo entregado y lo confirmado
+pasan a ese porcentaje menos lo ya confirmado, y el historial de la
+valorización guarda el cambio. El porcentaje no puede quedar por debajo de lo
+ya confirmado al cliente.
+
+Ejemplo: una partida con 42 % de avance calculado se valoriza al 50 % escrito,
+con motivo. La valorización, su PDF y la descripción de la línea de la factura
+muestran el 50 % marcado como manual.
 
 ## Facturar y cobrar
 
@@ -135,6 +153,8 @@ fondo de garantía y S/ 387.89 neto.
 | «Para confirmar la valorización falta…» | Falta fecha, nombre, cargo o documento del cliente | Completarlos |
 | «No alcanza una unidad facturable» | El % confirmado es menor que la precisión de la cantidad (0.01) | Facturar con la siguiente valorización o subir la precisión de la unidad |
 | «La factura … supera lo confirmado» | Se cambió la cantidad o el precio de la factura | Dejarla en lo confirmado |
+| «Un porcentaje escrito a mano pide su motivo» | Falta el motivo del % escrito | Escribir el motivo |
+| «… el porcentaje es menor que lo ya confirmado al cliente» | El % escrito no cubre lo ya confirmado | Escribir un porcentaje mayor |
 | Las fechas previstas caen en sábado | El horario de la compañía trabaja los sábados | Elegir los días hábiles del ingreso en Ajustes |
 
 !!! info "Ver también"

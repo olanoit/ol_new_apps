@@ -20,8 +20,9 @@ lo planificado sin una justificación.
 - El planificador necesita los grupos de **requerimientos de compra**, de
   **requerimientos de obra** y, para las órdenes de fabricación, de
   **fabricación**.
-- La política de exceso y la tolerancia se eligen en el plan (pestaña
-  **Políticas**).
+- La política de exceso y la tolerancia vienen de la compañía y de la obra, y
+  cada plan las puede cambiar en su pestaña **Políticas** (ver [Control de
+  consumo](#control-de-consumo)).
 - La regla «Exceso sobre el plan: jefatura del planificador» del requerimiento
   de obra viene con el módulo (**Requerimientos de obra ‣ Configuración ‣
   Reglas de aprobación**). Sus revisores necesitan también el grupo de
@@ -39,6 +40,55 @@ lo planificado sin una justificación.
   planificado más la tolerancia), **Completa** (llegó a la obra lo
   planificado), **En compra** (compra masiva abierta o faltante en compra),
   **Parcial** y **Planificada**.
+
+## Control de consumo
+
+Cada documento que pide recursos del plan se compara con su saldo. Si pide más
+de lo que queda (más la tolerancia) o repite lo ya pedido, actúa la política:
+
+| Política | Qué pasa |
+|---|---|
+| Solo alerta | Se avisa y basta confirmar |
+| Aprobación adicional | La justificación es obligatoria y decide la jefatura de proyectos |
+| Bloquear | El documento no sigue |
+
+### Dónde se define
+
+1. **Ajustes ‣ Planificación de obra ‣ Control de consumo**: la política por
+   defecto de las obras nuevas (**Si se excede el saldo del plan** y
+   **Tolerancia sobre el saldo (%)**) y, si hace falta, una por tipo de
+   recurso.
+2. **Proyecto ‣ Ajustes ‣ Control de consumo**: la obra la recibe de la
+   compañía y la puede cambiar.
+3. Pestaña **Políticas** del plan: el plan la hereda de la obra al crearse y
+   la puede cambiar mientras está en borrador.
+
+Las políticas por tipo de recurso (grupo **Por tipo de recurso** del plan)
+dejan una regla distinta para cada clase de documento; vacías, se usa la
+general:
+
+| Política | Se aplica en |
+|---|---|
+| Materiales | Requerimiento de obra y OC con la analítica de la obra (también servicio y equipo) |
+| Contratas | **Asignar contrata**: alcance por encima de lo que queda de la actividad en la selección (alcance adicional en la OC de servicio) |
+| Producción | Confirmar una orden de fabricación |
+
+### Pedido repetido de un nivel y sub etapa
+
+Si los recursos de material de un nivel en una sub etapa ya se pidieron
+completos, un requerimiento nuevo para ese nivel y sub etapa es una
+**repetición**: pasa por la política aunque el producto todavía tenga saldo.
+Así, con **Aprobación adicional**, un segundo requerimiento de melamina para
+un mueble cuya producción de piezas ya se pidió al 100 % espera a la jefatura.
+
+### Registro de excesos autorizados
+
+Cada exceso o repetición que autoriza la jefatura queda en **Informes ‣ Plan ‣
+Excesos autorizados** (y en el botón **Excesos** del plan) con su tipo, nivel,
+etapa, producto o actividad, cantidad, monto, motivo, quién lo autorizó,
+cuándo y el documento (**Abrir el documento**). Allí también quedan los
+pagos repetidos, los re-trabajos y los porcentajes manuales de las
+[liquidaciones de contratas](contractors.md#pago-repetido-re-trabajo-y-porcentaje-manual).
 
 ## Compra masiva
 
@@ -77,7 +127,8 @@ la última.
 3. Confirme: se crea un [requerimiento de materiales](../material_requests.md) en
    borrador, con la tarea del nivel en cada línea.
 4. Al **Solicitar aprobación**, el requerimiento compara lo pedido con el saldo
-   del plan más la tolerancia y aplica la política del plan:
+   del plan más la tolerancia (y si repite un nivel y sub etapa ya pedidos) y
+   aplica la política de materiales del plan:
     - **Avisar**: basta confirmar el aviso;
     - **Pedir aprobación**: se abre el asistente de exceso, la justificación es
       obligatoria y el requerimiento recibe la revisión adicional «Exceso sobre
@@ -102,8 +153,9 @@ dice «Excede 20». Con la política **pedir aprobación**, la justificación
    lleva el producto de la tipología, la cantidad de ambientes y los
    componentes de su lista de materiales.
 3. Al **Confirmar** la orden se controla el saldo de sus líneas de producción y
-   armado con la misma política; el exceso de una orden de fabricación lo
-   confirma la jefatura del planificador.
+   armado con la política de producción del plan; el exceso de una orden de
+   fabricación lo confirma la jefatura del planificador y queda en **Excesos
+   autorizados**.
 4. Al cerrarla, sus consumos suben lo consumido y la línea pasa a **Completa**.
 
 Ejemplo: la orden del Dpto 502 fabrica 1 «Cocina tipo 02» y se asigna a las
@@ -126,6 +178,7 @@ sale de la ubicación de la obra a una ubicación de consumo.
 | «El plan … no está vigente» | Los asistentes trabajan sobre el plan aprobado o en ejecución | Aprobar el plan |
 | El asistente no propone un material | Ya no tiene saldo o su etapa no está marcada | Revisar las etapas y las asignaciones de la línea |
 | «Pide más de lo que queda en el plan … bloquear» | La política del plan es bloquear | Reducir la cantidad o replanificar |
+| El requerimiento pide aprobación aunque el producto tiene saldo | El nivel y la sub etapa ya se pidieron completos (repetición) | Justificarlo para la jefatura o pedirlo en otro nivel |
 | «Fuera de plan» en el requerimiento | El material no está en el plan bajo el nivel de la línea | Pedirlo en el nivel correcto o justificarlo |
 | «El exceso lo aprueba la jefatura de proyectos» | Política «pedir aprobación» en una OF | Que la jefatura de proyectos confirme la OF |
 | Consumido en cero en material de obra | No hay salidas de la ubicación de la obra a consumo | Registrar el consumo en obra |

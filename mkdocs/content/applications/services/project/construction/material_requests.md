@@ -94,6 +94,59 @@ separa en la lista. Con el planificador de obra, todo extra lo revisa la
 Jefatura de Proyectos y se puede descontar a una contrata: vea
 [Material extra y descuento a la contrata](planning/extra_material.md).
 
+### Elegir niveles y etapas desde el plan
+
+Con la [planificación de obra](planning.md) instalada, el borrador muestra el
+recuadro **¿Para qué es el material?** debajo de la obra. Lo usan el
+supervisor, el jefe de producción, el jefe de proyectos y el asistente de
+proyectos, con el grupo **Solicitante**.
+
+1. Elija los niveles en cascada. Hay un selector por cada nivel de la
+   plantilla de la obra (Piso, Departamento, Ambiente, Mueble en mobiliario;
+   Disciplina, Subpartida, Partida en una constructora) y cada lista muestra
+   solo lo que cuelga de lo elegido arriba. Un nivel sin elegir significa
+   «todos los de arriba»: si solo elige pisos, entra todo lo que cuelga de esos
+   pisos. Un nivel que la obra no tiene no aparece.
+2. Elija las **Etapas** (vacío: todas). Cada línea guarda su etapa en la
+   columna **Etapa**.
+3. Si el material es para una tarea del Gantt que no es nivel del plan
+   (movilización, obras provisionales), elíjala en **Tareas del Gantt**. Esas
+   tareas no tienen líneas en el plan: agregue el material a mano y cada línea
+   queda con esa tarea.
+4. Haga clic en **Traer materiales del plan**. Se crea una línea por material,
+   nivel y etapa con lo que falta pedir del plan, agrupada en el nivel más bajo
+   que eligió. La columna **Nivel** muestra la ruta corta («Dpto 102 /
+   Cocina»).
+5. Corrija cantidades o borre líneas antes de **Solicitar aprobación**.
+
+Cada línea traída queda enlazada a sus líneas del plan: **Saldo** y
+**Control** muestran el saldo y marcan **Excede el plan** si pide más. Pulsar
+otra vez el botón solo agrega lo que falta: una línea ya traída no se repite.
+Una obra sin plan vigente funciona como siempre: se agrega el material a mano.
+
+El asistente **Requerimiento de obra** del plan sigue siendo la vía completa
+(agrupa por piso, departamento o ambiente y crea un requerimiento nuevo); este
+botón llena el requerimiento abierto.
+
+#### Material de producción
+
+Mientras la orden de fabricación del planificador no esté en uso, el jefe de
+producción también pide por aquí eligiendo la etapa **Producción**. Aparece el
+campo **Planta**: elija la preproducción de la planta (por ejemplo,
+`BRE/Preproducción` o `PPD/Preproducción`). El material de Producción se
+despacha a esa ubicación y el de las demás etapas a la obra, en una
+transferencia por destino; el costo sigue yendo a la obra por la analítica de
+la línea.
+
+Configuración:
+
+- Marque **Preproducción de planta** en la ubicación (Inventario ‣
+  Configuración ‣ Ubicaciones) para que se pueda elegir como planta.
+- **Planificación de obra ‣ Configuración ‣ Ajustes ‣ Abastecimiento ‣
+  Permitir la etapa Producción en el requerimiento de obra** (activo por
+  defecto). Al desactivarlo, la etapa Producción deja de aparecer y un
+  requerimiento con líneas de Producción no se envía.
+
 ## Aprobar
 
 1. Los revisores filtran **Necesita mi revisión** y abren el requerimiento.
@@ -118,6 +171,9 @@ línea:
   ya pasó su aprobación;
 - si la compra llega **Vía almacén central**, se crea además la transferencia
   central → obra en espera de la compra.
+
+Si las líneas tienen destinos distintos (material de producción a la planta y
+el resto a la obra), sale una transferencia por destino.
 
 El requerimiento pasa a **En proceso** y el chatter anota la división de cada
 material. Si al reservar se obtiene menos de lo calculado (otro pedido se llevó

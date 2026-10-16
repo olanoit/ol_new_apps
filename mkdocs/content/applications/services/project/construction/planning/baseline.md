@@ -33,7 +33,8 @@ historia.
 3. Con la última aprobación, el plan queda **Aprobado**: las líneas quedan
    congeladas (solo cambia la fecha de necesidad) y se crea el presupuesto
    analítico, con una línea por cada combinación de cuentas analíticas de las
-   líneas.
+   líneas. En mobiliario se crean también los [productos de cada
+   módulo](furniture.md#productos-por-módulo) con su lista de materiales.
 
 ![Aviso que impide enviar el plan con líneas sin etapa ni costo](baseline/approval-blocked.png)
 
@@ -43,15 +44,17 @@ historia.
     aplique el costo o asigne la actividad.
 
 En la demostración, la versión 1 del piso 05 queda aprobada (la melamina
-hidrófuga, sin etapa en el maestro, se asigna a Producción antes) y su resumen
-por etapa cuadra con el presupuesto:
+hidrófuga, sin etapa en el maestro, se asigna a 1.1 Producción de piezas
+antes) y su resumen por etapa cuadra con el presupuesto:
 
 | Etapa | Material | Contrata | Planificado | Presupuesto | Diferencia |
 |---|---|---|---|---|---|
-| Producción | 4,928.28 | — | 4,928.28 | 4,928.28 | 0.00 |
-| Armado | 1,638.63 | 781.29 | 2,419.92 | 2,419.92 | 0.00 |
-| Instalación | 55.00 | 941.17 | 996.17 | 996.17 | 0.00 |
-| Acabado y entrega | 21.00 | 579.07 | 600.07 | 600.07 | 0.00 |
+| **1 Producción** | **6,566.91** | **781.29** | **7,348.20** | **7,348.20** | **0.00** |
+| 1.1 Producción de piezas | 4,928.28 | — | 4,928.28 | 4,928.28 | 0.00 |
+| 1.2 Armado | 1,638.63 | 781.29 | 2,419.92 | 2,419.92 | 0.00 |
+| **2 Instalación** | **76.00** | **1,520.24** | **1,596.24** | **1,596.24** | **0.00** |
+| 2.1 Instalación | 55.00 | 941.17 | 996.17 | 996.17 | 0.00 |
+| 2.2 Acabado | 21.00 | 579.07 | 600.07 | 600.07 | 0.00 |
 | **Total** | **6,642.91** | **2,301.53** | **8,944.44** | **8,944.44** | **0.00** |
 
 El presupuesto tiene una línea de S/ 8,944.44 en la cuenta de la obra, porque
@@ -90,7 +93,8 @@ rejilla.
 - Un plan aprobado no se elimina: queda como historia de la obra.
 - **Cerrar** (Administrador) deja el plan de solo lectura y su presupuesto
   **Hecho**. No se cierra con compras, requerimientos u órdenes de fabricación
-  abiertos ni con liquidaciones de contrata pendientes.
+  abiertos ni con liquidaciones de contrata pendientes. En mobiliario, cerrar
+  el plan archiva los productos de módulo de la obra.
 
 ## Casos especiales
 

@@ -36,16 +36,36 @@ Para aplicarlo:
    vertical**, elija el perfil y pulse **Aplicar el perfil** (o, en el
    perfil, **Aplicar a la compañía**). Solo lo hace el grupo
    **Administrador**.
-2. El perfil activa sus etapas y tipos de recurso, escribe los parámetros en
-   la compañía, crea los planes analíticos que falten, deja su plantilla como
-   la de las obras nuevas y activa sus funciones e instala sus puentes. Al
-   instalar un puente, Odoo recarga la aplicación.
-3. Aplicar un perfil no borra nada: lo que ya estaba activo sigue activo.
+2. Se abre **Aplicar el perfil** con la tabla **Qué cambia**: cada función,
+   puente, plantilla y parámetro que cambia, cómo está **Ahora**, cómo queda
+   **Después** y qué menús aparecen o se ocultan. Si la compañía ya tiene
+   obras, un aviso lo dice: las obras existentes conservan su plantilla, sus
+   planes y sus montos.
+3. Haga clic en **Aplicar**. El perfil activa sus etapas y tipos de recurso,
+   escribe los parámetros en la compañía, crea los planes analíticos que
+   falten, deja su plantilla como la de las obras nuevas y activa sus
+   funciones e instala sus puentes. Al instalar un puente, Odoo recarga la
+   aplicación.
+4. Aplicar un perfil no borra nada: lo que ya estaba activo sigue activo.
+
+Los dos perfiles dejan las cuadrillas propias medidas en jornales de **Día
+completo** y la sede de marcación creada con la obra (ver [control y personal
+propio](control.md#cuadrillas-en-jornales) y [sedes de
+obra](site_portal.md#sedes-de-obra)). **Construcción por partidas** apaga
+además la función **Metrado**: la partida avanza por su driver.
 
 La pestaña **Desvíos de la compañía** del perfil compara el perfil con la
 configuración actual (parámetros, funciones y puentes) y muestra las
 diferencias. La pestaña **Por decidir** apunta lo que falta acordar con el
 cliente.
+
+### Términos de la vertical
+
+Las columnas, los filtros, los resúmenes y los análisis toman el nombre de los
+niveles de la plantilla: en una constructora se ven «Partida» y «Actividad»
+donde en mobiliario se ven «Ambiente» y «Módulo». Las columnas propias de
+mobiliario (**Tipología** y **ML**) solo aparecen en las obras que tienen
+tipologías o metros lineales.
 
 Cada obra guarda el perfil con el que nació. Las obras nuevas reciben la
 **Plantilla de niveles** de los Ajustes, que aplicar el perfil deja con la
@@ -81,7 +101,8 @@ se activan en **Ajustes ‣ Funciones**:
 | Función en Ajustes | Módulo | Qué agrega | Necesita |
 |---|---|---|---|
 | Control | (grupo) | Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso | — |
-| Avance y metrados | (grupo) | Avance por driver con fotos y validación, metrado de los niveles | — |
+| Avance | (grupo) | Avance por el driver de cada partida, contrata o actividad, con fotos y validación | — |
+| Metrado | (grupo) | Metrado del mueble: medida del espacio, diseño y despiece frente a lo planificado (mobiliario) | — |
 | Contratas | `al_construction_planner_subcontract` | OC de servicio, liquidación semanal y portal de la contrata | Compras |
 | Compras, abastecimiento y requerimientos de obra | `al_construction_planner_purchase` | Compra masiva, requerimientos de obra, abastecimiento, precios de compra y material extra | Requerimientos de compra y de obra |
 | Cuadrillas propias | `al_construction_planner_crew` | Turnos de Planificación y horas de la hoja de horas como real | Planificación, Hojas de horas |
@@ -96,8 +117,9 @@ Dos puentes se instalan solos cuando están sus dos lados:
 cuando hay mobiliario). `al_construction_planner_suite` instala todos los
 puentes de una vez.
 
-Desactivar **Control** o **Avance y metrados** solo oculta sus menús y
-botones. Desactivar un puente lo desinstala: Odoo pide confirmación y borra lo
+Desactivar **Control**, **Avance** o **Metrado** solo oculta sus menús y
+botones: sin **Metrado** no aparecen **Metrados**, **Cargar medidas** ni
+**Generar metrados**. Desactivar un puente lo desinstala: Odoo pide confirmación y borra lo
 que el puente guardaba, así que hágalo solo en una base nueva o de pruebas. Los menús que operan un documento de otra aplicación (órdenes de
 fabricación, requerimientos de compra, OC de servicio, cobranza) son accesos
 directos a esa aplicación, filtrados a la obra: la OC, la OF y la factura se
@@ -110,16 +132,45 @@ del cronograma y del avance lleva una.
 
 | Campo | Para qué |
 |---|---|
+| Número | Numeración visible del árbol («1», «1.1»): va delante del nombre en todas las vistas |
+| Etapa padre | La etapa que la agrupa: con ella, la etapa es una **sub etapa** |
 | Código | Lo que guardan las líneas; no se cambia si ya está en uso |
 | Tipo | **Producción** (se fabrica en taller y alimenta la OF) o **Campo** (se ejecuta en la obra) |
 | Consume en la orden de fabricación | El material de esta etapa sale de la lista de materiales |
 | Etapa anterior | Encadena el cronograma: la etapa empieza cuando termina la anterior |
 | Duración y color | Duración por defecto en el cronograma y color de la barra |
 | Niveles | Los niveles de la plantilla que la usan |
+| Otros nombres | Separados por comas: los nombres con que la etapa llega en las hojas de cálculo que se importan |
 
-El perfil **Mobiliario** usa Producción, Armado, Instalación y Acabado; el de
-**Construcción por partidas**, Trazo y replanteo, Ejecución, Acabados y Pruebas
-y entrega.
+### Sub etapas
+
+Una etapa con sub etapas (**Con sub etapas**) solo suma: las líneas del plan,
+las recetas, los avances y las etapas del cronograma van siempre en una sub
+etapa, y la etapa padre muestra la suma de sus sub etapas en cantidad, monto y
+avance. La numeración y el orden del árbol se respetan en el árbol de
+recursos, el cronograma, el panel de recursos, el resumen y el control del
+plan, la matriz insumo-producto y la valorización impresa.
+
+El perfil **Mobiliario** usa esta secuencia; cada sub etapa sigue a la
+anterior:
+
+| Etapa | Sub etapas |
+|---|---|
+| 1 Producción | 1.1 Producción de piezas, 1.2 Armado |
+| 2 Instalación | 2.1 Instalación, 2.2 Acabado, 2.3 Limpieza |
+
+El de **Construcción por partidas** usa Trazo y replanteo, Ejecución, Acabados
+y Pruebas y entrega, sin sub etapas.
+
+!!! note "Bases que ya usaban el planificador"
+    Al actualizar, las cuatro etapas de mobiliario pasan a ser sub etapas sin
+    cambiar su código: Producción es 1.1 Producción de piezas, Armado 1.2,
+    Instalación 2.1 y Acabado y entrega 2.2 Acabado. 2.3 Limpieza se crea
+    vacía. Ninguna línea, avance ni etapa del cronograma cambia de monto.
+
+El filtro de etapas del árbol de recursos, del cronograma y de la matriz
+insumo-producto es un árbol con casillas: marcar una etapa marca sus sub
+etapas y desmarcar una sub etapa deja a la etapa en selección parcial.
 
 Los **tipos de recurso** son el nombre visible de cada clase de recurso
 («Concreto», «Grúa», «Destajo»). Su **Comportamiento** dice qué hace el
@@ -133,6 +184,10 @@ planificador con la línea:
 | Contrata | OC de servicio | El avance validado |
 | Personal propio | Turnos de la cuadrilla | Las horas registradas |
 | Producción | Orden de fabricación | Lo producido y su consumo |
+
+Los tipos vienen en este orden, que es el de los grupos del panel de
+recursos: material, contrata, personal propio, equipo, servicio y producción.
+Para cambiarlo, arrastre los tipos en la lista.
 
 El campo **Abastecimiento** del tipo (compra, almacén, fabricación, contrata o
 cuadrilla propia) dice de dónde sale por defecto. Puede haber varios tipos con
@@ -155,8 +210,9 @@ La plantilla nombra los niveles del árbol de la obra y le da a cada uno una
 Los niveles van en ese orden. El nivel con etapas es el que lleva las etapas
 del cronograma (**Etapas del nivel** limita cuáles; vacía, todas las de la
 obra) y la unidad de entrega es la que se cobra por hitos. Las demás casillas
-se marcan por rubro: **Lleva receta**, **Se mide con metrado** (con su
-**Unidad del metrado**), **Se valoriza o factura** y **Recibe avance**. Así, una
+se marcan por rubro: **Lleva receta**, **Se mide con metrado**, **Unidad del
+driver** (la unidad en que se presupuesta y avanza el nivel; vacía, la de su
+receta), **Se valoriza o factura** y **Recibe avance**. Así, una
 obra eléctrica puede usar Tablero › Sistema › Partida y medir la partida en
 metros; una de tuberías, Área › Línea › Spool con el spool fabricado en
 taller y montado en campo.
@@ -172,8 +228,9 @@ nivel: material, equipo, mano de obra y contratas, con su etapa, su cantidad
 por unidad y su rendimiento. Equivale al APU de una partida.
 
 - **Plan ‣ Generar desde la receta**: elige los niveles y las etapas y crea las
-  líneas del plan multiplicando la receta por el metrado de cada nivel. Si ya
-  hay líneas generadas, las reemplaza o agrega otras.
+  líneas del plan multiplicando la receta por la **Cantidad presupuestada** de
+  cada nivel (120 m² de muro drywall). Si ya hay líneas generadas, las
+  reemplaza o agrega otras.
 - **Configuración ‣ Plan de obra ‣ Importar recetas y niveles**: lee un libro
   Excel con dos hojas opcionales.
     - **RECETAS**: una fila por recurso, con *Código de la receta*, *Tipo de
@@ -181,7 +238,8 @@ por unidad y su rendimiento. Equivale al APU de una partida.
       *Nombre*, *Unidad*, *Costo unitario*, *Etapa*, *Rendimiento* y
       *Personas*.
     - **NIVELES**: el árbol de la obra, con una columna por nivel de la
-      plantilla más *Receta* y *Metrado*.
+      plantilla más *Receta* y *Cantidad* (también se acepta el encabezado
+      *Metrado*).
 
     Con el paquete Construction de Odoo instalado, **Copiar desde Work Items**
     trae sus APU: el material y el equipo por su naturaleza de costo y la mano
@@ -189,11 +247,37 @@ por unidad y su rendimiento. Equivale al APU de una partida.
     lo importado: la receta se reconoce por su código y la tarea por su nombre
     bajo su nivel superior.
 
+### Recetas y Work Items
+
+Una receta copiada de un Work Item queda vinculada a él: la receta vive en
+Ventas (con el Work Item se cotiza) y en el planificador (con la receta se
+planifica y controla). La columna y la barra **Sincronización** de la receta
+dicen cómo están:
+
+| Estado | Qué significa |
+|---|---|
+| Sincronizada | La receta y su Work Item son iguales |
+| Cambió el Work Item / Cambió la receta / Cambiaron los dos | Uno de los dos (o ambos) cambió desde la última sincronización |
+| Work Item borrado | El Work Item ya no existe |
+
+Una acción programada diaria revisa todas las recetas vinculadas; **Revisar
+Work Item** (en la receta) y **Acción ‣ Revisar Work Items** (en la lista) lo
+hacen al momento. El filtro **Con diferencias con su Work Item** las reúne.
+
+1. En una receta con diferencias, haga clic en **Sincronizar con el Work
+   Item**.
+2. Elija **Llevar el Work Item a la receta** o **Llevar la receta al Work
+   Item** y revise la **Vista previa** de los cambios.
+3. Haga clic en **Aplicar**.
+
+La sincronización no toca los planes: el cambio llega a los planes nuevos o
+con una [versión nueva del plan](baseline.md#replanificar-con-una-nueva-versión).
+
 ## Ejemplos por rubro
 
 | Rubro | Perfil | Niveles | Etapas | Documentos |
 |---|---|---|---|---|
-| Mobiliario | Mobiliario | Piso › Departamento › Ambiente › Mueble › Módulo | Producción, Armado, Instalación, Acabado | OF por ambiente, compra masiva, OC de servicio de armado e instalación, valorización por unidad |
+| Mobiliario | Mobiliario | Piso › Departamento › Ambiente › Mueble › Módulo | 1 Producción (1.1 y 1.2), 2 Instalación (2.1 a 2.3) | OF por ambiente o por módulo, compra masiva, OC de servicio de armado e instalación, valorización por unidad |
 | Edificación por partidas | Construcción por partidas | Disciplina › Subpartida › Partida › Actividad | Trazo, Ejecución, Acabados, Pruebas | Requerimiento de compra por partida, contratas y cuadrillas, valorización por avance |
 | Instalaciones eléctricas | Construcción por partidas, con su plantilla | Tablero › Sistema › Partida | Propias (canalización, cableado, pruebas) | Compra masiva agrupada por partida o etapa, cuadrilla operario/oficial/peón |
 | Tuberías para minería | Perfil propio con Fabricación | Área › Línea › Spool | Prefabricación (producción), Montaje (campo) | Una OF por línea con sus spools; el consumo vuelve a cada spool |

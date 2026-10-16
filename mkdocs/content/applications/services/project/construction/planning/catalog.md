@@ -18,23 +18,29 @@ tipología). Todo se puede cargar a mano, como se explica aquí, o de una vez co
    cree cada actividad de las contratas con su **driver** (unidad, ML o módulo),
    su **etapa** y su precio. Las actividades de personal propio van en horas y
    con su **rol**.
-2. Opcional: dé a cada actividad su **producto de servicio** (con sus
+2. Elija su **Driver**: **El de la partida** si la actividad se mide en la
+   unidad de la partida (el muro drywall en m²): su avance es el avance físico
+   de la partida; **Propio** si avanza y se liquida en su unidad (el emplacado
+   en m² de placa, los esquineros en ml) sin mover el avance de la partida. Las
+   líneas del plan lo toman de la actividad (**En el driver del nivel**).
+3. Opcional: dé a cada actividad su **producto de servicio** (con sus
    impuestos). Si no lo tiene, **Asignar contrata** crea uno sin impuestos y con
    recepción manual.
-3. En **Configuración ‣ Tarifas de contrata**, registre los precios por obra,
+4. En **Configuración ‣ Tarifas de contrata**, registre los precios por obra,
    por contrata o por la combinación de ambas, con su **vigencia** y su
    **retención**. Las vigencias de una misma combinación no se superponen.
 
 La tarifa se busca en este orden: obra y contrata › solo obra › solo contrata ›
 tarifa base › precio de la actividad. Así una contrata puede cobrar distinto en
-una obra concreta.
+una obra concreta. En mobiliario, las tarifas también pueden venir de
+[listas de tarifas](furniture.md#listas-de-tarifas) por familia y por obra.
 
 ## Etapa de consumo de los materiales
 
 En **Fabricación ‣ Productos ‣ Listas de materiales**, la lista de cada
-tipología indica en sus componentes la **Etapa de consumo**: producción,
-armado, instalación o acabado y entrega. La etapa decide en qué semana se
-necesita cada material.
+tipología indica en sus componentes la **Etapa de consumo**, siempre una sub
+etapa: 1.1 Producción de piezas, 1.2 Armado, 2.1 Instalación, 2.2 Acabado o
+2.3 Limpieza. La etapa decide en qué semana se necesita cada material.
 
 !!! warning "Importante"
     Un componente sin etapa se genera en el plan «sin etapa» y se avisa. El
@@ -45,9 +51,16 @@ necesita cada material.
 Vaya a **Planificación de obra ‣ Configuración ‣ Plan de obra ‣ Tipologías** y cree una por
 cada tipo de ambiente de la obra (p. ej. «Cocina tipo 01»), con:
 
-- **Módulos**: código, tipo (bajo, alto, cajonera, campana…), ancho en mm,
-  grupo ML (mueble bajo o alto) y actividad de armado. Con los anchos, la
-  tipología calcula sus **ML bajo** y **ML alto**; sin ellos, se escriben a mano;
+- **Módulos**: código, nombre, tipo (bajo, alto, cajonera, campana…), tipo
+  de módulo (estándar o especial), método de unión, ancho en mm, grupo ML
+  (mueble bajo o alto), mueble y actividad de armado. Sin actividad de armado,
+  el plan usa la del catálogo según el método de unión o el tipo especial.
+  Cada módulo abre su formulario con sus **Materiales** (con su sub etapa) y
+  sus **Piezas** (ver [Mobiliario: módulos, productos y
+  envíos](furniture.md)). Con los anchos, la tipología calcula sus **ML
+  bajo** y **ML alto**; sin ellos, se escriben a mano;
+- **Muebles**: cada mueble de la tipología con su **Tipo de mueble** (bajo,
+  alto, torre, isla o mueble completo) y su grupo ML;
 - **Actividades por ambiente**: las que no se miden por módulo, con su cantidad
   por ambiente (instalación por ML, colocación de puertas, entarugado…);
 - **Producto y lista de materiales**: el mueble terminado de la tipología, con

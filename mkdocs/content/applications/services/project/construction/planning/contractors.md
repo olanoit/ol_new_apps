@@ -27,8 +27,9 @@ factura con vencimiento el sábado.
 4. La regla «Liquidación de contrata: jefatura de proyectos» viene con el módulo
    (**Configuración ‣ Reglas de aprobación**); sin reglas, la liquidación se
    aprueba al validarla.
-5. Revise las tarifas de la obra y de cada contrata (ver
-   [Catálogo y árbol de la obra](catalog.md)).
+5. Revise las tarifas de la obra y de cada contrata y el **Driver** de cada
+   actividad: el suyo propio o el de la partida (ver [Catálogo y árbol de la
+   obra](catalog.md#actividades-y-tarifas)).
 
 ## Asignar la contrata
 
@@ -40,6 +41,13 @@ factura con vencimiento el sábado.
    **OC de servicio** abierta de la contrata en la obra (una por contrata y
    obra); si no existe, se crea en borrador. Las líneas que ya tienen otra
    contrata no se reasignan.
+
+    Si asigna más de lo que queda de una actividad en la selección (alcance
+    adicional), actúa la política de contratas del plan (ver [Control de
+    consumo](supply.md#control-de-consumo)): con **Aprobación adicional**
+    asigna la jefatura de proyectos, con el **Motivo del alcance adicional**,
+    y el exceso queda en **Excesos autorizados**; con **Bloquear** no se
+    asigna; con **Solo alerta** queda una nota en el plan.
 4. Compras confirma la OC de servicio en **Contratas ‣ OC de servicio**: es
    requisito para aprobar las liquidaciones.
 
@@ -76,6 +84,30 @@ asignación a la misma contrata en la obra suma a la misma OC.
 3. El supervisor revisa **Avance ‣ Avances por validar**, agrupado por obra,
    contrata y semana de liquidación, y **Valida** o **Rechaza** con motivo. Solo
    lo validado suma al acumulado y al avance de la línea y de los niveles.
+
+### El avance en su formulario
+
+Cada avance tiene su formulario con historial. En **Avance ‣ Avances**
+también se crea uno con **Nuevo**, además del asistente **Registrar avance**
+para cargar muchos niveles a la vez.
+
+- El reporte deja en el historial una nota con la cantidad, la actividad, el
+  nivel y las fotos, con su autor: la contrata si llegó del portal (**Origen**
+  *Portal*) o quien lo registró.
+- El supervisor (grupo **Planificador**) registra su **Evaluación del
+  supervisor** (**Conforme**, **Con observaciones** o **No conforme**) y sus
+  **Observaciones y propuestas**; ambas quedan en el historial con autor y
+  fecha.
+- La validación, el rechazo con su motivo y la vuelta a reportado también
+  quedan en el historial.
+
+### Re-trabajo
+
+Un avance marcado **Re-trabajo**, con su **Motivo del re-trabajo**
+(**Cambio**, **Faltante** o **Mal armado**), se paga en una línea propia de la
+liquidación, sin bloqueo. No suma al ejecutado de la línea del plan ni a su
+saldo, y queda separado en **Excesos autorizados**. El filtro **Re-trabajos**
+de la lista de avances los reúne.
 
 ![Asistente Registrar avance con el saldo por módulo y las fotos](contractors/register-progress.png)
 
@@ -129,6 +161,35 @@ con pago el sábado 07/11:
 Un avance hecho el jueves 05/11 ya es del periodo del 05/11 al 11/11 y entra en
 la liquidación del 12/11, junto con lo validado tarde de semanas anteriores.
 
+### Pago repetido, re-trabajo y porcentaje manual
+
+La liquidación tiene una línea por línea de la OC de servicio y, aparte, una
+por re-trabajo con su motivo. En cada línea:
+
+- **Repetido**: la parte del driver que repite lo ya liquidado de la misma
+  actividad en el mismo nivel (módulo, unidad), por esta o por otra contrata,
+  por encima de lo presupuestado. La línea se resalta en amarillo, como las
+  que tienen un porcentaje escrito sobre el validado; las de re-trabajo, en
+  azul.
+- **% validado**: el avance validado acumulado de la actividad, con esta
+  semana.
+- **% escrito**: un porcentaje acumulado distinto, con su **Motivo del
+  porcentaje** obligatorio. La línea queda **Manual**, con quién y cuándo, y
+  **A liquidar** pasa a ser lo que lleva el acumulado a ese porcentaje
+  (descontado lo **Liquidado antes**). El porcentaje se escribe con la
+  liquidación en borrador o presentada.
+
+Con un pago repetido o un porcentaje escrito por encima del validado, la
+liquidación muestra «Espera la autorización de la jefatura» y la jefatura de
+proyectos recibe una actividad. No se aprueba hasta que la jefatura hace clic
+en **Autorizar (jefatura)**; cada pago repetido y cada porcentaje sobre el
+validado quedan en **Excesos autorizados**. Cambiar después un porcentaje
+pide autorizar de nuevo.
+
+Ejemplo: una contrata con 30 % de avance validado se liquida al 35 % escrito,
+con motivo; la liquidación espera a la jefatura y, autorizada, muestra 35 %
+marcado como manual.
+
 Si la Jefatura decidió descontar a la contrata un material extra de la obra, la
 liquidación lo resta del neto y la factura lleva la línea negativa: vea
 [Material extra y descuento a la contrata](extra_material.md).
@@ -146,6 +207,10 @@ liquidación lo resta del neto y la factura lleva la línea negativa: vea
 | «Confirme la OC de servicio … antes de aprobar» | La OC está en borrador | Que Compras la confirme |
 | «Con esta liquidación se recibirían … de … ordenados» | La semana pasa lo ordenado en la OC | Ampliar la OC o corregir los avances |
 | La liquidación no pasa a **Pagada** | La factura no está pagada del todo | Registrar y conciliar el pago |
+| «… espera la autorización de la jefatura de proyectos» | Tiene un pago repetido o un porcentaje escrito sobre el validado | Que la jefatura haga clic en **Autorizar (jefatura)** |
+| «Un porcentaje escrito a mano pide su motivo» | Falta el motivo del porcentaje | Escribir el motivo |
+| «El re-trabajo … necesita su motivo» | Avance de re-trabajo sin motivo | Elegir cambio, faltante o mal armado |
+| «El alcance adicional lo aprueba la jefatura de proyectos» | **Asignar contrata** pasa lo que queda de la actividad con política de aprobación | Que asigne la jefatura con el motivo, o reducir el alcance |
 
 !!! info "Ver también"
     - [Árbol de recursos](resource_tree.md)

@@ -243,6 +243,14 @@
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
+    <record id="help_construction_amounts_mixin" model="al.docs.help">
+        <field name="key">construction.amounts.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Montos del planificador visibles solo con su grupo</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
     <record id="help_construction_analytic_rule" model="al.docs.help">
         <field name="key">construction.analytic.rule</field>
         <field name="kind">model</field>
@@ -320,16 +328,24 @@
         <field name="kind">model</field>
         <field name="name">Marcación de personal de contrata</field>
         <field name="module">al_construction_attendance</field>
-        <field name="path">applications/services/project/construction/planning/site_portal/</field>
-        <field name="section">Portal de obra, sedes y marcación</field>
+        <field name="path">applications/services/project/construction/planning/control/</field>
+        <field name="section">Control y personal propio</field>
     </record>
     <record id="help_construction_contractor_worker" model="al.docs.help">
         <field name="key">construction.contractor.worker</field>
         <field name="kind">model</field>
         <field name="name">Personal de contrata</field>
         <field name="module">al_construction_attendance</field>
-        <field name="path">applications/services/project/construction/planning/site_portal/#quiosco-de-marcación</field>
-        <field name="section">Quiosco de marcación</field>
+        <field name="path">applications/services/project/construction/planning/control/</field>
+        <field name="section">Control y personal propio</field>
+    </record>
+    <record id="help_construction_crew_day" model="al.docs.help">
+        <field name="key">construction.crew.day</field>
+        <field name="kind">model</field>
+        <field name="name">Jornales de las cuadrillas</field>
+        <field name="module">al_construction_planner_crew</field>
+        <field name="path">applications/services/project/construction/planning/control/#cuadrillas-en-jornales</field>
+        <field name="section">Cuadrillas en jornales</field>
     </record>
     <record id="help_construction_dependency" model="al.docs.help">
         <field name="key">construction.dependency</field>
@@ -338,6 +354,14 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/changes/#dependencias-de-terceros</field>
         <field name="section">Dependencias de terceros</field>
+    </record>
+    <record id="help_construction_exceed_log" model="al.docs.help">
+        <field name="key">construction.exceed.log</field>
+        <field name="kind">model</field>
+        <field name="name">Exceso autorizado sobre el plan</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/supply/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_execution_template" model="al.docs.help">
         <field name="key">construction.execution.template</field>
@@ -354,6 +378,14 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/client_contracts/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_join_rule" model="al.docs.help">
+        <field name="key">construction.join.rule</field>
+        <field name="kind">model</field>
+        <field name="name">Regla del método de unión</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/#método-de-unión</field>
+        <field name="section">Método de unión</field>
     </record>
     <record id="help_construction_labor_activity" model="al.docs.help">
         <field name="key">construction.labor.activity</field>
@@ -385,6 +417,14 @@
         <field name="name">Tarifa de contrata</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/catalog/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
+    </record>
+    <record id="help_construction_level_labels_mixin" model="al.docs.help">
+        <field name="key">construction.level.labels.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Nombres de los niveles según la plantilla de la compañía</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/levels_typologies/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_level_template" model="al.docs.help">
@@ -440,8 +480,8 @@
         <field name="kind">model</field>
         <field name="name">Generar metrados</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/measurement/#registrar-el-metrado</field>
-        <field name="section">Registrar el metrado</field>
+        <field name="path">applications/services/project/construction/planning/measurement/#metrado-por-driver-del-ambiente</field>
+        <field name="section">Metrado por driver del ambiente</field>
     </record>
     <record id="help_construction_measurement_line" model="al.docs.help">
         <field name="key">construction.measurement.line</field>
@@ -466,6 +506,22 @@
         <field name="module">al_construction_planner_sale</field>
         <field name="path">applications/services/project/construction/planning/client_contracts/</field>
         <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
+    <record id="help_construction_module_dispatch_wizard" model="al.docs.help">
+        <field name="key">construction.module.dispatch.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Fabricar o enviar los módulos de la obra</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/#fabricar-y-enviar-módulos</field>
+        <field name="section">Fabricar y enviar módulos</field>
+    </record>
+    <record id="help_construction_module_dispatch_wizard_line" model="al.docs.help">
+        <field name="key">construction.module.dispatch.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Recurso suelto del envío</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
     </record>
     <record id="help_construction_plan_contract_wizard" model="al.docs.help">
         <field name="key">construction.plan.contract.wizard</field>
@@ -544,16 +600,16 @@
         <field name="kind">model</field>
         <field name="name">Orden de fabricación desde el plan</field>
         <field name="module">al_construction_planner_mrp</field>
-        <field name="path">applications/services/project/construction/planning/supply/</field>
-        <field name="section">Asignaciones y compras</field>
+        <field name="path">applications/services/project/construction/planning/measurement/</field>
+        <field name="section">Mobiliario: módulos, productos y envíos</field>
     </record>
     <record id="help_construction_plan_production_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.production.wizard.line</field>
         <field name="kind">model</field>
         <field name="name">OF propuesta desde el plan</field>
         <field name="module">al_construction_planner_mrp</field>
-        <field name="path">applications/services/project/construction/planning/supply/</field>
-        <field name="section">Asignaciones y compras</field>
+        <field name="path">applications/services/project/construction/planning/furniture/</field>
+        <field name="section">Mobiliario: módulos, productos y envíos</field>
     </record>
     <record id="help_construction_plan_progress_wizard" model="al.docs.help">
         <field name="key">construction.plan.progress.wizard</field>
@@ -667,6 +723,14 @@
         <field name="path">applications/services/project/construction/planning/prices_supply/</field>
         <field name="section">Material extra y descuento a la contrata</field>
     </record>
+    <record id="help_construction_profile_apply_wizard" model="al.docs.help">
+        <field name="key">construction.profile.apply.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Aplicar perfil de vertical</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/vertical_configuration/#perfil-de-vertical</field>
+        <field name="section">Perfil de vertical</field>
+    </record>
     <record id="help_construction_profile_import_wizard" model="al.docs.help">
         <field name="key">construction.profile.import.wizard</field>
         <field name="kind">model</field>
@@ -674,6 +738,22 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/vertical_configuration/#perfil-de-vertical</field>
         <field name="section">Perfil de vertical</field>
+    </record>
+    <record id="help_construction_projection_import_column" model="al.docs.help">
+        <field name="key">construction.projection.import.column</field>
+        <field name="kind">model</field>
+        <field name="name">Columna de material de la proyección</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/projection_import/</field>
+        <field name="section">Importar la proyección de materiales</field>
+    </record>
+    <record id="help_construction_projection_import_wizard" model="al.docs.help">
+        <field name="key">construction.projection.import.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar la proyección de materiales</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/projection_import/</field>
+        <field name="section">Importar la proyección de materiales</field>
     </record>
     <record id="help_construction_purchase_price_analysis" model="al.docs.help">
         <field name="key">construction.purchase.price.analysis</field>
@@ -691,6 +771,46 @@
         <field name="path">applications/services/project/construction/planning/prices_supply/#precios-de-compra-del-producto</field>
         <field name="section">Precios de compra del producto</field>
     </record>
+    <record id="help_construction_rate_list" model="al.docs.help">
+        <field name="key">construction.rate.list</field>
+        <field name="kind">model</field>
+        <field name="name">Lista de tarifas de contrata</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/#listas-de-tarifas</field>
+        <field name="section">Listas de tarifas</field>
+    </record>
+    <record id="help_construction_rate_list_line" model="al.docs.help">
+        <field name="key">construction.rate.list.line</field>
+        <field name="kind">model</field>
+        <field name="name">Tarifa de la lista</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/#listas-de-tarifas</field>
+        <field name="section">Listas de tarifas</field>
+    </record>
+    <record id="help_construction_real_recipe" model="al.docs.help">
+        <field name="key">construction.real.recipe</field>
+        <field name="kind">model</field>
+        <field name="name">Metrado: receta real del mueble</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/measurement/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
+    <record id="help_construction_real_recipe_line" model="al.docs.help">
+        <field name="key">construction.real.recipe.line</field>
+        <field name="kind">model</field>
+        <field name="name">Material de la receta real</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/catalog/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
+    <record id="help_construction_real_recipe_piece" model="al.docs.help">
+        <field name="key">construction.real.recipe.piece</field>
+        <field name="kind">model</field>
+        <field name="name">Pieza de la receta real</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
     <record id="help_construction_reason_wizard" model="al.docs.help">
         <field name="key">construction.reason.wizard</field>
         <field name="kind">model</field>
@@ -706,6 +826,14 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/vertical_configuration/#recetas</field>
         <field name="section">Recetas</field>
+    </record>
+    <record id="help_construction_recipe_versus" model="al.docs.help">
+        <field name="key">construction.recipe.versus</field>
+        <field name="kind">model</field>
+        <field name="name">Versus del metrado</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/measurement/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
     </record>
     <record id="help_construction_resource_plan" model="al.docs.help">
         <field name="key">construction.resource.plan</field>
@@ -816,8 +944,8 @@
         <field name="kind">model</field>
         <field name="name">Mueble de la tipología</field>
         <field name="module">al_construction_planner_furniture</field>
-        <field name="path">applications/services/project/construction/planning/catalog/</field>
-        <field name="section">Catálogo y árbol de la obra</field>
+        <field name="path">applications/services/project/construction/planning/catalog/#tipologías</field>
+        <field name="section">Tipologías</field>
     </record>
     <record id="help_construction_typology_module" model="al.docs.help">
         <field name="key">construction.typology.module</field>
@@ -825,6 +953,22 @@
         <field name="name">Módulo de la tipología</field>
         <field name="module">al_construction_planner_furniture</field>
         <field name="path">applications/services/project/construction/planning/catalog/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
+    <record id="help_construction_typology_module_material" model="al.docs.help">
+        <field name="key">construction.typology.module.material</field>
+        <field name="kind">model</field>
+        <field name="name">Material del módulo</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/catalog/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
+    </record>
+    <record id="help_construction_typology_piece" model="al.docs.help">
+        <field name="key">construction.typology.piece</field>
+        <field name="kind">model</field>
+        <field name="name">Pieza del módulo</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/furniture/</field>
         <field name="section">Catálogo y árbol de la obra</field>
     </record>
     <record id="help_construction_unit_milestone" model="al.docs.help">
@@ -938,6 +1082,14 @@
         <field name="module">al_construction_planner_sale</field>
         <field name="path">applications/services/project/construction/planning/income/#entrega-semanal</field>
         <field name="section">Entrega semanal</field>
+    </record>
+    <record id="help_construction_work_item_sync_wizard" model="al.docs.help">
+        <field name="key">construction.work.item.sync.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Sincronizar receta y Work Item</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/vertical_configuration/</field>
+        <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_edi_invoice_series" model="al.docs.help">
         <field name="key">edi.invoice.series</field>

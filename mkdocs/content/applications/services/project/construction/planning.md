@@ -31,11 +31,11 @@ principales y, dentro de cada uno, secciones por tema.
 | Menú | Secciones y pantallas |
 |---|---|
 | **Obras** | **Obras y tareas** (inicio, obras, tareas de la obra), **Plan de recursos** (planes, árbol de recursos, recursos planificados) y **Cronograma** (cronograma de la obra, etapas, Gantt de proyectos) |
-| **Ejecución** | **Avance** (registrar, por validar, avances), **Contratas** (asignar contrata o cuadrilla, OC de servicio, liquidaciones semanales), **Cambios** (adicionales y deductivos, dependencias de terceros) y **Asistencia** (con el módulo de sedes) |
-| **Abastecimiento** | Tablero de abastecimiento, requerimientos de obra y de compra, órdenes de fabricación y asignaciones del plan |
+| **Ejecución** | **Avance** (registrar, por validar, avances y, con la función **Metrado**, metrados), **Contratas** (asignar contrata o cuadrilla, OC de servicio, liquidaciones semanales), **Cambios** (adicionales y deductivos, dependencias de terceros) y **Asistencia** (con el módulo de sedes) |
+| **Abastecimiento** | Tablero de abastecimiento, requerimientos de obra y de compra, órdenes de fabricación, asignaciones del plan y, en mobiliario, envíos de planta a obra |
 | **Ingresos** | Contratos de obra, hitos por unidad, entregas semanales, preparar valorización, valorizaciones y cobranza |
-| **Informes** | **Plan** (análisis, control de saldo), **Cronograma valorizado** y **Compras** (precios de compra, compras por producto) |
-| **Configuración** | Ajustes, **Plan de obra** (perfiles de vertical, plantillas de niveles, etapas, tipos de recurso, recetas, tipologías, actividades, tarifas, reglas analíticas, importar recetas y niveles, importar maestro y ETO, sedes de obra), **Cobro al cliente** (plantillas de hitos) y **Aprobaciones y Gantt** |
+| **Informes** | **Plan** (análisis, control de saldo, excesos autorizados, jornales de las cuadrillas y, en mobiliario, presupuestado frente a real), **Cronograma valorizado** y **Compras** (precios de compra, compras por producto) |
+| **Configuración** | Ajustes, **Plan de obra** (perfiles de vertical, plantillas de niveles, etapas, tipos de recurso, recetas, tipologías, reglas del método de unión, actividades, tarifas, listas de tarifas, reglas analíticas, importar recetas y niveles, importar maestro y ETO, importar la proyección de materiales, sedes de obra), **Cobro al cliente** (plantillas de hitos) y **Aprobaciones y Gantt** |
 
 ## Configuración
 
@@ -65,14 +65,20 @@ principales y, dentro de cada uno, secciones por tema.
       la reemplace: aprueba las reglas de validación del planificador (plan,
       excesos, metrados, material extra y liquidaciones), los cambios, las
       entregas semanales, la anulación de valorizaciones y el descuento a
-      contratas;
+      contratas, y autoriza los pagos repetidos, los porcentajes escritos
+      sobre el avance validado y los metrados que pasan el umbral;
     - **Planificación de obra: asistente de proyectos** al asistente: crea los
       requerimientos a obra y los envía a aprobación, sin aprobarlos;
     - **Administrador** a quien configura la aplicación (catálogo, ajustes y
       cierre de planes). No aprueba las reglas de validación si no está también
       en la jefatura;
     - **Reporte de avance** a capataces y supervisores;
-    - **Planificación de obra: ingresos** a Administración y Finanzas.
+    - **Planificación de obra: ingresos** a Administración y Finanzas;
+    - **Planificación de obra: ve montos** a quien debe ver costos, precios,
+      presupuestos, comprometido, real, saldos y valorizaciones. Lo tienen
+      ya el **Administrador**, la jefatura de proyectos y los ingresos.
+      Retírelo a quien no deba ver montos, por ejemplo a los supervisores
+      (ver [Visibilidad de montos](#visibilidad-de-montos)).
 
     El despacho a obra de un requerimiento lo valida solo el almacén (grupo
     **Logística** de requerimientos de obra), aunque quien lo pidió tenga
@@ -92,6 +98,28 @@ retención en [contratas](planning/contractors.md), el código de familia y la
 alerta de precio en [abastecimiento](planning/prices_supply.md), y los valores
 del ingreso en [ruta del ingreso](planning/income.md).
 
+## Visibilidad de montos
+
+El grupo **Planificación de obra: ve montos** separa a quien ve importes de
+quien solo ve cantidades. Quien no lo tiene trabaja con cantidades, fechas,
+avance y estados:
+
+- los formularios y las listas del plan, sus líneas, los avances, las tareas,
+  las liquidaciones y los metrados no muestran los campos en soles;
+- el [árbol de recursos](planning/resource_tree.md), el
+  [cronograma](planning/schedule.md), sus paneles, la [matriz
+  insumo-producto](planning/resource_tree.md#matriz-insumo-producto), el
+  inicio y el tablero de abastecimiento se ven solo en cantidades; el
+  cronograma no muestra la carga semanal y el tablero avisa la alerta de
+  precio en porcentaje;
+- las exportaciones a Excel dejan vacías las columnas de monto;
+- los pivotes y los gráficos no admiten medidas ni agrupaciones en soles.
+
+!!! note "Bases que ya usaban el planificador"
+    Al actualizar, el grupo lo reciben los usuarios internos que ya usaban el
+    planificador (nivel **Usuario** o superior), para que nadie pierda lo que
+    veía. La jefatura se lo retira a quien no deba ver montos.
+
 ## Conceptos
 
 | Término | Significado |
@@ -100,13 +128,16 @@ del ingreso en [ruta del ingreso](planning/income.md).
 | Receta | Recursos de una unidad del nivel con etapas (el APU de una partida) |
 | Tipología | En mobiliario, plantilla de un ambiente (p. ej. «Cocina 01»): módulos, actividades y lista de materiales |
 | Módulo | Mueble unitario (tornillo, tarugo, campana, cajonera…); el armado se paga por módulo |
-| Driver | Unidad con la que se paga una contrata: unidad, ML (metro lineal) o módulo |
+| Driver | Unidad con la que se mide y se paga una actividad (unidad, ML, m², módulo…). La actividad usa el suyo propio o el de la partida |
+| Cantidad presupuestada | Cantidad del nivel en su driver (120 m² de muro drywall): con ella la receta genera el plan y la partida mide su avance |
 | ML bajo / alto | Suma de los anchos de los módulos bajos o altos |
-| Etapa | Fase del catálogo del rubro (en mobiliario: Producción, Armado, Instalación, Acabado y entrega) |
+| Etapa | Fase del catálogo del rubro. Puede tener sub etapas: en mobiliario, 1 Producción (1.1 Producción de piezas, 1.2 Armado) y 2 Instalación (2.1 Instalación, 2.2 Acabado, 2.3 Limpieza) |
+| Metrado | En mobiliario, la receta real del mueble: medida del espacio, diseño y despiece, frente a la receta planificada |
 | Tipo de recurso | Clase visible del recurso con su comportamiento: material, servicio, equipo, contrata, personal propio o producción |
 | Tarifa | Precio del driver por obra y contrata, con vigencia y retención |
 | Línea base | Versión aprobada del plan: sus montos quedan congelados como presupuesto |
 | Versión | Copia del plan para replanificar; la vigente sigue en uso hasta aprobar la nueva |
+| Exceso autorizado | Exceso sobre el saldo, pedido repetido, pago repetido, re-trabajo o porcentaje manual que autorizó la jefatura, con quién, cuándo, motivo y cantidad |
 | Asignación | Parte de un documento (compra, requerimiento, OF, OC de servicio, turno) que corresponde a una línea del plan |
 | Fecha de necesidad | Inicio de la tarea menos la anticipación del tipo de recurso |
 | Saldo del plan | Planificado menos lo ya pedido (requerimientos de obra y OF) |
@@ -185,6 +216,14 @@ flowchart TD
 | — | Reglas analíticas | **Configuración ‣ Plan de obra ‣ Reglas analíticas** | [Tramos, analítica y presupuesto](planning/analytic_budget.md) |
 | — | Perfiles de vertical, funciones, etapas, tipos de recurso y recetas | **Configuración ‣ Plan de obra**; **Ajustes ‣ Funciones** | [Configuración por rubro](planning/vertical_configuration.md) |
 | — | Pestaña Planificación y hoja de trabajo | Obra ‣ pestaña **Planificación** | [Pestaña Planificación y hoja de trabajo](planning/planning_worksheet.md) |
+| — | Matriz insumo-producto | Plan ‣ **Insumo-producto**; árbol o cronograma | [Árbol de recursos](planning/resource_tree.md#matriz-insumo-producto) |
+| — | Aplicar el perfil | **Ajustes ‣ Perfil de vertical ‣ Aplicar el perfil** | [Configuración por rubro](planning/vertical_configuration.md#perfil-de-vertical) |
+| — | Sincronizar con el Work Item | Receta ‣ **Sincronizar con el Work Item** | [Configuración por rubro](planning/vertical_configuration.md#recetas-y-work-items) |
+| — | Excesos autorizados | **Informes ‣ Plan ‣ Excesos autorizados**; plan ‣ **Excesos** | [Asignaciones y compras](planning/supply.md#control-de-consumo) |
+| — | Jornales de las cuadrillas | **Informes ‣ Plan ‣ Jornales de las cuadrillas** | [Control y personal propio](planning/control.md#cuadrillas-en-jornales) |
+| — | Modelo del mueble, listas de tarifas, productos por módulo y envíos | **Configuración ‣ Plan de obra**; plan ‣ **Fabricar o enviar módulos** | [Mobiliario: módulos, productos y envíos](planning/furniture.md) |
+| — | Metrado (receta real) y presupuestado frente a real | **Ejecución ‣ Avance ‣ Metrados (receta real)**; **Informes ‣ Plan** | [Metrado](planning/measurement.md) |
+| — | Importar la proyección de materiales | **Configuración ‣ Plan de obra ‣ Importar la proyección de materiales** | [Importar la proyección de materiales](planning/projection_import.md) |
 
 ## Ejemplo de la demostración
 
@@ -211,7 +250,13 @@ ejemplo y cuadran con una línea de ajuste marcada «(ajuste demo)».
 - **Recursos planificados** y **Análisis del plan**: pivote y gráfico de las
   líneas de los planes vigentes, por departamento y etapa.
 - **Resumen por etapa** (P-03) y **Control de saldo** (P-13): planificado,
-  presupuesto, comprometido, real, saldo y % ejecutado.
+  presupuesto, comprometido, real, saldo y % ejecutado, en el orden del árbol
+  de etapas.
+- **Matriz insumo-producto**, en pantalla y en Excel.
+- **Excesos autorizados** y **Jornales de las cuadrillas** (planificado contra
+  ejecutado, en jornales y en soles).
+- En mobiliario, **Presupuestado frente a real** (metrado contra receta
+  planificada) y **Envíos de planta a obra**.
 - Presupuesto analítico de cada versión aprobada (**Contabilidad ‣
   Presupuestos**).
 - **Asignaciones del plan**, **Avances**, **Liquidaciones semanales** y OC de

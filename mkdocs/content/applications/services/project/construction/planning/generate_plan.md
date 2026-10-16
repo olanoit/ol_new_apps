@@ -27,16 +27,25 @@ que elija.
    obra tiene como máximo un plan vigente (aprobado o en ejecución) y uno en
    preparación (borrador o en aprobación).
 2. Haga clic en **Generar plan** y elija los ambientes, los tipos de recurso y
-   las etapas. La vista previa muestra, sin escribir nada, las tareas a crear
+   las etapas (**1.1 Producción de piezas**, **1.2 Armado**, **2.1
+   Instalación** y **2.2 Acabado**). La vista previa muestra, sin escribir nada, las tareas a crear
    por nivel, las líneas y el monto por tipo y etapa, y las advertencias.
 3. Confirme. El asistente:
-    - crea bajo cada ambiente una tarea por módulo de su tipología, con código,
-      tipo, ancho y estado **Planificado**. Si el ambiente ya tiene módulos (del
-      ETO), los usa por su código y avisa los que faltan;
-    - crea las líneas de armado (una por módulo, con la tarifa de su tipo), de
-      contratas por ambiente y de materiales de la lista de materiales;
-    - deja las contratas con la tarifa vigente de la obra y los materiales en
-      cero, con el aviso «líneas sin costo».
+    - crea bajo cada ambiente una tarea por módulo de su tipología, con su
+      nombre, código, tipo, tipo de módulo, método de unión, ancho y estado
+      **Planificado**. Si el ambiente ya tiene módulos (del ETO), los usa por
+      su código y avisa los que faltan;
+    - crea las líneas de armado (una por módulo, con su actividad de armado o,
+      sin ella, la del catálogo según su método de unión o su tipo especial),
+      las [líneas de contrata desde las piezas](furniture.md#líneas-de-contrata-desde-las-piezas)
+      de cada módulo (puertas, cajones, tapas y correderas) y las de contratas
+      por ambiente;
+    - crea las líneas de materiales desde la receta de cada módulo (sus
+      **Materiales**, con su sub etapa) o, si el módulo no la tiene, desde la
+      lista de materiales del módulo o de la tipología;
+    - deja las contratas con la tarifa vigente de la obra (o la de la [lista
+      de tarifas](furniture.md#listas-de-tarifas) de la familia de la
+      tipología) y los materiales en cero, con el aviso «líneas sin costo».
 
 Las actividades por ML cuelgan del módulo cuando se conoce su ancho; si no,
 quedan en el ambiente con la cantidad de la tipología y se avisa.
@@ -83,8 +92,9 @@ y sus estadísticos, use los [precios de compra](prices_supply.md).
 
 ## Revisar el resumen por etapa
 
-La pestaña **Resumen por etapa** del plan muestra, por etapa, el material, la
-contrata, lo planificado y, una vez aprobado, el presupuesto, la diferencia, el
+La pestaña **Resumen por etapa** del plan muestra, en el orden del árbol de
+etapas, cada etapa padre con la suma de sus sub etapas y, debajo, cada sub
+etapa con su material, su contrata, lo planificado y, una vez aprobado, el presupuesto, la diferencia, el
 comprometido, el real y el saldo. Antes de pedir la aprobación no debe quedar
 ninguna fila **Sin etapa**. El [árbol de recursos](resource_tree.md) permite
 revisar los montos nivel por nivel.
@@ -98,6 +108,7 @@ de contrata).
 | Situación | Qué pasa | Qué hacer |
 |---|---|---|
 | Líneas de material sin costo | Se avisa | Escribir el costo con **Aplicar costo** |
+| «Módulos sin actividad de armado» | El módulo no tiene actividad ni método de unión o tipo especial que la dé; no se genera su armado | Escribir la actividad o completar el método o el tipo del módulo |
 | Tipología sin anchos | La instalación por ML queda en el ambiente; se avisa | Cargar los anchos del ETO por módulo |
 | El ambiente ya tiene módulos del ETO | Se usan por código; los que faltan se avisan | Crear el módulo faltante o corregir el código |
 | «Ya tiene un plan en preparación» | Solo un borrador o en aprobación por obra | Usar el existente o cancelarlo |
