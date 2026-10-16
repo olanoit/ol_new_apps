@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 from odoo.tools.misc import formatLang
 
 from odoo.addons.al_construction_planner.models.common import EXCEED_STATES
+from odoo.addons.al_construction_planner.models.construction_exceed import EXCEED_POLICIES
 from odoo.addons.al_construction_planner.models.construction_resource_plan import OPEN_STATES
 
 SUPPLY_TYPES = ('material', 'service', 'equipment', 'production')
@@ -25,6 +26,10 @@ class ConstructionMaterialRequest(models.Model):
     construction_exceed_state = fields.Selection(
         EXCEED_STATES, string='Control de plan', default='ok', copy=False, readonly=True,
         tracking=True)
+    # Política de materiales con la que se controló el exceso (la de la obra
+    # o la del plan, no la general): la regla de aprobación la mira a ella.
+    construction_exceed_policy = fields.Selection(
+        EXCEED_POLICIES, string='Política aplicada', copy=False, readonly=True)
     construction_exceed_reason = fields.Text(
         string='Justificación del exceso', copy=False, tracking=True,
         help='Por qué se pide más de lo que queda en el plan.')
@@ -52,7 +57,7 @@ class ConstructionMaterialRequest(models.Model):
     @api.model
     def _get_under_validation_exceptions(self):
         return super()._get_under_validation_exceptions() + [
-            'construction_exceed_state', 'construction_plan_id']
+            'construction_exceed_state', 'construction_plan_id', 'construction_exceed_policy']
 
     # ------------------------------------------------------------------
     # Control al solicitar la aprobación
@@ -87,6 +92,7 @@ class ConstructionMaterialRequest(models.Model):
                 request.construction_exceed_state = 'ok'
                 continue
             policy = request._construction_policy()
+            request.construction_exceed_policy = policy
             if policy == 'block':
                 raise UserError(self.env._(
                     'El requerimiento %(request)s pide más de lo que queda en el plan '

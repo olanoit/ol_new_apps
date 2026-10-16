@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261016 — 16/10/2026
+
+- El despacho lleva un movimiento por línea: el mismo producto pedido para dos niveles ya no se junta y lo validado llega a cada línea (antes caía entero en la primera y el requerimiento no pasaba a Hecho).
+- La línea muestra «Por despachar» hasta que el almacén valida la transferencia.
+
 ## 19.20261016 — 16/10/2026
 
 - Destino por línea: el despacho y la transferencia en espera de la compra salen en una transferencia por destino (base del material de producción a la preproducción de la planta).

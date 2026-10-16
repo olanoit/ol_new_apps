@@ -79,10 +79,25 @@ class ConstructionStage(models.Model):
             [('kind', '=', 'production')]).mapped('code'))
 
     @api.model
-    def _construction_request_stages(self, company):
+    def _construction_request_stages(self, company, project=None):
         """Etapas que se pueden elegir en el requerimiento: las que llevan
-        recursos, sin las de fabricación si el ajuste de la compañía lo apaga."""
+        recursos, sin las de fabricación si el ajuste de la compañía lo apaga.
+        Con obra, solo las de su perfil de vertical (y sus sub etapas) más las
+        que use su plan vigente (H-24)."""
         stages = self.search([])
+        # sudo: quien pide no lee los perfiles de vertical (configuración del
+        # planificador); solo se toman las etapas del perfil de su obra.
+        profile_sudo = project and project.sudo().construction_profile_id
+        if profile_sudo and profile_sudo.stage_ids:
+            allowed = self.search([('id', 'child_of', profile_sudo.stage_ids.ids)])
+            # sudo: quien pide no ve el plan; solo se leen las etapas que usan
+            # las líneas del plan vigente de su obra.
+            plan_sudo = project.sudo()._construction_current_plan()
+            if plan_sudo:
+                codes = {stage for stage, in self.env['construction.resource.plan.line'].sudo()
+                         ._read_group([('plan_id', '=', plan_sudo.id)], ['stage'])} - {False}
+                allowed |= stages.filtered(lambda stage: stage.code in codes)
+            stages &= allowed
         if 'is_group' in self._fields:
             stages = stages.filtered(lambda stage: not stage.is_group)
         if not company.construction_request_production_stage:
@@ -206,12 +221,12 @@ class ConstructionMaterialRequest(models.Model):
     # ------------------------------------------------------------------
     # Etapas (RQ-02) y tareas del Gantt (RQ-03)
     # ------------------------------------------------------------------
-    @api.depends('company_id')
+    @api.depends('company_id', 'project_id')
     def _compute_construction_allowed_stage_ids(self):
         Stage = self.env['construction.stage']
         for request in self:
             request.construction_allowed_stage_ids = Stage._construction_request_stages(
-                request.company_id)
+                request.company_id, request.project_id)
 
     def _construction_scope_stage_codes(self):
         """Códigos de las etapas elegidas (vacío: las permitidas)."""
@@ -220,13 +235,19 @@ class ConstructionMaterialRequest(models.Model):
             or self.construction_allowed_stage_ids
         return stages.mapped('code')
 
-    @api.depends('construction_stage_ids', 'construction_gantt_task_ids')
+    @api.depends('construction_stage_ids', 'construction_gantt_task_ids', *SCOPE_FIELDS)
     def _compute_construction_line_defaults(self):
+        """Nivel y etapa de las líneas agregadas a mano: los del recuadro
+        cuando hay uno solo elegido (H-25). Una sola tarea del Gantt manda
+        sobre el nivel."""
         for request in self:
             stages = request.construction_stage_ids
             request.construction_default_stage = stages.code if len(stages) == 1 else False
             tasks = request.construction_gantt_task_ids
-            request.construction_default_task_id = tasks if len(tasks) == 1 else False
+            if len(tasks) != 1:
+                tasks = request._construction_scope_tasks() or self.env['project.task']
+            # En el onchange las tareas llegan como registros nuevos.
+            request.construction_default_task_id = tasks._origin if len(tasks) == 1 else False
 
     @api.depends('construction_stage_ids', 'line_ids.construction_stage')
     def _compute_construction_needs_plant(self):
@@ -326,7 +347,9 @@ class ConstructionMaterialRequest(models.Model):
             dates = [line.date_needed for shares in shares_by_key for line in shares
                      if line.date_needed]
             if dates:
-                self.date_required = min(dates)
+                # Una necesidad del plan ya pasada no deja el requerimiento
+                # vencido al nacer: se propone hoy (H-28).
+                self.date_required = max(min(dates), fields.Date.context_today(self))
         self.construction_plan_id.sudo()._mark_in_progress()
         self.message_post(body=self.env._(
             '%(count)s materiales traídos del plan %(plan)s.',

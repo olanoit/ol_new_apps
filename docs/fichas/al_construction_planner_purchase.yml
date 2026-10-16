@@ -31,6 +31,13 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '5.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "La línea agregada a mano toma el nivel y la etapa del recuadro cuando hay uno solo elegido."
+  - "Las etapas del requerimiento son las del perfil de vertical de la obra (y las que usa su plan)."
+  - "Una fecha de necesidad del plan ya pasada propone hoy como fecha requerida."
+  - "La regla «Exceso sobre el plan» mira la política de materiales aplicada al requerimiento y no la general del plan: con materiales en «Solo alerta» ya no pide aprobación."
 - version: '4.20261016'
   fecha: 16/10/2026
   cambios:

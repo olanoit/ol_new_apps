@@ -15,6 +15,12 @@ class StockMove(models.Model):
     # para el consumo en obra. Nombre propio para no chocar con otros módulos.
     construction_analytic_distribution = fields.Json(string='Analítica de obra')
 
+    def _prepare_merge_moves_distinct_fields(self):
+        # Un movimiento por línea del requerimiento: si se fusionan los del
+        # mismo producto de dos niveles, lo validado cae entero en la primera
+        # línea (H-21).
+        return super()._prepare_merge_moves_distinct_fields() + ['construction_request_line_id']
+
     def _action_done(self, cancel_backorder=False):
         moves = super()._action_done(cancel_backorder=cancel_backorder)
         lines = (

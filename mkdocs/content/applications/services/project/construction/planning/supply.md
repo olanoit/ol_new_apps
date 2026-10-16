@@ -25,8 +25,11 @@ lo planificado sin una justificación.
   consumo](#control-de-consumo)).
 - La regla «Exceso sobre el plan: jefatura del planificador» del requerimiento
   de obra viene con el módulo (**Requerimientos de obra ‣ Configuración ‣
-  Reglas de aprobación**). Sus revisores necesitan también el grupo de
-  aprobador del requerimiento para verlo.
+  Reglas de aprobación**). Solo actúa cuando la política de **materiales**
+  aplicada al requerimiento es **Aprobación adicional**: con materiales en
+  **Solo alerta**, el exceso se avisa y el requerimiento sigue sin revisión,
+  aunque la política general del plan pida aprobación. Sus revisores necesitan
+  también el grupo de aprobador del requerimiento para verlo.
 
 ## Conceptos
 

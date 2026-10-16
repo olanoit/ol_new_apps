@@ -107,7 +107,9 @@ proyectos, con el grupo **Solicitante**.
    solo lo que cuelga de lo elegido arriba. Un nivel sin elegir significa
    «todos los de arriba»: si solo elige pisos, entra todo lo que cuelga de esos
    pisos. Un nivel que la obra no tiene no aparece.
-2. Elija las **Etapas** (vacío: todas). Cada línea guarda su etapa en la
+2. Elija las **Etapas** (vacío: todas). La lista trae las etapas del perfil
+   de vertical de la obra y las que usa su plan: una obra de mobiliario no
+   ofrece las de construcción por partidas. Cada línea guarda su etapa en la
    columna **Etapa**.
 3. Si el material es para una tarea del Gantt que no es nivel del plan
    (movilización, obras provisionales), elíjala en **Tareas del Gantt**. Esas
@@ -117,7 +119,13 @@ proyectos, con el grupo **Solicitante**.
    nivel y etapa con lo que falta pedir del plan, agrupada en el nivel más bajo
    que eligió. La columna **Nivel** muestra la ruta corta («Dpto 102 /
    Cocina»).
-5. Corrija cantidades o borre líneas antes de **Solicitar aprobación**.
+5. Corrija cantidades o borre líneas antes de **Solicitar aprobación**. Una
+   línea que agrega a mano toma el nivel y la etapa del recuadro cuando hay
+   uno solo elegido; si eligió varios, indíquelos en la línea.
+
+La **Fecha requerida** sale de la fecha de necesidad más temprana del plan. Si
+esa fecha ya pasó, se propone la de hoy para que el requerimiento no nazca
+vencido.
 
 Cada línea traída queda enlazada a sus líneas del plan: **Saldo** y
 **Control** muestran el saldo y marcan **Excede el plan** si pide más. Pulsar
@@ -184,6 +192,9 @@ unidad distinta (por ejemplo, docenas) se divide en la unidad de la línea.
 
 En **Transferencias** del requerimiento, el almacén valida el despacho. El
 material queda en `OBRAS/<obra>` y la guía de remisión sale con el motivo 04.
+Cada línea del requerimiento tiene su propio movimiento, aunque el mismo
+producto se pida para dos niveles: lo validado llega a cada línea. Hasta que
+el almacén valida, la línea dice **Por despachar**.
 Un traslado interno entre el central y la obra no genera asiento contable: la
 analítica viaja en el movimiento solo como trazabilidad.
 

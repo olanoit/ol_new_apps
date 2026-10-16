@@ -6,7 +6,7 @@
             <field name="model_id" ref="al_construction_material_request.model_construction_material_request"/>
             <field name="review_type">group</field>
             <field name="reviewer_group_id" ref="al_construction_planner.group_planner_project_head"/>
-            <field name="definition_domain">[('construction_exceed_state', '=', 'exceeded'), ('construction_plan_id.exceed_policy', '=', 'approval')]</field>
+            <field name="definition_domain">[('construction_exceed_state', '=', 'exceeded'), ('construction_exceed_policy', '=', 'approval')]</field>
             <field name="sequence">5</field>
             <field name="approve_sequence" eval="True"/>
         </record>

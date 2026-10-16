@@ -96,6 +96,10 @@ class ConstructionPlanRequestWizard(models.TransientModel):
             return {'analytic_distribution': dict(next(iter(distributions)))}
         return {}
 
+    def _not_past(self, date):
+        """Una necesidad del plan ya pasada se propone para hoy (H-28)."""
+        return date and max(date, fields.Date.context_today(self))
+
     def action_create(self):
         self.ensure_one()
         plan = self.plan_id
@@ -108,8 +112,8 @@ class ConstructionPlanRequestWizard(models.TransientModel):
         vals = {
             'project_id': plan.project_id.id,
             'task_id': tasks.id if len(tasks) == 1 else False,
-            'date_required': self.date_required or min(
-                filter(None, lines.mapped('date_needed')), default=False),
+            'date_required': self.date_required or self._not_past(min(
+                filter(None, lines.mapped('date_needed')), default=False)),
             'construction_plan_id': plan.id,
             'line_ids': [Command.create(dict({
                 'product_id': line.product_id.id,

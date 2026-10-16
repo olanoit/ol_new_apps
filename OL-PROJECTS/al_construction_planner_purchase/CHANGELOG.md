@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261016 — 16/10/2026
+
+- La línea agregada a mano toma el nivel y la etapa del recuadro cuando hay uno solo elegido.
+- Las etapas del requerimiento son las del perfil de vertical de la obra (y las que usa su plan).
+- Una fecha de necesidad del plan ya pasada propone hoy como fecha requerida.
+- La regla «Exceso sobre el plan» mira la política de materiales aplicada al requerimiento y no la general del plan: con materiales en «Solo alerta» ya no pide aprobación.
+
 ## 4.20261016 — 16/10/2026
 
 - Requerimiento de obra con selección de nivel y etapa: niveles en cascada según la plantilla de la obra, etapas, tareas del Gantt y botón «Traer materiales del plan» (una línea por material, nivel y etapa con el saldo, enlazada al plan).

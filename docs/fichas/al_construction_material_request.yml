@@ -429,6 +429,11 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 20.20261016
+    fecha: 16/10/2026
+    cambios:
+      - "El despacho lleva un movimiento por línea: el mismo producto pedido para dos niveles ya no se junta y lo validado llega a cada línea (antes caía entero en la primera y el requerimiento no pasaba a Hecho)."
+      - "La línea muestra «Por despachar» hasta que el almacén valida la transferencia."
   - version: 19.20261016
     fecha: 16/10/2026
     cambios:

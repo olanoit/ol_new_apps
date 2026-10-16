@@ -45,3 +45,4 @@ from . import test_module_product_v18
 from . import test_projection_import_v18
 from . import test_amounts_v18
 from . import test_request_scope
+from . import test_request_fixes

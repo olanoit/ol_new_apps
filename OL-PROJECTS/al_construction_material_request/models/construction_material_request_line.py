@@ -5,7 +5,8 @@ from odoo.exceptions import ValidationError
 LINE_STATES = [
     ('pending', 'Pendiente'),
     ('partial', 'Parcial'),
-    ('dispatched', 'Despachado'),
+    # Transferencia creada y aún sin validar por el almacén (H-21).
+    ('dispatched', 'Por despachar'),
     ('purchasing', 'En compra'),
     ('done', 'Completo'),
     ('cancel', 'Cancelado'),
