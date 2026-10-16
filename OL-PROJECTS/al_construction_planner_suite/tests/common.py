@@ -43,7 +43,7 @@ class PlannerCommon(TransactionCase):
         cls.meter = cls.env.ref('uom.product_uom_meter')
         grp = 'al_construction_planner.group_planner_'
         cls.planner = new_test_user(
-            cls.env, 'plan_planificador', groups=f'{grp}planner', name='Planificador (test)')
+            cls.env, 'plan_planificador', groups=f'{grp}planner,{grp}amounts', name='Planificador (test)')
         cls.reporter = new_test_user(
             cls.env, 'plan_capataz', groups=f'{grp}progress', name='Capataz (test)')
 

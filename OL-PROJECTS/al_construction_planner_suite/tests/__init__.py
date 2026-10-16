@@ -33,3 +33,14 @@ from . import test_generalized_v17
 from . import test_profile_furniture_v17
 from . import test_native_v17
 from . import test_electrical_v17
+from . import test_stages_v18
+from . import test_vertical_v18
+from . import test_progress_v18
+from . import test_work_item_v18
+from . import test_io_matrix_v18
+from . import test_exceed_v18
+from . import test_valuation_v18
+from . import test_furniture_v18
+from . import test_module_product_v18
+from . import test_projection_import_v18
+from . import test_amounts_v18

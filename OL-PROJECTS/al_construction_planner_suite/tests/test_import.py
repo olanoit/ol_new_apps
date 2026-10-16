@@ -84,6 +84,9 @@ class TestMasterImport(PlannerCommon):
         digits = self.env['decimal.precision'].precision_get('Product Unit')
         if digits < 4:
             expected.add('qty_precision')
+        if 'construction_sale_order_id' in self.env['project.project']._fields:
+            # v1.8: la obra del ejemplo no tiene venta aprobada (aviso, no error).
+            expected.add('budget_not_approved')
         self.assertEqual({k for k, v in data['warnings'].items() if v}, expected)
         self.assertEqual(data['warnings']['bom_no_stage'], ['C01 · EJ-MEL-RH'])
         self.assertEqual(data['warnings']['product_no_cost'], ['EJ-PIN'])
@@ -115,7 +118,8 @@ class TestMasterImport(PlannerCommon):
 
         eto = self._wizard(self._example(EX.ETO_FILE))
         data = eto._analyze()
-        self.assertEqual({k for k, v in data['warnings'].items() if v}, {'eto_unknown_space'})
+        warnings = {k for k, v in data['warnings'].items() if v} - {'budget_not_approved'}
+        self.assertEqual(warnings, {'eto_unknown_space'})
         eto.action_import()
         modules = Task.search([('project_id', '=', self.site.id),
                                ('construction_level', '=', 'module')])

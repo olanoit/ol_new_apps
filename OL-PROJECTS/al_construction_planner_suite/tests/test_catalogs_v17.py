@@ -34,7 +34,7 @@ class TestStageCatalog(PlannerCommon):
         self.assertEqual(codes[:4], ['production', 'assembly', 'installation', 'finishing'])
         line_field = self.env['construction.resource.plan.line']._fields['stage']
         labels = dict(line_field._description_selection(self.env))
-        self.assertEqual(labels['installation'], 'Instalación')
+        self.assertEqual(labels['installation'], '2.1 Instalación')
         self.assertEqual(labels['test_board'], 'Emplacado (test)')
 
     def test_plan_accepts_catalog_stages_only(self):

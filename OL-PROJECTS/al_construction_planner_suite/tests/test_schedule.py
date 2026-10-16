@@ -48,7 +48,8 @@ class TestSchedule(TransactionCase):
             ('project_id', '=', cls.project.id), ('construction_level', '=', 'space')])
         cls.planner = new_test_user(
             cls.env, 'plan_crono_planificador', name='Planificador (test)',
-            groups='al_construction_planner.group_planner_planner')
+            groups='al_construction_planner.group_planner_planner,'
+                   'al_construction_planner.group_planner_amounts')
         cls.reporter = new_test_user(
             cls.env, 'plan_crono_capataz', name='Capataz (test)',
             groups='al_construction_planner.group_planner_progress')
@@ -131,7 +132,7 @@ class TestSchedule(TransactionCase):
         row = next(r for r in payload['construction_stages'] if r['stage'] == 'installation')
         self.assertTrue(row['unassigned'])
         self.assertTrue(row['editable'])
-        self.assertEqual(row['name'], 'Instalación')
+        self.assertEqual(row['name'], '2.1 Instalación')
         # La producción es solo material: no necesita contrata ni cuadrilla.
         production = next(r for r in payload['construction_stages'] if r['stage'] == 'production')
         self.assertFalse(production['unassigned'])
