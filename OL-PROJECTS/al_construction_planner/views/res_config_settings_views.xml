@@ -31,8 +31,11 @@
                         <setting id="construction_feature_control" help="Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso.">
                             <field name="group_construction_control"/>
                         </setting>
-                        <setting id="construction_feature_progress" help="Avance por driver con fotos, validación y metrado de los niveles.">
+                        <setting id="construction_feature_progress" help="Avance por el driver de cada partida, contrata o actividad, con fotos y validación.">
                             <field name="group_construction_progress"/>
+                        </setting>
+                        <setting id="construction_feature_measurement" help="Metrado del mueble: medida del espacio, diseño y despiece frente a lo planificado (vertical Mobiliario).">
+                            <field name="group_construction_measurement"/>
                         </setting>
                         <setting id="construction_feature_subcontract" help="OC de servicio de la contrata, liquidación semanal y portal (Compras).">
                             <field name="module_al_construction_planner_subcontract"/>
@@ -71,6 +74,35 @@
                                 <div class="row">
                                     <label for="construction_payment_day" class="col-lg-5 o_light_label"/>
                                     <field name="construction_payment_day"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting company_dependent="1" id="construction_exceed_policy" string="Control de consumo"
+                                 help="Política por defecto de las obras nuevas (la heredan sus planes) cuando un documento pide más de lo que queda en el plan o repite lo ya pedido de un nivel y sub etapa. Por tipo de recurso, vacía es la general.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_exceed_policy" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_exceed_policy"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_exceed_tolerance" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_exceed_tolerance"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_exceed_policy_material" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_exceed_policy_material"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_exceed_policy_contract" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_exceed_policy_contract"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_exceed_policy_labor" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_exceed_policy_labor"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_exceed_policy_production" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_exceed_policy_production"/>
                                 </div>
                             </div>
                         </setting>

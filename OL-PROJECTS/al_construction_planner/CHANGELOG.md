@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 42.20261016 — 16/10/2026
+
+- Etapas con sub etapas (v1.8, M18-02 y M18-14): el catálogo de etapas es un árbol numerado («1.1 Armado»); el árbol de recursos, el cronograma y la matriz filtran por etapa padre o sub etapa, el resumen y el control del plan van en ese orden y el cronograma muestra una barra resumen por etapa padre.
+- Metrado como función propia (M18-01), separado del avance; **Aplicar el perfil** abre un asistente con la vista previa de lo que cambia, y los niveles de la obra toman los nombres de la plantilla en formularios, árbol y cronograma.
+- Panel de recursos por tipo de recurso con subtotales y por etapa (M18-03) y matriz insumo-producto de la selección, en pantalla y en Excel (M18-04).
+- Avance en formulario con chatter (M18-11): fotos y documentos, evaluación del supervisor con sus observaciones, validación y rechazo con autor y fecha; el avance de re-trabajo no suma al ejecutado. Cada partida avanza en su propio driver (M18-12).
+- Recetas sincronizadas con los Work Items de Ventas (M18-13): aviso de diferencias, asistente para traer o enviar cambios y revisión diaria.
+- Políticas de exceso por tipo de recurso en la compañía, la obra y el plan, y registro «Excesos autorizados» con motivo, monto y quién autorizó (M18-05, M18-21).
+- Visibilidad de montos (M18-10): el grupo «Planificación de obra: ve montos» (administrador, jefatura e ingresos) ve costos, precios, presupuestos y saldos; sin él, vistas, árbol, cronograma, matriz, paneles y exportaciones muestran cantidades, fechas y avance. Al actualizar, lo reciben los usuarios que ya usaban el planificador.
+
 ## 33.20261013 — 15/10/2026
 
 - Migración de las bases que ya usaban el planificador (v1.7): una compañía sin perfil con obras o tipologías queda con el perfil «Mobiliario», y sus obras con él, sin cambiar su plantilla, sus parámetros ni sus funciones; una obra sin plantilla conserva el árbol clásico.

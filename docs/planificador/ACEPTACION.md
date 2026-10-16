@@ -49,6 +49,38 @@ importador del maestro ya está hecho, fase 12: falta el libro real).
 Control de multicompañía: `al_base_module_info` (`TestMulticompany`) y los
 tests `test_multicompany` de cada fase.
 
+## Paquete 1.8 (configurabilidad)
+
+Criterios del requerimiento «Planificación de obra — requerimiento de
+configurabilidad (paquete 1.8)» (`docs/md/`), diseño en `DISENO_v1.8.md`,
+versión `42.20261016` del núcleo (16/10/2026). Corren en `ol_pe_v19` con
+`--test-tags /al_construction_planner,/al_construction_planner_suite,/al_construction_attendance,/al_construction_planner_spreadsheet`.
+
+| Req. | Criterio (resumen) | Test que lo cubre | Resultado |
+|---|---|---|---|
+| M18-01 | Con Construcción por partidas no hay menú, botón ni etiqueta de metrado; con Mobiliario, sí | `test_vertical_v18.TestVerticalTerms.test_construction_hides_measurement`, `test_apply_wizard_lists_changes`, `test_level_names_follow_the_template` | **Verde** |
+| M18-02 | El filtro muestra Producción con sus sub etapas; marcar la padre filtra cronograma y panel a sus dos sub etapas | `test_stages_v18.TestStagesV18.test_filter_by_parent_stage`, `test_parent_bar_and_chained_sub_stages` | **Verde** |
+| M18-03 | Al marcar un piso, un bloque por tipo de recurso con subtotal que cuadra con el plan | `test_io_matrix_v18.TestIoMatrixV18.test_panel_by_resource_type` | **Verde** |
+| M18-04 | Matriz con una fila por elemento, insumos bajo su etapa y sub etapa, filas que suman el total | `test_io_matrix_v18.test_io_matrix_rows_columns_and_totals`, `test_io_matrix_excel` | **Verde** (filas por ambiente del demo; por mueble se elige el nivel) |
+| M18-05 | Segundo requerimiento del mismo material espera a la jefatura y queda registrado | `test_exceed_v18.TestConsumptionControl.test_second_request_waits_for_head_and_is_logged`, `test_policy_defaults_from_company_and_types` | **Verde** |
+| Cuadrillas | La obra crea su sede; 4 personas × 5 días = 20 jornales; la marcación alimenta el control | `al_construction_attendance` `test_crew_v18.TestCrewDays` (4 tests) | **Verde** |
+| M18-09 | Valorización al 50 % manual con motivo marcada en la factura; contrata liquidada al 35 % sobre 30 % validado | `test_valuation_v18.TestValuationManual.test_manual_pct_on_valuation_and_invoice`, `test_exceed_v18.TestRepeatAndRework.test_manual_pct_over_validated` | **Verde** |
+| M18-10 | Un supervisor sin el grupo no ve importes en el cronograma ni en la matriz; la jefatura sí | `test_amounts_v18.TestAmountsV18` (5 tests: cronograma, matriz, árbol y panel, vistas, lecturas, agrupaciones y exportación) | **Verde** en servidor; las pantallas OWL ocultan columnas con `show_amounts` (pendiente de revisión visual) |
+| M18-11 | Avance con fotos en el chatter, evaluación del supervisor y validación con autor y fecha | `test_progress_v18.TestPartidaDriver.test_progress_traceability` | **Verde** (fotos cargadas en el avance; el portal usa el mismo `message_post`) |
+| M18-12 | Partida de 120 m² con 48 m² ejecutados al 40 %; el emplacado avanza en su driver | `test_progress_v18.test_partida_progress_by_its_driver` | **Verde** |
+| M18-13 | Cambiar un Work Item marca la receta desactualizada; aceptar la iguala sin tocar planes aprobados | `test_work_item_v18.TestWorkItemSync` (3 tests) | **Verde** |
+| M18-14 | Cronograma, panel, control y valorización impresa con las sub etapas en orden y numeradas | `test_stages_v18.test_furniture_sequence`, `test_control_in_tree_order`, `test_valuation_v18.test_printed_valuation_stage_rows` | **Verde** |
+| M17-18 | Importar la proyección deja cada módulo y mueble con los totales por material de la hoja | `test_projection_import_v18.TestProjectionImport.test_kitchen_book_keeps_sheet_totals` | **Adaptado**: libro sintético con el formato de Allcenter; los libros reales (FLORECE II, CLOSET LAMBAYEQUE) se leyeron sin errores, sin importarlos a una base |
+| M17-19 | Un código inexistente bloquea la importación y lista columna y código | `test_projection_import_v18.test_unknown_code_blocks_the_import` | **Verde** |
+| M17-15, M17-20 | Receta real lado a lado con la planificada; 8 % pasa registrado, 12 % espera a la jefatura | `test_module_product_v18.TestModuleProductsV18.test_real_recipe_versus_and_threshold` | **Verde** |
+| M18-15 | Al aprobar el plan existen los productos de los módulos con su lista de materiales y la OF los produce con serie por departamento | `test_module_product_v18.test_products_per_module_with_bom_and_lot` | **Verde** |
+| M18-16 | Envío de módulos con su transferencia; al recibir, tareas «en obra» | `test_module_product_v18.test_shipment_to_site` | **Verde** (la guía de remisión electrónica es de la localización) |
+| M18-17, M18-18 | Ambiente con tipología, muebles bajo y alto y módulos con nombre, tipo y método de unión | `test_furniture_v18.TestFurnitureModelV18.test_join_method_and_special_kind`, `test_projection_import_v18` | **Adaptado**: reglas y método de unión probados con bloques sintéticos; la COCINA 04 de MOMEN con sus 9 módulos necesita su ficha |
+| M18-19 | Módulo mixto y microondas generan su línea de armado con la tarifa de la obra | `test_furniture_v18.test_catalog_lines_and_project_rate_list` | **Verde** (tarifa del armado mixto a definir con Allcenter) |
+| M18-20 | Dpto 304 de MOMEN genera armado y puertas comparables con la ficha ALL-PR-F-03 | — | **Pendiente de MOMEN**: la regla de piezas está; falta contrastar con la ficha (la suma de anchos no es exacta) |
+| M18-21 | Segunda liquidación del mismo módulo espera autorización; re-trabajo «mal armado» se liquida aparte | `test_exceed_v18.test_repeat_payment_waits_for_head`, `test_rework_paid_apart` | **Verde** (la repetición solo puede pagarse dentro de la tolerancia de la OC) |
+| M18-22 | COCINA 04 armada en la hoja con un material nuevo crea árbol, tipología, módulos, BOM, tarifas, contrato y el producto nuevo; un segundo envío no duplica | `al_construction_planner_spreadsheet` `test_worksheet_v18.TestWorksheetV18` (2 tests) | **Verde** con datos sintéticos; tablas dinámicas y listas dependientes pendientes de revisión en el navegador |
+
 ## Qué falta para validarlos con MOMEN
 
 1. **Maestro de MOMEN** (`Maestro_Planificacion_MOMEN_v03.xlsx`): el

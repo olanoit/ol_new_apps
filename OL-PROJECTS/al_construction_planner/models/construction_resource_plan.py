@@ -10,7 +10,7 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import split_every
 from odoo.tools.misc import formatLang
 
-from .common import DRIVER_TYPES, RESOURCE_TYPES, stage_selection
+from .common import DRIVER_TYPES, RESOURCE_TYPES, stage_group_selection, stage_selection
 
 PLAN_STATES = [
     ('draft', 'Borrador'),
@@ -231,7 +231,7 @@ class ConstructionResourcePlan(models.Model):
                    self.env._('Planificado'), self.env._('Presupuesto'),
                    self.env._('Diferencia'), self.env._('Comprometido'), self.env._('Real'),
                    self.env._('Saldo')]
-        stage_labels = dict(self.env['construction.stage']._get_selection())
+        keys = ('material', 'contract', 'planned', 'budgeted', 'committed', 'actual')
         for plan in self:
             stages = plan._get_stage_amounts()
             if not stages:
@@ -241,27 +241,34 @@ class ConstructionResourcePlan(models.Model):
             def fmt(value):
                 return formatLang(plan.env, value, digits=2) if value else '—'
 
-            rows, total = [], dict.fromkeys(
-                ('material', 'contract', 'planned', 'budgeted', 'committed', 'actual'), 0.0)
-            for stage in self.env['construction.stage']._codes() + [False]:
-                if stage not in stages:
+            # En el orden del árbol de etapas: cada etapa padre con la suma de
+            # sus sub etapas y, debajo, las sub etapas (v1.8, M18-02).
+            rows, total = [], dict.fromkeys(keys, 0.0)
+            for node in self.env['construction.stage']._get_tree(active_only=False):
+                present = [code for code in node['leaves'] if code in stages]
+                if not present:
                     continue
-                data = stages[stage]
+                data = {key: sum(stages[code][key] for code in present) for key in keys}
+                if node['leaf']:
+                    for key in total:
+                        total[key] += data[key]
+                rows.append((node['label'], data, '', node['depth'], not node['leaf']))
+            if False in stages:
+                data = stages[False]
                 for key in total:
                     total[key] += data[key]
-                rows.append((stage_labels.get(stage, self.env._('Sin etapa')), data,
-                             not stage))
-            rows.append((self.env._('Total'), total, False))
+                rows.append((self.env._('Sin etapa'), data, 'table-danger', 0, False))
+            rows.append((self.env._('Total'), total, 'fw-bold', 0, False))
             body = Markup('')
-            for index, (label, data, unstaged) in enumerate(rows):
-                is_total = index == len(rows) - 1
+            for label, data, row_class, depth, is_group in rows:
                 remaining = data['planned'] - data['committed'] - data['actual']
                 cells = [data['material'], data['contract'], data['planned'], data['budgeted'],
                          data['planned'] - data['budgeted'], data['committed'], data['actual'],
                          remaining]
-                row_class = 'table-danger' if unstaged else ('fw-bold' if is_total else '')
-                body += Markup('<tr class="%s"><td>%s</td>%s</tr>') % (
-                    row_class, label,
+                if is_group:
+                    row_class = 'fw-bold table-light'
+                body += Markup('<tr class="%s"><td style="padding-left: %spx">%s</td>%s</tr>') % (
+                    row_class, 4 + 16 * depth, label,
                     Markup('').join(Markup('<td class="text-end">%s</td>') % fmt(value)
                                     for value in cells))
             head = Markup('').join(
@@ -294,7 +301,6 @@ class ConstructionResourcePlan(models.Model):
         headers = [self.env._('Etapa › Tipo de recurso'), self.env._('Planificado'),
                    self.env._('Comprometido'), self.env._('Real'), self.env._('Saldo'),
                    self.env._('% ejecutado')]
-        stage_labels = dict(self.env['construction.stage']._get_selection())
         for plan in self:
             data = plan._get_control_data()
             if not data:
@@ -317,20 +323,31 @@ class ConstructionResourcePlan(models.Model):
 
             body = Markup('')
             grand = dict.fromkeys(('planned', 'committed', 'actual'), 0.0)
-            for stage in self.env['construction.stage']._codes() + [False]:
-                rows = [(rtype, values) for (st, rtype), values in data.items() if st == stage]
+            # Árbol de etapas (v1.8, M18-02): etapa padre con su subtotal,
+            # sub etapas y, en cada una, sus tipos de recurso.
+            nodes = [(node['label'], node['leaves'], node['depth'], node['leaf'])
+                     for node in self.env['construction.stage']._get_tree(active_only=False)]
+            nodes.append((self.env._('Sin etapa'), [False], 0, True))
+            for label, leaves, depth, is_leaf in nodes:
+                rows = [(rtype, values) for (st, rtype), values in data.items() if st in leaves]
                 if not rows:
                     continue
                 subtotal = dict.fromkeys(('planned', 'committed', 'actual'), 0.0)
                 for _rtype, values in rows:
                     add(subtotal, values)
+                if not is_leaf:
+                    body += Markup(
+                        '<tr class="fw-bold table-light"><td style="padding-left: %spx">%s</td>'
+                        '%s</tr>') % (4 + 16 * depth, label, cells(subtotal))
+                    continue
                 add(grand, subtotal)
-                body += Markup('<tr class="fw-bold%s"><td>%s</td>%s</tr>') % (
-                    '' if stage else ' table-danger',
-                    stage_labels.get(stage, self.env._('Sin etapa')), cells(subtotal))
+                body += Markup('<tr class="fw-bold%s"><td style="padding-left: %spx">%s</td>'
+                               '%s</tr>') % (
+                    '' if leaves != [False] else ' table-danger', 4 + 16 * depth, label,
+                    cells(subtotal))
                 for rtype, values in sorted(rows, key=lambda r: (r[0].sequence, r[0].id)):
-                    body += Markup('<tr><td class="ps-4">%s</td>%s</tr>') % (
-                        rtype.name or self.env._('Sin tipo'), cells(values))
+                    body += Markup('<tr><td style="padding-left: %spx">%s</td>%s</tr>') % (
+                        20 + 16 * depth, rtype.name or self.env._('Sin tipo'), cells(values))
             body += Markup('<tr class="fw-bold table-active"><td>%s</td>%s</tr>') % (
                 self.env._('Total obra'), cells(grand))
             head = Markup('').join(
@@ -756,7 +773,8 @@ class ConstructionResourcePlanLine(models.Model):
     contrata, personal propio o producción."""
     _name = 'construction.resource.plan.line'
     _description = 'Línea del plan de recursos'
-    _inherit = ['analytic.mixin', 'construction.resource.type.mixin']
+    _inherit = ['analytic.mixin', 'construction.resource.type.mixin',
+                'construction.level.labels.mixin']
     _order = 'plan_id, floor_task_id, apartment_task_id, space_task_id, module_task_id, stage, id'
     _check_company_auto = True
 
@@ -813,6 +831,11 @@ class ConstructionResourcePlanLine(models.Model):
         RESOURCE_TYPES, string='Comportamiento', required=True, default='material',
         help='Lo que hace el planificador con la línea; sale del tipo de recurso.')
     stage = fields.Selection(stage_selection, string='Etapa')
+    stage_parent = fields.Selection(
+        stage_group_selection, string='Etapa padre', compute='_compute_stage_parent',
+        store=True, index=True,
+        help='La etapa de primer nivel de la sub etapa («1 Producción» de «1.2 Armado»): '
+             'agrupa el análisis.')
     product_id = fields.Many2one(
         'product.product', string='Producto', check_company=True, index=True)
     activity_id = fields.Many2one(
@@ -820,6 +843,11 @@ class ConstructionResourcePlanLine(models.Model):
         index=True)
     partner_id = fields.Many2one(
         'res.partner', string='Contrata o proveedor', check_company=True, index=True)
+    uses_level_driver = fields.Boolean(
+        string='En el driver del nivel', compute='_compute_uses_level_driver', store=True,
+        readonly=False,
+        help='La contrata o la cuadrilla se mide en el driver de la partida: su avance es el '
+             'avance físico de la partida (v1.8, M18-12). Sale de la actividad.')
     typology_id = fields.Many2one(
         'construction.typology', string='Tipología', check_company=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unidad', required=True)
@@ -947,6 +975,20 @@ class ConstructionResourcePlanLine(models.Model):
             line.furniture_task_id = task.construction_furniture_task_id
             line.module_task_id = task if task.construction_level == 'module' else False
 
+    @api.depends('activity_id.driver_source', 'resource_type')
+    def _compute_uses_level_driver(self):
+        for line in self:
+            line.uses_level_driver = line.resource_type in DRIVER_TYPES \
+                and line.activity_id.driver_source == 'level'
+
+    @api.depends('stage')
+    def _compute_stage_parent(self):
+        stages = {stage.code: stage for stage in self.env['construction.stage'].with_context(
+            active_test=False).search([('code', 'in', list(set(self.mapped('stage'))))])}
+        for line in self:
+            stage = stages.get(line.stage)
+            line.stage_parent = stage._root().code if stage else False
+
     @api.depends('qty_planned', 'price_unit_planned')
     def _compute_amount_planned(self):
         for line in self:
@@ -1043,15 +1085,17 @@ class ConstructionResourcePlanLine(models.Model):
         return self.activity_id or self.product_id
 
     @api.depends('qty_planned', 'resource_type', 'qty_consumed', 'progress_ids.state',
-                 'progress_ids.qty_weighted', 'progress_ids.settled')
+                 'progress_ids.qty_weighted', 'progress_ids.settled', 'progress_ids.is_rework')
     def _compute_progress_qty(self):
         Progress = self.env['construction.task.progress']
         executed = defaultdict(float)
         settled = defaultdict(float)
         real = self.filtered(lambda l: l.id and l.resource_type in DRIVER_TYPES)
         if real:
+            # El re-trabajo se paga aparte y no suma al ejecutado (M18-21).
             for line, is_settled, qty in Progress._read_group(
-                    [('plan_line_id', 'in', real.ids), ('state', '=', 'validated')],
+                    [('plan_line_id', 'in', real.ids), ('state', '=', 'validated'),
+                     ('is_rework', '=', False)],
                     ['plan_line_id', 'settled'], ['qty_weighted:sum']):
                 executed[line.id] += qty or 0.0
                 if is_settled:
@@ -1088,7 +1132,8 @@ class ConstructionResourcePlanLine(models.Model):
             progress_sudo = self.env['construction.task.progress'].sudo()
             for line, qty in progress_sudo._read_group(
                     [('plan_line_id', 'in', by_driver.ids), ('state', '=', 'validated'),
-                     ('date', '<=', day)], ['plan_line_id'], ['qty_weighted:sum']):
+                     ('is_rework', '=', False), ('date', '<=', day)],
+                    ['plan_line_id'], ['qty_weighted:sum']):
                 line = self.browse(line.id)
                 result[line][line.resource_type] += (qty or 0.0) * line.price_unit_planned
         for line in hour_based:
@@ -1126,7 +1171,8 @@ class ConstructionResourcePlanLine(models.Model):
         """Avance reportado y aún no validado de la línea (de un tramo, si se
         indica: en unidades del tramo; si no, en unidades equivalentes)."""
         self.ensure_one()
-        domain = [('plan_line_id', '=', self.id), ('state', '=', 'draft')]
+        domain = [('plan_line_id', '=', self.id), ('state', '=', 'draft'),
+                  ('is_rework', '=', False)]
         if tranche:
             return self.env['construction.task.progress']._read_group(
                 domain + [('tranche_id', '=', tranche.id)], [], ['qty:sum'])[0][0]
@@ -1138,7 +1184,7 @@ class ConstructionResourcePlanLine(models.Model):
         self.ensure_one()
         return self.env['construction.task.progress']._read_group(
             [('plan_line_id', '=', self.id), ('state', '=', 'validated'),
-             ('tranche_id', '=', tranche.id)], [], ['qty:sum'])[0][0]
+             ('is_rework', '=', False), ('tranche_id', '=', tranche.id)], [], ['qty:sum'])[0][0]
 
     def _get_tolerance_qty(self):
         self.ensure_one()
@@ -1363,7 +1409,7 @@ class ConstructionResourcePlanLine(models.Model):
 
     # Líneas editables solo con el plan en borrador (especificación).
     _LOCKED_ALLOWED = {'date_needed', 'line_state', 'amount_committed', 'amount_actual',
-                       'amount_remaining', 'executed_pct'}
+                       'amount_remaining', 'executed_pct', 'stage_parent'}
 
     def _check_plan_editable(self, vals=None):
         if self.env.context.get('construction_plan_force'):

@@ -237,8 +237,27 @@ Paquete de configurabilidad v1.7 (fases 26 a 34):
   e importan en JSON. Al actualizar, una compañía que ya usaba el
   planificador queda con el perfil Mobiliario.
 
-Especificación: docs/planificador/ESPECIFICACION_v1.4.md y
-docs/planificador/DISENO_v1.7.md. Diseño técnico y
+Paquete 1.8 (fases 35 a 46, docs/planificador/DISENO_v1.8.md):
+
+* Etapas con sub etapas («1 Producción › 1.1 Producción de piezas»), con su
+  numeración y el orden del árbol en el plan, el control, el cronograma
+  (barras resumen) y el filtro de etapas en árbol. Mobiliario: 1.1
+  Producción de piezas, 1.2 Armado, 2.1 Instalación, 2.2 Acabado y 2.3
+  Limpieza.
+* Funciones «Avance» y «Metrado» separadas; el perfil Construcción por
+  partidas no muestra metrados y las columnas de nivel toman los nombres de
+  la plantilla de la compañía (partida, actividad). Aplicar un perfil avisa
+  qué menús y funciones cambian.
+* Panel de recursos por tipo de recurso con subtotales y por etapa; matriz
+  insumo-producto (elementos por insumos, agrupados por etapa y tipo) con
+  exportación a Excel.
+* Avance en formulario con fotos, evaluación del supervisor y validación en
+  el historial; avance de la partida por su driver (48 de 120 m²: 40 %).
+* Recetas vinculadas a los Work Items: las diferencias se marcan y se
+  aplican en uno u otro sentido con vista previa, sin tocar planes aprobados.
+
+Especificación: docs/planificador/ESPECIFICACION_v1.4.md,
+docs/planificador/DISENO_v1.7.md y docs/planificador/DISENO_v1.8.md. Diseño técnico y
 plan por fases: docs/planificador/DISENO_TECNICO.md.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -247,7 +266,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '33.20261013',
+    'version': '42.20261016',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -291,10 +310,13 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_analytic_rule_views.xml',
         'views/construction_dependency_views.xml',
         'views/construction_measurement_views.xml',
+        'views/construction_exceed_views.xml',
         'views/menus.xml',
     ],
     'assets': {
         'web.assets_backend': [
+            'al_construction_planner/static/src/stage_filter/*',
+            'al_construction_planner/static/src/io_matrix/*',
             'al_construction_planner/static/src/plan_tree/*',
             'al_construction_planner/static/src/schedule/*',
             'al_construction_planner/static/src/home/*',

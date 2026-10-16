@@ -29,6 +29,8 @@
                 <field name="activity_id" options="{'no_create': True}"
                        required="resource_type in ('contract', 'labor')"/>
                 <field name="partner_id" optional="hide" options="{'no_create': True}"/>
+                <field name="uses_level_driver" optional="hide"
+                       invisible="resource_type not in ('contract', 'labor')"/>
                 <field name="qty_planned"/>
                 <field name="product_uom_id" options="{'no_create': True}"/>
                 <field name="price_unit_planned"/>
@@ -114,6 +116,8 @@
                             <field name="stage"/>
                             <field name="product_id" options="{'no_create': True}"/>
                             <field name="activity_id" options="{'no_create': True}"/>
+                            <field name="uses_level_driver"
+                                   invisible="resource_type not in ('contract', 'labor')"/>
                             <field name="partner_id" options="{'no_create': True}"/>
                             <field name="supply_mode"/>
                         </group>
@@ -209,6 +213,7 @@
                 <filter string="Planes vigentes" name="current_plan"
                         domain="[('plan_state', 'in', ('approved', 'in_progress'))]"/>
                 <group>
+                    <filter string="Etapa padre" name="group_stage_parent" context="{'group_by': 'stage_parent'}"/>
                     <filter string="Etapa" name="group_stage" context="{'group_by': 'stage'}"/>
                     <filter string="Nivel 1" name="group_level_1" context="{'group_by': 'level_1_id'}"/>
                     <filter string="Nivel 2" name="group_level_2" context="{'group_by': 'level_2_id'}"/>
@@ -355,6 +360,13 @@
                         <button name="action_open_schedule" type="object"
                                 class="oe_stat_button" icon="fa-tasks" string="Cronograma"
                                 groups="al_project_gantt_base.group_gantt_user"/>
+                        <button name="action_open_io_matrix" type="object"
+                                class="oe_stat_button" icon="fa-table" string="Insumo-producto"/>
+                        <button name="action_view_exceed_logs" type="object"
+                                class="oe_stat_button" icon="fa-exclamation-triangle"
+                                invisible="not exceed_log_count">
+                            <field name="exceed_log_count" widget="statinfo" string="Excesos"/>
+                        </button>
                         <button name="action_view_lines" type="object"
                                 class="oe_stat_button" icon="fa-list">
                             <field name="line_count" widget="statinfo" string="Líneas"/>
@@ -447,6 +459,12 @@
                                     <field name="exceed_tolerance" readonly="state != 'draft'"/>
                                     <field name="date_approved" invisible="not date_approved"/>
                                     <field name="date_closed" invisible="not date_closed"/>
+                                </group>
+                                <group string="Por tipo de recurso (vacía: la general)">
+                                    <field name="exceed_policy_material" readonly="state != 'draft'"/>
+                                    <field name="exceed_policy_contract" readonly="state != 'draft'"/>
+                                    <field name="exceed_policy_labor" readonly="state != 'draft'"/>
+                                    <field name="exceed_policy_production" readonly="state != 'draft'"/>
                                 </group>
                                 <group string="Anticipación">
                                     <field name="lead_days_material" readonly="state != 'draft'"/>

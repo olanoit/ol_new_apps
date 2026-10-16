@@ -12,6 +12,7 @@
                 <field name="name"/>
                 <field name="stage"/>
                 <field name="uom_id"/>
+                <field name="driver_source" optional="show"/>
                 <field name="module_level" optional="show"/>
                 <field name="ml_based" optional="show"/>
                 <field name="ml_group" optional="hide"/>
@@ -39,6 +40,7 @@
                             <field name="code"/>
                             <field name="stage"/>
                             <field name="uom_id" options="{'no_create': True}"/>
+                            <field name="driver_source" widget="radio" options="{'horizontal': True}"/>
                             <field name="product_id" options="{'no_create': True}"/>
                             <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                             <field name="active" invisible="1"/>

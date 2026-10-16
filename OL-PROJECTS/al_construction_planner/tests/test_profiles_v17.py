@@ -62,7 +62,10 @@ class TestProfiles(TransactionCase):
         self.assertEqual(copy.level_template_id.summary,
                          'Disciplina › Subpartida › Partida › Actividad')
         self.assertEqual(copy.module_ids, self.construction.module_ids)
-        self.assertEqual(copy.parameter_ids.mapped('name'), ['construction_week_start_day'])
+        # v1.8: también la unidad de las cuadrillas y la sede creada con la obra.
+        self.assertEqual(sorted(copy.parameter_ids.mapped('name')),
+                         ['construction_crew_time_unit', 'construction_site_auto_create',
+                          'construction_week_start_day'])
         pressure = self.env['construction.stage'].search([('code', '=', 'test17_pressure')])
         self.assertEqual(pressure.previous_stage_id.code, 'works_test')
         self.assertIn(pressure, copy.stage_ids)

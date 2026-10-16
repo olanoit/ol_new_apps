@@ -46,7 +46,7 @@ class ConstructionExecutionTemplate(models.Model):
     uom_id = fields.Many2one(
         'uom.uom', string='Unidad del nivel', required=True,
         default=lambda self: self.env.ref('uom.product_uom_unit'),
-        help='Unidad del metrado de la tarea (m², und, ml, kg): las cantidades de la receta '
+        help='Driver de la tarea (m², und, ml, kg): las cantidades de la receta '
              'son por una de estas unidades.')
     product_id = fields.Many2one(
         'product.product', string='Producto de la partida', check_company=True, index=True,

@@ -5,7 +5,7 @@ ancestros almacenados de las líneas (floor/apartment/space/module_task_id),
 sin recorrer el árbol en Python."""
 from odoo import api, models
 
-from .common import DRIVER_TYPES, LEVELS, RESOURCE_TYPES, UNIT_STATES
+from .common import DRIVER_TYPES, LEVELS, RESOURCE_TYPES, UNIT_STATES, can_see_amounts, mask_amounts
 
 # Campo de la línea del plan que agrupa por cada nivel (el nodo incluido).
 LINE_FIELD = {
@@ -67,7 +67,9 @@ class ConstructionResourcePlan(models.Model):
         filters = filters or {}
         domain = [('plan_id', '=', self.id)]
         if filters.get('stages'):
-            domain.append(('stage', 'in', filters['stages']))
+            # Una etapa padre del filtro son todas sus sub etapas (M18-02).
+            domain.append(('stage', 'in', self.env['construction.stage']._leaf_codes(
+                filters['stages'])))
         if filters.get('resource_types'):
             domain.append(('resource_type', 'in', filters['resource_types']))
         if filters.get('unit_states'):
@@ -112,7 +114,8 @@ class ConstructionResourcePlan(models.Model):
             planned[key(row[0]) if group_field else False] = row[-1] or 0.0
         executed = dict.fromkeys(planned, 0.0)
         for row in Progress._read_group(
-                [('state', '=', 'validated'), ('plan_line_id', 'any', domain)],
+                [('state', '=', 'validated'), ('is_rework', '=', False),
+                 ('plan_line_id', 'any', domain)],
                 groupby, ['amount:sum']):
             group = key(row[0]) if group_field else False
             executed[group] = executed.get(group, 0.0) + (row[-1] or 0.0)
@@ -141,6 +144,9 @@ class ConstructionResourcePlan(models.Model):
         Task = self.env['project.task']
         return {
             'stages': selection('stage'),
+            # Árbol de etapas con casillas (M18-02): las de la obra van en
+            # orden, con su etapa padre y las hojas que cubre cada una.
+            'stage_tree': self.env['construction.stage']._get_tree(),
             'resource_types': selection('resource_type'),
             'unit_states': [[v, l] for v, l in Task._fields[
                 'construction_unit_state']._description_selection(self.env)],
@@ -158,7 +164,7 @@ class ConstructionResourcePlan(models.Model):
         self.check_access('read')
         Task = self.env['project.task']
         if parent_key == 'root':
-            return [self._tree_root_node(filters)]
+            return mask_amounts(self.env, [self._tree_root_node(filters)])
         if parent_key == ROOT_KEY:
             children = Task.search([
                 ('project_id', '=', self.project_id.id), ('construction_level', '!=', False),
@@ -182,7 +188,7 @@ class ConstructionResourcePlan(models.Model):
             level_children = children.filtered(lambda t, level=level: t.construction_level == level)
             for node in self._tree_nodes(level_children, level, filters):
                 nodes[node['task_id']] = node
-        return [nodes[task.id] for task in children if task.id in nodes]
+        return mask_amounts(self.env, [nodes[task.id] for task in children if task.id in nodes])
 
     def _tree_root_node(self, filters):
         Line = self.env['construction.resource.plan.line']
@@ -290,6 +296,14 @@ class ConstructionResourcePlan(models.Model):
 
         progress = self._progress_amounts(
             self._tree_line_domain(filters) + [(line_field, 'in', ids)], line_field)
+        # El nivel con etapas que tiene driver (la partida en m²) avanza por él
+        # (v1.8, M18-12); sin filtros de etapa ni de recurso.
+        driver_progress = {}
+        if level == 'space' and not (filters or {}).get('stages') \
+                and not (filters or {}).get('resource_types'):
+            driver_progress = {task.id: ratio for task, (ratio, _qty) in
+                               children._construction_driver_progress().items()
+                               if ratio is not None}
         unit_labels = dict(UNIT_STATES)
         nodes = []
         for task in children:
@@ -299,7 +313,8 @@ class ConstructionResourcePlan(models.Model):
                 'level_name': task.construction_level_name,
                 'typology': typology.get(task.id, ''), 'modules': modules.get(task.id, 0),
                 'ml': round(ml.get(task.id, 0.0), 2),
-                'progress': self._progress_ratio(progress, task.id),
+                'progress': round(driver_progress[task.id], 4) if task.id in driver_progress
+                else self._progress_ratio(progress, task.id),
                 'unit_state': task.construction_unit_state or False,
                 'unit_state_label': unit_labels.get(task.construction_unit_state, ''),
                 'has_children': bool(has_children.get(task.id)),
@@ -393,13 +408,30 @@ class ConstructionResourcePlan(models.Model):
             'ml': round(ml, 2),
         })
 
+        totals['progress'] = self._progress_ratio(self._progress_amounts(line_domain), False)
+        totals.update(self._selection_resources(line_domain))
+        return mask_amounts(self.env, totals)
+
+    def _selection_resources(self, line_domain):
+        """Recursos acumulados de la selección (panel lateral).
+
+        ``resources``: una fila por actividad, producto o rol y unidad, como
+        siempre. ``groups`` (v1.8, M18-03): las mismas filas agrupadas por
+        tipo de recurso, en el orden del catálogo (materiales, contratas,
+        mano de obra propia, equipo, servicios, producción), con subtotal en
+        cantidad y en soles, y dentro de cada tipo por etapa y sub etapa."""
+        Line = self.env['construction.resource.plan.line']
         type_labels = dict(RESOURCE_TYPES)
-        resources = {}
+        resources, groups = {}, {}
+        stage_labels = dict(self.env['construction.stage']._get_selection())
+        stage_order = {code: index for index, code in enumerate(stage_labels)}
         # Las líneas de contrata y personal propio siempre tienen actividad.
-        for rtype, activity, product, uom, partner, amount, qty in Line._read_group(
-                line_domain,
-                ['resource_type', 'activity_id', 'product_id', 'product_uom_id', 'partner_id'],
-                ['amount_planned:sum', 'qty_planned:sum']):
+        for rtype, rtype_rec, stage, activity, product, uom, partner, amount, qty in \
+                Line._read_group(
+                    line_domain,
+                    ['resource_type', 'resource_type_id', 'stage', 'activity_id', 'product_id',
+                     'product_uom_id', 'partner_id'],
+                    ['amount_planned:sum', 'qty_planned:sum']):
             record = activity or product
             key = (rtype, record._name if record else '', record.id if record else 0, uom.id)
             item = resources.setdefault(key, {
@@ -414,6 +446,25 @@ class ConstructionResourcePlan(models.Model):
                 item['partners'].add(partner.display_name)
             elif rtype in ('contract', 'labor'):
                 item['unassigned'] = True
+            group = groups.setdefault(rtype_rec.id or 0, {
+                'type_id': rtype_rec.id or False,
+                'name': rtype_rec.name or type_labels.get(rtype, self.env._('Sin tipo')),
+                'resource_type': rtype, 'sequence': (rtype_rec.sequence, rtype_rec.id or 0),
+                'qty': 0.0, 'amount': 0.0, 'keys': {}, 'stages': {},
+            })
+            group['qty'] += qty or 0.0
+            group['amount'] += amount or 0.0
+            group['keys'][key] = True
+            stage_group = group['stages'].setdefault(stage or False, {
+                'stage': stage or False,
+                'label': stage_labels.get(stage, self.env._('Sin etapa')),
+                'qty': 0.0, 'amount': 0.0, 'items': {},
+            })
+            stage_group['qty'] += qty or 0.0
+            stage_group['amount'] += amount or 0.0
+            part = stage_group['items'].setdefault(key, {'qty': 0.0, 'amount': 0.0})
+            part['qty'] += qty or 0.0
+            part['amount'] += amount or 0.0
         # Acumulado de contratas y personal propio: avances validados por
         # actividad y unidad (las horas del personal propio, por línea).
         executed = {}
@@ -424,7 +475,6 @@ class ConstructionResourcePlan(models.Model):
         for key, qty in executed.items():
             if key in resources:
                 resources[key]['executed'] = round(qty, 2)
-        totals['progress'] = self._progress_ratio(self._progress_amounts(line_domain), False)
         rows = []
         for item in sorted(resources.values(), key=lambda r: (-r['amount'], r['name'])):
             partners = sorted(item.pop('partners'))
@@ -433,8 +483,68 @@ class ConstructionResourcePlan(models.Model):
             item.update(qty=round(item['qty'], 2), amount=round(item['amount'], 2),
                         partners=', '.join(partners))
             rows.append(item)
-        totals['resources'] = rows
-        return totals
+
+        def row_of(key, values=None):
+            row = dict(resources[key])
+            if values:
+                row.update(qty=round(values['qty'], 2), amount=round(values['amount'], 2))
+            return row
+
+        result_groups = []
+        for group in sorted(groups.values(), key=lambda g: g['sequence']):
+            stages = []
+            for stage_group in sorted(group['stages'].values(),
+                                      key=lambda g: stage_order.get(g['stage'], 9999)):
+                items = [row_of(key, values) for key, values in stage_group['items'].items()]
+                stages.append({
+                    'stage': stage_group['stage'], 'label': stage_group['label'],
+                    'qty': round(stage_group['qty'], 2), 'amount': round(stage_group['amount'], 2),
+                    'resources': sorted(items, key=lambda r: (-r['amount'], r['name'])),
+                })
+            items = [row_of(key) for key in group['keys']]
+            result_groups.append({
+                'type_id': group['type_id'], 'name': group['name'],
+                'resource_type': group['resource_type'],
+                'qty': round(group['qty'], 2), 'amount': round(group['amount'], 2),
+                'resources': sorted(items, key=lambda r: (-r['amount'], r['name'])),
+                'stages': stages,
+            })
+        return {'resources': rows, 'groups': result_groups}
+
+    @api.model
+    def _plural(self, name):
+        """Plural español sencillo de un nombre de nivel (Módulo → Módulos,
+        Actividad → Actividades, Mueble → Muebles)."""
+        name = (name or '').strip()
+        if not name or name[-1].lower() == 's':
+            return name
+        return name + ('s' if name[-1].lower() in 'aeiouáéíóú' else 'es')
+
+    def _tree_show_ml(self):
+        """Columna de metros lineales: solo la vertical mobiliario."""
+        self.ensure_one()
+        return False
+
+    def get_tree_terms(self):
+        """Términos de la vertical para el árbol, el cronograma y sus paneles
+        (v1.8, M18-01): los nombres de los niveles de la plantilla de la obra
+        y qué columnas propias de mobiliario se muestran."""
+        self.ensure_one()
+        self.check_access('read')
+        project = self.project_id
+        terms = self.env['construction.level.labels.mixin']._construction_level_terms(
+            project.construction_level_template_id)
+        detail = terms.get('module') or self.env._('Módulo')
+        space = terms.get('space') or self.env._('Ambiente')
+        return {
+            'detail': detail, 'details': self._plural(detail),
+            'space': space, 'spaces': self._plural(space),
+            'unit': terms.get('apartment') or self.env._('Departamento'),
+            'show_ml': self._tree_show_ml(),
+            'show_amounts': can_see_amounts(self.env),
+            'show_typology': bool(self.env['construction.typology'].search_count(
+                [('project_id', '=', project.id)], limit=1)),
+        }
 
     def get_tree_partners(self):
         """Contratas y proveedores asignados en el plan (filtro del árbol)."""

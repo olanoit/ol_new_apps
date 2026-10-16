@@ -25,8 +25,10 @@
                             <thead>
                                 <tr>
                                     <th>Obra · plan</th>
-                                    <th class="text-end">Planificado</th>
-                                    <th class="text-end">Saldo</th>
+                                    <t t-if="state.data.show_amounts">
+                                        <th class="text-end">Planificado</th>
+                                        <th class="text-end">Saldo</th>
+                                    </t>
                                     <th class="text-end">Avance</th>
                                     <th>Próximo hito</th>
                                     <th>Estado</th>
@@ -42,8 +44,10 @@
                                                 <t t-esc="work.plan_name"/> · <t t-esc="work.period"/>
                                             </div>
                                         </td>
-                                        <td class="text-end" t-esc="money(work.amount_total)"/>
-                                        <td class="text-end" t-esc="money(work.amount_remaining)"/>
+                                        <t t-if="state.data.show_amounts">
+                                            <td class="text-end" t-esc="money(work.amount_total)"/>
+                                            <td class="text-end" t-esc="money(work.amount_remaining)"/>
+                                        </t>
                                         <td class="text-end" t-esc="pct(work.progress)"/>
                                         <td t-esc="work.milestone or '—'"/>
                                         <td><span t-att-class="'badge ' + badge(work.state)" t-esc="work.state_label"/></td>

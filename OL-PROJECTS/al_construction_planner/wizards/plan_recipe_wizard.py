@@ -120,7 +120,7 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
                 amount=formatLang(self.env, total, currency_obj=wizard.currency_id))
             if warnings['no_qty']:
                 body += Markup('<p class="text-warning">%s</p>') % self.env._(
-                    'Sin metrado planificado (no generan): %s',
+                    'Sin cantidad presupuestada (no generan): %s',
                     ', '.join(warnings['no_qty'][:10]))
             wizard.preview_html = body
 
@@ -131,7 +131,7 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
         tasks = self._get_tasks()
         if not tasks:
             raise UserError(self.env._(
-                'No hay tareas con receta en la selección. Asigne la receta y el metrado '
+                'No hay tareas con receta en la selección. Asigne la receta y la cantidad '
                 'planificado a las partidas.'))
         if self.mode == 'replace':
             plan.line_ids.filtered(

@@ -13,13 +13,17 @@ opción ``construction_schedule`` (el Gantt de proyectos sigue igual):
 
 Opciones: ``construction_plan_id`` (plan; por defecto el vigente de la obra),
 ``construction_rows`` (``'stages'``: pisos, departamentos y ambientes con sus
-etapas; ``'tasks'``: las tareas de la obra) y ``construction_stage`` (solo
-esa etapa)."""
+etapas; ``'tasks'``: las tareas de la obra) y ``construction_stages`` (solo
+esas etapas; una etapa padre son sus sub etapas).
+
+Las etapas padre del catálogo (v1.8, M18-02) son barras resumen de cada
+ambiente (``construction_stage_groups``) con sus sub etapas como hijas."""
 from datetime import timedelta
 
 from odoo import api, fields, models
+from odoo.exceptions import AccessError
 
-from .common import DRIVER_TYPES, UNIT_STATES
+from .common import DRIVER_TYPES, UNIT_STATES, can_see_amounts
 from .construction_plan_tree import LINE_FIELD
 
 #: Días antes del inicio en que una etapa sin contrata ni cuadrilla es alerta.
@@ -35,9 +39,15 @@ class GanttData(models.AbstractModel):
         if not options.get('construction_schedule'):
             return None
         rows = options.get('construction_rows') or 'stages'
+        # Filtro de etapas (v1.8, M18-02): varias etapas a la vez; una etapa
+        # padre son todas sus sub etapas. ``construction_stage`` (una sola)
+        # sigue valiendo.
+        stages = list(options.get('construction_stages') or [])
+        if options.get('construction_stage'):
+            stages.append(options['construction_stage'])
         return {
             'rows': rows if rows in ('stages', 'tasks') else 'stages',
-            'stage': options.get('construction_stage') or False,
+            'stages': self.env['construction.stage']._leaf_codes(stages),
             'plan_id': options.get('construction_plan_id') or False,
         }
 
@@ -62,6 +72,16 @@ class GanttData(models.AbstractModel):
             options['include_undated'] = True
         payload = super().get_data(project_ids, options)
         self._construction_enrich(payload, schedule)
+        # Visibilidad de montos (v1.8, M18-10): sin el grupo, el cronograma
+        # muestra fechas, contratas y avance, sin el monto planificado.
+        show_amounts = can_see_amounts(self.env)
+        payload['construction']['show_amounts'] = show_amounts
+        if not show_amounts:
+            for item in payload['tasks']:
+                if item.get('construction'):
+                    item['construction']['amount'] = False
+            for row in payload['construction_stages'] + payload['construction_stage_groups']:
+                row['amount'] = False
         return payload
 
     # ------------------------------------------------------------------
@@ -90,24 +110,26 @@ class GanttData(models.AbstractModel):
             'plan_id': plan.id or False,
             'plan_name': plan.display_name or '',
             'rows': schedule['rows'],
-            'stage': schedule['stage'],
+            'stages': schedule['stages'],
             'stage_labels': stage_labels,
+            'stage_tree': self.env['construction.stage']._get_tree(),
             'stage_colors': {stage.code: stage.color for stage in
                              self.env['construction.stage'].search([]) if stage.color},
         }
         payload['construction_stages'] = []
+        payload['construction_stage_groups'] = []
         payload['construction_stage_links'] = []
         if not plan:
             return
         tasks = payload['tasks']
-        info = self._construction_task_info(tasks, plan, schedule['stage'])
+        info = self._construction_task_info(tasks, plan, schedule['stages'])
         for task in tasks:
             task['construction'] = info.get(task['id'], {})
         if schedule['rows'] == 'stages':
-            self._construction_stage_rows(payload, plan, schedule['stage'], stage_labels)
+            self._construction_stage_rows(payload, plan, schedule['stages'], stage_labels)
 
     @api.model
-    def _construction_task_info(self, tasks, plan, stage):
+    def _construction_task_info(self, tasks, plan, stages):
         """{tarea: {level, amount, progress, partners, unit_state, alerts}}
         con un _read_group por nivel (sin una consulta por tarea)."""
         Task = self.env['project.task']
@@ -121,8 +143,8 @@ class GanttData(models.AbstractModel):
             if not level_tasks:
                 continue
             domain = [('plan_id', '=', plan.id), (field, 'in', level_tasks.ids)]
-            if stage:
-                domain.append(('stage', '=', stage))
+            if stages:
+                domain.append(('stage', 'in', stages))
             amounts = {task.id: amount for task, amount in Line._read_group(
                 domain, [field], ['amount_planned:sum'])}
             partners = {}
@@ -150,8 +172,8 @@ class GanttData(models.AbstractModel):
         for task in records.filtered(lambda t: t.construction_level == 'group'):
             domain = [('plan_id', '=', plan.id),
                       ('task_path', '=like', '%s%%' % task.construction_path)]
-            if stage:
-                domain.append(('stage', '=', stage))
+            if stages:
+                domain.append(('stage', 'in', stages))
             amount = sum(Line.search(domain).mapped('amount_planned'))
             progress = Plan._progress_amounts(domain)
             result[task.id] = {
@@ -162,13 +184,13 @@ class GanttData(models.AbstractModel):
         return result
 
     @api.model
-    def _construction_stage_rows(self, payload, plan, stage, stage_labels):
+    def _construction_stage_rows(self, payload, plan, stages_filter, stage_labels):
         Stage = self.env['construction.space.stage']
         space_ids = [task['id'] for task in payload['tasks']
                      if task.get('construction', {}).get('level') == 'space']
         domain = [('space_task_id', 'in', space_ids)]
-        if stage:
-            domain.append(('stage', '=', stage))
+        if stages_filter:
+            domain.append(('stage', 'in', stages_filter))
         stages = Stage.search(domain)
         resources = Stage._resources_by_stage(stages)
         progress = Stage._progress_by_stage(stages)
@@ -211,6 +233,7 @@ class GanttData(models.AbstractModel):
                 links.append({'id': f'sl{current.id}', 'source': previous.id,
                               'target': current.id, 'type': 'FS'})
         payload['construction_stages'] = rows
+        payload['construction_stage_groups'] = self._construction_stage_groups(rows)
         payload['construction_stage_links'] = links
         # Los ambientes, departamentos y pisos sin fechas toman las de sus
         # etapas: no cuentan como «sin fecha» en el aviso de la interfaz.
@@ -218,6 +241,46 @@ class GanttData(models.AbstractModel):
         meta = payload['meta']
         meta['undated_count'] = max(0, meta.get('undated_count', 0) - len(
             [task for task in payload['tasks'] if task['undated'] and task['id'] in covered]))
+
+    @api.model
+    def _construction_stage_groups(self, rows):
+        """Barras resumen de las etapas padre (v1.8, M18-02): una por ambiente
+        y etapa padre con sub etapas en el cronograma, con su monto y su
+        avance ponderado por monto. Cada fila de etapa recibe ``group_key``
+        (la barra de la que cuelga) y cada resumen ``parent_key`` si su etapa
+        padre también tiene padre."""
+        Stage = self.env['construction.stage']
+        catalog = {stage.code: stage for stage in Stage.with_context(active_test=False).search(
+            [('code', 'in', list({row['stage'] for row in rows}))])}
+        groups = {}
+        for row in rows:
+            stage = catalog.get(row['stage'])
+            child_key = None
+            node = stage.parent_id if stage else Stage
+            while node:
+                key = 'g%s_%s' % (row['space_task_id'], node.id)
+                group = groups.setdefault(key, {
+                    'key': key, 'space_task_id': row['space_task_id'], 'stage': node.code,
+                    'name': node._label(), 'sequence': node._tree_key(), 'amount': 0.0,
+                    'weighted': 0.0, 'stages': [], 'parent_key': False,
+                })
+                group['amount'] += row['amount']
+                group['weighted'] += row['amount'] * row['progress']
+                group['stages'].append(row['stage'])
+                if child_key:
+                    groups[child_key]['parent_key'] = key
+                else:
+                    row['group_key'] = key
+                child_key = key
+                node = node.parent_id
+        result = []
+        for group in sorted(groups.values(), key=lambda g: (g['space_task_id'], g['sequence'])):
+            weighted = group.pop('weighted')
+            group.pop('sequence')
+            group['progress'] = round(weighted / group['amount'], 1) if group['amount'] else 0.0
+            group['amount'] = round(group['amount'], 2)
+            result.append(group)
+        return result
 
     @api.model
     def _construction_covered_tasks(self, tasks, space_ids):
@@ -246,15 +309,22 @@ class ConstructionResourcePlan(models.Model):
             total}], 'totals': [...], 'total': n}``
         """
         self.ensure_one()
+        if not can_see_amounts(self.env):
+            raise AccessError(self.env._(
+                'La carga semanal está en soles: solo la ve el grupo «Planificación de obra: '
+                've montos».'))
         self.check_access('read')
         Line = self.env['construction.resource.plan.line']
         Stage = self.env['construction.space.stage']
         stage_domain = [('project_id', '=', self.project_id.id)]
         line_domain = [('plan_id', '=', self.id), ('resource_type', 'in', DRIVER_TYPES),
                        ('space_task_id', '!=', False), ('stage', '!=', False)]
-        if stage:
-            stage_domain.append(('stage', '=', stage))
-            line_domain.append(('stage', '=', stage))
+        # Una etapa, varias o una etapa padre (sus sub etapas: M18-02).
+        stages = self.env['construction.stage']._leaf_codes(
+            [stage] if isinstance(stage, str) else stage or [])
+        if stages:
+            stage_domain.append(('stage', 'in', stages))
+            line_domain.append(('stage', 'in', stages))
         dates = {(record.space_task_id.id, record.stage): (record.date_start, record.date_end)
                  for record in Stage.search(stage_domain)}
         stage_labels = dict(Stage._fields['stage']._description_selection(self.env))

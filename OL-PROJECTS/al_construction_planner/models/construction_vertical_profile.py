@@ -20,6 +20,12 @@ from odoo.tools import SQL
 FEATURE_FIELDS = {
     'control': 'group_construction_control',
     'progress': 'group_construction_progress',
+    'measurement': 'group_construction_measurement',
+}
+FEATURE_GROUPS = {
+    'control': 'al_construction_planner.group_planner_feature_control',
+    'progress': 'al_construction_planner.group_planner_feature_progress',
+    'measurement': 'al_construction_planner.group_planner_feature_measurement',
 }
 
 
@@ -47,7 +53,11 @@ class ConstructionVerticalProfile(models.Model):
         string='Puentes', domain=[('name', '=like', 'al_construction_planner\\_%')],
         help='Se instalan al aplicar el perfil.')
     feature_control = fields.Boolean(string='Control', default=True)
-    feature_progress = fields.Boolean(string='Avance y metrados', default=True)
+    feature_progress = fields.Boolean(string='Avance', default=True)
+    feature_measurement = fields.Boolean(
+        string='Metrado', default=True,
+        help='Metrados y «Generar metrados» (vertical Mobiliario). Apagado, no aparecen menús, '
+             'botones ni etiquetas de metrado.')
     parameter_ids = fields.One2many(
         'construction.vertical.profile.parameter', 'profile_id', string='Parámetros', copy=True,
         help='Valores de la compañía que fija el perfil (semana de contratas, '
@@ -83,11 +93,9 @@ class ConstructionVerticalProfile(models.Model):
         for module in self._modules_to_install():
             rows.append((self.env._('Puente %s', module.shortdesc or module.name),
                          self.env._('Instalado'), self.env._('No instalado')))
-        groups = {'control': 'al_construction_planner.group_planner_feature_control',
-                  'progress': 'al_construction_planner.group_planner_feature_progress'}
         internal = self.env.ref('base.group_user')
-        labels = {'control': self.env._('Control'), 'progress': self.env._('Avance y metrados')}
-        for feature, xmlid in groups.items():
+        labels = self._feature_labels()
+        for feature, xmlid in FEATURE_GROUPS.items():
             active = self.env.ref(xmlid) in internal.implied_ids
             if self['feature_%s' % feature] != active:
                 yes, no = self.env._('Activo'), self.env._('Apagado')
@@ -107,6 +115,10 @@ class ConstructionVerticalProfile(models.Model):
             rows.append((self.env._('Etapa %s', stage.name), self.env._('Activa'),
                          self.env._('Archivada')))
         return rows
+
+    def _feature_labels(self):
+        return {'control': self.env._('Control'), 'progress': self.env._('Avance'),
+                'measurement': self.env._('Metrado')}
 
     @api.depends_context('company')
     def _compute_deviation_html(self):
@@ -143,6 +155,70 @@ class ConstructionVerticalProfile(models.Model):
         for plan_name in filter(None, (n.strip() for n in (self.analytic_plan_names or '').split(','))):
             if not Plan.search_count([('name', '=ilike', plan_name)]):
                 Plan.create({'name': plan_name})
+
+    def _feature_menus(self):
+        """Lo que muestra u oculta cada función (M18-01)."""
+        return {
+            'control': self.env._('Informes ▸ Control de saldo, pestaña «Control» del plan y '
+                                  'análisis de control'),
+            'progress': self.env._('Ejecución ▸ Avance (registrar, validar y avances) y el botón '
+                                   '«Registrar avance» del árbol y del cronograma'),
+            'measurement': self.env._('Ejecución ▸ Avance ▸ Metrados, Cargar medidas y Generar '
+                                      'metrados'),
+        }
+
+    def _get_apply_changes(self, company=None):
+        """[(qué, ahora, después, lo que se ve)] de lo que cambia en la
+        compañía al aplicar el perfil (M18-01): funciones que se encienden o
+        apagan con sus menús, puentes por instalar, plantilla y parámetros."""
+        self.ensure_one()
+        company = company or self.env.company
+        internal = self.env.ref('base.group_user')
+        labels, menus = self._feature_labels(), self._feature_menus()
+        yes, no = self.env._('Activo'), self.env._('Apagado')
+        rows = []
+        for feature, xmlid in FEATURE_GROUPS.items():
+            active = self.env.ref(xmlid) in internal.implied_ids
+            wanted = self['feature_%s' % feature]
+            if wanted != active:
+                rows.append((labels[feature], yes if active else no, yes if wanted else no,
+                             (self.env._('Aparecen: %s') if wanted else self.env._('Se ocultan: %s'))
+                             % menus[feature]))
+        for module in self._modules_to_install():
+            rows.append((self.env._('Puente %s', module.shortdesc or module.name),
+                         self.env._('No instalado'), self.env._('Instalado'),
+                         module.summary or ''))
+        if company.construction_level_template_id != self.level_template_id:
+            rows.append((self.env._('Plantilla de niveles de las obras nuevas'),
+                         company.construction_level_template_id.name or '—',
+                         self.level_template_id.name,
+                         self.env._('Las obras que ya existen conservan su plantilla.')))
+        for name, value in self._parameter_values().items():
+            if name not in company._fields:
+                continue
+            current = company[name]
+            current = current.id if isinstance(current, models.BaseModel) else current
+            if current != value:
+                field = company._fields[name]
+                selection = dict(field._description_selection(self.env)) \
+                    if field.type == 'selection' else {}
+                rows.append((field.string, selection.get(current, str(current or '—')),
+                             selection.get(value, str(value)), ''))
+        return rows
+
+    def action_open_apply_wizard(self):
+        """«Aplicar a la compañía» desde la interfaz: primero muestra qué
+        cambia (con aviso si la compañía ya tiene obras) y pide confirmar."""
+        self.ensure_one()
+        if not self.env.user.has_group('al_construction_planner.group_planner_manager'):
+            raise UserError(self.env._('Solo el administrador del planificador aplica perfiles.'))
+        wizard = self.env['construction.profile.apply.wizard'].create({'profile_id': self.id})
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._('Aplicar el perfil %s', self.name),
+            'res_model': wizard._name, 'res_id': wizard.id,
+            'view_mode': 'form', 'target': 'new',
+        }
 
     def action_apply(self):
         """Aplica el perfil a la compañía activa: la configuración y, por los
@@ -231,16 +307,19 @@ class ConstructionVerticalProfile(models.Model):
             },
             'stages': [{
                 'code': stage.code, 'name': stage.name, 'sequence': stage.sequence,
+                'number': stage.number or False, 'parent': stage.parent_id.code or False,
+                'aliases': stage.alias_names or False,
                 'kind': stage.kind, 'production_consumption': stage.production_consumption,
                 'previous': stage.previous_stage_id.code or False,
                 'duration_days': stage.duration_days, 'color': stage.color or False,
-            } for stage in self.stage_ids],
+            } for stage in self.env['construction.stage']._tree_sorted(self.stage_ids)],
             'resource_types': [{
                 'code': rtype.code, 'name': rtype.name, 'sequence': rtype.sequence,
                 'behavior': rtype.behavior, 'supply_method': rtype.supply_method,
             } for rtype in self.resource_type_ids],
             'modules': self.module_ids.mapped('name'),
-            'features': {'control': self.feature_control, 'progress': self.feature_progress},
+            'features': {'control': self.feature_control, 'progress': self.feature_progress,
+                         'measurement': self.feature_measurement},
             'parameters': {param.name: param.value for param in self.parameter_ids},
             'analytic_plans': self.analytic_plan_names or '',
         }
@@ -271,15 +350,18 @@ class ConstructionVerticalProfile(models.Model):
             values = {key: vals[key] for key in ('name', 'sequence', 'kind',
                                                  'production_consumption', 'duration_days')
                       if key in vals}
-            if vals.get('color'):
-                values['color'] = vals['color']
+            for key, field in (('color', 'color'), ('number', 'number'), ('aliases', 'alias_names')):
+                if vals.get(key):
+                    values[field] = vals[key]
             stage = stage.write(values) and stage if stage else Stage.create(
                 dict(values, code=vals['code']))
             stages |= stage
         for vals in data.get('stages', []):
+            stage = Stage.search([('code', '=', vals['code'])])
             if vals.get('previous'):
-                Stage.search([('code', '=', vals['code'])]).previous_stage_id = Stage.search(
-                    [('code', '=', vals['previous'])], limit=1)
+                stage.previous_stage_id = Stage.search([('code', '=', vals['previous'])], limit=1)
+            if vals.get('parent') and stage.parent_id.code != vals['parent']:
+                stage.parent_id = Stage.search([('code', '=', vals['parent'])], limit=1)
         types = Type
         for vals in data.get('resource_types', []):
             rtype = Type.search([('code', '=', vals['code'])], limit=1)
@@ -314,6 +396,8 @@ class ConstructionVerticalProfile(models.Model):
             'module_ids': [Command.set(modules.ids)],
             'feature_control': data.get('features', {}).get('control', True),
             'feature_progress': data.get('features', {}).get('progress', True),
+            'feature_measurement': data.get('features', {}).get(
+                'measurement', data.get('features', {}).get('progress', True)),
             'analytic_plan_names': data.get('analytic_plans') or False,
             'parameter_ids': [Command.clear()] + [
                 Command.create({'name': name, 'value': value})
@@ -364,6 +448,46 @@ class ConstructionVerticalProfileParameter(models.Model):
         if field.type == 'many2one':
             return self.env.ref(self.value).id if '.' in self.value else int(self.value)
         return self.value
+
+
+class ConstructionProfileApplyWizard(models.TransientModel):
+    """Confirmación de «Aplicar el perfil» (v1.8, M18-01): qué menús,
+    funciones y parámetros cambian, con aviso si la compañía ya tiene obras."""
+    _name = 'construction.profile.apply.wizard'
+    _description = 'Aplicar perfil de vertical'
+
+    profile_id = fields.Many2one(
+        'construction.vertical.profile', string='Perfil', required=True, ondelete='cascade')
+    company_id = fields.Many2one(
+        'res.company', string='Compañía', required=True, default=lambda self: self.env.company)
+    site_count = fields.Integer(string='Obras de la compañía', compute='_compute_changes')
+    changes_html = fields.Html(string='Qué cambia', compute='_compute_changes', sanitize=False)
+
+    @api.depends('profile_id', 'company_id')
+    def _compute_changes(self):
+        Project = self.env['project.project'].with_context(active_test=False)
+        for wizard in self:
+            wizard.site_count = Project.search_count([
+                ('is_construction_site', '=', True),
+                ('company_id', 'in', [wizard.company_id.id, False])])
+            rows = wizard.profile_id._get_apply_changes(wizard.company_id) \
+                if wizard.profile_id else []
+            if not rows:
+                wizard.changes_html = Markup('<p class="text-success">%s</p>') % self.env._(
+                    'La compañía ya tiene la configuración del perfil: no cambia nada.')
+                continue
+            body = Markup('').join(
+                Markup('<tr><td>%s</td><td>%s</td><td>%s</td><td class="text-muted">%s</td></tr>')
+                % row for row in rows)
+            wizard.changes_html = Markup(
+                '<table class="table table-sm o_construction_profile_changes"><thead><tr>'
+                '<th>%s</th><th>%s</th><th>%s</th><th>%s</th></tr></thead><tbody>%s</tbody>'
+                '</table>') % (self.env._('Qué'), self.env._('Ahora'), self.env._('Después'),
+                               self.env._('Menús y efecto'), body)
+
+    def action_confirm(self):
+        self.ensure_one()
+        return self.profile_id.with_company(self.company_id).action_apply()
 
 
 class ConstructionProfileImportWizard(models.TransientModel):

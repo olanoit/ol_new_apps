@@ -29,6 +29,15 @@ class ConstructionLaborActivity(models.Model):
         'product.product', string='Producto de servicio', check_company=True,
         domain=[('type', '=', 'service')],
         help='Servicio de recepción manual que va en la OC de servicio de la contrata.')
+    # Driver (v1.8, M18-12): la actividad se mide en el driver de la partida
+    # (muro drywall en m²) o en el suyo propio (emplacado en m² de placa,
+    # esquineros en ml).
+    driver_source = fields.Selection(
+        [('own', 'Propio'), ('level', 'El de la partida')], string='Driver',
+        default='own', required=True,
+        help='El de la partida: su avance es el avance físico de la partida (cantidad '
+             'ejecutada entre la cantidad presupuestada). Propio: avanza y se liquida en su '
+             'unidad, sin mover el avance de la partida.')
     module_level = fields.Boolean(
         string='Se mide por módulo',
         help='Una unidad por módulo (armado): la línea del plan cuelga del módulo.')

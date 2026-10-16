@@ -7,15 +7,19 @@
         <field name="arch" type="xml">
             <list string="Etapas" editable="bottom">
                 <field name="sequence" widget="handle"/>
+                <field name="number" optional="show"/>
                 <field name="name"/>
+                <field name="parent_id" options="{'no_create': True}" optional="show"/>
                 <field name="code"/>
                 <field name="kind"/>
+                <field name="is_group" optional="hide"/>
                 <field name="production_consumption" optional="show"/>
                 <field name="previous_stage_id" options="{'no_create': True}" optional="show"/>
                 <field name="duration_days" optional="show"/>
                 <field name="color" widget="color" optional="show"/>
                 <field name="level_line_ids" widget="many2many_tags" optional="hide"
                        options="{'no_create': True}"/>
+                <field name="alias_names" optional="hide"/>
                 <field name="active" widget="boolean_toggle" optional="hide"/>
             </list>
         </field>
@@ -28,11 +32,15 @@
             <search string="Etapas">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="parent_id"/>
                 <filter name="production" string="Fabricación" domain="[('kind', '=', 'production')]"/>
                 <filter name="field" string="Ejecución en campo" domain="[('kind', '=', 'field')]"/>
                 <filter name="control" string="Control" domain="[('kind', '=', 'control')]"/>
                 <separator/>
                 <filter name="archived" string="Archivadas" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_parent" string="Etapa padre" context="{'group_by': 'parent_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -47,6 +55,8 @@
                armado e instalación en mobiliario; trazo, emplacado y masillado en una partida de
                drywall. El tipo decide qué asistentes aplican: una etapa de fabricación habilita
                la orden de fabricación; una de campo, la contrata o la cuadrilla.</p>
+            <p>Una etapa con etapa padre es una sub etapa («1 Producción › 1.1 Producción de
+               piezas»): los recursos van en la sub etapa y la etapa padre los suma.</p>
         </field>
     </record>
 

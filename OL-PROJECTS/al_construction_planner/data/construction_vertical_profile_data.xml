@@ -74,12 +74,28 @@
         <field name="resource_type_ids" eval="[Command.set([ref('resource_type_material'), ref('resource_type_service'), ref('resource_type_equipment'), ref('resource_type_contract'), ref('resource_type_labor')])]"/>
         <field name="module_ids" eval="[Command.set(ref('base.module_al_construction_planner_purchase', False) and [ref('base.module_al_construction_planner_purchase'), ref('base.module_al_construction_planner_subcontract'), ref('base.module_al_construction_planner_crew'), ref('base.module_al_construction_planner_budget'), ref('base.module_al_construction_planner_sale')] or [])]"/>
         <field name="analytic_plan_names">Disciplina, Subpartida, Partida</field>
+        <!-- El metrado es de mobiliario (M18-01): la partida avanza por su driver. -->
+        <field name="feature_measurement" eval="False"/>
         <field name="note">Por decidir con CREVAL y Montegrande: la semana y el día de liquidación de las contratas, la forma de valorizar (por avance de partida) y si la receta sale de los Work Items o de la receta del planificador.</field>
     </record>
     <record id="profile_construction_week_start" model="construction.vertical.profile.parameter">
         <field name="profile_id" ref="profile_construction"/>
         <field name="name">construction_week_start_day</field>
         <field name="value">0</field>
+    </record>
+
+    <!-- Cuadrillas en jornales de día completo y sede de obra creada con la
+         obra (v1.8, M18-07 y M18-08); los campos son de los puentes de
+         cuadrillas y de marcación. -->
+    <record id="profile_construction_crew_unit" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_construction"/>
+        <field name="name">construction_crew_time_unit</field>
+        <field name="value">FULL</field>
+    </record>
+    <record id="profile_construction_site_auto" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_construction"/>
+        <field name="name">construction_site_auto_create</field>
+        <field name="value">True</field>
     </record>
 
     <!-- Mobiliario (Allcenter): el diseño de operación de los paquetes 1.4 a 1.6. -->
@@ -89,7 +105,7 @@
         <field name="sequence">20</field>
         <field name="description">Contratas de mobiliario que fabrican e instalan muebles por torre, piso, departamento, ambiente, mueble y módulo (Allcenter).</field>
         <field name="level_template_id" ref="level_template_building"/>
-        <field name="stage_ids" eval="[Command.set([ref('stage_production'), ref('stage_assembly'), ref('stage_installation'), ref('stage_finishing')])]"/>
+        <field name="stage_ids" eval="[Command.set([ref('stage_group_production'), ref('stage_production'), ref('stage_assembly'), ref('stage_group_installation'), ref('stage_installation'), ref('stage_finishing'), ref('stage_cleaning')])]"/>
         <field name="resource_type_ids" eval="[Command.set([ref('resource_type_material'), ref('resource_type_service'), ref('resource_type_contract'), ref('resource_type_labor'), ref('resource_type_production')])]"/>
         <field name="module_ids" eval="[Command.set(ref('base.module_al_construction_planner_suite', False) and [ref('base.module_al_construction_planner_mrp'), ref('base.module_al_construction_planner_purchase'), ref('base.module_al_construction_planner_subcontract'), ref('base.module_al_construction_planner_crew'), ref('base.module_al_construction_planner_budget'), ref('base.module_al_construction_planner_sale'), ref('base.module_al_construction_planner_furniture')] or [])]"/>
     </record>
@@ -107,5 +123,15 @@
         <field name="profile_id" ref="profile_furniture"/>
         <field name="name">construction_payment_day</field>
         <field name="value">5</field>
+    </record>
+    <record id="profile_furniture_crew_unit" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_furniture"/>
+        <field name="name">construction_crew_time_unit</field>
+        <field name="value">FULL</field>
+    </record>
+    <record id="profile_furniture_site_auto" model="construction.vertical.profile.parameter">
+        <field name="profile_id" ref="profile_furniture"/>
+        <field name="name">construction_site_auto_create</field>
+        <field name="value">True</field>
     </record>
 </odoo>

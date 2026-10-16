@@ -40,9 +40,10 @@
             <menuitem id="menu_planner_progress_register" name="Registrar avance" action="action_plan_progress_wizard" sequence="10"/>
             <menuitem id="menu_planner_progress_to_validate" name="Avances por validar" action="action_construction_progress_to_validate" sequence="20"/>
             <menuitem id="menu_planner_progress_all" name="Avances" action="action_construction_progress" sequence="30"/>
-            <menuitem id="menu_planner_measurements" name="Metrados" action="action_construction_measurement" sequence="40"/>
-            <menuitem id="menu_planner_measurement_lines" name="Cargar medidas" action="action_construction_measurement_line" sequence="45"/>
-            <menuitem id="menu_planner_measurement_generate" name="Generar metrados" action="action_construction_measurement_generate_wizard" sequence="50" groups="al_construction_planner.group_planner_user"/>
+            <!-- Metrado: solo con la función «Metrado» (vertical Mobiliario, M18-01). -->
+            <menuitem id="menu_planner_measurements" name="Metrados anteriores" action="action_construction_measurement" sequence="40" groups="group_planner_feature_measurement"/>
+            <menuitem id="menu_planner_measurement_lines" name="Cargar medidas" action="action_construction_measurement_line" sequence="45" groups="group_planner_feature_measurement"/>
+            <menuitem id="menu_planner_measurement_generate" name="Generar metrados" action="action_construction_measurement_generate_wizard" sequence="50" groups="-al_construction_planner.group_planner_user,group_planner_feature_measurement"/>
         </menuitem>
         <menuitem id="menu_planner_contracts" name="Contratas" sequence="20">
             </menuitem>
@@ -59,6 +60,7 @@
         <menuitem id="menu_planner_reports_plan" name="Plan" sequence="10" groups="group_planner_planner">
             <menuitem id="menu_planner_analysis" name="Análisis del plan" action="action_construction_resource_plan_line_analysis" sequence="10"/>
             <menuitem id="menu_planner_control" name="Control de saldo" action="action_construction_plan_control" groups="group_planner_feature_control" sequence="20"/>
+            <menuitem id="menu_planner_exceed_logs" name="Excesos autorizados" action="action_construction_exceed_log" groups="group_planner_feature_control" sequence="25"/>
         </menuitem>
         </menuitem>
 

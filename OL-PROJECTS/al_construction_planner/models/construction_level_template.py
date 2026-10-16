@@ -113,8 +113,9 @@ class ConstructionLevelTemplateLine(models.Model):
         readonly=False,
         help='La contrata o la cuadrilla reportan el avance en este nivel (portal incluido).')
     measure_uom_id = fields.Many2one(
-        'uom.uom', string='Unidad del metrado',
-        help='m², und, ml, kg… La del nivel que se mide; vacía: la de cada línea.')
+        'uom.uom', string='Unidad del driver',
+        help='m², und, ml, kg… En la que se presupuesta y avanza el nivel; vacía: la de su '
+             'receta.')
     stage_ids = fields.Many2many(
         'construction.stage', 'construction_level_line_stage_rel', 'level_line_id', 'stage_id',
         string='Etapas del nivel',

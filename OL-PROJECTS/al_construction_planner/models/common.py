@@ -58,6 +58,12 @@ def stage_selection(model):
     return model.env['construction.stage']._get_selection()
 
 
+def stage_group_selection(model):
+    """Lista de las etapas de primer nivel (las etapas padre y las etapas
+    sueltas): agrupa el análisis por «1 Producción», «2 Instalación»."""
+    return model.env['construction.stage']._get_group_selection()
+
+
 # Destino de la compra masiva (v1.7, M17-14): stock general (mobiliario) o
 # directo a la obra con su analítica (constructora).
 PURCHASE_DESTINATIONS = [
@@ -175,3 +181,35 @@ GUARANTEE_RELEASES = [
 # grupo o el administrador del planificador.
 PROJECT_HEAD_GROUPS = ('al_construction_planner.group_planner_project_head,'
                        'al_construction_planner.group_planner_manager')
+
+
+# Visibilidad de montos (v1.8, M18-10): ver construction_amounts.py.
+AMOUNTS_GROUP = 'al_construction_planner.group_planner_amounts'
+
+
+def can_see_amounts(env):
+    """¿El usuario ve montos? El superusuario y los procesos internos, sí."""
+    return env.su or env.user.has_group(AMOUNTS_GROUP)
+
+
+#: Claves de monto en los diccionarios de los paneles OWL.
+PANEL_AMOUNT_KEYS = frozenset({
+    'amount', 'material', 'contract', 'other', 'total', 'amount_total', 'amount_remaining',
+    'price', 'price_unit', 'cost', 'cost_unit'})
+
+
+def mask_amounts(env, data, keys=PANEL_AMOUNT_KEYS):
+    """Quita los montos de lo que devuelve un panel a quien no los ve: las
+    claves de monto quedan en ``False`` en todos los niveles."""
+    if can_see_amounts(env):
+        return data
+
+    def visit(value):
+        if isinstance(value, dict):
+            return {key: False if key in keys and isinstance(item, (int, float))
+                    and not isinstance(item, bool) else visit(item)
+                    for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [visit(item) for item in value]
+        return value
+    return visit(data)

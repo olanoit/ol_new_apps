@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Excesos autorizados, pagos repetidos y re-trabajos (v1.8, M18-05 y
+         M18-21): quién, cuándo, motivo y cantidad. -->
+    <record id="construction_exceed_log_view_list" model="ir.ui.view">
+        <field name="name">construction.exceed.log.list</field>
+        <field name="model">construction.exceed.log</field>
+        <field name="arch" type="xml">
+            <list string="Excesos autorizados" create="0" edit="0" delete="0">
+                <field name="date"/>
+                <field name="kind"/>
+                <field name="project_id" optional="show"/>
+                <field name="task_id"/>
+                <field name="stage" optional="show"/>
+                <field name="product_id" optional="show"/>
+                <field name="activity_id" optional="show"/>
+                <field name="partner_id" optional="hide"/>
+                <field name="qty"/>
+                <field name="uom_id" groups="uom.group_uom"/>
+                <field name="amount" sum="Total" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="reason"/>
+                <field name="rework_reason" optional="hide"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="document"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_exceed_log_view_form" model="ir.ui.view">
+        <field name="name">construction.exceed.log.form</field>
+        <field name="model">construction.exceed.log</field>
+        <field name="arch" type="xml">
+            <form string="Exceso autorizado" create="0" edit="0" delete="0">
+                <header>
+                    <button name="action_open_document" type="object" string="Abrir el documento"
+                            invisible="not res_id"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="kind"/>
+                            <field name="project_id"/>
+                            <field name="plan_id"/>
+                            <field name="task_id"/>
+                            <field name="stage"/>
+                            <field name="document"/>
+                            <field name="res_model" invisible="1"/>
+                            <field name="res_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="product_id" invisible="not product_id"/>
+                            <field name="activity_id" invisible="not activity_id"/>
+                            <field name="partner_id" invisible="not partner_id"/>
+                            <field name="qty"/>
+                            <field name="uom_id"/>
+                            <field name="amount"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="user_id"/>
+                            <field name="date"/>
+                        </group>
+                    </group>
+                    <field name="rework_reason" invisible="not rework_reason"/>
+                    <field name="reason"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_exceed_log_view_pivot" model="ir.ui.view">
+        <field name="name">construction.exceed.log.pivot</field>
+        <field name="model">construction.exceed.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Excesos autorizados">
+                <field name="project_id" type="row"/>
+                <field name="kind" type="col"/>
+                <field name="amount" type="measure"/>
+                <field name="qty" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_exceed_log_view_search" model="ir.ui.view">
+        <field name="name">construction.exceed.log.search</field>
+        <field name="model">construction.exceed.log</field>
+        <field name="arch" type="xml">
+            <search string="Excesos autorizados">
+                <field name="project_id"/>
+                <field name="task_id"/>
+                <field name="product_id"/>
+                <field name="activity_id"/>
+                <field name="user_id"/>
+                <filter name="excess" string="Excesos" domain="[('kind', 'in', ('excess', 'repeat'))]"/>
+                <filter name="repeat_payment" string="Pagos repetidos" domain="[('kind', '=', 'repeat_payment')]"/>
+                <filter name="rework" string="Re-trabajos" domain="[('kind', '=', 'rework')]"/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_kind" string="Tipo" context="{'group_by': 'kind'}"/>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_stage" string="Etapa" context="{'group_by': 'stage'}"/>
+                    <filter name="group_user" string="Autorizado por" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_exceed_log" model="ir.actions.act_window">
+        <field name="name">Excesos autorizados</field>
+        <field name="res_model">construction.exceed.log</field>
+        <field name="view_mode">list,pivot,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin excesos autorizados</p>
+            <p>Cada exceso sobre el plan, pedido repetido de un nivel y sub etapa, pago repetido
+               o re-trabajo de una contrata queda aquí con quién lo autorizó, cuándo, el motivo y
+               la cantidad.</p>
+        </field>
+    </record>
+</odoo>

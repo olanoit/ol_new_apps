@@ -15,9 +15,15 @@ class ResConfigSettings(models.TransientModel):
         group='base.group_user',
         help='Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso.')
     group_construction_progress = fields.Boolean(
-        string='Avance y metrados',
+        string='Avance',
         implied_group='al_construction_planner.group_planner_feature_progress',
-        group='base.group_user', help='Avance por driver, validación y metrado de los niveles.')
+        group='base.group_user', help='Avance por driver con fotos y su validación.')
+    # Metrado (v1.8, M18-01): concepto de la vertical Mobiliario (medida del
+    # espacio, diseño y despiece del mueble), separado del avance.
+    group_construction_measurement = fields.Boolean(
+        string='Metrado',
+        implied_group='al_construction_planner.group_planner_feature_measurement',
+        group='base.group_user', help='Metrado del nivel frente a lo planificado (mobiliario).')
     module_al_construction_planner_mrp = fields.Boolean(
         string='Producción', help='Órdenes de fabricación desde el plan (instala Fabricación).')
     module_al_construction_planner_subcontract = fields.Boolean(
@@ -64,4 +70,4 @@ class ResConfigSettings(models.TransientModel):
         if not profile:
             raise UserError(self.env._('Elija el perfil de vertical.'))
         self.execute()
-        return profile.action_apply()
+        return profile.action_open_apply_wizard()

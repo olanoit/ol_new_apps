@@ -21,12 +21,16 @@
                     </button>
                     <div class="dropdown-menu p-2 o_cp_filters">
                         <div class="fw-bold small text-muted">Etapa</div>
-                        <t t-foreach="state.options.stages" t-as="opt" t-key="opt[0]">
-                            <label class="dropdown-item d-flex gap-2">
-                                <input type="checkbox" t-att-checked="state.filters.stages.includes(opt[0])"
-                                       t-on-change="() => this.toggleFilter('stages', opt[0])"/>
-                                <span t-esc="opt[1]"/>
-                            </label>
+                        <t t-foreach="state.options.stage_tree" t-as="node" t-key="node.code">
+                            <t t-set="ss" t-value="stageState(node)"/>
+                            <div class="dropdown-item d-flex align-items-center o_cp_stage_node"
+                                 t-att-data-code="node.code"
+                                 t-att-style="'padding-left:' + (16 + node.depth * 16) + 'px'"
+                                 t-on-click.stop="() => this.toggleStage(node)">
+                                <span t-att-class="'o_cp_check o_cp_' + ss" role="checkbox"
+                                      t-att-aria-checked="ss === 'on' ? 'true' : (ss === 'part' ? 'mixed' : 'false')"/>
+                                <span t-att-class="node.leaf ? '' : 'fw-bold'" t-esc="node.label"/>
+                            </div>
                         </t>
                         <div class="fw-bold small text-muted mt-2">Tipo de recurso</div>
                         <t t-foreach="state.options.resource_types" t-as="opt" t-key="opt[0]">
@@ -55,8 +59,12 @@
                                 t-esc="partner[1]"/>
                     </t>
                 </select>
-                <div class="btn-group btn-group-sm ms-auto o_cp_measure" role="group" aria-label="Medida">
-                    <button class="btn" t-att-class="state.measure === 'amount' ? 'btn-primary' : 'btn-secondary'"
+                <button class="btn btn-sm btn-secondary ms-auto o_cp_open_io" t-on-click="openIoMatrix"
+                        title="Recursos de la selección como tabla insumo-producto">
+                    <i class="fa fa-table me-1"/>Insumo-producto
+                </button>
+                <div class="btn-group btn-group-sm o_cp_measure" role="group" aria-label="Medida">
+                    <button t-if="state.terms.show_amounts" class="btn" t-att-class="state.measure === 'amount' ? 'btn-primary' : 'btn-secondary'"
                             t-on-click="() => this.setMeasure('amount')">Soles</button>
                     <button class="btn" t-att-class="state.measure === 'driver' ? 'btn-primary' : 'btn-secondary'"
                             t-on-click="() => this.setMeasure('driver')">Cantidad</button>
@@ -70,12 +78,13 @@
                  class="o_cp_selbar d-flex flex-wrap align-items-center gap-3 px-3 py-2 border-bottom">
                 <span class="fw-bold o_cp_summary">
                     Selección:
-                    <span class="o_cp_summary_modules" t-esc="state.summary.modules"/> módulos ·
-                    <span t-esc="state.summary.spaces"/> ambientes ·
-                    <span t-esc="fmt(state.summary.ml)"/> ML ·
-                    S/ <span class="o_cp_summary_total" t-esc="fmt(state.summary.total)"/>
+                    <span class="o_cp_summary_modules" t-esc="state.summary.modules"/>
+                    <t t-esc="state.terms.details.toLowerCase()"/> ·
+                    <span t-esc="state.summary.spaces"/> <t t-esc="state.terms.spaces.toLowerCase()"/> ·
+                    <t t-if="state.terms.show_ml"><span t-esc="fmt(state.summary.ml)"/> ML · </t>
+                    <t t-if="state.terms.show_amounts">S/ <span class="o_cp_summary_total" t-esc="fmt(state.summary.total)"/></t>
                 </span>
-                <span class="text-muted small">
+                <span t-if="state.terms.show_amounts" class="text-muted small">
                     Material S/ <t t-esc="fmt(state.summary.material)"/> ·
                     Contrata S/ <t t-esc="fmt(state.summary.contract)"/>
                 </span>
@@ -101,9 +110,9 @@
                         <thead>
                             <tr>
                                 <th>Nivel</th>
-                                <th>Tipología</th>
-                                <th class="text-end">Módulos</th>
-                                <th class="text-end">ML</th>
+                                <th t-if="state.terms.show_typology">Tipología</th>
+                                <th class="text-end o_cp_col_details" t-esc="state.terms.details"/>
+                                <th t-if="state.terms.show_ml" class="text-end">ML</th>
                                 <t t-if="state.measure !== 'progress'">
                                     <t t-foreach="columns" t-as="col" t-key="col.field">
                                         <th class="text-end" t-esc="col.label"/>
@@ -133,9 +142,9 @@
                                         <span t-else="" t-esc="node.name"/>
                                         <span class="o_cp_lvl" t-esc="node.level_name || levelLabel(node.level)"/>
                                     </td>
-                                    <td t-esc="node.typology"/>
+                                    <td t-if="state.terms.show_typology" t-esc="node.typology"/>
                                     <td class="text-end" t-esc="node.modules"/>
-                                    <td class="text-end" t-esc="node.ml ? fmt(node.ml) : ''"/>
+                                    <td t-if="state.terms.show_ml" class="text-end" t-esc="node.ml ? fmt(node.ml) : ''"/>
                                     <t t-if="state.measure !== 'progress'">
                                         <t t-foreach="columns" t-as="col" t-key="col.field">
                                             <td class="text-end" t-esc="node[col.field] ? fmt(node[col.field]) : ''"/>
@@ -155,24 +164,62 @@
                         Marque una obra, un piso, un departamento o módulos para ver sus recursos.
                     </div>
                     <t t-else="">
+                        <!-- Por tipo de recurso, en el orden del catálogo, con su subtotal
+                             (v1.8, M18-03); dentro, por etapa y sub etapa si se pide. -->
+                        <div class="d-flex justify-content-end px-2 pt-1">
+                            <button class="btn btn-link btn-sm o_cp_panel_by_stage" t-on-click="togglePanelByStage">
+                                <t t-if="state.panelByStage">Sin etapas</t><t t-else="">Por etapa</t>
+                            </button>
+                        </div>
                         <table class="table table-sm mb-0 o_cp_panel_table">
                             <thead>
-                                <tr><th>Recurso</th><th class="text-end">Driver</th><th class="text-end">Acum.</th><th class="text-end">S/</th><th>Contrata</th></tr>
+                                <tr><th>Recurso</th><th class="text-end">Driver</th><th class="text-end">Acum.</th><th t-if="state.terms.show_amounts" class="text-end">S/</th><th>Contrata</th></tr>
                             </thead>
-                            <tbody>
-                                <t t-foreach="state.summary.resources" t-as="res" t-key="res_index">
-                                    <tr>
-                                        <td><span t-esc="res.name"/><div class="text-muted small" t-esc="res.type_label"/></td>
-                                        <td class="text-end text-nowrap"><t t-esc="fmt(res.qty)"/> <t t-esc="res.uom"/></td>
-                                        <td class="text-end" t-esc="fmt(res.executed)"/>
-                                        <td class="text-end" t-esc="fmt(res.amount)"/>
-                                        <td t-esc="res.partners"/>
+                            <t t-foreach="state.summary.groups" t-as="group" t-key="group.type_id or group_index">
+                                <tbody class="o_cp_panel_group" t-att-data-type="group.resource_type">
+                                    <tr class="table-light fw-bold o_cp_panel_group_row">
+                                        <td t-esc="group.name"/>
+                                        <td class="text-end" t-esc="fmt(group.qty)"/>
+                                        <td/>
+                                        <td t-if="state.terms.show_amounts" class="text-end o_cp_panel_group_total" t-esc="fmt(group.amount)"/>
+                                        <td/>
                                     </tr>
-                                </t>
-                            </tbody>
+                                    <t t-if="state.panelByStage">
+                                        <t t-foreach="group.stages" t-as="stage" t-key="stage.stage or stage_index">
+                                            <tr class="fw-bold text-muted o_cp_panel_stage_row">
+                                                <td class="ps-3" t-esc="stage.label"/>
+                                                <td class="text-end" t-esc="fmt(stage.qty)"/>
+                                                <td/>
+                                                <td t-if="state.terms.show_amounts" class="text-end" t-esc="fmt(stage.amount)"/>
+                                                <td/>
+                                            </tr>
+                                            <t t-foreach="stage.resources" t-as="res" t-key="res_index">
+                                                <tr>
+                                                    <td class="ps-4" t-esc="res.name"/>
+                                                    <td class="text-end text-nowrap"><t t-esc="fmt(res.qty)"/> <t t-esc="res.uom"/></td>
+                                                    <td class="text-end" t-esc="fmt(res.executed)"/>
+                                                    <td t-if="state.terms.show_amounts" class="text-end" t-esc="fmt(res.amount)"/>
+                                                    <td t-esc="res.partners"/>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-foreach="group.resources" t-as="res" t-key="res_index">
+                                            <tr>
+                                                <td class="ps-3" t-esc="res.name"/>
+                                                <td class="text-end text-nowrap"><t t-esc="fmt(res.qty)"/> <t t-esc="res.uom"/></td>
+                                                <td class="text-end" t-esc="fmt(res.executed)"/>
+                                                <td t-if="state.terms.show_amounts" class="text-end" t-esc="fmt(res.amount)"/>
+                                                <td t-esc="res.partners"/>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                            </t>
                             <tfoot>
                                 <tr><td colspan="3"><t t-esc="state.summary.resources.length"/> recursos</td>
-                                    <td class="text-end fw-bold" t-esc="fmt(state.summary.total)"/><td/></tr>
+                                    <td t-if="state.terms.show_amounts" class="text-end fw-bold" t-esc="fmt(state.summary.total)"/><td/></tr>
                             </tfoot>
                         </table>
                         <div class="p-2">

@@ -13,6 +13,11 @@
                 <field name="amount_unit"/>
                 <field name="currency_id" column_invisible="1"/>
                 <field name="source" optional="show"/>
+                <field name="sync_state" optional="show" widget="badge"
+                       decoration-success="sync_state == 'synced'"
+                       decoration-warning="sync_state in ('work_item', 'template', 'both')"
+                       decoration-danger="sync_state == 'missing'"
+                       invisible="sync_state == 'none'"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
             </list>
         </field>
@@ -23,7 +28,23 @@
         <field name="model">construction.execution.template</field>
         <field name="arch" type="xml">
             <form string="Receta">
+                <header>
+                    <button name="action_open_sync_wizard" type="object" string="Sincronizar con el Work Item"
+                            class="btn-primary" invisible="sync_state not in ('work_item', 'template', 'both')"/>
+                    <button name="action_open_sync_wizard" type="object" string="Comparar con el Work Item"
+                            invisible="sync_state not in ('synced',)"/>
+                    <button name="action_check_work_items" type="object" string="Revisar Work Item"
+                            invisible="not work_item_id"/>
+                    <field name="sync_state" widget="statusbar" invisible="sync_state == 'none'"
+                           statusbar_visible="synced"/>
+                </header>
                 <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="sync_state not in ('work_item', 'template', 'both')">
+                        La receta y su Work Item ya no son iguales: revise la diferencia con
+                        «Sincronizar con el Work Item». Los planes aprobados no cambian: el cambio
+                        llega a los planes nuevos o con una versión nueva del plan.
+                    </div>
                     <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
                     <div class="oe_title">
                         <label for="name"/>
@@ -40,6 +61,9 @@
                             <field name="amount_unit"/>
                             <field name="source"/>
                             <field name="source_ref" invisible="not source_ref"/>
+                            <field name="work_item_name" invisible="not work_item_id"/>
+                            <field name="work_item_id" invisible="1"/>
+                            <field name="sync_checked_on" invisible="not work_item_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="active" invisible="1"/>
@@ -89,11 +113,45 @@
                 <field name="project_id"/>
                 <field name="product_id"/>
                 <filter name="from_work_item" string="Desde Work Items" domain="[('source', '=', 'work_item')]"/>
+                <filter name="sync_diff" string="Con diferencias con su Work Item"
+                        domain="[('sync_state', 'in', ('work_item', 'template', 'both', 'missing'))]"/>
                 <filter name="archived" string="Archivadas" domain="[('active', '=', False)]"/>
                 <separator/>
                 <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
             </search>
         </field>
+    </record>
+
+    <record id="construction_work_item_sync_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.work.item.sync.wizard.form</field>
+        <field name="model">construction.work.item.sync.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Sincronizar con el Work Item">
+                <field name="template_id" invisible="1"/>
+                <group>
+                    <field name="sync_state"/>
+                    <field name="direction" widget="radio"/>
+                </group>
+                <field name="preview_html" readonly="1" nolabel="1"/>
+                <p class="text-muted small">
+                    Los planes aprobados no cambian: el cambio llega a los planes nuevos o con una
+                    versión nueva del plan.
+                </p>
+                <footer>
+                    <button name="action_apply" type="object" string="Aplicar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_execution_template_check" model="ir.actions.server">
+        <field name="name">Revisar Work Items</field>
+        <field name="model_id" ref="model_construction_execution_template"/>
+        <field name="binding_model_id" ref="model_construction_execution_template"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">records.action_check_work_items()</field>
     </record>
 
     <record id="action_construction_execution_template" model="ir.actions.act_window">
@@ -105,7 +163,7 @@
             <p class="o_view_nocontent_smiling_face">Cree la receta de una partida</p>
             <p>El APU por unidad del nivel: materiales, mano de obra de contrata o de cuadrilla
                propia y equipos, con su etapa y rendimiento. «Generar desde la receta» del plan
-               los multiplica por el metrado de cada tarea. También se importan desde Excel o se
+               los multiplica por la cantidad presupuestada de cada tarea. También se importan desde Excel o se
                copian desde los Work Items.</p>
         </field>
     </record>
@@ -160,7 +218,7 @@
                 <p class="text-muted" invisible="source != 'excel'">
                     Hoja RECETAS: una fila por recurso (código de la receta, tipo de recurso, código
                     del producto o de la actividad, cantidad por unidad, etapa…). Hoja NIVELES: una
-                    columna por nivel de la plantilla de la obra, más la receta y el metrado de la
+                    columna por nivel de la plantilla de la obra, más la receta y la cantidad de la
                     tarea. Volver a importar no duplica: la receta queda como en el libro.
                 </p>
                 <field name="result_html" readonly="1" invisible="not result_html"/>

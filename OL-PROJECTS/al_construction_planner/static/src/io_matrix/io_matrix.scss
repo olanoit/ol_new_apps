@@ -1,0 +1,46 @@
+// Tabla insumo-producto (v1.8, M18-04).
+.o_cp_io {
+    background-color: $o-view-background-color;
+
+    .o_cp_io_table {
+        th {
+            position: sticky;
+            background-color: $o-gray-100;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+        thead tr:nth-child(1) th { top: 0; z-index: 2; }
+        thead tr:nth-child(2) th { top: 1.9rem; z-index: 2; }
+        thead tr:nth-child(3) th { top: 3.8rem; z-index: 2; }
+        thead tr:nth-child(4) th { top: 5.7rem; z-index: 2; }
+        td:first-child,
+        .o_cp_io_corner {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background-color: $o-view-background-color;
+        }
+        .o_cp_io_corner {
+            z-index: 3;
+            background-color: $o-gray-100;
+        }
+        .o_cp_io_group {
+            cursor: pointer;
+        }
+        .o_cp_io_subtotal {
+            background-color: rgba($o-action, 0.06);
+            font-weight: bold;
+        }
+        tfoot td {
+            position: sticky;
+            bottom: 0;
+            background-color: $o-gray-100;
+        }
+    }
+
+    .o_cp_stage_tree {
+        min-width: 16rem;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+}

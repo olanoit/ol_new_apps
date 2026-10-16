@@ -59,12 +59,26 @@ class ProjectTask(models.Model):
         'construction.execution.template', string='Receta', index=True, check_company=True,
         domain="['|', ('project_id', '=', False), ('project_id', '=', project_id)]",
         help='Plantilla de ejecución del nivel: «Generar plan desde la receta» multiplica sus '
-             'recursos por el metrado.')
+             'recursos por la cantidad presupuestada.')
     construction_qty = fields.Float(
-        string='Metrado planificado', digits='Product Unit',
-        help='Cantidad del nivel en la unidad de su receta (m², und, ml, kg).')
+        string='Cantidad presupuestada', digits='Product Unit',
+        help='Cantidad del nivel en su driver, la unidad de su receta (m², und, ml, kg): '
+             '120 m² de muro drywall.')
     construction_qty_uom_id = fields.Many2one(
-        related='construction_execution_template_id.uom_id', string='Unidad del metrado')
+        related='construction_execution_template_id.uom_id', string='Unidad del driver')
+    # Avance por driver de la partida (v1.8, M18-12): lo ejecutado en su
+    # unidad (m², ml, und) entre la cantidad presupuestada.
+    construction_driver_uom_id = fields.Many2one(
+        'uom.uom', string='Driver del nivel', compute='_compute_construction_driver_uom_id',
+        help='La unidad de su receta o, sin receta, la del nivel en la plantilla.')
+    construction_driver_qty_executed = fields.Float(
+        string='Ejecutado en el driver', digits='Product Unit',
+        compute='_compute_construction_driver_progress',
+        help='Avances validados de las contratas y cuadrillas que se miden en el driver del '
+             'nivel, ponderados por valor.')
+    construction_driver_progress_pct = fields.Float(
+        string='Avance por driver', compute='_compute_construction_driver_progress',
+        help='Ejecutado en el driver entre la cantidad presupuestada (48 de 120 m²: 40 %).')
     construction_unit_state = fields.Selection(
         UNIT_STATES, string='Estado del módulo', tracking=True,
         help='Avance físico del módulo: planificado, en producción, producido, en obra, '
@@ -258,6 +272,54 @@ class ProjectTask(models.Model):
             executed, planned = Plan._progress_amounts(task._construction_plan_domain()).get(
                 False, (0.0, 0.0))
             task.construction_progress_pct = executed / planned if planned else 0.0
+
+    @api.depends('construction_execution_template_id.uom_id',
+                 'construction_level_line_id.measure_uom_id')
+    def _compute_construction_driver_uom_id(self):
+        for task in self:
+            task.construction_driver_uom_id = task.construction_execution_template_id.uom_id \
+                or task.construction_level_line_id.measure_uom_id
+
+    def _construction_driver_progress(self):
+        """{tarea: (avance 0..1 o None, ejecutado en el driver)}. Cuentan las
+        líneas de contrata y personal propio del nivel y de lo que tiene debajo
+        que se miden en el driver del nivel (``uses_level_driver``: las que
+        tienen su driver propio, como el emplacado en m² de placa, no); se
+        ponderan por valor. Sin driver o sin esas líneas: None."""
+        Line = self.env['construction.resource.plan.line']
+        result = {}
+        for task in self:
+            uom = task.construction_driver_uom_id
+            if not task.id or not task.construction_qty or not uom or not task.construction_path:
+                result[task] = (None, 0.0)
+                continue
+            plan = task.project_id._construction_current_plan()
+            lines = Line.search([
+                ('plan_id', '=', plan.id), ('resource_type', 'in', DRIVER_TYPES),
+                ('task_path', '=like', '%s%%' % task.construction_path),
+                ('uses_level_driver', '=', True)])
+            if not lines:
+                result[task] = (None, 0.0)
+                continue
+            planned = sum(lines.mapped('amount_planned'))
+            if planned:
+                executed = sum(min(line.qty_executed, line.qty_planned) * line.price_unit_planned
+                               for line in lines)
+                ratio = executed / planned
+            else:
+                total = sum(lines.mapped('qty_planned'))
+                ratio = sum(min(l.qty_executed, l.qty_planned) for l in lines) / total \
+                    if total else 0.0
+            ratio = min(ratio, 1.0)
+            result[task] = (ratio, ratio * task.construction_qty)
+        return result
+
+    def _compute_construction_driver_progress(self):
+        progress = self._construction_driver_progress()
+        for task in self:
+            ratio, executed = progress.get(task, (None, 0.0))
+            task.construction_driver_progress_pct = ratio or 0.0
+            task.construction_driver_qty_executed = executed
 
     def _construction_update_unit_state(self, revert=False):
         """Estado del módulo por el avance validado (especificación, «Avance

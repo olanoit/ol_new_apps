@@ -48,6 +48,18 @@
                         </div>
                     </group>
                 </group>
+                <group string="Control de consumo" name="construction_exceed" invisible="not is_construction_site" groups="al_construction_planner.group_planner_manager">
+                    <group>
+                        <field name="construction_exceed_policy"/>
+                        <field name="construction_exceed_tolerance"/>
+                    </group>
+                    <group>
+                        <field name="construction_exceed_policy_material"/>
+                        <field name="construction_exceed_policy_contract"/>
+                        <field name="construction_exceed_policy_labor"/>
+                        <field name="construction_exceed_policy_production"/>
+                    </group>
+                </group>
                 <group string="Semana de liquidación de contratas" name="construction_week" invisible="not is_construction_site" groups="al_construction_planner.group_planner_manager">
                     <group>
                         <field name="construction_week_start_day"/>
@@ -90,7 +102,13 @@
                             <label for="construction_qty"/>
                             <div class="o_row">
                                 <field name="construction_qty"/>
-                                <field name="construction_qty_uom_id"/>
+                                <field name="construction_driver_uom_id"/>
+                            </div>
+                            <label for="construction_driver_qty_executed" invisible="not construction_qty"/>
+                            <div class="o_row" invisible="not construction_qty">
+                                <field name="construction_driver_qty_executed"/>
+                                <span>·</span>
+                                <field name="construction_driver_progress_pct" widget="percentage"/>
                             </div>
                         </group>
                         <group string="Detalle" name="construction_detail" invisible="construction_level != 'module'">

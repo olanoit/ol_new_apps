@@ -21,9 +21,8 @@
         <field name="arch" type="xml">
             <form string="Perfil de vertical">
                 <header>
-                    <button name="action_apply" type="object" string="Aplicar a la compañía"
-                            class="btn-primary"
-                            confirm="Se configura la compañía activa con este perfil e instala los puentes que activa (la aplicación se recarga). No se borra nada."/>
+                    <button name="action_open_apply_wizard" type="object" string="Aplicar a la compañía"
+                            class="btn-primary"/>
                     <button name="action_export" type="object" string="Exportar"/>
                 </header>
                 <sheet>
@@ -42,6 +41,7 @@
                         <group string="Funciones">
                             <field name="feature_control"/>
                             <field name="feature_progress"/>
+                            <field name="feature_measurement"/>
                             <field name="module_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </group>
                     </group>
@@ -70,6 +70,29 @@
                         </page>
                     </notebook>
                 </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_profile_apply_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.profile.apply.wizard.form</field>
+        <field name="model">construction.profile.apply.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Aplicar el perfil">
+                <field name="profile_id" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <div class="alert alert-warning" role="alert" invisible="not site_count">
+                    La compañía ya tiene <field name="site_count" class="oe_inline"/> obras: revise
+                    qué menús y funciones cambian. Las obras existentes conservan su plantilla, sus
+                    planes y sus montos; no se borra nada.
+                </div>
+                <p>Se configura la compañía con el perfil y se instalan los puentes que activa (la
+                   aplicación se recarga).</p>
+                <field name="changes_html" readonly="1" nolabel="1"/>
+                <footer>
+                    <button name="action_confirm" type="object" string="Aplicar" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
             </form>
         </field>
     </record>

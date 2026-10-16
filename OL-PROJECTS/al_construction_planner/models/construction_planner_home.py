@@ -11,6 +11,8 @@ from odoo.exceptions import UserError
 from odoo.tools.misc import format_date
 from odoo.tools.safe_eval import safe_eval
 
+from .common import can_see_amounts
+
 GROUP = 'al_construction_planner.group_planner_'
 #: Días hacia adelante para las etapas sin contrata (P-01).
 STAGE_HORIZON_DAYS = 14
@@ -29,6 +31,7 @@ class ConstructionPlannerHome(models.AbstractModel):
         plans = Plan.search([('state', 'not in', ('cancel', 'replaced'))])
         states = dict(Plan._fields['state']._description_selection(self.env))
         works = []
+        show_amounts = can_see_amounts(self.env)
         for project in plans.project_id.sorted('name'):
             plan = project._construction_current_plan()
             if not plan:
@@ -43,8 +46,9 @@ class ConstructionPlannerHome(models.AbstractModel):
                 'plan_name': '%s · v%s' % (plan.name, plan.version),
                 'period': '%s → %s' % (format_date(self.env, plan.date_start, date_format='dd/MM'),
                                        format_date(self.env, plan.date_end, date_format='dd/MM')),
-                'amount_total': plan.amount_total if approved else False,
-                'amount_remaining': plan.amount_remaining if approved else False,
+                'amount_total': plan.amount_total if approved and show_amounts else False,
+                'amount_remaining': plan.amount_remaining if approved and show_amounts
+                else False,
                 'progress': Plan._progress_ratio(amounts, False) if approved else False,
                 'milestone': milestone['label'],
                 'milestone_date': milestone['date'] and fields.Date.to_string(milestone['date']),
@@ -197,6 +201,7 @@ class ConstructionPlannerHome(models.AbstractModel):
             'can_plan': self.env.user.has_group(GROUP + 'planner'),
             # El cronograma valorizado es del puente de ventas.
             'has_schedule_report': 'construction.schedule.report' in self.env,
+            'show_amounts': can_see_amounts(self.env),
         }
 
     @api.model

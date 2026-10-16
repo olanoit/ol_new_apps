@@ -14,6 +14,7 @@ import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
 import { _t } from "@web/core/l10n/translation";
 import { checkState, effectiveSelection, toggleNode } from "./selection";
+import { stageNodeState, toggleStageNode } from "../stage_filter/stage_filter";
 
 const PLAN = "construction.resource.plan";
 const ROOT_KEY = "p";
@@ -28,7 +29,7 @@ export class ConstructionPlanTree extends Component {
         this.state = useState({
             plans: [],
             planId: false,
-            options: { stages: [], resource_types: [], unit_states: [], levels: {} },
+            options: { stages: [], stage_tree: [], resource_types: [], unit_states: [], levels: {} },
             filters: { stages: [], resource_types: [], unit_states: [], partner: "" },
             measure: "amount",
             partners: [],
@@ -38,6 +39,15 @@ export class ConstructionPlanTree extends Component {
             summary: null,
             actions: [],
             loading: false,
+            // Términos de la vertical (v1.8, M18-01) y vista del panel (M18-03).
+            terms: {
+                details: _t("Módulos"),
+                spaces: _t("Ambientes"),
+                show_ml: true,
+                show_typology: true,
+                show_amounts: false,
+            },
+            panelByStage: false,
         });
         onWillStart(async () => {
             const context = this.props.action?.context || {};
@@ -85,7 +95,14 @@ export class ConstructionPlanTree extends Component {
         this.state.selected = {};
         this.state.summary = null;
         this.state.expanded = { [ROOT_KEY]: true };
-        this.state.partners = await this.orm.call(PLAN, "get_tree_partners", [[planId]]);
+        [this.state.partners, this.state.terms] = await Promise.all([
+            this.orm.call(PLAN, "get_tree_partners", [[planId]]),
+            this.orm.call(PLAN, "get_tree_terms", [[planId]]),
+        ]);
+        // Sin el grupo de montos (v1.8, M18-10) el árbol abre en cantidades.
+        if (!this.state.terms.show_amounts && this.state.measure === "amount") {
+            this.state.measure = "driver";
+        }
         await this.reload();
     }
 
@@ -215,6 +232,16 @@ export class ConstructionPlanTree extends Component {
         await this.reload();
     }
 
+    stageState(node) {
+        return stageNodeState(node, this.state.filters.stages);
+    }
+
+    /** Filtro de etapas en árbol: la etapa padre marca o desmarca sus sub etapas. */
+    async toggleStage(node) {
+        this.state.filters.stages = toggleStageNode(node, this.state.filters.stages);
+        await this.reload();
+    }
+
     async onPartnerChange(ev) {
         this.state.filters.partner = ev.target.value;
         await this.reload();
@@ -287,6 +314,25 @@ export class ConstructionPlanTree extends Component {
             res_model: "project.task",
             res_id: node.task_id,
             views: [[false, "form"]],
+        });
+    }
+
+    togglePanelByStage() {
+        this.state.panelByStage = !this.state.panelByStage;
+    }
+
+    /** Matriz insumo-producto (M18-04) de la selección (o de toda la obra). */
+    async openIoMatrix() {
+        const keys = this.selectionKeys;
+        await this.action.doAction({
+            type: "ir.actions.client",
+            tag: "al_construction_planner.io_matrix",
+            name: _t("Insumo-producto"),
+            context: {
+                construction_plan_id: this.state.planId,
+                construction_selection_keys: keys.length ? keys : [ROOT_KEY],
+                construction_filters: this.serverFilters,
+            },
         });
     }
 

@@ -189,6 +189,7 @@
         <field name="res_model">construction.measurement.generate.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_user'))]"/>
     </record>
 
     <record id="action_construction_measurement_submit" model="ir.actions.server">

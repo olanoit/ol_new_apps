@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from . import common
 from . import construction_stage
+from . import construction_level_labels
 from . import construction_execution_template
+from . import construction_work_item_sync
 from . import construction_vertical_profile
 from . import construction_labor
 from . import construction_typology
@@ -12,6 +14,8 @@ from . import construction_plan_supply
 from . import project_project
 from . import project_task
 from . import construction_plan_tree
+from . import construction_io_matrix
+from . import construction_exceed
 from . import tier_definition
 from . import res_company
 from . import res_config_settings
@@ -24,3 +28,4 @@ from . import ir_ui_menu
 from . import resource_calendar_leaves
 from . import construction_dependency
 from . import construction_measurement
+from . import construction_amounts

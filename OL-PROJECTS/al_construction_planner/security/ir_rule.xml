@@ -78,6 +78,11 @@
             <field name="model_id" ref="model_construction_dependency"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <record id="rule_construction_exceed_log_company" model="ir.rule">
+            <field name="name">Excesos autorizados: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_exceed_log"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
         <record id="rule_construction_measurement_company" model="ir.rule">
             <field name="name">Metrado: compañías del usuario</field>
             <field name="model_id" ref="model_construction_measurement"/>

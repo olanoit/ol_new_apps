@@ -44,8 +44,10 @@ RECIPE_COLUMNS = [
 ]
 LEVEL_EXTRA_COLUMNS = [
     ('recipe', 'Receta'),
-    ('qty', 'Metrado'),
+    ('qty', 'Cantidad'),
 ]
+# Encabezados de libros anteriores que se siguen aceptando.
+HEADER_ALIASES = {'NIVELES': {'Metrado': 'qty'}}
 # Naturaleza de costo del Work Item → comportamiento del recurso.
 WORK_ITEM_NATURES = {'material': 'material', 'equipment': 'equipment', 'labour': 'labor'}
 
@@ -131,6 +133,8 @@ class ConstructionRecipeImportWizard(models.TransientModel):
             if name not in layouts:
                 continue
             by_header = {norm(header): key for key, header, _required in layouts[name]}
+            for header, key in HEADER_ALIASES.get(name, {}).items():
+                by_header.setdefault(norm(header), key)
             rows = worksheet.iter_rows(values_only=True)
             positions = {}
             for index, header in enumerate(next(rows, None) or ()):
@@ -181,10 +185,7 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         text = _text(text)
         if not text:
             return self.default_stage_id.code or False
-        for code, name in self.env['construction.stage']._get_selection():
-            if norm(text) in (norm(code), norm(name)):
-                return code
-        return None
+        return self.env['construction.stage']._find_by_text(text)
 
     # ------------------------------------------------------------------
     # Recetas
@@ -283,8 +284,8 @@ class ConstructionRecipeImportWizard(models.TransientModel):
     # Niveles
     # ------------------------------------------------------------------
     def _import_levels(self, rows):
-        """Crea las tareas que faltan, nivel por nivel, y pone la receta y el
-        metrado en la última columna con nombre de cada fila."""
+        """Crea las tareas que faltan, nivel por nivel, y pone la receta y la
+        cantidad presupuestada en la última columna con nombre de cada fila."""
         if not self.project_id.construction_level_template_id:
             raise UserError(self.env._(
                 'La obra %s no tiene plantilla de niveles: la hoja NIVELES la necesita.',
@@ -394,7 +395,13 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         messages, errors = [], []
         if self.source == 'work_item':
             recipes, refs = self._recipes_from_work_items(self._read_work_items())
-            _templates, created, updated = self._upsert_recipes(recipes, 'work_item', refs)
+            templates, created, updated = self._upsert_recipes(recipes, 'work_item', refs)
+            # Vínculo con el Work Item para sincronizar en los dos sentidos
+            # (v1.8, M18-13).
+            for template in templates:
+                model, _sep, item_id = (template.source_ref or '').partition(',')
+                if model == 'x_work_item' and item_id.isdigit():
+                    template._link_work_item(int(item_id))
             messages.append(self.env._('Recetas desde Work Items: %(new)s nuevas y %(upd)s '
                                        'actualizadas.', new=created, upd=updated))
         else:

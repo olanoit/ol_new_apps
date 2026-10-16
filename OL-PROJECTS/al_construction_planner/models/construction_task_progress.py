@@ -14,13 +14,14 @@ PROGRESS_STATES = [
     ('rejected', 'Rechazado'),
 ]
 # Campos que solo cambian mientras el avance está reportado.
-LOCKED_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'date', 'qty', 'attachment_ids'}
+LOCKED_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'date', 'qty', 'attachment_ids',
+                 'is_rework', 'rework_reason'}
 
 
 class ConstructionTaskProgress(models.Model):
     _name = 'construction.task.progress'
     _description = 'Avance reportado'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'construction.level.labels.mixin']
     _order = 'date desc, id desc'
     _check_company_auto = True
 
@@ -106,6 +107,24 @@ class ConstructionTaskProgress(models.Model):
     validator_id = fields.Many2one('res.users', string='Validado por', readonly=True, copy=False)
     validation_date = fields.Datetime(string='Fecha de validación', readonly=True, copy=False)
     reject_reason = fields.Text(string='Motivo del rechazo', readonly=True, copy=False)
+    # Re-trabajo (v1.8, M18-21): se paga en una línea propia, con motivo, sin
+    # sumar al ejecutado de la línea del plan ni a su saldo.
+    is_rework = fields.Boolean(
+        string='Re-trabajo', copy=False, tracking=True,
+        help='Cambio, faltante o mal armado: se liquida sin bloqueo y queda separado en el '
+             'análisis de control.')
+    rework_reason = fields.Selection(
+        [('change', 'Cambio'), ('missing', 'Faltante'), ('bad_assembly', 'Mal armado')],
+        string='Motivo del re-trabajo', tracking=True, copy=False)
+    # Trazabilidad (v1.8, M18-11): la evaluación del supervisor queda en el
+    # chatter con autor y fecha, junto a las notas, fotos y propuestas.
+    supervisor_evaluation = fields.Selection(
+        [('compliant', 'Conforme'), ('observed', 'Con observaciones'),
+         ('non_compliant', 'No conforme')], string='Evaluación del supervisor', tracking=True,
+        copy=False)
+    evaluation_note = fields.Text(
+        string='Observaciones y propuestas', tracking=True, copy=False,
+        help='Lo que observa el supervisor y lo que propone (corregir, completar, re-trabajo).')
     # Lo calcula el puente de contratas con la liquidación del avance.
     settled = fields.Boolean(
         string='Liquidado', readonly=True, copy=False,
@@ -214,15 +233,25 @@ class ConstructionTaskProgress(models.Model):
                     activity=progress.activity_id.display_name,
                     task=progress.task_id.display_name))
 
-    @api.constrains('qty', 'state', 'plan_line_id')
+    @api.constrains('rework_reason', 'is_rework')
+    def _check_rework_reason(self):
+        for progress in self:
+            if progress.is_rework and not progress.rework_reason:
+                raise ValidationError(self.env._(
+                    'El re-trabajo %s necesita su motivo: cambio, faltante o mal armado.',
+                    progress.display_name))
+
+    @api.constrains('qty', 'state', 'plan_line_id', 'is_rework')
     def _check_balance(self):
         """No acepta más que lo presupuestado más la tolerancia del plan
         (especificación, «Control de saldo»: avance reportado)."""
-        lines = self.filtered(lambda p: p.state != 'rejected').plan_line_id
-        # Por tramo: cada tramo admite lo presupuestado de la línea.
+        lines = self.filtered(lambda p: p.state != 'rejected' and not p.is_rework).plan_line_id
+        # Por tramo: cada tramo admite lo presupuestado de la línea. El
+        # re-trabajo no cuenta (M18-21).
         totals = {}
         for line, _tranche, qty in self._read_group(
-                [('plan_line_id', 'in', lines.ids), ('state', '!=', 'rejected')],
+                [('plan_line_id', 'in', lines.ids), ('state', '!=', 'rejected'),
+                 ('is_rework', '=', False)],
                 ['plan_line_id', 'tranche_id'], ['qty:sum']):
             totals[line] = max(totals.get(line, 0.0), qty or 0.0)
         for line in lines:
@@ -258,7 +287,23 @@ class ConstructionTaskProgress(models.Model):
                     'El plan %s no está vigente: el avance se reporta sobre el plan aprobado.',
                     progress.plan_id.display_name))
         progresses.plan_line_id._refresh_control()
+        progresses._post_report_message()
         return progresses
+
+    def _post_report_message(self):
+        """Las fotos y evidencias del reporte quedan en el chatter del avance,
+        con su autor (la contrata desde el portal o quien lo registró)."""
+        for progress in self:
+            origin = dict(self._fields['source']._description_selection(self.env)).get(
+                progress.source, '')
+            body = self.env._(
+                'Avance reportado (%(origin)s): %(qty)s %(uom)s de %(activity)s en %(task)s.',
+                origin=origin.lower(), qty=progress.qty, uom=progress.uom_id.name or '',
+                activity=progress.activity_id.display_name, task=progress.task_id.display_name)
+            progress.message_post(
+                body=body, attachment_ids=progress.attachment_ids.ids,
+                author_id=progress.reported_by_id.partner_id.id or None,
+                message_type='comment', subtype_xmlid='mail.mt_note')
 
     def write(self, vals):
         if LOCKED_FIELDS & set(vals) and not self.env.context.get('construction_progress_force'):
@@ -270,7 +315,7 @@ class ConstructionTaskProgress(models.Model):
         before = self.plan_line_id
         res = super().write(vals)
         # Lo validado es el ejecutado de la línea (estado y control).
-        if {'state', 'qty', 'plan_line_id', 'settled'} & set(vals):
+        if {'state', 'qty', 'plan_line_id', 'settled', 'is_rework'} & set(vals):
             (before | self.plan_line_id)._refresh_control()
         return res
 
@@ -300,6 +345,10 @@ class ConstructionTaskProgress(models.Model):
             raise UserError(self.env._('Solo se validan avances reportados.'))
         self.write({'state': 'validated', 'validator_id': self.env.user.id,
                     'validation_date': fields.Datetime.now(), 'reject_reason': False})
+        for progress in self:
+            progress.message_post(body=self.env._(
+                'Validado: %(qty)s %(uom)s suman al ejecutado de la línea.',
+                qty=progress.qty, uom=progress.uom_id.name or ''))
         self.task_id._construction_update_unit_state()
 
     def action_open_reject_wizard(self):
@@ -335,6 +384,8 @@ class ConstructionTaskProgress(models.Model):
         self._construction_check_resettable()
         validated = self.filtered(lambda p: p.state == 'validated')
         self.write(self._construction_reset_values())
+        for progress in self:
+            progress.message_post(body=self.env._('Vuelto a reportado para corregirlo.'))
         validated.task_id._construction_update_unit_state(revert=True)
 
     def _construction_check_resettable(self):

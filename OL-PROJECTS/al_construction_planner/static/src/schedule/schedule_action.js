@@ -19,8 +19,10 @@
  *   recursos de dhtmlxGantt es PRO: es una tabla OWL propia).
  *
  * Ids de fila en el modo «Etapas»: `t<id>` para las tareas (de solo lectura:
- * su barra resume sus etapas) y `s<id>` para las etapas, para que el editor
- * del Gantt no las confunda con tareas que debe guardar él.
+ * su barra resume sus etapas), `s<id>` para las etapas, para que el editor
+ * del Gantt no las confunda con tareas que debe guardar él, y
+ * `g<ambiente>_<etapa>` para las etapas padre (v1.8, M18-02): barras resumen
+ * de sus sub etapas en el ambiente.
  */
 import { useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
@@ -29,6 +31,11 @@ import { formatFloat } from "@web/core/utils/numbers";
 import { GanttAction } from "@al_project_gantt_backend/gantt_action";
 import { toPlainDate } from "@al_project_gantt_base/js/gantt_adapter";
 import { escapeText } from "@al_project_gantt_base/js/gantt_setup";
+import {
+    stageFilterLabel,
+    stageNodeState,
+    toggleStageNode,
+} from "../stage_filter/stage_filter";
 
 const PLAN = "construction.resource.plan";
 const STAGE = "construction.space.stage";
@@ -42,6 +49,10 @@ export function isStageRow(id) {
 
 export function isTaskRow(id) {
     return /^t\d+$/.test(String(id));
+}
+
+export function isStageGroupRow(id) {
+    return /^g\d+_\d+$/.test(String(id));
 }
 
 function rowNumber(id) {
@@ -106,12 +117,33 @@ export function buildStageRows(ganttData, payload) {
         }
         rows.push(newRow);
     }
+    // Etapas padre: barras resumen bajo el ambiente (o bajo otra etapa padre).
+    for (const group of payload.construction_stage_groups || []) {
+        rows.push({
+            id: group.key,
+            text: group.name,
+            parent: group.parent_key || `t${group.space_task_id}`,
+            type: "project",
+            open: true,
+            readonly: true,
+            unscheduled: false,
+            color: (payload.construction?.stage_colors || {})[group.stage] || DEFAULT_STAGE_COLOR,
+            cp_stage_group: true,
+            cp_stage_key: group.stage,
+            cp_group_stages: group.stages,
+            cp_space_task_id: group.space_task_id,
+            cp_amount: group.amount,
+            cp_progress: group.progress,
+            cp_partner: "",
+            cp_alerts: [],
+        });
+    }
     for (const stage of stages) {
         const resource = stage.partner_name || stage.role_name || "";
         rows.push({
             id: `s${stage.id}`,
             text: stage.name,
-            parent: `t${stage.space_task_id}`,
+            parent: stage.group_key || `t${stage.space_task_id}`,
             type: "task",
             open: true,
             start_date: toPlainDate(stage.start),
@@ -172,13 +204,16 @@ export class ConstructionScheduleAction extends GanttAction {
             plansLoaded: false,
             planId: context.construction_plan_id || null,
             rows: "stages",
-            stage: "",
+            stages: [],
+            stageTree: [],
             stageLabels: {},
             buttons: [],
             summary: null,
             load: null,
             showPanel: true,
             showLoad: true,
+            panelByStage: false,
+            terms: { details: _t("Módulos"), show_ml: true },
         });
         this.summaryRequest = 0;
     }
@@ -208,6 +243,11 @@ export class ConstructionScheduleAction extends GanttAction {
 
     selectPlan(plan) {
         this.schedule.planId = plan ? plan.id : null;
+        if (plan) {
+            this.orm.call(PLAN, "get_tree_terms", [[plan.id]]).then((terms) => {
+                this.schedule.terms = terms;
+            });
+        }
         // Una obra por cronograma; sin plan, ningún proyecto.
         this.state.selectedIds = plan ? [plan.project_id[0]] : [-1];
         this.state.pinnedToProject = true;
@@ -229,13 +269,14 @@ export class ConstructionScheduleAction extends GanttAction {
             construction_schedule: true,
             construction_plan_id: this.schedule.planId,
             construction_rows: this.schedule.rows,
-            construction_stage: this.schedule.stage || false,
+            construction_stages: this.schedule.stages,
         };
     }
 
     transformGanttData(ganttData, payload) {
         this.construction = payload.construction || {};
         this.schedule.stageLabels = this.construction.stage_labels || {};
+        this.schedule.stageTree = this.construction.stage_tree || [];
         if (this.construction.rows === "stages") {
             return buildStageRows(ganttData, payload);
         }
@@ -247,13 +288,13 @@ export class ConstructionScheduleAction extends GanttAction {
     }
 
     async loadWeeklyLoad() {
-        if (!this.schedule.planId || !this.schedule.showLoad) {
+        if (!this.schedule.planId || !this.schedule.showLoad || !this.showAmounts) {
             this.schedule.load = null;
             return;
         }
         this.schedule.load = await this.orm.call(PLAN, "get_schedule_load", [
             [this.schedule.planId],
-            this.schedule.stage || false,
+            this.schedule.stages,
         ]);
     }
 
@@ -285,8 +326,13 @@ export class ConstructionScheduleAction extends GanttAction {
         return "al_construction_planner.ScheduleLoad";
     }
 
+    /** Sin el grupo de montos (v1.8, M18-10) no hay columnas ni totales en soles. */
+    get showAmounts() {
+        return this.construction?.show_amounts !== false;
+    }
+
     extraColumns() {
-        return [
+        const columns = [
             {
                 name: "cp_amount",
                 label: _t("Plan S/"),
@@ -328,6 +374,7 @@ export class ConstructionScheduleAction extends GanttAction {
                 },
             },
         ];
+        return this.showAmounts ? columns : columns.filter((col) => col.name !== "cp_amount");
     }
 
     setupGantt() {
@@ -387,7 +434,7 @@ export class ConstructionScheduleAction extends GanttAction {
                 `${_t("Inicio")}: ${format(start)}`,
                 `${_t("Fin")}: ${format(addDays(end, -1))}`,
                 `${_t("Contrata")}: ${escapeText(task.cp_partner || (task.cp_unassigned ? _t("Sin asignar") : "—"))}`,
-                `${_t("Plan S/")}: ${formatAmount(task.cp_amount)}`,
+                ...(this.showAmounts ? [`${_t("Plan S/")}: ${formatAmount(task.cp_amount)}`] : []),
                 `${_t("Avance")}: ${task.cp_progress || 0} %`,
                 ...(task.cp_alerts || []).map((alert) => `<b>${escapeText(alert)}</b>`),
             ];
@@ -413,6 +460,9 @@ export class ConstructionScheduleAction extends GanttAction {
         // Doble clic: la ficha de la etapa o de la tarea, no el formulario del
         // diagrama (que guarda tareas).
         gantt.attachEvent("onBeforeLightbox", (id) => {
+            if (isStageGroupRow(id)) {
+                return false;
+            }
             if (isStageRow(id) || isTaskRow(id)) {
                 this.openRow(id);
                 return false;
@@ -473,6 +523,9 @@ export class ConstructionScheduleAction extends GanttAction {
     }
 
     buildContextActions(taskId, task) {
+        if (isStageGroupRow(taskId)) {
+            return [];
+        }
         if (isStageRow(taskId)) {
             return [
                 {
@@ -507,6 +560,17 @@ export class ConstructionScheduleAction extends GanttAction {
         const stages = new Set();
         let allStages = false;
         for (const id of this.selection?.topIds || []) {
+            if (isStageGroupRow(id)) {
+                // Etapa padre marcada: su ambiente con todas sus sub etapas.
+                if (this.gantt?.isTaskExists(id)) {
+                    const row = this.gantt.getTask(id);
+                    taskIds.add(row.cp_space_task_id);
+                    for (const code of row.cp_group_stages || []) {
+                        stages.add(code);
+                    }
+                }
+                continue;
+            }
             if (isStageRow(id)) {
                 if (this.gantt?.isTaskExists(id)) {
                     const row = this.gantt.getTask(id);
@@ -522,8 +586,12 @@ export class ConstructionScheduleAction extends GanttAction {
             }
         }
         let stageList = [...stages];
-        if (this.schedule.stage) {
-            stageList = [this.schedule.stage];
+        if (this.schedule.stages.length) {
+            // El filtro de etapas acota lo marcado (o todas las del filtro si se
+            // marcó la tarea entera).
+            stageList = stageList.length && !allStages
+                ? stageList.filter((code) => this.schedule.stages.includes(code))
+                : [...this.schedule.stages];
         } else if (allStages) {
             stageList = [];
         }
@@ -553,14 +621,41 @@ export class ConstructionScheduleAction extends GanttAction {
 
     get extraToolbarButtons() {
         const disabled = !this.schedule.planId || !this.state.selectionCount;
-        return this.schedule.buttons.map((button) => ({
+        const matrix = {
+            key: "io_matrix",
+            label: _t("Insumo-producto"),
+            icon: "fa-table",
+            disabled: !this.schedule.planId,
+            title: _t("Recursos de la selección (o de la obra) como tabla insumo-producto"),
+            run: () => this.openIoMatrix(),
+        };
+        return [matrix, ...this.schedule.buttons.map((button) => ({
             key: button.xmlid,
             label: button.name,
             icon: button.icon,
             disabled,
             title: disabled ? _t("Marque filas para abrir el asistente con ellas") : button.name,
             run: () => this.runPlanAction(button.xmlid),
-        }));
+        }))];
+    }
+
+    /** Matriz insumo-producto (M18-04) con la selección y el filtro de etapas. */
+    async openIoMatrix() {
+        const { taskIds, stages } = this.selectionPayload();
+        await this.action.doAction({
+            type: "ir.actions.client",
+            tag: "al_construction_planner.io_matrix",
+            name: _t("Insumo-producto"),
+            context: {
+                construction_plan_id: this.schedule.planId,
+                construction_selection_keys: taskIds.length ? taskIds.map(String) : ["p"],
+                construction_filters: { stages: stages.length ? stages : this.schedule.stages },
+            },
+        });
+    }
+
+    togglePanelByStage() {
+        this.schedule.panelByStage = !this.schedule.panelByStage;
     }
 
     async runPlanAction(xmlid) {
@@ -582,12 +677,12 @@ export class ConstructionScheduleAction extends GanttAction {
     // ------------------------------------------------------------------
     // Barra propia
     // ------------------------------------------------------------------
-    get stageOptions() {
-        return Object.entries(this.schedule.stageLabels).map(([value, label]) => ({
-            value,
-            label,
-            selected: value === this.schedule.stage,
-        }));
+    get stageFilterLabel() {
+        return stageFilterLabel(this.schedule.stageTree, this.schedule.stages, _t("Todas las etapas"));
+    }
+
+    stageState(node) {
+        return stageNodeState(node, this.schedule.stages);
     }
 
     async onPlanChange(event) {
@@ -605,8 +700,14 @@ export class ConstructionScheduleAction extends GanttAction {
         await this.reload();
     }
 
-    async onStageChange(event) {
-        this.schedule.stage = event.target.value;
+    /** Filtro de etapas en árbol: la etapa padre marca o desmarca sus sub etapas. */
+    async toggleStage(node) {
+        this.schedule.stages = toggleStageNode(node, this.schedule.stages);
+        await this.reload();
+    }
+
+    async clearStages() {
+        this.schedule.stages = [];
         await this.reload();
     }
 
