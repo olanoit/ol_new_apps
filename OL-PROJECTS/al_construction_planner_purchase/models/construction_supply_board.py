@@ -26,8 +26,12 @@ from odoo.exceptions import UserError
 from odoo.tools import float_round
 from odoo.tools.misc import formatLang
 
+from odoo.addons.al_construction_planner.models.common import can_see_amounts, mask_amounts
+
 
 DEFAULT_WEEKS = 4
+#: Claves en soles de las filas del tablero.
+SUPPLY_AMOUNT_KEYS = frozenset({'amount', 'cost_plan', 'price_last'})
 MAX_WEEKS = 12
 #: Días que cuentan como «necesidad inmediata» para la alerta sin OC.
 SOON_DAYS = 7
@@ -223,7 +227,12 @@ class ConstructionSupplyBoard(models.AbstractModel):
         for row in rows:
             base = {'project_id': project.id, 'project_name': project.display_name,
                     'product_id': row['product_id'], 'product_name': row['product_name']}
-            if row['price_alert']:
+            if row['price_alert'] and not can_see_amounts(self.env):
+                alerts.append(dict(base, type='price', message=self.env._(
+                    '%(product)s: el último precio supera en %(pct)s %% al costo del plan.',
+                    product=row['product_name'],
+                    pct=formatLang(self.env, row['price_pct'], digits=1))))
+            elif row['price_alert']:
                 alerts.append(dict(base, type='price', message=self.env._(
                     '%(product)s: el último precio %(last)s supera en %(pct)s %% al costo del '
                     'plan %(plan)s.', product=row['product_name'],
@@ -267,7 +276,10 @@ class ConstructionSupplyBoard(models.AbstractModel):
         data['currency_symbol'] = (
             self.env['construction.resource.plan'].browse(data['plan_id']).currency_id.symbol
             or self.env.company.currency_id.symbol)
-        return data
+        # Visibilidad de montos (v1.8, M18-10): cantidades y alerta de precio
+        # (en %), sin costos ni montos.
+        data['show_amounts'] = can_see_amounts(self.env)
+        return mask_amounts(self.env, data, SUPPLY_AMOUNT_KEYS)
 
     @api.model
     def action_open_purchase(self, project_id, product_ids, options=None):

@@ -6,3 +6,5 @@ from . import task_progress
 from . import hr_payslip
 from . import res_company
 from . import labor_cost_allocation
+from . import construction_crew_attendance
+from . import construction_amounts

@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Catálogo de actividades de contrata de mobiliario, listas de tarifas y
+     reglas del método de unión (v1.8, M18-18 y M18-19). Tarifas base de la
+     lista de cocinas leídas en las fichas de pago ALL-PR-F-03 de Allcenter;
+     la de closet y cajones, más baja. noupdate: cada cliente las ajusta. -->
+<odoo noupdate="1">
+    <!-- Reglas del método de unión: insumos de armado del despiece. -->
+    <record id="join_rule_plinth" model="construction.join.rule">
+        <field name="sequence">1</field>
+        <field name="name">Zócalo: sin unión</field>
+        <field name="method">none</field>
+        <field name="special_kind">plinth</field>
+    </record>
+    <record id="join_rule_screw" model="construction.join.rule">
+        <field name="sequence">10</field>
+        <field name="name">Solo tornillo: 20 a 25 tornillos 4x50</field>
+        <field name="method">screw</field>
+        <field name="screws_min">20</field><field name="screws_max">25</field>
+        <field name="dowels_min">0</field><field name="dowels_max">0</field>
+    </record>
+    <record id="join_rule_mixed" model="construction.join.rule">
+        <field name="sequence">20</field>
+        <field name="name">Mixto: 12 a 15 tornillos 4x50 y 12 tarugos</field>
+        <field name="method">mixed</field>
+        <field name="screws_min">12</field><field name="screws_max">15</field>
+        <field name="dowels_min">12</field><field name="dowels_max">12</field>
+    </record>
+    <record id="join_rule_dowel" model="construction.join.rule">
+        <field name="sequence">30</field>
+        <field name="name">Solo tarugo: 20 a 28 tarugos</field>
+        <field name="method">dowel</field>
+        <field name="screws_min">0</field><field name="screws_max">0</field>
+        <field name="dowels_min">20</field><field name="dowels_max">28</field>
+    </record>
+    <record id="join_rule_none" model="construction.join.rule">
+        <field name="sequence">40</field>
+        <field name="name">Sin tornillos ni tarugos: sin unión</field>
+        <field name="method">none</field>
+        <field name="screws_min">0</field><field name="screws_max">0</field>
+        <field name="dowels_min">0</field><field name="dowels_max">0</field>
+    </record>
+
+    <!-- Catálogo de actividades de contrata de mobiliario. -->
+    <record id="activity_mob_arm_tor" model="construction.labor.activity">
+        <field name="code">MOB-ARM-TOR</field>
+        <field name="name">Armado módulo tornillo</field>
+        <field name="activity_class">assembly_method</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">6</field>
+        <field name="module_level" eval="True"/>
+        <field name="join_method">screw</field>
+    </record>
+    <record id="activity_mob_arm_tar" model="construction.labor.activity">
+        <field name="code">MOB-ARM-TAR</field>
+        <field name="name">Armado módulo tarugo</field>
+        <field name="activity_class">assembly_method</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">8</field>
+        <field name="module_level" eval="True"/>
+        <field name="join_method">dowel</field>
+    </record>
+    <record id="activity_mob_arm_mix" model="construction.labor.activity">
+        <field name="code">MOB-ARM-MIX</field>
+        <field name="name">Armado módulo mixto</field>
+        <field name="activity_class">assembly_method</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">0</field>
+        <field name="module_level" eval="True"/>
+        <field name="join_method">mixed</field>
+    </record>
+    <record id="activity_mob_arm_mfx" model="construction.labor.activity">
+        <field name="code">MOB-ARM-MFX</field>
+        <field name="name">Armado minifix en obra</field>
+        <field name="activity_class">onsite_assembly</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">installation</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">6.5</field>
+        <field name="module_level" eval="True"/>
+        <field name="join_method">minifix</field>
+    </record>
+    <record id="activity_mob_arm_mic" model="construction.labor.activity">
+        <field name="code">MOB-ARM-MIC</field>
+        <field name="name">Armado microondas</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">7</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">microwave</field>
+    </record>
+    <record id="activity_mob_arm_cam" model="construction.labor.activity">
+        <field name="code">MOB-ARM-CAM</field>
+        <field name="name">Armado campana</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">7</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">hood</field>
+    </record>
+    <record id="activity_mob_arm_ala" model="construction.labor.activity">
+        <field name="code">MOB-ARM-ALA</field>
+        <field name="name">Armado alacena con puertas</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">12</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">cupboard</field>
+    </record>
+    <record id="activity_mob_arm_rep" model="construction.labor.activity">
+        <field name="code">MOB-ARM-REP</field>
+        <field name="name">Armado repisero</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">7</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">shelf</field>
+    </record>
+    <record id="activity_mob_arm_toh" model="construction.labor.activity">
+        <field name="code">MOB-ARM-TOH</field>
+        <field name="name">Armado torre de horno</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">15</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">oven_tower</field>
+    </record>
+    <record id="activity_mob_arm_ref" model="construction.labor.activity">
+        <field name="code">MOB-ARM-REF</field>
+        <field name="name">Armado refrigeradora</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">12</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">fridge</field>
+    </record>
+    <record id="activity_mob_arm_esq" model="construction.labor.activity">
+        <field name="code">MOB-ARM-ESQ</field>
+        <field name="name">Armado esquinero</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">14</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">corner</field>
+    </record>
+    <record id="activity_mob_arm_caj" model="construction.labor.activity">
+        <field name="code">MOB-ARM-CAJ</field>
+        <field name="name">Armado cajonera</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">7</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">drawer</field>
+    </record>
+    <record id="activity_mob_arm_con" model="construction.labor.activity">
+        <field name="code">MOB-ARM-CON</field>
+        <field name="name">Armado condimentero</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">3</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">spice</field>
+    </record>
+    <record id="activity_mob_arm_bot" model="construction.labor.activity">
+        <field name="code">MOB-ARM-BOT</field>
+        <field name="name">Armado botellero</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">7</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">bottle</field>
+    </record>
+    <record id="activity_mob_arm_zoc" model="construction.labor.activity">
+        <field name="code">MOB-ARM-ZOC</field>
+        <field name="name">Armado zócalos</field>
+        <field name="activity_class">assembly_special</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">3</field>
+        <field name="module_level" eval="True"/>
+        <field name="special_kind">plinth</field>
+    </record>
+    <record id="activity_mob_com_ent" model="construction.labor.activity">
+        <field name="code">MOB-COM-ENT</field>
+        <field name="name">Entarugado</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">3</field>
+    </record>
+    <record id="activity_mob_com_pue" model="construction.labor.activity">
+        <field name="code">MOB-COM-PUE</field>
+        <field name="name">Colocación de puertas</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_meter"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">3</field>
+        <field name="piece_types">PUERTA</field>
+        <field name="piece_measure">width_ml</field>
+    </record>
+    <record id="activity_mob_com_tac" model="construction.labor.activity">
+        <field name="code">MOB-COM-TAC</field>
+        <field name="name">Tapacanteo</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">1</field>
+    </record>
+    <record id="activity_mob_com_cor" model="construction.labor.activity">
+        <field name="code">MOB-COM-COR</field>
+        <field name="name">Cortes especiales</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">1</field>
+    </record>
+    <record id="activity_mob_com_can" model="construction.labor.activity">
+        <field name="code">MOB-COM-CAN</field>
+        <field name="name">Pegado de canto</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">0.5</field>
+    </record>
+    <record id="activity_mob_com_rfi" model="construction.labor.activity">
+        <field name="code">MOB-COM-RFI</field>
+        <field name="name">Repisas fijas</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">1.5</field>
+    </record>
+    <record id="activity_mob_com_caj" model="construction.labor.activity">
+        <field name="code">MOB-COM-CAJ</field>
+        <field name="name">Armado de cajón</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">1</field>
+        <field name="piece_types">FRENTE</field>
+        <field name="piece_measure">count</field>
+    </record>
+    <record id="activity_mob_com_tap" model="construction.labor.activity">
+        <field name="code">MOB-COM-TAP</field>
+        <field name="name">Tapa de cajón</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">1</field>
+        <field name="piece_types">TAPA,TAPA CAJON</field>
+        <field name="piece_measure">count</field>
+    </record>
+    <record id="activity_mob_com_cdr" model="construction.labor.activity">
+        <field name="code">MOB-COM-CDR</field>
+        <field name="name">Correderas</field>
+        <field name="activity_class">complementary</field>
+        <field name="uom_id" ref="uom.product_uom_unit"/>
+        <field name="stage">assembly</field>
+        <field name="company_id" eval="False"/>
+        <field name="default_price">1.5</field>
+        <field name="piece_types">FRENTE</field>
+        <field name="piece_measure">count</field>
+    </record>
+
+    <!-- Listas de tarifas base por familia. -->
+    <record id="rate_list_kitchen_bath" model="construction.rate.list">
+        <field name="name">Tarifas base de cocina y baño</field>
+        <field name="family">kitchen_bath</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Armado mixto: tarifa por definir con Allcenter.</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_tor" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_tor"/>
+        <field name="price">6</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_tar" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_tar"/>
+        <field name="price">8</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_mix" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_mix"/>
+        <field name="price">0</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_mfx" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_mfx"/>
+        <field name="price">6.5</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_mic" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_mic"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_cam" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_cam"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_ala" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_ala"/>
+        <field name="price">12</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_rep" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_rep"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_toh" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_toh"/>
+        <field name="price">15</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_ref" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_ref"/>
+        <field name="price">12</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_esq" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_esq"/>
+        <field name="price">14</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_caj" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_caj"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_con" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_con"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_bot" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_bot"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_arm_zoc" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_arm_zoc"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_ent" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_ent"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_pue" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_pue"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_tac" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_tac"/>
+        <field name="price">1</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_cor" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_cor"/>
+        <field name="price">1</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_can" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_can"/>
+        <field name="price">0.5</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_rfi" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_rfi"/>
+        <field name="price">1.5</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_caj" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_caj"/>
+        <field name="price">1</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_tap" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_tap"/>
+        <field name="price">1</field>
+    </record>
+    <record id="rate_list_kitchen_bath_mob_com_cdr" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_kitchen_bath"/>
+        <field name="activity_id" ref="activity_mob_com_cdr"/>
+        <field name="price">1.5</field>
+    </record>
+    <record id="rate_list_closet_drawer" model="construction.rate.list">
+        <field name="name">Tarifas base de closet y cajones</field>
+        <field name="family">closet_drawer</field>
+        <field name="company_id" eval="False"/>
+        <field name="note">Armado mixto: tarifa por definir con Allcenter.</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_tor" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_tor"/>
+        <field name="price">5.5</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_tar" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_tar"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_mix" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_mix"/>
+        <field name="price">0</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_mfx" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_mfx"/>
+        <field name="price">6.5</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_mic" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_mic"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_cam" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_cam"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_ala" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_ala"/>
+        <field name="price">12</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_rep" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_rep"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_toh" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_toh"/>
+        <field name="price">15</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_ref" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_ref"/>
+        <field name="price">12</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_esq" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_esq"/>
+        <field name="price">12</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_caj" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_caj"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_con" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_con"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_bot" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_bot"/>
+        <field name="price">7</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_arm_zoc" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_arm_zoc"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_ent" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_ent"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_pue" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_pue"/>
+        <field name="price">3</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_tac" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_tac"/>
+        <field name="price">0.5</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_cor" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_cor"/>
+        <field name="price">0.5</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_can" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_can"/>
+        <field name="price">0.5</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_rfi" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_rfi"/>
+        <field name="price">1.5</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_caj" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_caj"/>
+        <field name="price">1</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_tap" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_tap"/>
+        <field name="price">1</field>
+    </record>
+    <record id="rate_list_closet_drawer_mob_com_cdr" model="construction.rate.list.line">
+        <field name="list_id" ref="rate_list_closet_drawer"/>
+        <field name="activity_id" ref="activity_mob_com_cdr"/>
+        <field name="price">1.5</field>
+    </record>
+</odoo>

@@ -6,6 +6,14 @@ from odoo import api, models
 class ConstructionResourcePlan(models.Model):
     _inherit = 'construction.resource.plan'
 
+    def _tree_show_ml(self):
+        """Metros lineales en las obras de mueble: las que tienen tipologías
+        con ML o una plantilla con nivel de mueble o de módulo con ancho."""
+        self.ensure_one()
+        return bool(self.env['construction.typology'].search_count([
+            ('project_id', '=', self.project_id.id),
+            '|', ('ml_low', '>', 0), ('ml_high', '>', 0)], limit=1)) or super()._tree_show_ml()
+
     @api.model
     def _tree_space_ml(self, spaces):
         """ML de cada ambiente: bajo + alto de su tipología."""

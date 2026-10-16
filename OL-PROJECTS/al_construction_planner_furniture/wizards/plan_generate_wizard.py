@@ -6,6 +6,8 @@ from markupsafe import Markup, escape
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
+from ..models.construction_furniture_model import rate_family_for
+
 
 STAGE_FIELDS = {
     'production': 'stage_production',
@@ -37,10 +39,10 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
              'su tipología. Si el ambiente ya tiene módulos (p. ej. del ETO), no los duplica.')
     include_material = fields.Boolean(string='Materiales', default=True)
     include_contract = fields.Boolean(string='Contratas', default=True)
-    stage_production = fields.Boolean(string='Producción', default=True)
+    stage_production = fields.Boolean(string='Producción de piezas', default=True)
     stage_assembly = fields.Boolean(string='Armado', default=True)
     stage_installation = fields.Boolean(string='Instalación', default=True)
-    stage_finishing = fields.Boolean(string='Acabado y entrega', default=True)
+    stage_finishing = fields.Boolean(string='Acabado', default=True)
     mode = fields.Selection(
         [('replace', 'Reemplazar lo generado'), ('add', 'Agregar')], string='Si ya hay líneas',
         default='replace', required=True,
@@ -119,10 +121,21 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         for module in existing_modules:
             modules_by_space[module.construction_space_task_id.id] |= module
 
+        # Tarifa: la escrita en el plan o la vigente; sin tarifa de la obra, la
+        # de la lista de la familia de la tipología (v1.8, M18-19).
+        family = {'value': False}
+
         def rate(activity):
             if ('activity', activity.id) in prices:
                 return prices[('activity', activity.id)]
-            return activity._get_rate(project)[0], False, False
+            return activity.with_context(construction_rate_family=family['value'])._get_rate(
+                project)[0], False, False
+
+        # Actividades que salen de las piezas del módulo (M18-20): puertas,
+        # cajones, tapas y correderas.
+        piece_activities = self.env['construction.labor.activity'].search([
+            ('piece_types', '!=', False), ('company_id', 'in', (plan.company_id.id, False))],
+            order='sequence, code, id')
 
         def add(kind, vals):
             result['lines'].append(vals)
@@ -151,6 +164,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             if not typology:
                 result['warnings']['no_typology'].append(space.display_name)
                 continue
+            family['value'] = rate_family_for(typology.family)
             templates = typology.module_line_ids
             existing = modules_by_space[space.id]
             # Pares (tarea de módulo o None, plantilla).
@@ -190,7 +204,13 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             # Contratas: armado por módulo.
             if self.include_contract:
                 for task, template in modules:
-                    activity = template.assembly_activity_id
+                    # La escrita o la del catálogo por el método de unión o el
+                    # tipo especial (v1.8, M18-19).
+                    activity = template.effective_assembly_activity_id
+                    if not activity:
+                        result['warnings']['no_assembly'].append(
+                            '%s · %s' % (typology.display_name, template.name or template.code))
+                        continue
                     if activity.stage not in stages:
                         continue
                     price, basis, basis_date = rate(activity)
@@ -200,6 +220,24 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         product_id=activity.product_id.id, product_uom_id=activity.uom_id.id,
                         qty_planned=1.0, price_unit_planned=price, price_basis=basis,
                         price_basis_date=basis_date, _space=space, _template=template))
+                # Contratas desde las piezas de cada módulo (M18-20).
+                for task, template in modules:
+                    if not template.piece_ids:
+                        continue
+                    for activity in piece_activities:
+                        if activity.stage not in stages:
+                            continue
+                        qty = template._piece_quantity(activity)
+                        if not qty:
+                            continue
+                        price, basis, basis_date = rate(activity)
+                        add('contract_pieces', dict(
+                            common, task_id=task.id if task else False,
+                            resource_type='contract', stage=activity.stage,
+                            activity_id=activity.id, product_id=activity.product_id.id,
+                            product_uom_id=activity.uom_id.id, qty_planned=qty,
+                            price_unit_planned=price, price_basis=basis,
+                            price_basis_date=basis_date, _space=space, _template=template))
                 # Contratas: actividades por ambiente (o por módulo si van por
                 # ML con ancho). Las por ML que la tipología no lista entran
                 # con su ML bajo o alto (cantidad None → la de la tipología).
@@ -239,13 +277,32 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                             result['warnings']['ml_on_space'].append(typology.display_name)
                         add('contract_space', dict(base, task_id=space.id,
                                                    qty_planned=listed_qty))
-            # Materiales: BOM de los módulos si existen; si no, la de la tipología.
+            # Materiales: la receta del módulo (materiales con su sub etapa,
+            # v1.8) o su BOM; si no, la BOM de la tipología.
             if self.include_material:
+                for task, template in modules:
+                    if template.bom_id or not template.material_ids:
+                        continue
+                    for material in template.material_ids:
+                        if material.stage and material.stage not in stages:
+                            continue
+                        price, basis, basis_date = prices.get(
+                            ('product', material.product_id.id), (0.0, False, False))
+                        add('material_staged' if material.stage else 'material_unstaged', dict(
+                            common, resource_type='material', stage=material.stage or False,
+                            product_id=material.product_id.id,
+                            product_uom_id=(material.uom_id or material.product_id.uom_id).id,
+                            qty_planned=material.qty, price_unit_planned=price,
+                            price_basis=basis, price_basis_date=basis_date,
+                            task_id=task.id if task else False, _space=space,
+                            _template=template))
+                recipe_modules = {template for _task, template in modules
+                                  if not template.bom_id and template.material_ids}
                 module_boms = [(task, template) for task, template in modules if template.bom_id]
                 sources = module_boms and [(task, template, template.bom_id)
                                            for task, template in module_boms] \
-                    or [(space, None, typology.bom_id)]
-                if not module_boms and not typology.bom_id:
+                    or ([] if recipe_modules else [(space, None, typology.bom_id)])
+                if not module_boms and not recipe_modules and not typology.bom_id:
                     result['warnings']['no_bom'].append(typology.display_name)
                 overrides = space._construction_overrides()
                 for task, template, bom in sources:
@@ -291,6 +348,8 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         labels = [
             ('assembly_module', self.env._('Líneas de armado por módulo'), self.env._('Módulo')),
             ('contract_module', self.env._('Líneas de contrata por ML del módulo'),
+             self.env._('Módulo')),
+            ('contract_pieces', self.env._('Líneas de contrata desde las piezas del módulo'),
              self.env._('Módulo')),
             ('contract_space', self.env._('Líneas de contrata por ambiente'),
              self.env._('Ambiente')),
@@ -348,6 +407,9 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             'no_typology': self.env._('Ambientes sin tipología (no se generan)'),
             'no_modules': self.env._('Ambientes sin módulos (marque «Crear módulos faltantes»)'),
             'no_bom': self.env._('Tipologías sin lista de materiales'),
+            'no_assembly': self.env._(
+                'Módulos sin actividad de armado: escríbala o complete su método de unión o su '
+                'tipo especial (no se genera su armado)'),
             'module_missing': self.env._(
                 'Módulos de la plantilla que no existen en el ambiente (no se generan)'),
             'ml_on_space': self.env._(
@@ -406,11 +468,14 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             parents = self._module_parents(data['modules_to_create'])
             created = Task.with_context(mail_create_nolog=True, tracking_disable=True).create([dict(
                 module_vals,
-                name=template.code,
+                name=template.name or template.code,
                 project_id=space.project_id.id,
                 parent_id=parents[(space.id, template.id)].id,
                 construction_module_code=template.code,
                 construction_module_type=template.module_type,
+                construction_module_class=template.module_class,
+                construction_special_kind=template.special_kind,
+                construction_join_method=template.join_method,
                 construction_width_mm=template.width_mm,
                 construction_ml_group=template.ml_group,
                 construction_unit_state='planned',

@@ -54,6 +54,8 @@ class DocumentsDocument(models.Model):
             'project_id': project.id,
             'file': base64.b64encode(output.getvalue()),
             'filename': '%s.xlsx' % self.name,
+            # Los productos nuevos de la hoja (PRODUCTOS NUEVOS) se crean.
+            'create_missing_products': True,
         })
         return {
             'type': 'ir.actions.act_window',

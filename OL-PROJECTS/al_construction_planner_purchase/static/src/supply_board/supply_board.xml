@@ -72,9 +72,9 @@
                                 <th class="text-end">Stock</th>
                                 <th class="text-end">En OC</th>
                                 <th class="text-end">A comprar</th>
-                                <th class="text-end">Costo plan</th>
+                                <th t-if="state.data.show_amounts" class="text-end">Costo plan</th>
                                 <th class="text-end">Último</th>
-                                <th class="text-end">Monto</th>
+                                <th t-if="state.data.show_amounts" class="text-end">Monto</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,18 +112,18 @@
                                     <td class="text-end" t-esc="formatQty(row.stock)"/>
                                     <td class="text-end" t-esc="formatQty(row.on_order)"/>
                                     <td class="text-end fw-bold" t-esc="formatQty(row.qty_to_buy)"/>
-                                    <td class="text-end" t-esc="formatQty(row.cost_plan)"/>
+                                    <td t-if="state.data.show_amounts" class="text-end" t-esc="formatQty(row.cost_plan)"/>
                                     <td class="text-end">
-                                        <t t-if="row.price_last" t-esc="formatQty(row.price_last)"/>
-                                        <t t-else="">—</t>
+                                        <t t-if="row.price_last and state.data.show_amounts" t-esc="formatQty(row.price_last)"/>
+                                        <t t-elif="!row.price_alert">—</t>
                                         <span t-if="row.price_alert" class="badge text-bg-danger ms-1 o_cp_price_alert"
                                               t-esc="formatPct(row.price_pct)"/>
                                     </td>
-                                    <td class="text-end" t-esc="formatQty(row.amount)"/>
+                                    <td t-if="state.data.show_amounts" class="text-end" t-esc="formatQty(row.amount)"/>
                                 </tr>
                             </t>
                         </tbody>
-                        <tfoot t-if="rows.length">
+                        <tfoot t-if="rows.length and state.data.show_amounts">
                             <tr class="fw-bold">
                                 <td t-att-colspan="9 + state.data.weeks.length">
                                     <t t-if="selectedRows.length">

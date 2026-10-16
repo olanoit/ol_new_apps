@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261016 — 16/10/2026
+
+- Liquidaciones con re-trabajo y repeticiones (v1.8, M18-21): las de más del plan esperan la autorización de la jefatura; porcentaje manual con motivo por línea y alcance adicional del contrato con justificación.
+
 ## 1.20261013 — 15/10/2026
 
 - Puente nuevo (v1.7, M17-07): las contratas salen del núcleo; la OC de servicio se gestiona en Compras.

@@ -65,6 +65,10 @@ pasos:
       personal propio; al publicarlo crea los apuntes analíticos.
 
 novedades:
+  - version: 3.20261016
+    fecha: 16/10/2026
+    cambios:
+      - "La asistencia de la cuadrilla actualiza el ejecutado de sus días (v1.8); costo diario por empleado y categoría del rol; sedes de planta y creación automática de la sede de la obra."
   - version: 2.20261013
     fecha: 13/10/2026
     cambios:

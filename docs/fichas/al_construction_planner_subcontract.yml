@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '2.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Liquidaciones con re-trabajo y repeticiones (v1.8, M18-21): las de más del plan esperan la autorización de la jefatura; porcentaje manual con motivo por línea y alcance adicional del contrato con justificación."
 - version: '1.20261013'
   fecha: 15/10/2026
   cambios:

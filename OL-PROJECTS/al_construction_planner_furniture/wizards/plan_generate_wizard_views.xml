@@ -24,10 +24,10 @@
                         <field name="include_contract"/>
                         <label for="stage_production" string="Etapas"/>
                         <div class="d-flex flex-wrap gap-3">
-                            <span><field name="stage_production" class="oe_inline"/> Producción</span>
-                            <span><field name="stage_assembly" class="oe_inline"/> Armado</span>
-                            <span><field name="stage_installation" class="oe_inline"/> Instalación</span>
-                            <span><field name="stage_finishing" class="oe_inline"/> Acabado y entrega</span>
+                            <span><field name="stage_production" class="oe_inline"/> 1.1 Producción de piezas</span>
+                            <span><field name="stage_assembly" class="oe_inline"/> 1.2 Armado</span>
+                            <span><field name="stage_installation" class="oe_inline"/> 2.1 Instalación</span>
+                            <span><field name="stage_finishing" class="oe_inline"/> 2.2 Acabado</span>
                         </div>
                     </group>
                 </group>

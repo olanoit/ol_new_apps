@@ -13,5 +13,12 @@
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
 
+        <!-- Listas de tarifas (v1.8): las generales sin compañía se comparten. -->
+        <record id="rule_construction_rate_list_company" model="ir.rule">
+            <field name="name">Listas de tarifas: compañías del usuario</field>
+            <field name="model_id" ref="model_construction_rate_list"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
     </data>
 </odoo>

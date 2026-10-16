@@ -29,7 +29,7 @@ class ConstructionPlanExceedWizard(models.TransientModel):
                 'qty_requested': line.product_qty,
                 'qty_excess': excess,
             })
-        return request_sudo.construction_plan_id.exceed_policy, lines
+        return request_sudo._construction_policy(), lines
 
     def _confirm_document(self, reason):
         if not self.material_request_id:

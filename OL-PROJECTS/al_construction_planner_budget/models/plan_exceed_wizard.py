@@ -20,7 +20,7 @@ class ConstructionPlanExceedWizard(models.TransientModel):
         if not order_sudo:
             return super()._exceed_lines()
         rows = order_sudo._construction_budget_excess()
-        policies = [row[0].exceed_policy for row in rows]
+        policies = [row[0]._exceed_policy_for('material') for row in rows]
         lines = [{
             'name': budget_line.display_name if budget_line else self.env._(
                 '%s (combinación fuera del presupuesto)', plan.display_name),

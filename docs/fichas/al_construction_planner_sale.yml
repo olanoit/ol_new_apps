@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Valorización con porcentaje manual por línea y motivo, marcado en la factura y en el reporte, con el avance por etapa (v1.8)."
 - version: '2.20261013'
   fecha: 15/10/2026
   cambios:

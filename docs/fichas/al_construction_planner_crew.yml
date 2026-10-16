@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise (`project_forecast`) y Hojas de horas. Licencia LGPL-3
   porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Cuadrillas por día (v1.8): unidad de tiempo de la cuadrilla en la compañía y la obra, costo diario por puesto y por rol, y días de cuadrilla con su costo."
 - version: '2.20261013'
   fecha: 15/10/2026
   cambios:

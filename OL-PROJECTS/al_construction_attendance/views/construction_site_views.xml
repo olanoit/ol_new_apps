@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="al_hr_pe_construction.view_construction_site_form"/>
         <field name="arch" type="xml">
             <field name="analytic_account_id" position="after">
-                <field name="project_id" options="{'no_create': True}"/>
+                <field name="site_kind" widget="radio" options="{'horizontal': True}"/>
+                <field name="project_id" options="{'no_create': True}" invisible="site_kind == 'plant'"/>
                 <field name="default_stage_account_id" options="{'no_create': True}"/>
             </field>
             <xpath expr="//sheet" position="inside">
@@ -26,5 +27,27 @@
                 </group>
             </xpath>
         </field>
+    </record>
+
+    <!-- Rol de la cuadrilla con su categoría de construcción civil (v1.8, M18-06). -->
+    <record id="planning_role_view_form_construction_category" model="ir.ui.view">
+        <field name="name">planning.role.form.construction.category</field>
+        <field name="model">planning.role</field>
+        <field name="inherit_id" ref="al_construction_planner_crew.planning_role_view_form_construction"/>
+        <field name="arch" type="xml">
+            <field name="construction_job_id" position="before">
+                <field name="construction_category_id" options="{'no_create': True}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ir_cron_construction_crew_days" model="ir.cron">
+        <field name="name">Planificación de obra: jornales ejecutados desde la marcación</field>
+        <field name="model_id" ref="al_construction_planner_crew.model_construction_crew_day"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_refresh_executed()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
     </record>
 </odoo>

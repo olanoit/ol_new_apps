@@ -61,6 +61,10 @@ pasos:
     imagen: screenshots/04-importar.png
 
 novedades:
+  - version: 2.20261016
+    fecha: 16/10/2026
+    cambios:
+      - "Hoja de trabajo de la oficina técnica (v1.8, M18-22): resúmenes con tablas dinámicas, listas dependientes, referencias de productos y categorías; el envío al planificador crea los productos nuevos."
   - version: 1.20261013
     fecha: 13/10/2026
     cambios:

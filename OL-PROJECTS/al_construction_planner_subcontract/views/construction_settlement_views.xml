@@ -45,6 +45,9 @@
                     <button name="action_validate" type="object" string="Validar" class="btn-primary"
                             invisible="state != 'submitted'"
                             groups="al_construction_planner.group_planner_planner"/>
+                    <button name="action_head_authorize" type="object" string="Autorizar (jefatura)"
+                            class="btn-primary" invisible="not needs_head_authorization or state not in ('draft', 'submitted')"
+                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
                     <button name="action_open_return_wizard" type="object" string="Devolver a la contrata"
                             invisible="state != 'submitted'"
                             groups="al_construction_planner.group_planner_planner"/>
@@ -67,6 +70,16 @@
                                 icon="fa-file-text-o" string="Factura" invisible="not invoice_id"
                                 groups="account.group_account_invoice"/>
                     </div>
+                    <div class="alert alert-warning mb-2" role="alert" invisible="not needs_head_authorization">
+                        <strong>Espera la autorización de la jefatura:</strong> tiene pagos repetidos (la misma
+                        actividad, módulo y unidad ya liquidados) o porcentajes escritos por encima del avance
+                        validado.
+                    </div>
+                    <div class="alert alert-info mb-2" role="alert" invisible="not head_authorized_by">
+                        Autorizada por <field name="head_authorized_by" class="oe_inline" readonly="1"/>
+                        el <field name="head_authorized_on" class="oe_inline" readonly="1"/>.
+                    </div>
+                    <field name="needs_head_authorization" invisible="1"/>
                     <div class="alert alert-warning mb-2" role="alert"
                          invisible="not return_reason or state != 'draft'">
                         <strong>Devuelta:</strong> <field name="return_reason" class="oe_inline"/>
@@ -97,14 +110,28 @@
                     </group>
                     <notebook>
                         <page string="Líneas" name="lines">
-                            <field name="line_ids" nolabel="1">
-                                <list create="0" delete="0">
-                                    <field name="activity_id"/>
+                            <field name="line_ids" nolabel="1" readonly="state not in ('draft', 'submitted')">
+                                <list create="0" delete="0" editable="bottom"
+                                      decoration-warning="is_repeat or manual_over"
+                                      decoration-info="is_rework">
+                                    <field name="activity_id" readonly="1"/>
+                                    <field name="is_rework" optional="show" readonly="1"/>
+                                    <field name="rework_reason" optional="show" readonly="1"/>
                                     <field name="uom_id" groups="uom.group_uom"/>
-                                    <field name="qty_period"/>
-                                    <field name="price_unit"/>
+                                    <field name="qty_period" readonly="1"/>
+                                    <field name="qty_repeat" optional="show" readonly="1"/>
+                                    <field name="is_repeat" column_invisible="True"/>
+                                    <field name="pct_validated" optional="show"/>
+                                    <field name="pct_manual" optional="show"
+                                           readonly="is_rework"/>
+                                    <field name="manual_reason" optional="show"
+                                           required="pct_manual" readonly="is_rework"/>
+                                    <field name="is_manual" optional="hide" readonly="1"/>
+                                    <field name="manual_over" column_invisible="True"/>
+                                    <field name="qty_settle" readonly="1"/>
+                                    <field name="price_unit" readonly="1"/>
                                     <field name="amount" sum="Bruto"/>
-                                    <field name="retention_pct" optional="hide"/>
+                                    <field name="retention_pct" optional="hide" readonly="1"/>
                                     <field name="qty_cumulative"/>
                                     <field name="qty_planned"/>
                                     <field name="progress_pct" widget="percentage"/>

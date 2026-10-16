@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Metrado como receta real del mueble (v1.8, M17-15) y versus (M17-20). -->
+    <record id="construction_real_recipe_view_list" model="ir.ui.view">
+        <field name="name">construction.real.recipe.list</field>
+        <field name="model">construction.real.recipe</field>
+        <field name="arch" type="xml">
+            <list string="Metrados" decoration-warning="needs_authorization">
+                <field name="name"/>
+                <field name="project_id" optional="show"/>
+                <field name="floor_task_id" optional="hide"/>
+                <field name="apartment_task_id" optional="show"/>
+                <field name="template_id" optional="show"/>
+                <field name="date"/>
+                <field name="amount_planned"/>
+                <field name="amount_real"/>
+                <field name="difference_pct"/>
+                <field name="needs_authorization"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_real_recipe_view_form" model="ir.ui.view">
+        <field name="name">construction.real.recipe.form</field>
+        <field name="model">construction.real.recipe</field>
+        <field name="arch" type="xml">
+            <form string="Metrado">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_authorize" type="object" string="Autorizar (jefatura)"
+                            class="btn-primary" invisible="not needs_authorization"
+                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'confirmed'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not needs_authorization">
+                        El costo real supera al planificado en más del umbral: la orden de
+                        fabricación espera la autorización de la jefatura de proyectos.
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="task_id" options="{'no_create': True}" readonly="state != 'draft'"/>
+                            <field name="template_id" options="{'no_create': True}"/>
+                            <field name="user_id"/>
+                            <field name="date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="amount_planned"/>
+                            <field name="amount_real"/>
+                            <field name="difference_pct"/>
+                            <field name="needs_authorization" invisible="1"/>
+                            <field name="authorized_by" invisible="not authorized_by"/>
+                            <field name="authorized_on" invisible="not authorized_by"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Planificado y real" name="comparison">
+                            <field name="comparison_html" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Materiales reales" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id" options="{'no_create': True}"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id" options="{'no_create': True}"/>
+                                    <field name="stage"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Piezas" name="pieces">
+                            <field name="piece_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="qty"/>
+                                    <field name="length_mm"/>
+                                    <field name="width_mm"/>
+                                    <field name="piece_type"/>
+                                    <field name="color"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_real_recipe" model="ir.actions.act_window">
+        <field name="name">Metrados</field>
+        <field name="res_model">construction.real.recipe</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre el metrado de un mueble</p>
+            <p>El supervisor mide el espacio; el diseño y el despiece resultantes son la receta real
+               del módulo, que se compara material por material con la planificada y pasa a la
+               lista de materiales de su orden de fabricación.</p>
+        </field>
+    </record>
+
+    <record id="construction_recipe_versus_view_pivot" model="ir.ui.view">
+        <field name="name">construction.recipe.versus.pivot</field>
+        <field name="model">construction.recipe.versus</field>
+        <field name="arch" type="xml">
+            <pivot string="Presupuestado frente a real">
+                <field name="project_id" type="row"/>
+                <field name="floor_task_id" type="row"/>
+                <field name="amount_planned" type="measure"/>
+                <field name="amount_real" type="measure"/>
+                <field name="amount_difference" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_recipe_versus_view_list" model="ir.ui.view">
+        <field name="name">construction.recipe.versus.list</field>
+        <field name="model">construction.recipe.versus</field>
+        <field name="arch" type="xml">
+            <list string="Presupuestado frente a real" create="0" edit="0">
+                <field name="project_id" optional="show"/>
+                <field name="apartment_task_id" optional="show"/>
+                <field name="task_id"/>
+                <field name="product_id"/>
+                <field name="qty_planned"/>
+                <field name="qty_real"/>
+                <field name="qty_difference"/>
+                <field name="amount_planned" sum="Total"/>
+                <field name="amount_real" sum="Total"/>
+                <field name="amount_difference" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_recipe_versus" model="ir.actions.act_window">
+        <field name="name">Presupuestado frente a real</field>
+        <field name="res_model">construction.recipe.versus</field>
+        <field name="view_mode">pivot,list</field>
+    </record>
+
+    <!-- Envíos de planta a obra (M18-16): el estado de cada módulo. -->
+    <record id="project_task_view_list_shipment" model="ir.ui.view">
+        <field name="name">project.task.list.construction.shipment</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Envíos de planta a obra" create="0">
+                <field name="project_id"/>
+                <field name="construction_floor_task_id"/>
+                <field name="construction_apartment_task_id"/>
+                <field name="construction_space_task_id"/>
+                <field name="name"/>
+                <field name="construction_shipment_picking_id"/>
+                <field name="construction_shipment_date"/>
+                <field name="construction_shipment_state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_module_shipments" model="ir.actions.act_window">
+        <field name="name">Envíos de planta a obra</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="view_id" ref="project_task_view_list_shipment"/>
+        <field name="domain">[('construction_level', '=', 'module')]</field>
+        <field name="context">{'group_by': ['project_id', 'construction_shipment_state']}</field>
+    </record>
+
+    <record id="construction_module_dispatch_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.module.dispatch.wizard.form</field>
+        <field name="model">construction.module.dispatch.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Fabricar o enviar módulos">
+                <group>
+                    <field name="plan_id" readonly="1"/>
+                    <field name="project_id" invisible="1"/>
+                    <field name="action" widget="radio"/>
+                    <field name="apartment_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                </group>
+                <field name="loose_line_ids" invisible="action != 'shipment'">
+                    <list editable="bottom">
+                        <field name="product_id" options="{'no_create': True}"/>
+                        <field name="qty"/>
+                    </list>
+                </field>
+                <p class="text-muted small">
+                    Fabricación: una orden por producto de módulo y departamento, con el lote del
+                    departamento. Envío: una transferencia de planta a obra con los módulos
+                    producidos de los departamentos y los recursos sueltos; al recibirla, los
+                    módulos pasan a «En obra».
+                </p>
+                <footer>
+                    <button name="action_confirm" type="object" string="Crear" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_module_dispatch_wizard" model="ir.actions.act_window">
+        <field name="name">Fabricar o enviar módulos</field>
+        <field name="res_model">construction.module.dispatch.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_user'))]"/>
+    </record>
+
+    <record id="res_config_settings_view_form_real_recipe" model="ir.ui.view">
+        <field name="name">res.config.settings.form.real.recipe</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <block name="construction_planner_contracts" position="inside">
+                <setting company_dependent="1" id="construction_real_recipe_threshold"
+                         help="Si el costo real del mueble supera al planificado en más de este porcentaje, la orden de fabricación espera a la jefatura.">
+                    <field name="construction_real_recipe_threshold"/>
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

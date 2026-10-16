@@ -59,8 +59,13 @@ SHEETS = {
         ('type', 'Tipo', True, 'Bajo, Alto, Cajonera, Campana, Repisero u Otro.'),
         ('width', 'Ancho (mm)', False, 'Con ancho, las actividades por ML bajan al módulo.'),
         ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto o Sin ML.'),
-        ('activity', 'Actividad de armado', True, 'Código de una actividad que se mide por módulo.'),
+        ('activity', 'Actividad de armado', False,
+         'Código de una actividad que se mide por módulo; vacía: la del catálogo por el método '
+         'de unión o el tipo de módulo.'),
         ('furniture', 'Mueble', False, 'Mueble de la tipología al que pertenece (hoja MUEBLES).'),
+        ('name', 'Nombre', False, 'Función y ancho (MOD LAVADERO 900).'),
+        ('module_class', 'Tipo de módulo', False, 'Estándar o Especial.'),
+        ('join_method', 'Método de unión', False, 'Tornillo, Tarugo, Mixto, Minifix o Sin unión.'),
     ]),
     'ACTIVIDADES': ('Actividades por ambiente de cada tipología.', [
         ('typology', 'Tipología', True, 'Código de la tipología.'),
@@ -77,6 +82,67 @@ SHEETS = {
          'Producción, Armado, Instalación o Acabado y entrega. Sin etapa no se aprueba el plan.'),
         ('cost', 'Costo unitario', False,
          'Costo del maestro: informativo y costo del producto si se crea.'),
+        ('module', 'Módulo', False,
+         'Código del módulo: la línea va a la receta de ese módulo (v1.8); vacío: la tipología.'),
+        ('categ', 'Categoría', False, 'Categoría del producto (informativa).'),
+    ]),
+    'PIEZAS': ('Despiece de cada módulo (v1.8).', [
+        ('typology', 'Tipología', True, 'Código de la tipología.'),
+        ('module', 'Módulo', True, 'Código del módulo.'),
+        ('qty', 'Cantidad', True, 'Piezas iguales.'),
+        ('length', 'Largo (mm)', False, 'Largo de la pieza.'),
+        ('width', 'Ancho (mm)', False, 'Ancho de la pieza.'),
+        ('piece_type', 'Tipo de pieza', True, 'COSTADO, BASE, PUERTA, FRENTE, TAPA…'),
+        ('color', 'Color', False, 'Color o descripción.'),
+        ('categ', 'Categoría', False, 'Categoría del tablero.'),
+        ('product_code', 'Código del producto', False, 'Tablero de la pieza.'),
+        ('edges', 'Cantos', False, 'Cantos de la pieza.'),
+    ]),
+    'PRODUCTOS NUEVOS': ('Productos que aún no están en el maestro (v1.8).', [
+        ('code', 'Código provisional', True, 'El que usan BOM y PIEZAS hasta crear el producto.'),
+        ('name', 'Nombre', True, 'Nombre completo del producto.'),
+        ('uom', 'Unidad', False, 'Unidad del producto.'),
+        ('categ', 'Categoría', False, 'Categoría (último nivel) del maestro.'),
+        ('cost', 'Costo estimado', False, 'Costo del producto al crearlo.'),
+    ]),
+    'TARIFAS': ('Tarifas de contrata pactadas para la obra (v1.8).', [
+        ('activity', 'Actividad', True, 'Código de la actividad.'),
+        ('price', 'Tarifa', True, 'Tarifa de la obra.'),
+        ('partner', 'Contratista', False, 'Vacío: cualquier contrata de la obra.'),
+        ('retention', 'Retención %', False, 'Retención de la liquidación.'),
+        ('date_from', 'Vigente desde', False, 'Fecha de inicio.'),
+        ('date_to', 'Vigente hasta', False, 'Fecha de fin.'),
+        ('family', 'Familia', False, 'Cocina y baño o Closet y cajones (por defecto cocina).'),
+    ]),
+    'OBRA': ('Datos y condiciones de la obra (v1.8).', [
+        ('key', 'Dato', True, 'Inicio, Fin, Cliente, Adelanto %, Fondo de garantía %…'),
+        ('value', 'Valor', True, 'Valor del dato.'),
+    ]),
+    'CONTRATOS': ('Contratos de la obra con el cliente (v1.8, con Ventas).', [
+        ('name', 'Contrato', True, 'Nombre del contrato.'),
+        ('partner', 'Cliente', False, 'Cliente del contrato.'),
+        ('advance', 'Adelanto %', False, 'Adelanto del contrato.'),
+        ('guarantee', 'Fondo de garantía %', False, 'Fondo de garantía.'),
+        ('milestone_template', 'Plantilla de hitos', False, 'Nombre de la plantilla (hoja HITOS).'),
+    ]),
+    'HITOS': ('Hitos de cobro por unidad (v1.8, con Ventas).', [
+        ('template', 'Plantilla', True, 'Nombre de la plantilla de hitos.'),
+        ('name', 'Hito', True, 'Nombre del hito.'),
+        ('pct', '%', True, 'Porcentaje del precio de la unidad.'),
+        ('stage', 'Etapa', False, 'Etapa terminada que lo dispara.'),
+    ]),
+    'VENTA': ('Precio de venta por tipología (v1.8, con Ventas).', [
+        ('contract', 'Contrato', True, 'Contrato de la hoja CONTRATOS.'),
+        ('typology', 'Tipología', True, 'Código de la tipología.'),
+        ('price', 'Precio por ambiente', True, 'Precio de un ambiente de la tipología.'),
+    ]),
+    'MO PROPIA': ('Mano de obra propia: roles de cuadrilla (v1.8).', [
+        ('role', 'Rol', True, 'Operario, oficial, peón…'),
+        ('category', 'Categoría', False, 'Categoría de construcción civil.'),
+        ('stage', 'Sub etapa', False, 'Sub etapa donde trabaja.'),
+        ('daily_cost', 'Jornal', False, 'Costo de referencia por jornal.'),
+        ('productivity', 'Rendimiento', False, 'Unidades por jornal.'),
+        ('activity', 'Actividad', False, 'Actividad (driver) que ejecuta.'),
     ]),
     'ARBOL': ('Árbol de la obra: agrupador › piso › unidad › ambiente.', [
         ('group', 'Agrupador', False,
@@ -186,7 +252,8 @@ def selection_value(values, text):
 def sheet_key(title):
     """Hoja del formato que corresponde a una pestaña del libro (o None)."""
     key = norm(title).upper().replace(' ', '_')
-    return key if key in SHEETS else None
+    by_key = {name.replace(' ', '_'): name for name in SHEETS}
+    return by_key.get(key)
 
 
 README = [

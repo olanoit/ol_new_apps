@@ -58,9 +58,18 @@ class ConstructionMaterialRequest(models.Model):
     # Control al solicitar la aprobación
     # ------------------------------------------------------------------
     def _construction_exceeding_lines(self):
+        """Líneas que exceden el saldo del plan o repiten lo ya pedido completo
+        de su nivel y sub etapa (v1.8, M18-05)."""
         self.ensure_one()
         return self.line_ids.filtered(
-            lambda l: not l.cancelled and l.product_id and l._construction_get_excess() > 0)
+            lambda l: not l.cancelled and l.product_id and (
+                l._construction_get_excess() > 0 or l._construction_is_repeat()))
+
+    def _construction_policy(self):
+        """Política del plan para materiales (v1.8: por tipo de recurso)."""
+        self.ensure_one()
+        plan = self.construction_plan_id
+        return plan.sudo()._exceed_policy_for('material') if plan else False
 
     def action_request_approval(self):
         """Antes de pedir las revisiones: plan vigente, control del saldo y
@@ -77,15 +86,16 @@ class ConstructionMaterialRequest(models.Model):
             if not exceeding:
                 request.construction_exceed_state = 'ok'
                 continue
-            if plan.exceed_policy == 'block':
+            policy = request._construction_policy()
+            if policy == 'block':
                 raise UserError(self.env._(
                     'El requerimiento %(request)s pide más de lo que queda en el plan '
                     '%(plan)s y su política es bloquear:\n\n%(lines)s',
                     request=request.name, plan=plan.display_name,
                     lines=exceeding._construction_excess_text()))
-            if not checked and (plan.exceed_policy == 'approval'
+            if not checked and (policy == 'approval'
                                 and not request.construction_exceed_reason
-                                or plan.exceed_policy == 'warn'):
+                                or policy == 'warn'):
                 return request._construction_open_exceed_wizard()
             request.construction_exceed_state = 'exceeded'
         self._construction_sync_allocations()
@@ -118,11 +128,43 @@ class ConstructionMaterialRequest(models.Model):
         res = super()._write_approved()
         approved = self.filtered(
             lambda r: r.construction_exceed_state == 'exceeded'
-            and r.construction_plan_id.exceed_policy == 'approval')
+            and r._construction_policy() == 'approval')
         if approved:
             approved.with_context(al_construction_approving=True).write(
                 {'construction_exceed_state': 'approved'})
+            approved._construction_log_exceed()
         return res
+
+    def _construction_log_exceed(self):
+        """Registro de cada exceso autorizado (M18-05): quién, cuándo, motivo
+        y cantidad, por línea del requerimiento."""
+        Log = self.env['construction.exceed.log']
+        values = []
+        for request in self:
+            plan = request.construction_plan_id
+            for line in request.line_ids.filtered(lambda l: not l.cancelled and l.product_id):
+                line_sudo = line.sudo()
+                excess = line_sudo._construction_get_excess()
+                repeat = line_sudo._construction_is_repeat()
+                if excess <= 0 and not repeat:
+                    continue
+                plan_line = line_sudo.construction_allocation_ids.plan_line_id[:1] or \
+                    line_sudo._construction_candidate_plan_lines(plan.sudo())[:1]
+                qty = line.product_id.uom_id._compute_quantity(
+                    excess, line.product_uom_id) if excess > 0 else line.product_qty
+                values.append({
+                    'kind': 'excess' if excess > 0 else 'repeat',
+                    'plan_id': plan.id, 'project_id': request.project_id.id,
+                    'company_id': request.company_id.id, 'plan_line_id': plan_line.id,
+                    'task_id': (line.task_id or request.task_id or plan_line.task_id).id,
+                    'product_id': line.product_id.id, 'qty': qty,
+                    'uom_id': line.product_uom_id.id,
+                    'amount': qty * (plan_line.price_unit_planned or 0.0),
+                    'reason': request.construction_exceed_reason,
+                    'document': request.name, 'res_model': request._name, 'res_id': request.id,
+                })
+        if values:
+            Log._log(values)
 
     def _construction_sync_allocations(self):
         """Reparte cada línea entre las líneas del plan (las ya asignadas o las
@@ -199,7 +241,8 @@ class ConstructionMaterialRequestLine(models.Model):
 
     def _construction_get_excess(self):
         """Exceso sobre el saldo más la tolerancia, en la UdM del producto
-        (0 si cabe o si la obra no tiene plan vigente)."""
+        (0 si cabe o si la obra no tiene plan vigente). El saldo no cuenta lo
+        asignado a este mismo requerimiento."""
         self.ensure_one()
         plan = self.request_id.construction_plan_id
         if not plan or not self.product_id:
@@ -210,6 +253,38 @@ class ConstructionMaterialRequestLine(models.Model):
             line_sudo.product_uom_qty, line_sudo.construction_allocation_ids)
         uom = self.product_id.uom_id
         return excess if uom.compare(excess, tolerance) > 0 else 0.0
+
+    def _construction_is_repeat(self):
+        """El nivel y la sub etapa de la línea ya se pidieron completos: un
+        pedido nuevo es una repetición aunque el producto tenga saldo (M18-05).
+        No cuenta lo pedido por este mismo requerimiento."""
+        self.ensure_one()
+        plan = self.request_id.construction_plan_id
+        if not plan or not self.product_id:
+            return False
+        line_sudo = self.sudo()
+        plan_lines = line_sudo._construction_candidate_plan_lines(plan.sudo())
+        if not plan_lines:
+            return False
+        own = line_sudo.construction_allocation_ids
+        own_qty = {}
+        for allocation in own:
+            own_qty[allocation.plan_line_id] = own_qty.get(allocation.plan_line_id, 0.0) \
+                + allocation._get_requested_qty()
+        Line = self.env['construction.resource.plan.line'].sudo()
+        for plan_line in plan_lines:
+            if not plan_line.task_id or not plan_line.stage:
+                continue
+            group = Line.search([
+                ('plan_id', '=', plan_line.plan_id.id), ('task_id', '=', plan_line.task_id.id),
+                ('stage', '=', plan_line.stage),
+                ('resource_type', 'in', SUPPLY_TYPES)])
+            if group and all(
+                    other.product_uom_id and other.product_uom_id.compare(
+                        other.qty_requested - own_qty.get(other, 0.0), other.qty_planned) >= 0
+                    for other in group):
+                return True
+        return False
 
     def _construction_excess_text(self):
         rows = []

@@ -53,6 +53,7 @@
                 <div class="alert alert-warning" role="alert" invisible="not note">
                     <field name="note" nolabel="1"/>
                 </div>
+                <field name="exceed_reason" placeholder="Motivo si asigna más de lo que queda en el plan (alcance adicional)"/>
                 <p class="text-muted small">
                     Tarifa vigente de la actividad con su prioridad: obra y contrata, solo obra, solo
                     contrata y tarifa base. La contrata queda en las líneas del plan y su alcance se

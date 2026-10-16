@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Las órdenes de fabricación siguen la política de exceso de producción y registran el exceso autorizado (v1.8)."
 - version: '2.20261013'
   fecha: 15/10/2026
   cambios:

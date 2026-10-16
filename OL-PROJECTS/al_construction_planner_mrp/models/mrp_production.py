@@ -118,7 +118,8 @@ class MrpProduction(models.Model):
             if not rows:
                 production.construction_exceed_state = 'ok'
                 continue
-            policy = production_sudo.construction_plan_id.exceed_policy
+            # Política de producción del plan (v1.8, M18-05: por tipo de recurso).
+            policy = production_sudo.construction_plan_id._exceed_policy_for('production')
             if policy == 'block':
                 raise UserError(self.env._(
                     'La OF %(production)s pide más de lo que queda en el plan %(plan)s y su '

@@ -13,4 +13,36 @@
             </xpath>
         </field>
     </record>
+
+    <record id="res_config_settings_view_form_construction_site_auto" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.site.auto</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <block name="construction_planner_contracts" position="inside">
+                <setting company_dependent="1" id="construction_site_auto_create"
+                         help="Al marcar un proyecto como obra se crea su sede de marcación con su nombre y su cuenta analítica. Las sedes de planta no se vinculan a obras.">
+                    <field name="construction_site_auto_create"/>
+                    <div class="content-group" invisible="not construction_site_auto_create">
+                        <div class="row mt-2">
+                            <label for="construction_site_latitude" class="col-lg-5 o_light_label"/>
+                            <field name="construction_site_latitude"/>
+                        </div>
+                        <div class="row">
+                            <label for="construction_site_longitude" class="col-lg-5 o_light_label"/>
+                            <field name="construction_site_longitude"/>
+                        </div>
+                        <div class="row">
+                            <label for="construction_site_radius_m" class="col-lg-5 o_light_label"/>
+                            <field name="construction_site_radius_m"/>
+                        </div>
+                        <div class="row">
+                            <label for="construction_site_entry_deadline" class="col-lg-5 o_light_label"/>
+                            <field name="construction_site_entry_deadline" widget="float_time"/>
+                        </div>
+                    </div>
+                </setting>
+            </block>
+        </field>
+    </record>
 </odoo>

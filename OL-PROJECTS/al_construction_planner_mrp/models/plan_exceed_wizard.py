@@ -25,11 +25,23 @@ class ConstructionPlanExceedWizard(models.TransientModel):
             'qty_requested': qty,
             'qty_excess': excess,
         } for product, balance, qty, excess in production_sudo._construction_get_excess()]
-        return production_sudo.construction_plan_id.exceed_policy, lines
+        return production_sudo.construction_plan_id._exceed_policy_for('production'), lines
 
     def _confirm_document(self, reason):
         if not self.production_id:
             return super()._confirm_document(reason)
         self._check_head_approval(self.production_id)
-        self.production_id.write(self._exceed_values(reason))
-        return self.production_id.with_context(construction_exceed_checked=True).action_confirm()
+        production = self.production_id
+        rows = production.sudo()._construction_get_excess()
+        production.write(self._exceed_values(reason))
+        res = production.with_context(construction_exceed_checked=True).action_confirm()
+        if self.policy == 'approval':
+            # Registro del exceso autorizado por la jefatura (M18-05).
+            plan = production.sudo().construction_plan_id
+            self.env['construction.exceed.log']._log([{
+                'kind': 'excess', 'plan_id': plan.id, 'project_id': plan.project_id.id,
+                'company_id': plan.company_id.id, 'product_id': product.id, 'qty': excess,
+                'uom_id': product.uom_id.id, 'reason': reason, 'document': production.name,
+                'res_model': production._name, 'res_id': production.id,
+            } for product, _balance, _qty, excess in rows])
+        return res

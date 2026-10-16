@@ -31,6 +31,11 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Requerimientos y compras con la política de exceso del plan (v1.8, M18-05): repetición dentro de la tolerancia y registro del exceso autorizado."
+  - "Tablero de abastecimiento sin costos ni montos para quien no tiene el grupo de montos (M18-10)."
 - version: '2.20261013'
   fecha: 15/10/2026
   cambios:

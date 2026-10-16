@@ -29,6 +29,13 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "Catálogo de mobiliario (v1.8): clase de módulo, tipo especial, método de unión con reglas, piezas y materiales por módulo; actividades de armado e instalación y listas de tarifas."
+  - "Un producto por módulo al aprobar el plan, con su lista de materiales, fabricación y despacho de módulos a obra (M18-15)."
+  - "Receta real contra la planificada con umbral que bloquea la orden de fabricación."
+  - "Importador de la proyección de materiales (M17-18) con validación de códigos contra Odoo (M17-19), y maestro de carga con piezas, productos nuevos, tarifas, obra, contratos, hitos y venta."
 - version: '2.20261013'
   fecha: 15/10/2026
   cambios:

@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: 19.20261016
+    fecha: 16/10/2026
+    cambios:
+      - "Destino por línea: el despacho y la transferencia en espera de la compra salen en una transferencia por destino (base del material de producción a la preproducción de la planta)."
   - version: 17.20261013
     fecha: 15/10/2026
     cambios:

@@ -10,6 +10,12 @@
                         class="btn-primary" invisible="state != 'draft'"
                         groups="al_construction_planner.group_planner_planner"/>
             </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="%(action_construction_module_dispatch_wizard)d" type="action"
+                        string="Fabricar o enviar módulos"
+                        context="{'default_plan_id': id}"
+                        invisible="state not in ('approved', 'in_progress')"/>
+            </xpath>
         </field>
     </record>
 </odoo>

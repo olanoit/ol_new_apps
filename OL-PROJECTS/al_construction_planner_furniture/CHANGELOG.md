@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261016 — 16/10/2026
+
+- Catálogo de mobiliario (v1.8): clase de módulo, tipo especial, método de unión con reglas, piezas y materiales por módulo; actividades de armado e instalación y listas de tarifas.
+- Un producto por módulo al aprobar el plan, con su lista de materiales, fabricación y despacho de módulos a obra (M18-15).
+- Receta real contra la planificada con umbral que bloquea la orden de fabricación.
+- Importador de la proyección de materiales (M17-18) con validación de códigos contra Odoo (M17-19), y maestro de carga con piezas, productos nuevos, tarifas, obra, contratos, hitos y venta.
+
 ## 2.20261013 — 15/10/2026
 
 - La OF del ambiente hereda la OF genérica del puente de producción; la familia de la partida pasa a `al_construction_planner_sale_furniture`.

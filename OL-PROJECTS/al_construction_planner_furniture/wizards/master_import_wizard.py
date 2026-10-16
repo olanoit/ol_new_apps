@@ -193,8 +193,14 @@ class ConstructionMasterImportWizard(models.TransientModel):
         company = self._company()
         Activity = self.env['construction.labor.activity'].with_context(active_test=False)
         is_manager = self.env.user.has_group('al_construction_planner.group_planner_manager')
-        stage_values = {code: (name, *STAGE_VALUES.get(code, ()))
-                        for code, name in self.env['construction.stage']._get_selection()}
+        # Etapas hoja por su número y nombre, su nombre y sus otros nombres
+        # («Producción» es 1.1 Producción de piezas: v1.8, M18-14).
+        stage_values = {}
+        for stage in self.env['construction.stage'].search([('is_group', '=', False)]):
+            aliases = [alias.strip() for alias in (stage.alias_names or '').split(',')
+                       if alias.strip()]
+            stage_values[stage.code] = (stage._label(), stage.name, *aliases,
+                                        *STAGE_VALUES.get(stage.code, ()))
 
         def invalid(sheet, row, column, value):
             warn['invalid_value'].append(self.env._(
@@ -359,10 +365,12 @@ class ConstructionMasterImportWizard(models.TransientModel):
             if not module_type:
                 invalid('MODULOS', row, self.env._('Tipo'), row['type'])
                 continue
-            if activity not in activity_codes:
+            # Sin actividad: la del catálogo por el método de unión o el tipo
+            # de módulo (v1.8, M18-19).
+            if activity and activity not in activity_codes:
                 warn['unknown_activity'].append('MODULOS · %s' % (activity or '—'))
                 continue
-            if activity not in module_activity_codes:
+            if activity and activity not in module_activity_codes:
                 warn['activity_not_module'].append('%s · %s' % (code, activity))
                 continue
             if width is not None and width < 0:
@@ -376,6 +384,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'ml_group': ml_group, '_activity': activity,
                 '_furniture': _text(row.get('furniture')),
             }
+            modules[code].update(self._module_extra_values(row))
             count += 1
         stats['MODULOS'] = (len(rows), count, 0)
 
@@ -735,6 +744,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
             modules=summary['modules'], spaces=summary['spaces'], eto=summary['eto']))
         return self.project_id.action_view_construction_typologies()
 
+    def _module_extra_values(self, row):
+        """Columnas del módulo que agrega la v1.8 (las lee el puente)."""
+        return {}
+
     def _apply(self, data):
         project = self.project_id
         company = self._company()
@@ -817,7 +830,8 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 f.name: f for f in typology.furniture_line_ids}
             for module_code, vals in modules.items():
                 furniture = furniture_names.get(vals.pop('_furniture', ''))
-                vals = dict(vals, assembly_activity_id=activities[vals.pop('_activity')].id,
+                activity = activities.get(vals.pop('_activity'))
+                vals = dict(vals, assembly_activity_id=activity.id if activity else False,
                             furniture_id=furniture.id if furniture else False)
                 if module_code in current:
                     current.pop(module_code).write(vals)

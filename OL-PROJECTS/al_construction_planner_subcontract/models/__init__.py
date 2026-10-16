@@ -9,3 +9,4 @@ from . import construction_contract_settlement
 from . import account_move
 from . import project_project
 from . import construction_planner_home
+from . import construction_amounts

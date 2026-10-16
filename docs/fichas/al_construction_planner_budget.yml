@@ -20,6 +20,10 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '2.20261016'
+  fecha: 16/10/2026
+  cambios:
+  - "El control de presupuesto usa la política de exceso de material del plan (v1.8, M18-05)."
 - version: '1.20261013'
   fecha: 15/10/2026
   cambios:

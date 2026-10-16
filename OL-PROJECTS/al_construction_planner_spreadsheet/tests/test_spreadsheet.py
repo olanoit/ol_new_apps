@@ -21,12 +21,13 @@ class TestConstructionSpreadsheet(PlannerCommon):
         self.assertEqual(action['params']['spreadsheet_id'], document.id)
         data = json.loads(document.spreadsheet_data)
         names = [sheet['name'] for sheet in data['sheets']]
-        self.assertEqual(names, list(SHEETS) + ['REFERENCIAS'])
+        self.assertEqual(names, ['LEEME', 'RESUMEN'] + list(SHEETS) + ['REFERENCIAS', '_LISTAS'])
         arbol = next(sheet for sheet in data['sheets'] if sheet['name'] == 'ARBOL')
         self.assertEqual(arbol['cells']['A1'], SHEETS['ARBOL'][1][0][1])
         self.assertEqual({lst['model'] for lst in data['lists'].values()},
-                         {'construction.labor.activity', 'construction.typology'})
-        reference = data['sheets'][-1]
+                         {'construction.labor.activity', 'construction.typology',
+                          'product.product', 'product.category'})
+        reference = data['sheets'][-2]
         self.assertEqual(reference['cells']['A3'], '=ODOO.LIST(1,1,"code")')
         # Se abre la misma hoja, no otra.
         self.project.action_construction_open_spreadsheet()

@@ -49,6 +49,12 @@ class ConstructionPlanContractWizard(models.TransientModel):
         check_company=True,
         help='La OC abierta de la contrata en la obra; vacía: se creará una en borrador.')
     note = fields.Text(string='Avisos', compute='_compute_line_ids', store=True)
+    # Alcance adicional sobre el saldo de la actividad (v1.8, M18-05): sigue la
+    # política de contratas del plan.
+    exceed_reason = fields.Text(
+        string='Motivo del alcance adicional',
+        help='Obligatorio si se asigna más de lo que queda de la actividad en la selección y '
+             'la política de contratas pide aprobación (la da la jefatura de proyectos).')
 
     @api.model
     def default_get(self, fields_list):
@@ -174,6 +180,46 @@ class ConstructionPlanContractWizard(models.TransientModel):
         account = self.plan_id.project_id.account_id
         return {str(account.id): 100.0} if account else False
 
+    def _check_additional_scope(self, rows):
+        """Alcance por encima del saldo de la actividad en la selección: la
+        política de contratas del plan (avisar, aprobación de la jefatura o
+        bloquear) y el registro del exceso autorizado."""
+        from odoo.addons.al_construction_planner.models.common import PROJECT_HEAD_GROUPS
+        plan = self.plan_id
+        excess_rows = []
+        for row in rows:
+            balance = sum(l.qty_planned - l.qty_requested for l in row.plan_line_ids)
+            if row.uom_id.compare(row.qty, balance) > 0:
+                excess_rows.append((row, row.qty - balance))
+        if not excess_rows:
+            return
+        policy = plan._exceed_policy_for('contract')
+        text = '\n'.join('   · %s: %s %s' % (row.activity_id.display_name, round(excess, 2),
+                                               row.uom_id.name) for row, excess in excess_rows)
+        if policy == 'block':
+            raise UserError(self.env._(
+                'El alcance pasa lo que queda en el plan y la política de contratas es '
+                'bloquear:\n\n%s', text))
+        if policy == 'approval':
+            if not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
+                raise UserError(self.env._(
+                    'El alcance adicional lo aprueba la jefatura de proyectos:\n\n%s', text))
+            if not (self.exceed_reason or '').strip():
+                raise UserError(self.env._('Escriba el motivo del alcance adicional.'))
+            self.env['construction.exceed.log']._log([{
+                'kind': 'excess', 'plan_id': plan.id, 'project_id': plan.project_id.id,
+                'company_id': plan.company_id.id, 'plan_line_id': row.plan_line_ids[:1].id,
+                'task_id': row.plan_line_ids[:1].task_id.id,
+                'activity_id': row.activity_id.id, 'partner_id': self.partner_id.id,
+                'qty': excess, 'uom_id': row.uom_id.id, 'amount': excess * row.price_unit,
+                'reason': self.exceed_reason, 'document': plan.display_name,
+                'res_model': plan._name, 'res_id': plan.id,
+            } for row, excess in excess_rows])
+        else:
+            plan.message_post(body=self.env._(
+                'Alcance adicional asignado a %(partner)s sobre lo planificado:\n%(text)s',
+                partner=self.partner_id.display_name, text=text))
+
     def action_assign(self):
         self.ensure_one()
         plan = self.plan_id
@@ -185,6 +231,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
         if not rows:
             raise UserError(self.env._(
                 'No hay actividades de contrata por asignar en esta selección.'))
+        self._check_additional_scope(rows)
         project = plan.project_id
         # sudo: la OC de servicio nace de la asignación y queda en borrador
         # para que Compras la confirme; quien asigna (Proyectos) no necesita

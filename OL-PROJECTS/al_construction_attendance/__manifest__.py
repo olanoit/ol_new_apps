@@ -27,6 +27,13 @@ y 18):
   sede por el costo por hora del trabajador, contra lo planificado de
   personal propio; al publicarlo crea los apuntes analíticos con la obra, la
   etapa de la sede y MODF.
+* **Cuadrillas en jornales** (v1.8, M18-06 a M18-08): el rol de la cuadrilla
+  con su categoría de construcción civil (costo de referencia: el jornal de la
+  tabla vigente) y la validación de la categoría al asignar personas; los
+  jornales ejecutados salen de la marcación en la sede de la obra,
+  redondeados en la unidad de la obra y valorizados al jornal de la categoría
+  o al costo del puesto; la sede de obra se crea sola al marcar el proyecto
+  como obra y las sedes de planta no se vinculan a obras.
 * **Costo de personal por sede**: la distribución analítica de la planilla
   lleva, además de la cuenta de la obra, la etapa de la sede y la partida de
   mano de obra fija (MODF), y se contrasta con el presupuesto de la obra.
@@ -36,7 +43,7 @@ y 18):
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '2.20261013',
+    'version': '3.20261016',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],

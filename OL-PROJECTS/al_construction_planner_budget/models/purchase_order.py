@@ -104,7 +104,8 @@ class PurchaseOrder(models.Model):
                 if order.construction_exceed_state != 'ok':
                     order.construction_exceed_state = 'ok'
                 continue
-            policy = max((row[0].exceed_policy for row in rows), key=POLICY_RANK.get)
+            policy = max((row[0]._exceed_policy_for('material') for row in rows),
+                         key=POLICY_RANK.get)
             if policy == 'block':
                 raise UserError(self.env._(
                     'La OC %(order)s pasa el presupuesto analítico del plan de la obra y su '

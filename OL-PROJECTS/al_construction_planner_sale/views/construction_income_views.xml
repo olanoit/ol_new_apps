@@ -250,15 +250,22 @@
                     </group>
                     <notebook>
                         <page string="Partidas" name="lines">
-                            <field name="line_ids" nolabel="1" readonly="1">
-                                <list create="0" delete="0">
-                                    <field name="sale_line_id"/>
-                                    <field name="price"/>
+                            <field name="line_ids" nolabel="1" readonly="state != 'draft'">
+                                <list create="0" delete="0" editable="bottom" decoration-warning="is_manual">
+                                    <field name="sale_line_id" readonly="1"/>
+                                    <field name="price" readonly="1"/>
                                     <field name="progress_prev" widget="percentage"/>
                                     <field name="progress_period" widget="percentage"/>
                                     <field name="progress_cumulative" widget="percentage"/>
-                                    <field name="amount_delivered" sum="Entregado"/>
-                                    <field name="amount_confirmed" sum="Confirmado"/>
+                                    <field name="pct_rule" optional="show"/>
+                                    <field name="pct_manual" optional="show"/>
+                                    <field name="manual_reason" optional="show" required="pct_manual"/>
+                                    <field name="is_manual" optional="show" readonly="1"/>
+                                    <field name="manual_user_id" optional="hide" readonly="1"/>
+                                    <field name="manual_date" optional="hide" readonly="1"/>
+                                    <field name="state" column_invisible="True"/>
+                                    <field name="amount_delivered" sum="Entregado" readonly="1"/>
+                                    <field name="amount_confirmed" sum="Confirmado" readonly="1"/>
                                     <field name="amount_pending" sum="Por valorizar" optional="hide"/>
                                     <field name="amount_amortization" sum="Amortización" optional="hide"/>
                                     <field name="amount_guarantee" sum="Fondo de garantía"/>

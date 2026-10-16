@@ -37,10 +37,20 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         string='Primera semana', compute='_compute_date_start', store=True, readonly=False,
         precompute=True, required=True, help='Se ajusta al inicio de la semana de la obra.')
     weeks = fields.Integer(string='Semanas', default=1, required=True)
+    # Jornales (v1.8, M18-07): la cuadrilla se planifica en días; las horas
+    # de cada turno son los días por las horas de un jornal de la compañía.
+    time_mode = fields.Selection(
+        [('days', 'Jornales (días)'), ('hours', 'Horas')], string='Planificar en',
+        default='hours', required=True)
+    days_per_week = fields.Float(
+        string='Días por semana', default=5.0,
+        help='Jornales de cada persona por semana; se reparten entre las líneas de la selección '
+             'según su monto planificado.')
     hours_per_week = fields.Float(
         string='Horas por semana', default=48.0, required=True,
         help='De cada recurso; se reparten entre las líneas de la selección según su monto '
              'planificado.')
+    days_total = fields.Float(string='Jornales', compute='_compute_line_ids', store=True)
     line_ids = fields.One2many(
         'construction.plan.crew.wizard.line', 'wizard_id', string='Vista previa',
         compute='_compute_line_ids', store=True)
@@ -79,11 +89,27 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         start = project._construction_period(self.date_start)[0] if project else self.date_start
         return [start + timedelta(weeks=week) for week in range(max(self.weeks, 0))]
 
+    def _hours_per_day(self):
+        self.ensure_one()
+        company = self.plan_id.company_id or self.env.company
+        return company.construction_crew_hours_per_day or 8.0
+
+    def _weekly_hours(self):
+        """Horas por semana de cada persona: las escritas o, en jornales, los
+        días por las horas de un jornal."""
+        self.ensure_one()
+        if self.time_mode == 'days':
+            return (self.days_per_week or 0.0) * self._hours_per_day()
+        return self.hours_per_week
+
     @api.depends('plan_id', 'task_ids', 'whole_project', 'role_id', 'resource_ids',
                  'member_ids.role_id', 'member_ids.resource_id',
-                 'date_start', 'weeks', 'hours_per_week', 'stage_ids')
+                 'date_start', 'weeks', 'hours_per_week', 'stage_ids', 'time_mode',
+                 'days_per_week')
     def _compute_line_ids(self):
         for wizard in self:
+            weekly_hours = wizard._weekly_hours() if wizard.plan_id else 0.0
+            hours_per_day = wizard._hours_per_day() if wizard.plan_id else 8.0
             commands, notes = [Command.clear()], []
             members = wizard._get_members() if wizard.plan_id else []
             # sudo: el empleado del recurso es de RR. HH.; solo se mira si
@@ -105,7 +131,7 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                         'La selección no tiene líneas de personal propio del rol %s.',
                         role.display_name))
                     continue
-                if not wizard.date_start or wizard.hours_per_week <= 0:
+                if not wizard.date_start or weekly_hours <= 0:
                     continue
                 total_amount = sum(lines.mapped('amount_planned'))
                 shares = {line: (line.amount_planned / total_amount if total_amount
@@ -114,7 +140,7 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                                  if member_role == role and r not in no_employee]:
                     for week in wizard._get_weeks():
                         for line, share in shares.items():
-                            hours = round(wizard.hours_per_week * share, 2)
+                            hours = round(weekly_hours * share, 2)
                             if hours <= 0:
                                 continue
                             hours_total += hours
@@ -124,10 +150,12 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                                 'week_start': week,
                                 'plan_line_id': line.id,
                                 'hours': hours,
+                                'days': round(hours / hours_per_day, 4) if hours_per_day else 0.0,
                             }))
             wizard.line_ids = commands
             wizard.plan_line_count = len(all_lines)
             wizard.hours_total = hours_total
+            wizard.days_total = round(hours_total / hours_per_day, 2) if hours_per_day else 0.0
             wizard.note = '\n'.join(notes) or False
 
     # ------------------------------------------------------------------
@@ -143,12 +171,27 @@ class ConstructionPlanCrewWizard(models.TransientModel):
 
         return to_utc(week_start, SLOT_START), to_utc(week_start + timedelta(days=6), SLOT_END)
 
+    def _check_members(self):
+        """Cada persona asignada tiene el puesto (o, con la planilla de
+        construcción civil, la categoría) de su rol (M18-06)."""
+        self.ensure_one()
+        errors = []
+        # sudo: el empleado y su puesto son de RR. HH.; solo se comparan.
+        for resource, role in self._get_members():
+            employee = resource.sudo().employee_id
+            message = role._construction_check_member(employee) if role else False
+            if message:
+                errors.append(message)
+        if errors:
+            raise UserError('\n'.join(errors))
+
     def action_assign(self):
         self.ensure_one()
         plan = self.plan_id
         plan._check_supply_wizard_state()
-        if self.weeks <= 0 or self.hours_per_week <= 0:
-            raise UserError(self.env._('Indique las semanas y las horas por semana.'))
+        if self.weeks <= 0 or self._weekly_hours() <= 0:
+            raise UserError(self.env._('Indique las semanas y las horas o los días por semana.'))
+        self._check_members()
         rows = self.line_ids.filtered(lambda r: r.hours > 0)
         if not rows:
             raise UserError(self.env._(
@@ -179,6 +222,9 @@ class ConstructionPlanCrewWizard(models.TransientModel):
                 'construction_plan_line_id': line.id,
             })
         slots_sudo = self.env['planning.slot'].sudo().create(slot_values)
+        # Jornales planificados al costo de referencia del rol (M18-07).
+        self.env['construction.crew.day']._create_planned(
+            slots_sudo, {slot.id: row.days for row, slot in zip(rows, slots_sudo)})
         allocation_values = []
         for row, slot_sudo in zip(rows, slots_sudo):
             line = row.plan_line_id
@@ -197,11 +243,12 @@ class ConstructionPlanCrewWizard(models.TransientModel):
         plan._mark_in_progress()
         plan.message_post(body=self.env._(
             'Cuadrilla %(role)s asignada (%(selection)s): %(resources)s, %(weeks)s semanas, '
-            '%(count)s turnos y %(hours)s horas.',
+            '%(count)s turnos, %(hours)s horas y %(days)s jornales.',
             role=', '.join(rows.role_id.mapped('display_name')),
             selection=self._get_selection_label(),
             resources=', '.join(rows.resource_id.mapped('name')), weeks=self.weeks,
-            count=len(slots_sudo), hours=round(sum(rows.mapped('hours')), 2)))
+            count=len(slots_sudo), hours=round(sum(rows.mapped('hours')), 2),
+            days=round(sum(rows.mapped('days')), 2)))
         if slots_sudo.sudo(False).has_access('read'):
             return {
                 'type': 'ir.actions.act_window',
@@ -231,6 +278,7 @@ class ConstructionPlanCrewWizardLine(models.TransientModel):
     task_id = fields.Many2one(related='plan_line_id.task_id', string='Nivel')
     activity_id = fields.Many2one(related='plan_line_id.activity_id', string='Actividad')
     hours = fields.Float(string='Horas', digits=(16, 2))
+    days = fields.Float(string='Jornales', digits=(16, 4))
 
 
 class ConstructionPlanCrewWizardMember(models.TransientModel):

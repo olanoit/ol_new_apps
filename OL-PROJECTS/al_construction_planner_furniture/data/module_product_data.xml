@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Atributos del producto de cada módulo (v1.8, M18-15): no crean variantes. -->
+<odoo noupdate="1">
+    <record id="attribute_module_class" model="product.attribute">
+        <field name="name">Tipo de módulo</field>
+        <field name="create_variant">no_variant</field>
+    </record>
+    <record id="attribute_join_method" model="product.attribute">
+        <field name="name">Método de unión</field>
+        <field name="create_variant">no_variant</field>
+    </record>
+</odoo>

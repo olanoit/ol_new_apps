@@ -14,7 +14,8 @@ from markupsafe import Markup
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.al_construction_planner.models.common import DRIVER_TYPES
+from odoo.addons.al_construction_planner.models.common import DRIVER_TYPES, PROJECT_HEAD_GROUPS
+from odoo.addons.al_construction_planner.models.construction_exceed import REWORK_REASONS
 from odoo.addons.al_construction_planner.models.construction_resource_plan import OPEN_STATES
 
 SETTLEMENT_STATES = [
@@ -80,9 +81,9 @@ class ConstructionContractSettlement(models.Model):
         'construction.task.progress', 'settlement_id', string='Avances liquidados',
         readonly=True)
     progress_count = fields.Integer(string='Nº de avances', compute='_compute_progress_count')
+    # Solo el porcentaje escrito y su motivo se editan (en la vista).
     line_ids = fields.One2many(
-        'construction.contract.settlement.line', 'settlement_id', string='Líneas',
-        readonly=True)
+        'construction.contract.settlement.line', 'settlement_id', string='Líneas')
     amount_gross = fields.Monetary(
         string='Bruto', compute='_compute_amounts', store=True, currency_field='currency_id')
     retention_amount = fields.Monetary(
@@ -106,6 +107,15 @@ class ConstructionContractSettlement(models.Model):
         related='invoice_id.payment_state', string='Estado del pago')
     return_reason = fields.Text(string='Motivo de la devolución', readonly=True, copy=False)
     date_approved = fields.Datetime(string='Aprobada el', readonly=True, copy=False)
+    # Pago repetido y porcentaje manual sobre el avance (v1.8, M18-21 y
+    # M18-09): la liquidación espera la autorización de la jefatura.
+    needs_head_authorization = fields.Boolean(
+        string='Espera a la jefatura', compute='_compute_needs_head_authorization',
+        help='Tiene un pago repetido (la misma actividad, módulo y unidad ya liquidados) o un '
+             'porcentaje manual por encima del avance validado.')
+    head_authorized_by = fields.Many2one('res.users', string='Autorizada por', readonly=True,
+                                         copy=False, tracking=True)
+    head_authorized_on = fields.Datetime(string='Autorizada el', readonly=True, copy=False)
 
     _period_unique = models.UniqueIndex(
         '(partner_id, project_id, period_start) WHERE state != \'cancel\'',
@@ -142,6 +152,12 @@ class ConstructionContractSettlement(models.Model):
                     'La semana de liquidación de %(project)s empieza el %(day)s.',
                     project=project.display_name,
                     day=days[project.construction_week_start_day].lower()))
+
+    @api.depends('line_ids.is_repeat', 'line_ids.manual_over', 'head_authorized_by')
+    def _compute_needs_head_authorization(self):
+        for settlement in self:
+            settlement.needs_head_authorization = not settlement.head_authorized_by and any(
+                line.is_repeat or line.manual_over for line in settlement.line_ids)
 
     def _compute_progress_count(self):
         counts = dict(self.env['construction.task.progress']._read_group(
@@ -233,12 +249,15 @@ class ConstructionContractSettlement(models.Model):
             # La OC de servicio se lee aunque quien prepara la liquidación no
             # tenga acceso a compras: solo para enlazar la línea y su tarifa.
             progresses_sudo = Progress.sudo().search(settlement._get_progress_domain())
+            # Una línea por línea de la OC y, aparte, el re-trabajo con su
+            # motivo (v1.8, M18-21).
             by_po_line = defaultdict(lambda: Progress.sudo())
             orphans = Progress.sudo()
             for progress in progresses_sudo:
                 po_line = self._get_service_line(progress)
                 if po_line:
-                    by_po_line[po_line] |= progress
+                    key = (po_line, progress.is_rework, progress.rework_reason or False)
+                    by_po_line[key] |= progress
                 else:
                     orphans |= progress
             included = Progress.sudo().union(*by_po_line.values()) if by_po_line \
@@ -247,22 +266,29 @@ class ConstructionContractSettlement(models.Model):
             (settlement_sudo.progress_ids - included).write({'settlement_id': False})
             included.write({'settlement_id': settlement.id})
             commands = [Command.clear()]
-            for po_line, progresses in sorted(
-                    by_po_line.items(), key=lambda kv: (kv[0].sequence, kv[0].id)):
+            for (po_line, is_rework, rework_reason), progresses in sorted(
+                    by_po_line.items(), key=lambda kv: (kv[0][0].sequence, kv[0][0].id,
+                                                        kv[0][1], kv[0][2] or '')):
                 activity = progresses.activity_id[:1]
                 qty = sum(progresses.mapped('qty_weighted'))
+                repeat = 0.0 if is_rework else settlement._repeat_qty(progresses)
                 if po_line.product_uom_id and activity.uom_id \
                         and po_line.product_uom_id != activity.uom_id:
                     qty = activity.uom_id._compute_quantity(qty, po_line.product_uom_id)
+                    repeat = activity.uom_id._compute_quantity(repeat, po_line.product_uom_id)
                 commands.append(Command.create({
                     'activity_id': activity.id,
                     'purchase_line_id': po_line.id,
                     'qty_period': qty,
                     'price_unit': po_line.price_unit,
                     'retention_pct': po_line.construction_retention_pct,
+                    'is_rework': is_rework,
+                    'rework_reason': rework_reason,
+                    'qty_repeat': repeat,
                 }))
-            orders = Progress.env['purchase.order.line'].union(*by_po_line).order_id \
-                if by_po_line else self.env['purchase.order']
+            po_lines = [key[0] for key in by_po_line]
+            orders = Progress.env['purchase.order.line'].union(*po_lines).order_id \
+                if po_lines else self.env['purchase.order']
             settlement._construction_refresh_discounts()
             settlement_sudo.write({
                 'line_ids': commands,
@@ -274,6 +300,67 @@ class ConstructionContractSettlement(models.Model):
                 settlement.message_post(body=self.env._(
                     'Avances validados sin OC de servicio de la contrata (asigne la contrata '
                     'con «Asignar contrata»): %s.', ', '.join(orphans.mapped('name'))))
+
+    def _repeat_qty(self, progresses):
+        """Cantidad de ``progresses`` (no re-trabajo) que repite lo ya liquidado:
+        la misma actividad en el mismo nivel (módulo, unidad) ya entró en otra
+        liquidación por lo presupuestado, de esta o de otra contrata (M18-21)."""
+        self.ensure_one()
+        Progress = self.env['construction.task.progress'].sudo()
+        Line = self.env['construction.resource.plan.line'].sudo()
+        repeat = 0.0
+        for (task, activity), group in progresses.grouped(
+                lambda p: (p.task_id, p.activity_id)).items():
+            plan = group.plan_line_id.plan_id[:1]
+            planned = sum(Line.search([
+                ('plan_id', '=', plan.id), ('task_id', '=', task.id),
+                ('activity_id', '=', activity.id)]).mapped('qty_planned'))
+            before = sum(Progress.search([
+                ('task_id', '=', task.id), ('activity_id', '=', activity.id),
+                ('is_rework', '=', False), ('state', '=', 'validated'),
+                ('settlement_id', '!=', False), ('settlement_id', '!=', self.id),
+                ('settlement_id.state', '!=', 'cancel')]).mapped('qty_weighted'))
+            current = sum(group.mapped('qty_weighted'))
+            over = before + current - planned
+            uom = activity.uom_id
+            if uom and uom.compare(over, 0.0) > 0:
+                repeat += min(over, current)
+        return repeat
+
+    def action_head_authorize(self):
+        """La jefatura autoriza el pago repetido y el porcentaje manual sobre
+        el avance validado; cada uno queda registrado."""
+        if not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
+            raise UserError(self.env._('Autoriza la jefatura de proyectos.'))
+        Log = self.env['construction.exceed.log']
+        for settlement in self.filtered('needs_head_authorization'):
+            values = []
+            for line in settlement.line_ids.filtered(lambda l: l.is_repeat or l.manual_over):
+                plan_line = line._get_plan_lines()[:1]
+                base = {
+                    'plan_id': settlement.plan_id.id, 'project_id': settlement.project_id.id,
+                    'company_id': settlement.company_id.id, 'plan_line_id': plan_line.id,
+                    'task_id': plan_line.task_id.id, 'activity_id': line.activity_id.id,
+                    'partner_id': settlement.partner_id.id, 'uom_id': line.uom_id.id,
+                    'document': settlement.name, 'res_model': settlement._name,
+                    'res_id': settlement.id,
+                }
+                if line.is_repeat:
+                    values.append(dict(base, kind='repeat_payment', qty=line.qty_repeat,
+                                       amount=line.qty_repeat * line.price_unit,
+                                       reason=self.env._('Pago repetido autorizado')))
+                if line.manual_over:
+                    extra = line.qty_settle - line.qty_period
+                    values.append(dict(base, kind='manual_pct', qty=extra,
+                                       amount=extra * line.price_unit,
+                                       reason=line.manual_reason))
+            Log._log(values)
+            settlement.write({'head_authorized_by': self.env.user.id,
+                              'head_authorized_on': fields.Datetime.now()})
+            settlement.message_post(body=self.env._(
+                'Autorizada por la jefatura: pagos repetidos y porcentajes manuales sobre el '
+                'avance validado.'))
+        return True
 
     def action_refresh(self):
         if self.filtered(lambda s: s.state != 'draft'):
@@ -372,6 +459,22 @@ class ConstructionContractSettlement(models.Model):
                     'La liquidación %s no tiene líneas: actualice sus avances.',
                     settlement.display_name))
         self.write({'state': 'submitted', 'return_reason': False})
+        self.filtered('needs_head_authorization')._notify_heads()
+
+    def _notify_heads(self):
+        """Actividad para la jefatura de proyectos: hay algo que autorizar."""
+        group = self.env.ref('al_construction_planner.group_planner_project_head',
+                             raise_if_not_found=False)
+        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        for settlement in self:
+            users = group.sudo().all_user_ids.filtered(
+                lambda u: not u.share and settlement.company_id in u.company_ids) if group else []
+            for user in users[:1]:
+                settlement.activity_schedule(
+                    activity_type_id=activity_type.id if activity_type else False,
+                    summary=self.env._('Autorizar la liquidación'), user_id=user.id,
+                    note=self.env._('Tiene pagos repetidos o porcentajes manuales sobre el avance '
+                                    'validado.'))
 
     def action_open_return_wizard(self):
         self._check_supervisor()
@@ -395,9 +498,17 @@ class ConstructionContractSettlement(models.Model):
 
     def action_validate(self):
         """El supervisor valida las cantidades; siguen las revisiones de la
-        jefatura (tier validation). Sin reglas que apliquen, se aprueba."""
+        jefatura (tier validation). Sin reglas que apliquen, se aprueba. Con
+        un pago repetido o un porcentaje manual sobre el avance validado,
+        espera la autorización de la jefatura (M18-21, M18-09)."""
         self._check_supervisor()
         self._check_state(('submitted',))
+        waiting = self.filtered('needs_head_authorization')
+        if waiting:
+            raise UserError(self.env._(
+                'La liquidación %s tiene pagos repetidos o porcentajes manuales sobre el avance '
+                'validado: espera la autorización de la jefatura de proyectos.',
+                ', '.join(waiting.mapped('display_name'))))
         self.write({'state': 'validated'})
         for settlement in self:
             reviews = settlement.request_validation() if settlement.need_validation else False
@@ -441,6 +552,7 @@ class ConstructionContractSettlement(models.Model):
                 'invoice_id': invoice_sudo.id,
                 'date_approved': fields.Datetime.now(),
             })
+            settlement._log_rework()
             settlement.message_post(body=Markup(self.env._(
                 'Aprobada: recibido en %(order)s y factura %(invoice)s con vencimiento el '
                 '%(due)s.')) % {
@@ -450,11 +562,32 @@ class ConstructionContractSettlement(models.Model):
             if settlement.plan_id:
                 settlement.plan_id._mark_in_progress()
 
+    def _log_rework(self):
+        """El re-trabajo liquidado queda separado en el análisis (M18-21)."""
+        self.ensure_one()
+        values = []
+        for line in self.line_ids.filtered('is_rework'):
+            plan_line = line._get_plan_lines()[:1]
+            values.append({
+                'kind': 'rework', 'plan_id': self.plan_id.id, 'project_id': self.project_id.id,
+                'company_id': self.company_id.id, 'plan_line_id': plan_line.id,
+                'task_id': plan_line.task_id.id, 'activity_id': line.activity_id.id,
+                'partner_id': self.partner_id.id, 'qty': line.qty_settle,
+                'uom_id': line.uom_id.id, 'amount': line.amount,
+                'rework_reason': line.rework_reason,
+                'reason': dict(REWORK_REASONS).get(line.rework_reason),
+                'document': self.name, 'res_model': self._name, 'res_id': self.id,
+            })
+        if values:
+            self.env['construction.exceed.log']._log(values)
+
     def _receive_on_purchase_order(self):
         """Suma lo de la semana a lo recibido de cada línea de la OC (recepción
-        manual de servicios). No deja recibir más que lo ordenado."""
+        manual de servicios). No deja recibir más que lo ordenado. El
+        re-trabajo y lo repetido autorizado se facturan sin recibirse: están
+        fuera del alcance de la OC."""
         self.ensure_one()
-        lines = self.line_ids
+        lines = self.line_ids.filtered(lambda l: not l.is_rework)
         orders = lines.purchase_line_id.order_id
         not_confirmed = orders.filtered(lambda o: o.state != 'purchase')
         if not_confirmed:
@@ -463,7 +596,7 @@ class ConstructionContractSettlement(models.Model):
                 ', '.join(not_confirmed.mapped('name'))))
         for line in lines:
             po_line = line.purchase_line_id
-            received = po_line.qty_received + line.qty_period
+            received = po_line.qty_received + line._qty_to_receive()
             if po_line.product_uom_id.compare(received, po_line.product_qty) > 0:
                 raise UserError(self.env._(
                     '%(activity)s: con esta liquidación se recibirían %(received)s de '
@@ -472,7 +605,7 @@ class ConstructionContractSettlement(models.Model):
                     received=round(received, 2), ordered=round(po_line.product_qty, 2),
                     uom=po_line.product_uom_id.name, order=po_line.order_id.name))
         for line in lines:
-            line.purchase_line_id.qty_received += line.qty_period
+            line.purchase_line_id.qty_received += line._qty_to_receive()
 
     def _create_invoice(self):
         """Factura de proveedor desde lo recibido de la semana, con
@@ -493,7 +626,11 @@ class ConstructionContractSettlement(models.Model):
         line_vals = []
         for line in self.line_ids:
             values = line.purchase_line_id._prepare_account_move_line(invoice)
-            values['quantity'] = line.qty_period
+            values['quantity'] = line.qty_settle
+            if line.is_rework:
+                values['name'] = self.env._('Re-trabajo (%(reason)s): %(name)s',
+                                            reason=dict(REWORK_REASONS).get(line.rework_reason, ''),
+                                            name=values.get('name') or line.activity_id.name)
             line_vals.append(values)
         invoice.write({'invoice_line_ids': [Command.create(v) for v in line_vals]})
         # Las líneas negativas van en otra escritura: si todas las líneas
@@ -606,6 +743,36 @@ class ConstructionContractSettlementLine(models.Model):
     price_unit = fields.Monetary(string='Tarifa', currency_field='currency_id')
     amount = fields.Monetary(
         string='Monto', compute='_compute_amount', store=True, currency_field='currency_id')
+    # Re-trabajo y pago repetido (v1.8, M18-21).
+    is_rework = fields.Boolean(string='Re-trabajo', readonly=True)
+    rework_reason = fields.Selection(REWORK_REASONS, string='Motivo del re-trabajo', readonly=True)
+    qty_repeat = fields.Float(
+        string='Repetido', digits='Product Unit', readonly=True,
+        help='Parte del driver que repite lo ya liquidado de la misma actividad, módulo y '
+             'unidad: espera la autorización de la jefatura.')
+    is_repeat = fields.Boolean(string='Pago repetido', compute='_compute_is_repeat', store=True)
+    # Porcentaje manual (v1.8, M18-09): la línea propone el avance validado y
+    # admite otro porcentaje con motivo, marcado como manual.
+    pct_validated = fields.Float(
+        string='% validado', compute='_compute_cumulative',
+        help='Avance validado acumulado de la actividad en la contrata, con esta semana.')
+    pct_manual = fields.Float(
+        string='% escrito', digits=(5, 2),
+        help='Porcentaje acumulado que se liquida en lugar del validado. Pide motivo; si supera '
+             'el validado, lo aprueba la jefatura de proyectos.')
+    manual_reason = fields.Text(string='Motivo del porcentaje')
+    is_manual = fields.Boolean(string='Manual', compute='_compute_qty_settle', store=True)
+    manual_user_id = fields.Many2one('res.users', string='Escrito por', readonly=True)
+    manual_date = fields.Datetime(string='Escrito el', readonly=True)
+    manual_over = fields.Boolean(
+        string='Sobre lo validado', compute='_compute_qty_settle', store=True)
+    qty_settled_before = fields.Float(
+        string='Liquidado antes', digits='Product Unit', readonly=True,
+        help='Lo ya liquidado de la actividad en liquidaciones anteriores.')
+    qty_settle = fields.Float(
+        string='A liquidar', compute='_compute_qty_settle', store=True, digits='Product Unit',
+        help='El driver de la semana o, con un porcentaje escrito, lo que lleva el acumulado a '
+             'ese porcentaje.')
     retention_pct = fields.Float(string='Retención (%)', digits=(5, 2))
     qty_cumulative = fields.Float(
         string='Acumulado', compute='_compute_cumulative', digits='Product Unit')
@@ -613,12 +780,78 @@ class ConstructionContractSettlementLine(models.Model):
         string='Presupuestado', compute='_compute_cumulative', digits='Product Unit')
     progress_pct = fields.Float(string='Avance', compute='_compute_cumulative')
 
-    @api.depends('qty_period', 'price_unit')
+    @api.depends('qty_repeat')
+    def _compute_is_repeat(self):
+        for line in self:
+            line.is_repeat = bool(line.uom_id) and line.uom_id.compare(line.qty_repeat, 0.0) > 0 \
+                if line.uom_id else line.qty_repeat > 0
+
+    @api.depends('qty_period', 'pct_manual', 'qty_settled_before', 'is_rework')
+    def _compute_qty_settle(self):
+        for line in self:
+            if line.is_rework or not line.pct_manual:
+                line.qty_settle = line.qty_period
+                line.is_manual = False
+                line.manual_over = False
+                continue
+            planned = sum(line._get_plan_lines().mapped('qty_planned'))
+            target = planned * line.pct_manual / 100.0 - line.qty_settled_before
+            line.qty_settle = max(target, 0.0)
+            line.is_manual = True
+            uom = line.uom_id
+            line.manual_over = bool(uom) and uom.compare(line.qty_settle, line.qty_period) > 0
+
+    def _qty_to_receive(self):
+        """Lo que se recibe en la OC: lo liquidado menos lo repetido."""
+        self.ensure_one()
+        return max(self.qty_settle - self.qty_repeat, 0.0)
+
+    @api.depends('qty_settle', 'price_unit')
     def _compute_amount(self):
         for line in self:
             currency = line.currency_id
-            amount = line.qty_period * line.price_unit
+            amount = line.qty_settle * line.price_unit
             line.amount = currency.round(amount) if currency else amount
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines._set_settled_before()
+        return lines
+
+    def _set_settled_before(self):
+        Progress = self.env['construction.task.progress'].sudo()
+        for line in self:
+            settlement = line.settlement_id
+            before = sum(Progress.search([
+                ('project_id', '=', settlement.project_id.id),
+                ('partner_id', '=', settlement.partner_id.id),
+                ('activity_id', '=', line.activity_id.id), ('is_rework', '=', False),
+                ('settlement_id', '!=', False), ('settlement_id', '!=', settlement.id),
+                ('settlement_id.state', 'in', ('approved', 'paid'))]).mapped('qty_weighted'))
+            line.qty_settled_before = before
+
+    def write(self, vals):
+        if 'pct_manual' in vals:
+            if any(line.settlement_id.state not in ('draft', 'submitted') for line in self):
+                raise UserError(self.env._(
+                    'El porcentaje se escribe con la liquidación en borrador o presentada.'))
+            if vals.get('pct_manual') and not (vals.get('manual_reason') or all(
+                    line.manual_reason for line in self)):
+                raise UserError(self.env._('Un porcentaje escrito a mano pide su motivo.'))
+            vals = dict(vals, manual_user_id=self.env.user.id if vals.get('pct_manual') else False,
+                        manual_date=fields.Datetime.now() if vals.get('pct_manual') else False)
+            self.settlement_id.filtered('head_authorized_by').write(
+                {'head_authorized_by': False, 'head_authorized_on': False})
+        res = super().write(vals)
+        if 'pct_manual' in vals:
+            for line in self:
+                line.settlement_id.message_post(body=self.env._(
+                    '%(activity)s: liquidada al %(pct)s %% escrito a mano (validado %(validated)s '
+                    '%%). Motivo: %(reason)s', activity=line.activity_id.display_name,
+                    pct=round(line.pct_manual, 2), validated=round(line.pct_validated, 2),
+                    reason=line.manual_reason or '—'))
+        return res
 
     def _get_plan_lines(self):
         """Líneas de la contrata con esta actividad en el plan vigente de la obra."""
@@ -639,3 +872,4 @@ class ConstructionContractSettlementLine(models.Model):
             line.qty_cumulative = executed
             line.qty_planned = planned
             line.progress_pct = min(executed / planned, 1.0) if planned else 0.0
+            line.pct_validated = round(min(executed / planned, 1.0) * 100, 2) if planned else 0.0

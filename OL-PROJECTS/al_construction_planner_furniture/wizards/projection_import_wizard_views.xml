@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Importar la proyección de materiales (v1.8, M17-18 y M17-19). -->
+    <record id="construction_projection_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.projection.import.wizard.form</field>
+        <field name="model">construction.projection.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar la proyección de materiales">
+                <field name="state" invisible="1"/>
+                <group>
+                    <group>
+                        <field name="project_id" options="{'no_create': True}" readonly="state != 'upload'"/>
+                        <field name="file" filename="filename" readonly="state != 'upload'"/>
+                        <field name="filename" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="family" invisible="state == 'upload'"/>
+                        <field name="create_tree"/>
+                        <field name="unresolved_count" invisible="state != 'preview'"/>
+                    </group>
+                </group>
+                <div invisible="state != 'preview'">
+                    <field name="preview_html" nolabel="1"/>
+                    <div class="alert alert-warning" role="alert" invisible="not warning_html">
+                        <field name="warning_html" nolabel="1"/>
+                    </div>
+                    <div class="alert alert-danger" role="alert" invisible="not unresolved_count">
+                        Hay columnas de material sin resolver: elija el producto de Odoo de cada una
+                        (o acepte el propuesto) antes de importar.
+                    </div>
+                    <field name="line_ids" nolabel="1">
+                        <list editable="bottom" create="0" delete="0"
+                              decoration-danger="used and state not in ('ok', 'resolved')"
+                              decoration-muted="not used">
+                            <field name="name" readonly="1"/>
+                            <field name="full_name" readonly="1" optional="show"/>
+                            <field name="tab_codes" readonly="1"/>
+                            <field name="summary_code" readonly="1"/>
+                            <field name="stage"/>
+                            <field name="product_id" options="{'no_create': True}"/>
+                            <field name="state" widget="badge"/>
+                            <field name="note" readonly="1" optional="show"/>
+                            <field name="used" optional="hide" readonly="1"/>
+                            <field name="in_summary" optional="hide" readonly="1"/>
+                            <field name="auto_product_id" column_invisible="1"/>
+                            <field name="auto_state" column_invisible="1"/>
+                            <button name="action_accept" type="object" string="Aceptar"
+                                    icon="fa-check" invisible="state in ('ok', 'resolved') or not product_id"/>
+                        </list>
+                    </field>
+                </div>
+                <footer>
+                    <button name="action_preview" type="object" string="Leer el libro" class="btn-primary"
+                            invisible="state != 'upload'"/>
+                    <button name="action_preview" type="object" string="Volver a leer"
+                            invisible="state != 'preview'"/>
+                    <button name="action_import" type="object" string="Importar" class="btn-primary"
+                            invisible="state != 'preview'"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_projection_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar la proyección de materiales</field>
+        <field name="res_model">construction.projection.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+    </record>
+</odoo>

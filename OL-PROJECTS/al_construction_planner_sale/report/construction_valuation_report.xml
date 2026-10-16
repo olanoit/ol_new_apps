@@ -81,7 +81,7 @@
                         <td class="text-end"><t t-out="line.price" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
                         <td class="text-end"><t t-out="'%.2f' % (line.progress_prev * 100)"/> %</td>
                         <td class="text-end"><t t-out="'%.2f' % (line.progress_period * 100)"/> %</td>
-                        <td class="text-end"><t t-out="'%.2f' % (line.progress_cumulative * 100)"/> %</td>
+                        <td class="text-end"><t t-out="'%.2f' % (line.progress_cumulative * 100)"/> %<t t-if="line.is_manual"> (manual)</t></td>
                         <td class="text-end"><t t-out="line.amount_delivered" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
                         <td class="text-end"><t t-out="line.amount_confirmed" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
                         <td class="text-end" t-if="o.amount_amortization"><t t-out="line.amount_amortization" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
@@ -116,6 +116,37 @@
                         <td colspan="2" class="text-end"><t t-out="o.amount_net" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
                     </tr>
                 </tfoot>
+            </table>
+            <!-- Porcentajes escritos a mano (v1.8, M18-09). -->
+            <t t-set="manual_lines" t-value="o.line_ids.filtered('is_manual')"/>
+            <div t-if="manual_lines" class="pe-doc-fs-11 mb-3">
+                <strong>Porcentajes manuales:</strong>
+                <ul class="mb-0">
+                    <li t-foreach="manual_lines" t-as="line">
+                        <t t-out="line.sale_line_id.name.splitlines()[0]"/>:
+                        <t t-out="'%.2f' % line.pct_manual"/> % escrito por <t t-out="line.manual_user_id.name"/>
+                        (la regla proponía <t t-out="'%.2f' % line.pct_rule"/> %). Motivo: <t t-out="line.manual_reason"/>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Avance por etapa y sub etapa de la obra (v1.8, M18-14). -->
+            <t t-set="stage_rows" t-value="o._construction_stage_progress()"/>
+            <table t-if="stage_rows" class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Etapa</td>
+                        <td class="text-end">Planificado</td>
+                        <td class="text-end">Avance</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="stage_rows" t-as="row" t-att-class="'fw-bold' if not row['leaf'] else ''">
+                        <td t-att-style="'padding-left: %spx' % (4 + 14 * row['depth'])"><t t-out="row['label']"/></td>
+                        <td class="text-end"><t t-out="row['planned']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><t t-out="'%.1f' % (row['progress'] * 100)"/> %</td>
+                    </tr>
+                </tbody>
             </table>
 
             <!-- Conformidad del cliente y firmas -->

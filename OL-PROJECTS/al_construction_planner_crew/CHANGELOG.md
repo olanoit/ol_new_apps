@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_crew.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261016 — 16/10/2026
+
+- Cuadrillas por día (v1.8): unidad de tiempo de la cuadrilla en la compañía y la obra, costo diario por puesto y por rol, y días de cuadrilla con su costo.
+
 ## 2.20261013 — 15/10/2026
 
 - Cuadrilla por rol (M17-10): una fila por persona con su rol; cada una cubre la línea de personal propio de su rol y el rol del asistente deja de ser obligatorio.

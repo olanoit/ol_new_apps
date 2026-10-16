@@ -24,8 +24,11 @@
                                options="{'no_create': True}"/>
                         <field name="date_start"/>
                         <field name="weeks"/>
-                        <field name="hours_per_week"/>
+                        <field name="time_mode" widget="radio" options="{'horizontal': True}"/>
+                        <field name="days_per_week" invisible="time_mode != 'days'"/>
+                        <field name="hours_per_week" invisible="time_mode != 'hours'"/>
                         <field name="plan_line_count"/>
+                        <field name="days_total"/>
                         <field name="hours_total"/>
                     </group>
                 </group>
@@ -46,6 +49,7 @@
                         <field name="apartment_task_id"/>
                         <field name="task_id"/>
                         <field name="activity_id"/>
+                        <field name="days" sum="Total"/>
                         <field name="hours" sum="Total"/>
                         <field name="plan_line_id" column_invisible="1"/>
                     </list>

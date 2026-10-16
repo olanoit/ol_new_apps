@@ -332,6 +332,32 @@ class ConstructionValuation(models.Model):
             'line_ids': lines, 'milestone_line_ids': details,
         })
 
+    def _construction_stage_progress(self):
+        """Filas del avance por etapa y sub etapa del plan vigente de la obra
+        (valorización impresa, M18-14): en el orden del árbol de etapas, con
+        lo planificado y el avance valorizado."""
+        self.ensure_one()
+        plan = self.project_id._construction_current_plan()
+        if not plan:
+            return []
+        Plan = self.env['construction.resource.plan']
+        Line = self.env['construction.resource.plan.line']
+        planned = dict(Line._read_group([('plan_id', '=', plan.id)], ['stage'],
+                                        ['amount_planned:sum']))
+        rows = []
+        for node in self.env['construction.stage']._get_tree(active_only=False):
+            leaves = [code for code in node['leaves'] if code in planned]
+            if not leaves:
+                continue
+            amounts = Plan._progress_amounts(
+                [('plan_id', '=', plan.id), ('stage', 'in', leaves)])
+            rows.append({
+                'label': node['label'], 'depth': node['depth'], 'leaf': node['leaf'],
+                'planned': sum(planned[code] for code in leaves),
+                'progress': Plan._progress_ratio(amounts, False),
+            })
+        return rows
+
     def _construction_bill_milestones(self):
         """Al confirmar, cada hito queda cobrado hasta su avance al corte."""
         for valuation in self.filtered('milestone_line_ids'):
@@ -553,6 +579,11 @@ class ConstructionValuation(models.Model):
                 'acumulado', name=sale_line.name, number=self.sequence_number,
                 period=round(line.progress_period * 100, 2),
                 cumulative=round(line.progress_confirmed * 100, 2))
+            if line.is_manual:
+                vals['name'] += self.env._(
+                    ' (manual: %(pct)s %% escrito por %(user)s; motivo: %(reason)s)',
+                    pct=round(line.pct_manual, 2), user=line.manual_user_id.name,
+                    reason=line.manual_reason)
             vals_list.append(vals)
             delivered[sale_line] = cumulative
         for field, account, label in (
@@ -669,6 +700,55 @@ class ConstructionValuationLine(models.Model):
     amount_guarantee = fields.Monetary(
         string='Fondo de garantía', compute='_compute_amounts', store=True)
     amount_net = fields.Monetary(string='Neto', compute='_compute_amounts', store=True)
+    # Porcentaje arbitrario (v1.8, M18-09): la línea propone el % de su regla
+    # (avance de la partida o hitos por unidad) y admite escribir otro, con
+    # motivo, marcado como manual con quién y cuándo.
+    pct_rule = fields.Float(
+        string='% de la regla', digits=(16, 2), readonly=True,
+        help='Avance acumulado que propone la regla de la vertical al preparar la valorización.')
+    pct_manual = fields.Float(
+        string='% escrito', digits=(16, 2),
+        help='Avance acumulado escrito a mano en lugar del de la regla; pide motivo.')
+    manual_reason = fields.Text(string='Motivo del porcentaje')
+    is_manual = fields.Boolean(string='Manual', readonly=True)
+    manual_user_id = fields.Many2one('res.users', string='Escrito por', readonly=True)
+    manual_date = fields.Datetime(string='Escrito el', readonly=True)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        for line in lines.filtered(lambda l: not l.pct_rule and l.price):
+            line.pct_rule = round((line.confirmed_before + line.amount_delivered)
+                                  / line.price * 100, 2)
+        return lines
+
+    def write(self, vals):
+        if 'pct_manual' not in vals:
+            return super().write(vals)
+        if any(line.state != 'draft' for line in self):
+            raise UserError(self.env._('El porcentaje se escribe con la valorización en borrador.'))
+        pct = vals['pct_manual']
+        if pct and not (vals.get('manual_reason') or all(line.manual_reason for line in self)):
+            raise UserError(self.env._('Un porcentaje escrito a mano pide su motivo.'))
+        res = super().write(dict(vals, is_manual=bool(pct),
+                                 manual_user_id=self.env.user.id if pct else False,
+                                 manual_date=fields.Datetime.now() if pct else False))
+        for line in self:
+            target = pct if pct else line.pct_rule
+            amount = line.currency_id.round(line.price * target / 100.0 - line.confirmed_before)
+            if amount < 0:
+                raise UserError(self.env._(
+                    '%s: el porcentaje es menor que lo ya confirmado al cliente.',
+                    line.sale_line_id.name.splitlines()[0]))
+            super(ConstructionValuationLine, line).write({
+                'amount_delivered': amount, 'amount_confirmed': amount,
+                'progress_delivered': target / 100.0})
+            if pct:
+                line.valuation_id.message_post(body=self.env._(
+                    '%(partida)s: %(pct)s %% escrito a mano (la regla proponía %(rule)s %%). '
+                    'Motivo: %(reason)s', partida=line.sale_line_id.name.splitlines()[0],
+                    pct=round(pct, 2), rule=round(line.pct_rule, 2), reason=line.manual_reason))
+        return res
 
     @api.depends('price', 'confirmed_before', 'amount_delivered', 'amount_confirmed')
     def _compute_progress(self):
