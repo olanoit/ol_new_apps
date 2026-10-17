@@ -11,9 +11,9 @@ domicilio.
 
 - **Sitio web** con tienda, stock y el checkout peruano (RUC o DNI, ubigeo y
   tipo de comprobante).
-- Los proveedores de pago [Culqi](../finance/payment_providers/culqi.md),
-  [Niubiz](../finance/payment_providers/niubiz.md) e
-  [Izipay](../finance/payment_providers/izipay.md).
+- Los proveedores de pago [Culqi](../applications/finance/payment_providers/culqi.md),
+  [Niubiz](../applications/finance/payment_providers/niubiz.md) e
+  [Izipay](../applications/finance/payment_providers/izipay.md).
 - El kárdex valorizado SUNAT y el **libro de reclamaciones** virtual.
 
 ## Qué deja configurado

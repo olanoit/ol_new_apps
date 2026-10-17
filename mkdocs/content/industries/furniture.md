@@ -12,7 +12,7 @@ muebles de baño en proyectos inmobiliarios.
 El planificador de obra con todos sus puentes: tipologías de mueble,
 fabricación, metrado, compras, contratas, cuadrillas, presupuesto,
 valorización y aprobaciones (ver
-[Mobiliario: módulos, productos y envíos](../services/project/construction/planning/furniture.md)).
+[Mobiliario: módulos, productos y envíos](../applications/services/project/construction/planning/furniture.md)).
 
 ## Qué deja configurado
 

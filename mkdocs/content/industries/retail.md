@@ -9,12 +9,12 @@ a distribuidores.
 
 ## Qué instala
 
-- **Punto de venta** con [boleta y factura electrónica](../sales/point_of_sale/electronic_invoicing.md),
-  [cliente por RUC o DNI](../sales/point_of_sale/customer_lookup.md),
-  [cobro con Yape y Plin](../sales/point_of_sale/qr_payments.md),
-  [vista de productos](../sales/point_of_sale/product_view.md),
-  [vendedor por venta](../sales/point_of_sale/salesperson.md)
-  y el [tema del TPV](../sales/point_of_sale/theme.md) (nombre, logo y colores
+- **Punto de venta** con [boleta y factura electrónica](../applications/sales/point_of_sale/electronic_invoicing.md),
+  [cliente por RUC o DNI](../applications/sales/point_of_sale/customer_lookup.md),
+  [cobro con Yape y Plin](../applications/sales/point_of_sale/qr_payments.md),
+  [vista de productos](../applications/sales/point_of_sale/product_view.md),
+  [vendedor por venta](../applications/sales/point_of_sale/salesperson.md)
+  y el [tema del TPV](../applications/sales/point_of_sale/theme.md) (nombre, logo y colores
   propios en la caja).
 - **Compras** con recepción en almacén y el kárdex valorizado SUNAT.
 - El **libro de reclamaciones**.

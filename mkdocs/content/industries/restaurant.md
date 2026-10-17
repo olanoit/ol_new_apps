@@ -10,17 +10,17 @@ y por delivery.
 ## Qué instala
 
 - El **TPV de restaurante** de Odoo (salón, mesas, comandas, división de
-  cuentas y propinas) con [boleta y factura electrónica](../sales/point_of_sale/electronic_invoicing.md),
-  [cliente por RUC o DNI](../sales/point_of_sale/customer_lookup.md),
-  [cobro con Yape y Plin](../sales/point_of_sale/qr_payments.md),
-  [mozo por venta](../sales/point_of_sale/salesperson.md)
-  y el [tema del TPV](../sales/point_of_sale/theme.md) (nombre, logo y colores
+  cuentas y propinas) con [boleta y factura electrónica](../applications/sales/point_of_sale/electronic_invoicing.md),
+  [cliente por RUC o DNI](../applications/sales/point_of_sale/customer_lookup.md),
+  [cobro con Yape y Plin](../applications/sales/point_of_sale/qr_payments.md),
+  [mozo por venta](../applications/sales/point_of_sale/salesperson.md)
+  y el [tema del TPV](../applications/sales/point_of_sale/theme.md) (nombre, logo y colores
   propios en la caja).
 - **Compras** de insumos con recepción en almacén.
 - El **libro de reclamaciones**.
 
 !!! tip "Comandas en impresoras de red"
-    Instale también [Impresoras de red](../sales/point_of_sale/network_printers.md).
+    Instale también [Impresoras de red](../applications/sales/point_of_sale/network_printers.md).
     No viene en el paquete porque necesita `queue_job` en `server_wide_modules`.
 
 ## Qué deja configurado

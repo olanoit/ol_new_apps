@@ -9,17 +9,17 @@ subpartida y partida, con contratas y personal de construcción civil.
 
 ## Qué instala
 
-- El [planificador de obra](../services/project/construction/planning.md) con
+- El [planificador de obra](../applications/services/project/construction/planning.md) con
   compras, contratas (y su descuento de material extra), cuadrillas,
   presupuesto analítico, valorización e ingresos y
-  [aprobaciones](../services/project/construction/planning/approvals.md).
-- Los [requerimientos de materiales](../services/project/construction/material_requests.md).
+  [aprobaciones](../applications/services/project/construction/planning/approvals.md).
+- Los [requerimientos de materiales](../applications/services/project/construction/material_requests.md).
 - La marcación en obra y la planilla de construcción civil.
 
 ## Qué deja configurado
 
 - El perfil de vertical **Construcción por partidas** aplicado a la compañía
-  (ver [Configuración por rubro](../services/project/construction/planning/vertical_configuration.md)).
+  (ver [Configuración por rubro](../applications/services/project/construction/planning/vertical_configuration.md)).
 - Las funciones de **control** y **avance** del planificador, y las
   ubicaciones de inventario (almacén de obra).
 - Categorías de materiales (cemento y agregados, acero, acabados, eléctricos y
