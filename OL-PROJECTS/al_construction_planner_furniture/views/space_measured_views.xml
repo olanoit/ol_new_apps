@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ambiente medido (paquete 1.9, M19-06). -->
+    <record id="construction_space_measured_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.space.measured.wizard.form</field>
+        <field name="model">construction.space.measured.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Marcar como medido">
+                <p class="text-muted">Sin cantidades ni aprobación: Optimización ve el ambiente en su lista de pendientes.</p>
+                <group>
+                    <field name="task_ids" widget="many2many_tags" readonly="1"/>
+                    <field name="date"/>
+                    <field name="file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                    <field name="note" placeholder="Opcional"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Marcar como medido"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button special="cancel" string="Cancelar" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_measured" model="ir.ui.view">
+        <field name="name">project.task.form.construction.measured</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="al_construction_planner.project_task_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <group name="construction_detail" position="before">
+                <group string="Medición" name="construction_measured" invisible="construction_level != 'space'">
+                    <field name="construction_measured"/>
+                    <field name="construction_measured_date" invisible="not construction_measured"/>
+                    <field name="construction_measured_user_id" invisible="not construction_measured"/>
+                    <field name="construction_measured_attachment_ids" widget="many2many_binary"
+                           invisible="not construction_measured"/>
+                    <field name="construction_measured_pending" invisible="1"/>
+                    <div colspan="2">
+                        <button name="action_construction_mark_measured" type="object"
+                                string="Marcar como medido" class="btn-secondary btn-sm"
+                                icon="fa-check" invisible="construction_measured"
+                                groups="al_construction_planner.group_planner_user"/>
+                        <button name="action_construction_unmark_measured" type="object"
+                                string="Desmarcar" class="btn-link btn-sm"
+                                invisible="not construction_measured_pending"
+                                groups="al_construction_planner.group_planner_user"/>
+                    </div>
+                </group>
+            </group>
+        </field>
+    </record>
+
+    <record id="project_task_view_list_measured" model="ir.ui.view">
+        <field name="name">project.task.list.construction.measured</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Ambientes" create="0" decoration-success="construction_measured_pending"
+                  decoration-muted="construction_measured and not construction_measured_pending">
+                <header>
+                    <button name="action_construction_mark_measured" type="object"
+                            string="Marcar como medido"
+                            groups="al_construction_planner.group_planner_user"/>
+                </header>
+                <field name="project_id"/>
+                <field name="construction_floor_task_id" string="Piso"/>
+                <field name="construction_apartment_task_id" string="Departamento"/>
+                <field name="name" string="Ambiente"/>
+                <field name="construction_typology_id" optional="show"/>
+                <field name="construction_measured" widget="boolean"/>
+                <field name="construction_measured_date"/>
+                <field name="construction_measured_user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="construction_measured_pending" widget="boolean"/>
+                <field name="construction_production_ids" widget="many2many_tags" optional="show"
+                       groups="mrp.group_mrp_user"/>
+                <button name="action_construction_mark_measured" type="object" icon="fa-check"
+                        title="Marcar como medido" invisible="construction_measured"
+                        groups="al_construction_planner.group_planner_user"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="project_task_view_search_measured" model="ir.ui.view">
+        <field name="name">project.task.search.construction.measured</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Ambientes">
+                <field name="name" string="Ambiente"/>
+                <field name="project_id"/>
+                <field name="construction_floor_task_id" string="Piso"/>
+                <filter name="pending" string="Medidos por cargar a una orden"
+                        domain="[('construction_measured_pending', '=', True)]"/>
+                <filter name="not_measured" string="Sin medir"
+                        domain="[('construction_measured', '=', False)]"/>
+                <filter name="measured" string="Medidos"
+                        domain="[('construction_measured', '=', True)]"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_floor" string="Piso" context="{'group_by': 'construction_floor_task_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_measured_spaces" model="ir.actions.act_window">
+        <field name="name">Ambientes medidos</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('construction_level', '=', 'space')]</field>
+        <field name="context">{'search_default_pending': 1, 'search_default_group_project': 1}</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('project_task_view_list_measured')})]"/>
+        <field name="search_view_id" ref="project_task_view_search_measured"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay ambientes medidos por cargar</p>
+            <p>El supervisor marca el ambiente como medido, con fecha y archivo, y aparece aquí hasta que entra en una orden de fabricación.</p>
+        </field>
+    </record>
+</odoo>

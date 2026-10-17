@@ -166,6 +166,12 @@ Configuración:
 Con la regla de demostración, el jefe de proyecto revisa todos los pedidos y
 la gerencia de operaciones además los que superan S/ 10 000.
 
+!!! tip "Consejo"
+    Con el planificador y el motor **Aplicación Aprobaciones**, el requerimiento
+    sin cambios frente al plan va directo al almacén y los cambios de material o
+    de cantidad se aprueban en **Aprobaciones**, según la tabla de rutas (ver
+    [Aprobaciones del plan y del requerimiento](planning/approvals.md)).
+
 ![Regla de aprobación por niveles con el umbral por monto](material_requests/approval-rule.png)
 
 ## Procesar el pedido

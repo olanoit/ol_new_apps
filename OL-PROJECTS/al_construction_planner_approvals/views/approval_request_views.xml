@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="approval_request_view_form" model="ir.ui.view">
+        <field name="name">approval.request.form.construction</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+        <field name="arch" type="xml">
+            <!-- El rechazo de una solicitud de obra pide el motivo. -->
+            <xpath expr="//header/button[@name='action_refuse']" position="attributes">
+                <attribute name="invisible">request_status in ['approved', 'refused', 'cancel'] or user_status != 'pending' or construction_res_model</attribute>
+            </xpath>
+            <xpath expr="//header/button[@name='action_refuse']" position="after">
+                <field name="construction_res_model" invisible="1"/>
+                <button name="action_construction_refuse" string="Rechazar" type="object"
+                        invisible="not construction_res_model or request_status != 'pending' or user_status != 'pending'"
+                        data-hotkey="z"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_construction_origin" type="object" class="oe_stat_button"
+                        icon="fa-file-text-o" invisible="not construction_res_model">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Documento</span>
+                        <span class="o_stat_value"><field name="construction_origin_name"/></span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//group[@name='request_details']" position="inside">
+                <field name="construction_project_id" invisible="not construction_project_id"/>
+                <field name="construction_todo" invisible="not construction_todo"/>
+                <field name="construction_amount" invisible="not construction_res_model"
+                       groups="al_construction_planner.group_planner_amounts"/>
+                <field name="construction_refuse_reason" invisible="not construction_refuse_reason"/>
+            </xpath>
+            <xpath expr="//field[@name='approver_ids']/list/field[@name='user_id']" position="before">
+                <field name="construction_step" string="Tramo"
+                       column_invisible="not parent.construction_res_model"/>
+            </xpath>
+            <xpath expr="//field[@name='approver_ids']/list/field[@name='required']" position="after">
+                <field name="construction_route_id" column_invisible="not parent.construction_res_model"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="approval_product_line_view_tree" model="ir.ui.view">
+        <field name="name">approval.product.line.list.construction</field>
+        <field name="model">approval.product.line</field>
+        <field name="inherit_id" ref="approvals.approval_product_line_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="construction_change_type" column_invisible="parent.approval_type != 'construction'"/>
+                <field name="construction_qty_budget" column_invisible="parent.approval_type != 'construction'"/>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_id']" position="after">
+                <field name="construction_qty_diff" column_invisible="parent.approval_type != 'construction'"/>
+                <field name="construction_diff_pct" column_invisible="parent.approval_type != 'construction'"/>
+                <field name="construction_currency_id" column_invisible="1"/>
+                <field name="construction_amount_diff" column_invisible="parent.approval_type != 'construction'"
+                       groups="al_construction_planner.group_planner_amounts"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="approval_request_view_search" model="ir.ui.view">
+        <field name="name">approval.request.search.construction</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_search_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="construction_project_id"/>
+                <filter name="construction" string="De obra" domain="[('construction_res_model', '!=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

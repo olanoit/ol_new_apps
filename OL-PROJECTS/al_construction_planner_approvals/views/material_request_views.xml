@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="request_view_form_approvals" model="ir.ui.view">
+        <field name="name">construction.material.request.form.approvals</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="al_construction_material_request.construction_material_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_request_approval']" position="after">
+                <field name="construction_approval_can_review" invisible="1"/>
+                <button name="action_construction_approve" type="object" string="Aprobar"
+                        class="btn-primary" invisible="not construction_approval_can_review"/>
+                <button name="action_construction_refuse" type="object" string="Rechazar"
+                        invisible="not construction_approval_can_review"/>
+            </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="alert alert-info d-flex align-items-center gap-2" role="status"
+                     invisible="not construction_approval_todo">
+                    <i class="fa fa-hourglass-half" title="Pendiente de aprobación"/>
+                    <span>Pendiente de aprobación · <field name="construction_approval_todo" class="d-inline"/></span>
+                    <button name="action_view_construction_approvals" type="object"
+                            class="btn btn-link p-0 ms-auto" string="Ver solicitud"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

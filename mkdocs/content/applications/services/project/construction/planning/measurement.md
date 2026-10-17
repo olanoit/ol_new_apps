@@ -124,19 +124,43 @@ supervisor mide 2.90 ML.
 | Módulos | 7 | 7 | 0 | 7.7143 | 0.00 |
 | **Total** | | | | | **14.04** |
 
-### La orden de fabricación espera la aprobación
+### La orden de fabricación ya no espera al metrado en mobiliario
 
-El asistente **Orden de fabricación** deja fuera los ambientes con un metrado
-con diferencia que todavía no está aprobado, con el aviso «Metrado con
-diferencia por aprobar». Cuando la Jefatura lo aprueba, el ambiente vuelve a
-aparecer en el asistente. Los ambientes sin metrado o con metrado sin
-diferencia no se detienen.
+Desde el paquete 1.9, en mobiliario el [ambiente medido](#ambiente-medido)
+reemplaza al metrado con cantidad y su aprobación: el asistente **Orden de
+fabricación** ya no deja fuera los ambientes con tipología por un metrado
+pendiente. En construcción por partidas (ambientes sin tipología) el metrado
+con diferencia sin aprobar sigue deteniendo la orden, con el aviso «Metrado
+con diferencia por aprobar».
 
 !!! note "Nota"
     Un metrado aprobado se puede volver a borrador para corregirlo mientras su
     ambiente no tenga una orden de fabricación.
 
+## Ambiente medido
+
+En mobiliario, el supervisor solo marca el ambiente como **medido**, con la
+fecha y un archivo (plano, foto o exportación de SketchUp). No escribe
+cantidades ni pasa por aprobación: las cantidades reales llegan con la carga
+del despiece a la orden de fabricación.
+
+1. Abra el ambiente (desde el árbol de la obra o **Planificación de obra ‣
+   Ejecución ‣ Avance ‣ Ambientes medidos**, filtro **Sin medir**) y haga clic
+   en **Marcar como medido**. En la lista se pueden marcar varios a la vez.
+2. Indique la **Fecha de medición** y el **Archivo**, y confirme. El archivo
+   queda en el historial del ambiente.
+3. **Ambientes medidos** abre con el filtro **Medidos por cargar a una
+   orden**: es la lista de pendientes de Optimización. El ambiente sale de
+   ella cuando entra en una orden de fabricación y vuelve si la orden se
+   cancela.
+4. El asistente **Orden de fabricación** avisa «Sin marcar como medidos» con
+   los ambientes que aún no lo están; la orden se puede crear igual.
+
+**Desmarcar** quita la marca mientras el ambiente no tenga orden de
+fabricación.
+
 !!! info "Ver también"
     - [Mobiliario: módulos, productos y envíos](furniture.md)
+    - [Aprobaciones del plan y del requerimiento](approvals.md)
     - [Asignaciones y compras](supply.md)
     - [Niveles de la obra y tipologías](levels_typologies.md)

@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_construction_approval_route_user,construction.approval.route user,model_construction_approval_route,base.group_user,1,0,0,0
+access_construction_approval_route_manager,construction.approval.route manager,model_construction_approval_route,al_construction_planner.group_planner_manager,1,1,1,1
+access_construction_approval_route_approver_user,construction.approval.route.approver user,model_construction_approval_route_approver,base.group_user,1,0,0,0
+access_construction_approval_route_approver_manager,construction.approval.route.approver manager,model_construction_approval_route_approver,al_construction_planner.group_planner_manager,1,1,1,1
+access_construction_approval_refuse_wizard_user,construction.approval.refuse.wizard user,model_construction_approval_refuse_wizard,base.group_user,1,1,1,1

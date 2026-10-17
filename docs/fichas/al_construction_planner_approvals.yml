@@ -1,0 +1,40 @@
+titulo: 'Planificación de obra: aprobaciones'
+subtitulo: El plan de recursos y el requerimiento de obra se aprueban en la aplicación Aprobaciones,
+  con tabla de rutas por tramos en escalera y aprobadores por grupo.
+categoria: Construcción · Proyectos
+etiquetas:
+- Aprobaciones
+- Tabla de rutas
+- Tramos en escalera
+- Oficina técnica
+destacados:
+- icono: ⇄
+  titulo: Documento enlazado
+  texto: La solicitud lleva el plan o el requerimiento, con botón en los dos sentidos y sus líneas
+    de cambio.
+- icono: ☰
+  titulo: Tabla de rutas
+  texto: Documento, tipo de cambio y tramo de porcentaje o monto, con su tipo de aprobación,
+    aprobadores y seguidores.
+- icono: 👥
+  titulo: Grupos y regla
+  texto: Aprobadores por usuario o grupo, con «basta uno» o «todos» en cada tramo.
+- icono: ↩
+  titulo: Resultado de vuelta
+  texto: Aprobada libera el documento; rechazada lo devuelve a borrador con el motivo.
+configuracion:
+- "Instale **Planificación de obra: aprobaciones** (`al_construction_planner_approvals`)."
+- En **Planificación de obra ▸ Configuración ▸ Ajustes ▸ Aprobaciones**, elija **Aplicación Aprobaciones**.
+- Revise las **Rutas de aprobación** y asigne el grupo **Oficina técnica**.
+requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
+  Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261017'
+  fecha: 17/10/2026
+  cambios:
+  - "Puente nuevo (paquete 1.9, M19-03 y M19-07): plan y requerimiento de obra en Aprobaciones, con tabla de rutas, tramos en escalera, aprobadores por grupo, aprobar o rechazar desde el documento y el resultado de vuelta."
+relacionados:
+- al_construction_planner
+- al_construction_material_request
+- al_construction_planner_purchase
+- al_construction_planner_suite

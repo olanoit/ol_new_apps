@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_approval_route_view_list" model="ir.ui.view">
+        <field name="name">construction.approval.route.list</field>
+        <field name="model">construction.approval.route</field>
+        <field name="arch" type="xml">
+            <list string="Rutas de aprobación">
+                <field name="sequence" widget="handle"/>
+                <field name="document_type"/>
+                <field name="change_type"/>
+                <field name="basis"/>
+                <field name="threshold"/>
+                <field name="name"/>
+                <field name="approver_ids" widget="many2many_tags"/>
+                <field name="approval_rule"/>
+                <field name="category_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_approval_route_view_form" model="ir.ui.view">
+        <field name="name">construction.approval.route.form</field>
+        <field name="model">construction.approval.route</field>
+        <field name="arch" type="xml">
+            <form string="Tramo de aprobación">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Cambio de material: oficina técnica"/></h1>
+                    </div>
+                    <group>
+                        <group string="Cuándo aplica">
+                            <field name="document_type"/>
+                            <field name="change_type" readonly="document_type == 'plan'"/>
+                            <field name="basis"/>
+                            <field name="threshold"/>
+                        </group>
+                        <group string="Quién aprueba">
+                            <field name="category_id"/>
+                            <field name="approval_rule" widget="radio"/>
+                            <field name="sequence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Aprobadores" name="approvers">
+                            <field name="approver_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                    <field name="group_id"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Seguidores" name="followers">
+                            <group>
+                                <field name="notify_project_manager"/>
+                                <field name="follower_user_ids" widget="many2many_tags_avatar"/>
+                                <field name="follower_group_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_approval_route_view_search" model="ir.ui.view">
+        <field name="name">construction.approval.route.search</field>
+        <field name="model">construction.approval.route</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="approver_ids" string="Aprobador"
+                       filter_domain="['|', ('approver_ids.user_id.name', 'ilike', self), ('approver_ids.group_id.name', 'ilike', self)]"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_document" string="Documento" context="{'group_by': 'document_type'}"/>
+                    <filter name="group_change" string="Tipo de cambio" context="{'group_by': 'change_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_approval_route" model="ir.actions.act_window">
+        <field name="name">Rutas de aprobación</field>
+        <field name="res_model">construction.approval.route</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_group_document': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Configure quién aprueba cada envío</p>
+            <p>Cada fila es un tramo: el documento, el tipo de cambio y desde qué porcentaje o monto
+               aplica. Un exceso que supera varios tramos pasa por todos, del menor al mayor.</p>
+        </field>
+    </record>
+</odoo>

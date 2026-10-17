@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261017 — 17/10/2026
+
+- Instala también `al_construction_planner_approvals`; pruebas del paquete 1.9 (aprobaciones en la aplicación Aprobaciones y ambiente medido).
+
 ## 2.20261013 — 15/10/2026
 
 - Instala también `al_construction_planner_sale_furniture`; pruebas de operación nativa (compras con tres proveedores, spools de tuberías, cuadrilla por rol) y del perfil mobiliario sobre la demo.

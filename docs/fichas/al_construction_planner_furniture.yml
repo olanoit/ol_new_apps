@@ -29,6 +29,11 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261017'
+  fecha: 17/10/2026
+  cambios:
+  - "Ambiente medido (paquete 1.9, M19-06): el supervisor marca el ambiente como medido con fecha y archivo, sin cantidades ni aprobación; lista de ambientes medidos por cargar a una orden para Optimización y aviso en la orden de los que no están marcados."
+  - "En mobiliario, la orden de fabricación ya no espera al metrado con diferencia por aprobar."
 - version: '3.20261016'
   fecha: 16/10/2026
   cambios:

@@ -61,21 +61,19 @@ class TestMeasurement(PlannerCommon):
         self.assertAlmostEqual(measurement.amount_difference, 14.04)
         self.assertTrue(measurement.name.startswith('MET/'))
 
-    def test_difference_blocks_production_until_approved(self):
+    def test_difference_no_longer_blocks_furniture(self):
+        """Paquete 1.9 (M19-06): en mobiliario el ambiente medido reemplaza al
+        metrado con aprobación; la orden ya no espera al metrado."""
         measurement = self._measure(self.space_501, ml_low=2.90)
         wizard = self._production_wizard()
-        self.assertEqual(wizard.line_ids.space_task_ids, self.space_502)
-        self.assertIn('Metrado con diferencia por aprobar', wizard.note)
+        self.assertEqual(wizard.line_ids.space_task_ids, self.space_501 | self.space_502)
+        self.assertNotIn('Metrado con diferencia por aprobar', wizard.note or '')
 
         measurement.with_user(self.supervisor).action_submit()
         self.assertEqual(measurement.state, 'submitted')
         self.assertTrue(measurement.review_ids)
-        self.assertEqual(self._production_wizard().line_ids.space_task_ids, self.space_502)
-
         measurement.with_user(self.manager).validate_tier()
         self.assertEqual(measurement.state, 'approved')
-        self.assertEqual(self._production_wizard().line_ids.space_task_ids,
-                         self.space_501 | self.space_502)
 
     def test_without_difference_is_approved_on_submit(self):
         measurement = self._measure(self.space_501)

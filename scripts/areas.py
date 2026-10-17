@@ -37,6 +37,8 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner_furniture': 'LGPL-3',
     'al_construction_planner_sale_furniture': 'LGPL-3',
     'al_construction_planner_suite': 'LGPL-3',
+    # Paquete 1.9 (M19-07): aprobaciones en la aplicación Aprobaciones.
+    'al_construction_planner_approvals': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts', 'mkdocs'}

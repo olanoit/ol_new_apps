@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Oficina Técnica (paquete 1.9): aprueba los cambios de material y de
+         cantidad del requerimiento de obra y, más adelante, los de accesorios. -->
+    <record id="group_planner_technical_office" model="res.groups">
+        <field name="name">Planificación de obra: oficina técnica</field>
+        <field name="privilege_id" ref="al_construction_planner.res_groups_privilege_construction_planner"/>
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner')), Command.link(ref('al_construction_planner.group_planner_amounts')), Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
+    </record>
+</odoo>

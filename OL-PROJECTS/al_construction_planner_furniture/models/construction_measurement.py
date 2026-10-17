@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Metrado del ambiente en mobiliario (v1.6, M16-03): ML de mueble bajo, ML de
 mueble alto y módulos frente a la tipología."""
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ConstructionMeasurement(models.Model):
@@ -31,6 +31,14 @@ class ConstructionMeasurement(models.Model):
             return lines.filtered(lambda l: l.activity_id.module_level)
         group = 'low' if driver == 'ml_low' else 'high'
         return lines.filtered(lambda l: l.activity_id.ml_based and l.activity_id.ml_group == group)
+
+    @api.model
+    def _construction_blocked_spaces(self, spaces):
+        """En mobiliario el ambiente medido reemplaza al metrado con su
+        aprobación (M19-06): la orden de un ambiente con tipología no espera
+        al metrado."""
+        return super()._construction_blocked_spaces(
+            spaces.filtered(lambda t: not t.construction_typology_id))
 
 
 class ConstructionMeasurementLine(models.Model):

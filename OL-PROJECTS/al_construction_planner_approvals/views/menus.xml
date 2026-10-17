@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_planner_approval_routes" name="Rutas de aprobación"
+              parent="al_construction_planner.menu_planner_config_other"
+              action="action_construction_approval_route" sequence="5"
+              groups="al_construction_planner.group_planner_manager"/>
+</odoo>

@@ -8,3 +8,4 @@ from . import construction_furniture_model
 from . import construction_module_product
 from . import construction_real_recipe
 from . import construction_amounts
+from . import project_task_measured

@@ -46,3 +46,5 @@ from . import test_projection_import_v18
 from . import test_amounts_v18
 from . import test_request_scope
 from . import test_request_fixes
+from . import test_approvals_v19
+from . import test_measured_v19

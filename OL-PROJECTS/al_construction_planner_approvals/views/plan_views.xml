@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="plan_view_form_approvals" model="ir.ui.view">
+        <field name="name">construction.resource.plan.form.approvals</field>
+        <field name="model">construction.resource.plan</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_request_approval']" position="after">
+                <field name="construction_approval_can_review" invisible="1"/>
+                <button name="action_construction_approve" type="object" string="Aprobar"
+                        class="btn-primary" invisible="not construction_approval_can_review"/>
+                <button name="action_construction_refuse" type="object" string="Rechazar"
+                        invisible="not construction_approval_can_review"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_approvals" type="object" class="oe_stat_button"
+                        icon="fa-check-square-o" invisible="not construction_approval_count">
+                    <field name="construction_approval_count" widget="statinfo" string="Aprobaciones"/>
+                </button>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="after">
+                <div class="alert alert-info d-flex align-items-center gap-2" role="status"
+                     invisible="not construction_approval_todo">
+                    <i class="fa fa-hourglass-half" title="Pendiente de aprobación"/>
+                    <span>Pendiente de aprobación · <field name="construction_approval_todo" class="d-inline"/></span>
+                    <button name="action_view_construction_approvals" type="object"
+                            class="btn btn-link p-0 ms-auto" string="Ver solicitud"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

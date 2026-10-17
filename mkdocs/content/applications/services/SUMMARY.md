@@ -17,6 +17,7 @@
             * [Línea base y versiones](project/construction/planning/baseline.md)
             * [Asignaciones y compras](project/construction/planning/supply.md)
             * [Metrado](project/construction/planning/measurement.md)
+            * [Aprobaciones del plan y del requerimiento](project/construction/planning/approvals.md)
             * [Contratas y liquidación semanal](project/construction/planning/contractors.md)
             * [Material extra y descuento a la contrata](project/construction/planning/extra_material.md)
             * [Portal de obra, sedes y marcación](project/construction/planning/site_portal.md)

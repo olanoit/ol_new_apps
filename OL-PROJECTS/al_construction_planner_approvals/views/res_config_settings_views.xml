@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_construction_approvals" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.approvals</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_construction_planner']" position="inside">
+                <block title="Aprobaciones" name="construction_planner_approvals">
+                    <setting company_dependent="1" id="construction_approval_engine" string="Motor de aprobación"
+                             help="Dónde se aprueban el plan de recursos y el requerimiento de obra. Con Aprobaciones, cada envío sigue la tabla de rutas.">
+                        <field name="construction_approval_engine" widget="radio"/>
+                        <div class="mt8">
+                            <button name="%(action_construction_approval_route)d" type="action"
+                                    string="Rutas de aprobación" icon="oi-arrow-right" class="btn-link"
+                                    invisible="construction_approval_engine != 'approvals'"/>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

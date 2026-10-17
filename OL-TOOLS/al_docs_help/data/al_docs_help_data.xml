@@ -259,6 +259,38 @@
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
+    <record id="help_construction_approval_mixin" model="al.docs.help">
+        <field name="key">construction.approval.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Documento de obra aprobado en Aprobaciones</field>
+        <field name="module">al_construction_planner_approvals</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
+    <record id="help_construction_approval_refuse_wizard" model="al.docs.help">
+        <field name="key">construction.approval.refuse.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Rechazar una solicitud de obra</field>
+        <field name="module">al_construction_planner_approvals</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
+    <record id="help_construction_approval_route" model="al.docs.help">
+        <field name="key">construction.approval.route</field>
+        <field name="kind">model</field>
+        <field name="name">Ruta de aprobación de obra</field>
+        <field name="module">al_construction_planner_approvals</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
+    <record id="help_construction_approval_route_approver" model="al.docs.help">
+        <field name="key">construction.approval.route.approver</field>
+        <field name="kind">model</field>
+        <field name="name">Aprobador del tramo</field>
+        <field name="module">al_construction_planner_approvals</field>
+        <field name="path">applications/services/project/construction/planning/approvals/#aprobar-o-rechazar</field>
+        <field name="section">Aprobar o rechazar</field>
+    </record>
     <record id="help_construction_change_order" model="al.docs.help">
         <field name="key">construction.change.order</field>
         <field name="kind">model</field>
@@ -376,7 +408,7 @@
         <field name="kind">model</field>
         <field name="name">Recurso de la plantilla de ejecución</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/client_contracts/</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_join_rule" model="al.docs.help">
@@ -576,7 +608,7 @@
         <field name="kind">model</field>
         <field name="name">Material que excede el plan</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_generate_wizard" model="al.docs.help">
@@ -592,8 +624,8 @@
         <field name="kind">model</field>
         <field name="name">Aplicar costo a las líneas del plan</field>
         <field name="module">al_construction_planner_purchase</field>
-        <field name="path">applications/services/project/construction/planning/prices_supply/</field>
-        <field name="section">Material extra y descuento a la contrata</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_plan_production_wizard" model="al.docs.help">
         <field name="key">construction.plan.production.wizard</field>
@@ -633,7 +665,7 @@
         <field name="name">Compra masiva desde el plan</field>
         <field name="module">al_construction_planner_purchase</field>
         <field name="path">applications/services/project/construction/planning/prices_supply/</field>
-        <field name="section">Material extra y descuento a la contrata</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_plan_purchase_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.purchase.wizard.line</field>
@@ -656,7 +688,7 @@
         <field name="kind">model</field>
         <field name="name">Nueva versión del plan de recursos</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_plan_request_wizard" model="al.docs.help">
@@ -664,16 +696,16 @@
         <field name="kind">model</field>
         <field name="name">Requerimiento de obra desde el plan</field>
         <field name="module">al_construction_planner_purchase</field>
-        <field name="path">applications/services/project/construction/planning/prices_supply/</field>
-        <field name="section">Material extra y descuento a la contrata</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_plan_request_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.request.wizard.line</field>
         <field name="kind">model</field>
         <field name="name">Línea del requerimiento de obra desde el plan</field>
         <field name="module">al_construction_planner_purchase</field>
-        <field name="path">applications/services/project/construction/planning/prices_supply/</field>
-        <field name="section">Material extra y descuento a la contrata</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_plan_reschedule_wizard" model="al.docs.help">
         <field name="key">construction.plan.reschedule.wizard</field>
@@ -696,7 +728,7 @@
         <field name="kind">model</field>
         <field name="name">Selección del plan para los asistentes de abastecimiento</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_planner_home" model="al.docs.help">
@@ -721,7 +753,7 @@
         <field name="name">Producto parecido</field>
         <field name="module">al_construction_planner_purchase</field>
         <field name="path">applications/services/project/construction/planning/prices_supply/</field>
-        <field name="section">Material extra y descuento a la contrata</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_profile_apply_wizard" model="al.docs.help">
         <field name="key">construction.profile.apply.wizard</field>
@@ -816,7 +848,7 @@
         <field name="kind">model</field>
         <field name="name">Motivo del rechazo o la devolución</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_recipe_import_wizard" model="al.docs.help">
@@ -840,24 +872,24 @@
         <field name="kind">model</field>
         <field name="name">Plan de recursos de obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="path">applications/services/project/construction/planning/approvals/#plan-de-recursos</field>
+        <field name="section">Plan de recursos</field>
     </record>
     <record id="help_construction_resource_plan_allocation" model="al.docs.help">
         <field name="key">construction.resource.plan.allocation</field>
         <field name="kind">model</field>
         <field name="name">Asignación del plan de recursos</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/schedule/#asignar-recursos-desde-el-cronograma</field>
-        <field name="section">Asignar recursos desde el cronograma</field>
+        <field name="path">applications/services/project/construction/planning/approvals/#plan-de-recursos</field>
+        <field name="section">Plan de recursos</field>
     </record>
     <record id="help_construction_resource_plan_line" model="al.docs.help">
         <field name="key">construction.resource.plan.line</field>
         <field name="kind">model</field>
         <field name="name">Línea del plan de recursos</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/baseline/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="path">applications/services/project/construction/planning/approvals/#plan-de-recursos</field>
+        <field name="section">Plan de recursos</field>
     </record>
     <record id="help_construction_resource_type" model="al.docs.help">
         <field name="key">construction.resource.type</field>
@@ -872,7 +904,7 @@
         <field name="kind">model</field>
         <field name="name">Tipo de recurso del catálogo</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/catalog/</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
     <record id="help_construction_schedule_report" model="al.docs.help">
@@ -882,6 +914,14 @@
         <field name="module">al_construction_planner_sale</field>
         <field name="path">applications/services/project/construction/planning/valued_schedule/#cronograma-valorizado</field>
         <field name="section">Cronograma valorizado</field>
+    </record>
+    <record id="help_construction_space_measured_wizard" model="al.docs.help">
+        <field name="key">construction.space.measured.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Marcar ambientes como medidos</field>
+        <field name="module">al_construction_planner_furniture</field>
+        <field name="path">applications/services/project/construction/planning/measurement/</field>
+        <field name="section">Catálogo y árbol de la obra</field>
     </record>
     <record id="help_construction_space_stage" model="al.docs.help">
         <field name="key">construction.space.stage</field>

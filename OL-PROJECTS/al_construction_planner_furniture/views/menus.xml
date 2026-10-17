@@ -9,4 +9,5 @@
     <menuitem id="menu_planner_recipe_versus" name="Presupuestado frente a real" parent="al_construction_planner.menu_planner_reports_plan" action="action_construction_recipe_versus" sequence="45"/>
     <menuitem id="menu_planner_module_shipments" name="Envíos de planta a obra" parent="al_construction_planner.menu_planner_supply" action="action_construction_module_shipments" sequence="50"/>
     <menuitem id="menu_planner_projection_import" name="Importar la proyección de materiales" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_projection_import_wizard" sequence="41"/>
+    <menuitem id="menu_planner_measured_spaces" name="Ambientes medidos" parent="al_construction_planner.menu_planner_progress" action="action_construction_measured_spaces" sequence="36" groups="al_construction_planner.group_planner_user"/>
 </odoo>
