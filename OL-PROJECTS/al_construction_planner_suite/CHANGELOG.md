@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261017 — 17/10/2026
+
+- Pruebas de accesorios con la orden que ya trae los accesorios de su lista de materiales.
+
 ## 5.20261017 — 17/10/2026
 
 - Instala también `al_construction_planner_production`; pruebas de accesorios de armado y presupuestado frente a real (M19-02 y M19-05).

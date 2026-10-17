@@ -24,5 +24,7 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             lambda t: t.construction_typology_id and not t.construction_measured)
         if unmeasured:
             notes.append(self.env._('Sin marcar como medidos: %s.', ', '.join(
-                unmeasured.mapped('display_name'))))
+                '%s / %s' % (task.construction_apartment_task_id.name, task.name)
+                if task.construction_apartment_task_id else task.display_name
+                for task in unmeasured)))
         return values, notes

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_production.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261017 — 17/10/2026
+
+- El pedido de accesorios no vuelve a proponer lo que la orden ya trae en sus componentes (prueba en dev1 del 17-oct).
+
 ## 1.20261017 — 17/10/2026
 
 - Puente nuevo (paquete 1.9, M19-02 y M19-05): accesorios de armado desde la orden y presupuestado frente a real en la orden y en el planificador.

@@ -57,8 +57,25 @@ class TestProductionOrder(PlannerCommon):
         action = production.with_user(user or self.head).action_construction_request_accessories()
         return self.env['construction.accessory.request'].browse(action['res_id'])
 
+    def test_accessories_already_in_the_order_are_not_proposed(self):
+        """La orden que sale de la lista de materiales ya trae las bisagras:
+        el pedido no las vuelve a proponer."""
+        production = self._production()
+        production.action_confirm()
+        self.assertEqual(self._hinges(production), 20)
+        request = self._request(production)
+        self.assertFalse(request.line_ids.filtered(lambda l: l.product_id == self.p_hinge))
+
+    def _without_bom_hinges(self, production):
+        # Como quedará con la carga del despiece (M19-01): sin accesorios.
+        self._hinges_move(production).unlink()
+
+    def _hinges_move(self, production):
+        return production.move_raw_ids.filtered(lambda m: m.product_id == self.p_hinge)
+
     def test_accessories_without_changes_go_to_the_order(self):
         production = self._production()
+        self._without_bom_hinges(production)
         production.action_confirm()
         before = self._hinges(production)
         request = self._request(production)
@@ -75,6 +92,7 @@ class TestProductionOrder(PlannerCommon):
 
     def test_changed_accessory_goes_to_technical_office(self):
         production = self._production()
+        self._without_bom_hinges(production)
         production.action_confirm()
         request = self._request(production)
         request.line_ids[:1].product_id = self.other_hinge
@@ -95,6 +113,7 @@ class TestProductionOrder(PlannerCommon):
 
     def test_quantity_over_balance_is_a_change(self):
         production = self._production()
+        self._without_bom_hinges(production)
         request = self._request(production)
         line = request.line_ids[:1]
         line.qty = line.qty_balance + 2
@@ -103,6 +122,7 @@ class TestProductionOrder(PlannerCommon):
 
     def test_who_requests(self):
         production = self._production()
+        self._without_bom_hinges(production)
         with self.assertRaises(AccessError):
             production.with_user(self.operator).action_construction_request_accessories()
         production.construction_accessories_user_id = self.operator

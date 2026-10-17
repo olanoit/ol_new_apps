@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261017 — 17/10/2026
+
+- El aviso de ambientes sin medir de la orden de fabricación nombra el departamento.
+
 ## 5.20261017 — 17/10/2026
 
 - Con el exceso en la orden (paquete 1.9, M19-04), la autorización de la receta real ya no detiene la confirmación de la orden.

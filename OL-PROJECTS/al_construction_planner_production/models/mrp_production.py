@@ -74,7 +74,8 @@ class MrpProduction(models.Model):
 
     def _construction_proposed_accessories(self):
         """Por nivel y accesorio del plan (Armado): lo planificado menos lo ya
-        pedido en otros pedidos de accesorios de la obra."""
+        pedido en otros pedidos de accesorios de la obra y lo que la orden ya
+        trae en sus componentes."""
         self.ensure_one()
         planned = defaultdict(lambda: [0.0, 0.0])
         for line in self._construction_assembly_plan_lines():
@@ -90,11 +91,19 @@ class MrpProduction(models.Model):
         for line in previous_sudo:
             asked[(line.task_id, line.planned_product_id)] += line.uom_id._compute_quantity(
                 line.qty, line.planned_product_id.uom_id)
+        # Lo que la orden ya trae de cada accesorio (de su lista de
+        # materiales) no se vuelve a pedir.
+        in_order = defaultdict(float)
+        for move in self.sudo().move_raw_ids.filtered(lambda m: m.state != 'cancel'):
+            in_order[move.product_id] += move.product_qty
         values = []
         for (task, product), (qty, amount) in sorted(
                 planned.items(), key=lambda item: (item[0][0].display_name or '',
                                                    item[0][1].display_name)):
             balance = qty - asked[(task, product)]
+            covered = min(max(balance, 0.0), in_order[product])
+            in_order[product] -= covered
+            balance -= covered
             if product.uom_id.compare(balance, 0) <= 0:
                 continue
             values.append({
