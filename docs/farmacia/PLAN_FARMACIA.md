@@ -49,9 +49,11 @@ sus unidades, pero **no hay precio propio por presentación** → lo resuelve
 
 ## 2. Arquitectura de módulos
 
-Carpeta: `OL-INDUSTRIES/` (es funcionalidad de un solo rubro; ver el README
-de la carpeta) **[Por validar]**: alternativa, un área nueva `OL-HEALTH/`
-si después vienen clínica u óptica.
+Carpeta: **área nueva `OL-HEALTH/`** (decidido el 18/10/2026), pensada para
+farmacia y, más adelante, clínica u óptica. Se registra en `scripts/areas.py`,
+el `addons_path` (local, servidores y documentación de instalación) y
+`mkdocs/scripts/gen_pages.py`; `category` = `OL-HEALTH/Apps`. El paquete
+`al_industry_pharmacy` sigue en `OL-INDUSTRIES/`.
 
 ```text
                        al_industry_pharmacy  (paquete: instala y configura)
@@ -210,7 +212,7 @@ commit `[ADD]`/`[IMP]`, despliegue a una base de demostración.
 
 ## 11. Por decidir (antes de E1)
 
-1. Carpeta: `OL-INDUSTRIES/` o área nueva `OL-HEALTH/`.
+1. ~~Carpeta~~ → **decidido: área nueva `OL-HEALTH/`** (18/10/2026).
 2. Recetas: ¿bloquear o solo avisar sin receta en productos `prescription`? (BPOF dice exigirla; muchas boticas avisan).
 3. Q.F. en turno: ¿bloqueo o alerta?
 4. Venta fraccionada: opción A o B de R1 (sale del prototipo).
