@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="product_category_groceries" model="product.category">
+            <field name="name">Abarrotes</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_beverages" model="product.category">
+            <field name="name">Bebidas</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_dairy" model="product.category">
+            <field name="name">Lácteos y embutidos</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_snacks" model="product.category">
+            <field name="name">Snacks y golosinas</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_cleaning" model="product.category">
+            <field name="name">Limpieza del hogar</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_personal_care" model="product.category">
+            <field name="name">Cuidado personal</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_liquor" model="product.category">
+            <field name="name">Licores</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="pos_category_01" model="pos.category">
+            <field name="name">Abarrotes</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="pos_category_02" model="pos.category">
+            <field name="name">Bebidas</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="pos_category_03" model="pos.category">
+            <field name="name">Lácteos</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="pos_category_04" model="pos.category">
+            <field name="name">Snacks</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="pos_category_05" model="pos.category">
+            <field name="name">Limpieza</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="pos_category_06" model="pos.category">
+            <field name="name">Cuidado personal</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="pos_category_07" model="pos.category">
+            <field name="name">Licores</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="product_tag_01" model="product.tag">
+            <field name="name">Granel</field>
+        </record>
+        <record id="product_tag_02" model="product.tag">
+            <field name="name">Oferta</field>
+        </record>
+        <record id="product_tag_03" model="product.tag">
+            <field name="name">Refrigerado</field>
+        </record>
+    </data>
+</odoo>

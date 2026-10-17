@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_board_mdf" model="product.template">
+        <field name="name">Tablero melamina blanco 18 mm 2,44 x 2,15 m</field>
+        <field name="categ_id" ref="product_category_boards"/>
+        <field name="list_price">165.0</field>
+        <field name="standard_price">128.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+    </record>
+    <record id="product_edge" model="product.template">
+        <field name="name">Tapacanto PVC blanco 22 x 0,45 mm (m)</field>
+        <field name="categ_id" ref="product_category_edges"/>
+        <field name="list_price">1.2</field>
+        <field name="standard_price">0.65</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+    </record>
+    <record id="product_hinge" model="product.template">
+        <field name="name">Bisagra cangrejo cierre lento</field>
+        <field name="categ_id" ref="product_category_hardware"/>
+        <field name="list_price">6.5</field>
+        <field name="standard_price">3.9</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01'), ref('product_tag_02')])]"/>
+    </record>
+    <record id="product_slide" model="product.template">
+        <field name="name">Corredera telescópica 45 cm (par)</field>
+        <field name="categ_id" ref="product_category_hardware"/>
+        <field name="list_price">18.0</field>
+        <field name="standard_price">11.5</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_quartz" model="product.template">
+        <field name="name">Cubierta de cuarzo (m lineal)</field>
+        <field name="categ_id" ref="product_category_countertops"/>
+        <field name="list_price">480.0</field>
+        <field name="standard_price">350.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_assembly_service" model="product.template">
+        <field name="name">Armado de mueble (m lineal)</field>
+        <field name="categ_id" ref="product_category_assembly"/>
+        <field name="list_price">35.0</field>
+        <field name="standard_price">28.0</field>
+        <field name="type">service</field>
+    </record>
+    <record id="product_installation_service" model="product.template">
+        <field name="name">Instalación de mueble (m lineal)</field>
+        <field name="categ_id" ref="product_category_installation"/>
+        <field name="list_price">40.0</field>
+        <field name="standard_price">32.0</field>
+        <field name="type">service</field>
+    </record>
+</odoo>

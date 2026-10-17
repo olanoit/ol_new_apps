@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="industry_retail" model="al.industry">
+        <field name="name">Bodega y minimarket</field>
+        <field name="code">retail</field>
+        <field name="sequence">40</field>
+        <field name="module_id" ref="base.module_al_industry_retail"/>
+        <field name="description">Bodegas, minimarkets y tiendas de barrio que venden en caja y compran a distribuidores.</field>
+        <field name="ciiu_code">4711</field>
+    </record>
+
+    <!-- Solo al instalar: configura la compañía activa sin pisar lo que ya
+         tiene. Las demás compañías, con «Aplicar a la compañía activa». -->
+    <data noupdate="1">
+        <function model="al.industry" name="_apply_on_install"
+                  eval="['al_industry_retail.industry_retail']"/>
+    </data>
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="industry_restaurant" model="al.industry">
+        <field name="name">Restaurante</field>
+        <field name="code">restaurant</field>
+        <field name="sequence">50</field>
+        <field name="module_id" ref="base.module_al_industry_restaurant"/>
+        <field name="description">Restaurantes, cafeterías y pollerías que atienden en mesa, para llevar y por delivery.</field>
+        <field name="ciiu_code">5610</field>
+    </record>
+
+    <!-- Solo al instalar: configura la compañía activa sin pisar lo que ya
+         tiene. Las demás compañías, con «Aplicar a la compañía activa». -->
+    <data noupdate="1">
+        <function model="al.industry" name="_apply_on_install"
+                  eval="['al_industry_restaurant.industry_restaurant']"/>
+    </data>
+</odoo>

@@ -1,0 +1,34 @@
+titulo: "Industria: tienda en línea"
+subtitulo: "Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Tienda en línea, Pagos, Culqi, Niubiz, Izipay]
+
+destacados:
+  - icono: "⌂"
+    titulo: "Checkout peruano"
+    texto: "RUC o DNI, ubigeo y tipo de comprobante en la compra."
+  - icono: "◉"
+    titulo: "Pago en línea"
+    texto: "Culqi, Niubiz e Izipay listos para configurar con sus llaves."
+  - icono: "✎"
+    titulo: "Libro de reclamaciones virtual"
+    texto: "El enlace obligatorio en la web, con plazos y avisos."
+
+funcionalidades:
+  - "Tienda web con stock y checkout peruano."
+  - "Proveedores de pago Culqi, Niubiz e Izipay."
+  - "Kárdex valorizado y libro de reclamaciones."
+  - "Categorías web: novedades, más vendidos y ofertas."
+  - "Actividad CIIU 4791 en la compañía."
+
+configuracion:
+  - "Instale **Industria: Tienda en línea** desde Aplicaciones (categoría OL-INDUSTRIES)."
+  - "Active el proveedor de pago con sus llaves en **Sitio web ▸ Configuración ▸ Proveedores de pago**."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión del paquete de industria."
+
+relacionados: [al_website_sale_pe, al_payment_culqi, al_payment_niubiz, al_payment_izipay]

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_rice" model="product.template">
+        <field name="name">Arroz extra 5 kg</field>
+        <field name="categ_id" ref="product_category_groceries"/>
+        <field name="list_price">22.5</field>
+        <field name="standard_price">18.9</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+    </record>
+    <record id="product_oil" model="product.template">
+        <field name="name">Aceite vegetal 1 L</field>
+        <field name="categ_id" ref="product_category_groceries"/>
+        <field name="list_price">9.8</field>
+        <field name="standard_price">7.6</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+    </record>
+    <record id="product_sugar_bulk" model="product.template">
+        <field name="name">Azúcar rubia a granel (kg)</field>
+        <field name="categ_id" ref="product_category_groceries"/>
+        <field name="list_price">4.2</field>
+        <field name="standard_price">3.3</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_water" model="product.template">
+        <field name="name">Agua mineral sin gas 625 mL</field>
+        <field name="categ_id" ref="product_category_beverages"/>
+        <field name="list_price">1.5</field>
+        <field name="standard_price">0.9</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_03')])]"/>
+    </record>
+    <record id="product_soda" model="product.template">
+        <field name="name">Gaseosa 1,5 L</field>
+        <field name="categ_id" ref="product_category_beverages"/>
+        <field name="list_price">6.5</field>
+        <field name="standard_price">4.7</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_03')])]"/>
+    </record>
+    <record id="product_milk" model="product.template">
+        <field name="name">Leche evaporada 400 g</field>
+        <field name="categ_id" ref="product_category_dairy"/>
+        <field name="list_price">4.1</field>
+        <field name="standard_price">3.2</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
+    </record>
+    <record id="product_detergent" model="product.template">
+        <field name="name">Detergente en polvo 900 g</field>
+        <field name="categ_id" ref="product_category_cleaning"/>
+        <field name="list_price">11.9</field>
+        <field name="standard_price">8.7</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_05')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_02')])]"/>
+    </record>
+</odoo>

@@ -1,0 +1,39 @@
+titulo: "Industria: constructora"
+subtitulo: "Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Construcción, Obras, Partidas, Contratas]
+
+destacados:
+  - icono: "▤"
+    titulo: "Plan por partidas"
+    texto: "Disciplina, subpartida y partida con su receta: el perfil «Construcción por partidas» queda aplicado."
+  - icono: "⇄"
+    titulo: "Compras y contratas"
+    texto: "Requerimientos de obra, compras contra el plan y contratas con liquidación semanal."
+  - icono: "◷"
+    titulo: "Cuadrillas y marcación"
+    texto: "Turnos por cuadrilla, quiosco de marcación en obra y planilla de construcción civil."
+  - icono: "✓"
+    titulo: "Aprobaciones"
+    texto: "Plan y requerimientos aprobados en la aplicación Aprobaciones, por tramos."
+
+funcionalidades:
+  - "Planificador de obra con control y avance activos."
+  - "Compras, contratas, cuadrillas, presupuesto analítico y valorización."
+  - "Aprobaciones por tramos y marcación en obra."
+  - "Planilla de construcción civil."
+  - "Categorías: cemento y agregados, acero, acabados, eléctricos y sanitarios, alquiler de equipos y contratas."
+  - "Actividad CIIU 4100 en la compañía."
+
+configuracion:
+  - "Instale **Industria: Constructora** desde Aplicaciones (categoría OL-INDUSTRIES)."
+  - "Revise el perfil aplicado en **Planificación de obra ▸ Configuración ▸ Ajustes**."
+  - "Asigne a los usuarios los grupos del planificador y de oficina técnica."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión del paquete de industria."
+
+relacionados: [al_construction_planner, al_construction_material_request, al_construction_attendance, al_hr_pe_construction]

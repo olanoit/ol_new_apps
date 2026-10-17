@@ -9,5 +9,6 @@ Cómo está hecho el repositorio y cómo se desarrolla un módulo de la suite.
 | Imprimir un documento con el formato común | [Formato de los documentos impresos](report_layout.md) |
 | Regenerar tablas, fichas, novedades, traducciones y ayuda contextual | [Herramientas del repositorio](tools.md) |
 | Probar un módulo y medir la cobertura | [Pruebas](testing.md) |
+| Crear un paquete por rubro (farmacia, construcción…) | [Paquetes de industria](industries.md) |
 | Ver la ficha técnica, la descripción y las novedades de cada módulo | [Referencia de módulos](reference/index.md) |
 | Leer los planes, especificaciones y análisis de desarrollo | [Especificaciones y diseño](specs/index.md) |

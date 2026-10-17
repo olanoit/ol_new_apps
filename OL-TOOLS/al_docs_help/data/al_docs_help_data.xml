@@ -179,6 +179,14 @@
         <field name="path">applications/hr/payroll/peru/import/</field>
         <field name="section">Importación de novedades</field>
     </record>
+    <record id="help_al_industry" model="al.docs.help">
+        <field name="key">al.industry</field>
+        <field name="kind">model</field>
+        <field name="name">Paquete de industria</field>
+        <field name="module">al_industry_base</field>
+        <field name="path">applications/industries/</field>
+        <field name="section">Industrias</field>
+    </record>
     <record id="help_al_pe_demo" model="al.docs.help">
         <field name="key">al.pe.demo</field>
         <field name="kind">model</field>

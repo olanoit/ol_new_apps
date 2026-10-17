@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_backpack" model="product.template">
+        <field name="name">Mochila urbana 20 L</field>
+        <field name="categ_id" ref="product_category_catalog"/>
+        <field name="list_price">129.0</field>
+        <field name="standard_price">62.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+        <field name="is_published" eval="True"/>
+        <field name="public_categ_ids" eval="[Command.set([ref('public_category_01')])]"/>
+    </record>
+    <record id="product_bottle" model="product.template">
+        <field name="name">Botella térmica 750 mL</field>
+        <field name="categ_id" ref="product_category_catalog"/>
+        <field name="list_price">59.9</field>
+        <field name="standard_price">24.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="is_published" eval="True"/>
+        <field name="public_categ_ids" eval="[Command.set([ref('public_category_02')])]"/>
+    </record>
+    <record id="product_headphones" model="product.template">
+        <field name="name">Audífonos inalámbricos</field>
+        <field name="categ_id" ref="product_category_catalog"/>
+        <field name="list_price">189.0</field>
+        <field name="standard_price">95.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_02')])]"/>
+        <field name="is_published" eval="True"/>
+        <field name="public_categ_ids" eval="[Command.set([ref('public_category_03')])]"/>
+    </record>
+</odoo>

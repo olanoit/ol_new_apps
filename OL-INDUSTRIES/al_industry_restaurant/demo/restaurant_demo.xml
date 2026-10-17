@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_ceviche" model="product.template">
+        <field name="name">Ceviche de pescado</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">32.0</field>
+        <field name="standard_price">12.0</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_causa" model="product.template">
+        <field name="name">Causa limeña</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">18.0</field>
+        <field name="standard_price">6.0</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+    </record>
+    <record id="product_lomo" model="product.template">
+        <field name="name">Lomo saltado</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">38.0</field>
+        <field name="standard_price">15.0</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+    </record>
+    <record id="product_aji" model="product.template">
+        <field name="name">Ají de gallina</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">28.0</field>
+        <field name="standard_price">9.0</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_menu" model="product.template">
+        <field name="name">Menú del día (entrada, fondo y refresco)</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">15.0</field>
+        <field name="standard_price">6.5</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
+    </record>
+    <record id="product_chicha" model="product.template">
+        <field name="name">Chicha morada (jarra 1 L)</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">14.0</field>
+        <field name="standard_price">3.5</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_04')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_02'), ref('product_tag_03')])]"/>
+    </record>
+    <record id="product_suspiro" model="product.template">
+        <field name="name">Suspiro a la limeña</field>
+        <field name="categ_id" ref="product_category_menu"/>
+        <field name="list_price">12.0</field>
+        <field name="standard_price">3.8</field>
+        <field name="type">consu</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_05')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_02')])]"/>
+    </record>
+    <record id="product_container" model="product.template">
+        <field name="name">Táper descartable para llevar</field>
+        <field name="categ_id" ref="product_category_disposables"/>
+        <field name="list_price">1.0</field>
+        <field name="standard_price">0.35</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+    </record>
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="industry_pharmacy" model="al.industry">
+        <field name="name">Farmacia y botica</field>
+        <field name="code">pharmacy</field>
+        <field name="sequence">10</field>
+        <field name="module_id" ref="base.module_al_industry_pharmacy"/>
+        <field name="description">Farmacias, boticas y droguerías minoristas que venden en caja, compran por lote y controlan vencimientos.</field>
+        <field name="ciiu_code">4772</field>
+    </record>
+
+    <!-- Solo al instalar: configura la compañía activa sin pisar lo que ya
+         tiene. Las demás compañías, con «Aplicar a la compañía activa». -->
+    <data noupdate="1">
+        <function model="al.industry" name="_apply_on_install"
+                  eval="['al_industry_pharmacy.industry_pharmacy']"/>
+    </data>
+</odoo>

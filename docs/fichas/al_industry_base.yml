@@ -1,0 +1,33 @@
+titulo: "Industrias: base común"
+subtitulo: "Lo que comparten los paquetes de industria: la localización peruana de la suite y el registro de cada industria, con su actividad CIIU, aplicable por compañía."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Perú, CIIU, Multicompañía]
+
+destacados:
+  - icono: "▦"
+    titulo: "Una industria, un registro"
+    texto: "Cada paquete deja su industria en Ajustes ▸ Usuarios y compañías ▸ Industrias, con su actividad CIIU."
+  - icono: "⌂"
+    titulo: "Por compañía"
+    texto: "Al instalar configura la compañía activa; las demás, con «Aplicar a la compañía activa»."
+  - icono: "✓"
+    titulo: "No pisa nada"
+    texto: "Solo completa lo que falta: si la compañía ya tiene actividad principal o perfil, se respeta."
+
+funcionalidades:
+  - "Localización peruana de la suite: comprobantes, tipo de cambio, consulta de RUC y DNI."
+  - "Catálogo de industrias instaladas con su CIIU y las compañías donde se aplicaron."
+  - "Actividad económica principal del RUC desde la CIIU Rev. 4 de SUNAT."
+  - "Perfil de vertical del planificador de obra para los rubros que planifican obras."
+
+configuracion:
+  - "Se instala sola con cualquier paquete de industria."
+  - "Para otra compañía: cámbiese a ella y use **Aplicar a la compañía activa** en Ajustes ▸ Usuarios y compañías ▸ Industrias."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión: registro de industrias con su CIIU, aplicable por compañía."
+
+relacionados: [al_industry_pharmacy, al_industry_construction, al_industry_retail]

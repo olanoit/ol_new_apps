@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_cement" model="product.template">
+        <field name="name">Cemento portland tipo I (bolsa 42,5 kg)</field>
+        <field name="categ_id" ref="product_category_materials_cement"/>
+        <field name="list_price">32.5</field>
+        <field name="standard_price">27.8</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+    </record>
+    <record id="product_sand" model="product.template">
+        <field name="name">Arena gruesa (m³)</field>
+        <field name="categ_id" ref="product_category_materials_cement"/>
+        <field name="list_price">75.0</field>
+        <field name="standard_price">60.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_rebar" model="product.template">
+        <field name="name">Fierro corrugado 1/2" x 9 m</field>
+        <field name="categ_id" ref="product_category_materials_steel"/>
+        <field name="list_price">42.0</field>
+        <field name="standard_price">36.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01')])]"/>
+    </record>
+    <record id="product_tile" model="product.template">
+        <field name="name">Porcelanato 60 x 60 (m²)</field>
+        <field name="categ_id" ref="product_category_materials_finishing"/>
+        <field name="list_price">58.0</field>
+        <field name="standard_price">44.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_02')])]"/>
+    </record>
+    <record id="product_mixer_rental" model="product.template">
+        <field name="name">Alquiler de mezcladora (día)</field>
+        <field name="categ_id" ref="product_category_equipment_rental"/>
+        <field name="list_price">120.0</field>
+        <field name="standard_price">90.0</field>
+        <field name="type">service</field>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_04')])]"/>
+    </record>
+    <record id="product_masonry_contract" model="product.template">
+        <field name="name">Contrata de albañilería (m²)</field>
+        <field name="categ_id" ref="product_category_subcontracts"/>
+        <field name="list_price">45.0</field>
+        <field name="standard_price">38.0</field>
+        <field name="type">service</field>
+    </record>
+</odoo>

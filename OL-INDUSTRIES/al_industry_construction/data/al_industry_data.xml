@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="industry_construction" model="al.industry">
+        <field name="name">Constructora</field>
+        <field name="code">construction</field>
+        <field name="sequence">20</field>
+        <field name="module_id" ref="base.module_al_industry_construction"/>
+        <field name="description">Constructoras y contratistas generales que planifican por disciplina, subpartida y partida, con contratas y personal de construcción civil.</field>
+        <field name="ciiu_code">4100</field>
+        <field name="planner_profile_xmlid">al_construction_planner.profile_construction</field>
+    </record>
+
+    <!-- Solo al instalar: configura la compañía activa sin pisar lo que ya
+         tiene. Las demás compañías, con «Aplicar a la compañía activa». -->
+    <data noupdate="1">
+        <function model="al.industry" name="_apply_on_install"
+                  eval="['al_industry_construction.industry_construction']"/>
+    </data>
+</odoo>

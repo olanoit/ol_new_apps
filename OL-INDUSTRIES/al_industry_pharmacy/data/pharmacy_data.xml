@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Opciones de Ajustes que el rubro necesita para todos los usuarios
+         internos (como los paquetes de industria de Odoo). -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('stock.group_production_lot')), Command.link(ref('product_expiry.group_expiry_date_on_delivery_slip')), Command.link(ref('stock.group_lot_on_delivery_slip'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <record id="product_category_medicines" model="product.category">
+            <field name="name">Medicamentos</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_medicines_otc" model="product.category">
+            <field name="name">Venta libre</field>
+            <field name="parent_id" ref="product_category_medicines"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_medicines_rx" model="product.category">
+            <field name="name">Con receta médica</field>
+            <field name="parent_id" ref="product_category_medicines"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_medicines_controlled" model="product.category">
+            <field name="name">Controlados</field>
+            <field name="parent_id" ref="product_category_medicines"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_dermo" model="product.category">
+            <field name="name">Dermocosmética</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_personal_care" model="product.category">
+            <field name="name">Cuidado personal</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_baby" model="product.category">
+            <field name="name">Bebés y maternidad</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_nutrition" model="product.category">
+            <field name="name">Nutrición y suplementos</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="product_category_medical_devices" model="product.category">
+            <field name="name">Dispositivos médicos</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+        <record id="pos_category_01" model="pos.category">
+            <field name="name">Medicamentos</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="pos_category_02" model="pos.category">
+            <field name="name">Dermocosmética</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="pos_category_03" model="pos.category">
+            <field name="name">Cuidado personal</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="pos_category_04" model="pos.category">
+            <field name="name">Bebés</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="pos_category_05" model="pos.category">
+            <field name="name">Nutrición</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="pos_category_06" model="pos.category">
+            <field name="name">Dispositivos médicos</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="product_tag_01" model="product.tag">
+            <field name="name">Requiere receta</field>
+        </record>
+        <record id="product_tag_02" model="product.tag">
+            <field name="name">Cadena de frío</field>
+        </record>
+        <record id="product_tag_03" model="product.tag">
+            <field name="name">Genérico</field>
+        </record>
+        <record id="product_tag_04" model="product.tag">
+            <field name="name">De marca</field>
+        </record>
+        <record id="product_tag_05" model="product.tag">
+            <field name="name">Psicotrópico</field>
+        </record>
+    </data>
+</odoo>

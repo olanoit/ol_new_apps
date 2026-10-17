@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Opciones de Ajustes que el rubro necesita para todos los usuarios
+         internos (como los paquetes de industria de Odoo). -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_feature_control')), Command.link(ref('al_construction_planner.group_planner_feature_progress')), Command.link(ref('stock.group_stock_multi_locations'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <record id="product_category_materials" model="product.category">
+            <field name="name">Materiales de construcción</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_materials_cement" model="product.category">
+            <field name="name">Cemento y agregados</field>
+            <field name="parent_id" ref="product_category_materials"/>
+        </record>
+        <record id="product_category_materials_steel" model="product.category">
+            <field name="name">Acero y fierro</field>
+            <field name="parent_id" ref="product_category_materials"/>
+        </record>
+        <record id="product_category_materials_finishing" model="product.category">
+            <field name="name">Acabados</field>
+            <field name="parent_id" ref="product_category_materials"/>
+        </record>
+        <record id="product_category_materials_electric" model="product.category">
+            <field name="name">Eléctricos y sanitarios</field>
+            <field name="parent_id" ref="product_category_materials"/>
+        </record>
+        <record id="product_category_equipment_rental" model="product.category">
+            <field name="name">Alquiler de equipos</field>
+            <field name="parent_id" ref="product.product_category_services"/>
+        </record>
+        <record id="product_category_subcontracts" model="product.category">
+            <field name="name">Servicios de contratas</field>
+            <field name="parent_id" ref="product.product_category_services"/>
+        </record>
+        <record id="product_tag_01" model="product.tag">
+            <field name="name">Obra gruesa</field>
+        </record>
+        <record id="product_tag_02" model="product.tag">
+            <field name="name">Acabados</field>
+        </record>
+        <record id="product_tag_03" model="product.tag">
+            <field name="name">Instalaciones</field>
+        </record>
+        <record id="product_tag_04" model="product.tag">
+            <field name="name">Equipo menor</field>
+        </record>
+    </data>
+</odoo>

@@ -10,6 +10,7 @@ AREAS = [
     'OL-POS',
     'OL-INVENTORY',
     'OL-PROJECTS',
+    'OL-INDUSTRIES',
     'OL-TOOLS',
     'OL-THIRD-PARTY',
 ]
@@ -41,6 +42,9 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner_approvals': 'LGPL-3',
     'al_construction_planner_approvals_mrp': 'LGPL-3',
     'al_construction_planner_production': 'LGPL-3',
+    # Paquetes de industria que instalan el planificador (LGPL-3 por él).
+    'al_industry_construction': 'LGPL-3',
+    'al_industry_furniture': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts', 'mkdocs'}

@@ -1,0 +1,33 @@
+titulo: "Industria: mobiliario a medida"
+subtitulo: "Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Mobiliario, Fabricación, Metrado, Obras]
+
+destacados:
+  - icono: "▦"
+    titulo: "Tipologías de mueble"
+    texto: "Módulos, piezas, método de unión y lista de materiales por tipología."
+  - icono: "⚙"
+    titulo: "Fabricación"
+    texto: "Órdenes de fabricación desde el plan, a la espera del metrado."
+  - icono: "⌂"
+    titulo: "Por torre y departamento"
+    texto: "El perfil «Mobiliario» planifica por torre, piso, departamento, ambiente, mueble y módulo."
+
+funcionalidades:
+  - "Planificador con todos sus puentes (perfil mobiliario) y metrado activo."
+  - "Compras, contratas, cuadrillas, presupuesto, valorización y aprobaciones."
+  - "Categorías: tableros, cantos, herrajes, cubiertas, servicios de armado e instalación."
+  - "Actividad CIIU 3100 en la compañía."
+
+configuracion:
+  - "Instale **Industria: Mobiliario a medida** desde Aplicaciones (categoría OL-INDUSTRIES)."
+  - "En **Planificación de obra ▸ Configuración ▸ Ajustes** elija las categorías de los servicios de armado e instalación."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión del paquete de industria."
+
+relacionados: [al_construction_planner_suite, al_construction_planner_furniture, al_construction_planner_mrp]

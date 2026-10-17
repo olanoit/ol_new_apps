@@ -1,0 +1,48 @@
+titulo: "Industria: farmacia y botica"
+subtitulo: "Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Farmacia, Botica, DIGEMID, Lotes, TPV]
+
+destacados:
+  - icono: "℞"
+    titulo: "Datos DIGEMID"
+    texto: "Registro sanitario, principio activo, concentración, forma farmacéutica y condición de venta en la ficha del producto."
+  - icono: "⌛"
+    titulo: "Lotes y vencimientos"
+    texto: "Compra por lote con fecha de vencimiento y salida FEFO: primero vence, primero sale."
+  - icono: "▣"
+    titulo: "Caja peruana"
+    texto: "Boleta y factura electrónica desde el TPV, cliente por RUC o DNI y cobro con Yape y Plin."
+  - icono: "✎"
+    titulo: "Libro de reclamaciones"
+    texto: "El libro virtual que exige Indecopi, con plazos y avisos."
+
+funcionalidades:
+  - grupo: "Ventas"
+    items:
+      - "Punto de venta con boleta y factura electrónica."
+      - "Programas de fidelización y cupones."
+      - "Margen por pedido de venta."
+  - grupo: "Inventario"
+    items:
+      - "Lotes con vencimiento y su fecha en la guía."
+      - "Categorías de medicamentos con salida FEFO."
+      - "Kárdex valorizado SUNAT."
+  - grupo: "Datos de partida"
+    items:
+      - "Categorías: venta libre, con receta, controlados, dermocosmética, bebés, nutrición, dispositivos."
+      - "Etiquetas: requiere receta, cadena de frío, genérico, de marca, psicotrópico."
+      - "Actividad CIIU 4772 en la compañía."
+
+configuracion:
+  - "Instale **Industria: Farmacia y botica** desde Aplicaciones (categoría OL-INDUSTRIES)."
+  - "Configure la facturación electrónica y los diarios de boleta y factura del TPV."
+  - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión del paquete de industria."
+
+relacionados: [al_l10n_pe_edi_pos, al_pos_pe_wallet_qr, ol_stock_kardex_pe, al_l10n_pe_complaints_book]

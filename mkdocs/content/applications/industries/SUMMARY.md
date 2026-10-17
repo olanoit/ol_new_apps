@@ -1,0 +1,7 @@
+* [Industrias](index.md)
+* [Farmacia y botica](pharmacy.md)
+* [Constructora](construction.md)
+* [Mobiliario a medida](furniture.md)
+* [Bodega y minimarket](retail.md)
+* [Restaurante](restaurant.md)
+* [Tienda en línea](ecommerce.md)

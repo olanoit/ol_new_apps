@@ -3,6 +3,7 @@
 * [Convenciones de Odoo 19](conventions.md)
 * [Formato de los documentos impresos](report_layout.md)
 * [Herramientas del repositorio](tools.md)
+* [Paquetes de industria](industries.md)
 * [Pruebas](testing.md)
 * [Referencia de módulos](reference/)
 * [Especificaciones y diseño](specs/)

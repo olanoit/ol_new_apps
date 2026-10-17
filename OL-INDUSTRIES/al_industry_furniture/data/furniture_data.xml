@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Opciones de Ajustes que el rubro necesita para todos los usuarios
+         internos (como los paquetes de industria de Odoo). -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_feature_control')), Command.link(ref('al_construction_planner.group_planner_feature_progress')), Command.link(ref('al_construction_planner.group_planner_feature_measurement')), Command.link(ref('stock.group_stock_multi_locations'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <record id="product_category_boards" model="product.category">
+            <field name="name">Tableros</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_edges" model="product.category">
+            <field name="name">Cantos y tapacantos</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_hardware" model="product.category">
+            <field name="name">Herrajes y accesorios</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_countertops" model="product.category">
+            <field name="name">Tableros de cubierta</field>
+            <field name="parent_id" ref="product.product_category_goods"/>
+        </record>
+        <record id="product_category_assembly" model="product.category">
+            <field name="name">Servicios de armado</field>
+            <field name="parent_id" ref="product.product_category_services"/>
+        </record>
+        <record id="product_category_installation" model="product.category">
+            <field name="name">Servicios de instalación</field>
+            <field name="parent_id" ref="product.product_category_services"/>
+        </record>
+        <record id="product_tag_01" model="product.tag">
+            <field name="name">Cocina</field>
+        </record>
+        <record id="product_tag_02" model="product.tag">
+            <field name="name">Closet</field>
+        </record>
+        <record id="product_tag_03" model="product.tag">
+            <field name="name">Baño</field>
+        </record>
+        <record id="product_tag_04" model="product.tag">
+            <field name="name">Lavandería</field>
+        </record>
+    </data>
+</odoo>

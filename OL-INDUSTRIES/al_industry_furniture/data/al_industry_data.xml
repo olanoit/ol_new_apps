@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="industry_furniture" model="al.industry">
+        <field name="name">Mobiliario a medida</field>
+        <field name="code">furniture</field>
+        <field name="sequence">30</field>
+        <field name="module_id" ref="base.module_al_industry_furniture"/>
+        <field name="description">Contratas de mobiliario que fabrican e instalan cocinas, closets y muebles de baño en proyectos inmobiliarios.</field>
+        <field name="ciiu_code">3100</field>
+        <field name="planner_profile_xmlid">al_construction_planner.profile_furniture</field>
+    </record>
+
+    <!-- Solo al instalar: configura la compañía activa sin pisar lo que ya
+         tiene. Las demás compañías, con «Aplicar a la compañía activa». -->
+    <data noupdate="1">
+        <function model="al.industry" name="_apply_on_install"
+                  eval="['al_industry_furniture.industry_furniture']"/>
+    </data>
+</odoo>

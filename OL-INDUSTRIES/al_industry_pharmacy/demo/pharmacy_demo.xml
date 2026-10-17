@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_paracetamol" model="product.template">
+        <field name="name">Paracetamol 500 mg x 100 tabletas</field>
+        <field name="categ_id" ref="product_category_medicines_otc"/>
+        <field name="list_price">12.0</field>
+        <field name="standard_price">6.5</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date" eval="True"/>
+        <field name="expiration_time">730</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_03')])]"/>
+        <field name="pharmacy_sale_condition">otc</field>
+        <field name="pharmacy_sanitary_registry">EN-00000 DEMO</field>
+        <field name="pharmacy_active_ingredient">Paracetamol</field>
+        <field name="pharmacy_concentration">500 mg</field>
+        <field name="pharmacy_dosage_form">Tableta</field>
+    </record>
+    <record id="product_ibuprofen" model="product.template">
+        <field name="name">Ibuprofeno 400 mg x 100 tabletas</field>
+        <field name="categ_id" ref="product_category_medicines_otc"/>
+        <field name="list_price">15.0</field>
+        <field name="standard_price">7.8</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date" eval="True"/>
+        <field name="expiration_time">730</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_03')])]"/>
+        <field name="pharmacy_sale_condition">otc</field>
+        <field name="pharmacy_sanitary_registry">EN-00001 DEMO</field>
+        <field name="pharmacy_active_ingredient">Ibuprofeno</field>
+        <field name="pharmacy_concentration">400 mg</field>
+        <field name="pharmacy_dosage_form">Tableta</field>
+    </record>
+    <record id="product_amoxicillin" model="product.template">
+        <field name="name">Amoxicilina 500 mg x 100 cápsulas</field>
+        <field name="categ_id" ref="product_category_medicines_rx"/>
+        <field name="list_price">35.0</field>
+        <field name="standard_price">18.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date" eval="True"/>
+        <field name="expiration_time">730</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01'), ref('product_tag_03')])]"/>
+        <field name="pharmacy_sale_condition">prescription</field>
+        <field name="pharmacy_sanitary_registry">EN-00002 DEMO</field>
+        <field name="pharmacy_active_ingredient">Amoxicilina</field>
+        <field name="pharmacy_concentration">500 mg</field>
+        <field name="pharmacy_dosage_form">Cápsula</field>
+    </record>
+    <record id="product_insulin" model="product.template">
+        <field name="name">Insulina humana 100 UI/mL x 10 mL</field>
+        <field name="categ_id" ref="product_category_medicines_rx"/>
+        <field name="list_price">58.0</field>
+        <field name="standard_price">41.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date" eval="True"/>
+        <field name="expiration_time">730</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01'), ref('product_tag_02')])]"/>
+        <field name="pharmacy_sale_condition">prescription</field>
+        <field name="pharmacy_sanitary_registry">BE-00003 DEMO</field>
+        <field name="pharmacy_active_ingredient">Insulina humana</field>
+        <field name="pharmacy_concentration">100 UI/mL</field>
+        <field name="pharmacy_dosage_form">Solución inyectable</field>
+    </record>
+    <record id="product_sunscreen" model="product.template">
+        <field name="name">Protector solar FPS 50 x 50 mL</field>
+        <field name="categ_id" ref="product_category_dermo"/>
+        <field name="list_price">69.9</field>
+        <field name="standard_price">38.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date" eval="True"/>
+        <field name="expiration_time">1095</field>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+        <field name="product_tag_ids" eval="[Command.set([ref('product_tag_04')])]"/>
+    </record>
+    <record id="product_diapers" model="product.template">
+        <field name="name">Pañales talla M x 40</field>
+        <field name="categ_id" ref="product_category_baby"/>
+        <field name="list_price">45.5</field>
+        <field name="standard_price">32.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_04')])]"/>
+    </record>
+    <record id="product_thermometer" model="product.template">
+        <field name="name">Termómetro digital</field>
+        <field name="categ_id" ref="product_category_medical_devices"/>
+        <field name="list_price">25.0</field>
+        <field name="standard_price">12.0</field>
+        <field name="type">consu</field>
+        <field name="is_storable" eval="True"/>
+        <field name="available_in_pos" eval="True"/>
+        <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+    </record>
+</odoo>

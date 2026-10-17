@@ -1,0 +1,36 @@
+titulo: "Industria: restaurante"
+subtitulo: "Restaurante listo para atender: salón con mesas, comandas a cocina, división de cuentas y propinas, boleta y factura electrónica desde la caja, cobro con Yape y Plin y libro de reclamaciones."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Restaurante, Mesas, Comandas, TPV]
+
+destacados:
+  - icono: "▦"
+    titulo: "Salón y mesas"
+    texto: "Plano del salón, pedidos por mesa, división de cuentas y propinas."
+  - icono: "▣"
+    titulo: "Comprobante en la mesa"
+    texto: "Boleta o factura electrónica al cobrar, con el RUC o DNI del cliente."
+  - icono: "◉"
+    titulo: "Yape y Plin"
+    texto: "Cobro con el QR de la billetera en la caja."
+
+funcionalidades:
+  - "TPV de restaurante de Odoo: mesas, comandas y propinas."
+  - "Boleta y factura electrónica, cliente por RUC o DNI, vendedor (mozo) por venta."
+  - "Compras de insumos con recepción en almacén."
+  - "Libro de reclamaciones."
+  - "Categorías de caja: entradas, platos de fondo, menú del día, bebidas, postres y para llevar."
+  - "Actividad CIIU 5610 en la compañía."
+
+configuracion:
+  - "Instale **Industria: Restaurante** desde Aplicaciones (categoría OL-INDUSTRIES)."
+  - "Dibuje el salón en la configuración del TPV."
+  - "Para comandas en impresoras de red instale también **Impresoras de red en el TPV** (necesita queue_job en server_wide_modules)."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión del paquete de industria."
+
+relacionados: [al_l10n_pe_edi_pos, al_pos_network_printer, al_pos_pe_wallet_qr]

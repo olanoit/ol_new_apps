@@ -24,6 +24,7 @@ tabla de los módulos que contiene.
 [OL-POS](OL-POS/) | Punto de venta: comprobantes electrónicos desde la caja, vendedor, catálogo, tema y marca blanca.
 [OL-INVENTORY](OL-INVENTORY/) | Inventario y existencias: kárdex valorizado.
 [OL-PROJECTS](OL-PROJECTS/) | Proyectos y obras: Gantt y requerimientos de materiales de obra.
+[OL-INDUSTRIES](OL-INDUSTRIES/) | Paquetes por industria (farmacia, construcción, mobiliario, bodega, restaurante, tienda en línea): instalan y configuran los módulos del rubro.
 [OL-TOOLS](OL-TOOLS/) | Utilidades transversales: información de módulos, servidor MCP, licencia.
 [OL-THIRD-PARTY](OL-THIRD-PARTY/) | Módulos de otros autores que usa el proyecto, con su autoría y licencia; los cambios locales, anotados en su CHANGELOG.
 
@@ -71,13 +72,14 @@ addons_path = ...,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-POS,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-INVENTORY,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-PROJECTS,
+              /home/och/odoo/ce19/myodoo/ol_new_apps/OL-INDUSTRIES,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-TOOLS,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-THIRD-PARTY
 ```
 
 En Odoo.sh y en los servidores donde `ol_new_apps` es un submódulo (por
 ejemplo `democonstruccion` o `newallcenter-dev`) hay que añadir las mismas
-ocho carpetas al `addons_path`; con solo la raíz, Odoo no encuentra los
+nueve carpetas al `addons_path`; con solo la raíz, Odoo no encuentra los
 módulos.
 
 Estructura
@@ -245,11 +247,23 @@ módulo | versión | licencia | resumen
 [al_construction_planner_spreadsheet](OL-PROJECTS/al_construction_planner_spreadsheet/) | 2.20261016 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».
 [al_construction_planner_subcontract](OL-PROJECTS/al_construction_planner_subcontract/) | 2.20261016 | LGPL-3 | Asignar contrata con su OC de servicio, avance por driver, liquidación semanal y portal de la contrata.
 [al_construction_planner_subcontract_purchase](OL-PROJECTS/al_construction_planner_subcontract_purchase/) | 1.20261013 | LGPL-3 | Descuento a la contrata del material extra en su liquidación semanal.
-[al_construction_planner_suite](OL-PROJECTS/al_construction_planner_suite/) | 6.20261017 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
+[al_construction_planner_suite](OL-PROJECTS/al_construction_planner_suite/) | 7.20261017 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
 [al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 8.20261013 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 17.20261013 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 18.20261011 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
 [al_project_gantt_website](OL-PROJECTS/al_project_gantt_website/) | 12.20261008 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
+
+### OL-INDUSTRIES
+
+módulo | versión | licencia | resumen
+--- | --- | --- | ---
+[al_industry_base](OL-INDUSTRIES/al_industry_base/) | 1.20261017 | OPL-1 | Lo que comparten los paquetes de industria: la localización peruana de la suite y el registro de cada industria, con su actividad CIIU, aplicable por compañía.
+[al_industry_construction](OL-INDUSTRIES/al_industry_construction/) | 1.20261017 | LGPL-3 | Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil.
+[al_industry_ecommerce](OL-INDUSTRIES/al_industry_ecommerce/) | 1.20261017 | OPL-1 | Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual.
+[al_industry_furniture](OL-INDUSTRIES/al_industry_furniture/) | 1.20261017 | LGPL-3 | Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento.
+[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 1.20261017 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
+[al_industry_restaurant](OL-INDUSTRIES/al_industry_restaurant/) | 1.20261017 | OPL-1 | Restaurante listo para atender: salón con mesas, comandas a cocina, división de cuentas y propinas, boleta y factura electrónica desde la caja, cobro con Yape y Plin y libro de reclamaciones.
+[al_industry_retail](OL-INDUSTRIES/al_industry_retail/) | 1.20261017 | OPL-1 | Bodega o minimarket listo para vender: caja con boleta y factura electrónica, cobro con Yape y Plin, cliente por RUC o DNI, vendedor por venta, kárdex SUNAT y libro de reclamaciones.
 
 ### OL-TOOLS
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="al_industry_view_list" model="ir.ui.view">
+        <field name="name">al.industry.list</field>
+        <field name="model">al.industry</field>
+        <field name="arch" type="xml">
+            <list create="0" delete="0">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="module_id"/>
+                <field name="ciiu_code"/>
+                <field name="company_ids" widget="many2many_tags" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="al_industry_view_form" model="ir.ui.view">
+        <field name="name">al.industry.form</field>
+        <field name="model">al.industry</field>
+        <field name="arch" type="xml">
+            <form create="0" delete="0">
+                <header>
+                    <button name="action_apply_current_company" type="object" class="btn-primary"
+                            string="Aplicar a la compañía activa" groups="base.group_system"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" readonly="1"/>
+                            <field name="module_id"/>
+                            <field name="ciiu_code" readonly="1"/>
+                            <field name="planner_profile_xmlid" readonly="1"
+                                   invisible="not planner_profile_xmlid"/>
+                        </group>
+                        <group>
+                            <field name="company_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <field name="description" readonly="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="al_industry_action" model="ir.actions.act_window">
+        <field name="name">Industrias</field>
+        <field name="res_model">al.industry</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Todavía no hay paquetes de industria instalados</p>
+            <p>Instale uno desde Aplicaciones (categoría OL-INDUSTRIES): farmacia, construcción,
+                mobiliario, bodega, restaurante o tienda en línea.</p>
+        </field>
+    </record>
+
+    <menuitem id="al_industry_menu" name="Industrias" parent="base.menu_users"
+              action="al_industry_action" sequence="40" groups="base.group_system"/>
+</odoo>

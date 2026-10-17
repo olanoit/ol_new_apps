@@ -1,0 +1,35 @@
+titulo: "Industria: bodega y minimarket"
+subtitulo: "Bodega o minimarket listo para vender: caja con boleta y factura electrónica, cobro con Yape y Plin, cliente por RUC o DNI, vendedor por venta, kárdex SUNAT y libro de reclamaciones."
+categoria: "Industrias · Perú"
+etiquetas: [Industrias, Bodega, Minimarket, TPV, Yape]
+
+destacados:
+  - icono: "▣"
+    titulo: "Caja peruana"
+    texto: "Boleta y factura electrónica, cliente por RUC o DNI y cobro con Yape y Plin."
+  - icono: "☺"
+    titulo: "Vendedor por venta"
+    texto: "Cada ticket con su vendedor, para comisiones y control."
+  - icono: "▤"
+    titulo: "Kárdex SUNAT"
+    texto: "Compras y ventas valorizadas en el formato 13.1."
+
+funcionalidades:
+  - "Punto de venta con boleta y factura electrónica."
+  - "Vista de productos del TPV y vendedor por venta."
+  - "Compras con recepción en almacén y kárdex valorizado."
+  - "Libro de reclamaciones."
+  - "Categorías de caja: abarrotes, bebidas, lácteos, snacks, limpieza, cuidado personal y licores."
+  - "Actividad CIIU 4711 en la compañía."
+
+configuracion:
+  - "Instale **Industria: Bodega y minimarket** desde Aplicaciones (categoría OL-INDUSTRIES)."
+  - "Configure los diarios de boleta y factura del TPV y el método de pago con QR."
+
+novedades:
+  - version: 1.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Primera versión del paquete de industria."
+
+relacionados: [al_l10n_pe_edi_pos, al_pos_vendedor, al_pos_pe_wallet_qr, ol_stock_kardex_pe]
