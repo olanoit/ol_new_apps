@@ -94,7 +94,7 @@ ficha en `docs/fichas/`, página en `mkdocs/content/industries/` y
 | `pharmacy.ingredient` | Principio activo (DCI): nombre, código ATC opcional, sinónimos. Global. |
 | `pharmacy.dosage.form`, `pharmacy.route` | Catálogos de forma farmacéutica (tableta, jarabe…) y vía. Datos semilla. |
 | `pharmacy.product.ingredient` | Línea producto ↔ DCI con concentración (valor + unidad: mg, mL, UI, %). Admite combinaciones. |
-| `product.template` | `pharmacy_ok`; DCI (líneas); forma, vía; **condición de venta** (`otc` / `prescription` / `special_prescription`); registro sanitario (número, titular, **fecha de vencimiento**); laboratorio (`res.partner`); tipo (`generic_dci` / `generic_brand` / `innovator`); empresa vinculada; cadena de frío y condiciones de almacenamiento; ficha clínica (indicaciones, contraindicaciones, efectos adversos); **ubicación en estante**. |
+| `product.template` | `pharmacy_ok`; DCI (líneas); forma, vía; **condición de venta** (`otc` / `prescription` / `controlled`: se conservan los valores de `al_industry_pharmacy`, que ya usan sus datos y pruebas); registro sanitario (número, titular, **fecha de vencimiento**); laboratorio (`res.partner`); tipo (`generic_dci` / `generic_brand` / `innovator`); empresa vinculada; cadena de frío y condiciones de almacenamiento; ficha clínica (indicaciones, contraindicaciones, efectos adversos); **ubicación en estante**. |
 | Equivalentes | `pharmacy_equivalence_key` calculada (DCI + concentración + forma, ordenada) y `pharmacy_equivalent_ids`: base de las alternativas en TPV y web. |
 | Turnos de Q.F. | `pharmacy.shift`: Q.F. (empleado con colegiatura COP), local, inicio/fin, director técnico o reemplazo. `res.company` / `stock.warehouse`: director técnico. |
 | Libro de ocurrencias | `pharmacy.logbook.entry` solo-ampliable: correlativo por local, fecha, usuario, tipo (rotación, ausencia, SRA, incidente, otro). Corrección = asiento nuevo que referencia al anterior; sin `write`/`unlink` (restricción + regla). |
@@ -128,7 +128,8 @@ libro inmodificable; reglas multicompañía; migración desde v2.
 
 | Elemento | Detalle [Propuesta] |
 |---|---|
-| Prescriptor | `res.partner` con `pharmacy_prescriber`, profesión (médico, odontólogo, obstetra), colegiatura (CMP/COP/COP…), especialidad. |
+| Prescriptor | `res.partner` con `pharmacy_prescriber`, profesión (médico, odontólogo, obstetra), colegiatura (CMP, COP, COP…), especialidad. |
+| Consulta CMP [Por validar] | En Perú, `al_l10n_pe_prescriber_cmp` (o dentro de `al_l10n_pe_pharmacy_digemid`): consulta el portal «Conoce a tu médico» del Colegio Médico y rellena o valida CMP, especialidad y si está hábil en el contacto prescriptor. Se porta solo la consulta de `al_peru_medico_data` (Odoo 18, `ce18/al/farmaniacos/alta/`), sin su modelo `peru.medico`, corrigiendo `_sql_constraints`, permisos, `sudo`, licencia, el índice fuera de rango y la URL; sin llamadas al portal al crear y con pruebas que simulan sus respuestas. Riesgo: captcha o cambio de HTML del portal; solo cubre médicos. |
 | Paciente | `res.partner` con fecha de nacimiento, alergias (DCI), condiciones crónicas. Datos sensibles: grupo restringido (Ley 29733). |
 | Receta | `pharmacy.prescription`: número, tipo (común / especial), prescriptor, establecimiento de salud, paciente, fecha, **vigencia**, diagnóstico (opcional), imagen o PDF, líneas (DCI o producto, concentración, forma, cantidad, posología, duración); estados borrador → validada → dispensada parcial → dispensada / vencida / anulada. |
 | Dispensación | Línea de receta ↔ líneas de venta (TPV o pedido); cantidad dispensada y saldo; **alternativa entregada** (producto, laboratorio, Q.F.) registrada como pide BPOF 7.5.2.28; retención (folio). |
@@ -190,7 +191,7 @@ libro inmodificable; reglas multicompañía; migración desde v2.
 |---|---|---|
 | **E0 — Prototipo (spike)** | R1: venta por presentación en el TPV con precio propio, lote y CPE (boleta); decide el diseño antes de seguir. | 3–4 |
 | **E1 — Núcleo** | `al_pharmacy_base` + migración de `al_industry_pharmacy`; `al_pharmacy_stock` (recepción, estados de lote, vencimientos, bajas, registro ambiental, recall). | 12–14 |
-| **E2 — Venta** | `al_pharmacy_prescription` + `al_pharmacy_pos` (alternativas, fraccionado, lotes, receta, Q.F., etiquetas). | 14–16 |
+| **E2 — Venta** | `al_pharmacy_prescription` + `al_pharmacy_pos` (alternativas, fraccionado, lotes, receta, Q.F., etiquetas); consulta CMP si se aprueba (+2–3 días). | 14–16 |
 | **E3 — Perú** | `al_l10n_pe_pharmacy_controlled` + `al_l10n_pe_pharmacy_digemid`. | 12–15 |
 | **E4 — Paquete y salida** | `al_industry_pharmacy` v3, datos demo de una botica completa, fichas, documentación en `industries/`, guion de prueba funcional, despliegue. | 5–6 |
 | **Total** | | **≈ 46–55** (+ opcionales) |
