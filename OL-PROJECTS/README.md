@@ -45,7 +45,7 @@ módulo | versión | licencia | resumen
 [al_construction_planner_spreadsheet](al_construction_planner_spreadsheet/) | 2.20261016 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».
 [al_construction_planner_subcontract](al_construction_planner_subcontract/) | 2.20261016 | LGPL-3 | Asignar contrata con su OC de servicio, avance por driver, liquidación semanal y portal de la contrata.
 [al_construction_planner_subcontract_purchase](al_construction_planner_subcontract_purchase/) | 1.20261013 | LGPL-3 | Descuento a la contrata del material extra en su liquidación semanal.
-[al_construction_planner_suite](al_construction_planner_suite/) | 6.20261017 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
+[al_construction_planner_suite](al_construction_planner_suite/) | 7.20261017 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
 [al_project_gantt_ai](al_project_gantt_ai/) | 8.20261013 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](al_project_gantt_backend/) | 17.20261013 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](al_project_gantt_base/) | 18.20261011 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
