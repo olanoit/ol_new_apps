@@ -1,7 +1,41 @@
 # Dependencias Python de los módulos de ol_new_apps. Los servidores que montan
 # el repositorio en shared-addons las instalan al arrancar (entrypoint).
+# El agente local del TPV (al_pos_network_printer/agent) se instala en el
+# equipo de la tienda con su propio requirements.txt.
+
+# --- No vienen con Odoo ------------------------------------------------------
 # al_pos_network_printer: impresión ESC/POS de red y rasterizado de PDF.
 python-escpos==3.1
 pymupdf==1.28.2
 # queue_job (OL-THIRD-PARTY): migraciones.
 openupgradelib
+# al_mcp_server: límite de peticiones compartido entre workers (opcional; sin
+# Redis usa el limitador en memoria).
+redis
+
+# --- Ya vienen con Odoo (requirements.txt de odoo/odoo) ----------------------
+# Sin versión fija: se usa la del sistema y solo se instalan si faltan.
+# l10n_pe_vat_sunat: lectura del padrón SUNAT.
+beautifulsoup4
+# Reportes Excel: PLE, SIRE, kardex, factoring, beneficios, planificador, Gantt.
+XlsxWriter
+# Importación de Excel: planillas, asistencia, detracciones, PLE, planificador.
+openpyxl
+xlrd
+# al_hr_pe_construction: PDF del convenio.
+reportlab
+# Imágenes: QR de billeteras, planificador, impresión TPV.
+Pillow
+# Consultas HTTP: SUNAT, BCRP, SBS, Decolecta, pasarelas de pago, IA.
+requests
+python-stdnum
+python-dateutil
+pytz
+lxml
+MarkupSafe
+Werkzeug
+cryptography
+psycopg2
+
+# --- Solo tests --------------------------------------------------------------
+freezegun
