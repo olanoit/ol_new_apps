@@ -16,6 +16,7 @@ destacados:
 
 funcionalidades:
   - "TPV de restaurante de Odoo: mesas, comandas y propinas."
+  - "Tema del TPV: nombre, logo y colores propios en la caja."
   - "Boleta y factura electrónica, cliente por RUC o DNI, vendedor (mozo) por venta."
   - "Compras de insumos con recepción en almacén."
   - "Libro de reclamaciones."
@@ -28,9 +29,13 @@ configuracion:
   - "Para comandas en impresoras de red instale también **Impresoras de red en el TPV** (necesita queue_job en server_wide_modules)."
 
 novedades:
+  - version: 2.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Instala también el tema del TPV (al_pos_theme): nombre, logo y colores propios en la caja."
   - version: 1.20261017
     fecha: 17/10/2026
     cambios:
       - "Primera versión del paquete de industria."
 
-relacionados: [al_l10n_pe_edi_pos, al_pos_network_printer, al_pos_pe_wallet_qr]
+relacionados: [al_pos_theme, al_l10n_pe_edi_pos, al_pos_network_printer, al_pos_pe_wallet_qr]

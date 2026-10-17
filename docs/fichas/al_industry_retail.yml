@@ -17,6 +17,7 @@ destacados:
 funcionalidades:
   - "Punto de venta con boleta y factura electrónica."
   - "Vista de productos del TPV y vendedor por venta."
+  - "Tema del TPV: nombre, logo y colores propios en la caja."
   - "Compras con recepción en almacén y kárdex valorizado."
   - "Libro de reclamaciones."
   - "Categorías de caja: abarrotes, bebidas, lácteos, snacks, limpieza, cuidado personal y licores."
@@ -27,9 +28,13 @@ configuracion:
   - "Configure los diarios de boleta y factura del TPV y el método de pago con QR."
 
 novedades:
+  - version: 2.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Instala también el tema del TPV (al_pos_theme): nombre, logo y colores propios en la caja."
   - version: 1.20261017
     fecha: 17/10/2026
     cambios:
       - "Primera versión del paquete de industria."
 
-relacionados: [al_l10n_pe_edi_pos, al_pos_vendedor, al_pos_pe_wallet_qr, ol_stock_kardex_pe]
+relacionados: [al_pos_theme, al_l10n_pe_edi_pos, al_pos_vendedor, al_pos_pe_wallet_qr, ol_stock_kardex_pe]

@@ -23,5 +23,8 @@ class TestIndustryRestaurant(TransactionCase):
         self.assertEqual(main.code, '5610')
         self.assertIn(company, industry.company_ids)
 
+    def test_pos_theme_installed(self):
+        self.assertEqual(self.env['ir.module.module']._get('al_pos_theme').state, 'installed')
+
     def test_master_data(self):
         self.assertTrue(self.env.ref('al_industry_restaurant.product_category_menu'))

@@ -11,8 +11,10 @@ por lote y controlan vencimientos.
 
 - **Punto de venta** con [boleta y factura electrónica](../sales/point_of_sale/electronic_invoicing.md),
   [cliente por RUC o DNI](../sales/point_of_sale/customer_lookup.md),
-  [cobro con Yape y Plin](../sales/point_of_sale/qr_payments.md) y la
-  [vista de productos](../sales/point_of_sale/product_view.md).
+  [cobro con Yape y Plin](../sales/point_of_sale/qr_payments.md), la
+  [vista de productos](../sales/point_of_sale/product_view.md)
+  y el [tema del TPV](../sales/point_of_sale/theme.md) (nombre, logo y colores
+  propios en la caja).
 - **Inventario** con lotes y fecha de vencimiento (Caducidad de productos de
   Odoo), su fecha en la guía y el kárdex valorizado SUNAT.
 - **Compras** y **Ventas** con margen, y programas de **fidelización**.

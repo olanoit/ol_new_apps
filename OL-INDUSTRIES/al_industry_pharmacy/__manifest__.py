@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '1.20261017',
+    'version': '2.20261017',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
@@ -32,6 +32,7 @@ compañías ▸ Industrias.
         'al_l10n_pe_edi_pos',
         'al_pos_pe_partner_lookup',
         'al_pos_pe_wallet_qr',
+        'al_pos_theme',
         'al_pos_product_view',
         'ol_stock_kardex_pe',
         'al_l10n_pe_complaints_book',

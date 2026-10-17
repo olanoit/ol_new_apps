@@ -21,6 +21,7 @@ funcionalidades:
   - grupo: "Ventas"
     items:
       - "Punto de venta con boleta y factura electrónica."
+      - "Tema del TPV: nombre, logo y colores de la farmacia en la caja."
       - "Programas de fidelización y cupones."
       - "Margen por pedido de venta."
   - grupo: "Inventario"
@@ -40,9 +41,13 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: 2.20261017
+    fecha: 17/10/2026
+    cambios:
+      - "Instala también el tema del TPV (al_pos_theme): nombre, logo y colores propios en la caja."
   - version: 1.20261017
     fecha: 17/10/2026
     cambios:
       - "Primera versión del paquete de industria."
 
-relacionados: [al_l10n_pe_edi_pos, al_pos_pe_wallet_qr, ol_stock_kardex_pe, al_l10n_pe_complaints_book]
+relacionados: [al_pos_theme, al_l10n_pe_edi_pos, al_pos_pe_wallet_qr, ol_stock_kardex_pe, al_l10n_pe_complaints_book]

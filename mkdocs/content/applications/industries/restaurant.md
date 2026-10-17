@@ -12,8 +12,10 @@ y por delivery.
 - El **TPV de restaurante** de Odoo (salón, mesas, comandas, división de
   cuentas y propinas) con [boleta y factura electrónica](../sales/point_of_sale/electronic_invoicing.md),
   [cliente por RUC o DNI](../sales/point_of_sale/customer_lookup.md),
-  [cobro con Yape y Plin](../sales/point_of_sale/qr_payments.md) y
-  [mozo por venta](../sales/point_of_sale/salesperson.md).
+  [cobro con Yape y Plin](../sales/point_of_sale/qr_payments.md),
+  [mozo por venta](../sales/point_of_sale/salesperson.md)
+  y el [tema del TPV](../sales/point_of_sale/theme.md) (nombre, logo y colores
+  propios en la caja).
 - **Compras** de insumos con recepción en almacén.
 - El **libro de reclamaciones**.
 
