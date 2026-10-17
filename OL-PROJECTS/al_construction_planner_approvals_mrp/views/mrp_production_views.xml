@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_approvals" model="ir.ui.view">
+        <field name="name">mrp.production.form.construction.approvals</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="al_construction_planner_mrp.mrp_production_form_view_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="construction_excess_action" invisible="1"/>
+                <field name="construction_approval_can_review" invisible="1"/>
+                <button name="action_construction_approve_excess" type="object" string="Aprobar exceso"
+                        class="btn-primary" invisible="construction_excess_action != 'approve'"/>
+                <button name="action_construction_request_excess_approval" type="object"
+                        string="Solicitar aprobación" class="btn-primary"
+                        invisible="construction_excess_action != 'request'"/>
+                <button name="action_construction_approve" type="object" string="Aprobar"
+                        class="btn-primary" invisible="not construction_approval_can_review"/>
+                <button name="action_construction_refuse" type="object" string="Rechazar"
+                        invisible="not construction_approval_can_review"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="alert alert-warning d-flex align-items-center gap-2" role="alert"
+                     invisible="construction_exceed_state != 'exceeded' or construction_approval_engine != 'approvals'">
+                    <field name="construction_approval_engine" invisible="1"/>
+                    <i class="fa fa-exclamation-triangle" title="Exceso"/>
+                    <span>Excede lo presupuestado: no empieza hasta que se apruebe el exceso.
+                        <field name="construction_approval_todo" class="d-inline" invisible="not construction_approval_todo"/></span>
+                    <button name="action_view_construction_approvals" type="object"
+                            class="btn btn-link p-0 ms-auto" string="Ver solicitud"
+                            invisible="not construction_approval_count"/>
+                </div>
+            </xpath>
+            <xpath expr="//page[@name='construction_plan']" position="before">
+                <page string="Presupuestado frente a real" name="construction_versus"
+                      invisible="not construction_plan_id or construction_approval_engine != 'approvals'">
+                    <group>
+                        <group>
+                            <field name="construction_currency_id" invisible="1"/>
+                            <field name="construction_excess_amount" groups="al_construction_planner.group_planner_amounts"/>
+                            <field name="construction_excess_pct"/>
+                            <field name="construction_excess_material"/>
+                        </group>
+                        <group invisible="not construction_excess_approved_by">
+                            <field name="construction_excess_approved_by"/>
+                            <field name="construction_excess_approved_date"/>
+                            <field name="construction_excess_approved_amount" groups="al_construction_planner.group_planner_amounts"/>
+                        </group>
+                    </group>
+                    <button name="action_construction_refresh_versus" type="object" string="Actualizar comparación"
+                            class="btn-secondary btn-sm mb-2" icon="fa-refresh" invisible="state in ('done', 'cancel')"/>
+                    <field name="construction_versus_ids">
+                        <list decoration-danger="change_type" decoration-muted="not change_type and qty_diff == 0">
+                            <field name="product_id"/>
+                            <field name="change_type"/>
+                            <field name="qty_budget" sum="Total"/>
+                            <field name="qty_required" sum="Total"/>
+                            <field name="qty_diff"/>
+                            <field name="uom_id" groups="uom.group_uom"/>
+                            <field name="diff_pct"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="amount_budget" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                            <field name="amount_required" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                            <field name="amount_diff" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

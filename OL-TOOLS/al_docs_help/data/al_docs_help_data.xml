@@ -395,6 +395,14 @@
         <field name="path">applications/services/project/construction/planning/supply/</field>
         <field name="section">Tramos, analítica y presupuesto</field>
     </record>
+    <record id="help_construction_excess_approve_wizard" model="al.docs.help">
+        <field name="key">construction.excess.approve.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Aprobar el exceso de la orden de fabricación</field>
+        <field name="module">al_construction_planner_approvals_mrp</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
     <record id="help_construction_execution_template" model="al.docs.help">
         <field name="key">construction.execution.template</field>
         <field name="kind">model</field>
@@ -753,6 +761,14 @@
         <field name="name">Producto parecido</field>
         <field name="module">al_construction_planner_purchase</field>
         <field name="path">applications/services/project/construction/planning/prices_supply/</field>
+        <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
+    <record id="help_construction_production_versus" model="al.docs.help">
+        <field name="key">construction.production.versus</field>
+        <field name="kind">model</field>
+        <field name="name">Presupuestado frente a requerido de la orden de fabricación</field>
+        <field name="module">al_construction_planner_approvals_mrp</field>
+        <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Aprobaciones del plan y del requerimiento</field>
     </record>
     <record id="help_construction_profile_apply_wizard" model="al.docs.help">
@@ -2898,6 +2914,14 @@
         <field name="module">al_mcp_server</field>
         <field name="path">applications/general/mcp_server/</field>
         <field name="section">Servidor MCP</field>
+    </record>
+    <record id="help_mrp_piece_import_wizard" model="al.docs.help">
+        <field name="key">mrp.piece.import.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar el despiece de piezas</field>
+        <field name="module">al_mrp_piece_costing</field>
+        <field name="path">applications/inventory_and_mrp/mrp/piece_costing/#importar-el-despiece</field>
+        <field name="section">Importar el despiece</field>
     </record>
     <record id="help_pe_catalog_payment" model="al.docs.help">
         <field name="key">pe.catalog.payment</field>

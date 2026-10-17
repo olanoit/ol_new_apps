@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_piece_costing" model="ir.ui.view">
+        <field name="name">product.template.form.piece.costing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="inside">
+                <group string="Costeo por medida" name="piece_costing">
+                    <group>
+                        <field name="piece_is_cut"/>
+                        <field name="piece_area_m2" invisible="not piece_is_cut"/>
+                        <field name="piece_edge_ml" invisible="not piece_is_cut"/>
+                        <field name="piece_material_id" invisible="not piece_is_cut"/>
+                        <field name="piece_project_ref" invisible="not piece_is_cut"/>
+                    </group>
+                    <group>
+                        <field name="piece_is_edge_banding"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

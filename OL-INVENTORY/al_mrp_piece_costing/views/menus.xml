@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_mrp_piece_import" name="Importar despiece"
+              parent="mrp.menu_mrp_manufacturing" action="action_mrp_piece_import_wizard"
+              sequence="90" groups="mrp.group_mrp_user"/>
+</odoo>

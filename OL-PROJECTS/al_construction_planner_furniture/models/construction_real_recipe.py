@@ -311,7 +311,11 @@ class MrpProduction(models.Model):
     _inherit = 'mrp.production'
 
     def action_confirm(self):
-        """La OF de un módulo con metrado sobre el umbral espera a la jefatura."""
+        """La OF de un módulo con metrado sobre el umbral espera a la jefatura.
+        Con el exceso en la orden (paquete 1.9, M19-04) lo controla la orden
+        misma y este bloqueo no aplica."""
+        if self.env.context.get('construction_skip_recipe_authorization'):
+            return super().action_confirm()
         recipes = self.env['construction.real.recipe'].sudo()._blocking_for(
             self.construction_module_task_ids)
         if recipes:

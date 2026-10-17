@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_piece_costing" model="ir.ui.view">
+        <field name="name">mrp.production.form.piece.costing</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_extra_info']" position="inside">
+                <field name="piece_costing" readonly="state in ('done', 'cancel')"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page name="piece_costing" string="Costeo por medida"
+                      invisible="not piece_costing or state != 'done'">
+                    <group>
+                        <group string="Cuadre de la orden">
+                            <field name="piece_currency_id" invisible="1"/>
+                            <field name="piece_total_cost"/>
+                            <field name="piece_output_value"/>
+                            <field name="piece_balance_diff"
+                                   decoration-danger="piece_balance_diff &gt; 1 or piece_balance_diff &lt; -1"/>
+                        </group>
+                        <group string="Ajustes manuales de valor">
+                            <field name="piece_has_manual_value"/>
+                            <field name="piece_manual_value_detail" nolabel="1" colspan="2"
+                                   invisible="not piece_has_manual_value"/>
+                        </group>
+                    </group>
+                    <field name="move_finished_ids" readonly="1">
+                        <list decoration-muted="value == 0">
+                            <field name="product_id" string="Pieza"/>
+                            <field name="quantity" string="Cantidad"/>
+                            <field name="cost_share" string="Participación (%)" optional="show"/>
+                            <field name="price_unit" string="Costo unitario"/>
+                            <field name="value" string="Valor" sum="Suma"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '2.20261017'
+  fecha: 17/10/2026
+  cambios:
+  - "Tipo de documento «Orden de fabricación» en la tabla de rutas (con el puente de aprobaciones en fabricación) y los campos de la solicitud se recalculan al crearla."
 - version: '1.20261017'
   fecha: 17/10/2026
   cambios:

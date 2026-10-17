@@ -1,0 +1,34 @@
+titulo: Costeo de piezas por medida
+subtitulo: La orden de corte reparte su costo entre las piezas por área, tablero de origen y metros
+  de tapacanto, e importa el despiece como productos-pieza.
+categoria: Inventario · Fabricación
+etiquetas:
+- Fabricación
+- Costeo
+- Corte CNC
+- Tapacanto
+destacados:
+- icono: ▦
+  titulo: Reparto por medida
+  texto: Bolsa de tapacanto por metros, una bolsa por tablero entre sus piezas y la general por área.
+- icono: ⚙
+  titulo: Sobre el costo nativo
+  texto: Usa el cost_share de los subproductos y fija el costo unitario exacto; asientos y kárdex cuadran.
+- icono: ⛔
+  titulo: Controles
+  texto: Sin entregas parciales, desarme ni kits; piezas con área y su tablero entre los componentes.
+- icono: ⇪
+  titulo: Importar despiece
+  texto: Crea o actualiza los productos-pieza desde un XLSX con una fila por pieza.
+configuracion:
+- Marque **Es tapacanto** en los productos de tapacanto.
+- "En el tipo de operación de corte, active **Costeo por medida** (**Inventario ▸ Configuración ▸ Tipos de operación**)."
+- "Importe el despiece en **Fabricación ▸ Operaciones ▸ Importar despiece**."
+requisitos_nota: Requiere Fabricación con contabilidad (`mrp_account`); las piezas con costo promedio o FIFO.
+novedades:
+- version: '1.20261017'
+  fecha: 17/10/2026
+  cambios:
+  - "Refactorización del costeador de piezas CNC de Allcenter (`allcenter_mrp_costeo_pieza` 0.4.1) con la misma lógica, en la suite y con pruebas."
+relacionados:
+- al_construction_planner_mrp

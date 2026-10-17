@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261017 — 17/10/2026
+
+- Con el exceso en la orden (paquete 1.9, M19-04), la autorización de la receta real ya no detiene la confirmación de la orden.
+
 ## 4.20261017 — 17/10/2026
 
 - Ambiente medido (paquete 1.9, M19-06): el supervisor marca el ambiente como medido con fecha y archivo, sin cantidades ni aprobación; lista de ambientes medidos por cargar a una orden para Optimización y aviso en la orden de los que no están marcados.

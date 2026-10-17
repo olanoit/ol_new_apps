@@ -1,0 +1,37 @@
+titulo: 'Planificación de obra: aprobaciones en fabricación'
+subtitulo: La orden de fabricación compara lo presupuestado con lo requerido por material; el jefe
+  de producción aprueba el exceso dentro de su margen y, por encima, va a Aprobaciones.
+categoria: Construcción · Proyectos
+etiquetas:
+- Orden de fabricación
+- Exceso
+- Jefe de producción
+- Aprobaciones
+destacados:
+- icono: ⚖
+  titulo: Presupuestado frente a requerido
+  texto: Por material, en cantidad, en % y en soles, con el total de la orden.
+- icono: ✔
+  titulo: Margen del jefe de producción
+  texto: Aprueba en la misma orden el exceso dentro de su porcentaje, con motivo, fecha y usuario.
+- icono: ⇪
+  titulo: Por encima, a Aprobaciones
+  texto: La solicitud sigue los tramos en escalera de la tabla de rutas.
+- icono: ⏸
+  titulo: No empieza con exceso pendiente
+  texto: Sin registrar producción, consumir ni iniciar órdenes de trabajo hasta la aprobación.
+configuracion:
+- "Se instala solo con **Planificación de obra: aprobaciones** y el puente de producción."
+- "En **Ajustes ▸ Planificación de obra ▸ Aprobaciones**, defina el margen del jefe de producción y su base."
+- "Asigne el grupo **Planificación de obra: jefe de producción** y agregue los tramos de la **Orden de fabricación** en las rutas."
+requisitos_nota: Requiere `al_construction_planner_approvals` y `al_construction_planner_mrp`. Licencia
+  LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261017'
+  fecha: 17/10/2026
+  cambios:
+  - "Puente nuevo (paquete 1.9, M19-04): exceso en la orden de fabricación con aprobación del jefe de producción y Aprobaciones."
+relacionados:
+- al_construction_planner_approvals
+- al_construction_planner_mrp
+- al_construction_planner_suite

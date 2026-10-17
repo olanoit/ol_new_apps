@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_excess_approve_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.excess.approve.wizard.form</field>
+        <field name="model">construction.excess.approve.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Aprobar exceso">
+                <group>
+                    <field name="production_id" readonly="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="excess_amount" groups="al_construction_planner.group_planner_amounts"/>
+                    <field name="excess_pct"/>
+                    <field name="reason" placeholder="Por qué se aprueba el exceso"/>
+                </group>
+                <footer>
+                    <button name="action_approve" type="object" string="Aprobar exceso"
+                            class="btn-primary" data-hotkey="q"/>
+                    <button special="cancel" string="Cancelar" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

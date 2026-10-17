@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_piece_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">mrp.piece.import.wizard.form</field>
+        <field name="model">mrp.piece.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar despiece">
+                <field name="state" invisible="1"/>
+                <group invisible="state == 'done'">
+                    <field name="file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                    <field name="categ_id"/>
+                </group>
+                <p class="text-muted" invisible="state == 'done'">
+                    Una fila por pieza: obra, mueble_terminado, modulo, id_pieza, material,
+                    largo_mm, ancho_mm, area_m2, tapacanto_codigo, tapacanto_ml y cantidad.
+                </p>
+                <field name="summary" nolabel="1" invisible="state != 'done'"/>
+                <footer>
+                    <button name="action_import" type="object" string="Importar"
+                            class="btn-primary" invisible="state == 'done'" data-hotkey="q"/>
+                    <button special="cancel" string="Cerrar" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mrp_piece_import_wizard" model="ir.actions.act_window">
+        <field name="name">Importar despiece</field>
+        <field name="res_model">mrp.piece.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

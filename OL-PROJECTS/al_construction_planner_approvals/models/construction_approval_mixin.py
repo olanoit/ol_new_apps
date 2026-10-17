@@ -82,7 +82,8 @@ class ConstructionApprovalMixin(models.AbstractModel):
         """Al enviar: el motor de la compañía queda fijo en el documento."""
         for record in self:
             record.construction_approval_engine = record.company_id.construction_approval_engine
-        self.invalidate_recordset(['need_validation'])
+        if 'need_validation' in self._fields:
+            self.invalidate_recordset(['need_validation'])
 
     def _construction_uses_approvals(self):
         return self.filtered(lambda r: r.construction_approval_engine == 'approvals')
@@ -174,6 +175,8 @@ class ConstructionApprovalMixin(models.AbstractModel):
             fields.Command.create(vals) for vals in approver_values]})
         request_sudo.action_confirm()
         request_sudo.construction_notified_status = request_sudo.request_status
+        # Los campos de la solicitud no tienen dependencias: se recalculan.
+        self.invalidate_recordset()
         followers = ladder._construction_follower_partners(project)
         if followers:
             request_sudo.message_subscribe(partner_ids=followers.ids)

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_construction_production_versus_mrp,construction.production.versus mrp,model_construction_production_versus,mrp.group_mrp_user,1,0,0,0
+access_construction_production_versus_planner,construction.production.versus planner,model_construction_production_versus,al_construction_planner.group_planner_user,1,0,0,0
+access_construction_excess_approve_wizard_head,construction.excess.approve.wizard head,model_construction_excess_approve_wizard,group_planner_production_head,1,1,1,1

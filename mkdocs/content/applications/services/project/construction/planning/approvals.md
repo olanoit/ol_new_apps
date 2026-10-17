@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner_approvals, al_construction_planner, al_construction_material_request, al_construction_planner_purchase]
+modulos: [al_construction_planner_approvals, al_construction_planner_approvals_mrp, al_construction_planner, al_construction_material_request, al_construction_planner_purchase]
 ---
 
 # Aprobaciones del plan y del requerimiento
@@ -73,6 +73,43 @@ aprobarse. La política **Bloquear** sigue bloqueando.
 **Solicitar aprobación** crea la solicitud con los tramos del plan que
 apliquen por su total o por lo que sube frente a la versión vigente. Sin
 tramos, el plan se aprueba directamente.
+
+### Orden de fabricación
+
+Con el puente **Planificación de obra: aprobaciones en fabricación**
+(`al_construction_planner_approvals_mrp`, se instala solo), la orden que sale
+del plan compara al confirmarse, por material, lo **presupuestado** en el
+plan (sus ambientes, etapas de fabricación) con lo **requerido** en sus
+componentes. La pestaña **Presupuestado frente a real** muestra la diferencia
+en cantidad, en % y en soles, con el total; **Actualizar comparación** la
+rehace si se cambian los componentes. Toda diferencia queda registrada; lo que
+sale por debajo no pide aprobación.
+
+Configure en **Ajustes ‣ Planificación de obra ‣ Aprobaciones ‣ Exceso en la
+orden de fabricación**:
+
+| Ajuste | Qué hace |
+|---|---|
+| Margen del jefe de producción (%) | Exceso que aprueba en la misma orden; con 0, todo va a Aprobaciones |
+| Base del margen | **Costo total de la orden**: el exceso neto en soles sobre lo presupuestado de la orden. **Por material**: el material con más exceso |
+| El margen cubre cambios de material | Sin la marca, un material que no está en el plan va siempre a Aprobaciones |
+
+Asigne el grupo **Planificación de obra: jefe de producción** y agregue en la
+tabla de rutas los tramos del documento **Orden de fabricación** (por ejemplo,
+jefatura de proyectos desde 0 y Gerencia desde 15 %).
+
+1. Con exceso, la orden muestra **Excede lo presupuestado** y no empieza: no
+   registra producción, no marca consumos ni inicia órdenes de trabajo.
+2. Dentro del margen, el jefe de producción ve **Aprobar exceso**: escribe el
+   motivo y queda quién y cuándo, con cada exceso en **Excesos autorizados**.
+3. Por encima del margen (o si no es el jefe de producción), **Solicitar
+   aprobación** crea la solicitud en Aprobaciones con los tramos que apliquen.
+   Al aprobarse, la orden puede empezar; si se rechaza, sigue pendiente con el
+   motivo en su historial: corrija los componentes y actualice la comparación o
+   vuelva a solicitar.
+
+Con este puente, la autorización de la receta real (umbral del metrado) ya no
+detiene la confirmación de la orden.
 
 ## Aprobar o rechazar
 
