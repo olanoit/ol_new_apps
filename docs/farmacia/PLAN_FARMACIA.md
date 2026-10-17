@@ -129,7 +129,7 @@ libro inmodificable; reglas multicompañía; migración desde v2.
 | Elemento | Detalle [Propuesta] |
 |---|---|
 | Prescriptor | `res.partner` con `pharmacy_prescriber`, profesión (médico, odontólogo, obstetra), colegiatura (CMP, COP, COP…), especialidad. |
-| Consulta CMP [Por validar] | En Perú, `al_l10n_pe_prescriber_cmp` (o dentro de `al_l10n_pe_pharmacy_digemid`): consulta el portal «Conoce a tu médico» del Colegio Médico y rellena o valida CMP, especialidad y si está hábil en el contacto prescriptor. Se porta solo la consulta de `al_peru_medico_data` (Odoo 18, `ce18/al/farmaniacos/alta/`), sin su modelo `peru.medico`, corrigiendo `_sql_constraints`, permisos, `sudo`, licencia, el índice fuera de rango y la URL; sin llamadas al portal al crear y con pruebas que simulan sus respuestas. Riesgo: captcha o cambio de HTML del portal; solo cubre médicos. |
+| Consulta CMP (aprobada) | En Perú, `al_l10n_pe_prescriber_cmp` (o dentro de `al_l10n_pe_pharmacy_digemid`): consulta el portal «Conoce a tu médico» del Colegio Médico y rellena o valida CMP, especialidad y si está hábil en el contacto prescriptor. Se porta solo la consulta de `al_peru_medico_data` (Odoo 18, `ce18/al/farmaniacos/alta/`), sin su modelo `peru.medico`, corrigiendo `_sql_constraints`, permisos, `sudo`, licencia, el índice fuera de rango y la URL; sin llamadas al portal al crear y con pruebas que simulan sus respuestas. Riesgo: captcha o cambio de HTML del portal; solo cubre médicos. |
 | Paciente | `res.partner` con fecha de nacimiento, alergias (DCI), condiciones crónicas. Datos sensibles: grupo restringido (Ley 29733). |
 | Receta | `pharmacy.prescription`: número, tipo (común / especial), prescriptor, establecimiento de salud, paciente, fecha, **vigencia**, diagnóstico (opcional), imagen o PDF, líneas (DCI o producto, concentración, forma, cantidad, posología, duración); estados borrador → validada → dispensada parcial → dispensada / vencida / anulada. |
 | Dispensación | Línea de receta ↔ líneas de venta (TPV o pedido); cantidad dispensada y saldo; **alternativa entregada** (producto, laboratorio, Q.F.) registrada como pide BPOF 7.5.2.28; retención (folio). |
@@ -191,7 +191,7 @@ libro inmodificable; reglas multicompañía; migración desde v2.
 |---|---|---|
 | **E0 — Prototipo (spike)** | R1: venta por presentación en el TPV con precio propio, lote y CPE (boleta); decide el diseño antes de seguir. | 3–4 |
 | **E1 — Núcleo** | `al_pharmacy_base` + migración de `al_industry_pharmacy`; `al_pharmacy_stock` (recepción, estados de lote, vencimientos, bajas, registro ambiental, recall). | 12–14 |
-| **E2 — Venta** | `al_pharmacy_prescription` + `al_pharmacy_pos` (alternativas, fraccionado, lotes, receta, Q.F., etiquetas); consulta CMP si se aprueba (+2–3 días). | 14–16 |
+| **E2 — Venta** | `al_pharmacy_prescription` + `al_pharmacy_pos` (alternativas, fraccionado, lotes, receta, Q.F., etiquetas); consulta CMP (+2–3 días). | 14–16 |
 | **E3 — Perú** | `al_l10n_pe_pharmacy_controlled` + `al_l10n_pe_pharmacy_digemid`. | 12–15 |
 | **E4 — Paquete y salida** | `al_industry_pharmacy` v3, datos demo de una botica completa, fichas, documentación en `industries/`, guion de prueba funcional, despliegue. | 5–6 |
 | **Total** | | **≈ 46–55** (+ opcionales) |
@@ -211,12 +211,35 @@ commit `[ADD]`/`[IMP]`, despliegue a una base de demostración.
 | R5 | Rendimiento del TPV con 15–20 mil productos y sus equivalencias. | Clave de equivalencia indexada y carga perezosa en el TPV; prueba con el catálogo completo. |
 | R6 | Interacciones: las bases de datos clínicas tienen licencia. | Fuera del alcance base; `al_pharmacy_care` con datos propios o de fuente abierta. |
 
-## 11. Por decidir (antes de E1)
+## 11. Decisiones (18/10/2026)
 
-1. ~~Carpeta~~ → **decidido: área nueva `OL-HEALTH/`** (18/10/2026).
-2. Recetas: ¿bloquear o solo avisar sin receta en productos `prescription`? (BPOF dice exigirla; muchas boticas avisan).
-3. Q.F. en turno: ¿bloqueo o alerta?
-4. Venta fraccionada: opción A o B de R1 (sale del prototipo).
-5. Bonificaciones: prorrateo en el costo del lote o ingreso aparte (contador).
-6. Cliente piloto y su catálogo (para el Observatorio y las pruebas de rendimiento).
-7. Opcionales a incluir en la primera versión.
+Vicente aceptó las recomendaciones de esta sección y aprobó la consulta CMP
+y el uso de farmacia-dev para las pruebas.
+
+1. **Carpeta:** área nueva `OL-HEALTH/`.
+2. **Recetas:** ajuste por compañía. Por defecto, los productos `prescription`
+   y `controlled` **bloquean** la venta sin receta válida (BPOF 7.5.2.8). Un
+   Q.F. puede autorizar la excepción en el TPV y queda asentada en el libro
+   de ocurrencias. `controlled` nunca admite excepción.
+3. **Q.F. en turno:** **alerta**, no bloqueo, mientras no se confirme que la
+   norma exige bloquear [VERIFICAR]; ajuste por compañía para pasar a
+   bloqueo. Cada alerta ignorada queda en el libro de ocurrencias.
+4. **Venta fraccionada:** se prototipa la **opción A** de R1 en E0 (la línea
+   guarda presentación y número de presentaciones; stock en unidades). Si el
+   prototipo falla con el redondeo del CPE, se pasa a la B.
+5. **Bonificaciones:** se **prorratean en el costo del lote** (costo unitario
+   = importe pagado ÷ unidades recibidas, incluidas las bonificadas). El
+   contador lo revisa antes de cerrar E1.
+6. **Piloto:** sin cliente por ahora: catálogo de demostración (≈ 200
+   productos con DCI, lotes y presentaciones) y, para rendimiento, uno
+   sintético de 20 000.
+7. **Opcionales:** ninguno en la primera versión; se planifican después de
+   E4.
+8. **Consulta CMP:** aprobada; va en E2 con la receta (`al_pharmacy_prescription`
+   la usa desde `al_l10n_pe_prescriber_cmp`).
+9. **Pruebas y demostración:** cada entrega se instala en **farmacia-dev**
+   (`io-altaexperts`, contenedor `odoo19_farmacia_dev`, base
+   `farmacia_dev_1`), con permiso de Vicente aunque la base no empiece por
+   `test_`. Las pruebas automáticas siguen en `test_pe_pharmacy` en local.
+   Antes de la primera instalación se añade `OL-HEALTH` al `--addons-path`
+   del servicio.
