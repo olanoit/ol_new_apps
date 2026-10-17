@@ -1,0 +1,34 @@
+titulo: 'Planificación de obra: orden de fabricación del mueble'
+subtitulo: Accesorios de armado pedidos desde la orden sobre lo proyectado, y presupuestado,
+  requerido y consumido en la orden y en el planificador.
+categoria: Construcción · Proyectos
+etiquetas:
+- Orden de fabricación
+- Accesorios de armado
+- Presupuestado frente a real
+destacados:
+- icono: 🔩
+  titulo: Pedir accesorios
+  texto: Propone lo proyectado de Armado de los módulos de la orden, con su saldo.
+- icono: ✔
+  titulo: Cambios a Oficina Técnica
+  texto: Otro accesorio o más cantidad que el saldo va a Aprobaciones; sin cambios, directo a la orden.
+- icono: ⚖
+  titulo: Presupuestado, requerido y consumido
+  texto: Por material en la orden, con montos solo para quien tiene el permiso.
+- icono: ▦
+  titulo: Informe del planificador
+  texto: Las mismas cifras por obra, piso, ambiente, mueble, módulo y etapa.
+configuracion:
+- "Se instala solo con **Planificación de obra: aprobaciones en fabricación**."
+- "Asigne el grupo **Planificación de obra: jefe de producción** y revise la ruta **Accesorios de armado**."
+requisitos_nota: Requiere `al_construction_planner_approvals_mrp`. Licencia LGPL-3 porque el planificador
+  depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261017'
+  fecha: 17/10/2026
+  cambios:
+  - "Puente nuevo (paquete 1.9, M19-02 y M19-05): accesorios de armado desde la orden y presupuestado frente a real en la orden y en el planificador."
+relacionados:
+- al_construction_planner_approvals_mrp
+- al_construction_planner_suite

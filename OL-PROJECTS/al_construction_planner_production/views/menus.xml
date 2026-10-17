@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_planner_production_analysis" name="Presupuestado frente a real de fabricación"
+              parent="al_construction_planner.menu_planner_reports_plan"
+              action="action_construction_production_analysis" sequence="46"/>
+    <menuitem id="menu_planner_accessory_requests" name="Pedidos de accesorios"
+              parent="al_construction_planner.menu_planner_supply"
+              action="action_construction_accessory_request" sequence="55"/>
+</odoo>

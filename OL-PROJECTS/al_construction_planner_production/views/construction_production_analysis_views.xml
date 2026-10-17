@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_production_analysis_view_pivot" model="ir.ui.view">
+        <field name="name">construction.production.analysis.pivot</field>
+        <field name="model">construction.production.analysis</field>
+        <field name="arch" type="xml">
+            <pivot string="Presupuestado frente a real de fabricación" sample="1">
+                <field name="floor_task_id" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="qty_budget" type="measure"/>
+                <field name="qty_required" type="measure"/>
+                <field name="qty_consumed" type="measure"/>
+                <field name="amount_budget" type="measure"/>
+                <field name="amount_required" type="measure"/>
+                <field name="amount_consumed" type="measure"/>
+                <field name="amount_diff" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_production_analysis_view_list" model="ir.ui.view">
+        <field name="name">construction.production.analysis.list</field>
+        <field name="model">construction.production.analysis</field>
+        <field name="arch" type="xml">
+            <list string="Presupuestado frente a real de fabricación" create="0">
+                <field name="project_id"/>
+                <field name="floor_task_id" optional="show"/>
+                <field name="apartment_task_id" optional="hide"/>
+                <field name="space_task_id"/>
+                <field name="furniture_task_id" optional="hide"/>
+                <field name="task_id" optional="show"/>
+                <field name="stage"/>
+                <field name="product_id"/>
+                <field name="production_id" optional="show"/>
+                <field name="qty_budget" sum="Total"/>
+                <field name="qty_required" sum="Total"/>
+                <field name="qty_consumed" sum="Total"/>
+                <field name="uom_id" groups="uom.group_uom" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="amount_budget" sum="Total" optional="show"/>
+                <field name="amount_required" sum="Total" optional="show"/>
+                <field name="amount_consumed" sum="Total" optional="show"/>
+                <field name="amount_diff" sum="Total" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_production_analysis_view_search" model="ir.ui.view">
+        <field name="name">construction.production.analysis.search</field>
+        <field name="model">construction.production.analysis</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id"/>
+                <field name="floor_task_id"/>
+                <field name="space_task_id"/>
+                <field name="product_id"/>
+                <field name="production_id"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_floor" string="Piso" context="{'group_by': 'floor_task_id'}"/>
+                    <filter name="group_space" string="Ambiente" context="{'group_by': 'space_task_id'}"/>
+                    <filter name="group_furniture" string="Mueble" context="{'group_by': 'furniture_task_id'}"/>
+                    <filter name="group_stage" string="Etapa" context="{'group_by': 'stage'}"/>
+                    <filter name="group_product" string="Material" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_production_analysis" model="ir.actions.act_window">
+        <field name="name">Presupuestado frente a real de fabricación</field>
+        <field name="res_model">construction.production.analysis</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="context">{'search_default_group_project': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin órdenes de fabricación comparadas</p>
+            <p>Cada orden del plan suma aquí lo presupuestado, lo requerido y lo consumido, por nivel, etapa y material.</p>
+        </field>
+    </record>
+</odoo>

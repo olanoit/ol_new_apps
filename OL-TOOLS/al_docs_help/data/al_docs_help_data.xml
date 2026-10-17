@@ -235,6 +235,22 @@
         <field name="path">applications/services/project/gantt/#abrir-el-diagrama</field>
         <field name="section">Abrir el diagrama</field>
     </record>
+    <record id="help_construction_accessory_request" model="al.docs.help">
+        <field name="key">construction.accessory.request</field>
+        <field name="kind">model</field>
+        <field name="name">Pedido de accesorios de armado</field>
+        <field name="module">al_construction_planner_production</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#pedir-accesorios-de-armado</field>
+        <field name="section">Pedir accesorios de armado</field>
+    </record>
+    <record id="help_construction_accessory_request_line" model="al.docs.help">
+        <field name="key">construction.accessory.request.line</field>
+        <field name="kind">model</field>
+        <field name="name">Accesorio pedido</field>
+        <field name="module">al_construction_planner_production</field>
+        <field name="path">applications/services/project/construction/planning/production_order/</field>
+        <field name="section">Orden de fabricación del mueble</field>
+    </record>
     <record id="help_construction_activity_tranche" model="al.docs.help">
         <field name="key">construction.activity.tranche</field>
         <field name="kind">model</field>
@@ -762,6 +778,14 @@
         <field name="module">al_construction_planner_purchase</field>
         <field name="path">applications/services/project/construction/planning/prices_supply/</field>
         <field name="section">Aprobaciones del plan y del requerimiento</field>
+    </record>
+    <record id="help_construction_production_analysis" model="al.docs.help">
+        <field name="key">construction.production.analysis</field>
+        <field name="kind">model</field>
+        <field name="name">Presupuestado frente a real de fabricación</field>
+        <field name="module">al_construction_planner_production</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#presupuestado-frente-a-real</field>
+        <field name="section">Presupuestado frente a real</field>
     </record>
     <record id="help_construction_production_versus" model="al.docs.help">
         <field name="key">construction.production.versus</field>

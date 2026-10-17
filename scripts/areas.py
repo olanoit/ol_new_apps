@@ -40,6 +40,7 @@ LICENSE_EXCEPTIONS = {
     # Paquete 1.9 (M19-07): aprobaciones en la aplicación Aprobaciones.
     'al_construction_planner_approvals': 'LGPL-3',
     'al_construction_planner_approvals_mrp': 'LGPL-3',
+    'al_construction_planner_production': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
 NO_AREAS = {'docs', 'scripts', 'mkdocs'}

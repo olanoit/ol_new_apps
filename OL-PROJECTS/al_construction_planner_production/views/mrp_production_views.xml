@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_production" model="ir.ui.view">
+        <field name="name">mrp.production.form.construction.production</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="al_construction_planner_approvals_mrp.mrp_production_form_view_approvals"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="construction_can_request_accessories" invisible="1"/>
+                <button name="action_construction_request_accessories" type="object"
+                        string="Pedir accesorios"
+                        invisible="not construction_can_request_accessories"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_accessories" type="object"
+                        class="oe_stat_button" icon="fa-wrench"
+                        invisible="not construction_accessory_count">
+                    <field name="construction_accessory_count" widget="statinfo" string="Accesorios"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='construction_versus_ids']/list/field[@name='qty_required']" position="after">
+                <field name="qty_consumed" sum="Total"/>
+            </xpath>
+            <xpath expr="//field[@name='construction_versus_ids']/list/field[@name='amount_required']" position="after">
+                <field name="amount_consumed" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
+            </xpath>
+            <xpath expr="//page[@name='construction_versus']" position="inside">
+                <group>
+                    <field name="construction_accessories_user_id"
+                           readonly="state in ('done', 'cancel')"
+                           groups="al_construction_planner_approvals_mrp.group_planner_production_head"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -17,11 +17,12 @@ Instala el planificador con todos sus puentes (perfil mobiliario completo) y re√
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '4.20261017',
+    'version': '5.20261017',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_furniture', 'al_construction_planner_purchase', 'al_construction_planner_subcontract', 'al_construction_planner_subcontract_purchase', 'al_construction_planner_crew', 'al_construction_planner_budget', 'al_construction_planner_sale',
-                'al_construction_planner_sale_furniture', 'al_construction_planner_approvals', 'al_construction_planner_approvals_mrp'],
+                'al_construction_planner_sale_furniture', 'al_construction_planner_approvals', 'al_construction_planner_approvals_mrp',
+                'al_construction_planner_production'],
     'data': [
     ],
     'demo': [

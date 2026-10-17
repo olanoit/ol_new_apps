@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="construction_accessory_request_view_form" model="ir.ui.view">
+        <field name="name">construction.accessory.request.form</field>
+        <field name="model">construction.accessory.request</field>
+        <field name="arch" type="xml">
+            <form string="Pedido de accesorios">
+                <header>
+                    <button name="action_submit" type="object" string="Enviar" class="btn-primary"
+                            invisible="state != 'draft'" data-hotkey="q"/>
+                    <field name="construction_approval_can_review" invisible="1"/>
+                    <button name="action_construction_approve" type="object" string="Aprobar"
+                            class="btn-primary" invisible="not construction_approval_can_review"/>
+                    <button name="action_construction_refuse" type="object" string="Rechazar"
+                            invisible="not construction_approval_can_review"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state not in ('to_approve', 'cancel')"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state in ('done', 'cancel')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_production" type="object" class="oe_stat_button"
+                                icon="fa-wrench" string="Orden de fabricación"/>
+                        <button name="action_view_construction_approvals" type="object"
+                                class="oe_stat_button" icon="fa-check-square-o"
+                                invisible="not construction_approval_count">
+                            <field name="construction_approval_count" widget="statinfo" string="Aprobaciones"/>
+                        </button>
+                    </div>
+                    <div class="alert alert-info d-flex align-items-center gap-2" role="status"
+                         invisible="not construction_approval_todo">
+                        <i class="fa fa-hourglass-half" title="Pendiente de aprobación"/>
+                        <span>Pendiente de aprobación · <field name="construction_approval_todo" class="d-inline"/></span>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="not has_changes or state != 'draft'">
+                        Hay cambios frente a lo proyectado: el pedido va a Oficina Técnica por Aprobaciones.
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="production_id" readonly="1"/>
+                            <field name="project_id"/>
+                        </group>
+                        <group>
+                            <field name="user_id" readonly="1"/>
+                            <field name="has_changes" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_diff" invisible="not has_changes"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'draft'">
+                        <list editable="bottom" decoration-warning="change_type">
+                            <field name="task_id" options="{'no_create': True}"/>
+                            <field name="planned_product_id"/>
+                            <field name="product_id" options="{'no_create': True}"/>
+                            <field name="qty_balance"/>
+                            <field name="qty"/>
+                            <field name="uom_id" groups="uom.group_uom"/>
+                            <field name="change_type"/>
+                            <field name="diff_pct" optional="hide"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="price_unit" optional="hide"/>
+                            <field name="amount_diff" optional="show"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Motivo del cambio (obligatorio si cambia el material o la cantidad)"
+                           readonly="state != 'draft'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_accessory_request_view_list" model="ir.ui.view">
+        <field name="name">construction.accessory.request.list</field>
+        <field name="model">construction.accessory.request</field>
+        <field name="arch" type="xml">
+            <list string="Pedidos de accesorios" decoration-info="state == 'to_approve'"
+                  decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="production_id"/>
+                <field name="project_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="has_changes"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"
+                       decoration-info="state == 'to_approve'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_accessory_request_view_search" model="ir.ui.view">
+        <field name="name">construction.accessory.request.search</field>
+        <field name="model">construction.accessory.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="production_id"/>
+                <field name="project_id"/>
+                <filter name="to_approve" string="En aprobación" domain="[('state', '=', 'to_approve')]"/>
+                <filter name="changes" string="Con cambios" domain="[('has_changes', '=', True)]"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_accessory_request" model="ir.actions.act_window">
+        <field name="name">Pedidos de accesorios</field>
+        <field name="res_model">construction.accessory.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin pedidos de accesorios</p>
+            <p>Se piden desde la orden de fabricación con «Pedir accesorios».</p>
+        </field>
+    </record>
+</odoo>
