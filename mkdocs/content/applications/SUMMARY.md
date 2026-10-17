@@ -4,6 +4,5 @@
 * [Cadena de suministro](inventory_and_mrp/)
 * [Recursos humanos](hr/)
 * [Servicios](services/)
-* [Industrias](industries/)
 * [Ajustes generales](general/)
 * [Novedades de la suite](novedades.md)

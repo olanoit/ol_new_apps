@@ -184,7 +184,7 @@
         <field name="kind">model</field>
         <field name="name">Paquete de industria</field>
         <field name="module">al_industry_base</field>
-        <field name="path">applications/industries/</field>
+        <field name="path">industries/</field>
         <field name="section">Industrias</field>
     </record>
     <record id="help_al_pe_demo" model="al.docs.help">

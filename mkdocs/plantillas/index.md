@@ -9,7 +9,7 @@ hide:
 <p class="ol-lead">Localización peruana y módulos de negocio para Odoo
 {{ odoo_version }} Community y Enterprise: contabilidad y tributación,
 comprobantes electrónicos, nómina, punto de venta, inventario, proyectos y
-obras.</p>
+obras, con paquetes listos por industria.</p>
 
 {{ cifras }}
 
@@ -20,6 +20,13 @@ obras.</p>
     ---
 
     Cómo configurar y usar cada funcionalidad, por área de negocio.
+
+-   :material-domain:{ .lg .middle } **[Industrias](industries/index.md)**
+
+    ---
+
+    Paquetes por rubro que instalan y configuran todo de una vez: farmacia,
+    constructora, mobiliario, bodega, restaurante y tienda en línea.
 
 -   :material-clipboard-check:{ .lg .middle } **[Consultoría](consulting/index.md)**
 

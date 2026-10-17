@@ -45,7 +45,7 @@ Tienda en línea | `al_industry_ecommerce` | 4791 | Tienda web con checkout peru
 Para añadir una industria: copie el paquete más parecido, registre su
 `al.industry` en `data/al_industry_data.xml` (con su `<function>` en
 `noupdate`), su ficha en `docs/fichas/` y su página en
-`mkdocs/content/applications/industries/`.
+`mkdocs/content/industries/`.
 
 Módulos disponibles
 -------------------

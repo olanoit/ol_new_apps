@@ -1,5 +1,6 @@
 * [Inicio](index.md)
 * [Documentación para usuarios](applications/)
+* [Industrias](industries/)
 * [Consultoría](consulting/)
 * [Instalación y mantenimiento](administration/)
 * [Desarrollador](developer/)

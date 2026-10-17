@@ -738,7 +738,7 @@ def template_pages():
                   '', '    ---', '', '    %s' % summary, '',
                   '    *%d módulos*' % len(modules), '']
     functional = sum(1 for path in CONTENT_PAGES
-                     if path.relative_to(CONTENT).parts[0] == 'applications')
+                     if path.relative_to(CONTENT).parts[0] in ('applications', 'industries'))
     numbers = ('**%d módulos** en %d áreas · **%d páginas** para usuarios · **%d fichas** con '
                'capturas · Odoo **%s**') % (len(MODULES), len(AREAS), functional,
                                            sum(1 for m in MODULES if m.ficha_path), ODOO_VERSION)

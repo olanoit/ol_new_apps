@@ -8,7 +8,7 @@ La carpeta `OL-INDUSTRIES/` reúne los paquetes por rubro, con el mismo modelo
 que los paquetes de industria de Odoo (por ejemplo `pharmacy_retail`). Un
 paquete casi no tiene código: sus **dependencias** instalan las aplicaciones
 del rubro y sus **datos** dejan la base configurada. La guía de uso está en
-[Industrias](../applications/industries/index.md).
+[Industrias](../industries/index.md).
 
 ## Estructura
 
@@ -75,6 +75,6 @@ es de cada compañía queda en la propia compañía; las demás se configuran co
    grupos y los datos de partida.
 5. Escriba la ficha en `docs/fichas/al_industry_<rubro>.yml` y genere la ficha
    y el CHANGELOG. Añada la página del rubro en
-   `content/applications/industries/` y en su `SUMMARY.md`, y su fila en el
+   `content/industries/` y en su `SUMMARY.md`, y su fila en el
    `README.md` de la carpeta.
 6. Ejecute `python3 scripts/gen_addons_table.py --check`.

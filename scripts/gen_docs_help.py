@@ -4,7 +4,7 @@ sección de la documentación abre el botón «?» de cada pantalla de la suite.
 
 Fuentes, sin escribir nada a mano:
 
-- Las páginas de ``mkdocs/content/applications/`` declaran en su
+- Las páginas de ``mkdocs/content/applications/`` e ``industries/`` declaran en su
   encabezado los módulos que documentan (``modulos: [...]``).
 - Modelos y asistentes que define cada módulo propio (``_name`` con su
   ``_description``) y sus acciones de cliente (``ir.actions.client``, por
@@ -38,6 +38,8 @@ from areas import AREAS, REPO_ROOT, THIRD_PARTY  # noqa: E402
 OUTPUT = REPO_ROOT / 'OL-TOOLS' / 'al_docs_help' / 'data' / 'al_docs_help_data.xml'
 OVERRIDES = REPO_ROOT / 'docs' / 'ayuda' / 'ayuda_contextual.yml'
 CONTENT = REPO_ROOT / 'mkdocs' / 'content'
+# Secciones del sitio con páginas para usuarios (las que abre el botón «?»).
+USER_SECTIONS = ('applications', 'industries')
 SLUG = slugify(case='lower')
 MIN_SCORE = 0.6
 STOPWORDS = {
@@ -189,7 +191,7 @@ def doc_pages():
     """``{módulo: [(ruta del sitio, archivo)]}`` desde ``modulos:`` de las
     páginas de usuarios."""
     pages = {}
-    for path in sorted((CONTENT / 'applications').rglob('*.md')):
+    for path in sorted(p for section in USER_SECTIONS for p in (CONTENT / section).rglob('*.md')):
         match = re.match(r'---\n(.*?)\n---\n', path.read_text(encoding='utf-8'), re.S)
         meta = (yaml.safe_load(match.group(1)) or {}) if match else {}
         rel = path.relative_to(CONTENT).with_suffix('').as_posix()
