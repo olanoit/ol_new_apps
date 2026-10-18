@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pharmacy_environment_point_comp_rule" model="ir.rule">
+        <field name="name">Punto de control ambiental: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_environment_point"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_environment_reading_comp_rule" model="ir.rule">
+        <field name="name">Lectura ambiental: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_environment_reading"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_alert_comp_rule" model="ir.rule">
+        <field name="name">Alerta sanitaria: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_alert"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_destruction_comp_rule" model="ir.rule">
+        <field name="name">Acta de baja: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_destruction"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_destruction_line_comp_rule" model="ir.rule">
+        <field name="name">Línea de acta de baja: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_destruction_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

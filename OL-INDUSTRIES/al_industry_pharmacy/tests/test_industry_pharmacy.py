@@ -16,7 +16,7 @@ class TestIndustryPharmacy(TransactionCase):
     def test_apply_to_new_company(self):
         industry = self.env.ref('al_industry_pharmacy.industry_pharmacy')
         company = self.env['res.company'].create({
-            'name': 'Farmacia y botica DEMO', 'country_id': self.env.ref('base.pe').id})
+            'name': 'Farmacia y botica Lima', 'country_id': self.env.ref('base.pe').id})
         industry._apply(company)
         main = company.partner_id.l10n_pe_economic_activity_ids.filtered(
             lambda line: line.kind == 'principal')
@@ -43,7 +43,7 @@ class TestIndustryPharmacy(TransactionCase):
 
     def test_prescription_filter(self):
         product = self.env['product.template'].create({
-            'name': 'Medicamento DEMO', 'type': 'consu', 'is_storable': True,
+            'name': 'Clonazepam 2 mg', 'type': 'consu', 'is_storable': True,
             'tracking': 'lot', 'pharmacy_sale_condition': 'controlled'})
         found = self.env['product.template'].search(
             [('pharmacy_sale_condition', 'in', ('prescription', 'controlled'))])

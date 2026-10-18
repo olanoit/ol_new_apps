@@ -19,11 +19,11 @@ registry.category("web_tour.tours").add("al_pharmacy_pos_presentation", {
             Chrome.startPoS(),
             Dialog.confirm("Open Register"),
             // Blíster de 7 a 1,00: la línea muestra 1 blíster y suma 1,00 (no 0,98).
-            ProductScreen.clickDisplayedProduct("Paracetamol DEMO"),
+            ProductScreen.clickDisplayedProduct("Loratadina 10 mg"),
             choosePresentation("Blíster x 7"),
-            ProductScreen.selectedOrderlineHas("Paracetamol DEMO (Blíster x 7)", "1", "1.00"),
+            ProductScreen.selectedOrderlineHas("Loratadina 10 mg (Blíster x 7)", "1", "1.00"),
             // Unidad suelta al precio del producto.
-            ProductScreen.clickDisplayedProduct("Paracetamol DEMO"),
+            ProductScreen.clickDisplayedProduct("Loratadina 10 mg"),
             choosePresentation("Unidad"),
             ProductScreen.totalAmountIs("1.20"),
             ProductScreen.clickPayButton(),

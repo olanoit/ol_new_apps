@@ -8,7 +8,7 @@ class TestPosPresentationTour(TestPointOfSaleHttpCommon):
 
     def test_sell_blister_in_pos(self):
         product = self.env['product.template'].create({
-            'name': 'Paracetamol DEMO', 'type': 'consu', 'available_in_pos': True,
+            'name': 'Loratadina 10 mg', 'type': 'consu', 'available_in_pos': True,
             'list_price': 0.20, 'taxes_id': [(6, 0, [])],
         })
         self.env['pharmacy.presentation'].create({

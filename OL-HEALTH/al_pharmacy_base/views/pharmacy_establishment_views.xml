@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Empleados y locales -->
+    <record id="hr_employee_view_form_pharmacy" model="ir.ui.view">
+        <field name="name">hr.employee.form.pharmacy</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_title']" position="after">
+                <field name="pharmacy_role" placeholder="Función en farmacia"/>
+                <field name="pharmacy_license_number" placeholder="Colegiatura (COP)"
+                       invisible="pharmacy_role != 'pharmacist'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_warehouse_view_form_pharmacy" model="ir.ui.view">
+        <field name="name">stock.warehouse.form.pharmacy</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="pharmacy_director_id"/>
+                <field name="pharmacy_establishment_code"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Turnos -->
+    <record id="pharmacy_shift_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.shift.list</field>
+        <field name="model">pharmacy.shift</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="employee_id"/>
+                <field name="warehouse_id"/>
+                <field name="role"/>
+                <field name="note" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_shift_view_calendar" model="ir.ui.view">
+        <field name="name">pharmacy.shift.calendar</field>
+        <field name="model">pharmacy.shift</field>
+        <field name="arch" type="xml">
+            <calendar date_start="date_start" date_stop="date_end" color="employee_id" mode="week">
+                <field name="employee_id"/>
+                <field name="warehouse_id"/>
+                <field name="role"/>
+            </calendar>
+        </field>
+    </record>
+    <record id="pharmacy_shift_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.shift.search</field>
+        <field name="model">pharmacy.shift</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="warehouse_id"/>
+                <filter string="Reemplazos" name="replacement" domain="[('role', '=', 'replacement')]"/>
+                <group>
+                    <filter string="Local" name="group_warehouse" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="pharmacy_shift_action" model="ir.actions.act_window">
+        <field name="name">Turnos de químicos farmacéuticos</field>
+        <field name="res_model">pharmacy.shift</field>
+        <field name="view_mode">calendar,list</field>
+    </record>
+
+    <!-- Libro de ocurrencias -->
+    <record id="pharmacy_logbook_entry_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.logbook.entry.list</field>
+        <field name="model">pharmacy.logbook.entry</field>
+        <field name="arch" type="xml">
+            <list create="1" delete="0">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="entry_type"/>
+                <field name="warehouse_id" optional="show"/>
+                <field name="description"/>
+                <field name="user_id" optional="show"/>
+                <field name="correction_of_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_logbook_entry_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.logbook.entry.form</field>
+        <field name="model">pharmacy.logbook.entry</field>
+        <field name="arch" type="xml">
+            <form delete="0">
+                <header>
+                    <button name="action_correct" type="object" string="Corregir" invisible="not id"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="entry_type" readonly="id"/>
+                            <field name="warehouse_id" readonly="id"/>
+                            <field name="correction_of_id" readonly="1" invisible="not correction_of_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="description" readonly="id" placeholder="Qué pasó, quién intervino y qué se hizo."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_logbook_entry_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.logbook.entry.search</field>
+        <field name="model">pharmacy.logbook.entry</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="description"/>
+                <field name="warehouse_id"/>
+                <filter string="Excepciones del Q.F." name="exception" domain="[('entry_type', '=', 'exception')]"/>
+                <filter string="Alertas sin Q.F." name="alert" domain="[('entry_type', '=', 'alert')]"/>
+                <filter string="Reacciones adversas" name="adverse" domain="[('entry_type', '=', 'adverse_event')]"/>
+                <group>
+                    <filter string="Tipo" name="group_type" context="{'group_by': 'entry_type'}"/>
+                    <filter string="Local" name="group_warehouse" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="pharmacy_logbook_entry_action" model="ir.actions.act_window">
+        <field name="name">Libro de ocurrencias</field>
+        <field name="res_model">pharmacy.logbook.entry</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="pharmacy_logbook_report" model="ir.actions.report">
+        <field name="name">Libro de ocurrencias</field>
+        <field name="model">pharmacy.logbook.entry</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_pharmacy_base.report_pharmacy_logbook</field>
+        <field name="report_file">al_pharmacy_base.report_pharmacy_logbook</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_pharmacy_logbook_entry"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_pharmacy_root" name="Farmacia" sequence="35"
+              web_icon="al_pharmacy_base,static/description/icon.png"
+              groups="group_pharmacy_technician"/>
+    <menuitem id="menu_pharmacy_products" name="Productos" parent="menu_pharmacy_root" sequence="10"/>
+    <menuitem id="menu_pharmacy_product_template" name="Productos farmacéuticos"
+              parent="menu_pharmacy_products" action="pharmacy_product_template_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_establishment" name="Establecimiento" parent="menu_pharmacy_root" sequence="40"/>
+    <menuitem id="menu_pharmacy_shift" name="Turnos de Q.F." parent="menu_pharmacy_establishment"
+              action="pharmacy_shift_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_logbook" name="Libro de ocurrencias" parent="menu_pharmacy_establishment"
+              action="pharmacy_logbook_entry_action" sequence="20"/>
+    <menuitem id="menu_pharmacy_config" name="Configuración" parent="menu_pharmacy_root" sequence="90"
+              groups="group_pharmacy_manager"/>
+    <menuitem id="menu_pharmacy_settings" name="Ajustes" parent="menu_pharmacy_config"
+              action="stock.action_stock_config_settings" sequence="1"/>
+    <menuitem id="menu_pharmacy_catalogs" name="Catálogos" parent="menu_pharmacy_config" sequence="10"/>
+    <menuitem id="menu_pharmacy_ingredient" name="Principios activos" parent="menu_pharmacy_catalogs"
+              action="pharmacy_ingredient_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_dosage_form" name="Formas farmacéuticas" parent="menu_pharmacy_catalogs"
+              action="pharmacy_dosage_form_action" sequence="20"/>
+    <menuitem id="menu_pharmacy_route" name="Vías de administración" parent="menu_pharmacy_catalogs"
+              action="pharmacy_route_action" sequence="30"/>
+</odoo>

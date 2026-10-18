@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_pharmacy_destruction" model="ir.sequence">
+            <field name="name">Acta de baja y destrucción</field>
+            <field name="code">pharmacy.destruction</field>
+            <field name="prefix">ABD/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="ir_cron_pharmacy_expire_lots" model="ir.cron">
+            <field name="name">Farmacia: marcar lotes vencidos</field>
+            <field name="model_id" ref="stock.model_stock_lot"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_pharmacy_expire_lots()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+
+        <record id="ir_cron_pharmacy_reading_reminder" model="ir.cron">
+            <field name="name">Farmacia: recordar lecturas de temperatura</field>
+            <field name="model_id" ref="model_pharmacy_environment_point"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_pharmacy_reading_reminder()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+    </data>
+</odoo>

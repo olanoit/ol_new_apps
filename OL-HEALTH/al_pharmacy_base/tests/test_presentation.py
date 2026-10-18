@@ -12,7 +12,7 @@ class TestPresentation(TransactionCase):
         super().setUpClass()
         cls.unit = cls.env.ref('uom.product_uom_unit')
         cls.product = cls.env['product.template'].create({
-            'name': 'Paracetamol 500 mg DEMO', 'type': 'consu', 'list_price': 0.20,
+            'name': 'Paracetamol 500 mg', 'type': 'consu', 'list_price': 0.20,
             'uom_id': cls.unit.id,
         })
 
@@ -27,7 +27,7 @@ class TestPresentation(TransactionCase):
 
     def test_uom_is_reused(self):
         other = self.env['product.template'].create({
-            'name': 'Ibuprofeno 400 mg DEMO', 'type': 'consu', 'uom_id': self.unit.id})
+            'name': 'Ibuprofeno 400 mg', 'type': 'consu', 'uom_id': self.unit.id})
         first = self.env['pharmacy.presentation'].create({
             'product_tmpl_id': self.product.id, 'name': 'Blíster', 'factor': 10, 'price': 1.5})
         second = self.env['pharmacy.presentation'].create({

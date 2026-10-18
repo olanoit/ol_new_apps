@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: 3.20261017
+    fecha: 18/10/2026
+    cambios:
+      - "Instala la suite de farmacia de OL-HEALTH (maestro, almacenamiento y venta por presentación); sus datos farmacéuticos del producto pasan al maestro y se migran."
   - version: 2.20261017
     fecha: 17/10/2026
     cambios:

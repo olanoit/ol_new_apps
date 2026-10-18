@@ -1,11 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="product_template_form_view_pharmacy_presentation" model="ir.ui.view">
-        <field name="name">product.template.form.pharmacy.presentation</field>
+        <field name="name">product.template.form.pharmacy</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']//field[@name='categ_id']" position="after">
+                <field name="pharmacy_ok" invisible="type != 'consu'"/>
+            </xpath>
             <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Farmacia" name="pharmacy" invisible="not pharmacy_ok">
+                    <group>
+                        <group string="Registro sanitario">
+                            <field name="pharmacy_sanitary_registry"/>
+                            <field name="pharmacy_registry_expiry"/>
+                            <field name="pharmacy_registry_holder_id"/>
+                            <field name="pharmacy_laboratory_id"/>
+                            <field name="pharmacy_sale_condition"/>
+                            <field name="pharmacy_product_type"/>
+                            <field name="pharmacy_linked_company"/>
+                        </group>
+                        <group string="Forma y conservación">
+                            <field name="pharmacy_dosage_form_id" options="{'no_create': True}"/>
+                            <field name="pharmacy_route_id" options="{'no_create': True}"/>
+                            <field name="pharmacy_cold_chain"/>
+                            <field name="pharmacy_storage_conditions"/>
+                            <field name="pharmacy_shelf"/>
+                        </group>
+                    </group>
+                    <separator string="Composición"/>
+                    <field name="pharmacy_ingredient_line_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="ingredient_id"/>
+                            <field name="strength"/>
+                            <field name="strength_unit"/>
+                        </list>
+                    </field>
+                    <group invisible="not pharmacy_equivalent_ids">
+                        <field name="pharmacy_equivalent_ids" widget="many2many_tags" readonly="1"/>
+                    </group>
+                    <group string="Ficha">
+                        <field name="pharmacy_indications"/>
+                        <field name="pharmacy_contraindications"/>
+                        <field name="pharmacy_adverse_effects"/>
+                    </group>
+                </page>
                 <page string="Presentaciones" name="pharmacy_presentations" invisible="type != 'consu'">
                     <field name="pharmacy_presentation_ids" context="{'active_test': False}">
                         <list editable="bottom">
@@ -25,6 +65,49 @@
                     </div>
                 </page>
             </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_search_view_pharmacy" model="ir.ui.view">
+        <field name="name">product.template.search.pharmacy</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <field name="product_tag_ids" position="after">
+                <field name="pharmacy_composition"/>
+                <field name="pharmacy_sanitary_registry"/>
+                <field name="pharmacy_laboratory_id"/>
+            </field>
+            <filter name="services" position="after">
+                <separator/>
+                <filter string="Farmacéuticos" name="pharmacy" domain="[('pharmacy_ok', '=', True)]"/>
+                <filter string="Venta libre" name="pharmacy_otc"
+                        domain="[('pharmacy_sale_condition', '=', 'otc')]"/>
+                <filter string="Con receta" name="pharmacy_prescription"
+                        domain="[('pharmacy_sale_condition', 'in', ('prescription', 'controlled'))]"/>
+                <filter string="Genéricos en DCI" name="pharmacy_generic"
+                        domain="[('pharmacy_product_type', '=', 'generic_dci')]"/>
+                <filter string="Cadena de frío" name="pharmacy_cold_chain"
+                        domain="[('pharmacy_cold_chain', '=', True)]"/>
+                <separator/>
+                <filter string="Sin registro sanitario" name="pharmacy_no_registry"
+                        domain="[('pharmacy_ok', '=', True), ('pharmacy_sanitary_registry', '=', False)]"/>
+                <filter string="Registro vencido" name="pharmacy_registry_expired"
+                        domain="[('pharmacy_registry_expiry', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="pharmacy_product_template_action" model="ir.actions.act_window">
+        <field name="name">Productos farmacéuticos</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('pharmacy_ok', '=', True)]</field>
+        <field name="context">{'default_pharmacy_ok': True, 'default_type': 'consu', 'default_is_storable': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre su primer medicamento</p>
+            <p>Con su principio activo y concentración, registro sanitario, condición de venta y
+                presentaciones (caja, blíster).</p>
         </field>
     </record>
 </odoo>

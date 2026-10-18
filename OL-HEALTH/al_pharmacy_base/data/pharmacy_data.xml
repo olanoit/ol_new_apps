@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_pharmacy_logbook_entry" model="ir.sequence">
+            <field name="name">Libro de ocurrencias</field>
+            <field name="code">pharmacy.logbook.entry</field>
+            <field name="prefix">OC/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Formas farmacéuticas más comunes -->
+        <record id="dosage_form_tablet" model="pharmacy.dosage.form"><field name="name">Tableta</field><field name="sequence">10</field></record>
+        <record id="dosage_form_coated_tablet" model="pharmacy.dosage.form"><field name="name">Tableta recubierta</field><field name="sequence">11</field></record>
+        <record id="dosage_form_capsule" model="pharmacy.dosage.form"><field name="name">Cápsula</field><field name="sequence">20</field></record>
+        <record id="dosage_form_syrup" model="pharmacy.dosage.form"><field name="name">Jarabe</field><field name="sequence">30</field></record>
+        <record id="dosage_form_suspension" model="pharmacy.dosage.form"><field name="name">Suspensión</field><field name="sequence">31</field></record>
+        <record id="dosage_form_drops" model="pharmacy.dosage.form"><field name="name">Gotas</field><field name="sequence">32</field></record>
+        <record id="dosage_form_injection" model="pharmacy.dosage.form"><field name="name">Solución inyectable</field><field name="sequence">40</field></record>
+        <record id="dosage_form_cream" model="pharmacy.dosage.form"><field name="name">Crema</field><field name="sequence">50</field></record>
+        <record id="dosage_form_ointment" model="pharmacy.dosage.form"><field name="name">Ungüento</field><field name="sequence">51</field></record>
+        <record id="dosage_form_gel" model="pharmacy.dosage.form"><field name="name">Gel</field><field name="sequence">52</field></record>
+        <record id="dosage_form_ovule" model="pharmacy.dosage.form"><field name="name">Óvulo</field><field name="sequence">60</field></record>
+        <record id="dosage_form_suppository" model="pharmacy.dosage.form"><field name="name">Supositorio</field><field name="sequence">61</field></record>
+        <record id="dosage_form_inhaler" model="pharmacy.dosage.form"><field name="name">Inhalador</field><field name="sequence">70</field></record>
+        <record id="dosage_form_powder" model="pharmacy.dosage.form"><field name="name">Polvo para suspensión</field><field name="sequence">80</field></record>
+
+        <!-- Vías de administración -->
+        <record id="route_oral" model="pharmacy.route"><field name="name">Oral</field><field name="sequence">10</field></record>
+        <record id="route_sublingual" model="pharmacy.route"><field name="name">Sublingual</field><field name="sequence">11</field></record>
+        <record id="route_topical" model="pharmacy.route"><field name="name">Tópica</field><field name="sequence">20</field></record>
+        <record id="route_iv" model="pharmacy.route"><field name="name">Intravenosa</field><field name="sequence">30</field></record>
+        <record id="route_im" model="pharmacy.route"><field name="name">Intramuscular</field><field name="sequence">31</field></record>
+        <record id="route_sc" model="pharmacy.route"><field name="name">Subcutánea</field><field name="sequence">32</field></record>
+        <record id="route_ophthalmic" model="pharmacy.route"><field name="name">Oftálmica</field><field name="sequence">40</field></record>
+        <record id="route_otic" model="pharmacy.route"><field name="name">Ótica</field><field name="sequence">41</field></record>
+        <record id="route_nasal" model="pharmacy.route"><field name="name">Nasal</field><field name="sequence">42</field></record>
+        <record id="route_inhalation" model="pharmacy.route"><field name="name">Inhalatoria</field><field name="sequence">50</field></record>
+        <record id="route_rectal" model="pharmacy.route"><field name="name">Rectal</field><field name="sequence">60</field></record>
+        <record id="route_vaginal" model="pharmacy.route"><field name="name">Vaginal</field><field name="sequence">61</field></record>
+    </data>
+</odoo>

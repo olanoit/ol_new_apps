@@ -1,33 +1,60 @@
 titulo: "Farmacia: maestro farmacéutico"
-subtitulo: "Presentaciones de venta (caja, blíster, frasco) con precio propio; el stock se lleva en la unidad del producto."
+subtitulo: "Principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias."
 categoria: "Salud · Farmacia"
-etiquetas: [Farmacia, Botica, Presentaciones, Blíster, Precios]
+etiquetas: [Farmacia, Botica, DCI, Registro sanitario, Presentaciones, BPOF]
 
 destacados:
+  - icono: "℞"
+    titulo: "Producto farmacéutico completo"
+    texto: "Composición en DCI con concentración, forma y vía, registro sanitario con vencimiento, laboratorio, condición de venta y tipo (genérico en DCI, de marca, innovador)."
+  - icono: "⇄"
+    titulo: "Equivalentes"
+    texto: "Mismo principio activo, concentración y forma: genéricos en DCI primero y del más barato al más caro (Ley 32033)."
   - icono: "▦"
     titulo: "Caja, blíster o unidad"
-    texto: "Cada presentación agrupa un número fijo de unidades y tiene su propio precio, no proporcional al de la unidad."
-  - icono: "⚖"
-    titulo: "Stock exacto"
-    texto: "El inventario se lleva siempre en la unidad del producto: vender una caja descuenta sus unidades."
-  - icono: "⌗"
-    titulo: "Unidad de medida automática"
-    texto: "La unidad «Caja x 100» se crea sola y se agrega a los empaques del producto, para la factura y el código de barras."
+    texto: "Presentaciones con precio propio; el stock se lleva en la unidad del producto."
+  - icono: "✎"
+    titulo: "Libro de ocurrencias"
+    texto: "Solo admite asientos nuevos: un error se corrige con otro asiento que cita al anterior (BPOF 7.3.6)."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "Una farmacia o botica necesita su maestro con los datos del registro sanitario y debe ofrecer genéricos en DCI (Ley 32033), llevar libros (BPOF, RM 554-2022/MINSA) y tener un químico farmacéutico responsable por local. Odoo no trae nada de eso."
 
 funcionalidades:
-  - "Presentaciones por producto con nombre, unidades y precio."
-  - "Precio por unidad calculado sin redondear."
-  - "Unidad de medida de la presentación creada y reutilizada automáticamente."
-  - "Regla multicompañía como la de los productos."
+  - grupo: "Productos"
+    items:
+      - "Composición (principio activo y concentración), forma farmacéutica y vía de administración."
+      - "Registro sanitario con titular y vencimiento, laboratorio, condición de venta, tipo de producto y empresa vinculada."
+      - "Cadena de frío, condiciones de almacenamiento, ubicación en estante y ficha clínica."
+      - "Equivalentes calculados y orden de alternativas: genéricos en DCI primero, por precio."
+      - "Presentaciones de venta con precio propio y su unidad de medida automática."
+  - grupo: "Establecimiento"
+    items:
+      - "Función (técnico o químico farmacéutico) y colegiatura en el empleado."
+      - "Director técnico y código de establecimiento por local."
+      - "Turnos de Q.F.; los reemplazos del director técnico se asientan solos en el libro."
+      - "Libro de ocurrencias correlativo, solo ampliable, con PDF."
+  - grupo: "Ajustes por compañía"
+    items:
+      - "Venta sin receta: bloquear (con excepción del Q.F.) o avisar."
+      - "Sin Q.F. en turno: avisar o bloquear."
+      - "Días de aviso de vencimientos."
 
 configuracion:
   - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
-  - "En el producto, pestaña **Presentaciones**, agregue la caja, el blíster u otras con sus unidades y su precio."
+  - "Asigne a los usuarios su rol en **Ajustes ▸ Usuarios ▸ Farmacia** (técnico, químico farmacéutico, director técnico, administrador)."
+  - "Revise los ajustes en **Farmacia ▸ Configuración ▸ Ajustes**."
 
 novedades:
+  - version: 2.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Entrega 1: maestro farmacéutico (composición en DCI, equivalentes, registro sanitario, condición de venta), grupos de farmacia, turnos de Q.F., libro de ocurrencias y ajustes por compañía."
+      - "Los datos farmacéuticos del producto que tenía el paquete de industria pasan a este módulo."
   - version: 1.20261018
     fecha: 18/10/2026
     cambios:
       - "Primera versión (prototipo E0): presentaciones de venta con precio propio."
 
-relacionados: [al_pharmacy_pos, al_industry_pharmacy]
+relacionados: [al_pharmacy_stock, al_pharmacy_pos, al_industry_pharmacy]

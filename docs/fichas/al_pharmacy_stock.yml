@@ -1,0 +1,46 @@
+titulo: "Farmacia: buenas prácticas de almacenamiento"
+subtitulo: "Recepción con inspección y registro sanitario vigente, lotes en cuarentena o bloqueados que no se venden, vencimientos, bonificaciones de compra, control de temperatura, alertas sanitarias y actas de baja."
+categoria: "Salud · Inventario"
+etiquetas: [Farmacia, BPA, Lotes, Vencimientos, Cadena de frío, Alertas]
+
+destacados:
+  - icono: "✓"
+    titulo: "Recepción según BPOF"
+    texto: "Inspección conforme o no conforme, lote, vencimiento y registro sanitario vigente obligatorios."
+  - icono: "⛔"
+    titulo: "Lotes que no se venden"
+    texto: "Cuarentena, bloqueado o vencido: Odoo no los reserva ni los ofrece en la caja."
+  - icono: "🌡"
+    titulo: "Temperatura y humedad"
+    texto: "Lecturas por punto (ambiente o 2-8 °C) con acción correctiva obligatoria fuera de rango y recordatorio diario."
+  - icono: "⚠"
+    titulo: "Alertas sanitarias"
+    texto: "Bloquea los lotes de la alerta y lista el stock y los clientes que los recibieron."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "El Manual de Buenas Prácticas de Oficina Farmacéutica (RM 554-2022/MINSA, 7.5.1) exige registrar la recepción, controlar temperatura y cadena de frío, separar devoluciones y bajas, avisar vencimientos y retirar lotes alertados."
+  nota: "**Bonificaciones:** la unidad bonificada se agrega como una línea a precio cero; la factura del proveedor cuadra y el costo se prorratea solo."
+
+funcionalidades:
+  - "Inspección de la recepción y validación de lote, vencimiento y registro sanitario."
+  - "Estado sanitario del lote y reserva solo de lotes disponibles."
+  - "Liberación de lotes por un químico farmacéutico."
+  - "Cron diario de vencidos y filtro «Por vencer» con los días de la compañía."
+  - "Motivo de devolución al proveedor."
+  - "Bonificaciones de compra como línea hermana a precio cero."
+  - "Puntos de control ambiental, lecturas, gráfico y recordatorio diario."
+  - "Alertas sanitarias con bloqueo de lotes, stock afectado y clientes."
+  - "Acta de baja y destrucción en PDF con baja de inventario."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Cree los puntos de control en **Farmacia ▸ Control ambiental ▸ Puntos de control**."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión (entrega 1 del plan)."
+
+relacionados: [al_pharmacy_base, al_pharmacy_pos, al_industry_pharmacy]

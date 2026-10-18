@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_pharmacy_logbook">
+        <t t-call="web.html_container">
+            <t t-set="o" t-value="docs[:1]"/>
+            <t t-call="al_report_base.report_pe_page">
+                <t t-set="company" t-value="o.company_id"/>
+                <t t-set="doc_title" t-value="'Libro de ocurrencias'"/>
+                <t t-set="doc_extra" t-value="o.warehouse_id.name or ''"/>
+                <table class="pe-doc-table pe-doc-lines mb-3">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <th>N.º</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Detalle</th>
+                            <th>Registró</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="docs.sorted(lambda e: (e.date, e.id))" t-as="entry">
+                            <td t-out="entry.name"/>
+                            <td t-out="entry.date" t-options="{'widget': 'datetime'}"/>
+                            <td t-field="entry.entry_type"/>
+                            <td>
+                                <t t-out="entry.description"/>
+                                <div t-if="entry.correction_of_id" class="text-muted">
+                                    Corrige el asiento <t t-out="entry.correction_of_id.name"/>.
+                                </div>
+                            </td>
+                            <td t-out="entry.user_id.name"/>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+        </t>
+    </template>
+</odoo>

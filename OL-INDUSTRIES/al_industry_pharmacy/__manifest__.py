@@ -19,10 +19,13 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '2.20261017',
+    'version': '3.20261017',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
+        'al_pharmacy_base',
+        'al_pharmacy_stock',
+        'al_pharmacy_pos',
         'point_of_sale',
         'purchase_stock',
         'sale_stock',
@@ -40,7 +43,6 @@ compañías ▸ Industrias.
     'data': [
         'data/al_industry_data.xml',
         'data/pharmacy_data.xml',
-        'views/product_template_views.xml',
     ],
     'demo': [
         'demo/pharmacy_demo.xml',

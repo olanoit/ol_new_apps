@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="ingredient_paracetamol" model="pharmacy.ingredient">
+        <field name="name">Paracetamol</field>
+    </record>
+    <record id="ingredient_ibuprofeno" model="pharmacy.ingredient">
+        <field name="name">Ibuprofeno</field>
+    </record>
+    <record id="ingredient_amoxicilina" model="pharmacy.ingredient">
+        <field name="name">Amoxicilina</field>
+    </record>
+    <record id="ingredient_insulina_humana" model="pharmacy.ingredient">
+        <field name="name">Insulina humana</field>
+    </record>
     <record id="product_paracetamol" model="product.template">
         <field name="name">Paracetamol 500 mg x 100 tabletas</field>
         <field name="categ_id" ref="product_category_medicines_otc"/>
@@ -14,10 +26,10 @@
         <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         <field name="product_tag_ids" eval="[Command.set([ref('product_tag_03')])]"/>
         <field name="pharmacy_sale_condition">otc</field>
-        <field name="pharmacy_sanitary_registry">EN-00000 DEMO</field>
-        <field name="pharmacy_active_ingredient">Paracetamol</field>
-        <field name="pharmacy_concentration">500 mg</field>
-        <field name="pharmacy_dosage_form">Tableta</field>
+        <field name="pharmacy_sanitary_registry">EN-04512</field>
+        <field name="pharmacy_ok" eval="True"/>
+        <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_tablet"/>
+        <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 500, 'strength_unit': 'mg'})]"/>
     </record>
     <record id="product_ibuprofen" model="product.template">
         <field name="name">Ibuprofeno 400 mg x 100 tabletas</field>
@@ -33,10 +45,10 @@
         <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         <field name="product_tag_ids" eval="[Command.set([ref('product_tag_03')])]"/>
         <field name="pharmacy_sale_condition">otc</field>
-        <field name="pharmacy_sanitary_registry">EN-00001 DEMO</field>
-        <field name="pharmacy_active_ingredient">Ibuprofeno</field>
-        <field name="pharmacy_concentration">400 mg</field>
-        <field name="pharmacy_dosage_form">Tableta</field>
+        <field name="pharmacy_sanitary_registry">EN-03891</field>
+        <field name="pharmacy_ok" eval="True"/>
+        <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_tablet"/>
+        <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ibuprofeno'), 'strength': 400, 'strength_unit': 'mg'})]"/>
     </record>
     <record id="product_amoxicillin" model="product.template">
         <field name="name">Amoxicilina 500 mg x 100 cápsulas</field>
@@ -52,10 +64,10 @@
         <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01'), ref('product_tag_03')])]"/>
         <field name="pharmacy_sale_condition">prescription</field>
-        <field name="pharmacy_sanitary_registry">EN-00002 DEMO</field>
-        <field name="pharmacy_active_ingredient">Amoxicilina</field>
-        <field name="pharmacy_concentration">500 mg</field>
-        <field name="pharmacy_dosage_form">Cápsula</field>
+        <field name="pharmacy_sanitary_registry">EN-05127</field>
+        <field name="pharmacy_ok" eval="True"/>
+        <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_capsule"/>
+        <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
     </record>
     <record id="product_insulin" model="product.template">
         <field name="name">Insulina humana 100 UI/mL x 10 mL</field>
@@ -71,10 +83,10 @@
         <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         <field name="product_tag_ids" eval="[Command.set([ref('product_tag_01'), ref('product_tag_02')])]"/>
         <field name="pharmacy_sale_condition">prescription</field>
-        <field name="pharmacy_sanitary_registry">BE-00003 DEMO</field>
-        <field name="pharmacy_active_ingredient">Insulina humana</field>
-        <field name="pharmacy_concentration">100 UI/mL</field>
-        <field name="pharmacy_dosage_form">Solución inyectable</field>
+        <field name="pharmacy_sanitary_registry">BE-01046</field>
+        <field name="pharmacy_ok" eval="True"/>
+        <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_injection"/>
+        <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_insulina_humana'), 'strength': 100, 'strength_unit': 'ui'})]"/>
     </record>
     <record id="product_sunscreen" model="product.template">
         <field name="name">Protector solar FPS 50 x 50 mL</field>

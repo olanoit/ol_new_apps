@@ -31,6 +31,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_pharmacy_edi](al_l10n_pe_pharmacy_edi/) | 1.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
-[al_pharmacy_base](al_pharmacy_base/) | 1.20261018 | OPL-1 | Presentaciones de venta (caja, blíster, frasco) con precio propio; el stock se lleva en la unidad del producto.
+[al_pharmacy_base](al_pharmacy_base/) | 2.20261018 | OPL-1 | Maestro farmacéutico: principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias.
 [al_pharmacy_pos](al_pharmacy_pos/) | 1.20261018 | OPL-1 | Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación.
+[al_pharmacy_stock](al_pharmacy_stock/) | 1.20261018 | OPL-1 | Recepción con inspección y registro sanitario vigente, lotes en cuarentena o bloqueados que no se venden, vencimientos, bonificaciones de compra, control de temperatura, alertas sanitarias y actas de baja.
 [//]: # (end addons)

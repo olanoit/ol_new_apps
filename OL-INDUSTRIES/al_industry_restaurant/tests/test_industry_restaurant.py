@@ -16,7 +16,7 @@ class TestIndustryRestaurant(TransactionCase):
     def test_apply_to_new_company(self):
         industry = self.env.ref('al_industry_restaurant.industry_restaurant')
         company = self.env['res.company'].create({
-            'name': 'Restaurante DEMO', 'country_id': self.env.ref('base.pe').id})
+            'name': 'Restaurante Lima', 'country_id': self.env.ref('base.pe').id})
         industry._apply(company)
         main = company.partner_id.l10n_pe_economic_activity_ids.filtered(
             lambda line: line.kind == 'principal')

@@ -1,5 +1,5 @@
 # Farmacia: maestro farmacéutico (AL)
 
-Presentaciones de venta (caja, blíster, frasco) con precio propio; el stock se lleva en la unidad del producto.
+Maestro farmacéutico: principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias.
 
-Plan e investigación: [docs/farmacia/](../../docs/farmacia/PLAN_FARMACIA.md) (prototipo E0, riesgo R1).
+Plan e investigación: [docs/farmacia/](../../docs/farmacia/PLAN_FARMACIA.md).

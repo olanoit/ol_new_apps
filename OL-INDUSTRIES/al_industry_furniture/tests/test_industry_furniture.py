@@ -16,7 +16,7 @@ class TestIndustryFurniture(TransactionCase):
     def test_apply_to_new_company(self):
         industry = self.env.ref('al_industry_furniture.industry_furniture')
         company = self.env['res.company'].create({
-            'name': 'Mobiliario a medida DEMO', 'country_id': self.env.ref('base.pe').id})
+            'name': 'Mobiliario a medida Lima', 'country_id': self.env.ref('base.pe').id})
         industry._apply(company)
         main = company.partner_id.l10n_pe_economic_activity_ids.filtered(
             lambda line: line.kind == 'principal')

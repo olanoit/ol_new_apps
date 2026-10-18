@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Lotes -->
+    <record id="view_production_lot_form_pharmacy" model="ir.ui.view">
+        <field name="name">stock.lot.form.pharmacy</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_pharmacy_quarantine" type="object" string="Cuarentena"
+                            invisible="pharmacy_state != 'available'"
+                            groups="al_pharmacy_base.group_pharmacy_technician"/>
+                    <button name="action_pharmacy_release" type="object" string="Liberar"
+                            invisible="pharmacy_state not in ('quarantine', 'blocked')"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <field name="pharmacy_state" widget="statusbar"/>
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="pharmacy_state_reason" invisible="pharmacy_state == 'available'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_production_lot_tree_pharmacy" model="ir.ui.view">
+        <field name="name">stock.lot.list.pharmacy</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-danger">pharmacy_state in ('blocked', 'expired')</attribute>
+                <attribute name="decoration-warning">pharmacy_state == 'quarantine'</attribute>
+            </xpath>
+            <xpath expr="//list" position="inside">
+                <field name="pharmacy_state" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="search_product_lot_filter_pharmacy" model="ir.ui.view">
+        <field name="name">stock.lot.search.pharmacy</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.search_product_lot_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter string="Por vencer" name="pharmacy_expiry_soon"
+                        domain="[('pharmacy_expiry_soon', '=', True)]"/>
+                <filter string="No disponibles" name="pharmacy_unavailable"
+                        domain="[('pharmacy_state', '!=', 'available')]"/>
+                <group>
+                    <filter string="Estado sanitario" name="group_pharmacy_state"
+                            context="{'group_by': 'pharmacy_state'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pharmacy_lot_action" model="ir.actions.act_window">
+        <field name="name">Lotes y vencimientos</field>
+        <field name="res_model">stock.lot</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('product_id.product_tmpl_id.pharmacy_ok', '=', True)]</field>
+        <field name="context">{'search_default_pharmacy_expiry_soon': 1}</field>
+    </record>
+
+    <!-- Recepción e inspección -->
+    <record id="view_picking_form_pharmacy" model="ir.ui.view">
+        <field name="name">stock.picking.form.pharmacy</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="pharmacy_has_products" invisible="1"/>
+                <field name="return_id" invisible="1"/>
+            </xpath>
+            <xpath expr="//page[@name='extra']" position="before">
+                <page string="Farmacia" name="pharmacy"
+                      invisible="not pharmacy_has_products or picking_type_code not in ('incoming', 'outgoing')">
+                    <group invisible="picking_type_code != 'incoming'">
+                        <field name="pharmacy_inspection" widget="radio" readonly="state == 'done'"/>
+                        <field name="pharmacy_inspection_note" readonly="state == 'done'"
+                               required="pharmacy_inspection == 'nonconform'"/>
+                    </group>
+                    <group invisible="picking_type_code != 'outgoing' or not return_id">
+                        <field name="pharmacy_return_reason" readonly="state == 'done'"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pharmacy_reception_action" model="ir.actions.act_window">
+        <field name="name">Recepciones</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('picking_type_code', '=', 'incoming'), ('pharmacy_has_products', '=', True)]</field>
+        <field name="context">{'restricted_picking_type_code': 'incoming'}</field>
+    </record>
+
+    <!-- Bonificaciones de compra -->
+    <record id="purchase_order_form_pharmacy" model="ir.ui.view">
+        <field name="name">purchase.order.form.pharmacy</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="after">
+                <field name="pharmacy_bonus_qty" optional="show"
+                       readonly="pharmacy_bonus_of_id or parent.state not in ('draft', 'sent')"/>
+                <field name="pharmacy_bonus_of_id" column_invisible="True"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

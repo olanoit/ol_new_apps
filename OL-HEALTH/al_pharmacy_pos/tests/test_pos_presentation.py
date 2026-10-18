@@ -10,12 +10,12 @@ class TestPosPresentation(TestPoSCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.config = cls.basic_config
-        cls.product = cls.create_product('Paracetamol 500 mg DEMO', cls.categ_basic, 0.20)
+        cls.product = cls.create_product('Paracetamol 500 mg', cls.categ_basic, 0.20)
         cls.blister = cls.env['pharmacy.presentation'].create({
             'product_tmpl_id': cls.product.product_tmpl_id.id,
             'name': 'Blíster', 'factor': 7, 'price': 1.00,
         })
-        cls.customer = cls.env['res.partner'].create({'name': 'Cliente DEMO'})
+        cls.customer = cls.env['res.partner'].create({'name': 'Cliente'})
 
     def _order(self, qty, presentation=None, price_unit=None):
         price_unit = price_unit if price_unit is not None else (

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261017 — 18/10/2026
+
+- Instala la suite de farmacia de OL-HEALTH (maestro, almacenamiento y venta por presentación); sus datos farmacéuticos del producto pasan al maestro y se migran.
+
 ## 2.20261017 — 17/10/2026
 
 - Instala también el tema del TPV (al_pos_theme): nombre, logo y colores propios en la caja.

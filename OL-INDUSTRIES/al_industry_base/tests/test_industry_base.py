@@ -11,9 +11,9 @@ class TestIndustryBase(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env['res.company'].create({
-            'name': 'Botica DEMO', 'country_id': cls.env.ref('base.pe').id})
+            'name': 'Botica Santa Rosa', 'country_id': cls.env.ref('base.pe').id})
         cls.industry = cls.env['al.industry'].create({
-            'name': 'Industria DEMO', 'code': 'demo_industry', 'ciiu_code': '4772'})
+            'name': 'Industria de prueba', 'code': 'test_industry', 'ciiu_code': '4772'})
 
     def _main_activity(self, company):
         return self.env['l10n_pe.partner.economic.activity'].search(

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Control ambiental -->
+    <record id="pharmacy_environment_point_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.environment.point.list</field>
+        <field name="model">pharmacy.environment.point</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="warehouse_id"/>
+                <field name="point_type"/>
+                <field name="temp_min"/>
+                <field name="temp_max"/>
+                <field name="humidity_max" optional="show"/>
+                <field name="last_reading_date"/>
+                <field name="next_calibration_date" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_environment_point_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.environment.point.form</field>
+        <field name="model">pharmacy.environment.point</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="p. ej. Refrigeradora 1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="warehouse_id"/>
+                            <field name="location_id"/>
+                            <field name="point_type"/>
+                            <field name="responsible_id"/>
+                        </group>
+                        <group>
+                            <field name="temp_min"/>
+                            <field name="temp_max"/>
+                            <field name="humidity_max"/>
+                            <field name="equipment"/>
+                            <field name="calibration_date"/>
+                            <field name="next_calibration_date"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="reading_ids" context="{'default_point_id': id}">
+                        <list editable="top" decoration-danger="out_of_range">
+                            <field name="date"/>
+                            <field name="temperature"/>
+                            <field name="humidity"/>
+                            <field name="out_of_range"/>
+                            <field name="corrective_action" required="out_of_range"/>
+                            <field name="user_id"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_environment_point_action" model="ir.actions.act_window">
+        <field name="name">Puntos de control</field>
+        <field name="res_model">pharmacy.environment.point</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="pharmacy_environment_reading_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.environment.reading.list</field>
+        <field name="model">pharmacy.environment.reading</field>
+        <field name="arch" type="xml">
+            <list editable="top" decoration-danger="out_of_range">
+                <field name="date"/>
+                <field name="point_id"/>
+                <field name="temperature"/>
+                <field name="humidity"/>
+                <field name="out_of_range"/>
+                <field name="corrective_action" required="out_of_range"/>
+                <field name="user_id"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_environment_reading_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.environment.reading.search</field>
+        <field name="model">pharmacy.environment.reading</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="point_id"/>
+                <filter string="Fuera de rango" name="out_of_range" domain="[('out_of_range', '=', True)]"/>
+                <filter string="Hoy" name="today"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter string="Punto" name="group_point" context="{'group_by': 'point_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="pharmacy_environment_reading_view_graph" model="ir.ui.view">
+        <field name="name">pharmacy.environment.reading.graph</field>
+        <field name="model">pharmacy.environment.reading</field>
+        <field name="arch" type="xml">
+            <graph type="line">
+                <field name="date" interval="day"/>
+                <field name="point_id"/>
+                <field name="temperature" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="pharmacy_environment_reading_action" model="ir.actions.act_window">
+        <field name="name">Lecturas de temperatura y humedad</field>
+        <field name="res_model">pharmacy.environment.reading</field>
+        <field name="view_mode">list,graph</field>
+    </record>
+
+    <!-- Alertas sanitarias -->
+    <record id="pharmacy_alert_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.alert.list</field>
+        <field name="model">pharmacy.alert</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="source"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_alert_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.alert.form</field>
+        <field name="model">pharmacy.alert</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirmar y bloquear lotes"
+                            class="btn-primary" invisible="state != 'draft'"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="state == 'done'"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state == 'done'"/>
+                            <field name="source" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Motivo de la alerta" readonly="state == 'done'"/>
+                    <notebook>
+                        <page string="Productos" name="lines">
+                            <field name="line_ids" readonly="state == 'done'">
+                                <list editable="bottom">
+                                    <field name="product_tmpl_id"/>
+                                    <field name="sanitary_registry"/>
+                                    <field name="lot_names"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Impacto" name="impact" invisible="state != 'done'">
+                            <group>
+                                <field name="lot_ids" widget="many2many_tags"/>
+                            </group>
+                            <separator string="Stock en los locales"/>
+                            <field name="quant_ids">
+                                <list>
+                                    <field name="product_id"/>
+                                    <field name="lot_id"/>
+                                    <field name="location_id"/>
+                                    <field name="quantity"/>
+                                </list>
+                            </field>
+                            <separator string="Clientes que los recibieron"/>
+                            <field name="customer_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="phone"/>
+                                    <field name="email"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_alert_action" model="ir.actions.act_window">
+        <field name="name">Alertas sanitarias</field>
+        <field name="res_model">pharmacy.alert</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Actas de baja -->
+    <record id="pharmacy_destruction_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.destruction.list</field>
+        <field name="model">pharmacy.destruction</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="warehouse_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_destruction_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.destruction.form</field>
+        <field name="model">pharmacy.destruction</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_validate" type="object" string="Validar y dar de baja"
+                            class="btn-primary" invisible="state != 'draft'"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state == 'done'"/>
+                            <field name="warehouse_id" readonly="state == 'done'"/>
+                        </group>
+                        <group>
+                            <field name="method" readonly="state == 'done'"/>
+                            <field name="witness" readonly="state == 'done'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state == 'done'">
+                        <list editable="bottom">
+                            <field name="product_id"/>
+                            <field name="lot_id"/>
+                            <field name="expiration_date"/>
+                            <field name="location_id"/>
+                            <field name="quantity"/>
+                            <field name="uom_id"/>
+                            <field name="reason"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_destruction_action" model="ir.actions.act_window">
+        <field name="name">Actas de baja y destrucción</field>
+        <field name="res_model">pharmacy.destruction</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <record id="pharmacy_destruction_report" model="ir.actions.report">
+        <field name="name">Acta de baja y destrucción</field>
+        <field name="model">pharmacy.destruction</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_pharmacy_stock.report_pharmacy_destruction</field>
+        <field name="report_file">al_pharmacy_stock.report_pharmacy_destruction</field>
+        <field name="print_report_name">'Acta de baja %s' % object.name</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_pharmacy_destruction"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_pharmacy_inventory" name="Inventario" parent="al_pharmacy_base.menu_pharmacy_root" sequence="20"/>
+    <menuitem id="menu_pharmacy_reception" name="Recepciones" parent="menu_pharmacy_inventory"
+              action="pharmacy_reception_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_lot" name="Lotes y vencimientos" parent="menu_pharmacy_inventory"
+              action="pharmacy_lot_action" sequence="20"/>
+    <menuitem id="menu_pharmacy_destruction" name="Actas de baja" parent="menu_pharmacy_inventory"
+              action="pharmacy_destruction_action" sequence="30"/>
+    <menuitem id="menu_pharmacy_alert" name="Alertas sanitarias" parent="menu_pharmacy_inventory"
+              action="pharmacy_alert_action" sequence="40"/>
+    <menuitem id="menu_pharmacy_environment" name="Control ambiental" parent="al_pharmacy_base.menu_pharmacy_root" sequence="30"/>
+    <menuitem id="menu_pharmacy_environment_reading" name="Lecturas" parent="menu_pharmacy_environment"
+              action="pharmacy_environment_reading_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_environment_point" name="Puntos de control" parent="menu_pharmacy_environment"
+              action="pharmacy_environment_point_action" sequence="20"/>
+</odoo>

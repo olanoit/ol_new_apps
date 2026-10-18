@@ -6,4 +6,14 @@
         <field name="model_id" ref="model_pharmacy_presentation"/>
         <field name="domain_force">['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]</field>
     </record>
+    <record id="pharmacy_shift_comp_rule" model="ir.rule">
+        <field name="name">Turno de Q.F.: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_shift"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_logbook_entry_comp_rule" model="ir.rule">
+        <field name="name">Libro de ocurrencias: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_logbook_entry"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
 </odoo>

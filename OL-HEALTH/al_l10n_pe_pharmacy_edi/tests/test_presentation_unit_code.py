@@ -10,7 +10,7 @@ class TestPresentationUnitCode(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.product = cls.env['product.template'].create({
-            'name': 'Amoxicilina 500 mg DEMO', 'type': 'consu',
+            'name': 'Amoxicilina 500 mg', 'type': 'consu',
             'uom_id': cls.env.ref('uom.product_uom_unit').id,
         })
 
