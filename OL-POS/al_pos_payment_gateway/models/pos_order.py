@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class PosOrder(models.Model):
@@ -36,6 +36,43 @@ class PosOrder(models.Model):
             raise UserError(_('El método de pago no es un método en línea de esta caja.'))
         self.al_online_payment_method_id = method
         return True
+
+    def al_check_invoice_before_online_payment(self):
+        """Antes del QR: ¿se podrá emitir el comprobante de esta orden?
+
+        Con un pago en línea la pasarela cobra primero y el comprobante se
+        emite después, al registrar el pago. Si entonces falla (por ejemplo, una
+        línea sin impuesto en una boleta electrónica), el cargo queda hecho y la
+        orden en borrador. Aquí se arma la factura en un punto de guardado que
+        siempre se deshace y se corren las mismas revisiones que al publicarla
+        (las del comprobante electrónico de cada diario), sin publicarla ni
+        enviarla.
+
+        :return: el texto del problema, o ``False`` si se puede cobrar.
+        """
+        self.ensure_one()
+        self.check_access('read')
+        if not self.to_invoice or self.is_refund or self.state != 'draft' or self.account_move:
+            return False
+        errors = []
+        try:
+            with self.env.cr.savepoint() as savepoint:
+                # El cajero crea las facturas del TPV con sudo (como Odoo en
+                # _create_invoice): aquí solo se revisan y se deshacen.
+                invoice_sudo = self.sudo()._create_invoice(self.sudo()._prepare_invoice_vals())
+                for edi_format in invoice_sudo.journal_id._fields.get('edi_format_ids') and \
+                        invoice_sudo.journal_id.edi_format_ids or []:
+                    if edi_format._get_move_applicability(invoice_sudo):
+                        errors += edi_format._check_move_configuration(invoice_sudo)
+                savepoint.rollback()
+        except (UserError, ValidationError) as error:
+            errors.append(error.args[0] if error.args else str(error))
+        # La factura de prueba ya no existe en la base: fuera de la caché.
+        self.env.invalidate_all()
+        if errors:
+            return _('No se puede emitir el comprobante de esta venta; corrija esto antes de cobrar:\n\n%s',
+                     '\n'.join(errors))
+        return False
 
     def get_and_set_online_payments_data(self, next_online_payment_amount=False):
         # Una devolución no se cobra con QR. Al validarla el TPV pregunta con

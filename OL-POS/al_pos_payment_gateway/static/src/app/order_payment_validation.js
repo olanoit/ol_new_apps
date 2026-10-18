@@ -15,11 +15,41 @@ patch(OrderPaymentValidation.prototype, {
     },
 
     async isOrderValid(isForceValidate) {
+        if (!(await this.alCheckInvoiceBeforeOnlinePayment())) {
+            return false;
+        }
         if (!(await super.isOrderValid(...arguments))) {
             return false;
         }
         // Al final, con la orden ya revisada: la devolución mueve dinero.
         return await this.alRefundOnlinePayments();
+    },
+
+    /**
+     * Antes de mostrar el QR de una pasarela: el servidor revisa que el
+     * comprobante de la venta se podrá emitir. Si no, el cobro se haría y la
+     * orden quedaría sin cerrar (el comprobante se emite al llegar el pago).
+     */
+    async alCheckInvoiceBeforeOnlinePayment() {
+        const pending = this.getRemainingOnlinePaymentLines().filter((line) => line.getAmount() > 0);
+        if (!pending.length || !this.order.isToInvoice() || this.order.isRefund) {
+            return true;
+        }
+        await this.pos.syncAllOrders({ orders: [this.order] });
+        if (!this.order.id || typeof this.order.id !== "number") {
+            return true; // el flujo nativo avisa que no se pudo generar el QR
+        }
+        const problem = await this.pos.data.call("pos.order", "al_check_invoice_before_online_payment", [
+            this.order.id,
+        ]);
+        if (problem) {
+            this.pos.dialog.add(AlertDialog, {
+                title: _t("Comprobante con errores"),
+                body: problem,
+            });
+            return false;
+        }
+        return true;
     },
 
     /**

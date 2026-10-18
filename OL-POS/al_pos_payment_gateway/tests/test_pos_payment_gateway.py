@@ -3,7 +3,7 @@ import uuid
 from unittest.mock import patch
 
 from odoo import fields
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command
 from odoo.tests import tagged
 from odoo.tools import mute_logger
@@ -102,6 +102,27 @@ class TestPosPaymentGateway(TestUi):
             provider_sudo = provider.sudo()
             card = Image.open(io.BytesIO(base64.b64decode(provider_sudo._al_pos_payment_logo())))
             self.assertEqual(card.size, (240, 160), xmlid)
+
+    def test_invoice_checked_before_qr(self):
+        """Antes del QR se arma el comprobante y se deshace: si no se puede
+        emitir, el cajero ve el motivo y no se cobra."""
+        order = self._open_session_fake_cashier_unpaid_order()
+        partner = self.env['res.partner'].create({'name': 'Cliente con comprobante'})
+        order.write({'to_invoice': True, 'partner_id': partner.id})
+        Move = self.env['account.move'].sudo()
+        moves_before = Move.search_count([])
+        self.assertFalse(order.with_user(self.pos_user).al_check_invoice_before_online_payment())
+        self.assertEqual(Move.search_count([]), moves_before, 'La factura de prueba se deshace')
+        self.assertEqual(order.state, 'draft')
+
+        def _broken(self_order):
+            raise UserError('Todas las lineas deben tener impuestos asignados')
+        with patch.object(type(order), '_prepare_invoice_vals', _broken):
+            problem = order.with_user(self.pos_user).al_check_invoice_before_online_payment()
+        self.assertIn('impuestos asignados', problem)
+        # Sin factura no hay nada que revisar.
+        order.to_invoice = False
+        self.assertFalse(order.with_user(self.pos_user).al_check_invoice_before_online_payment())
 
     def test_payment_recorded_with_provider_method(self):
         """El cajero pide el QR con el segundo método: la página solo admite su
