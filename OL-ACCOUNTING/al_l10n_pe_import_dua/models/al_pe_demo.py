@@ -24,25 +24,25 @@ class AlPeDemo(models.AbstractModel):
         if not journal or not picking_type:
             return
         customs = self._demo_partner(env, 'al_l10n_pe_import_dua.demo_customs',
-                                     'DEMO DUA SUNAT - Superintendencia Nacional de Aduanas', '20131312955')
+                                     'SUNAT - Superintendencia Nacional de Aduanas', '20131312955')
         offset = self._demo_account(env, 'al_l10n_pe_import_dua.demo_account_offset', '609190',
                                     'Valor en aduana por regularizar', 'expense')
         company.write({'l10n_pe_dua_partner_id': customs.id, 'l10n_pe_dua_offset_account_id': offset.id,
                        'l10n_pe_dua_journal_id': journal.id})
         category = self._demo_record('al_l10n_pe_import_dua.demo_category', env['product.category'], {
-            'name': 'DEMO DUA Importados', 'property_cost_method': 'average', 'property_valuation': 'real_time'})
+            'name': 'Productos importados', 'property_cost_method': 'average', 'property_valuation': 'real_time'})
         product = self._demo_record('al_l10n_pe_import_dua.demo_product', env['product.product'], {
-            'name': 'DEMO DUA Motobomba importada', 'is_storable': True, 'categ_id': category.id,
+            'name': 'Motobomba importada', 'is_storable': True, 'categ_id': category.id,
             'standard_price': 1000.0, 'weight': 45.0})
         supplier = self._demo_record('al_l10n_pe_import_dua.demo_supplier', env['res.partner'], {
-            'name': 'DEMO DUA Pumps Inc.', 'is_company': True, 'country_id': env.ref('base.us').id})
-        agent = self._demo_partner(env, 'al_l10n_pe_import_dua.demo_agent', 'DEMO DUA Agencia de Aduanas S.A.C.',
+            'name': 'Pumps Inc.', 'is_company': True, 'country_id': env.ref('base.us').id})
+        agent = self._demo_partner(env, 'al_l10n_pe_import_dua.demo_agent', 'Agencia de Aduanas S.A.C.',
                                    self._demo_ruc('2060555444'))
         today = fields.Date.context_today(self)
         suppliers_location = env.ref('stock.stock_location_suppliers')
         destination = picking_type.default_location_dest_id
         picking = self._demo_record('al_l10n_pe_import_dua.demo_picking', env['stock.picking'], {
-            'picking_type_id': picking_type.id, 'partner_id': supplier.id, 'origin': 'DEMO DUA',
+            'picking_type_id': picking_type.id, 'partner_id': supplier.id, 'origin': 'DUA 118-2026',
             'location_id': suppliers_location.id, 'location_dest_id': destination.id,
             'move_ids': [Command.create({'product_id': product.id, 'product_uom_qty': 10.0, 'price_unit': 1000.0,
                                          'location_id': suppliers_location.id, 'location_dest_id': destination.id})]})
@@ -50,15 +50,15 @@ class AlPeDemo(models.AbstractModel):
         picking.move_ids.quantity = 10.0
         picking.button_validate()
         foreign = self._demo_record('al_l10n_pe_import_dua.demo_foreign_invoice', env['account.move'], {
-            'move_type': 'in_invoice', 'partner_id': supplier.id, 'ref': 'DEMO DUA INV-118',
+            'move_type': 'in_invoice', 'partner_id': supplier.id, 'ref': 'INV-118',
             'invoice_date': today - timedelta(days=11),
             'invoice_line_ids': [Command.create({'product_id': product.id, 'quantity': 10.0, 'price_unit': 1000.0,
                                                  'tax_ids': [Command.clear()]})]})
         plain = self._demo_journal(env, 'al_l10n_pe_import_dua.demo_journal_expenses',
-                                   'DEMO DUA Gastos de importación', 'DGIM', 'purchase')
+                                   'Gastos de importación', 'DGIM', 'purchase')
         expense = self._demo_record('al_l10n_pe_import_dua.demo_agent_bill', env['account.move'], {
             'move_type': 'in_invoice', 'partner_id': agent.id, 'journal_id': plain.id,
-            'invoice_date': today - timedelta(days=6), 'ref': 'DEMO DUA agente',
+            'invoice_date': today - timedelta(days=6), 'ref': 'Servicios de agenciamiento',
             'invoice_line_ids': [Command.create({'product_id': env.ref('al_l10n_pe_import_dua.product_dua_other').id,
                                                  'name': 'Comisión y gastos operativos del agente de aduana',
                                                  'price_unit': 350.0, 'tax_ids': [Command.clear()]})]})

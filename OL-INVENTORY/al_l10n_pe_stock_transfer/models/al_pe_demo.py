@@ -23,29 +23,29 @@ class AlPeDemo(models.AbstractModel):
         address = {'l10n_pe_district': district.id, 'country_id': pe.id}
         Partner = env['res.partner']
         addr_plant = self._demo_record('al_l10n_pe_stock_transfer.demo_address_plant', Partner, dict(
-            address, name='DEMO TRAS Planta Ate', parent_id=company.partner_id.id, type='other',
+            address, name='Planta Ate', parent_id=company.partner_id.id, type='other',
             street='Av. Nicolás Ayllón 4200', l10n_pe_annex_code='0001'))
         addr_site = self._demo_record('al_l10n_pe_stock_transfer.demo_address_site', Partner, dict(
-            address, name='DEMO TRAS Obra Surco', parent_id=company.partner_id.id, type='other',
+            address, name='Obra Surco', parent_id=company.partner_id.id, type='other',
             street='Av. Primavera 1550', l10n_pe_annex_code='0002'))
         Warehouse = env['stock.warehouse']
         plant = self._demo_record('al_l10n_pe_stock_transfer.demo_warehouse_plant', Warehouse, {
-            'name': 'DEMO TRAS Planta Ate', 'code': 'DTP', 'partner_id': addr_plant.id, 'company_id': company.id})
+            'name': 'Planta Ate', 'code': 'DTP', 'partner_id': addr_plant.id, 'company_id': company.id})
         site = self._demo_record('al_l10n_pe_stock_transfer.demo_warehouse_site', Warehouse, {
-            'name': 'DEMO TRAS Obra Surco', 'code': 'DTO', 'partner_id': addr_site.id, 'company_id': company.id})
-        owner = self._demo_partner(env, 'al_l10n_pe_stock_transfer.demo_owner', 'DEMO TRAS Alquiler de Equipos S.A.C.',
+            'name': 'Obra Surco', 'code': 'DTO', 'partner_id': addr_site.id, 'company_id': company.id})
+        owner = self._demo_partner(env, 'al_l10n_pe_stock_transfer.demo_owner', 'Alquiler de Equipos S.A.C.',
                                    self._demo_ruc('2061111111'), street='Jr. Los Andamios 300', **address)
         supplier = self._demo_partner(env, 'al_l10n_pe_stock_transfer.demo_supplier',
-                                      'DEMO TRAS Aceros del Centro S.A.C.', self._demo_ruc('2062222222'),
+                                      'Aceros del Centro S.A.C.', self._demo_ruc('2062222222'),
                                       street='Av. Argentina 2100', **address)
         carrier = self._demo_partner(env, 'al_l10n_pe_stock_transfer.demo_carrier',
-                                     'DEMO TRAS Transportes Rápidos S.A.C.', self._demo_ruc('2063333333'),
+                                     'Transportes Rápidos S.A.C.', self._demo_ruc('2063333333'),
                                      l10n_pe_edi_mtc_number='1512345CNG')
         Product = env['product.product']
         product = self._demo_record('al_l10n_pe_stock_transfer.demo_product_own', Product, {
-            'name': 'DEMO TRAS Andamio tubular 2 m', 'type': 'consu', 'is_storable': True, 'weight': 18.0})
+            'name': 'Andamio tubular 2 m', 'type': 'consu', 'is_storable': True, 'weight': 18.0})
         rented = self._demo_record('al_l10n_pe_stock_transfer.demo_product_rented', Product, {
-            'name': 'DEMO TRAS Andamio multidireccional (alquilado)', 'type': 'consu', 'is_storable': True,
+            'name': 'Andamio multidireccional (alquilado)', 'type': 'consu', 'is_storable': True,
             'weight': 25.0})
         Quant = env['stock.quant']
         Quant._update_available_quantity(product, plant.lot_stock_id, 20.0)
@@ -66,9 +66,9 @@ class AlPeDemo(models.AbstractModel):
             return picking
 
         done('own', plant.int_type_id, plant.lot_stock_id, site.lot_stock_id, product, 10.0,
-             origin='DEMO TRAS Obra Surco')
+             origin='Obra Surco')
         done('rented', plant.int_type_id, plant.lot_stock_id, site.lot_stock_id, rented, 8.0,
-             origin='DEMO TRAS Obra Surco', owner_id=owner.id)
+             origin='Obra Surco', owner_id=owner.id)
         done('purchase', plant.in_type_id, env.ref('stock.stock_location_suppliers'), plant.lot_stock_id, product,
              15.0, partner_id=supplier.id, origin='Factura F001-00004521').write({
                  'l10n_pe_edi_related_document_type': '01', 'l10n_pe_edi_document_number': 'F001-00004521'})

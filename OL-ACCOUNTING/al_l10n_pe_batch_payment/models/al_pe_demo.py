@@ -18,16 +18,16 @@ class AlPeDemo(models.AbstractModel):
         pen = env.ref('base.PEN')
         Bank = env['res.bank']
         bcp = self._demo_record('al_l10n_pe_batch_payment.demo_bank_bcp', Bank,
-                                {'name': 'DEMO BCP', 'l10n_pe_batch_format': 'bcp'})
+                                {'name': 'Banco de Crédito del Perú', 'l10n_pe_batch_format': 'bcp'})
         bbva = self._demo_record('al_l10n_pe_batch_payment.demo_bank_bbva', Bank,
-                                 {'name': 'DEMO BBVA', 'l10n_pe_batch_format': 'bbva'})
+                                 {'name': 'BBVA Perú', 'l10n_pe_batch_format': 'bbva'})
         ibk = self._demo_record('al_l10n_pe_batch_payment.demo_bank_interbank', Bank,
-                                {'name': 'DEMO Interbank', 'l10n_pe_batch_format': 'interbank'})
+                                {'name': 'Interbank', 'l10n_pe_batch_format': 'interbank'})
         company_account = self._demo_record(
             'al_l10n_pe_batch_payment.demo_company_bank_account', env['res.partner.bank'], {
                 'partner_id': company.partner_id.id, 'bank_id': bcp.id, 'acc_number': '191-2233445-0-66',
                 'currency_id': pen.id})
-        journal = self._demo_journal(env, 'al_l10n_pe_batch_payment.demo_journal_bcp', 'DEMO BCP soles', 'DBCP',
+        journal = self._demo_journal(env, 'al_l10n_pe_batch_payment.demo_journal_bcp', 'BCP soles', 'DBCP',
                                      'bank', currency_id=pen.id, bank_account_id=company_account.id,
                                      l10n_pe_batch_service_code='P')
         method_line = journal.outbound_payment_method_line_ids.filtered(lambda l: l.code == 'pe_bank_txt')
@@ -35,10 +35,10 @@ class AlPeDemo(models.AbstractModel):
         payments = env['account.payment']
         day = fields.Date.context_today(self) - timedelta(days=2)
         for key, name, vat, bank, number, cci, amount in (
-                ('1', 'DEMO PAGO Maderas del Sur S.A.C.', '2060555501', bcp, '193-7654321-0-22', False, 4820.0),
-                ('2', 'DEMO PAGO Herrajes Lima S.A.C.', '2060555502', bbva, '0011-0456-0200098765',
+                ('1', 'Maderas del Sur S.A.C.', '2060555501', bcp, '193-7654321-0-22', False, 4820.0),
+                ('2', 'Herrajes Lima S.A.C.', '2060555502', bbva, '0011-0456-0200098765',
                  '01145600020009876512', 1350.75),
-                ('3', 'DEMO PAGO Transportes Andinos S.A.C.', '2060555503', ibk, '200-3001234567',
+                ('3', 'Transportes Andinos S.A.C.', '2060555503', ibk, '200-3001234567',
                  '00320000300123456713', 690.0)):
             partner = self._demo_partner(env, 'al_l10n_pe_batch_payment.demo_supplier_%s' % key, name,
                                          self._demo_ruc(vat))
@@ -53,7 +53,7 @@ class AlPeDemo(models.AbstractModel):
                 'payment_type': 'outbound', 'partner_type': 'supplier', 'partner_id': partner.id,
                 'partner_bank_id': bank_account.id, 'amount': amount, 'journal_id': journal.id,
                 'payment_method_line_id': method_line.id, 'date': day,
-                'memo': 'DEMO F001-0000%s' % key})
+                'memo': 'F001-0000%s' % key})
         payments.action_post()
         batch = self._demo_record('al_l10n_pe_batch_payment.demo_batch', env['account.batch.payment'], {
             'journal_id': journal.id, 'batch_type': 'outbound', 'date': day,

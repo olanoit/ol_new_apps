@@ -33,14 +33,14 @@ class AlPeDemo(models.AbstractModel):
         expense = Account.search([*Account._check_company_domain(company), ('account_type', '=', 'expense')], limit=1)
         if not (bank and receivable and payable and income and expense):
             return
-        journal = self._demo_journal(env, 'al_l10n_pe_exchange_closure.demo_journal', 'DEMO Cierre de tipo de cambio',
+        journal = self._demo_journal(env, 'al_l10n_pe_exchange_closure.demo_journal', 'Cierre de tipo de cambio',
                                      'DCTC', 'general')
         company.l10n_pe_exchange_closing_journal_id = journal
         bank.write({'currency_id': usd.id, 'l10n_pe_exchange_closing': 'summary'})
         (receivable | payable).write({'l10n_pe_exchange_closing': 'detail'})
-        customer = self._demo_partner(env, 'al_l10n_pe_exchange_closure.demo_customer', 'DEMO TC Cliente S.A.C.',
+        customer = self._demo_partner(env, 'al_l10n_pe_exchange_closure.demo_customer', 'Importadora Pacífico S.A.C.',
                                       self._demo_ruc('2060555666'))
-        supplier = self._demo_partner(env, 'al_l10n_pe_exchange_closure.demo_supplier', 'DEMO TC Proveedor S.A.C.',
+        supplier = self._demo_partner(env, 'al_l10n_pe_exchange_closure.demo_supplier', 'Exportadora Andina S.A.C.',
                                       self._demo_ruc('2060555777'))
         first = fields.Date.context_today(self).replace(day=1) - relativedelta(months=2)
         # T.C. de cierre: el del último día del mes se registra con la fecha
@@ -52,10 +52,10 @@ class AlPeDemo(models.AbstractModel):
             """Asiento en dólares: (cuenta, US$, T.C., socio)."""
             move = self._demo_record('al_l10n_pe_exchange_closure.demo_move_%s' % key, env['account.move'], {
                 'move_type': 'entry', 'journal_id': journal.id, 'date': first.replace(day=day),
-                'ref': 'DEMO TC %s' % key,
+                'ref': 'Saldo en dólares %s' % key,
                 'line_ids': [Command.create({
                     'account_id': acc.id, 'partner_id': partner.id, 'currency_id': usd.id, 'amount_currency': amount,
-                    'balance': round(amount * rate, 2), 'name': 'DEMO TC %s' % key,
+                    'balance': round(amount * rate, 2), 'name': 'Saldo en dólares %s' % key,
                 }) for acc, amount, rate, partner in lines]})
             if move.state == 'draft':
                 move.action_post()

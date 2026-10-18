@@ -20,3 +20,7 @@ def migrate(cr, version):
         record = env.ref(xmlid, raise_if_not_found=False)
         if record and record.name in by_old_name:
             record.write(by_old_name[record.name])
+    # Las líneas de las facturas de la demo llevan el nombre del producto.
+    for line in env['account.move.line'].search([('name', 'like', 'DEMO SPOT Servicio empresarial')]):
+        line.name = line.name.replace('[DEMO-SPOT-01] ', '[SRV-037] ').replace(
+            'DEMO SPOT Servicio empresarial', 'Servicio de asesoría empresarial')

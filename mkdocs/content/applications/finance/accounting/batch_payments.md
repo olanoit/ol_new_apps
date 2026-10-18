@@ -103,12 +103,11 @@ Si hay que corregir un pago, use **Volver a generar el archivo de exportación**
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-PAGO** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
-- Bancos DEMO BCP, DEMO BBVA y DEMO Interbank con su formato de archivo.
-- Diario **DEMO BCP soles** (DBCP) con la cuenta de la compañía y el método de
+- Bancos Banco de Crédito del Perú, BBVA Perú y Interbank con su formato de archivo.
+- Diario **BCP soles** (DBCP) con la cuenta de la compañía y el método de
   pago masivo.
 - Un lote validado con tres pagos (S/ 4 820,00, S/ 1 350,75 y S/ 690,00) a
   proveedores de los tres bancos, listo para **Exportar archivo**.

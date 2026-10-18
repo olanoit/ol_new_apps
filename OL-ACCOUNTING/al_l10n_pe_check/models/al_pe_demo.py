@@ -22,11 +22,11 @@ class AlPeDemo(models.AbstractModel):
         if not portfolio or not bank_journal:
             return
         bank = self._demo_record('al_l10n_pe_check.demo_bank', env['res.bank'],
-                                 {'name': 'DEMO CHQ Banco de Crédito', 'bic': 'BCPLPEPL'})
-        customer = self._demo_partner(env, 'al_l10n_pe_check.demo_customer', 'DEMO CHQ Ferretería Los Andes S.A.C.',
+                                 {'name': 'Banco de Crédito', 'bic': 'BCPLPEPL'})
+        customer = self._demo_partner(env, 'al_l10n_pe_check.demo_customer', 'Ferretería Los Andes S.A.C.',
                                       self._demo_ruc('2061223334'))
-        person = self._demo_partner(env, 'al_l10n_pe_check.demo_person', 'DEMO CHQ Rosa Quispe Mamani', '41234567')
-        supplier = self._demo_partner(env, 'al_l10n_pe_check.demo_supplier', 'DEMO CHQ Maderas del Sur S.A.C.',
+        person = self._demo_partner(env, 'al_l10n_pe_check.demo_person', 'Rosa Quispe Mamani', '41234567')
+        supplier = self._demo_partner(env, 'al_l10n_pe_check.demo_supplier', 'Maderas Selva Central S.A.C.',
                                       self._demo_ruc('2061556667'))
         today = fields.Date.context_today(self)
         new_line = portfolio.inbound_payment_method_line_ids.filtered(lambda l: l.code == 'new_third_party_checks')

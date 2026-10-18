@@ -203,13 +203,12 @@ solo registro; los canjes de origen pasan a **Historial de canje**.
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-LETRA** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
 - Cuentas de letras del PCGE (1232, 1233 y 1234 por cobrar; 4230 por pagar) y
   cuentas «Redondeo».
-- Diarios **DEMO Letras por cobrar** (DLEC) y **DEMO Letras por pagar** (DLEP).
+- Diarios **Letras por cobrar** (DLEC) y **Letras por pagar** (DLEP).
 - Canje de la factura de cliente de S/ 1 180,00 en tres letras de S/ 393,33 con
   su redondeo de S/ 0,01; la primera, enviada a **cobranza libre**.
 - Canje de la factura de proveedor de S/ 2 360,00 en dos letras.

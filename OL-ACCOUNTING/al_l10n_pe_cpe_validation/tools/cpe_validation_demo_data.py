@@ -37,7 +37,7 @@ for partner, number, amount, data in rows:
             'move_type': 'in_invoice', 'partner_id': partner.id, 'journal_id': journal.id,
             'invoice_date': '2026-10-05', 'l10n_latam_document_type_id': invoice_type.id,
             'l10n_latam_document_number': number, 'ref': number,
-            'invoice_line_ids': [(0, 0, {'name': 'Mercadería (demo)', 'quantity': 1, 'price_unit': amount})],
+            'invoice_line_ids': [(0, 0, {'name': 'Mercadería', 'quantity': 1, 'price_unit': amount})],
         })
     move._l10n_pe_cpe_apply(data)
     print('DEMO', move.id, move.name, move.l10n_pe_cpe_result)

@@ -280,8 +280,7 @@ cierra la garantía.
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-DEP** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
 - Depósito a plazo de S/ 250 000 con intereses devengados y otro de S/ 80 000

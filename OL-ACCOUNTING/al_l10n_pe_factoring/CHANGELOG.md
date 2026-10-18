@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_factoring.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261018 — 18/10/2026
+
+- Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
+
 ## 8.20261013 — 13/10/2026
 
 - Contratos de factoring por factor: adelanto, TEA, días mínimos, comisión (% con mínimo, fija e IGV), gastos, cuenta del factor, línea de crédito y límite por cliente, con lo usado y lo disponible.

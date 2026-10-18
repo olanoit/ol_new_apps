@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_stock_transfer.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261018 — 18/10/2026
+
+- Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
+
 ## 3.20261012 — 12/10/2026
 
 - Datos de demostración en «PE Company» (solo en bases con datos de demostración): dos almacenes con establecimiento anexo, andamios propios y de terceros, dos traslados a la obra, una compra recogida en el proveedor y la devolución al propietario.

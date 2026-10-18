@@ -298,8 +298,7 @@ Con los importes del ejemplo en 2026:
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-NIIF16** y las fechas se calculan respecto del día de la instalación. En una
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una
 base sin datos de demostración no se carga nada.
 
 - Oficina a 36 meses con cuota adelantada de S/ 4 500, confirmada y con sus dos

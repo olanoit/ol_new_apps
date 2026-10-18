@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_retention.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261018 — 18/10/2026
+
+- Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.
+
 ## 23.20261012 — 12/10/2026
 
 - Menús en Perú ▸ Proveedores y Clientes ▸ Detracciones, retenciones y percepciones; resumen 626 en SUNAT ▸ Declaraciones; análisis en Informes ▸ Análisis.

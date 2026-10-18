@@ -113,8 +113,7 @@ del contacto.
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-4TA** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
 - Dos prestadores con RUC 10 y la constancia de suspensión de uno de ellos.

@@ -74,6 +74,10 @@ pasos:
     imagen: screenshots/03-diario.png
 
 novedades:
+  - version: 5.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
   - version: 4.20261012
     fecha: 12/10/2026
     cambios:

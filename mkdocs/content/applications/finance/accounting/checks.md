@@ -106,8 +106,7 @@ decidir qué depositar:
 ## Datos de demostración
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
-ejemplo en la compañía **PE Company**. Los registros llevan el prefijo **DEMO
-CHQ** y las fechas se calculan respecto del día de la instalación. En una base
+ejemplo en la compañía **PE Company**. Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
 - Cuatro cheques de terceros: uno ya depositado en el banco, uno en cartera,

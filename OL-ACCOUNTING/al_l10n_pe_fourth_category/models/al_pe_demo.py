@@ -26,9 +26,9 @@ class AlPeDemo(models.AbstractModel):
         today = fields.Date.context_today(self)
         day, paid_on = today - timedelta(days=7), today - timedelta(days=2)
         quispe = self._demo_partner(env, 'al_l10n_pe_fourth_category.demo_provider_quispe',
-                                    'DEMO 4TA Quispe Rojas Ana', self._demo_ruc('1047382956'), is_company=False)
+                                    'Quispe Rojas Ana', self._demo_ruc('1047382956'), is_company=False)
         torres = self._demo_partner(env, 'al_l10n_pe_fourth_category.demo_provider_torres',
-                                    'DEMO 4TA Torres Paz Luis', self._demo_ruc('1041122334'), is_company=False)
+                                    'Torres Paz Luis', self._demo_ruc('1041122334'), is_company=False)
         self._demo_record('al_l10n_pe_fourth_category.demo_suspension', env['l10n_pe.fourth.category.suspension'], {
             'partner_id': torres.id, 'number': '1609-%s-000184' % str(today.year)[2:],
             'date_issued': today.replace(month=1, day=15),

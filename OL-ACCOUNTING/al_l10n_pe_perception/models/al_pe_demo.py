@@ -33,13 +33,13 @@ class AlPeDemo(models.AbstractModel):
         })
         address = {'street': 'Av. Industrial 123', 'city': 'Lima'}
         customer = self._demo_partner(env, 'al_l10n_pe_perception.demo_customer',
-                                      'DEMO PER Ferretería Los Andes S.A.C.', self._demo_ruc('2060123459'), **address)
+                                      'Ferretería El Constructor S.A.C.', self._demo_ruc('2060123459'), **address)
         agent_customer = self._demo_partner(env, 'al_l10n_pe_perception.demo_agent_customer',
-                                            'DEMO PER Distribuidora Agente S.A.C.', self._demo_ruc('2060123460'),
+                                            'Distribuidora Agente S.A.C.', self._demo_ruc('2060123460'),
                                             l10n_pe_is_perception_agent=True, **address)
-        supplier = self._demo_partner(env, 'al_l10n_pe_perception.demo_supplier', 'DEMO PER Cementos del Sur S.A.C.',
+        supplier = self._demo_partner(env, 'al_l10n_pe_perception.demo_supplier', 'Cementos del Sur S.A.C.',
                                       self._demo_ruc('2060123461'), l10n_pe_is_perception_agent=True, **address)
-        customs = self._demo_partner(env, 'al_l10n_pe_perception.demo_customs', 'DEMO PER SUNAT Aduanas',
+        customs = self._demo_partner(env, 'al_l10n_pe_perception.demo_customs', 'SUNAT Aduanas',
                                      is_company=True)
         Product = env['product.product']
 
@@ -48,10 +48,10 @@ class AlPeDemo(models.AbstractModel):
                 'name': name, 'type': 'consu', 'lst_price': price, 'l10n_pe_perception_type': 'internal',
                 'taxes_id': [Command.set(igv.ids)], 'supplier_taxes_id': [Command.set(igv_p.ids)]})
 
-        cement = product('cement', 'DEMO PER Cemento Portland tipo I (bolsa 42,5 kg)', 28.0)
-        rod = product('rod', 'DEMO PER Fierro corrugado 1/2"', 45.0)
-        sale = self._demo_journal(env, 'al_l10n_pe_perception.demo_journal_sale', 'DEMO PER Ventas', 'DPEV', 'sale')
-        purchase = self._demo_journal(env, 'al_l10n_pe_perception.demo_journal_purchase', 'DEMO PER Compras', 'DPEC',
+        cement = product('cement', 'Cemento Portland tipo I (bolsa 42,5 kg)', 28.0)
+        rod = product('rod', 'Fierro corrugado 1/2"', 45.0)
+        sale = self._demo_journal(env, 'al_l10n_pe_perception.demo_journal_sale', 'Ventas con percepción', 'DPEV', 'sale')
+        purchase = self._demo_journal(env, 'al_l10n_pe_perception.demo_journal_purchase', 'Compras con percepción', 'DPEC',
                                       'purchase')
         today = fields.Date.context_today(self)
         bank = self._demo_bank_journal(env)
@@ -86,7 +86,7 @@ class AlPeDemo(models.AbstractModel):
             collect('2', inv2, 12)
         bill = self._demo_record('al_l10n_pe_perception.demo_bill', Move, {
             'move_type': 'in_invoice', 'partner_id': supplier.id, 'journal_id': purchase.id,
-            'invoice_date': today - timedelta(days=32), 'ref': 'DEMO PER C-1',
+            'invoice_date': today - timedelta(days=32), 'ref': 'F001-00004512',
             'invoice_line_ids': [Command.create({'product_id': cement.id, 'quantity': 500, 'price_unit': 22.0,
                                                  'tax_ids': [Command.set(igv_p.ids)]})]})
         if bill.state == 'draft':

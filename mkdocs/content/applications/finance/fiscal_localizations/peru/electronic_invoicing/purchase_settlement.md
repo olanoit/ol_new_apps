@@ -190,8 +190,7 @@ la parte superior de la liquidación cuando ya pasan de 75 UIT.
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-LC** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
 - Productora de café con DNI y los productos café pergamino y oro en bruto.

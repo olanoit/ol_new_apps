@@ -384,11 +384,10 @@ credenciales. En **Ajustes ‣ Perú ‣ CAVALI (facturas negociables)**:
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-FAC** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
-- Factor **DEMO FAC Factor Capital S.A.** y cliente **DEMO FAC Inmobiliaria del
+- Factor **Factor Capital S.A.** y cliente **Inmobiliaria del
   Sur S.A.C.**
 - Operación sin recurso de dos facturas (S/ 12 000 y S/ 8 500), cedida y
   desembolsada.

@@ -260,6 +260,10 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: 9.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
   - version: 8.20261013
     fecha: 13/10/2026
     cambios:

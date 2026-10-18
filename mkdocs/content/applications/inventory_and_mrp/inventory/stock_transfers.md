@@ -245,11 +245,10 @@ obra y 0 en la planta (12 recibidos − 8 trasladados − 4 devueltos).
 
 Una base creada **con datos de demostración** carga, al instalar el módulo, un
 ejemplo completo en la compañía **PE Company** (la compañía peruana de la demo
-de Odoo, con el plan contable de Perú). Los registros llevan el prefijo **DEMO
-TRAS** y las fechas se calculan respecto del día de la instalación. En una base
+de Odoo, con el plan contable de Perú). Las fechas se calculan respecto del día de la instalación. En una base
 sin datos de demostración no se carga nada.
 
-- Almacenes **DEMO TRAS Planta Ate** (DTP, anexo 0001) y **DEMO TRAS Obra
+- Almacenes **Planta Ate** (DTP, anexo 0001) y **Obra
   Surco** (DTO, anexo 0002).
 - Andamios propios y andamios alquilados a un tercero (consignación).
 - Dos traslados de la planta a la obra (motivo 04), una compra recogida en el

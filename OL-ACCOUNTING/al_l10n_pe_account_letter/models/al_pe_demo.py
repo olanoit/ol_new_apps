@@ -47,20 +47,20 @@ class AlPeDemo(models.AbstractModel):
                                   'Redondeo', 'income_other').id,
         })
         receivable_journal = self._demo_journal(env, 'al_l10n_pe_account_letter.demo_journal_receivable',
-                                                'DEMO Letras por cobrar', 'DLEC', 'general', currency_id=pen.id,
+                                                'Letras por cobrar', 'DLEC', 'general', currency_id=pen.id,
                                                 l10n_pe_letter_type='receivable')
         payable_journal = self._demo_journal(env, 'al_l10n_pe_account_letter.demo_journal_payable',
-                                             'DEMO Letras por pagar', 'DLEP', 'general', currency_id=pen.id,
+                                             'Letras por pagar', 'DLEP', 'general', currency_id=pen.id,
                                              l10n_pe_letter_type='payable')
-        sale = self._demo_journal(env, 'al_l10n_pe_account_letter.demo_journal_sale', 'DEMO LETRA Ventas', 'DLTV',
+        sale = self._demo_journal(env, 'al_l10n_pe_account_letter.demo_journal_sale', 'Ventas con letras', 'DLTV',
                                   'sale')
-        purchase = self._demo_journal(env, 'al_l10n_pe_account_letter.demo_journal_purchase', 'DEMO LETRA Compras',
+        purchase = self._demo_journal(env, 'al_l10n_pe_account_letter.demo_journal_purchase', 'Compras con letras',
                                       'DLTC', 'purchase')
-        customer = self._demo_partner(env, 'al_l10n_pe_account_letter.demo_customer', 'DEMO LETRA Cliente S.A.C.',
+        customer = self._demo_partner(env, 'al_l10n_pe_account_letter.demo_customer', 'Comercial Los Olivos S.A.C.',
                                       self._demo_ruc('2060555888'))
-        supplier = self._demo_partner(env, 'al_l10n_pe_account_letter.demo_supplier', 'DEMO LETRA Proveedor S.A.C.',
+        supplier = self._demo_partner(env, 'al_l10n_pe_account_letter.demo_supplier', 'Suministros del Norte S.A.C.',
                                       self._demo_ruc('2060555999'))
-        bank = self._demo_record('al_l10n_pe_account_letter.demo_bank', env['res.bank'], {'name': 'DEMO Banco Letras'})
+        bank = self._demo_record('al_l10n_pe_account_letter.demo_bank', env['res.bank'], {'name': 'Banco Comercial Andino'})
         today = fields.Date.context_today(self)
         start = today - timedelta(days=20)
 
@@ -68,7 +68,7 @@ class AlPeDemo(models.AbstractModel):
             move = self._demo_record('al_l10n_pe_account_letter.demo_%s' % key, env['account.move'], {
                 'move_type': move_type, 'partner_id': partner.id, 'journal_id': journal.id,
                 'invoice_date': start, 'ref': ref,
-                'invoice_line_ids': [Command.create({'name': 'Mercadería (demo)', 'quantity': 1, 'price_unit': amount,
+                'invoice_line_ids': [Command.create({'name': 'Mercadería', 'quantity': 1, 'price_unit': amount,
                                                      'tax_ids': [Command.set(tax.ids)]})]})
             if move.state == 'draft':
                 move.action_post()
@@ -77,7 +77,7 @@ class AlPeDemo(models.AbstractModel):
         def exchange(key, partner, move_type, journal, move, number, prefix):
             letter = self._demo_record('al_l10n_pe_account_letter.demo_letter_%s' % key, env['l10n_pe.letter'], {
                 'partner_id': partner.id, 'type': move_type, 'journal_id': journal.id,
-                'payment_reference': 'DEMO-LETRA-%s' % key.upper()})
+                'payment_reference': 'LT-%s' % key.upper()})
             line = move.line_ids.filtered(lambda l: l.display_type == 'payment_term')
             letter.write({
                 'invoice_date': start + timedelta(days=5),

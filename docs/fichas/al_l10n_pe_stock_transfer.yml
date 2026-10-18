@@ -152,6 +152,10 @@ campos:
       - [Propietarios de los bienes, Dueños distintos de la compañía, —, Observaciones de la guía y guía impresa]
 
 novedades:
+  - version: 4.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
   - version: 3.20261012
     fecha: 12/10/2026
     cambios:

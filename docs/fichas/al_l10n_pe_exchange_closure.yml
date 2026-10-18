@@ -440,6 +440,10 @@ faq:
       historial del cierre.
 
 novedades:
+  - version: 12.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar."
   - version: 11.20261012
     fecha: 12/10/2026
     cambios:

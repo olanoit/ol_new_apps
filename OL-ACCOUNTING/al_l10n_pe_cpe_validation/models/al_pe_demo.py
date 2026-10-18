@@ -23,11 +23,11 @@ class AlPeDemo(models.AbstractModel):
             return
         day = fields.Date.context_today(self) - timedelta(days=7)
         rows = [
-            ('1', 'DEMO CPE Distribuidora S.A.C.', '2061000111', 'F001-00004521', 2000.0,
+            ('1', 'Distribuidora S.A.C.', '2061000111', 'F001-00004521', 2000.0,
              {'estadoCp': '1', 'estadoRuc': '00', 'condDomiRuc': '00', 'observaciones': []}),
-            ('2', 'DEMO CPE Servicios Generales E.I.R.L.', '2061000222', 'F002-00000318', 711.86,
+            ('2', 'Servicios Generales E.I.R.L.', '2061000222', 'F002-00000318', 711.86,
              {'estadoCp': '1', 'estadoRuc': '00', 'condDomiRuc': '12', 'observaciones': []}),
-            ('3', 'DEMO CPE Importaciones S.R.L.', '2061000333', 'F001-00009910', 1000.0,
+            ('3', 'Importaciones S.R.L.', '2061000333', 'F001-00009910', 1000.0,
              {'estadoCp': '0', 'estadoRuc': '00', 'condDomiRuc': '00',
               'observaciones': ['- El comprobante de pago consultado no ha sido informado a SUNAT.']}),
         ]
@@ -42,7 +42,7 @@ class AlPeDemo(models.AbstractModel):
                 'move_type': 'in_invoice', 'partner_id': partner.id, 'journal_id': journal.id,
                 'invoice_date': day, 'l10n_latam_document_type_id': env.ref('l10n_pe.document_type01').id,
                 'l10n_latam_document_number': number,
-                'invoice_line_ids': [Command.create({'name': 'Mercadería (demo)', 'quantity': 1,
+                'invoice_line_ids': [Command.create({'name': 'Mercadería', 'quantity': 1,
                                                      'price_unit': amount, 'tax_ids': [Command.set(tax.ids)]})],
             })
             move._l10n_pe_cpe_apply(data)

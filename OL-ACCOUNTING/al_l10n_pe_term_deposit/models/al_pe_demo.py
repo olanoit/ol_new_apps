@@ -23,11 +23,11 @@ class AlPeDemo(models.AbstractModel):
         misc = Journal.search([*Journal._check_company_domain(company), ('type', '=', 'general')], limit=1)
         if not bank_journal or not misc:
             return
-        bank = self._demo_partner(env, 'al_l10n_pe_term_deposit.demo_bank', 'DEMO DEP Banco Andino S.A.',
+        bank = self._demo_partner(env, 'al_l10n_pe_term_deposit.demo_bank', 'Banco Andino S.A.',
                                   self._demo_ruc('2061112223'))
         landlord = self._demo_partner(env, 'al_l10n_pe_term_deposit.demo_landlord',
-                                      'DEMO DEP Inmuebles Lurín S.A.C.', self._demo_ruc('2061445556'))
-        entity = self._demo_partner(env, 'al_l10n_pe_term_deposit.demo_entity', 'DEMO DEP Proyecto Especial Vial',
+                                      'Inmuebles Lurín S.A.C.', self._demo_ruc('2061445556'))
+        entity = self._demo_partner(env, 'al_l10n_pe_term_deposit.demo_entity', 'Proyecto Especial Vial',
                                     self._demo_ruc('2061778889'))
         today = fields.Date.context_today(self)
         Deposit = env['l10n_pe.term.deposit']

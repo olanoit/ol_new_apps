@@ -17,7 +17,7 @@ class AlPeDemo(models.AbstractModel):
         if not company or self._demo_ref('al_l10n_pe_lease.demo_lease_depot'):
             return
         env = self._demo_env(company)
-        lessor = self._demo_partner(env, 'al_l10n_pe_lease.demo_lessor', 'DEMO NIIF16 Inmobiliaria San Isidro S.A.C.',
+        lessor = self._demo_partner(env, 'al_l10n_pe_lease.demo_lessor', 'Inmobiliaria San Isidro S.A.C.',
                                     self._demo_ruc('2061234567'))
         Lease = env['l10n_pe.lease']
         month = fields.Date.context_today(self).replace(day=1)

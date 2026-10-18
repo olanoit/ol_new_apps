@@ -31,14 +31,14 @@ class AlPeDemo(models.AbstractModel):
             'l10n_pe_retention_outstanding_account_id': company.l10n_pe_retention_outstanding_account_id.id
             or outstanding.id,
         })
-        supplier = self._demo_partner(env, 'al_l10n_pe_retention.demo_supplier', 'DEMO RET Proveedor S.A.C.',
+        supplier = self._demo_partner(env, 'al_l10n_pe_retention.demo_supplier', 'Proveedor S.A.C.',
                                       self._demo_ruc('2060555111'))
-        customer = self._demo_partner(env, 'al_l10n_pe_retention.demo_customer', 'DEMO RET Cliente Agente S.A.C.',
+        customer = self._demo_partner(env, 'al_l10n_pe_retention.demo_customer', 'Cliente Agente S.A.C.',
                                       self._demo_ruc('2060555222'), is_retention_agent=True,
                                       l10n_pe_padron_manual=True)
-        purchase = self._demo_journal(env, 'al_l10n_pe_retention.demo_journal_purchase', 'DEMO RET Compras', 'DRTC',
+        purchase = self._demo_journal(env, 'al_l10n_pe_retention.demo_journal_purchase', 'Compras con retención', 'DRTC',
                                       'purchase')
-        sale = self._demo_journal(env, 'al_l10n_pe_retention.demo_journal_sale', 'DEMO RET Ventas', 'DRTV', 'sale')
+        sale = self._demo_journal(env, 'al_l10n_pe_retention.demo_journal_sale', 'Ventas con retención', 'DRTV', 'sale')
         today = fields.Date.context_today(self)
         bill = self._demo_record('al_l10n_pe_retention.demo_bill', env['account.move'], {
             'move_type': 'in_invoice', 'partner_id': supplier.id, 'journal_id': purchase.id,

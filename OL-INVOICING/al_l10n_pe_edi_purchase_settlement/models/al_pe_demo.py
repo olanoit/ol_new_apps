@@ -26,22 +26,22 @@ class AlPeDemo(models.AbstractModel):
         kg = env.ref('uom.product_uom_kgm')
         district = env.ref('l10n_pe.district_pe_100103')
         seller = self._demo_partner(
-            env, 'al_l10n_pe_edi_purchase_settlement.demo_seller', 'DEMO LC Quispe Mamani Juana', '45612378',
+            env, 'al_l10n_pe_edi_purchase_settlement.demo_seller', 'Quispe Mamani Juana', '45612378',
             street='Caserío Santa Rosa, parcela 14', state_id=district.city_id.state_id.id,
             city_id=district.city_id.id, l10n_pe_district=district.id)
         Product = env['product.product']
         coffee = self._demo_record('al_l10n_pe_edi_purchase_settlement.demo_product_coffee', Product, {
-            'name': 'DEMO LC Café pergamino', 'default_code': 'DEMO-CAFE', 'type': 'consu', 'uom_id': kg.id,
+            'name': 'Café pergamino', 'default_code': 'CAFE-PERG', 'type': 'consu', 'uom_id': kg.id,
             'supplier_taxes_id': [Command.set(igv.ids)]})
         self._demo_record('al_l10n_pe_edi_purchase_settlement.demo_product_gold', Product, {
-            'name': 'DEMO LC Oro en bruto', 'default_code': 'DEMO-ORO', 'type': 'consu', 'l10n_pe_lce_gold': True,
+            'name': 'Oro en bruto', 'default_code': 'ORO-BRUTO', 'type': 'consu', 'l10n_pe_lce_gold': True,
             'supplier_taxes_id': [Command.set(igv.ids)]})
         day = fields.Date.context_today(self) - timedelta(days=7)
         for key, quantity, price, post in (('1', 1250.0, 9.5, True), ('2', 60.0, 10.0, False)):
             move = self._demo_record('al_l10n_pe_edi_purchase_settlement.demo_settlement_%s' % key,
                                      env['account.move'], {
                 'move_type': 'in_invoice', 'journal_id': journal.id, 'partner_id': seller.id,
-                'invoice_date': day, 'date': day, 'ref': 'DEMO LC %s' % key,
+                'invoice_date': day, 'date': day, 'ref': 'LC-%s' % key,
                 'l10n_pe_lce_place_type': '02', 'l10n_pe_lce_partner_address_type': '02',
                 'l10n_pe_lce_license_plate': 'B2C845' if post else False,
                 'invoice_line_ids': [Command.create({

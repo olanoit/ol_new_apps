@@ -21,11 +21,11 @@ class AlPeDemo(models.AbstractModel):
         bank = self._demo_bank_journal(env)
         if not misc or not bank:
             return
-        factor = self._demo_partner(env, 'al_l10n_pe_factoring.demo_factor', 'DEMO FAC Factor Capital S.A.',
+        factor = self._demo_partner(env, 'al_l10n_pe_factoring.demo_factor', 'Factor Capital S.A.',
                                     self._demo_ruc('2060123456'))
         customer = self._demo_partner(env, 'al_l10n_pe_factoring.demo_customer',
-                                      'DEMO FAC Inmobiliaria del Sur S.A.C.', self._demo_ruc('2060987654'))
-        sale = self._demo_journal(env, 'al_l10n_pe_factoring.demo_journal_sale', 'DEMO FAC Ventas', 'DFAC', 'sale')
+                                      'Inmobiliaria del Sur S.A.C.', self._demo_ruc('2060987654'))
+        sale = self._demo_journal(env, 'al_l10n_pe_factoring.demo_journal_sale', 'Ventas con factoring', 'DFAC', 'sale')
         today = fields.Date.context_today(self)
 
         def invoice(key, amount, days_ago):
