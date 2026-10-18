@@ -58,6 +58,63 @@ funcionalidades:
     items:
       - Botón «Cobrar en el TPV» en la pasarela, que crea o abre su método de pago.
 
+ejemplos_titulo: Datos de prueba
+ejemplos_intro: >-
+  Cómo probar el cobro y la devolución en la caja con cada pasarela en modo de
+  prueba, sin dinero real. Las claves y tarjetas de cada una están en su
+  ficha.
+ejemplos:
+  - titulo: Pasarelas y tarjetas de prueba
+    tabla:
+      - [Pasarela, Claves de prueba, Tarjeta aprobada, Ficha con todos los datos]
+      - [Izipay, "Tienda pública `89289758`", "`4970100000000055` · venc. futuro · CVV `123`", "[al_payment_izipay](/al_payment_izipay/static/description/index.html)"]
+      - [Niubiz, "Sandbox público (comercio `456879852`)", "`4551708161768059` · `03/28` · CVV `111`", "[al_payment_niubiz](/al_payment_niubiz/static/description/index.html)"]
+      - [Culqi, "Llaves `pk_test_`/`sk_test_` del comercio", "`4111111111111111` · `09/30` · CVV `123`", "[al_payment_culqi](/al_payment_culqi/static/description/index.html)"]
+    nota: >-
+      Niubiz y Culqi necesitan el proveedor habilitado en **Modo de prueba**;
+      Culqi, además, las llaves de integración del propio comercio.
+  - titulo: Qué probar en la caja
+    texto: >-
+      **1. Configurar:** en [Proveedores de pago](/odoo/action-payment.action_payment_provider),
+      abrir la pasarela y pulsar «Cobrar en el TPV»; agregar el método creado
+      a la caja con la sesión cerrada.
+
+
+      **2. Cobrar:** en el TPV, elegir el método de la pasarela y validar. La
+      caja muestra un QR; el cliente lo escanea (o se abre el enlace) y paga
+      con la tarjeta de prueba. El TPV marca el pedido como pagado y emite el
+      comprobante.
+
+
+      **3. Devolver:** en el TPV, «Reembolso» sobre la orden pagada, elegir el
+      mismo método y validar. La devolución vuelve a la tarjeta por la
+      pasarela; si la pasarela no la confirma, el TPV muestra el motivo.
+
+
+      **4. Cerrar caja:** el cierre muestra lo cobrado con cada pasarela por
+      separado.
+    nota: >-
+      Niubiz solo acepta devoluciones desde las 48 horas hábiles siguientes al
+      cobro; el mismo día se anula desde la transacción de pago.
+  - titulo: Revisar los pagos
+    texto: >-
+      [Proveedores de pago en Odoo](/odoo/action-payment.action_payment_provider):
+      claves, estado y el botón «Cobrar en el TPV» de cada pasarela.
+
+
+      [Métodos de pago del TPV](/odoo/action-point_of_sale.action_pos_payment_method_form):
+      el método de cada pasarela y sus cajas.
+
+
+      Back Office de cada pasarela:
+      [Izipay](https://secure.micuentaweb.pe/vads-merchant/),
+      [Niubiz](https://comercio.niubiz.com.pe/) y
+      [Culqi](https://culqipanel.culqi.com/).
+    nota: >-
+      En Odoo, cada cobro y cada devolución quedan en **Contabilidad ▸
+      Configuración ▸ Pagos en línea ▸ Transacciones de pago**, con la orden
+      del TPV de origen.
+
 configuracion:
   - "Pasarela publicada en modo de prueba o activa: al_payment_izipay, al_payment_niubiz o al_payment_culqi."
   - "En la pasarela, «Cobrar en el TPV»; luego agregar el método a la caja con la sesión cerrada."

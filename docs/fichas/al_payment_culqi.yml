@@ -76,7 +76,7 @@ pasos_intro: >-
 pasos:
   - seccion: Configuración
   - titulo: Llaves de Culqi
-    ruta: Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Culqi
+    ruta: Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ Culqi
     texto: >-
       Llave pública y llave secreta de CulqiPanel ▸ Desarrollo ▸ API Keys.
       Odoo comprueba que correspondan al modo: de integración en «Modo de
@@ -136,12 +136,83 @@ funcionalidades:
 
 configuracion:
   - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
-  - "Indique las llaves en **Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Culqi**."
+  - "Indique las llaves en **Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ Culqi**."
   - Publique el proveedor y active los métodos Tarjeta y Yape.
 requisitos_nota: >-
   Funciona en Community y Enterprise. No incluye todavía los medios que
   requieren una orden de Culqi (PagoEfectivo, billeteras, Cuotéalo), la
   tarjeta guardada ni la captura manual.
+
+ejemplos_titulo: Datos de prueba
+ejemplos_intro: >-
+  Todo lo necesario para probar Culqi sin cobrar dinero real: las llaves de
+  integración, las tarjetas y el Yape de prueba oficiales y los enlaces para
+  revisar el comercio y los pagos.
+ejemplos:
+  - titulo: Llaves de integración
+    texto: >-
+      Culqi no publica llaves de prueba comunes: cada comercio tiene las suyas
+      en el **entorno de integración** de CulqiPanel. Se cargan en el
+      proveedor con el estado **Modo de prueba**; los cargos van al entorno de
+      integración de Culqi y no se cobra nada.
+    tabla:
+      - [Campo del proveedor, Valor de prueba]
+      - [Llave pública, "`pk_test_…` (CulqiPanel, entorno de integración)"]
+      - [Llave secreta, "`sk_test_…` (CulqiPanel, entorno de integración)"]
+      - [Estado, Modo de prueba]
+    nota: >-
+      Con llaves `pk_test_`/`sk_test_`, Odoo rechaza el estado «Activado»; en
+      producción se usan `pk_live_…` y `sk_live_…`.
+  - titulo: Tarjetas y Yape de prueba
+    texto: >-
+      Tarjetas oficiales del entorno de integración de Culqi, cada una con su
+      vencimiento y CVV. Cualquier nombre y correo.
+    tabla:
+      - [Tarjeta, Número, Vencimiento, CVV, Resultado]
+      - [Visa débito, "`4111111111111111`", "`09/30`", "`123`", Venta exitosa]
+      - [Visa crédito, "`4111111110101113`", "`09/30`", "`123`", Venta exitosa]
+      - [Mastercard, "`5111111111111118`", "`12/30`", "`039`", Venta exitosa]
+      - [American Express, "`371212121212122`", "`12/30`", "`2841`", Venta exitosa]
+      - [Diners, "`36001212121210`", "`12/30`", "`964`", Venta exitosa]
+      - [Visa, "`4456530000001096`", "`07/30`", "`111`", 3D Secure con desafío · autenticación exitosa]
+      - [Visa, "`4000020000000000`", "`10/30`", "`354`", Rechazada · tarjeta robada]
+      - [Visa, "`4000040000000008`", "`03/30`", "`295`", Rechazada · fondos insuficientes]
+      - [Mastercard, "`5400020000000003`", "`07/30`", "`203`", Rechazada · CVV incorrecto]
+    nota: >-
+      **Yape de prueba:** celular `900000001` y cualquier código de
+      verificación de 6 dígitos. Lista completa: [tarjetas de prueba de
+      Culqi](https://docs.culqi.com/es/documentacion/pagos-online/tarjetas-de-prueba).
+  - titulo: Qué probar
+    texto: >-
+      **Tienda, portal o enlace de pago:** pagar una factura o un pedido con
+      tarjeta y con Yape; el pago queda confirmado. Repetir con una tarjeta
+      rechazada: el formulario muestra el motivo y deja reintentar. Con la
+      tarjeta 3D Secure, Culqi pide la autenticación antes de cobrar.
+
+
+      **Punto de venta (con el módulo «Cobro con pasarelas en el TPV»):**
+      cobrar un pedido con el método Culqi desde el QR o el enlace que muestra
+      la caja.
+
+
+      **Devoluciones:** en el pago, «Reembolsar» un importe parcial y luego el
+      resto.
+  - titulo: Revisar el comercio y los pagos
+    texto: >-
+      [Proveedores de pago en Odoo](/odoo/action-payment.action_payment_provider): llaves, estado y métodos de pago (tarjeta y Yape) del proveedor
+      Culqi.
+
+
+      [CulqiPanel](https://culqipanel.culqi.com/): las llaves de integración y
+      de producción, los cargos, las devoluciones y los depósitos del comercio.
+
+
+      [Documentación de la API de Culqi](https://apidocs.culqi.com/): cargos,
+      devoluciones y códigos de error.
+    nota: >-
+      En Odoo, cada pago queda en **Contabilidad ▸ Configuración ▸ Pagos en
+      línea ▸ Transacciones de pago** con la referencia de Culqi, el estado y el
+      motivo del rechazo, si lo hubo.
 
 faq:
   - pregunta: "¿Por qué Checkout Custom y no Checkout v4?"

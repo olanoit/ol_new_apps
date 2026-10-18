@@ -183,7 +183,7 @@ ejemplos:
       pagada. Repetir con una tarjeta rechazada y reintentar.
 
 
-      **Punto de venta (con el módulo «Pasarelas de pago en el TPV»):**
+      **Punto de venta (con el módulo «Cobro con pasarelas en el TPV»):**
       cobrar un pedido con el método Izipay, pagar desde el QR o el enlace
       que muestra la caja y comprobar que el TPV marca el pedido como pagado
       y emite el comprobante.

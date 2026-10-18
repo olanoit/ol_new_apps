@@ -81,7 +81,7 @@ pasos_intro: >-
 pasos:
   - seccion: Configuración
   - titulo: Credenciales de Niubiz
-    ruta: Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Niubiz
+    ruta: Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ Niubiz
     texto: >-
       Código de comercio, usuario y contraseña de la API y RUC del comercio
       (para las devoluciones). En «Modo de prueba» la pantalla muestra las
@@ -156,11 +156,72 @@ funcionalidades:
 
 configuracion:
   - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
-  - "Configure las credenciales en **Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Niubiz**."
+  - "Configure las credenciales en **Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ Niubiz**."
   - Pruebe en «Modo de prueba» con las tarjetas del sandbox y luego active el proveedor.
 requisitos_nota: >-
   Funciona en Community y Enterprise. Requiere una cuenta de comercio afiliada
   a Niubiz y que el servidor de Odoo llegue a las API de Niubiz.
+
+ejemplos_titulo: Datos de prueba
+ejemplos_intro: >-
+  Todo lo necesario para probar Niubiz sin cobrar dinero real: el sandbox
+  público de Niubiz, sus tarjetas de prueba y los enlaces para revisar el
+  comercio y los pagos.
+ejemplos:
+  - titulo: Sandbox público de Niubiz
+    texto: >-
+      Con el proveedor en **Modo de prueba**, el módulo usa el sandbox de
+      Niubiz con estas credenciales públicas (la pantalla del proveedor también
+      las muestra). Los pagos se hacen de verdad contra el sandbox, pero no se
+      cobra nada. En producción se usan el código de comercio, el usuario y la
+      contraseña que entrega Niubiz.
+    tabla:
+      - [Dato, Valor de prueba]
+      - [Usuario de la API, "`integraciones@niubiz.com.pe`"]
+      - [Contraseña de la API, "`_7z3@8fF`"]
+      - [Código de comercio en soles, "`456879852`"]
+      - [Código de comercio en dólares, "`456879853`"]
+      - [Estado, Modo de prueba]
+  - titulo: Tarjetas de prueba
+    texto: >-
+      Validadas contra el sandbox con el formulario de Niubiz. Cualquier
+      nombre, correo y documento.
+    tabla:
+      - [Tarjeta, Número, Vencimiento, CVV, Resultado]
+      - [Visa, "`4551708161768059`", "`03/28`", "`111`", Pago aprobado]
+      - [Mastercard, "`5160030000000317`", "`03/28`", "`111`", Pago aprobado]
+      - [American Express, "`371064649323968`", "`03/28`", "`1111`", Pago aprobado]
+      - [Visa, "`4041650444437904`", "`03/28`", "`111`", Rechazado (código 116 · fondos insuficientes)]
+  - titulo: Qué probar
+    texto: >-
+      **Tienda, portal o enlace de pago:** pagar una factura o un pedido con
+      Niubiz y una tarjeta aprobada; el pago queda confirmado con su número de
+      autorización. Repetir con la tarjeta rechazada: vuelve a la página de
+      pago con el motivo.
+
+
+      **Punto de venta (con el módulo «Cobro con pasarelas en el TPV»):**
+      cobrar un pedido con el método Niubiz desde el QR o el enlace que
+      muestra la caja.
+
+
+      **Anulación y devoluciones:** el mismo día, «Anular en Niubiz» desde la
+      transacción; desde las 48 horas hábiles siguientes, «Reembolsar».
+  - titulo: Revisar el comercio y los pagos
+    texto: >-
+      [Proveedores de pago en Odoo](/odoo/action-payment.action_payment_provider): credenciales, estado y métodos de pago del proveedor Niubiz.
+
+
+      [Portal de comercio electrónico de Niubiz](https://comercio.niubiz.com.pe/):
+      con el usuario del comercio, las ventas, anulaciones y devoluciones.
+
+
+      [Portal de desarrolladores de Niubiz](https://desarrolladores.niubiz.com.pe/):
+      documentación de la API y del formulario de pago.
+    nota: >-
+      En Odoo, cada pago queda en **Contabilidad ▸ Configuración ▸ Pagos en
+      línea ▸ Transacciones de pago** con la referencia de Niubiz, el estado y el
+      motivo del rechazo, si lo hubo.
 
 faq:
   - pregunta: "¿Puedo probar sin una cuenta de Niubiz?"
