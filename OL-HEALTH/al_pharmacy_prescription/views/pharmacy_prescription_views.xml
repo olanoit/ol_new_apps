@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recetas -->
+    <record id="pharmacy_prescription_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.list</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('cancelled', 'expired')" decoration-info="state == 'partial'">
+                <field name="name"/>
+                <field name="prescription_number" optional="show"/>
+                <field name="date"/>
+                <field name="expiry_date" optional="show"/>
+                <field name="prescription_type" optional="show"/>
+                <field name="patient_id"/>
+                <field name="prescriber_id"/>
+                <field name="retention_folio" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'dispensed'"
+                       decoration-info="state in ('valid', 'partial')"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pharmacy_prescription_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.form</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_validate" type="object" string="Validar" class="btn-primary"
+                            invisible="state != 'draft'"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state not in ('valid', 'cancelled')"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state not in ('draft', 'valid')"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,valid,partial,dispensed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Receta">
+                            <field name="prescription_number" readonly="state not in ('draft', 'valid')"/>
+                            <field name="prescription_type" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="validity_days" readonly="state != 'draft'"/>
+                            <field name="expiry_date"/>
+                            <field name="warehouse_id"/>
+                        </group>
+                        <group string="Prescriptor y paciente">
+                            <field name="prescriber_id" readonly="state != 'draft'"
+                                   context="{'default_pharmacy_is_prescriber': True}"/>
+                            <field name="prescriber_license"/>
+                            <field name="health_facility" readonly="state != 'draft'"/>
+                            <field name="patient_id" readonly="state != 'draft'"/>
+                            <field name="diagnosis" readonly="state != 'draft'"
+                                   groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Medicamentos" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="ingredient_id"/>
+                                    <field name="strength"/>
+                                    <field name="quantity"/>
+                                    <field name="posology"/>
+                                    <field name="duration" optional="show"/>
+                                    <field name="dispensed_qty"/>
+                                    <field name="remaining_qty"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Dispensaciones" name="dispensations">
+                            <field name="dispensation_ids" readonly="1">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="lot_id"/>
+                                    <field name="is_alternative"/>
+                                    <field name="pharmacist_id"/>
+                                    <field name="source"/>
+                                    <field name="purchaser_name" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Retención e imagen" name="retention">
+                            <group>
+                                <field name="retained"/>
+                                <field name="retention_folio" invisible="not retained"/>
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="pharmacy_prescription_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.search</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('prescription_number', 'ilike', self)]"/>
+                <field name="patient_id"/>
+                <field name="prescriber_id"/>
+                <field name="line_ids" string="Producto" filter_domain="[('line_ids.product_id', 'ilike', self)]"/>
+                <filter string="Vigentes" name="valid" domain="[('state', 'in', ('valid', 'partial'))]"/>
+                <filter string="Retenidas" name="retained" domain="[('retained', '=', True)]"/>
+                <filter string="Especiales" name="special" domain="[('prescription_type', '=', 'special')]"/>
+                <group>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Prescriptor" name="group_prescriber" context="{'group_by': 'prescriber_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pharmacy_prescription_action" model="ir.actions.act_window">
+        <field name="name">Recetas</field>
+        <field name="res_model">pharmacy.prescription</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre una receta</p>
+            <p>Las recetas de las ventas del TPV se registran solas; aquí también puede registrarlas a
+                mano, adjuntar su imagen y ver lo dispensado.</p>
+        </field>
+    </record>
+
+    <!-- Dispensaciones -->
+    <record id="pharmacy_dispensation_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.dispensation.list</field>
+        <field name="model">pharmacy.dispensation</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="date"/>
+                <field name="prescription_id"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="lot_id"/>
+                <field name="is_alternative"/>
+                <field name="pharmacist_id"/>
+                <field name="source"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_dispensation_action" model="ir.actions.act_window">
+        <field name="name">Dispensaciones</field>
+        <field name="res_model">pharmacy.dispensation</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Prescriptores y pacientes -->
+    <record id="res_partner_view_form_pharmacy" model="ir.ui.view">
+        <field name="name">res.partner.form.pharmacy</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Farmacia" name="pharmacy"
+                      groups="al_pharmacy_base.group_pharmacy_technician">
+                    <group>
+                        <group string="Prescriptor">
+                            <field name="pharmacy_is_prescriber"/>
+                            <field name="pharmacy_profession" invisible="not pharmacy_is_prescriber"/>
+                            <field name="pharmacy_prescriber_license" invisible="not pharmacy_is_prescriber"/>
+                            <field name="pharmacy_specialty" invisible="not pharmacy_is_prescriber"/>
+                            <field name="pharmacy_prescriber_status" invisible="not pharmacy_is_prescriber"/>
+                            <field name="pharmacy_prescriber_checked" invisible="not pharmacy_prescriber_checked"/>
+                        </group>
+                        <group string="Paciente" groups="al_pharmacy_base.group_pharmacy_pharmacist">
+                            <field name="pharmacy_birthdate" groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                            <field name="pharmacy_allergy_ids" widget="many2many_tags"
+                                   groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                            <field name="pharmacy_chronic_conditions"
+                                   groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pharmacy_prescriber_action" model="ir.actions.act_window">
+        <field name="name">Prescriptores</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('pharmacy_is_prescriber', '=', True)]</field>
+        <field name="context">{'default_pharmacy_is_prescriber': True, 'default_is_company': False}</field>
+    </record>
+
+    <!-- Reportes -->
+    <record id="pharmacy_prescription_book_report" model="ir.actions.report">
+        <field name="name">Libro de recetas</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_pharmacy_prescription.report_prescription_book</field>
+        <field name="report_file">al_pharmacy_prescription.report_prescription_book</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
+        <field name="binding_model_id" ref="model_pharmacy_prescription"/>
+        <field name="binding_type">report</field>
+    </record>
+    <record id="paperformat_pharmacy_label" model="report.paperformat">
+        <field name="name">Etiqueta de dispensación 70 x 40 mm</field>
+        <field name="format">custom</field>
+        <field name="page_width">70</field>
+        <field name="page_height">40</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">2</field>
+        <field name="margin_bottom">2</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+    <record id="pharmacy_dispensation_label_report" model="ir.actions.report">
+        <field name="name">Etiqueta de dispensación</field>
+        <field name="model">pharmacy.dispensation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_pharmacy_prescription.report_dispensation_label</field>
+        <field name="report_file">al_pharmacy_prescription.report_dispensation_label</field>
+        <field name="paperformat_id" ref="paperformat_pharmacy_label"/>
+        <field name="binding_model_id" ref="model_pharmacy_dispensation"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_pharmacy_dispensing" name="Dispensación" parent="al_pharmacy_base.menu_pharmacy_root" sequence="5"/>
+    <menuitem id="menu_pharmacy_prescription" name="Recetas" parent="menu_pharmacy_dispensing"
+              action="pharmacy_prescription_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_dispensation" name="Dispensaciones" parent="menu_pharmacy_dispensing"
+              action="pharmacy_dispensation_action" sequence="20"/>
+    <menuitem id="menu_pharmacy_prescriber" name="Prescriptores" parent="menu_pharmacy_dispensing"
+              action="pharmacy_prescriber_action" sequence="30"/>
+</odoo>

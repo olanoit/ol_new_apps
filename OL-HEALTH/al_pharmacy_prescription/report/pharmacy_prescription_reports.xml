@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_prescription_book">
+        <t t-call="web.html_container">
+            <t t-set="o" t-value="docs[:1]"/>
+            <t t-call="al_report_base.report_pe_page">
+                <t t-set="company" t-value="o.company_id"/>
+                <t t-set="doc_title" t-value="'Libro de recetas'"/>
+                <table class="pe-doc-table pe-doc-lines mb-3">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <th>Ref.</th>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Paciente</th>
+                            <th>Prescriptor</th>
+                            <th>Colegiatura</th>
+                            <th>Medicamentos</th>
+                            <th>Dispensado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="docs.sorted(lambda p: (p.date, p.id))" t-as="p">
+                            <td t-out="p.name"/>
+                            <td t-out="p.retention_folio or ''"/>
+                            <td><span t-field="p.date"/></td>
+                            <td t-out="p.patient_id.name or ''"/>
+                            <td t-out="p.prescriber_id.name or ''"/>
+                            <td t-out="p.prescriber_license or ''"/>
+                            <td>
+                                <div t-foreach="p.line_ids" t-as="line">
+                                    <t t-out="line.product_id.display_name or line.ingredient_id.name"/>
+                                    <t t-out="line.strength or ''"/> x <t t-out="line.quantity"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div t-foreach="p.dispensation_ids" t-as="d">
+                                    <t t-out="d.product_id.display_name"/> x <t t-out="d.quantity"/>
+                                    <t t-if="d.lot_id">(lote <t t-out="d.lot_id.name"/>)</t>
+                                    <t t-if="d.is_alternative"> — alternativa</t>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_dispensation_label">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="d">
+                <div class="article" style="font-family: Arial, sans-serif; font-size: 9px; line-height: 1.2;">
+                    <div style="font-weight: bold; font-size: 10px;" t-out="d.product_id.display_name"/>
+                    <div t-if="d.product_id.pharmacy_composition" t-out="d.product_id.pharmacy_composition"/>
+                    <div>
+                        <t t-if="d.product_id.pharmacy_laboratory_id">Lab.: <t t-out="d.product_id.pharmacy_laboratory_id.name"/> · </t>
+                        <t t-if="d.product_id.pharmacy_route_id">Vía: <t t-out="d.product_id.pharmacy_route_id.name"/></t>
+                    </div>
+                    <div t-if="d.lot_id">
+                        Lote: <t t-out="d.lot_id.name"/>
+                        <t t-if="d.lot_id.expiration_date"> · Vence: <t t-out="d.lot_id.expiration_date" t-options="{'widget': 'date'}"/></t>
+                    </div>
+                    <div t-if="d.prescription_line_id.posology" t-out="d.prescription_line_id.posology"/>
+                    <div style="margin-top: 2px; border-top: 1px solid #595959;">
+                        <t t-out="d.company_id.name"/> · <t t-out="d.prescription_id.warehouse_id.name or ''"/>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

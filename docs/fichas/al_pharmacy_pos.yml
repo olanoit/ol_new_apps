@@ -1,5 +1,5 @@
 titulo: "Farmacia: punto de venta"
-subtitulo: "Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación."
+subtitulo: "Caja de farmacia: venta por caja, blíster o unidad con su precio, alternativas genéricas primero, receta en la caja, control del químico farmacéutico y lotes por vencimiento."
 categoria: "Salud · Punto de venta"
 etiquetas: [Farmacia, TPV, Blíster, Venta fraccionada, Boleta]
 
@@ -20,6 +20,11 @@ contexto:
   nota: "**Alcance del prototipo:** el precio de la presentación es fijo (no aplica listas de precios) y la unidad SUNAT de la presentación se configura en su unidad de medida."
 
 funcionalidades:
+  - "Alternativas al elegir una marca: genéricos en DCI primero, por precio (Ley 32033)."
+  - "Receta en la caja (número, fecha, prescriptor, colegiatura, paciente) según el ajuste de la compañía; excepción del Q.F. salvo en controlados."
+  - "Aviso o bloqueo si quien atiende no es químico farmacéutico; queda en el libro de ocurrencias."
+  - "Lotes disponibles, el que vence primero arriba (FEFO)."
+  - "Receta y dispensación registradas al guardar la venta pagada."
   - "Selector de presentación al agregar el producto."
   - "Línea con precio unitario exacto y cantidad en unidades."
   - "Pantalla y ticket con el número de presentaciones y el precio por presentación."
@@ -31,9 +36,13 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: 2.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Entrega 2: alternativas genéricas, receta en la caja, control del Q.F., lotes FEFO y registro de la dispensación."
   - version: 1.20261018
     fecha: 18/10/2026
     cambios:
       - "Primera versión (prototipo E0): venta por presentación con precio propio en el TPV."
 
-relacionados: [al_pharmacy_base, al_l10n_pe_edi_pos, al_industry_pharmacy]
+relacionados: [al_pharmacy_prescription, al_pharmacy_base, al_l10n_pe_edi_pos, al_industry_pharmacy]

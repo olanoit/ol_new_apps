@@ -1,5 +1,5 @@
 # Farmacia: punto de venta (AL)
 
-Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación.
+Caja de farmacia: venta por caja, blíster o unidad con su precio, alternativas genéricas primero, receta en la caja, control del químico farmacéutico, lotes disponibles por vencimiento y receta y dispensación registradas al vender.
 
-Plan e investigación: [docs/farmacia/](../../docs/farmacia/PLAN_FARMACIA.md) (prototipo E0, riesgo R1).
+Plan: [docs/farmacia/](../../docs/farmacia/PLAN_FARMACIA.md).

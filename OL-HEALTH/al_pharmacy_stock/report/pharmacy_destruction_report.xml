@@ -12,7 +12,7 @@
                             <td class="pe-doc-label">Establecimiento</td>
                             <td class="pe-doc-value" t-out="o.warehouse_id.name"/>
                             <td class="pe-doc-label">Fecha</td>
-                            <td class="pe-doc-value" t-field="o.date"/>
+                            <td class="pe-doc-value"><span t-field="o.date"/></td>
                         </tr>
                         <tr>
                             <td class="pe-doc-label">Director técnico</td>
@@ -37,9 +37,9 @@
                                 <td t-out="line.product_id.display_name"/>
                                 <td t-out="line.product_id.pharmacy_sanitary_registry or ''"/>
                                 <td t-out="line.lot_id.name or ''"/>
-                                <td t-out="line.expiration_date" t-options="{'widget': 'date'}"/>
+                                <td><span t-out="line.expiration_date" t-options="{'widget': 'date'}"/></td>
                                 <td class="text-end"><t t-out="line.quantity"/> <t t-out="line.uom_id.name"/></td>
-                                <td t-field="line.reason"/>
+                                <td><span t-field="line.reason"/></td>
                             </tr>
                         </tbody>
                     </table>

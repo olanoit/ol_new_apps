@@ -1,0 +1,39 @@
+titulo: "Farmacia: receta y dispensación"
+subtitulo: "Receta médica con prescriptor y paciente, dispensación parcial y alternativas, retención con folio, alergias del paciente, libro de recetas y etiqueta de dispensación."
+categoria: "Salud · Farmacia"
+etiquetas: [Farmacia, Receta, Dispensación, BPOF, Libro de recetas]
+
+destacados:
+  - icono: "℞"
+    titulo: "Receta según BPOF"
+    texto: "Prescriptor con colegiatura, paciente, medicamentos por producto o por DCI, posología y vigencia."
+  - icono: "½"
+    titulo: "Dispensación parcial"
+    texto: "Cada entrega descuenta lo pendiente de su línea; la receta pasa a dispensada en parte o dispensada."
+  - icono: "⇄"
+    titulo: "Alternativas registradas"
+    texto: "Si se entrega un equivalente, queda marcado como alternativa (BPOF 7.5.2.28)."
+  - icono: "⚕"
+    titulo: "Datos de salud protegidos"
+    texto: "Fecha de nacimiento, alergias y condiciones crónicas solo para el químico farmacéutico."
+
+funcionalidades:
+  - "Prescriptores con profesión, colegiatura, especialidad y estado; un prescriptor inhábil no valida recetas."
+  - "Receta común o especial, vigencia, imagen adjunta, retención con folio."
+  - "Líneas por producto o por principio activo: las cubren el producto, sus equivalentes o cualquier producto con la DCI."
+  - "Dispensaciones con lote, químico farmacéutico, adquiriente y documento de venta; no se borran."
+  - "Aviso de alergias del paciente."
+  - "Cron diario de recetas vencidas."
+  - "Libro de recetas en PDF y etiqueta de dispensación de 70 x 40 mm."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Las ventas del TPV de farmacia registran sus recetas solas; también puede registrarlas en **Farmacia ▸ Dispensación ▸ Recetas**."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión (entrega 2 del plan)."
+
+relacionados: [al_pharmacy_pos, al_l10n_pe_prescriber_cmp, al_pharmacy_base]

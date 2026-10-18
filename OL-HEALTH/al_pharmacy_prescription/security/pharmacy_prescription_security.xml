@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pharmacy_prescription_comp_rule" model="ir.rule">
+        <field name="name">Receta: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_prescription"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_dispensation_comp_rule" model="ir.rule">
+        <field name="name">Dispensación: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_dispensation"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

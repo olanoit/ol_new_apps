@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261017 — 18/10/2026
+
+- Instala también la receta y la dispensación y la consulta del médico en el CMP.
+
 ## 3.20261017 — 18/10/2026
 
 - Instala la suite de farmacia de OL-HEALTH (maestro, almacenamiento y venta por presentación); sus datos farmacéuticos del producto pasan al maestro y se migran.

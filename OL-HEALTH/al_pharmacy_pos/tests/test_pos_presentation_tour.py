@@ -22,3 +22,33 @@ class TestPosPresentationTour(TestPointOfSaleHttpCommon):
         self.assertEqual(blister_line.qty, 7)
         self.assertAlmostEqual(blister_line.price_unit * 7, 1.0, places=9)
         self.assertEqual(order.amount_total, 1.20)
+
+    def test_dispense_generic_with_prescription(self):
+        ingredient = self.env['pharmacy.ingredient']._get_or_create('Ciprofloxacino')
+        tablet = self.env.ref('al_pharmacy_base.dosage_form_tablet')
+        common = {
+            'type': 'consu', 'available_in_pos': True, 'taxes_id': [(6, 0, [])],
+            'pharmacy_ok': True, 'pharmacy_sale_condition': 'prescription',
+            'pharmacy_dosage_form_id': tablet.id,
+            'pharmacy_ingredient_line_ids': [(0, 0, {'ingredient_id': ingredient.id,
+                                                     'strength': 500, 'strength_unit': 'mg'})],
+        }
+        self.env['product.template'].create({
+            **common, 'name': 'Cipro Marca 500 mg', 'list_price': 6.0,
+            'pharmacy_product_type': 'innovator'})
+        generic = self.env['product.template'].create({
+            **common, 'name': 'Ciprofloxacino 500 mg tableta', 'list_price': 2.0,
+            'pharmacy_product_type': 'generic_dci'})
+        self.main_pos_config.with_user(self.pos_user).open_ui()
+        self.start_pos_tour('al_pharmacy_pos_dispensation')
+
+        order = self.env['pos.order'].search(
+            [('session_id', '=', self.main_pos_config.current_session_id.id)], limit=1)
+        self.assertEqual(order.lines.product_id.product_tmpl_id, generic)
+        prescription = order.sudo().pharmacy_prescription_id
+        self.assertEqual(prescription.prescription_number, '000321')
+        self.assertEqual(prescription.prescriber_id.pharmacy_prescriber_license, '067890')
+        self.assertEqual(prescription.patient_id.name, 'Rosa Mendoza')
+        self.assertEqual(prescription.state, 'dispensed')
+        # El cajero de la prueba no es químico farmacéutico: queda el aviso.
+        self.assertTrue(order.pharmacy_no_pharmacist_alert)

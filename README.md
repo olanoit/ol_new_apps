@@ -263,7 +263,7 @@ módulo | versión | licencia | resumen
 [al_industry_construction](OL-INDUSTRIES/al_industry_construction/) | 1.20261017 | LGPL-3 | Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil.
 [al_industry_ecommerce](OL-INDUSTRIES/al_industry_ecommerce/) | 1.20261017 | OPL-1 | Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual.
 [al_industry_furniture](OL-INDUSTRIES/al_industry_furniture/) | 1.20261017 | LGPL-3 | Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento.
-[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 3.20261017 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
+[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 4.20261017 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
 [al_industry_restaurant](OL-INDUSTRIES/al_industry_restaurant/) | 2.20261017 | OPL-1 | Restaurante listo para atender: salón con mesas, comandas a cocina, división de cuentas y propinas, boleta y factura electrónica desde la caja, cobro con Yape y Plin y libro de reclamaciones.
 [al_industry_retail](OL-INDUSTRIES/al_industry_retail/) | 2.20261017 | OPL-1 | Bodega o minimarket listo para vender: caja con boleta y factura electrónica, cobro con Yape y Plin, cliente por RUC o DNI, vendedor por venta, kárdex SUNAT y libro de reclamaciones.
 
@@ -272,8 +272,10 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_pharmacy_edi](OL-HEALTH/al_l10n_pe_pharmacy_edi/) | 1.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
+[al_l10n_pe_prescriber_cmp](OL-HEALTH/al_l10n_pe_prescriber_cmp/) | 1.20261018 | OPL-1 | Valida al médico prescriptor en el portal «Conoce a tu médico» del Colegio Médico del Perú: nombre, especialidad, consejo regional y si está hábil.
 [al_pharmacy_base](OL-HEALTH/al_pharmacy_base/) | 2.20261018 | OPL-1 | Maestro farmacéutico: principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias.
-[al_pharmacy_pos](OL-HEALTH/al_pharmacy_pos/) | 1.20261018 | OPL-1 | Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación.
+[al_pharmacy_pos](OL-HEALTH/al_pharmacy_pos/) | 2.20261018 | OPL-1 | Caja de farmacia: venta por caja, blíster o unidad con su precio, alternativas genéricas primero, receta en la caja, control del químico farmacéutico, lotes disponibles por vencimiento y receta y dispensación registradas al vender.
+[al_pharmacy_prescription](OL-HEALTH/al_pharmacy_prescription/) | 1.20261018 | OPL-1 | Receta médica con prescriptor y paciente, dispensación parcial y alternativas, retención con folio, alergias del paciente, libro de recetas y etiqueta de dispensación.
 [al_pharmacy_stock](OL-HEALTH/al_pharmacy_stock/) | 1.20261018 | OPL-1 | Recepción con inspección y registro sanitario vigente, lotes en cuarentena o bloqueados que no se venden, vencimientos, bonificaciones de compra, control de temperatura, alertas sanitarias y actas de baja.
 
 ### OL-TOOLS

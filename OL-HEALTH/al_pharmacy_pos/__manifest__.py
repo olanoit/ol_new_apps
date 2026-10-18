@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Farmacia: punto de venta (AL)',
-    'summary': 'Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el '
-               'stock en unidades y el comprobante en la unidad de la presentación.',
+    'summary': 'Caja de farmacia: venta por caja, blíster o unidad con su precio, alternativas '
+               'genéricas primero, receta en la caja, control del químico farmacéutico, lotes '
+               'disponibles por vencimiento y receta y dispensación registradas al vender.',
     'description': """
 Farmacia: punto de venta
 ========================
-Prototipo E0 del plan (docs/farmacia/PLAN_FARMACIA.md, riesgo R1, opción A):
+Entregas E0 y E2 del plan (docs/farmacia/PLAN_FARMACIA.md).
+
+Venta por presentación (riesgo R1, opción A):
 
 * Al elegir un producto con presentaciones, el TPV pregunta si se vende por
   unidad o por una presentación (caja, blíster…).
@@ -16,15 +19,28 @@ Prototipo E0 del plan (docs/farmacia/PLAN_FARMACIA.md, riesgo R1, opción A):
 * El código de barras del empaque vende directamente la presentación.
 * La factura o boleta lleva la línea en la unidad de la presentación
   (1 Blíster x 7 a S/ 1,00), así cuadra con el ticket.
+
+Dispensación en la caja:
+
+* Al elegir un producto de marca con equivalentes, ofrece las alternativas:
+  genéricos en DCI primero y del más barato al más caro (Ley 32033).
+* Productos con receta: pide la receta (número, fecha, prescriptor y
+  colegiatura, paciente) según el ajuste de la compañía; el químico
+  farmacéutico puede autorizar la excepción (nunca en controlados).
+* Si quien atiende no es químico farmacéutico: aviso o bloqueo, según el
+  ajuste; cada caso queda en el libro de ocurrencias.
+* Lotes: solo los disponibles, el que vence primero arriba (FEFO).
+* Al guardar la venta pagada se registran la receta y la dispensación.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '1.20261018',
+    'version': '2.20261018',
     'license': 'OPL-1',
-    'depends': ['al_pharmacy_base', 'point_of_sale'],
+    'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
+                'point_of_sale', 'pos_hr'],
     'assets': {
         'point_of_sale._assets_pos': [
             'al_pharmacy_pos/static/src/app/**/*',

@@ -1,0 +1,30 @@
+titulo: "PE - Farmacia: consulta del médico en el CMP"
+subtitulo: "Valida al médico prescriptor en el portal «Conoce a tu médico» del Colegio Médico del Perú: nombre, especialidad, consejo regional y si está hábil."
+categoria: "Salud · Perú"
+etiquetas: [Farmacia, CMP, Colegio Médico, Receta, Perú]
+
+destacados:
+  - icono: "⌕"
+    titulo: "Un botón en el prescriptor"
+    texto: "Con la colegiatura, completa nombre, especialidad, consejo regional y estado."
+  - icono: "⛔"
+    titulo: "Inhábil no valida"
+    texto: "Una receta de un médico inhábil en el CMP no se valida."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "La receta debe llevar el nombre y la colegiatura del prescriptor (BPOF 7.5.2.9); el portal público del Colegio Médico permite verificar que el médico existe y está hábil."
+  nota: "**Límite:** el portal no tiene API. Si cambia su página o agrega un captcha, la consulta falla con un aviso y los datos se registran a mano."
+
+funcionalidades:
+  - "Consulta por colegiatura con lxml (sin dependencias nuevas)."
+  - "Estado hábil o inhábil bien distinguido (la palabra HÁBIL está dentro de INHÁBIL)."
+  - "URL del portal configurable (parámetro del sistema)."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión: porta la consulta de al_peru_medico_data (Odoo 18) corrigiendo el estado y la lectura de la página."
+
+relacionados: [al_pharmacy_prescription, al_pharmacy_pos]

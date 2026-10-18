@@ -190,3 +190,13 @@ class TestPharmacyStock(TransactionCase):
         quantity = self.env['stock.quant']._get_available_quantity(
             self.product, self.stock, lot_id=self.lot_quarantine, strict=True)
         self.assertEqual(quantity, 0)
+
+    def test_destruction_report_renders(self):
+        destruction = self.env['pharmacy.destruction'].create({
+            'warehouse_id': self.warehouse.id, 'method': 'Operador de residuos sólidos',
+            'line_ids': [(0, 0, {'product_id': self.product.id, 'lot_id': self.lot_quarantine.id,
+                                 'location_id': self.stock.id, 'quantity': 2})],
+        })
+        html, _ = self.env['ir.actions.report']._render_qweb_html(
+            'al_pharmacy_stock.report_pharmacy_destruction', destruction.ids)
+        self.assertIn(b'CTZ2312', html)

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_partner_view_form_pharmacy_cmp" model="ir.ui.view">
+        <field name="name">res.partner.form.pharmacy.cmp</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="al_pharmacy_prescription.res_partner_view_form_pharmacy"/>
+        <field name="arch" type="xml">
+            <field name="pharmacy_prescriber_license" position="after">
+                <button name="action_pharmacy_check_cmp" type="object" string="Consultar en el CMP"
+                        icon="fa-search" class="btn-link"
+                        invisible="not pharmacy_is_prescriber or pharmacy_profession not in (False, 'physician') or not pharmacy_prescriber_license"/>
+                <field name="pharmacy_cmp_council" invisible="not pharmacy_cmp_council"/>
+            </field>
+        </field>
+    </record>
+</odoo>

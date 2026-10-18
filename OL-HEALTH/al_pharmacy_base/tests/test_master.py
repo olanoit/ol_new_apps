@@ -108,3 +108,10 @@ class TestPharmacyEstablishment(TransactionCase):
             self.env['pharmacy.shift'].create({
                 'employee_id': self.pharmacist.id, 'warehouse_id': self.warehouse.id,
                 'date_start': now, 'date_end': now - timedelta(hours=1)})
+
+    def test_logbook_report_renders(self):
+        entry = self.env['pharmacy.logbook.entry'].create({
+            'entry_type': 'other', 'description': 'Inventario anual realizado.'})
+        html, _ = self.env['ir.actions.report']._render_qweb_html(
+            'al_pharmacy_base.report_pharmacy_logbook', entry.ids)
+        self.assertIn(b'Inventario anual realizado', html)

@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: 4.20261017
+    fecha: 18/10/2026
+    cambios:
+      - "Instala también la receta y la dispensación y la consulta del médico en el CMP."
   - version: 3.20261017
     fecha: 18/10/2026
     cambios:
