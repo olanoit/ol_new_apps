@@ -1,15 +1,17 @@
-// Logos de las pasarelas: tarjeta 3:2 de la marca (como las imágenes de los
-// métodos de pago de Odoo), sin el relleno del ícono genérico del tema ni la
-// inversión de colores del modo oscuro.
+// Logos de las pasarelas: la tarjeta 3:2 de la marca (como las imágenes de
+// los métodos de pago de Odoo) dentro del mismo cuadro de 30 px que los
+// íconos genéricos, para que los nombres queden alineados. Sin la inversión
+// de colores del modo oscuro.
 .pos .payment-screen .paymentmethods .paymentmethod .payment-method-icon.al-brand-logo,
 .pos .payment-screen .paymentmethod img.payment-method-icon.al-brand-logo {
-    width: 48px !important;
-    height: 32px !important;
+    width: 30px !important;
+    height: 20px !important;
     max-width: none !important;
     max-height: none !important;
+    margin: 5px 0;
     padding: 0 !important;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 3px;
     background-color: transparent !important;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, .08);
     filter: none !important;

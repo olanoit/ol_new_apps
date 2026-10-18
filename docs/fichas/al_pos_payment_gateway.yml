@@ -120,6 +120,10 @@ configuracion:
   - "En la pasarela, «Cobrar en el TPV»; luego agregar el método a la caja con la sesión cerrada."
 
 novedades:
+  - version: '5.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "El logo de la pasarela ocupa el mismo cuadro de 30 px que los demás íconos de la pantalla de pago."
   - version: '4.20261018'
     fecha: 18/10/2026
     cambios:
