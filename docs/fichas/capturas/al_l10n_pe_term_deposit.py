@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_term_deposit (datos «DEMO DEP», cargados
+"""Capturas de la ficha de al_l10n_pe_term_deposit (datos de demostración, cargados
 con al_l10n_pe_term_deposit/tools/term_deposit_demo_data.py)."""
 import sys
 from pathlib import Path
@@ -8,7 +8,7 @@ from capturar import Captura  # noqa: E402
 M = 'al_l10n_pe_term_deposit'
 FULL = '.o_action_manager'
 FORM = '.o_form_view .o_form_sheet_bg'
-# Ids: depósito a plazo, garantía de alquiler y fondo de la carta fianza (DEMO DEP).
+# Ids: depósito a plazo, garantía de alquiler y fondo de la carta fianza (demostración).
 TERM, GUARANTEE = int(sys.argv[1]), int(sys.argv[2])
 BOND = int(sys.argv[3]) if len(sys.argv) > 3 else None
 

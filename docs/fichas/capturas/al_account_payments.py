@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_account_payments (datos «DEMO PAGO»).
+"""Capturas de la ficha de al_account_payments (datos de demostración).
 
 Uso: ``python al_account_payments.py [bloque …]`` (1, 2, 3; sin argumentos,
 todos)."""
@@ -8,8 +8,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 from PIL import Image
 
-BILL_OPEN = 2402        # F F001-00004588, DEMO PAGO Proveedor SAC, sin pagar
-BILL_OPEN_2 = 2437      # F F001-00004610, DEMO PAGO Proveedor SAC, sin pagar
+BILL_OPEN = 2402        # F F001-00004588, Distribuidora Lima Sur S.A.C., sin pagar
+BILL_OPEN_2 = 2437      # F F001-00004610, Distribuidora Lima Sur S.A.C., sin pagar
 PAYMENT = 177           # PBNK1/2026/00002: transferencia, operación 00458721
 PAYMENT_MOVE = 2403
 GROUPED = 182           # PBNK1/2026/00006: F001-00004620 + F001-00004621, depósito
@@ -92,7 +92,7 @@ with Captura('al_account_payments') as c:
         # 7. Dos facturas del mismo proveedor, pagadas en un pago agrupado
         c.abrir_accion('account.action_move_in_invoice_type', ms=2000)
         buscar = c.page.locator('.o_searchview_input').first
-        buscar.fill('DEMO PAGO')
+        buscar.fill('Distribuidora Lima Sur S.A.C.')
         buscar.press('Enter')
         c.esperar(1500)
         for numero in ('F001-00004588', 'F001-00004610'):

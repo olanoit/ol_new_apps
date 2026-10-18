@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos «DEMO 4TA» para la ficha y la documentación (idempotente).
+"""Datos de cuarta categoría para la ficha y la documentación (idempotente).
 
     odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < \\
         myodoo/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_fourth_category/tools/fourth_category_demo_data.py
@@ -30,8 +30,8 @@ def provider(name, body):
         'l10n_latam_identification_type_id': ruc_type.id})
 
 
-quispe = provider('DEMO 4TA QUISPE ROJAS ANA', '1047382956')
-torres = provider('DEMO 4TA TORRES PAZ LUIS', '1041122334')
+quispe = provider('QUISPE ROJAS ANA', '1047382956')
+torres = provider('TORRES PAZ LUIS', '1041122334')
 Suspension = env['l10n_pe.fourth.category.suspension']
 if not Suspension.search([('partner_id', '=', torres.id), ('number', '=', '1609-26-000184')]):
     Suspension.create({'partner_id': torres.id, 'number': '1609-26-000184',
@@ -41,14 +41,14 @@ if not Suspension.search([('partner_id', '=', torres.id), ('number', '=', '1609-
 
 def receipt(partner, number, amount, concept):
     move = env['account.move'].search([
-        ('partner_id', '=', partner.id), ('ref', '=', 'DEMO 4TA %s' % number),
+        ('partner_id', '=', partner.id), ('ref', '=', number),
         ('move_type', '=', 'in_invoice')], limit=1)
     if not move:
         move = env['account.move'].create({
             'move_type': 'in_invoice', 'partner_id': partner.id, 'journal_id': journal.id,
             'invoice_date': day, 'date': day,
             'l10n_latam_document_type_id': receipt_type.id,
-            'l10n_latam_document_number': number, 'ref': 'DEMO 4TA %s' % number,
+            'l10n_latam_document_number': number, 'ref': number,
             'invoice_line_ids': [(0, 0, {'name': concept, 'quantity': 1,
                                          'price_unit': amount, 'tax_ids': [(6, 0, [])]})],
         })
@@ -65,6 +65,6 @@ r2 = receipt(quispe, 'E001-59', 1200.0, 'Capacitación al personal')
 r3 = receipt(torres, 'E001-12', 5000.0, 'Diseño de la campaña publicitaria')
 env.cr.commit()
 for move in (r1, r2, r3):
-    print('DEMO4TA', move.id, move.l10n_latam_document_number, move.l10n_pe_fourth_category_status,
+    print('4TA', move.id, move.l10n_latam_document_number, move.l10n_pe_fourth_category_status,
           move.l10n_pe_fourth_category_amount, move.amount_residual, move.payment_state)
-print('DEMO4TA partners', quispe.id, torres.id)
+print('4TA partners', quispe.id, torres.id)

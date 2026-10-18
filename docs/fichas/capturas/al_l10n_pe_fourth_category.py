@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_fourth_category (datos «DEMO 4TA»,
+"""Capturas de la ficha de al_l10n_pe_fourth_category (datos de demostración,
 cargados con al_l10n_pe_fourth_category/tools/fourth_category_demo_data.py)."""
 import sys
 from pathlib import Path
@@ -47,7 +47,7 @@ with Captura(M) as c:
 
     # 3. Suspensiones de retención (Formulario 1609)
     c.abrir_accion(f'{M}.action_fourth_category_suspension', ms=2000)
-    c.texto('DEMO 4TA TORRES PAZ LUIS', ms=1500)
+    c.texto('TORRES PAZ LUIS', ms=1500)
     c.foto('03-suspension', selector=FORM)
 
     # 4. Retenciones del mes para la PLAME

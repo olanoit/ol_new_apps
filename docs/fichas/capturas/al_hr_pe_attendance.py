@@ -1,11 +1,11 @@
-"""Capturas de la ficha de al_hr_pe_attendance (datos «DEMO FICHA HR1»).
+"""Capturas de la ficha de al_hr_pe_attendance (datos de demostración).
 
-Datos usados (todos DEMO): ciclos «DEMO FICHA HR1 …», la asignación 14×7 de
+Datos usados (todos de demostración): ciclos atípicos, la asignación 14×7 de
 Huamán, los turnos publicados y las marcaciones del 1 al 14 de septiembre de
-2026, el tareaje de ese avance (aplicado), la boleta DEMO de Rivas del 1 al 14
-de septiembre, el rol «DEMO FICHA HR1 Vigilancia nocturna» con su plantilla de
+2026, el tareaje de ese avance (aplicado), la boleta de Rivas del 1 al 14
+de septiembre, el rol «Vigilancia nocturna» con su plantilla de
 22:00 a 06:00, un turno de reemplazo en borrador y la configuración de
-fotocheck DEMO. No se guarda nada desde la interfaz: el ciclo ilegal se
+fotocheck de demostración. No se guarda nada desde la interfaz: el ciclo ilegal se
 descarta y el diálogo de ausencia se cierra sin guardar.
 """
 import sys
@@ -32,15 +32,16 @@ class Captura(_Captura):
 
 
 MODULE = 'al_hr_pe_attendance'
-CICLO = 1               # DEMO FICHA HR1 Atípico 14×7 — 10 horas
+CICLO = 1               # Atípico 14×7 — 10 horas
 ASIGNACION = 2          # ciclo 14×7 de Huamán Torres Jorge Luis (octubre 2026)
 TURNO_REEMPLAZO = 81    # Huamán cubre la falta de Salazar el 10/09/2026 (borrador)
-TAREAJE = 149           # DEMO FICHA HR1 Tareaje septiembre 2026 (avance al 14), aplicado
+TAREAJE = 149           # Tareaje septiembre 2026 (avance al 14), aplicado
 PARAMETROS = 90         # Configuración principal de Comercial Demo Perú S.A.C.
 BOLETA_RIVAS = 3527     # Boleta 1–14 septiembre 2026 (tareaje) — Rivas
 TIPO_AUSENCIA = 1       # Tiempo personal pagado (solo se mira, no se guarda)
-FOTOCHECK = 1           # DEMO FICHA HR1 Fotocheck Comercial Demo
+FOTOCHECK = 1           # Fotocheck Comercial Demo
 LUCIA, ANDREA = 2448, 2450
+TRABAJADORES = ('Salazar Quispe Lucía', 'Huamán Torres Jorge Luis', 'Rivas Cárdenas Andrea')
 
 
 def columnas(c, etiquetas):
@@ -61,6 +62,12 @@ def buscar(c, texto):
     c.esperar(1200)
 
 
+def buscar_trabajadores(c):
+    """Los tres trabajadores de demostración (el mismo campo se une con «o»)."""
+    for nombre in TRABAJADORES:
+        buscar(c, nombre)
+
+
 def zona(c, name, top, bottom, margin=16):
     """Foto de la franja vertical entre dos elementos, a lo ancho de la hoja."""
     c.page.mouse.move(c.viewport['width'] - 2, c.viewport['height'] - 2)
@@ -78,7 +85,7 @@ def abrir_monitor(c):
     c.abrir_accion('al_hr_pe_attendance.action_l10n_pe_hr_attendance_monitor', ms=1800)
     c.page.locator('.o_searchview_facet .o_facet_remove').first.click()
     c.esperar(900)
-    buscar(c, 'DEMO FICHA HR1 Salazar')
+    buscar(c, 'Salazar Quispe Lucía')
     c.page.locator('.o_group_header').first.click()
     c.esperar(1200)
 
@@ -111,7 +118,7 @@ def paso_05(c):
     # 5. El validador rechaza un ciclo que supera las 48 h semanales
     c.abrir_accion('al_hr_pe_attendance.action_l10n_pe_hr_shift_cycle', ms=1500)
     c.clic('.o_control_panel_main_buttons button.o_list_button_add', ms=1500)
-    c.page.locator('div[name=name] input').fill('DEMO FICHA HR1 Prueba 14×7 — 12 horas')
+    c.page.locator('div[name=name] input').fill('Prueba 14×7 — 12 horas')
     c.page.locator('div[name=days_work] input').fill('14')
     c.page.locator('div[name=days_rest] input').fill('7')
     c.page.locator('div[name=hours_per_day] input').fill('12:00')
@@ -190,7 +197,7 @@ def paso_12(c):
 def paso_13(c):
     # 13. «Sujeto a horas extras (PE)» en las versiones
     c.abrir('/odoo/action-hr.action_hr_version', ms=2000)
-    buscar(c, 'DEMO FICHA HR1')
+    buscar_trabajadores(c)
     columnas(c, ('Sujeto a horas extras (PE)',))
     c.foto('13-versiones-he', clip={'x': 0, 'y': 0, 'width': 1920, 'height': 300})
 
@@ -198,7 +205,7 @@ def paso_13(c):
 def paso_14(c):
     # 14. Lista de tareajes
     c.abrir_accion('al_hr_pe_attendance.hr_tareaje_manager_action', ms=1800)
-    buscar(c, 'DEMO FICHA HR1')
+    buscar(c, 'Tareaje septiembre 2026 (avance al 14)')
     c.foto('14-tareajes')
 
 
@@ -234,7 +241,7 @@ def paso_18(c):
 def paso_19(c):
     # 19. Reporte «Fotocheck (Perú)» desde el empleado
     c.abrir('/odoo/action-hr.open_view_employee_list_my?view_type=list', ms=2500)
-    buscar(c, 'DEMO FICHA HR1')
+    buscar_trabajadores(c)
     c.page.locator('.o_list_record_selector input').first.check()
     c.esperar(500)
     c.clic('.o_control_panel_actions button:has-text("Imprimir")', ms=700)

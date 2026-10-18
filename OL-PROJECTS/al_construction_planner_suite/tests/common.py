@@ -13,8 +13,8 @@ def load_demo(env, prefix):
     (plan, project, floor, act…)."""
     code = (DEMO_SCRIPT.read_text()
             .replace('env.cr.commit()', '')
-            .replace("P = 'DEMO PLAN'", 'P = %r' % prefix)
-            .replace("full_code = f'DEMO-{code}'",
+            .replace("P = ''", 'P = %r' % f'{prefix} ')
+            .replace("full_code = code",
                      "full_code = f'%s-{code}'" % prefix.replace(' ', '')))
     namespace = {'env': env, 'print': lambda *args, **kwargs: None}
     exec(compile(code, str(DEMO_SCRIPT), 'exec'), namespace)  # noqa: S102

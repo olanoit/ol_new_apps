@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Capturas de la ficha de al_l10n_pe_cpe_validation (datos DEMO CPE:
+"""Capturas de la ficha de al_l10n_pe_cpe_validation (datos de demostración:
 tools/cpe_validation_demo_data.py). FICHAS_URL=http://127.0.0.1:19791"""
 import sys
 from pathlib import Path
@@ -16,8 +16,11 @@ with Captura('al_l10n_pe_cpe_validation', viewport={'width': 1440, 'height': 900
     by_ref = {row['ref']: row['id'] for row in ids}
     # 1. Lista de facturas de proveedor con la columna SUNAT.
     c.abrir_accion('account.action_move_in_invoice_type', 2500)
-    p.locator('.o_searchview_input').fill('DEMO CPE')
-    p.keyboard.press('Enter'); c.esperar(1500)
+    # Los tres proveedores de la demostración (el mismo campo se une con «o»).
+    for proveedor in ('DISTRIBUIDORA SAN JORGE S.A.C.', 'IMPORTACIONES DEL PACÍFICO S.R.L.',
+                      'SERVICIOS GENERALES LUNA E.I.R.L.'):
+        p.locator('.o_searchview_input').fill(proveedor)
+        p.keyboard.press('Enter'); c.esperar(1500)
     c.foto('01-lista', selector='.o_list_renderer')
     # 2. Factura con resultado no válido: pestaña Otra información.
     for name, move_id in (('02-no-valido', by_ref['F001-00009910']),

@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_retention (datos «DEMO RET»)."""
+"""Capturas de la ficha de al_l10n_pe_retention (datos de demostración)."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -18,7 +18,7 @@ with Captura('al_l10n_pe_retention') as c:
     c.texto('Retención IGV')
     c.foto('02-factura', selector='.o_form_view .o_form_sheet_bg')
 
-    # 3. Asistente de pago con la línea de retención (factura «DEMO RET ficha»)
+    # 3. Asistente de pago con la línea de retención (factura «Ficha»)
     c.abrir_registro('account.move', 2395, ms=2000)
     c.clic('.o_form_statusbar button:has-text("Pagar")', ms=2500)
     c.foto('03-registrar-pago', selector='.modal-content')

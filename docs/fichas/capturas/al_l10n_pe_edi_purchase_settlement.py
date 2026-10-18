@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_edi_purchase_settlement (datos «DEMO LC»,
+"""Capturas de la ficha de al_l10n_pe_edi_purchase_settlement (datos de demostración,
 cargados con al_l10n_pe_edi_purchase_settlement/tools/purchase_settlement_demo_data.py).
 No envía nada a SUNAT: la liquidación queda «Por enviar»."""
 import sys

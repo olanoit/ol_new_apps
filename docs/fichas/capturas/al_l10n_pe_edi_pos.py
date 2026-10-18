@@ -1,7 +1,7 @@
-"""Capturas de la ficha de al_l10n_pe_edi_pos (TPV «DEMO TPV Vendedores»).
+"""Capturas de la ficha de al_l10n_pe_edi_pos (TPV «Vendedores»).
 
 La venta de demostración B002-00000004 (orden 48) se hizo una sola vez en la
-sesión DEMO con «Emitir a SUNAT: No», así que su boleta quedó retenida y no
+sesión de demostración con «Emitir a SUNAT: No», así que su boleta quedó retenida y no
 se envió. Este guion NO valida ventas: arma una orden, abre el diálogo del
 comprobante y lo cancela; el recibo se toma reimprimiendo la orden ya pagada.
 """
@@ -10,7 +10,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-TPV = 23                      # DEMO TPV Vendedores (sesión DEMO abierta)
+TPV = 23                      # Vendedores (sesión de demostración abierta)
 ORDEN = 48                    # boleta B002-00000004, retenida
 REFERENCIA = '2622-23-000001'  # referencia de la orden 48 en el TPV
 BOLETA = 2414                 # account.move de la orden 48

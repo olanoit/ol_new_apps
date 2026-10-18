@@ -1,7 +1,7 @@
 """Capturas de la ficha de al_hr_pe_benefits.
 
 Datos: planilla de pruebas de «Comercial Demo Perú S.A.C.» (trabajadores
-ficticios de docs/planillas/pruebas) y los datos «DEMO FICHA HR2»: lotes
+ficticios de docs/planillas/pruebas) y los datos de demostración: lotes
 de julio y agosto de 2026 de la trabajadora Salazar Ríos Andrea (provisión
 51 y liquidación de cese 3), préstamo 27 y adelanto 1. Los asistentes se
 abren y se cierran sin confirmar; no se genera ni exporta nada.
@@ -77,7 +77,7 @@ with Captura('al_hr_pe_benefits') as c:
         c.abrir_registro('hr.fifth.category.line', 81, ms=2000)
         c.foto('09-renta-5ta-linea', selector=SHEET)
 
-    # 10-11. Liquidación de cese DEMO
+    # 10-11. Liquidación de cese de agosto
     if quiero('10-liquidacion') or quiero('11-liquidacion-vacaciones'):
         alto(c, 900)
         c.abrir_registro('hr.liquidation', 3, ms=2000)
@@ -89,7 +89,7 @@ with Captura('al_hr_pe_benefits') as c:
         c.esperar(500)
         c.foto('11-liquidacion-vacaciones', selector=SHEET)
 
-    # 12. Provisión DEMO de julio
+    # 12. Provisión de julio
     if quiero('12-provisiones'):
         alto(c, 900)
         c.abrir_registro('hr.provisiones', 51, ms=2000)
@@ -117,7 +117,7 @@ with Captura('al_hr_pe_benefits') as c:
         c.abrir_accion('al_hr_pe_benefits.action_hr_vacation_rest', ms=2000)
         c.foto('16-saldos-vacaciones')
 
-    # 17-18. Adelanto y préstamo DEMO
+    # 17-18. Adelanto y préstamo de demostración
     if quiero('17-adelanto'):
         alto(c, 900)
         c.abrir_registro('hr.advance', 1, ms=2000)
@@ -138,7 +138,7 @@ with Captura('al_hr_pe_benefits') as c:
         alto(c, 900)
         c.abrir_accion('hr_payroll.action_hr_payslip_run', ms=2500)
         card = c.page.locator(
-            '.o_kanban_record:has-text("DEMO FICHA HR2 Planilla agosto 2026")').first
+            '.o_kanban_record:has(:text-is("Planilla agosto 2026"))').first
         card.locator('button.dropdown-toggle').first.click()
         c.esperar(900)
         menu = c.page.locator('.o-dropdown--menu').last

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Capturas de la ficha de al_l10n_pe_batch_payment (datos DEMO de
+"""Capturas de la ficha de al_l10n_pe_batch_payment (datos de demostración de
 tools/batch_payment_demo_data.py). FICHAS_URL=http://127.0.0.1:19771"""
 import sys
 from pathlib import Path

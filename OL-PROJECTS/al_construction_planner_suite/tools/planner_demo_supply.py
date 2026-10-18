@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Datos demo de la fase 4 (asignaciones y compras) sobre el plan vigente de
-«DEMO PLAN MOMEN-35-26».
+«MOMEN-35-26».
 
 Requiere haber ejecutado antes ``planner_demo_data.py`` y
 ``planner_demo_baseline.py``. Deja:
@@ -16,10 +16,12 @@ Requiere haber ejecutado antes ``planner_demo_data.py`` y
 Idempotente (si el plan ya tiene asignaciones no hace nada). Ejecutar con:
   odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < planner_demo_supply.py
 """
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final: el mismo que en
+# planner_demo_data.py (vacío en la base demo).
+P = ''
 # Como admin (jefatura del planificador, compras y requerimientos).
 env = env(user=env.ref('base.user_admin'))
-project = env['project.project'].search([('name', '=', f'{P} MOMEN-35-26')], limit=1)
+project = env['project.project'].search([('name', '=', f'{P}MOMEN-35-26')], limit=1)
 assert project, 'Ejecute antes planner_demo_data.py'
 plan = env['construction.resource.plan'].search([
     ('project_id', '=', project.id), ('state', 'in', ('approved', 'in_progress'))], limit=1)

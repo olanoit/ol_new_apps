@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Datos demo de la fase 10 (ruta del ingreso) sobre «DEMO PLAN
-MOMEN-35-26».
+"""Datos demo de la fase 10 (ruta del ingreso) sobre «MOMEN-35-26».
 
 Requiere haber ejecutado antes ``planner_demo_data.py``,
 ``planner_demo_baseline.py`` y ``planner_demo_contracts.py``. Deja (todo
 ficticio):
 
 - la orden de venta del contrato con la partida «Cocinas» (cantidad 1, más
-  IGV) para «DEMO PLAN Inmobiliaria MOMEN», confirmada y
+  IGV) para «Inmobiliaria MOMEN», confirmada y
   enlazada a la obra, con la obra del 12/10 al 18/12/2026 y su calendario de
   ingresos (cada 2 semanas, 2 + 5 + 2 días, cobro a 30 días, fondo de
   garantía 5 % al cierre) y los días hábiles del ingreso de lunes a viernes
@@ -29,10 +28,12 @@ from datetime import date
 
 from odoo import Command
 
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final: el mismo que en
+# planner_demo_data.py (vacío en la base demo).
+P = ''
 # Como admin (jefatura del planificador e ingresos).
 env = env(user=env.ref('base.user_admin'))
-project = env['project.project'].search([('name', '=', f'{P} MOMEN-35-26')], limit=1)
+project = env['project.project'].search([('name', '=', f'{P}MOMEN-35-26')], limit=1)
 assert project, 'Ejecute antes planner_demo_data.py'
 plan = project._construction_current_plan()
 company = plan.company_id or project.company_id or env.company
@@ -62,17 +63,17 @@ else:
                     'day_period': 'full_day'}) for day, name in enumerate(
                         ('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'))]})
         company.construction_income_calendar_id = calendar
-    customer_vals = {'name': f'{P} Inmobiliaria MOMEN', 'is_company': True,
+    customer_vals = {'name': f'{P}Inmobiliaria MOMEN', 'is_company': True,
                      'vat': '20557912879', 'company_id': False}
     ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
     if ruc:
         customer_vals['l10n_latam_identification_type_id'] = ruc.id
     customer = env['res.partner'].search([('name', '=', customer_vals['name'])], limit=1) \
         or env['res.partner'].create(customer_vals)
-    product = env['product.product'].search([('name', '=', f'{P} Cocinas')], limit=1)
+    product = env['product.product'].search([('name', '=', f'{P}Cocinas')], limit=1)
     if not product:
-        vals = {'name': f'{P} Cocinas', 'type': 'service', 'invoice_policy': 'delivery',
-                'default_code': 'DEMO-PARTIDA-COC'}
+        vals = {'name': f'{P}Cocinas', 'type': 'service', 'invoice_policy': 'delivery',
+                'default_code': 'PARTIDA-COC'}
         if 'service_type' in env['product.template']._fields:
             vals['service_type'] = 'manual'
         product = env['product.product'].create(vals)

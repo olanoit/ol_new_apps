@@ -1,7 +1,7 @@
 """Capturas de la ficha de al_hr_pe_reports.
 
 Datos: planilla de pruebas de «Comercial Demo Perú S.A.C.» (trabajadores
-ficticios), la trabajadora «DEMO FICHA HR2 Salazar Ríos Andrea» y los pagos
+ficticios), la trabajadora «Salazar Ríos Andrea» y los pagos
 masivos en borrador PM-000007 (lote) y PM-000009 (gratificación). Los
 asistentes de certificados se crean por RPC (son transitorios) y se ven en
 la vista previa HTML del PDF. El logotipo de la compañía de pruebas se
@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-EMPLEADA = 2451          # DEMO FICHA HR2 Salazar Ríos Andrea
+EMPLEADA = 2451          # Salazar Ríos Andrea
 VERSION = 2553           # su versión, con plantilla de contrato
 BOLETA = 759             # Planilla 2026-06, trabajador de pruebas
 PAGO_LOTE = 11           # PM-000007, lote de abril 2026 (BCP)
@@ -176,7 +176,7 @@ with Captura('al_hr_pe_reports') as c:
         c.clic('.modal-footer button:has-text("Cancelar")', ms=800)
 
     if quiere('10'):
-        # La trabajadora DEMO no tiene cuenta CTS: la carta impresa se
+        # Salazar Ríos Andrea no tiene cuenta CTS: la carta impresa se
         # muestra con un trabajador de pruebas que sí la tiene y una fecha
         # de cese de ejemplo (el asistente es transitorio, nada se guarda).
         letter = rpc(c, 'hr.letter.wizard', 'create', [{

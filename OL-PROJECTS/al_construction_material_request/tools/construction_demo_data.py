@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Datos demo de requerimientos de obra para la ficha y las pruebas manuales
-(prefijo DEMO RQO; todo ficticio). Idempotente: no toca datos que no sean DEMO.
+(todo ficticio). Idempotente: busca cada registro por su nombre y solo crea
+los que faltan.
 
 Ejecutar con:
   odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < construction_demo_data.py
 """
-P = 'DEMO RQO'
 company = env.company
 admin = env.ref('base.user_admin')
 company._al_construction_ensure_setup()
@@ -19,14 +19,14 @@ def get_or_create(model, domain, vals):
 print('=== Analítica ===')
 plans = {}
 for key, name in (('disc', 'Disciplina'), ('part', 'Partida')):
-    plans[key] = get_or_create('account.analytic.plan', [('name', '=', f'{P} {name}')],
-                               {'name': f'{P} {name}'})
+    plans[key] = get_or_create('account.analytic.plan', [('name', '=', name)],
+                               {'name': name})
 acc = {}
 for key, plan, name in (('estr', 'disc', 'Estructuras'), ('arq', 'disc', 'Arquitectura'),
                         ('conc', 'part', '02.01 Concreto simple'),
                         ('alba', 'part', '03.01 Muros de albañilería')):
-    acc[key] = get_or_create('account.analytic.account', [('name', '=', f'{P} {name}')],
-                             {'name': f'{P} {name}', 'plan_id': plans[plan].id})
+    acc[key] = get_or_create('account.analytic.account', [('name', '=', name)],
+                             {'name': name, 'plan_id': plans[plan].id})
 
 
 def dist(*keys):
@@ -36,9 +36,9 @@ def dist(*keys):
 print('=== Ubicaciones por familia ===')
 loc = {}
 for key, name in (('cem', 'Cementos'), ('fie', 'Fierros')):
-    loc[key] = get_or_create('stock.location', [('name', '=', f'{P} {name}'),
+    loc[key] = get_or_create('stock.location', [('name', '=', name),
                                                 ('location_id', '=', central.id)],
-                             {'name': f'{P} {name}', 'usage': 'internal',
+                             {'name': name, 'usage': 'internal',
                               'location_id': central.id})
 
 print('=== Materiales y existencias ===')
@@ -52,10 +52,10 @@ for key, name, u, cost, location, qty in (
         ('are', 'Arena gruesa', 'm3', 65.00, central, 5),
         ('lad', 'Ladrillo King Kong 18 huecos', 'u', 1.10, central, 0),
         ('cla', 'Clavo para madera 3"', 'kg', 6.80, central, 50)):
-    product = env['product.product'].search([('name', '=', f'{P} {name}')], limit=1)
+    product = env['product.product'].search([('name', '=', name)], limit=1)
     if not product:
         product = env['product.product'].create({
-            'name': f'{P} {name}', 'type': 'consu', 'is_storable': True,
+            'name': name, 'type': 'consu', 'is_storable': True,
             'uom_id': uom[u].id, 'standard_price': cost})
         if qty:
             env['stock.quant']._update_available_quantity(product, location, qty)
@@ -65,33 +65,33 @@ print('=== Usuarios, obras y reglas de aprobación ===')
 grp = 'al_construction_material_request.group_construction_'
 residente = env['res.users'].search([('login', '=', 'demo_rqo_residente')]) or \
     env['res.users'].create({
-        'name': f'{P} Residente de obra', 'login': 'demo_rqo_residente', 'lang': 'es_419',
+        'name': 'Residente de obra', 'login': 'demo_rqo_residente', 'lang': 'es_419',
         'group_ids': [(6, 0, [env.ref(f'{grp}requester').id])]})
 gerente = env['res.users'].search([('login', '=', 'demo_rqo_gerente')]) or \
     env['res.users'].create({
-        'name': f'{P} Gerente de operaciones', 'login': 'demo_rqo_gerente', 'lang': 'es_419',
+        'name': 'Gerente de operaciones', 'login': 'demo_rqo_gerente', 'lang': 'es_419',
         'group_ids': [(6, 0, [env.ref(f'{grp}operations_manager').id])]})
 sites = {}
 for key, name in (('a', 'Colegio A'), ('b', 'Posta médica B')):
-    sites[key] = get_or_create('project.project', [('name', '=', f'{P} {name}')], {
-        'name': f'{P} {name}', 'is_construction_site': True, 'user_id': admin.id})
+    sites[key] = get_or_create('project.project', [('name', '=', name)], {
+        'name': name, 'is_construction_site': True, 'user_id': admin.id})
     sites[key].message_subscribe(partner_ids=residente.partner_id.ids)
 
 model = env['ir.model']._get('construction.material.request')
-get_or_create('tier.definition', [('name', '=', f'{P} Nivel 1: jefe de proyecto de la obra')], {
-    'name': f'{P} Nivel 1: jefe de proyecto de la obra', 'model_id': model.id,
+get_or_create('tier.definition', [('name', '=', 'Nivel 1: jefe de proyecto de la obra')], {
+    'name': 'Nivel 1: jefe de proyecto de la obra', 'model_id': model.id,
     'review_type': 'field',
     'reviewer_field_id': env['ir.model.fields']._get(
         'construction.material.request', 'project_manager_id').id,
     'definition_domain': "[('project_manager_id', '!=', False)]",
     'sequence': 20, 'approve_sequence': True, 'notify_on_create': True})
-get_or_create('tier.definition', [('name', '=', f'{P} Nivel 2: gerencia (más de S/ 10 000)')], {
-    'name': f'{P} Nivel 2: gerencia (más de S/ 10 000)', 'model_id': model.id,
+get_or_create('tier.definition', [('name', '=', 'Nivel 2: gerencia (más de S/ 10 000)')], {
+    'name': 'Nivel 2: gerencia (más de S/ 10 000)', 'model_id': model.id,
     'review_type': 'group', 'reviewer_group_id': env.ref(f'{grp}operations_manager').id,
     'definition_domain': "[('amount_estimated', '>', 10000)]",
     'sequence': 10, 'approve_sequence': True, 'notify_on_create': True})
-vendor = get_or_create('res.partner', [('name', '=', f'{P} Distribuidora de materiales')],
-                       {'name': f'{P} Distribuidora de materiales', 'is_company': True})
+vendor = get_or_create('res.partner', [('name', '=', 'Distribuidora de materiales')],
+                       {'name': 'Distribuidora de materiales', 'is_company': True})
 
 print('=== Requerimientos ===')
 Request = env['construction.material.request']
@@ -99,8 +99,9 @@ Request = env['construction.material.request']
 
 def request(key, site, lines, **vals):
     """``lines``: (producto, cantidad, analítica, modo)."""
-    marker = f'{P} {key}'
-    found = Request.search([('note', 'ilike', marker)], limit=1)
+    marker = key.capitalize()
+    found = Request.search([('project_id', '=', sites[site].id),
+                            ('note', 'ilike', f'<p>{marker}:')], limit=1)
     if found:
         return found, False
     rec = Request.with_user(residente).create({

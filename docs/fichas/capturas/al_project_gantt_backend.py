@@ -1,6 +1,6 @@
 """Capturas de la ficha de al_project_gantt_backend.
 
-Datos: proyectos «[DEMO Gantt] Edificio A» (id 18) y «[DEMO Gantt] Migración
+Datos: proyectos «Edificio A» (id 18) y «Migración
 ERP» (id 19) de docs/gantt/pruebas/seed_gantt_demo.py y la línea base ya
 guardada del Edificio A. El guion no guarda nada: el formulario de tarea se
 cierra con Cancelar.

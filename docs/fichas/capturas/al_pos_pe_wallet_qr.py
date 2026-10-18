@@ -1,7 +1,7 @@
-"""Capturas de la ficha de al_pos_pe_wallet_qr con los datos DEMO de
+"""Capturas de la ficha de al_pos_pe_wallet_qr con los datos de demostración de
 docs/tpv_pe/preparar_demo_qr.py: la cuenta bancaria con su QR y el método de
-pago. 03-qr es la captura del cobro en el TPV (Playwright, caja «DEMO TPV
-Yape»)."""
+pago. 03-qr es la captura del cobro en el TPV (Playwright, caja
+«Yape»)."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -17,10 +17,10 @@ def search_id(c, model, domain):
 
 with Captura('al_pos_pe_wallet_qr') as c:
     c.abrir('/odoo', ms=2000)
-    bank = search_id(c, 'res.partner.bank', [['acc_number', '=', 'DEMO-YAPE-0001']])
+    bank = search_id(c, 'res.partner.bank', [['acc_number', '=', 'YAPE-0001']])
     c.abrir_registro('res.partner.bank', bank, ms=2500)
     c.texto('QR de billetera', ms=1200)
     c.foto('01-cuenta', selector='.o_form_sheet_bg')
-    method = search_id(c, 'pos.payment.method', [['name', '=', 'DEMO Yape / Plin']])
+    method = search_id(c, 'pos.payment.method', [['name', '=', 'Yape / Plin']])
     c.abrir_registro('pos.payment.method', method, ms=2500)
     c.foto('02-metodo', selector='.o_form_sheet_bg')

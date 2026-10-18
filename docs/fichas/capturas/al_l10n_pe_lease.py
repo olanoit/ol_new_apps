@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_lease (datos «DEMO NIIF16», cargados con
+"""Capturas de la ficha de al_l10n_pe_lease (datos de demostración, cargados con
 al_l10n_pe_lease/tools/lease_demo_data.py)."""
 import sys
 from pathlib import Path

@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_ple (datos «DEMO PLE», ejercicio 2026).
+"""Capturas de la ficha de al_l10n_pe_ple (datos de demostración, ejercicio 2026).
 
 Solo lectura salvo el propio asistente «Exportar PLE» (modelo transitorio):
 ningún paso modifica registros de la base.
@@ -42,7 +42,7 @@ if 1 in BLOQUES:
         # 01. Ajustes ▸ Perú: formatos simplificados
         ajustes(c, 'Libros electrónicos PLE', '01-ajustes', 420)
 
-        # 02. Clasificación RCE en el producto «DEMO PLE Producto Consignado»
+        # 02. Clasificación RCE en el producto «Producto Consignado»
         c.abrir_registro('product.template', 155, ms=2000)
         c.texto('Contabilidad')
         c.foto('02-producto-rce', selector='.o_form_view .o_form_sheet_bg')
@@ -58,7 +58,7 @@ if 1 in BLOQUES:
         c.clic('.modal-header .btn-close', ms=800)
 
         # 04. El mismo asistente con el Libro 3 al 31/07/2026 (fecha de los
-        # registros DEMO de 3.8 y 3.19): aparecen Fecha de los EEFF y Oportunidad
+        # registros de demostración de 3.8 y 3.19): aparecen Fecha de los EEFF y Oportunidad
         c.abrir_accion('al_l10n_pe_ple.action_ple_export_wizard', ms=2000)
         c.clic('.modal-dialog div[name=export_71] input', ms=500)
         for campo in ('export_38', 'export_39', 'export_319'):

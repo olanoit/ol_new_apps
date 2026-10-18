@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Capturas de la ficha de al_l10n_pe_check (datos DEMO CHQ de la demo en
+"""Capturas de la ficha de al_l10n_pe_check (datos de demostración de cheques en
 «PE Company»). Argumentos: id de la compañía, del diario «Cheques de
 terceros» y del cheque diferido. FICHAS_URL=http://127.0.0.1:19771
 FICHAS_DB=test_pe_demo"""

@@ -1,22 +1,22 @@
-"""Capturas de la ficha de al_hr_pe_import (datos «DEMO FICHA HR1»).
+"""Capturas de la ficha de al_hr_pe_import (datos de demostración).
 
 Importa de verdad, desde la interfaz, con los seis asistentes y solo sobre
-registros DEMO:
+registros de demostración:
 
-* Inputs de boletas: novedades de agosto 2026 sobre el lote DEMO
-  «DEMO FICHA HR1 Novedades agosto 2026» (antes se borran las entradas de
-  esas boletas DEMO para que el resultado sea siempre el mismo).
+* Inputs de boletas: novedades de agosto 2026 sobre el lote
+  «Novedades agosto 2026» (antes se borran las entradas de
+  esas boletas para que el resultado sea siempre el mismo).
 * Datos PE de versiones: los mismos valores que ya tienen los tres
-  trabajadores DEMO (se actualizan sin cambiar nada) y una fila errónea.
+  trabajadores de demostración (se actualizan sin cambiar nada) y una fila errónea.
 * Récord vacacional y Adelantos: saldos y adelantos de los trabajadores
-  DEMO; se borran al terminar para no alterar otros módulos.
+  de demostración; se borran al terminar para no alterar otros módulos.
 * Asistencias: marcaciones que ya existen (se actualizan sin cambios) y una
   fila errónea.
-* Reglas salariales: sobre la estructura DEMO «DEMO FICHA HR1 Reglas
+* Reglas salariales: sobre la estructura «Reglas
   importadas» (creada por odoo shell).
 
 El historial de importaciones NO se borra: no hay forma de distinguir las
-importaciones DEMO de las reales. Cada ejecución completa añade seis líneas.
+importaciones de demostración de las reales. Cada ejecución completa añade seis líneas.
 
 Uso: ``python al_hr_pe_import.py [seccion ...]`` (sin argumentos, todas;
 ``boleta`` solo rehace la foto de la boleta, sin importar).
@@ -48,10 +48,12 @@ class Captura(_Captura):
 
 
 MODULE = 'al_hr_pe_import'
-LOTE = 'DEMO FICHA HR1 Novedades agosto 2026'
+LOTE = 'Novedades agosto 2026'
 BOLETA_LUCIA = 3524
-ESTRUCTURA = 'DEMO FICHA HR1 Reglas importadas'
-DEMO = 'DEMO FICHA HR1'
+ESTRUCTURA = 'Reglas importadas'
+TRABAJADORES = ['Salazar Quispe Lucía', 'Huamán Torres Jorge Luis', 'Rivas Cárdenas Andrea']
+# Observaciones de los adelantos que importa este guion (se borran al terminar).
+OBSERVACIONES = ['Solicitud del 04/10', 'Adelanto de gratificación', 'Tipo inexistente']
 SECCIONES = set(sys.argv[1:])
 
 
@@ -69,7 +71,7 @@ FILAS_INPUTS = [
     ['40000001', 'COMI', 120],        # documento sin boleta en el lote → error
 ]
 
-# Mismos valores que ya tienen las versiones DEMO: se actualizan sin cambios.
+# Mismos valores que ya tienen las versiones de demostración: se actualizan sin cambios.
 FILAS_VERSIONES = [
     ['NRO DOCUMENTO', 'RÉGIMEN LABORAL', 'CUSPP', 'TIPO COMISIÓN AFP',
      'AFILIACIÓN (AFP/ONP)', 'SEGURO SOCIAL', 'TIPO TRABAJADOR (T08)',
@@ -94,17 +96,17 @@ FILAS_ADELANTOS = [
     ['NRO DOCUMENTO', 'TIPO DE ADELANTO', 'FECHA DE ADELANTO',
      'FECHA DE DESCUENTO', 'MONTO', 'OBSERVACIONES'],
     ['72418305', 'Adelanto de sueldo', '2026-10-05', '2026-10-31', 500,
-     'DEMO FICHA HR1 solicitud del 04/10'],
+     OBSERVACIONES[0]],
     ['75102846', 'Adelanto de gratificación', '2026-10-10', '2026-12-15', 1200,
-     'DEMO FICHA HR1 adelanto de gratificación'],
+     OBSERVACIONES[1]],
     ['70935214', 'Adelanto de movilidad', '2026-10-05', '2026-10-31', 150,
-     'DEMO FICHA HR1 tipo inexistente'],       # error
+     OBSERVACIONES[2]],       # error
 ]
 
-# Marcaciones DEMO que ya existen (hora de Lima): se actualizan sin cambios.
+# Marcaciones de demostración que ya existen (hora de Lima): se actualizan sin cambios.
 FILAS_ASISTENCIAS = [
     ['EMPLEADO (nombre exacto o documento)', 'ENTRADA (check_in)', 'SALIDA (check_out)'],
-    ['DEMO FICHA HR1 Salazar Quispe Lucía', '2026-09-01 08:00:00', '2026-09-01 13:00:00'],
+    ['Salazar Quispe Lucía', '2026-09-01 08:00:00', '2026-09-01 13:00:00'],
     ['72418305', '2026-09-01 14:00:00', '2026-09-01 17:00:00'],
     ['75102846', '2026-09-01 08:00:00', '2026-09-01 13:00:00'],
     ['75102846', '2026-09-15 17:00:00', '2026-09-15 08:00:00'],   # salida anterior → error
@@ -113,12 +115,12 @@ FILAS_ASISTENCIAS = [
 FILAS_REGLAS = [
     ['CATEGORÍA (nombre o código)', 'COMPAÑÍA (informativa)', 'CÓDIGO', 'NOMBRE',
      'SECUENCIA', 'CÓDIGO PYTHON', 'CONDICIÓN PYTHON'],
-    ['ING', '', 'DEMO_BAS', 'DEMO Básico', 1, 'result = contract.wage',
+    ['ING', '', 'BAS', 'Básico', 1, 'result = contract.wage',
      "result = rules['NET']['total'] > categories['NET'] * 0.10"],
-    ['APORTES TRABAJADOR', '', 'DEMO_ONP', 'DEMO Aporte ONP 13 %', 20,
+    ['APORTES TRABAJADOR', '', 'ONP', 'Aporte ONP 13 %', 20,
      "result = -categories['ING'] * 0.13",
      "result = contract.retirement_fund == 'onp'"],
-    ['BONOS', '', 'DEMO_BONO', 'DEMO Bono', 5, 'result = 100', ''],   # categoría inexistente
+    ['BONOS', '', 'BONO', 'Bono', 5, 'result = 100', ''],   # categoría inexistente
 ]
 
 
@@ -136,7 +138,7 @@ def rpc(c, model, method, args, kwargs=None):
 
 
 def demo_employees(c):
-    return rpc(c, 'hr.employee', 'search', [[['name', '=like', DEMO + ' %']]])
+    return rpc(c, 'hr.employee', 'search', [[['name', 'in', TRABAJADORES]]])
 
 
 def limpiar_inputs(c):
@@ -147,7 +149,7 @@ def limpiar_inputs(c):
 
 
 def limpiar_vacaciones_adelantos(c):
-    """Solo lo que crea este guion sobre los trabajadores DEMO."""
+    """Solo lo que crea este guion sobre los trabajadores de demostración."""
     emps = demo_employees(c)
     rests = rpc(c, 'hr.vacation.rest', 'search', [[
         ['employee_id', 'in', emps], ['internal_motive', '=', 'rest'],
@@ -155,7 +157,7 @@ def limpiar_vacaciones_adelantos(c):
     if rests:
         rpc(c, 'hr.vacation.rest', 'unlink', [rests])
     advances = rpc(c, 'hr.advance', 'search', [[
-        ['employee_id', 'in', emps], ['observations', '=like', DEMO + ' %'],
+        ['employee_id', 'in', emps], ['observations', 'in', OBSERVACIONES],
         ['state', '=', 'not payed']]])
     if advances:
         rpc(c, 'hr.advance', 'unlink', [advances])
@@ -237,7 +239,7 @@ with Captura(MODULE) as c:
         importar(
             c, 'al_hr_pe_import.action_al_import_payslip_input_wizard',
             excel('novedades_agosto_2026.xlsx', 'INPUTS', FILAS_INPUTS),
-            antes=lambda: many2one(c, 'payslip_run_id', 'DEMO FICHA HR1 Novedades', LOTE),
+            antes=lambda: many2one(c, 'payslip_run_id', 'Novedades agosto', LOTE),
             foto_archivo='02-archivo', foto_config='03-configurar',
             foto_progreso='04-progreso')
         c.clic('.modal-content button:has-text("Listo")', ms=800)
@@ -298,7 +300,7 @@ with Captura(MODULE) as c:
             excel('reglas_v18.xlsx', 'REGLAS', FILAS_REGLAS),
             configurar=estructura, foto_config='16-reglas-configurar')
         c.clic('.modal-content button:has-text("Ver registros")', ms=2000)
-        c.page.locator('.o_data_row:has-text("DEMO_ONP")').first.click()
+        c.page.locator('.o_data_row:has(td[name=code]:text-is("ONP"))').first.click()
         c.esperar(1800)
         c.foto('17-regla-adaptada', selector='.o_form_view .o_form_sheet_bg')
 

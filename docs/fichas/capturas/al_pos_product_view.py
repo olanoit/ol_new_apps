@@ -1,6 +1,6 @@
 """Capturas de la ficha de al_pos_product_view.
 
-Usa el punto de venta «DEMO TPV Vendedores» (id 23) y su sesión abierta. Los
+Usa el punto de venta «Vendedores» (id 23) y su sesión abierta. Los
 seis productos del TPV de demostración ya llevan las etiquetas de ejemplo del
 módulo. El conmutador guarda la vista preferida del usuario: el guion termina
 en «Lista», que es la preferencia que tenía el administrador.

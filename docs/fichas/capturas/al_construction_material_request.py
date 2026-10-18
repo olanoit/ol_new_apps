@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_construction_material_request (datos «DEMO RQO»,
+"""Capturas de la ficha de al_construction_material_request (datos de demostración,
 cargados con al_construction_material_request/tools/construction_demo_data.py)."""
 import sys
 from pathlib import Path

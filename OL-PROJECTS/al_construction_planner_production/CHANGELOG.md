@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_production.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261018 — 18/10/2026
+
+- Confirmar la orden sin accesorios ya no falla para el comprador: el aviso a Logística se arma aunque no pueda leer las compañías de los demás usuarios.
+
 ## 2.20261017 — 17/10/2026
 
 - El pedido de accesorios no vuelve a proponer lo que la orden ya trae en sus componentes (prueba en dev1 del 17-oct).

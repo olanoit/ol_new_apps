@@ -1,6 +1,6 @@
 """Capturas de la ficha de al_pos_vendedor.
 
-Usa el punto de venta «DEMO TPV Vendedores» (copia del TPV de la compañía con
+Usa el punto de venta «Vendedores» (copia del TPV de la compañía con
 solo el método Tarjeta, sin comprobante electrónico y con seis vendedores
 autorizados) y su propia sesión. Las tres ventas validadas que se ven en el
 análisis (órdenes 44-46) se hicieron una sola vez; el guion no valida ventas
@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-CONFIG = 23  # DEMO TPV Vendedores
+CONFIG = 23  # Vendedores
 
 
 def w(c, ms):
@@ -106,7 +106,7 @@ with Captura('al_pos_vendedor') as c:
     p.locator('.alv-cancel').click()
     w(c, 600)
 
-    # 5. Órdenes agrupadas por vendedor (incluye las tres ventas DEMO validadas:
+    # 5. Órdenes agrupadas por vendedor (incluye las tres ventas de demostración validadas:
     #    Quispe S/ 33,26, Flores S/ 18,73 y Torres S/ 50,00)
     c.abrir('/odoo/action-point_of_sale.action_pos_pos_form', ms=2500)
     c.clic('.o_searchview_dropdown_toggler', ms=800)

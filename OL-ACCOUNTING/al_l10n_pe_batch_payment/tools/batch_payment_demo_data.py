@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos DEMO del pago masivo para las capturas (odoo shell, se guarda).
+"""Datos de demostración del pago masivo para las capturas (odoo shell, se guarda).
 
     odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 < tools/batch_payment_demo_data.py
 """
@@ -17,24 +17,24 @@ def bank(name, fmt):
         {'name': name, 'l10n_pe_batch_format': fmt})
 
 
-bcp = bank('DEMO BCP', 'bcp')
-bbva = bank('DEMO BBVA', 'bbva')
-ibk = bank('DEMO Interbank', 'interbank')
+bcp = bank('BCP', 'bcp')
+bbva = bank('BBVA', 'bbva')
+ibk = bank('Interbank', 'interbank')
 journal = env['account.journal'].search([('code', '=', 'DBCP'), ('company_id', '=', company.id)])
 if not journal:
     account = env['res.partner.bank'].create({
         'partner_id': company.partner_id.id, 'bank_id': bcp.id, 'acc_number': '191-2233445-0-66',
         'currency_id': pen.id})
     journal = env['account.journal'].create({
-        'name': 'DEMO BCP soles', 'code': 'DBCP', 'type': 'bank', 'currency_id': pen.id,
+        'name': 'BCP soles', 'code': 'DBCP', 'type': 'bank', 'currency_id': pen.id,
         'bank_account_id': account.id, 'l10n_pe_batch_service_code': 'P'})
 ruc = env.ref('l10n_pe.it_RUC')
 suppliers = []
 for name, vat, b, acc, cci in (
-        ('DEMO PAGO Maderas del Sur SAC', '20100070970', bcp, '193-7654321-0-22', ''),
-        ('DEMO PAGO Herrajes Lima SAC', '20131312955', bbva, '0011-0456-0200098765',
+        ('Maderas del Sur SAC', '20100070970', bcp, '193-7654321-0-22', ''),
+        ('Herrajes Lima SAC', '20131312955', bbva, '0011-0456-0200098765',
          '01145600020009876512'),
-        ('DEMO PAGO Transportes Andinos SAC', '20100047218', ibk, '200-3001234567',
+        ('Transportes Andinos SAC', '20100047218', ibk, '200-3001234567',
          '00320000300123456713')):
     partner = env['res.partner'].search([('name', '=', name)], limit=1) or env['res.partner'].create({
         'name': name, 'is_company': True, 'vat': vat, 'country_id': env.ref('base.pe').id,
@@ -53,7 +53,7 @@ if not batch:
             'payment_type': 'outbound', 'partner_type': 'supplier', 'partner_id': partner.id,
             'partner_bank_id': bank_account.id, 'amount': value, 'journal_id': journal.id,
             'payment_method_line_id': line.id, 'date': date(2026, 10, 12),
-            'memo': 'DEMO F001-%s' % partner.id})
+            'memo': 'F001-%s' % partner.id})
     payments.action_post()
     batch = env['account.batch.payment'].create({
         'journal_id': journal.id, 'batch_type': 'outbound',
@@ -61,5 +61,5 @@ if not batch:
         'payment_ids': [(6, 0, payments.ids)]})
     batch.validate_batch()
 env.cr.commit()
-print('DEMO', batch.id, batch.name, batch.export_filename, batch.l10n_pe_export_count, journal.id,
+print('Pago masivo', batch.id, batch.name, batch.export_filename, batch.l10n_pe_export_count, journal.id,
       suppliers[1][1].id)

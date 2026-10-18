@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_hr_pe_construction (datos «DEMO FICHA HR2»).
+"""Capturas de la ficha de al_hr_pe_construction (datos de demostración).
 
 Obreros 2444 (operario, BAE equipo pesado), 2445 (oficial) y 2446 (peón) en
 la obra 132; obra 133 a 3 850 m; boletas semanales 3509–3520 de agosto 2026
@@ -74,12 +74,12 @@ with Captura('al_hr_pe_construction') as c:
     c.foto('08-trabajador', selector='.o_notebook .tab-pane.active .o_notebook')
 
     # --- Planilla semanal ---------------------------------------------------
-    # 9. Boletas semanales DEMO de agosto 2026
+    # 9. Boletas semanales de agosto 2026
     ancho(c, 1440, 1000)
     c.abrir_accion('hr_payroll.action_view_hr_payslip_month_form', ms=2500)
     search = c.page.locator('.o_searchview_input').first
     search.click()
-    search.type('DEMO FICHA HR2 Semana', delay=20)
+    search.type('Semana', delay=20)
     c.esperar(1200)
     c.page.locator(".o_searchview_autocomplete .o-dropdown-item").nth(2).locator("a").last.click()
     c.esperar(1500)

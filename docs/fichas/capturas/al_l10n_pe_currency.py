@@ -4,10 +4,10 @@ No se pulsa ningún botón que descargue tipos de cambio (SUNAT, BCRP,
 Decolecta, apis.net.pe): se fotografían las tasas ya registradas y los
 asistentes antes de aceptar.
 
-Datos «DEMO TC FACTURA», creados por odoo shell (idempotente):
+Datos de demostración, creados por odoo shell (idempotente):
 
-- Diario de ventas DTCV «DEMO TC Ventas» (sin documentos LATAM).
-- Dos facturas de US$ 1.180,00 del 02/08/2026 a «DEMO TC FACTURA Cliente
+- Diario de ventas DTCV «Ventas en dólares» (sin documentos LATAM).
+- Dos facturas de US$ 1.180,00 del 02/08/2026 a «FACTURA Cliente
   SAC», iguales salvo el tipo de T.C.: DTCV/2026/00001 a venta (3,400) y
   DTCV/2026/00002 a compra (3,391).
 - Cobro PBNK1/2026/00005 de la primera, registrado con T.C. compra, y su

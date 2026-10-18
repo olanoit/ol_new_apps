@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos demo + validación integral de letras de cambio y canje (prefijo DEMO LETRA).
+"""Datos demo + validación integral de letras de cambio y canje.
 
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < account_letter_demo_data.py
 """
@@ -61,19 +61,19 @@ j_pagar = get_or_create('account.journal', [('name', '=', 'Letras por Pagar')], 
 log('diarios de letras (Cobrar/Pagar)', bool(j_cobrar) and bool(j_pagar),
     '%s / %s' % (j_cobrar.code, j_pagar.code))
 
-partner = get_or_create('res.partner', [('name', '=', 'DEMO LETRA Cliente SAC')], {
-    'name': 'DEMO LETRA Cliente SAC', 'vat': '20100070970'})
-provider = get_or_create('res.partner', [('name', '=', 'DEMO LETRA Proveedor SAC')], {
-    'name': 'DEMO LETRA Proveedor SAC', 'vat': '20131312955'})
-bank = env['res.bank'].search([], limit=1) or env['res.bank'].create({'name': 'Banco DEMO'})
+partner = get_or_create('res.partner', [('name', '=', 'Comercial Los Olivos S.A.C.')], {
+    'name': 'Comercial Los Olivos S.A.C.', 'vat': '20100070970'})
+provider = get_or_create('res.partner', [('name', '=', 'Suministros del Norte S.A.C.')], {
+    'name': 'Suministros del Norte S.A.C.', 'vat': '20131312955'})
+bank = env['res.bank'].search([], limit=1) or env['res.bank'].create({'name': 'Banco'})
 
 # Diarios propios sin numeración SUNAT (l10n_latam_use_documents=False) para
 # no depender del correlativo real de comprobantes electrónicos del entorno.
 sale_journal = get_or_create('account.journal', [('code', '=', 'DLTV')], {
-    'name': 'DEMO LETRA Ventas', 'code': 'DLTV', 'type': 'sale',
+    'name': 'Ventas con letras', 'code': 'DLTV', 'type': 'sale',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 purchase_journal = get_or_create('account.journal', [('code', '=', 'DLTC')], {
-    'name': 'DEMO LETRA Compras', 'code': 'DLTC', 'type': 'purchase',
+    'name': 'Compras con letras', 'code': 'DLTC', 'type': 'purchase',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 acc_inc = Account.search([('account_type', '=', 'income')], limit=1)
 acc_exp = Account.search([('account_type', '=', 'expense')], limit=1)
@@ -107,12 +107,12 @@ def make_invoice(origin, move_type, partner_id, journal_id, account_id, amount, 
 
 # invoice_2 (1000 + 18% IGV = 1180.00) se reparte entre 3 letras (393.33 c/u)
 # para forzar un residual/redondeo natural de 0.01.
-invoice_1 = make_invoice('DEMO LETRA venta 1', 'out_invoice', partner.id, sale_journal.id,
+invoice_1 = make_invoice('Venta 1', 'out_invoice', partner.id, sale_journal.id,
                           acc_inc.id, 3000.0, tax_sale)
-invoice_2 = make_invoice('DEMO LETRA venta 2', 'out_invoice', partner.id, sale_journal.id,
+invoice_2 = make_invoice('Venta 2', 'out_invoice', partner.id, sale_journal.id,
                           acc_inc.id, 1000.0, tax_sale)
-bill_1 = make_invoice('DEMO LETRA compra 1', 'in_invoice', provider.id, purchase_journal.id,
-                       acc_exp.id, 2000.0, tax_purchase, ref='F001-DEMOLETRA1')
+bill_1 = make_invoice('Compra 1', 'in_invoice', provider.id, purchase_journal.id,
+                       acc_exp.id, 2000.0, tax_purchase, ref='F001-LETRA1')
 log('factura cliente 1 publicada (3000)',
     invoice_1.state == 'posted' and invoice_1.amount_residual == invoice_1.amount_total,
     'total=%.2f residual=%.2f' % (invoice_1.amount_total, invoice_1.amount_residual))
@@ -144,9 +144,9 @@ def add_invoice_line(letter, move, document_type=doc_type_01):
 
 print('=== 3. Canje de letras — cliente (residual por redondeo) ===')
 letter_cli = get_or_create(
-    'l10n_pe.letter', [('payment_reference', '=', 'DEMO-LETRA-CLI-01')],
+    'l10n_pe.letter', [('payment_reference', '=', 'LETRA-CLI-01')],
     {'partner_id': partner.id, 'type': 'out_invoice', 'journal_id': j_cobrar.id,
-     'payment_reference': 'DEMO-LETRA-CLI-01'})
+     'payment_reference': 'LETRA-CLI-01'})
 log('canje cliente creado en borrador',
     letter_cli.state == 'draft' and letter_cli.name.startswith('CLC'), letter_cli.name)
 
@@ -205,9 +205,9 @@ log('refinanciamiento trae el saldo adeudado como línea "99"',
 
 print('=== 6. Refinanciación masiva (2 canjes del mismo cliente) ===')
 letter_cli_2 = get_or_create(
-    'l10n_pe.letter', [('payment_reference', '=', 'DEMO-LETRA-CLI-02')],
+    'l10n_pe.letter', [('payment_reference', '=', 'LETRA-CLI-02')],
     {'partner_id': partner.id, 'type': 'out_invoice', 'journal_id': j_cobrar.id,
-     'payment_reference': 'DEMO-LETRA-CLI-02'})
+     'payment_reference': 'LETRA-CLI-02'})
 add_invoice_line(letter_cli_2, invoice_1)
 letter_cli_2.invoice_date = date(YEAR, MONTH, 10)
 if letter_cli_2.state == 'draft':
@@ -232,10 +232,10 @@ else:
 
 print('=== 7. Canje masivo (2 canjes -> l10n_pe.letter.massive) ===')
 letter_cli_3 = get_or_create(
-    'l10n_pe.letter', [('payment_reference', '=', 'DEMO-LETRA-CLI-03')],
+    'l10n_pe.letter', [('payment_reference', '=', 'LETRA-CLI-03')],
     {'partner_id': partner.id, 'type': 'out_invoice', 'journal_id': j_cobrar.id,
-     'payment_reference': 'DEMO-LETRA-CLI-03'})
-invoice_3 = make_invoice('DEMO LETRA venta 3', 'out_invoice', partner.id, sale_journal.id,
+     'payment_reference': 'LETRA-CLI-03'})
+invoice_3 = make_invoice('Venta 3', 'out_invoice', partner.id, sale_journal.id,
                           acc_inc.id, 500.0, tax_sale)
 add_invoice_line(letter_cli_3, invoice_3)
 letter_cli_3.invoice_date = date(YEAR, MONTH, 10)
@@ -264,9 +264,9 @@ else:
 
 print('=== 8. Flujo proveedor (in_invoice) ===')
 letter_prov = get_or_create(
-    'l10n_pe.letter', [('payment_reference', '=', 'DEMO-LETRA-PROV-01')],
+    'l10n_pe.letter', [('payment_reference', '=', 'LETRA-PROV-01')],
     {'partner_id': provider.id, 'type': 'in_invoice', 'journal_id': j_pagar.id,
-     'payment_reference': 'DEMO-LETRA-PROV-01'})
+     'payment_reference': 'LETRA-PROV-01'})
 add_invoice_line(letter_prov, bill_1)
 letter_prov.invoice_date = date(YEAR, MONTH, 10)
 log('canje proveedor creado y con línea de factura',
@@ -290,7 +290,7 @@ log('factura de proveedor conciliada', bill_1.payment_state in ('paid', 'in_paym
 print('=== 9. Vinculación de asientos por referencia ===')
 unlinked = env['l10n_pe.letter'].create({
     'partner_id': partner.id, 'type': 'out_invoice', 'journal_id': j_cobrar.id,
-    'payment_reference': 'DEMO-LETRA-CLI-04',
+    'payment_reference': 'LETRA-CLI-04',
 })
 manual_move = env['account.move'].create({
     'journal_id': j_cobrar.id, 'ref': unlinked.name, 'date': date(YEAR, MONTH, 28),

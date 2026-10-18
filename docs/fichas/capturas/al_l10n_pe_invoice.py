@@ -2,8 +2,8 @@
 
 Datos: facturas electrónicas de la base de demostración (F001-00000002 con
 detracción, F002-00000001 con exonerada e ICBPER, B001-00000001 con
-inafectas, F001-00000211 en dólares) y, creados por odoo shell con prefijo
-DEMO FAC, el pedido S00060 («30% ahora, el resto en 60 días», OC. externa
+inafectas, F001-00000211 en dólares) y, creados por odoo shell como datos de
+demostración, el pedido S00060 («30% ahora, el resto en 60 días», OC. externa
 OC-2026-0457) con su factura en **borrador** (línea con descuento y descuento
 global). Nada se publica ni se envía a SUNAT/OSE.
 
@@ -23,7 +23,7 @@ FACTURA_DETRACCION = 470   # F001-00000002, detracción 022
 FACTURA_EXONERADA = 1417   # F002-00000001, exonerada + ICBPER
 BOLETA_INAFECTA = 466      # B001-00000001, gravada, exonerada, inafecta, ICBPER
 FACTURA_USD = 65           # F001-00000211, US$ 1.180,00
-FACTURA_CREDITO = 2436     # borrador DEMO FAC desde S00060
+FACTURA_CREDITO = 2436     # borrador de demostración desde S00060
 PEDIDO = 60                # S00060
 
 NORMAL = {'width': 1440, 'height': 900}

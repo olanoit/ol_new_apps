@@ -1,16 +1,16 @@
 """Capturas de la ficha de al_l10n_pe_edi_downpayment_discount.
 
-Usa el caso DEMO de ol_pe_v19 (cliente «DEMO Constructora Andina S.A.C.»):
+Usa el caso de demostración de ol_pe_v19 (cliente «Constructora Andina S.A.C.»):
 pedido con un servicio gravado y uno exonerado, anticipo del 20 %, factura
 final que lo deduce y nota de crédito de esa factura. Los registros se buscan
-por el cliente DEMO; no se modifican.
+por ese cliente; no se modifican.
 """
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-CLIENTE = 'DEMO Constructora Andina S.A.C.'
+CLIENTE = 'Constructora Andina S.A.C.'
 
 
 def buscar(c, model, domain, order='id desc'):

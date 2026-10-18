@@ -1,7 +1,7 @@
-"""Capturas de la ficha de al_hr_pe_public_holidays (datos «DEMO FICHA HR1»).
+"""Capturas de la ficha de al_hr_pe_public_holidays (datos de demostración).
 
-Los feriados de 2026 están aplicados solo al calendario DEMO
-«DEMO FICHA HR1 Jornada 48h»: el botón «Aplicar a los calendarios» no se
+Los feriados de 2026 están aplicados solo al calendario de demostración
+«Jornada 48h»: el botón «Aplicar a los calendarios» no se
 pulsa aquí porque escribiría en todos los calendarios de la compañía. El
 formulario de medio día se abre como registro nuevo y se descarta sin guardar.
 """
@@ -12,9 +12,9 @@ from capturar import Captura  # noqa: E402
 
 MODULE = 'al_hr_pe_public_holidays'
 JUNIN_2026 = 11        # Batalla de Junín, 06/08/2026
-DESCANSO_JUNIN = 57    # su descanso en «DEMO FICHA HR1 Jornada 48h»
+DESCANSO_JUNIN = 57    # su descanso en «Jornada 48h»
 CRON = 55              # Peru Holidays: Yearly Auto Apply
-BOLETA_JULIO = 3521    # DEMO FICHA HR1 Salazar Quispe Lucía, julio 2026
+BOLETA_JULIO = 3521    # Salazar Quispe Lucía, julio 2026
 
 
 def franja(c, name, height, width=None):
@@ -89,10 +89,12 @@ with Captura(MODULE, viewport={'width': 1920, 'height': 700}) as c:
     # 9. Entradas de trabajo de julio: los feriados como días de descanso
     c.abrir_accion('hr_work_entry.hr_work_entry_action', ms=2500)
     search = c.page.locator('.o_searchview_input')
-    search.fill('DEMO FICHA HR1')
-    c.esperar(700)
-    c.page.keyboard.press('Enter')
-    c.esperar(1200)
+    # Los tres trabajadores de demostración (el mismo campo se une con «o»).
+    for nombre in ('Salazar Quispe Lucía', 'Huamán Torres Jorge Luis', 'Rivas Cárdenas Andrea'):
+        search.fill(nombre)
+        c.esperar(700)
+        c.page.keyboard.press('Enter')
+        c.esperar(1200)
     for _ in range(2):
         c.clic('button:has(> i.oi-arrow-left)', ms=1200)
     c.foto('09-entradas', clip={'x': 0, 'y': 172, 'width': 1920, 'height': 262})

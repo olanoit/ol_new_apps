@@ -4,7 +4,7 @@
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < sire_demo_data.py
 
 Crea un periodo RVIE y uno RCE en modo carga manual con un TXT de propuesta
-simulado (prefijo "DEMO SIRE", idempotente), despliega SIRE y Sistema, compara
+simulado (idempotente), despliega SIRE y Sistema, compara
 y genera los exportables, validando cada paso.
 """
 import base64
@@ -28,8 +28,8 @@ def get_or_create(model, domain, vals):
 print('=== 1. Requisitos ===')
 log('RUC de compañía', bool(company.vat and len(company.vat) == 11), company.vat or 'SIN RUC')
 
-partner = get_or_create('res.partner', [('name', '=', 'DEMO SIRE SOCIO SAC')], {
-    'name': 'DEMO SIRE SOCIO SAC',
+partner = get_or_create('res.partner', [('name', '=', 'Inversiones Socio Norte S.A.C.')], {
+    'name': 'Inversiones Socio Norte S.A.C.',
     'vat': '20131312955',
     'country_id': env.ref('base.pe').id,
     'l10n_latam_identification_type_id': env['l10n_latam.identification.type'].search(
@@ -55,7 +55,7 @@ if not invoice:
         'partner_id': partner.id,
         'invoice_date': '%s-%s-10' % (YEAR, MONTH),
         'invoice_line_ids': [(0, 0, {
-            'name': 'DEMO SIRE venta',
+            'name': 'Venta',
             'quantity': 1,
             'price_unit': 2500.0,
             'tax_ids': [(6, 0, tax_sale.ids)],
@@ -80,7 +80,7 @@ if not bill:
         'ref': 'F077-771',
         'l10n_pe_sire_goods_class': '1',
         'invoice_line_ids': [(0, 0, {
-            'name': 'DEMO SIRE compra',
+            'name': 'Compra',
             'quantity': 1,
             'price_unit': 1800.0,
             'tax_ids': [(6, 0, tax_purchase.ids)],

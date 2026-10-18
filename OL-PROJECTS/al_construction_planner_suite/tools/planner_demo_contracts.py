@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Datos demo de las fases 5 y 6 (contratas y liquidación semanal) sobre el
-plan vigente de «DEMO PLAN MOMEN-35-26».
+plan vigente de «MOMEN-35-26».
 
 Requiere haber ejecutado antes ``planner_demo_data.py`` y
 ``planner_demo_baseline.py`` (plan aprobado). Deja:
 
-- «DEMO PLAN Leandro (instalación)» asignado a la instalación del piso 05
+- «Leandro (instalación)» asignado a la instalación del piso 05
   (W-05): 64 líneas, 8 líneas en su OC de servicio por S/ 941.17, confirmada;
-- «DEMO PLAN Armado Gonza» asignado al armado del Dpto 501 (OC en borrador);
+- «Armado Gonza» asignado al armado del Dpto 501 (OC en borrador);
 - el avance del ejemplo de P-08 (Dpto 501 a 504, del 29/10 al 03/11/2026)
   reportado y validado, y la liquidación de Leandro del 29/10 al 04/11 creada
   por la acción programada del jueves 05/11 (bruto S/ 380.88, neto S/ 342.79);
@@ -26,23 +26,25 @@ from PIL import Image, ImageDraw
 
 from odoo import Command
 
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final: el mismo que en
+# planner_demo_data.py (vacío en la base demo).
+P = ''
 # Como admin (jefatura del planificador, compras): el superusuario no revisa.
 env = env(user=env.ref('base.user_admin'))
-project = env['project.project'].search([('name', '=', f'{P} MOMEN-35-26')], limit=1)
+project = env['project.project'].search([('name', '=', f'{P}MOMEN-35-26')], limit=1)
 assert project, 'Ejecute antes planner_demo_data.py'
 plan = project._construction_current_plan()
 assert plan.state in ('approved', 'in_progress'), 'Ejecute antes planner_demo_baseline.py'
-leandro = env['res.partner'].search([('name', '=', f'{P} Leandro (instalación)')], limit=1)
-gonza = env['res.partner'].search([('name', '=', f'{P} Armado Gonza')], limit=1)
+leandro = env['res.partner'].search([('name', '=', f'{P}Leandro (instalación)')], limit=1)
+gonza = env['res.partner'].search([('name', '=', f'{P}Armado Gonza')], limit=1)
 Task = env['project.task']
 floor = Task.search([('project_id', '=', project.id), ('construction_level', '=', 'floor')],
                     limit=1)
 apartments = {apt.name: apt for apt in Task.search([
     ('parent_id', '=', floor.id), ('construction_level', '=', 'apartment')])}
 spaces = {name: Task.search([('parent_id', '=', apt.id)]) for name, apt in apartments.items()}
-act = {a.code.split('-', 1)[1]: a for a in env['construction.labor.activity'].search(
-    [('code', '=like', 'DEMO-%')])}
+# Actividades del plan demo por código (TOR, INA…).
+act = {a.code: a for a in plan.line_ids.activity_id}
 
 
 def photo(label):

@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_hr_pe (datos «DEMO FICHA HR1»).
+"""Capturas de la ficha de al_hr_pe (datos de demostración: Salazar, Huamán y Rivas).
 
 Solo lee: ningún botón que escriba se pulsa (el diálogo «Dar de baja» y
 «Generar periodos» se cancelan; la validación del T-Registro se detiene en
@@ -11,13 +11,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura, _recortar_fondo  # noqa: E402
 
 MODULE = 'al_hr_pe'
-LUCIA = 2448          # DEMO FICHA HR1 Salazar Quispe Lucía
+LUCIA = 2448          # Salazar Quispe Lucía
 BOLETA_LUCIA = 3521   # Boleta julio 2026 (estructura BASE)
 DEP_CAMILA = 1030     # hija menor de edad
 AFP_INTEGRA = 2
 ESTRUCTURA_BASE = 7
-SEDE_DEMO = 48        # DEMO FICHA HR1 Sede Lima (código 0001)
-BANCO_DEMO = 80       # DEMO FICHA HR1 Banco (T36 002)
+SEDE_DEMO = 48        # Sede Lima (código 0001)
+BANCO_DEMO = 80       # Banco (T36 002)
+TRABAJADORES = ('Salazar Quispe Lucía', 'Huamán Torres Jorge Luis', 'Rivas Cárdenas Andrea')
 # FICHA_DESDE=16 repite solo desde ese bloque de capturas.
 DESDE = int(os.environ.get('FICHA_DESDE', '0'))
 
@@ -61,6 +62,12 @@ def buscar(c, texto):
     c.esperar(500)
     c.page.keyboard.press('Enter')
     c.esperar(1200)
+
+
+def buscar_trabajadores(c):
+    """Los tres trabajadores de demostración (el mismo campo se une con «o»)."""
+    for nombre in TRABAJADORES:
+        buscar(c, nombre)
 
 
 # 01. Menú Configuración ▸ Perú (pantalla ancha para que no se pliegue)
@@ -152,7 +159,7 @@ if DESDE <= 16:
     with Captura(MODULE, viewport={'width': 1920, 'height': 900}) as c:
         # 16. Histórico de versiones con las columnas peruanas
         c.abrir('/odoo/action-hr.action_hr_version', ms=2000)
-        buscar(c, 'DEMO FICHA HR1')
+        buscar_trabajadores(c)
         c.clic('.o_optional_columns_dropdown_toggle', ms=600)
         for label in ('Tipo de trabajador (T08)', 'Situación (T15)', 'Seguro social',
                       'CUSPP', 'Tipo de comisión AFP (PE)', 'Ocupación (T30)'):
@@ -195,7 +202,7 @@ if DESDE <= 17:
 
         # 23. Lote: exportadores PLAME y AFPNet
         c.abrir_accion('hr_payroll.action_hr_payslip_run', ms=2500)
-        card = c.page.locator('.o_kanban_record:has-text("DEMO FICHA HR1 Planilla julio")').first
+        card = c.page.locator('.o_kanban_record:has(:text-is("Planilla julio 2026"))').first
         card.locator('.o_dropdown_kanban .dropdown-toggle, .oe_kanban_action_menu, button.dropdown-toggle').first.click()
         c.esperar(700)
         menu = c.page.locator('.o-dropdown--menu').first.bounding_box()
@@ -212,7 +219,7 @@ if DESDE <= 17:
 
         # 24. Empleados: acciones del T-Registro
         c.abrir('/odoo/action-hr.open_view_employee_list_my?view_type=list', ms=2500)
-        buscar(c, 'DEMO FICHA HR1')
+        buscar_trabajadores(c)
         for i in range(3):
             c.page.locator('.o_data_row .o_list_record_selector input').nth(i).check()
         c.esperar(500)

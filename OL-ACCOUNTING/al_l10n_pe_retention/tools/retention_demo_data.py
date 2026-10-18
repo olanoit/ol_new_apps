@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos demo + validación integral de retenciones IGV (prefijo DEMO RET).
+"""Datos demo + validación integral de retenciones IGV.
 
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < retention_demo_data.py
 """
@@ -24,13 +24,13 @@ def get_or_create(model, domain, vals):
 print('=== 1. Configuración del agente ===')
 Account = env['account.account'].with_company(company)
 acc_ret = get_or_create('account.account', [('code', '=', '401141')], {
-    'code': '401141', 'name': 'IGV Retenciones por pagar (DEMO)',
+    'code': '401141', 'name': 'IGV Retenciones por pagar',
     'account_type': 'liability_current'})
 acc_suf = get_or_create('account.account', [('code', '=', '401142')], {
-    'code': '401142', 'name': 'IGV Retenciones sufridas (DEMO)',
+    'code': '401142', 'name': 'IGV Retenciones sufridas',
     'account_type': 'asset_current'})
 sequence = get_or_create('ir.sequence', [('code', '=', 'l10n_pe.cre.demo')], {
-    'name': 'CRE DEMO', 'code': 'l10n_pe.cre.demo', 'prefix': 'R001-',
+    'name': 'CRE', 'code': 'l10n_pe.cre.demo', 'prefix': 'R001-',
     'padding': 8, 'company_id': company.id})
 tax = env['account.tax'].search(
     [('company_id', '=', company.id),
@@ -46,7 +46,7 @@ if not tax:
     tax.refund_repartition_line_ids.filtered(
         lambda l: l.repartition_type == 'tax').account_id = acc_ret
 acc_out = get_or_create('account.account', [('code', '=', '104901')], {
-    'code': '104901', 'name': 'Pagos pendientes (DEMO)',
+    'code': '104901', 'name': 'Pagos pendientes',
     'account_type': 'asset_current', 'reconcile': True})
 company.write({
     'l10n_pe_retention_agent': True, 'l10n_pe_retention_rate': 3.0,
@@ -66,22 +66,22 @@ tax_s = env['account.tax'].search([('company_id', '=', company.id),
                                    ('type_tax_use', '=', 'sale'),
                                    ('amount', '=', 18.0)], limit=1)
 j_purchase = get_or_create('account.journal', [('code', '=', 'DPSC')], {
-    'name': 'DEMO PLE Compras Simpl', 'code': 'DPSC', 'type': 'purchase',
+    'name': 'Compras simplificado', 'code': 'DPSC', 'type': 'purchase',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 j_sale = get_or_create('account.journal', [('code', '=', 'DPSV')], {
-    'name': 'DEMO PLE Ventas Simpl', 'code': 'DPSV', 'type': 'sale',
+    'name': 'Ventas simplificado', 'code': 'DPSV', 'type': 'sale',
     'company_id': company.id, 'l10n_latam_use_documents': False})
-partner = get_or_create('res.partner', [('name', '=', 'DEMO RET Proveedor SAC')], {
-    'name': 'DEMO RET Proveedor SAC', 'vat': '20131312955'})
+partner = get_or_create('res.partner', [('name', '=', 'Servicios Industriales Andinos S.A.C.')], {
+    'name': 'Servicios Industriales Andinos S.A.C.', 'vat': '20131312955'})
 
 print('=== 2. Compra: retención en el pago ===')
 bill = env['account.move'].search(
-    [('invoice_origin', '=', 'DEMO RET compra'),
+    [('invoice_origin', '=', 'Compra'),
      ('state', '=', 'posted')], limit=1)
 if not bill:
     bill = env['account.move'].create({
         'move_type': 'in_invoice', 'partner_id': partner.id,
-        'journal_id': j_purchase.id, 'invoice_origin': 'DEMO RET compra',
+        'journal_id': j_purchase.id, 'invoice_origin': 'Compra',
         'invoice_date': date(YEAR, int(MONTH), 16),
         'date': date(YEAR, int(MONTH), 16), 'ref': 'F00T-00000901',
         'invoice_line_ids': [(0, 0, {
@@ -123,12 +123,12 @@ log('XML CRE generado', xml.startswith('<?xml')
 
 print('=== 3. Venta: retención sufrida ===')
 invoice = env['account.move'].search(
-    [('invoice_origin', '=', 'DEMO RET venta'),
+    [('invoice_origin', '=', 'Venta'),
      ('state', '=', 'posted')], limit=1)
 if not invoice:
     invoice = env['account.move'].create({
         'move_type': 'out_invoice', 'partner_id': partner.id,
-        'journal_id': j_sale.id, 'invoice_origin': 'DEMO RET venta',
+        'journal_id': j_sale.id, 'invoice_origin': 'Venta',
         'invoice_date': date(YEAR, int(MONTH), 16),
         'date': date(YEAR, int(MONTH), 16),
         'invoice_line_ids': [(0, 0, {

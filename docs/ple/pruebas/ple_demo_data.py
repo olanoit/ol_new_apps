@@ -3,8 +3,8 @@
 
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < ple_demo.py
 
-Crea registros con prefijo "DEMO PLE" (idempotente: si ya existen, los
-reutiliza) y luego genera cada TXT validando nombre y estructura.
+Crea registros de ejemplo (idempotente: si ya existen, los reutiliza) y
+luego genera cada TXT validando nombre y estructura.
 """
 import base64
 from datetime import date, datetime
@@ -44,11 +44,11 @@ dni = env['l10n_latam.identification.type'].search(
 ruc = env['l10n_latam.identification.type'].search(
     [('l10n_pe_vat_code', '=', '6')], limit=1)
 
-p_dni = get_or_create('res.partner', [('name', '=', 'DEMO PLE Prestador')], {
-    'name': 'DEMO PLE Prestador',
+p_dni = get_or_create('res.partner', [('name', '=', 'Prestadora de Servicios Lima S.A.C.')], {
+    'name': 'Prestadora de Servicios Lima S.A.C.',
     'l10n_latam_identification_type_id': dni.id, 'vat': '46779810'})
-p_ruc = get_or_create('res.partner', [('name', '=', 'DEMO PLE Consignatario SAC')], {
-    'name': 'DEMO PLE Consignatario SAC',
+p_ruc = get_or_create('res.partner', [('name', '=', 'Consignaciones del Norte S.A.C.')], {
+    'name': 'Consignaciones del Norte S.A.C.',
     'l10n_latam_identification_type_id': ruc.id, 'vat': '20131312955'})
 
 # --- Libro 7: activos fijos ---------------------------------------------
@@ -57,29 +57,29 @@ asset_vals = {
     'account_asset_id': acc_fixed.id, 'account_depreciation_id': acc_dep.id,
     'account_depreciation_expense_id': acc_exp.id, 'journal_id': journal_gen.id,
 }
-a1 = get_or_create('account.asset', [('name', '=', 'DEMO PLE Camioneta')], dict(
-    asset_vals, name='DEMO PLE Camioneta', original_value=60000.0,
+a1 = get_or_create('account.asset', [('name', '=', 'Camioneta')], dict(
+    asset_vals, name='Camioneta', original_value=60000.0,
     acquisition_date=date(2026, 1, 15), prorata_date=date(2026, 1, 15),
-    l10n_pe_ple_code='AF-DEMO-001', l10n_pe_asset_type='1',
+    l10n_pe_ple_code='AF-001', l10n_pe_asset_type='1',
     l10n_pe_brand='Toyota', l10n_pe_model='Hilux', l10n_pe_plate='DEM-001'))
-a2 = get_or_create('account.asset', [('name', '=', 'DEMO PLE Montacargas Leasing')], dict(
-    asset_vals, name='DEMO PLE Montacargas Leasing', original_value=45000.0,
+a2 = get_or_create('account.asset', [('name', '=', 'Montacargas Leasing')], dict(
+    asset_vals, name='Montacargas Leasing', original_value=45000.0,
     acquisition_date=date(2026, 2, 1), prorata_date=date(2026, 2, 1),
-    l10n_pe_ple_code='AF-DEMO-002', l10n_pe_asset_type='1',
+    l10n_pe_ple_code='AF-002', l10n_pe_asset_type='1',
     l10n_pe_is_leasing=True, l10n_pe_leasing_contract='CT-2026-0099',
     l10n_pe_leasing_date=date(2026, 1, 20), l10n_pe_leasing_start=date(2026, 2, 1),
     l10n_pe_leasing_installments=36, l10n_pe_leasing_total=52000.0))
-a3 = get_or_create('account.asset', [('name', '=', 'DEMO PLE Servidor USD')], dict(
-    asset_vals, name='DEMO PLE Servidor USD', original_value=15000.0,
+a3 = get_or_create('account.asset', [('name', '=', 'Servidor USD')], dict(
+    asset_vals, name='Servidor USD', original_value=15000.0,
     acquisition_date=date(2026, 3, 10), prorata_date=date(2026, 3, 10),
-    l10n_pe_ple_code='AF-DEMO-003', l10n_pe_asset_type='1',
+    l10n_pe_ple_code='AF-003', l10n_pe_asset_type='1',
     l10n_pe_fx_currency_id=usd.id, l10n_pe_fx_amount=4000.0,
     l10n_pe_fx_rate=3.750))
-a4 = get_or_create('account.asset', [('name', '=', 'DEMO PLE Licencia ERP')], dict(
-    asset_vals, name='DEMO PLE Licencia ERP', original_value=12000.0,
+a4 = get_or_create('account.asset', [('name', '=', 'Licencia ERP')], dict(
+    asset_vals, name='Licencia ERP', original_value=12000.0,
     acquisition_date=date(2026, 1, 2), prorata_date=date(2026, 1, 2),
     account_asset_id=acc_34.id, method_number=4,
-    l10n_pe_ple_code='AF-DEMO-004', l10n_pe_asset_type='1'))
+    l10n_pe_ple_code='AF-004', l10n_pe_asset_type='1'))
 assets = a1 | a2 | a3 | a4
 assets.filtered(lambda a: a.state == 'draft').write({'state': 'open'})
 if not env['account.move'].search([('asset_id', 'in', assets.ids)], limit=1):
@@ -87,7 +87,7 @@ if not env['account.move'].search([('asset_id', 'in', assets.ids)], limit=1):
         move = env['account.move'].create({
             'move_type': 'entry', 'date': date(2026, 7, 15),
             'journal_id': journal_gen.id, 'asset_id': asset.id,
-            'ref': 'DEMO PLE depreciación %s' % asset.name,
+            'ref': 'Depreciación %s' % asset.name,
             'line_ids': [
                 (0, 0, {'account_id': acc_exp.id, 'debit': amount, 'credit': 0}),
                 (0, 0, {'account_id': acc_dep.id, 'debit': 0, 'credit': amount}),
@@ -104,9 +104,9 @@ if not env['l10n_pe.ple.withholding'].search([('partner_id', '=', p_dni.id)], li
     ])
 
 # --- 9.1 / 9.2 consignaciones -------------------------------------------
-prod = get_or_create('product.product', [('default_code', '=', 'DEMO-CONS-01')], {
-    'name': 'DEMO PLE Producto Consignado', 'type': 'consu',
-    'default_code': 'DEMO-CONS-01', 'l10n_pe_type_of_existence': '1'})
+prod = get_or_create('product.product', [('default_code', '=', 'CONS-01')], {
+    'name': 'Producto Consignado', 'type': 'consu',
+    'default_code': 'CONS-01', 'l10n_pe_type_of_existence': '1'})
 pt_out = env['stock.picking.type'].search(
     [('code', '=', 'outgoing'), ('company_id', '=', company.id)], limit=1)
 pt_in = env['stock.picking.type'].search(
@@ -118,7 +118,7 @@ def make_picking(pt, kind, qty, day):
     src = pt.default_location_src_id or env.ref('stock.stock_location_suppliers')
     picking = env['stock.picking'].create({
         'picking_type_id': pt.id, 'partner_id': p_ruc.id,
-        'origin': 'DEMO PLE %s' % kind,
+        'origin': kind.capitalize(),
         'location_id': src.id, 'location_dest_id': dest.id,
         'l10n_pe_consignment': kind,
         'move_ids': [(0, 0, {
@@ -132,7 +132,10 @@ def make_picking(pt, kind, qty, day):
     return picking
 
 
-if not env['stock.picking'].search([('origin', 'like', 'DEMO PLE')], limit=1):
+if not env['stock.picking'].search([
+        ('partner_id', '=', p_ruc.id),
+        ('origin', 'in', ['Out_delivery', 'Out_return', 'Out_sale', 'In_receipt'])],
+        limit=1):
     make_picking(pt_out, 'out_delivery', 10.0, 5)
     make_picking(pt_out, 'out_return', 2.0, 12)
     make_picking(pt_out, 'out_sale', 3.0, 20)
@@ -141,7 +144,7 @@ if not env['stock.picking'].search([('origin', 'like', 'DEMO PLE')], limit=1):
 # --- Libro 3: 3.8 y 3.19 -------------------------------------------------
 if not env['l10n_pe.ple.investment'].search([('date', '=', BALANCE)], limit=1):
     env['l10n_pe.ple.investment'].create({
-        'date': BALANCE, 'issuer_name': 'DEMO Minera Andina S.A.A.',
+        'date': BALANCE, 'issuer_name': 'Minera Andina S.A.A.',
         'title_code': '1', 'nominal_value': 10.0, 'quantity': 800,
         'book_cost': 8800.0, 'provision': 400.0})
 rubric = env['l10n_pe_reports_lib.financial.rubric'].search(
@@ -167,18 +170,18 @@ for month, mat in (('06', 7000.0), ('07', 7500.0)):
                   {'year': YEAR, 'month': month, 'direct_materials': mat,
                    'direct_labor': 4000.0, 'gif_materials': 900.0})
 get_or_create('l10n_pe.ple.cost.production',
-              [('year', '=', YEAR), ('process_code', '=', 'DEMO-PR1')],
-              {'year': YEAR, 'process_code': 'DEMO-PR1',
-               'process_name': 'DEMO Proceso de ensamblaje',
+              [('year', '=', YEAR), ('process_code', '=', 'PR1')],
+              {'year': YEAR, 'process_code': 'PR1',
+               'process_name': 'Proceso de ensamblaje',
                'direct_materials': 14500.0, 'direct_labor': 8000.0,
                'initial_wip': 3000.0, 'final_wip': 1800.0,
                'grouping_code': '1'})
 get_or_create('l10n_pe.ple.cost.center',
-              [('year', '=', YEAR), ('cost_center_code', '=', 'DEMO-CC1')],
-              {'year': YEAR, 'operation_unit_code': 'DEMO-UO1',
-               'operation_unit_name': 'DEMO Unidad Lima',
-               'cost_center_code': 'DEMO-CC1',
-               'cost_center_name': 'DEMO Planta Lima'})
+              [('year', '=', YEAR), ('cost_center_code', '=', 'CC1')],
+              {'year': YEAR, 'operation_unit_code': 'UO1',
+               'operation_unit_name': 'Unidad Lima',
+               'cost_center_code': 'CC1',
+               'cost_center_name': 'Planta Lima'})
 
 # --- Simplificados: facturas ---------------------------------------------
 company.l10n_pe_ple_simplified = True
@@ -189,10 +192,10 @@ tax_p = env['account.tax'].search([('company_id', '=', company.id),
                                    ('type_tax_use', '=', 'purchase'),
                                    ('amount', '=', 18.0)], limit=1)
 j_sale = get_or_create('account.journal', [('code', '=', 'DPSV')], {
-    'name': 'DEMO PLE Ventas Simpl', 'code': 'DPSV', 'type': 'sale',
+    'name': 'Ventas simplificado', 'code': 'DPSV', 'type': 'sale',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 j_purchase = get_or_create('account.journal', [('code', '=', 'DPSC')], {
-    'name': 'DEMO PLE Compras Simpl', 'code': 'DPSC', 'type': 'purchase',
+    'name': 'Compras simplificado', 'code': 'DPSC', 'type': 'purchase',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 if not env['account.move'].search([('journal_id', '=', j_sale.id),
                                    ('state', '=', 'posted')], limit=1):
@@ -201,7 +204,7 @@ if not env['account.move'].search([('journal_id', '=', j_sale.id),
         'journal_id': j_sale.id, 'invoice_date': date(2026, 7, 18),
         'date': date(2026, 7, 18),
         'invoice_line_ids': [(0, 0, {
-            'name': 'DEMO PLE venta gravada', 'quantity': 1.0,
+            'name': 'Venta gravada', 'quantity': 1.0,
             'price_unit': 1000.0, 'account_id': acc_inc.id,
             'tax_ids': [(6, 0, tax_s.ids)]})]})
     inv.action_post()
@@ -210,7 +213,7 @@ if not env['account.move'].search([('journal_id', '=', j_sale.id),
         'journal_id': j_purchase.id, 'invoice_date': date(2026, 7, 17),
         'date': date(2026, 7, 17), 'ref': 'F001-00000777',
         'invoice_line_ids': [(0, 0, {
-            'name': 'DEMO PLE compra gravada', 'quantity': 1.0,
+            'name': 'Compra gravada', 'quantity': 1.0,
             'price_unit': 500.0, 'account_id': acc_exp.id,
             'tax_ids': [(6, 0, tax_p.ids)]})]})
     bill.action_post()

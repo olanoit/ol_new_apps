@@ -1,6 +1,6 @@
 """Capturas de la ficha de al_project_gantt_website (página /gantt).
 
-Datos: proyectos «[DEMO Gantt]» 18 y 19. Solo consulta: no se guarda nada.
+Datos: proyectos de demostración 18 y 19. Solo consulta: no se guarda nada.
 """
 import sys
 from pathlib import Path

@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-PICKING_GRE = 237  # DEMO GRE Obra Ate, con guía de remisión enviada
+PICKING_GRE = 237  # Obra Ate, con guía de remisión enviada
 
 with Captura('al_stock_base') as c:
     c.abrir_registro('stock.picking', PICKING_GRE, ms=3000)

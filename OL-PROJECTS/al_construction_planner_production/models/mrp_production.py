@@ -165,7 +165,10 @@ class MrpProduction(models.Model):
     def _construction_notify_missing_accessories(self):
         """Confirmada sin accesorios pedidos: avisa al jefe de proyectos y a
         Logística."""
-        logistics = self.env.ref(LOGISTICS_GROUP, raise_if_not_found=False)
+        # sudo: quien confirma (comprador, jefe de producción) no puede leer las
+        # compañías de los demás usuarios; solo se toman sus contactos.
+        logistics_sudo = (self.env.ref(LOGISTICS_GROUP, raise_if_not_found=False)
+                          or self.env['res.groups']).sudo()
         for production in self:
             if production.construction_accessory_request_ids.filtered(
                     lambda r: r.state != 'cancel'):
@@ -173,8 +176,8 @@ class MrpProduction(models.Model):
             if not production._construction_assembly_plan_lines():
                 continue
             partners = production.sudo().construction_plan_id.project_id.user_id.partner_id
-            if logistics:
-                partners |= logistics.all_user_ids.filtered(
+            if logistics_sudo:
+                partners |= logistics_sudo.all_user_ids.filtered(
                     lambda u: u.active and not u.share
                     and production.company_id in u.company_ids).partner_id
             production.message_post(

@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_account_base (datos «DEMO»).
+"""Capturas de la ficha de al_account_base (datos de demostración).
 
 Uso: ``python al_account_base.py [bloque …]`` (1, 2; sin argumentos, todos)."""
 import sys
@@ -9,10 +9,10 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
-MOVE_GLOSS = 2396       # MISCE/2026/09/0001 · DEMO provisión alquiler setiembre
-JOURNAL_OPENING = 1970  # DEMO Asientos de apertura
-BANK_ACCOUNT = 165      # cuenta BCP de DEMO Distribuidora Norte SAC
-PARTNER = 5363          # DEMO Distribuidora Norte SAC · anexo 0002
+MOVE_GLOSS = 2396       # MISCE/2026/09/0001 · Provisión alquiler setiembre
+JOURNAL_OPENING = 1970  # Asientos de apertura
+BANK_ACCOUNT = 165      # cuenta BCP de Distribuidora Norte SAC
+PARTNER = 5363          # Distribuidora Norte SAC · anexo 0002
 COMPANY = 1
 
 BLOQUES = set(sys.argv[1:]) or {'1', '2'}

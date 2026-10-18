@@ -10,7 +10,7 @@ banco en M.E. y un cobro parcial conciliado), corre los cierres de junio y
 julio 2026 y verifica que, tras cada cierre, el saldo contable de cada
 cuenta sea exactamente ``saldo_en_dólares × T.C. de cierre``.
 
-Es idempotente: si ya existen los registros «DEMO TC» los reutiliza.
+Es idempotente: si ya existen los registros de la prueba los reutiliza.
 """
 from datetime import date
 
@@ -73,27 +73,27 @@ for rate_date, purchase, sale in ((date(2026, 7, 1), 3.410, 3.418),
     usd._l10n_pe_upsert_rate(rate_date, purchase, sale, 'manual')
 log('T.C. de cierre registrados', True, 'cierre 30/06 3.410-3.418 · cierre 31/07 3.395-3.404')
 
-partner_cli = get_or_create('res.partner', [('name', '=', 'DEMO TC Cliente')],
-                            {'name': 'DEMO TC Cliente'})
-partner_prov = get_or_create('res.partner', [('name', '=', 'DEMO TC Proveedor')],
-                             {'name': 'DEMO TC Proveedor'})
-partner_cc = get_or_create('res.partner', [('name', '=', 'DEMO TC Analítica')],
-                           {'name': 'DEMO TC Analítica'})
+partner_cli = get_or_create('res.partner', [('name', '=', 'Importadora Pacífico S.A.C.')],
+                            {'name': 'Importadora Pacífico S.A.C.'})
+partner_prov = get_or_create('res.partner', [('name', '=', 'Exportadora Andina S.A.C.')],
+                             {'name': 'Exportadora Andina S.A.C.'})
+partner_cc = get_or_create('res.partner', [('name', '=', 'Analítica por centro comercial')],
+                           {'name': 'Analítica por centro comercial'})
 acc_other = env['account.account'].with_company(company).search(
     [('account_type', '=', 'income')], limit=1)
 acc_exp = env['account.account'].with_company(company).search(
     [('account_type', '=', 'expense')], limit=1)
 
 # Centros de costo para comprobar la herencia de analítica.
-plan = get_or_create('account.analytic.plan', [('name', '=', 'DEMO TC Centros')],
-                     {'name': 'DEMO TC Centros'})
+plan = get_or_create('account.analytic.plan', [('name', '=', 'Centros comerciales')],
+                     {'name': 'Centros comerciales'})
 cc_north = get_or_create('account.analytic.account',
-                         [('name', '=', 'DEMO TC Norte')],
-                         {'name': 'DEMO TC Norte', 'plan_id': plan.id,
+                         [('name', '=', 'CC Norte')],
+                         {'name': 'CC Norte', 'plan_id': plan.id,
                           'company_id': company.id})
 cc_south = get_or_create('account.analytic.account',
-                         [('name', '=', 'DEMO TC Sur')],
-                         {'name': 'DEMO TC Sur', 'plan_id': plan.id,
+                         [('name', '=', 'CC Sur')],
+                         {'name': 'CC Sur', 'plan_id': plan.id,
                           'company_id': company.id})
 dist_north = {str(cc_north.id): 100.0}
 dist_south = {str(cc_south.id): 100.0}
@@ -128,28 +128,28 @@ def entry(ref, move_date, lines):
 
 
 # Venta a crédito US$ 10,000 al T.C. 3.389 del 14/06.
-mv_sale = entry('DEMO TC venta', date(2026, 6, 15), [
+mv_sale = entry('Venta en dólares', date(2026, 6, 15), [
     (acc_receivable, 10000.0, 3.389, partner_cli),
     (acc_other, -10000.0, 3.389, False),
 ])
 # Compra a crédito US$ 6,000 al T.C. 3.384 del 18/06.
-mv_bill = entry('DEMO TC compra', date(2026, 6, 18), [
+mv_bill = entry('Compra en dólares', date(2026, 6, 18), [
     (acc_exp, 6000.0, 3.384, False),
     (acc_payable, -6000.0, 3.384, partner_prov),
 ])
 # Depósito en la cuenta corriente en dólares al T.C. 3.386 del 22/06.
-mv_bank = entry('DEMO TC banco', date(2026, 6, 22), [
+mv_bank = entry('Banco en dólares', date(2026, 6, 22), [
     (acc_bank, 5000.0, 3.386, False),
     (acc_other, -5000.0, 3.386, False),
 ])
 # Dos ventas al mismo cliente con centros de costo distintos: la analítica
 # va en la línea de ingreso, no en la cuenta por cobrar (caso real de una
 # factura). 60 % Norte / 40 % Sur por importe.
-mv_cc1 = entry('DEMO TC venta CC Norte', date(2026, 6, 16), [
+mv_cc1 = entry('Venta CC Norte', date(2026, 6, 16), [
     (acc_receivable, 6000.0, 3.389, partner_cc),
     (acc_other, -6000.0, 3.389, False, dist_north),
 ])
-mv_cc2 = entry('DEMO TC venta CC Sur', date(2026, 6, 17), [
+mv_cc2 = entry('Venta CC Sur', date(2026, 6, 17), [
     (acc_receivable, 4000.0, 3.389, partner_cc),
     (acc_other, -4000.0, 3.389, False, dist_south),
 ])
@@ -315,7 +315,7 @@ log('El total analítico iguala al ajuste del cliente (210,00)',
 print('\n=== 4. Movimiento de julio y cierre de julio 2026 ===')
 # ------------------------------------------------------------------ #
 # Cobro parcial de US$ 4,000 al T.C. 3.397 del 15/07.
-mv_collect = entry('DEMO TC cobro', date(2026, 7, 15), [
+mv_collect = entry('Cobro en dólares', date(2026, 7, 15), [
     (acc_bank, 4000.0, 3.397, False),
     (acc_receivable, -4000.0, 3.397, partner_cli),
 ])

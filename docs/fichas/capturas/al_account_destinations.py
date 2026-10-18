@@ -1,7 +1,7 @@
-"""Capturas de la ficha de al_account_destinations (datos «DEMO»).
+"""Capturas de la ficha de al_account_destinations (datos de demostración).
 
 La compañía de demostración trabaja con el sentido 9→6, así que las cuentas de
-ejemplo son de clase 9 («DEMO Gastos por distribuir (9)» y «DEMO Gastos
+ejemplo son de clase 9 («Gastos por distribuir (9)» y «Gastos
 compartidos (9)»).
 
 Uso: ``python al_account_destinations.py [bloque …]`` (1, 2, 3; sin argumentos,
@@ -12,14 +12,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from capturar import Captura  # noqa: E402
 
 COMPANY = 1
-ACCOUNT = 156844      # 941200 DEMO Gastos por distribuir (9): 60 % / 40 %
-ACCOUNT_3 = 156845    # 941300 DEMO Gastos compartidos (9): 3 × 33,3333 %
-ENTRY = 2397          # MISCE/2026/09/0002 · DEMO destinos servicios setiembre
+ACCOUNT = 156844      # 941200 Gastos por distribuir (9): 60 % / 40 %
+ACCOUNT_3 = 156845    # 941300 Gastos compartidos (9): 3 × 33,3333 %
+ENTRY = 2397          # MISCE/2026/09/0002 · Servicios setiembre
 ENTRY_DEST = 2398     # GA/2026/09/0001
-INVOICE = 2404        # F F001-00000877 · factura de DEMO Distribuidora Norte SAC
+INVOICE = 2404        # F F001-00000877 · factura de Distribuidora Norte SAC
 INVOICE_DEST = 2405   # GA/2026/09/0002
-ROUNDING_DEST = 2424  # GA/2026/09/0003 · destino de «DEMO destinos redondeo»
-NO_DEST = 2425        # borrador «DEMO destinos sin configurar» (cuenta 942100)
+ROUNDING_DEST = 2424  # GA/2026/09/0003 · destino de «Redondeo»
+NO_DEST = 2425        # borrador «Sin configurar» (cuenta 942100)
 DRAFT_DEST = 2427     # GA/2026/09/0004 · vuelto a borrador con su origen
 
 BLOQUES = set(sys.argv[1:]) or {'1', '2', '3'}

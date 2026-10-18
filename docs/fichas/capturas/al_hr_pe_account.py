@@ -1,8 +1,8 @@
 """Capturas de la ficha de al_hr_pe_account.
 
 Datos: planilla de pruebas de «Comercial Demo Perú S.A.C.» (trabajadores
-ficticios de docs/planillas/pruebas) y los registros «DEMO FICHA HR2»:
-lotes de julio y agosto de 2026 de la trabajadora DEMO, su provisión
+ficticios de docs/planillas/pruebas) y los registros de demostración:
+lotes de julio y agosto de 2026 de Salazar Ríos Andrea, su provisión
 (asiento PROVISION202607) y su liquidación de cese (asiento LIQUI202608).
 Los asistentes sobre datos reales se abren y se cierran sin confirmar.
 """
@@ -17,8 +17,8 @@ AFILIACION = 2            # AFP INTEGRA
 CTS = 50                  # CTS noviembre 2025 – abril 2026 (asiento CTS202604)
 GRATIFICACION = 20        # Fiestas Patrias 2026 (asiento GRA202606)
 PROVISION_REAL = 15       # Provisión de Planilla 2026-06 (borrador, sin asiento)
-PROVISION_DEMO = 51       # Provisión DEMO de julio 2026 (asiento PROVISION202607)
-LIQUIDACION_DEMO = 3      # Liquidación DEMO de agosto 2026 (asiento LIQUI202608)
+PROVISION_DEMO = 51       # Provisión de julio 2026 (asiento PROVISION202607)
+LIQUIDACION_DEMO = 3      # Liquidación de agosto 2026 (asiento LIQUI202608)
 ASIENTO_LOTE = 837        # PLA042026
 ASIENTO_CTS = 838         # CTS202604
 ASIENTO_GRA = 839         # GRA202606
@@ -145,14 +145,14 @@ with Captura('al_hr_pe_account') as c:
     c.foto('13-asistente-provision', selector='.modal-content')
     c.clic('.modal-footer button:has-text("Cancelar")', ms=800)
 
-    # 14-15. Provisión DEMO contabilizada y su asiento
+    # 14-15. Provisión de julio contabilizada y su asiento
     c.abrir_registro('hr.provisiones', PROVISION_DEMO, ms=2000)
     con_botones(c, '14-provision-hecha')
     tamano(c, 1200)
     c.abrir_registro('account.move', ASIENTO_PROVISION, ms=2500)
     c.foto('15-asiento-provision', selector='.o_form_view .o_form_sheet_bg')
 
-    # 16-17. Liquidación de cese DEMO: pestaña de asientos y asiento
+    # 16-17. Liquidación de cese de agosto: pestaña de asientos y asiento
     tamano(c, 900)
     c.abrir_registro('hr.liquidation', LIQUIDACION_DEMO, ms=2500)
     c.clic('.o_notebook_headers a[name=benefits_moves]', ms=900)

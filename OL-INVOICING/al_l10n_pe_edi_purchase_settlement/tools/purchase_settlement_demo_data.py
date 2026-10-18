@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos «DEMO LC» para la ficha y la documentación (idempotente).
+"""Datos de liquidaciones de compra para la ficha y la documentación (idempotente).
 
     odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http --max-cron-threads=0 < \\
         myodoo/ol_new_apps/OL-INVOICING/al_l10n_pe_edi_purchase_settlement/tools/purchase_settlement_demo_data.py
@@ -21,10 +21,10 @@ kg = env.ref('uom.product_uom_kgm')
 district = env.ref('l10n_pe.district_pe_100103')
 day = date(2026, 10, 5)
 
-seller = env['res.partner'].search([('name', '=', 'DEMO LC QUISPE MAMANI JUANA')], limit=1)
+seller = env['res.partner'].search([('name', '=', 'QUISPE MAMANI JUANA')], limit=1)
 if not seller:
     seller = env['res.partner'].create({
-        'name': 'DEMO LC QUISPE MAMANI JUANA',
+        'name': 'QUISPE MAMANI JUANA',
         'l10n_latam_identification_type_id': env.ref('l10n_pe.it_DNI').id,
         'vat': '45612378',
         'street': 'Caserío Santa Rosa, parcela 14',
@@ -34,15 +34,15 @@ if not seller:
         'l10n_pe_district': district.id,
     })
 
-product = env['product.product'].search([('name', '=', 'DEMO LC Café pergamino')], limit=1)
+product = env['product.product'].search([('name', '=', 'Café pergamino')], limit=1)
 if not product:
     product = env['product.product'].create({
-        'name': 'DEMO LC Café pergamino', 'default_code': 'DEMO-CAFE', 'type': 'consu',
+        'name': 'Café pergamino', 'default_code': 'CAFE', 'type': 'consu',
         'uom_id': kg.id, 'supplier_taxes_id': [Command.set(igv.ids)]})
-gold = env['product.product'].search([('name', '=', 'DEMO LC Oro en bruto')], limit=1)
+gold = env['product.product'].search([('name', '=', 'Oro en bruto')], limit=1)
 if not gold:
     gold = env['product.product'].create({
-        'name': 'DEMO LC Oro en bruto', 'default_code': 'DEMO-ORO', 'type': 'consu',
+        'name': 'Oro en bruto', 'default_code': 'ORO', 'type': 'consu',
         'l10n_pe_lce_gold': True, 'supplier_taxes_id': [Command.set(igv.ids)]})
 
 
@@ -66,8 +66,8 @@ def settlement(ref, quantity, price, post):
     return move
 
 
-main = settlement('DEMO LC 1', 1250.0, 9.5, True)
-small = settlement('DEMO LC 2', 60.0, 10.0, False)
+main = settlement('Liquidación de compra 1', 1250.0, 9.5, True)
+small = settlement('Liquidación de compra 2', 60.0, 10.0, False)
 env.cr.commit()
 print('LCE', main.id, main.name, main.amount_total, main.l10n_pe_lce_status, '| borrador', small.id,
       '| oro', gold.product_tmpl_id.id)

@@ -1,9 +1,9 @@
 """Capturas de la ficha de al_pos_network_printer (impresora de red ESC/POS).
 
-Usa el punto de venta «DEMO TPV Vendedores» (id 23). Una impresora simulada
+Usa el punto de venta «Vendedores» (id 23). Una impresora simulada
 escucha en 127.0.0.1:9100 (un socket que guarda lo recibido), así «Probar
 impresora» imprime de verdad. Al terminar, la caja vuelve a como estaba y se
-borra la impresora de cocina DEMO.
+borra la impresora de cocina de demostración.
 """
 import socket
 import sys
@@ -89,7 +89,7 @@ with Captura('al_pos_network_printer') as c:
         rpc(c, 'pos.config', 'write', [[CONFIG], {
             'escpos_printer_mode': 'agent',
             'escpos_agent_url': 'https://agente-tienda1.ejemplo.com',
-            'escpos_agent_token': 'DEMO-token-del-agente'}])
+            'escpos_agent_token': 'token-del-agente'}])
         p.reload()
         p.wait_for_selector('#al_escpos_network_printer', timeout=30000)
         c.esperar(1500)
@@ -97,7 +97,7 @@ with Captura('al_pos_network_printer') as c:
 
         # 4. Impresora de preparación (cocina) ESC/POS
         cocina = rpc(c, 'pos.printer', 'create', [{
-            'name': 'DEMO Cocina', 'printer_type': 'escpos_network',
+            'name': 'Cocina', 'printer_type': 'escpos_network',
             'escpos_printer_ip': '127.0.0.1', 'escpos_printer_port': '9100',
             'product_categories_ids': [(6, 0, categ)]}])
         c.abrir_registro('pos.printer', cocina, ms=2500)

@@ -26,7 +26,7 @@ with Captura(M) as c:
     errors = []
     c.page.on('pageerror', lambda exc: errors.append(str(exc)))
     sites = rpc(c, 'project.project', 'search_read',
-                [[('is_construction_site', '=', True), ('name', 'ilike', 'DEMO')], ['id', 'name']],
+                [[('is_construction_site', '=', True), ('name', '=', 'Colegio A')], ['id', 'name']],
                 {'limit': 1, 'order': 'id'})
     if not sites:
         sites = rpc(c, 'project.project', 'search_read',

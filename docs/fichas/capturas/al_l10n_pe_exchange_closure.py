@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_exchange_closure (datos «DEMO TC»).
+"""Capturas de la ficha de al_l10n_pe_exchange_closure (datos de demostración).
 
 Base: ``al_l10n_pe_exchange_closure/tools/exchange_closure_demo.py`` (cierres
 de junio y julio 2026 contabilizados, CTC/2026/06/0007 y CTC/2026/07/0002).
@@ -129,7 +129,7 @@ def vista_previa(c):
 def apuntes_renglon(c):
     ventana(c, ANCHO)
     cierre(c, CIERRE_JULIO)
-    fila = c.page.locator('div[name=line_ids] .o_data_row', has_text='DEMO TC Cliente').first
+    fila = c.page.locator('div[name=line_ids] .o_data_row', has_text='Importadora Pacífico S.A.C.').first
     fila.locator('button[name=action_open_move_lines]').click()
     c.esperar(2500)
     c.foto('07-apuntes-renglon')

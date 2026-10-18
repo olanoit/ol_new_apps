@@ -210,7 +210,7 @@ class TestMasterImport(PlannerCommon):
         """El piso 05 del demo, exportado al formato del maestro e importado
         en otra obra, genera el mismo plan (66 módulos, S/ 2,301.53 de
         contratas y S/ 6,642.91 de material al costo de los productos)."""
-        demo = load_demo(self.env, 'IMP DEMO')
+        demo = load_demo(self.env, 'IMP')
         rows = defaultdict(list)
         stage_labels = {'production': 'Producción', 'assembly': 'Armado',
                         'installation': 'Instalación', 'finishing': 'Acabado y entrega'}

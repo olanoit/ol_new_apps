@@ -1,4 +1,4 @@
-"""Captura del PDF de la ficha de al_report_base: account.move B001-00000002 (factura de la obra DEMO PLAN).
+"""Captura del PDF de la ficha de al_report_base: account.move B001-00000002 (factura de la obra MOMEN-35-26).
 
 Uso: python3 docs/fichas/capturas/al_report_base.py [id]  (por defecto 26958)
 """

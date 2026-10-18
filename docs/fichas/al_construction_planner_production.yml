@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals_mrp`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261018'
+  fecha: 18/10/2026
+  cambios:
+  - "Confirmar la orden sin accesorios ya no falla para el comprador: el aviso a Logística se arma aunque no pueda leer las compañías de los demás usuarios."
 - version: '2.20261017'
   fecha: 17/10/2026
   cambios:

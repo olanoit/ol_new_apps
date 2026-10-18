@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos demo de la fase 3 (línea base) sobre el plan «DEMO PLAN MOMEN-35-26».
+"""Datos demo de la fase 3 (línea base) sobre el plan «MOMEN-35-26».
 
 Requiere haber ejecutado antes ``planner_demo_data.py``. Deja:
 
@@ -19,11 +19,13 @@ from datetime import timedelta
 
 from odoo import fields
 
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final: el mismo que en
+# planner_demo_data.py (vacío en la base demo).
+P = ''
 # Como admin (jefatura del planificador): el superusuario no es revisor.
 env = env(user=env.ref('base.user_admin'))
 Plan = env['construction.resource.plan']
-project = env['project.project'].search([('name', '=', f'{P} MOMEN-35-26')], limit=1)
+project = env['project.project'].search([('name', '=', f'{P}MOMEN-35-26')], limit=1)
 assert project, 'Ejecute antes planner_demo_data.py'
 unit = env.ref('uom.product_uom_unit')
 
@@ -34,13 +36,13 @@ def get_or_create(model, domain, vals):
 
 print('=== Reglas de aprobación del plan ===')
 plan_model = env['ir.model']._get('construction.resource.plan')
-get_or_create('tier.definition', [('name', '=', f'{P} · Nivel 1: jefatura de proyectos')], {
-    'name': f'{P} · Nivel 1: jefatura de proyectos', 'model_id': plan_model.id,
+get_or_create('tier.definition', [('name', '=', f'{P}Nivel 1: jefatura de proyectos')], {
+    'name': f'{P}Nivel 1: jefatura de proyectos', 'model_id': plan_model.id,
     'review_type': 'group',
     'reviewer_group_id': env.ref('al_construction_planner.group_planner_project_head').id,
     'definition_domain': '[]', 'sequence': 20, 'approve_sequence': True, 'has_comment': True})
-get_or_create('tier.definition', [('name', '=', f'{P} · Nivel 2: gerencia (más de S/ 100 000)')], {
-    'name': f'{P} · Nivel 2: gerencia (más de S/ 100 000)', 'model_id': plan_model.id,
+get_or_create('tier.definition', [('name', '=', f'{P}Nivel 2: gerencia (más de S/ 100 000)')], {
+    'name': f'{P}Nivel 2: gerencia (más de S/ 100 000)', 'model_id': plan_model.id,
     'review_type': 'group',
     'reviewer_group_id': env.ref(
         'al_construction_material_request.group_construction_operations_manager').id,
@@ -48,17 +50,17 @@ get_or_create('tier.definition', [('name', '=', f'{P} · Nivel 2: gerencia (más
     'approve_sequence': True})
 
 print('=== Compras de la melamina blanca (base de W-12) ===')
-white = env['product.product'].search([('name', '=', f'{P} Melamina MDP blanco fantasía')], limit=1)
+white = env['product.product'].search([('name', '=', f'{P}Melamina MDP blanco fantasía')], limit=1)
 assert white, 'No está la melamina blanca del demo'
-vendor = get_or_create('res.partner', [('name', '=', f'{P} Maderera (proveedor)')], {
-    'name': f'{P} Maderera (proveedor)', 'is_company': True})
+vendor = get_or_create('res.partner', [('name', '=', f'{P}Maderera (proveedor)')], {
+    'name': f'{P}Maderera (proveedor)', 'is_company': True})
 today = fields.Date.context_today(env.user)
 for ref, days, qty, price in [('W12-1', 150, 20, 118.50), ('W12-2', 75, 35, 122.00),
                               ('W12-3', 20, 15, 124.90)]:
-    if env['purchase.order'].search_count([('partner_ref', '=', f'{P} {ref}')]):
+    if env['purchase.order'].search_count([('partner_ref', '=', f'{P}{ref}')]):
         continue
     order = env['purchase.order'].create({
-        'partner_id': vendor.id, 'partner_ref': f'{P} {ref}',
+        'partner_id': vendor.id, 'partner_ref': f'{P}{ref}',
         'order_line': [(0, 0, {'product_id': white.id, 'product_qty': qty, 'price_unit': price})]})
     order.button_confirm()
     order.date_approve = fields.Datetime.to_datetime(today - timedelta(days=days))
@@ -90,8 +92,8 @@ if not plan_v2 and plan_v1.state in ('approved', 'in_progress'):
         'plan_id': plan_v2.id, 'product_id': white.id, 'basis': 'weighted_6m'})
     price.price_unit = round(price.price_weighted_6m, 2)
     price.action_apply()
-    grille = get_or_create('product.product', [('name', '=', f'{P} Rejilla de ventilación')], {
-        'name': f'{P} Rejilla de ventilación', 'default_code': '62011239', 'type': 'consu',
+    grille = get_or_create('product.product', [('name', '=', f'{P}Rejilla de ventilación')], {
+        'name': f'{P}Rejilla de ventilación', 'default_code': '62011239', 'type': 'consu',
         'uom_id': unit.id})
     space = plan_v2.line_ids.filtered(lambda l: l.task_level == 'space')[:1].task_id
     env['construction.resource.plan.line'].create({

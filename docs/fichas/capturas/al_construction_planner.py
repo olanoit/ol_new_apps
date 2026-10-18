@@ -1,6 +1,6 @@
 """Capturas de las fases 3 a 8 de al_construction_planner (línea base,
 asignaciones y compras, contratas, liquidación semanal, control y personal
-propio, cronograma con recursos): datos «DEMO PLAN» de tools/planner_demo_data.py,
+propio, cronograma con recursos): datos de demostración de tools/planner_demo_data.py,
 planner_demo_baseline.py, planner_demo_supply.py, planner_demo_contracts.py
 y planner_demo_control.py. Las capturas 01 a 03 (árbol de recursos) son de
 la fase 2.
@@ -59,20 +59,20 @@ def fases_5_6(c, v1):
     c.esperar(600)
     c.page.locator('.o_select_menu_item', has_text='Armado').first.click()
     c.esperar(1500)
-    elegir(c, 'partner_id', 'DEMO PLAN Armado Gonza')
+    elegir(c, 'partner_id', 'Armado Gonza')
     c.foto('17-asignar-contrata', selector=MODAL)
     c.clic('.modal-footer button.btn-secondary', ms=800)
 
     # 18. OC de servicio de Leandro en la obra (8 actividades, S/ 941.17)
     orders = buscar(c, 'purchase.order', [['construction_is_service_order', '=', True],
-                                          ['partner_id.name', '=like', 'DEMO PLAN Leandro%']])
+                                          ['partner_id.name', '=like', 'Leandro%']])
     c.abrir_registro('purchase.order', orders[-1], ms=2000)
     c.foto('18-oc-de-servicio', selector=FULL)
 
     # 19. Registrar avance (W-07, P-06): instalación mueble alto del piso
     c.abrir_registro(PLAN, v1, ms=2000)
     c.texto('Registrar avance', ms=2000)
-    elegir(c, 'activity_id', 'DEMO PLAN Instalación mueble alto')
+    elegir(c, 'activity_id', 'Instalación mueble alto')
     c.foto('19-registrar-avance', selector=MODAL)
     c.clic('.modal-footer button.btn-secondary', ms=800)
 
@@ -87,12 +87,12 @@ def fases_5_6(c, v1):
 
     # 21. Liquidación semanal (P-08)
     settlements = buscar(c, 'construction.contract.settlement',
-                         [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']])
+                         [['project_id.name', '=', 'MOMEN-35-26']])
     c.abrir_registro('construction.contract.settlement', settlements[0], ms=2000)
     c.foto('21-liquidacion-semanal', selector=FULL)
 
     # 22. Ambiente: pestaña «Recursos y avance» (P-09), cocina del Dpto 504
-    space = buscar(c, 'project.task', [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26'],
+    space = buscar(c, 'project.task', [['project_id.name', '=', 'MOMEN-35-26'],
                                        ['parent_id.name', '=', 'Dpto 504'],
                                        ['construction_level', '=', 'space']])
     c.abrir_registro('project.task', space[0], ms=2000)
@@ -121,9 +121,9 @@ def fase_7(c, v1):
     # 26. Asignar cuadrilla (W-06): toda la obra con el rol propio
     c.abrir_registro(PLAN, v1, ms=2000)
     c.texto('Asignar cuadrilla', ms=2000)
-    elegir(c, 'role_id', 'DEMO PLAN Instalador propio')
+    elegir(c, 'role_id', 'Instalador propio')
     resources = c.page.locator('.modal-content div[name=resource_ids] input')
-    for name in ('DEMO PLAN Obrero propio 1', 'DEMO PLAN Obrero propio 2'):
+    for name in ('Obrero propio 1', 'Obrero propio 2'):
         resources.fill(name)
         c.esperar(1200)
         c.page.locator('.o-autocomplete--dropdown-item').first.click()
@@ -176,7 +176,7 @@ def fase_10(c):
     """Fase 10: ruta del ingreso (P-19 a P-21), con los datos de
     tools/planner_demo_income.py."""
     # 36. Calendario e ingresos de la obra (P-21): valorizaciones previstas
-    project = buscar(c, 'project.project', [['name', '=', 'DEMO PLAN MOMEN-35-26']])[0]
+    project = buscar(c, 'project.project', [['name', '=', 'MOMEN-35-26']])[0]
     c.abrir_registro('project.project', project, ms=2000)
     c.texto('Calendario e ingresos', ms=2000)
     c.js("document.querySelector('.o_construction_forecast').scrollIntoView({block: 'end'})")
@@ -203,7 +203,7 @@ def fase_10(c):
 def fase_11(c):
     """Fase 11: cronograma valorizado (P-22) e inicio (P-01), con los datos
     de tools/planner_demo_schedule.py."""
-    project = buscar(c, 'project.project', [['name', '=', 'DEMO PLAN MOMEN-35-26']])[0]
+    project = buscar(c, 'project.project', [['name', '=', 'MOMEN-35-26']])[0]
     # 40. Cronograma valorizado, escenario plan: curva S y tabla semanal
     c.abrir_accion(f'{M}.action_construction_schedule_report_screen', ms=3000)
     c.page.locator('.o_cp_sr_project').select_option(str(project))
@@ -289,7 +289,7 @@ with Captura(M) as c:
         fase_10(c)
         fase_11(c)
         raise SystemExit
-    v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'DEMO PLAN MOMEN-35-26']], 'version')[:2]
+    v1, v2 = buscar(c, PLAN, [['project_id.name', '=', 'MOMEN-35-26']], 'version')[:2]
     if DESDE >= 28:
         fase_8(c, v1)
         raise SystemExit

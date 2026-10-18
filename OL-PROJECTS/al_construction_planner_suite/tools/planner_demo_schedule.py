@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Datos demo de la fase 11 (cronograma valorizado e inicio) sobre «DEMO
-PLAN MOMEN-35-26».
+"""Datos demo de la fase 11 (cronograma valorizado e inicio) sobre
+«MOMEN-35-26».
 
 Requiere haber ejecutado antes los scripts de las fases 1 a 10 (al menos
 ``planner_demo_data.py``, ``planner_demo_baseline.py``,
@@ -20,9 +20,11 @@ from datetime import date
 
 from odoo import Command
 
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final: el mismo que en
+# planner_demo_data.py (vacío en la base demo).
+P = ''
 env = env(user=env.ref('base.user_admin'))
-project = env['project.project'].search([('name', '=', f'{P} MOMEN-35-26')], limit=1)
+project = env['project.project'].search([('name', '=', f'{P}MOMEN-35-26')], limit=1)
 assert project, 'Ejecute antes planner_demo_data.py'
 plan = project._construction_current_plan()
 company = plan.company_id or project.company_id or env.company
@@ -43,7 +45,7 @@ if invoice and invoice.state == 'posted' and invoice.payment_state not in ('paid
         *env['account.journal']._check_company_domain(company), ('type', '=', 'bank')], limit=1)
     entry = env['account.move'].create({
         'move_type': 'entry', 'journal_id': journal.id, 'date': date(2026, 12, 21),
-        'ref': f'{P} cobro {invoice.name}',
+        'ref': f'{P}Cobro {invoice.name}',
         'line_ids': [
             Command.create({'account_id': journal.default_account_id.id,
                             'debit': invoice.amount_residual,

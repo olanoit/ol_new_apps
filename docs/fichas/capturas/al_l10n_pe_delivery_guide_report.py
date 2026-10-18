@@ -1,9 +1,9 @@
-"""Capturas de la ficha de al_l10n_pe_delivery_guide_report (datos «DEMO GRE»).
+"""Capturas de la ficha de al_l10n_pe_delivery_guide_report (datos de demostración).
 
-Datos creados por odoo shell: cliente «DEMO GRE Constructora Los Andes
-S.A.C.», conductor «DEMO GRE Carlos Quispe Mamani», vehículo DEM-701,
-tres productos «DEMO GRE» (el fierro con lotes) y la entrega validada con
-origen «DEMO GRE Obra Ate», marcada como guía T001-00000101 enviada (sin
+Datos creados por odoo shell: cliente «Constructora Los Andes
+S.A.C.», conductor «Carlos Quispe Mamani», vehículo DEM-701,
+tres productos de demostración (el fierro con lotes) y la entrega validada con
+origen «Obra Ate», marcada como guía T001-00000101 enviada (sin
 envío real: el número y el ticket son de demostración).
 """
 import sys

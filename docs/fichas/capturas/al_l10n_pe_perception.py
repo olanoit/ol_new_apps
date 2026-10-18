@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_perception (datos «DEMO PER»)."""
+"""Capturas de la ficha de al_l10n_pe_perception (datos de demostración)."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))

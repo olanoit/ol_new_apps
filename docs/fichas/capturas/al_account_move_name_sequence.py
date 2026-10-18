@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_account_move_name_sequence (datos «DEMO»).
+"""Capturas de la ficha de al_account_move_name_sequence (datos de demostración).
 
 Uso: ``python al_account_move_name_sequence.py [bloque …]`` (1, 2; sin
 argumentos, todos)."""
@@ -11,9 +11,9 @@ SERIE_F001 = 3
 SERIE_F002 = 11
 SERIE_F099 = 26         # serie publicada y luego inhabilitada
 JOURNAL_CPE = 429       # Facturas TPV: documentos latam y series F001/F002
-JOURNAL_CAJA = 1971     # DEMO Caja chica: prefijo simple CC01-
-INVOICE_DRAFT = 2406    # factura en borrador del diario 429 (DEMO Distribuidora Norte)
-INVOICE_F002 = 2443     # F002-00000002 · «DEMO serie F002»
+JOURNAL_CAJA = 1971     # Caja chica: prefijo simple CC01-
+INVOICE_DRAFT = 2406    # factura en borrador del diario 429 (Distribuidora Norte)
+INVOICE_F002 = 2443     # F002-00000002 · «Serie F002»
 REFUND_FC02 = 2444      # FC02-00000001 · nota de crédito de la anterior
 ENTRY_CAJA = 2400       # CC01-00000002
 

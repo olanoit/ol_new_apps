@@ -1,13 +1,13 @@
-"""Capturas de la ficha de al_l10n_pe_detraction (datos «DEMO SPOT» / «DEMO SPLIT»).
+"""Capturas de la ficha de al_l10n_pe_detraction (datos de demostración).
 
-Datos previos, cargados por odoo shell sobre registros DEMO:
+Datos previos, cargados por odoo shell sobre registros de demostración:
 
-- Cuentas de detracciones del Banco de la Nación en «DEMO SPOT Contraparte
-  SAC» y «DEMO SPOT2 Cliente SAC»; «DEMO SPLIT SAC» queda sin cuenta a
+- Cuentas de detracciones del Banco de la Nación en «Consultores Asociados
+  del Sur S.A.C.» y «Transportes del Centro S.A.C.»; «Consultora Integral S.A.C.» queda sin cuenta a
   propósito (sale como excluido en el depósito masivo).
 - Depósitos registrados con el asistente sobre las facturas con reparto
-  DPSC/2026/07/0007 (constancia DEMO-SPLIT-0001) y DPSV/2026/00008
-  (DEMO-SPLIT-0002).
+  DPSC/2026/07/0007 (constancia SPLIT-0001) y DPSV/2026/00008
+  (SPLIT-0002).
 
 Los asistentes que se capturan aquí se abren pero no se confirman.
 """
@@ -18,8 +18,8 @@ import capturar  # noqa: E402
 from capturar import Captura  # noqa: E402
 
 TIPO_037 = 24                # [037] Demás servicios gravados con el IGV
-PRODUCTO_SPOT = 165          # DEMO SPOT Servicio Empresarial (037)
-CONTACTO = 149               # DEMO SPOT Contraparte SAC, con cuenta del BN
+PRODUCTO_SPOT = 165          # Servicio de asesoría empresarial (037)
+CONTACTO = 149               # Consultores Asociados del Sur S.A.C., con cuenta del BN
 FACTURA_VENTA = 206          # DPSV/2026/00002, S/ 5.900, 12 % = S/ 708
 FACTURA_REPARTO = 250        # DPSV/2026/00008, reparto en 121901, depositada
 FACTURA_COMPRA = 233         # DPSC/2026/07/0004, sin constancia

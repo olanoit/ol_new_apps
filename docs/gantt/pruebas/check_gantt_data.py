@@ -15,7 +15,7 @@ import json
 user = env.ref('base.user_admin')
 Project = env['project.project'].with_user(user)
 
-demo = Project.search([('name', 'like', '[DEMO Gantt]')])
+demo = Project.search([('name', 'in', ['Edificio A', 'Migración ERP'])])
 print(f"Usuario: {user.name} · proyectos de demostración: {len(demo)}")
 
 payload = Project.get_gantt_data(project_ids=demo.ids)

@@ -3,7 +3,7 @@
 Datos: periodos RVIE-07-2026 (SIRE desplegado) y RCE-07-2026 del script
 ``docs/sire/pruebas/sire_demo_data.py``, y periodo RVIE-08-2026 en carga manual con una
 propuesta simulada (``DEMO_Propuesta_RVIE_202608.txt``: una factura con otro
-importe, una que SUNAT no tiene y una del socio «DEMO SIRE SOCIO SAC» que Odoo
+importe, una que SUNAT no tiene y una del socio «Inversiones Socio Norte S.A.C.» que Odoo
 no tiene).
 
 Ningún paso llama a la API de SUNAT: la compañía no tiene credenciales, los
@@ -18,7 +18,7 @@ from capturar import Captura  # noqa: E402
 RVIE_JUL_ID = 3     # RVIE-07-2026, estado «SIRE desplegado»
 RVIE_ID = 22        # RVIE-08-2026, estado «Comparado»
 RCE_ID = 3          # RCE-07-2026, estado «Comparado»
-FACTURA_ID = 372    # F F077-00000771, compra de «DEMO SIRE SOCIO SAC»
+FACTURA_ID = 372    # F F077-00000771, compra de «Inversiones Socio Norte S.A.C.»
 FORM = '.o_form_view .o_form_sheet_bg'
 BLOQUES = {int(a) for a in sys.argv[1:]} or {1, 2}
 

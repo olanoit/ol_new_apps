@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos «DEMO NIIF16» para las capturas de la ficha (se ejecuta con ``odoo shell``).
+"""Datos NIIF 16 para las capturas de la ficha (se ejecuta con ``odoo shell``).
 
 * Oficina a 36 meses, cuota adelantada de S/ 4 500, tasa 12 %, costos directos
   de S/ 1 200: confirmada, con sus dos primeras facturas del arrendador.
@@ -10,8 +10,6 @@ Es idempotente: si el arrendador demo existe, no hace nada.
 """
 from datetime import date
 
-PREFIX = 'DEMO NIIF16'
-
 
 def ruc(base10):
     """RUC con su dígito verificador (módulo 11 de SUNAT)."""
@@ -20,11 +18,11 @@ def ruc(base10):
 
 
 Partner = env['res.partner']
-if Partner.search([('name', '=', '%s Inmobiliaria San Isidro S.A.C.' % PREFIX)], limit=1):
-    print('Los datos DEMO NIIF16 ya existen.')
+if Partner.search([('name', '=', 'Inmobiliaria San Isidro S.A.C.')], limit=1):
+    print('Los datos NIIF 16 ya existen.')
 else:
     it_ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
-    lessor = Partner.create({'name': '%s Inmobiliaria San Isidro S.A.C.' % PREFIX, 'vat': ruc('2061234567'),
+    lessor = Partner.create({'name': 'Inmobiliaria San Isidro S.A.C.', 'vat': ruc('2061234567'),
                              'is_company': True, 'country_id': env.ref('base.pe').id,
                              'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False})
     Lease = env['l10n_pe.lease']
@@ -50,14 +48,14 @@ else:
         'payment_amount': 1350.0, 'payment_timing': 'arrears', 'annual_rate': 10.5})
     forklift.action_compute()
     env.cr.commit()
-    print('DEMO NIIF16:', [(l.name, l.state, l.liability_amount, l.rou_amount) for l in office | warehouse | forklift])
+    print('NIIF 16:', [(l.name, l.state, l.liability_amount, l.rou_amount) for l in office | warehouse | forklift])
 
 # ----------------------------------------------------------------------
 # Versión 2: moneda extranjera, subcuentas del pasivo y remedición.
 # ----------------------------------------------------------------------
-lessor2_name = '%s Centro Comercial del Sur S.A.' % PREFIX
+lessor2_name = 'Centro Comercial del Sur S.A.'
 if Partner.search([('name', '=', lessor2_name)], limit=1):
-    print('Los datos DEMO NIIF16 (v2) ya existen.')
+    print('Los datos NIIF 16 (v2) ya existen.')
 else:
     from dateutil.relativedelta import relativedelta
     it_ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
@@ -85,7 +83,7 @@ else:
         'date': date(2026, 10, 1), 'payment_amount': 3300.0, 'remaining_months': 27,
         'annual_rate': 12.0, 'reason': 'Reajuste anual de la renta (10 %)'}).action_apply()
     env.cr.commit()
-    print('DEMO NIIF16 v2:', [(l.name, l.state, l.currency_id.name, l.liability_amount) for l in shop | depot])
+    print('NIIF 16 v2:', [(l.name, l.state, l.currency_id.name, l.liability_amount) for l in shop | depot])
 
 
 # Facturas del arrendador del depósito, enero a octubre, publicadas en un diario
@@ -94,11 +92,11 @@ depot = env['l10n_pe.lease'].search([('contract_ref', '=', 'ARR-2026-05')], limi
 if depot and not depot._vendor_bills().filtered(lambda m: m.state == 'posted'):
     company = depot.company_id
     journal = env['account.journal'].search([('code', '=', 'DNIF'), ('company_id', '=', company.id)], limit=1) \
-        or env['account.journal'].create({'name': '%s Compras' % PREFIX, 'code': 'DNIF', 'type': 'purchase',
+        or env['account.journal'].create({'name': 'Compras arrendamientos', 'code': 'DNIF', 'type': 'purchase',
                                           'company_id': company.id, 'l10n_latam_use_documents': False})
     for _i in range(10):
         bill = env['account.move'].browse(depot.action_register_installment()['res_id'])
         bill.journal_id = journal
         bill.action_post()
     env.cr.commit()
-    print('DEMO NIIF16: 10 facturas del depósito publicadas')
+    print('NIIF 16: 10 facturas del depósito publicadas')

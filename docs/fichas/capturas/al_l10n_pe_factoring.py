@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_factoring (datos «DEMO FAC», cargados con
+"""Capturas de la ficha de al_l10n_pe_factoring (datos de demostración, cargados con
 al_l10n_pe_factoring/tools/factoring_demo_data.py)."""
 import sys
 from pathlib import Path
@@ -60,7 +60,7 @@ with Captura(M) as c:
     c.abrir_accion(f'{M}.action_factoring_cost', ms=2500)
     c.foto('11-costo-financiero', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
 
-# Versión 8 (contrato DEMO FAC, ver tools/factoring_demo_data.py)
+# Versión 8 (contrato de demostración, ver tools/factoring_demo_data.py)
 CONTRACT, INVOICE_NEGOTIABLE = 5, 16772
 with Captura(M) as c:
     # 12. Contrato del factor con su línea de crédito

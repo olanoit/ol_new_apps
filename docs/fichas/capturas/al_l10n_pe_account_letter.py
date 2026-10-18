@@ -1,7 +1,7 @@
-"""Capturas de la ficha de al_l10n_pe_account_letter (datos «DEMO LETRA»).
+"""Capturas de la ficha de al_l10n_pe_account_letter (datos de demostración).
 
 Base: el guion del módulo ``tools/account_letter_demo_data.py``. Encima, por
-odoo shell y solo sobre registros DEMO LETRA:
+odoo shell y solo sobre los registros de demostración de letras:
 
 - Factura DLTV/2026/00004 (S/ 2.360,00) y canje CLC00124 en «Comprobado» con
   dos letras generadas y aún sin número.
@@ -141,7 +141,7 @@ with Captura('al_l10n_pe_account_letter') as c:
 
     # 11. Facturas de cliente con la columna opcional «Estado de canje»
     c.abrir_accion('account.action_move_out_invoice_type', ms=2500)
-    c.page.locator('.o_searchview_input').fill('DEMO LETRA')
+    c.page.locator('.o_searchview_input').fill('Comercial Los Olivos S.A.C.')
     c.esperar(700)
     c.page.keyboard.press('Enter')
     c.esperar(1800)

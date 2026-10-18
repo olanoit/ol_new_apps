@@ -7,7 +7,7 @@ con ``odoo-bin shell``::
 Sin variables, pone el proveedor Izipay en «Modo de prueba» con las claves de
 la tienda de prueba pública de la documentación de Izipay (89289758) y
 publicado. Imprime un enlace de pago de una factura abierta en soles (o, si no
-hay, un enlace de /payment/pay con referencia DEMO-IZIPAY/…).
+hay, un enlace de /payment/pay con referencia IZIPAY/…).
 
 Variables de entorno:
 
@@ -81,7 +81,7 @@ else:
         print('Factura:', invoice.name, partner.name, amount)
     else:
         partner = env['res.partner'].search([('email', '!=', False)], limit=1)  # noqa: F821
-        amount, extra = 120.5, f'&reference=DEMO-IZIPAY/{int(time.time())}'
+        amount, extra = 120.5, f'&reference=IZIPAY/{int(time.time())}'
     token = payment_utils.generate_access_token(partner.id, amount, pen.id, env=env)  # noqa: F821
     link = (f'{BASE_URL}/payment/pay?amount={amount}&currency_id={pen.id}'
             f'&partner_id={partner.id}&access_token={token}{extra}')

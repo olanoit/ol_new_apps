@@ -2,7 +2,7 @@
 
 Las capturas del pago (modal, tarjeta, aprobado, rechazado) salen del pago
 real contra el sandbox con docs/niubiz/validar_sandbox_e2e.py. Aquí: la
-configuración del proveedor y la transacción DEMO-NIUBIZ-OK3, anulada en el
+configuración del proveedor y la transacción NIUBIZ-OK3, anulada en el
 sandbox el mismo día.
 """
 import sys
@@ -24,6 +24,6 @@ with Captura('al_payment_niubiz') as c:
     provider = buscar(c, 'payment.provider', [['code', '=', 'niubiz']])
     c.abrir_registro('payment.provider', provider, ms=3000)
     c.foto('01-ajustes', selector='.o_form_sheet_bg')
-    tx = buscar(c, 'payment.transaction', [['reference', '=', 'DEMO-NIUBIZ-OK3']])
+    tx = buscar(c, 'payment.transaction', [['reference', '=', 'NIUBIZ-OK3']])
     c.abrir_registro('payment.transaction', tx, ms=3000)
     c.foto('06-anulacion', selector='.o_form_sheet_bg')

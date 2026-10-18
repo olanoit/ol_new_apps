@@ -1,8 +1,8 @@
 """Capturas de la ficha de al_pos_theme (tema y marca blanca del TPV).
 
-Usa el punto de venta «DEMO TPV Vendedores» (id 23) y su sesión abierta, sin
+Usa el punto de venta «Vendedores» (id 23) y su sesión abierta, sin
 cobrar ninguna orden. La caja queda con la marca neutra por defecto; para el
-ejemplo de marca propia se le aplica una marca DEMO y al final se restaura.
+ejemplo de marca propia se le aplica una marca de ejemplo y al final se restaura.
 El administrador tiene la vista de lista de al_pos_product_view como
 preferencia: el guion la deja igual al terminar.
 """
@@ -15,7 +15,7 @@ CONFIG = 23
 DESKTOP = {'width': 1440, 'height': 900}
 PHONE = {'width': 390, 'height': 844}
 DEMO_BRAND = {
-    'al_theme_brand_name': 'DEMO Botica Central',
+    'al_theme_brand_name': 'Botica Central',
     'al_theme_color_primary': '#0F766E',
     'al_theme_color_secondary': '#134E4A',
     'al_theme_color_accent': '#F59E0B',
@@ -103,7 +103,7 @@ with Captura('al_pos_theme', viewport=DESKTOP) as c:
     w(c, 2500)
     c.foto('06-ordenes', recortar=False)
 
-    # 8. Marca propia (ejemplo DEMO): nombre, logo de la compañía y colores
+    # 8. Marca propia (ejemplo): nombre, logo de la compañía y colores
     rpc_write(c, DEMO_BRAND)
     abrir_tpv(c, desbloquear=False)
     c.foto('08-marca-propia-bloqueo', recortar=False)

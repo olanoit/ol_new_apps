@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """Datos demo de la fase 7 (control y personal propio) sobre el plan vigente
-de «DEMO PLAN MOMEN-35-26».
+de «MOMEN-35-26».
 
 Requiere haber ejecutado antes ``planner_demo_data.py``,
 ``planner_demo_baseline.py`` y ``planner_demo_contracts.py``. Deja (todo
 ficticio):
 
-- la actividad «DEMO PLAN Instalación con personal propio» en horas, con el
-  rol «DEMO PLAN Instalador propio», y dos obreros con costo hora S/ 9.50;
+- la actividad «Instalación con personal propio» en horas, con el
+  rol «Instalador propio», y dos obreros con costo hora S/ 9.50;
 - una línea de personal propio de 16 h a S/ 12.00 en las cocinas de los
   Dpto 501 y 502 (instalación), agregada al plan vigente como si viniera de
   la generación;
@@ -24,9 +24,11 @@ from datetime import date
 
 from odoo import Command
 
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final: el mismo que en
+# planner_demo_data.py (vacío en la base demo).
+P = ''
 env = env(user=env.ref('base.user_admin'))
-project = env['project.project'].search([('name', '=', f'{P} MOMEN-35-26')], limit=1)
+project = env['project.project'].search([('name', '=', f'{P}MOMEN-35-26')], limit=1)
 assert project, 'Ejecute antes planner_demo_data.py'
 plan = project._construction_current_plan()
 assert plan.state in ('approved', 'in_progress'), 'Ejecute antes planner_demo_baseline.py'
@@ -34,17 +36,17 @@ company = plan.company_id
 hour = env.ref('uom.product_uom_hour')
 Task = env['project.task']
 
-role = env['planning.role'].search([('name', '=', f'{P} Instalador propio')], limit=1) \
-    or env['planning.role'].create({'name': f'{P} Instalador propio'})
-activity = env['construction.labor.activity'].search([('code', '=', 'DEMO-PPI')], limit=1) \
+role = env['planning.role'].search([('name', '=', f'{P}Instalador propio')], limit=1) \
+    or env['planning.role'].create({'name': f'{P}Instalador propio'})
+activity = env['construction.labor.activity'].search([('code', '=', 'PPI')], limit=1) \
     or env['construction.labor.activity'].create({
-        'code': 'DEMO-PPI', 'name': f'{P} Instalación con personal propio',
+        'code': 'PPI', 'name': f'{P}Instalación con personal propio',
         'stage': 'installation', 'uom_id': hour.id, 'default_price': 12.0,
         'role_id': role.id, 'productivity_source': 'estimated'})
 employees = env['hr.employee']
 for name in ('Obrero propio 1', 'Obrero propio 2'):
-    employees |= env['hr.employee'].search([('name', '=', f'{P} {name}')], limit=1) \
-        or env['hr.employee'].create({'name': f'{P} {name}', 'hourly_cost': 9.5,
+    employees |= env['hr.employee'].search([('name', '=', f'{P}{name}')], limit=1) \
+        or env['hr.employee'].create({'name': f'{P}{name}', 'hourly_cost': 9.5,
                                       'company_id': company.id})
 
 if not plan.line_ids.filtered(lambda l: l.activity_id == activity):

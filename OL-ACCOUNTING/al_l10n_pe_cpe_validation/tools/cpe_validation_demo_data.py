@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos DEMO CPE para las capturas: tres facturas de proveedor con el
+"""Datos de demostración para las capturas: tres facturas de proveedor con el
 resultado de la consulta ya registrado (sin llamar a SUNAT).
 
     odoo-bin shell -c <cfg> -d <base> < tools/cpe_validation_demo_data.py
@@ -22,11 +22,11 @@ def vendor(name, body):
 
 
 rows = [
-    (vendor('DEMO CPE DISTRIBUIDORA S.A.C.', '2061000111'), 'F001-00004521', 2360.0,
+    (vendor('DISTRIBUIDORA SAN JORGE S.A.C.', '2061000111'), 'F001-00004521', 2360.0,
      {'estadoCp': '1', 'estadoRuc': '00', 'condDomiRuc': '00', 'observaciones': []}),
-    (vendor('DEMO CPE SERVICIOS GENERALES E.I.R.L.', '2061000222'), 'F002-00000318', 840.0,
+    (vendor('SERVICIOS GENERALES LUNA E.I.R.L.', '2061000222'), 'F002-00000318', 840.0,
      {'estadoCp': '1', 'estadoRuc': '00', 'condDomiRuc': '12', 'observaciones': []}),
-    (vendor('DEMO CPE IMPORTACIONES S.R.L.', '2061000333'), 'F001-00009910', 1180.0,
+    (vendor('IMPORTACIONES DEL PACÍFICO S.R.L.', '2061000333'), 'F001-00009910', 1180.0,
      {'estadoCp': '0', 'estadoRuc': '00', 'condDomiRuc': '00',
       'observaciones': ['- El comprobante de pago consultado no ha sido informado a SUNAT.']}),
 ]
@@ -40,5 +40,5 @@ for partner, number, amount, data in rows:
             'invoice_line_ids': [(0, 0, {'name': 'Mercadería', 'quantity': 1, 'price_unit': amount})],
         })
     move._l10n_pe_cpe_apply(data)
-    print('DEMO', move.id, move.name, move.l10n_pe_cpe_result)
+    print('CPE', move.id, move.name, move.l10n_pe_cpe_result)
 env.cr.commit()

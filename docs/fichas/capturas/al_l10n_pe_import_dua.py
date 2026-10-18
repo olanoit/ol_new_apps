@@ -1,4 +1,4 @@
-"""Capturas de la ficha de al_l10n_pe_import_dua (datos «DEMO DUA», cargados
+"""Capturas de la ficha de al_l10n_pe_import_dua (datos de demostración, cargados
 con al_l10n_pe_import_dua/tools/import_dua_demo_data.py).
 
 Uso: python3 docs/fichas/capturas/al_l10n_pe_import_dua.py <id DUA> <id costo en destino>

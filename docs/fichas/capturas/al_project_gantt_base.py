@@ -2,7 +2,7 @@
 
 El módulo base no tiene interfaz propia: se muestran su configuración (colores,
 grupos), el informe PDF que define y el diagrama que dibujan las interfaces con
-su adaptador. Datos: proyectos «[DEMO Gantt]» 18 y 19.
+su adaptador. Datos: proyectos de demostración 18 y 19.
 """
 import sys
 from pathlib import Path

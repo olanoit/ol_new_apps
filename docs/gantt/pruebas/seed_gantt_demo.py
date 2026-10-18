@@ -6,17 +6,18 @@ Uso:
     .venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -p 19799 --gevent-port 19798 \
         < myodoo/ol_new_apps/docs/gantt/pruebas/seed_gantt_demo.py
 
-Crea dos proyectos con el prefijo «[DEMO Gantt]», tareas jerárquicas con
+Crea dos proyectos («Edificio A» y «Migración ERP»), tareas jerárquicas con
 dependencias e hitos. Es idempotente: si ya existen, los borra y los rehace.
 
 Para eliminarlos:
 
-    env['project.project'].search([('name', 'like', '[DEMO Gantt]')]).unlink()
+    env['project.project'].search([('name', 'in', ['Edificio A', 'Migración ERP'])]).unlink()
     env.cr.commit()
 """
 from datetime import datetime, timedelta
 
-PREFIX = '[DEMO Gantt]'
+# Proyectos de demostración (el script los borra y los rehace).
+PROJECTS = ['Edificio A', 'Migración ERP']
 BASE = datetime(2026, 9, 7, 8, 0, 0)  # lunes
 
 field_map = env['al.gantt.field.map'].get_map()
@@ -24,7 +25,7 @@ START = field_map['date_start']
 END = field_map['date_end']
 print(f"Mapeo de campos detectado: {field_map}")
 
-old = env['project.project'].search([('name', 'like', PREFIX)])
+old = env['project.project'].search([('name', 'in', PROJECTS)])
 if old:
     print(f"Eliminando {len(old)} proyecto(s) de demostración anteriores")
     old.with_context(active_test=False).unlink()
@@ -53,7 +54,7 @@ def make_task(project, name, offset, duration, parent=None, **extra):
 # Proyecto 1 — obra, con jerarquía de tres niveles y cadena de dependencias
 # ---------------------------------------------------------------------------
 building = env['project.project'].create({
-    'name': f'{PREFIX} Edificio A',
+    'name': 'Edificio A',
     'allow_milestones': True,
     'privacy_visibility': 'employees',
 })
@@ -103,7 +104,7 @@ env['project.task'].create({'name': 'Tarea sin fechas', 'project_id': building.i
 # Proyecto 2 — plano, para probar la vista multiproyecto
 # ---------------------------------------------------------------------------
 erp = env['project.project'].create({
-    'name': f'{PREFIX} Migración ERP',
+    'name': 'Migración ERP',
     'allow_milestones': True,
     'privacy_visibility': 'employees',
 })

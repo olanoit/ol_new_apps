@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Datos demo del planificador de obra (prefijo DEMO PLAN; todo ficticio).
+"""Datos demo del planificador de obra (todo ficticio).
 
 Reproduce el piso 05 de la especificación v1.4 (departamentos 501 a 508,
 tipologías 01 a 08): 66 módulos, 41.33 ML, material S/ 6,642.91, contrata
@@ -12,7 +12,9 @@ inventado (E) y se cuadra con una línea de ajuste por tipología.
 Idempotente. Ejecutar con:
   odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < planner_demo_data.py
 """
-P = 'DEMO PLAN'
+# Prefijo opcional de los nombres, con espacio final (vacío en la base demo;
+# los tests ponen el suyo para aislar sus datos).
+P = ''
 unit = env.ref('uom.product_uom_unit')
 meter = env.ref('uom.product_uom_meter')
 
@@ -22,12 +24,12 @@ def get_or_create(model, domain, vals):
 
 
 print('=== Obra ===')
-project = get_or_create('project.project', [('name', '=', f'{P} MOMEN-35-26')], {
-    'name': f'{P} MOMEN-35-26', 'is_construction_site': True})
-leandro = get_or_create('res.partner', [('name', '=', f'{P} Leandro (instalación)')],
-                        {'name': f'{P} Leandro (instalación)', 'is_company': True})
-gonza = get_or_create('res.partner', [('name', '=', f'{P} Armado Gonza')],
-                      {'name': f'{P} Armado Gonza', 'is_company': True})
+project = get_or_create('project.project', [('name', '=', f'{P}MOMEN-35-26')], {
+    'name': f'{P}MOMEN-35-26', 'is_construction_site': True})
+leandro = get_or_create('res.partner', [('name', '=', f'{P}Leandro (instalación)')],
+                        {'name': f'{P}Leandro (instalación)', 'is_company': True})
+gonza = get_or_create('res.partner', [('name', '=', f'{P}Armado Gonza')],
+                      {'name': f'{P}Armado Gonza', 'is_company': True})
 
 print('=== Actividades y tarifas (P-14) ===')
 ACTIVITIES = [
@@ -57,11 +59,11 @@ ACTIVITIES = [
 ]
 act = {}
 for code, name, stage, uom, base, site, extra in ACTIVITIES:
-    full_code = f'DEMO-{code}'
+    full_code = code
     activity = env['construction.labor.activity'].search([('code', '=', full_code)], limit=1)
     if not activity:
         activity = env['construction.labor.activity'].create(dict({
-            'code': full_code, 'name': f'{P} {name}', 'stage': stage, 'uom_id': uom.id,
+            'code': full_code, 'name': f'{P}{name}', 'stage': stage, 'uom_id': uom.id,
             'default_price': base, 'productivity_source': 'estimated'}, **extra))
         env['construction.labor.rate'].create({
             'activity_id': activity.id, 'price': base, 'retention_pct': 10.0})
@@ -83,8 +85,8 @@ MATERIALS = [
 ]
 prod, cost = {}, {}
 for key, ref, name, uom, price, _stage in MATERIALS:
-    prod[key] = get_or_create('product.product', [('default_code', '=', f'DEMO-{ref}')], {
-        'name': f'{P} {name}', 'default_code': f'DEMO-{ref}', 'type': 'consu',
+    prod[key] = get_or_create('product.product', [('default_code', '=', ref)], {
+        'name': f'{P}{name}', 'default_code': ref, 'type': 'consu',
         'is_storable': True, 'uom_id': uom.id, 'standard_price': price})
     cost[key] = price
 stage_of = {key: stage for key, _r, _n, _u, _p, stage in MATERIALS}
@@ -150,7 +152,7 @@ for code, (mix, ml_low, ml_high, inst, armado, bom_qty, material, contract) in T
         assert adjust > 0, (code, adjust)
         lines.append(('ENP', adjust))
         tmpl = env['product.template'].create({
-            'name': f'{P} Cocina tipo {code}', 'type': 'consu', 'is_storable': True})
+            'name': f'{P}Cocina tipo {code}', 'type': 'consu', 'is_storable': True})
         bom_lines = [(key, qty) for key, qty in zip(('MDP', 'COÑ', 'RH', 'BIS', 'TOR', 'TAP'),
                                                      bom_qty)]
         # La BOM guarda las cantidades con la precisión «Product Unit» de la base.
@@ -159,8 +161,8 @@ for code, (mix, ml_low, ml_high, inst, armado, bom_qty, material, contract) in T
         assert extra_cost > 0, (code, extra_cost)
         # Ajuste E: herrajes de la tipología a un costo que cuadra con el maestro.
         extra = env['product.product'].create({
-            'name': f'{P} Herrajes y accesorios tipología {code}',
-            'default_code': f'DEMO-HER-{code}', 'type': 'consu', 'uom_id': unit.id,
+            'name': f'{P}Herrajes y accesorios tipología {code}',
+            'default_code': f'HER-{code}', 'type': 'consu', 'uom_id': unit.id,
             'standard_price': extra_cost})
         prod[f'HER-{code}'] = extra
         cost[f'HER-{code}'] = extra_cost

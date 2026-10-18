@@ -1,10 +1,10 @@
-"""Capturas de la ficha de al_l10n_pe_stock_transfer (datos «DEMO TRAS», cargados
+"""Capturas de la ficha de al_l10n_pe_stock_transfer (datos de demostración, cargados
 con al_l10n_pe_stock_transfer/tools/stock_transfer_demo_data.py). No envía
 nada a SUNAT.
 
 Uso: python docs/fichas/capturas/al_l10n_pe_stock_transfer.py TRASLADO COMPRA DEVOLUCION TIPO
 (ids de las transferencias DTP/INT/00002, DTP/IN/00001, DTP/OUT/00001 y del
-tipo de operación de entregas de DEMO TRAS Planta Ate)."""
+tipo de operación de entregas de Planta Ate)."""
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -41,7 +41,7 @@ with Captura(M) as c:
     c.page.keyboard.press('Escape')
     c.esperar(400)
     # Solo los bienes de la demostración.
-    c.page.locator('.o_searchview_input').fill('DEMO TRAS Andamio')
+    c.page.locator('.o_searchview_input').fill('Andamio')
     c.page.keyboard.press('Enter')
     c.esperar(1500)
     c.foto('05-existencias-terceros', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 420})
