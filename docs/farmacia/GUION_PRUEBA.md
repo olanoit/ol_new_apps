@@ -72,9 +72,31 @@ Abra **Punto de venta ‣ Botica Principal**.
 | 5.9 | Prescriptor «Dr. Jorge Salazar Pérez» ‣ **Consultar en el CMP** | Abre conoceatumedico.cmp.org.pe | |
 | 5.10 | **Verificado: inhábil** y validar una receta suya | No valida: prescriptor inhábil | |
 
+## 6. Comprobantes electrónicos (SUNAT beta)
+
+farmacia-dev emite en el **entorno de prueba de SUNAT** (beta): los comprobantes
+se firman con el certificado de prueba de Odoo, SUNAT beta los valida y
+devuelve su constancia, pero no tienen valor tributario. Compañía «Botica Santa
+Rosa S.A.C.» (RUC de prueba 20557912879), series **B001** (boletas) y **F001**
+(facturas) con sus diarios, caja con el flujo de comprobantes activo.
+
+| # | Paso | Resultado esperado | ✓ |
+|---|---|---|---|
+| 6.1 | En la caja, vender 1 blíster de Paracetamol a «Lucía Fernández Ríos» (DNI) y en el pago elegir **Boleta electrónica** | Ticket con el formato de boleta (B001-…, QR) | |
+| 6.2 | **Contabilidad ‣ Clientes ‣ Facturas**, abrir la boleta | Estado electrónico **Enviado**; línea «1 Blíster x 10» | |
+| 6.3 | En la caja, vender a «Distribuidora Médica Lima S.A.C.» (RUC) con **Factura electrónica** | Factura F001-… enviada | |
+| 6.4 | Intentar **Factura electrónica** sin cliente con RUC | La caja lo impide: emita boleta | |
+| 6.5 | Factura con Metformina (IGV exonerado) | Línea con «0% Exo» y total sin IGV de esa línea | |
+
+Prueba hecha el 18/10/2026 desde el servidor: boleta B001-00000001 (1 Caja x
+100, código BX), factura F001-00000001 (blíster + metformina exonerada) y la
+venta de caja «Botica Principal - 000001» con receta → boleta B001-00000002:
+las tres aceptadas por SUNAT beta.
+
 ## Pendientes conocidos
 
-- La boleta y la factura electrónicas no se envían a SUNAT en farmacia-dev (sin
-  certificado ni operador): la caja emite recibos.
+- Los comprobantes van a SUNAT beta: para producción hacen falta el
+  certificado digital, el usuario SOL u operador (OSE) y el RUC del cliente
+  (ver `configurar_cpe_beta.py`).
 - El archivo del Observatorio usa columnas por confirmar con DIGEMID.
 - El precio de las presentaciones no aplica listas de precios ni descuentos.
