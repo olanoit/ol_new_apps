@@ -23,6 +23,31 @@ class TestPosPresentationTour(TestPointOfSaleHttpCommon):
         self.assertAlmostEqual(blister_line.price_unit * 7, 1.0, places=9)
         self.assertEqual(order.amount_total, 1.20)
 
+    def test_presentation_with_pricelist(self):
+        product = self.env['product.template'].create({
+            'name': 'Loratadina 10 mg', 'type': 'consu', 'available_in_pos': True,
+            'list_price': 0.20, 'taxes_id': [(6, 0, [])],
+        })
+        self.env['pharmacy.presentation'].create({
+            'product_tmpl_id': product.id, 'name': 'Blíster', 'factor': 7, 'price': 1.00})
+        agreement = self.env['product.pricelist'].create({
+            'name': 'Convenio 10%', 'currency_id': self.main_pos_config.currency_id.id,
+            'item_ids': [(0, 0, {'compute_price': 'percentage', 'applied_on': '3_global',
+                                 'percent_price': 10})],
+        })
+        self.main_pos_config.write({'available_pricelist_ids': [(4, agreement.id)]})
+        self.main_pos_config.with_user(self.pos_user).open_ui()
+        self.start_pos_tour('al_pharmacy_pos_presentation_pricelist')
+
+        order = self.env['pos.order'].search(
+            [('session_id', '=', self.main_pos_config.current_session_id.id)], limit=1)
+        self.assertEqual(order.pricelist_id, agreement)
+        self.assertEqual(len(order.lines), 2)
+        for line in order.lines:
+            self.assertEqual(line.pharmacy_presentation_id.factor, 7)
+            self.assertAlmostEqual(line.price_unit * 7, 0.90, places=9)
+        self.assertAlmostEqual(order.amount_total, 1.80)
+
     def test_dispense_generic_with_prescription(self):
         ingredient = self.env['pharmacy.ingredient']._get_or_create('Ciprofloxacino')
         tablet = self.env.ref('al_pharmacy_base.dosage_form_tablet')

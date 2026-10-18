@@ -50,6 +50,7 @@ Abra **Punto de venta ‣ Botica Principal**.
 |---|---|---|---|
 | 4.1 | Tocar «Dolofen 500 mg tableta» | Ventana de alternativas: primero «Paracetamol 500 mg tableta» (genérico en DCI, más barato) | |
 | 4.2 | Elegir el genérico y luego **Blíster x 10** | Línea «1 Paracetamol 500 mg tableta (Blíster x 10)» a S/ 1,50; pide el lote | |
+| 4.2b | Con la línea del blíster seleccionada, **Lista de precios** ‣ una lista con un 10 % de descuento | El blíster pasa a S/ 1,35 | |
 | 4.3 | Tocar «Amoxicilina 500 mg cápsula» | Ventana **Receta médica** (el administrador no es Q.F.: aviso de venta sin Q.F.) | |
 | 4.4 | Completar N.º 000555, prescriptor «Dra. Ana Torres Quispe», colegiatura 067890, paciente; **Registrar receta**; elegir Blíster x 10 | Línea agregada | |
 | 4.5 | Cobrar en efectivo | Ticket emitido | |
@@ -99,4 +100,5 @@ las tres aceptadas por SUNAT beta.
   certificado digital, el usuario SOL u operador (OSE) y el RUC del cliente
   (ver `configurar_cpe_beta.py`).
 - El archivo del Observatorio usa columnas por confirmar con DIGEMID.
-- El precio de las presentaciones no aplica listas de precios ni descuentos.
+- En las listas de precios, las reglas de precio fijo o sobre el costo son por
+  unidad del producto (no por presentación).

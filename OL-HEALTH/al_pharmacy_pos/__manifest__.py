@@ -16,6 +16,8 @@ Venta por presentación (riesgo R1, opción A):
 * La línea guarda la presentación; la cantidad va en unidades del producto
   (el stock se descuenta exacto) y el precio unitario es el de la
   presentación entre sus unidades, sin redondear.
+* La lista de precios del pedido (porcentaje o fórmula) se aplica al precio
+  de la presentación; se recalcula al cambiar la lista o la cantidad.
 * El código de barras del empaque vende directamente la presentación.
 * La factura o boleta lleva la línea en la unidad de la presentación
   (1 Blíster x 7 a S/ 1,00), así cuadra con el ticket.
@@ -37,7 +39,7 @@ Dispensación en la caja:
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '2.20261018',
+    'version': '3.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
                 'point_of_sale', 'pos_hr'],

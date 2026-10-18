@@ -17,7 +17,7 @@ destacados:
 contexto:
   titulo: "El problema que resuelve"
   texto: "En Perú las boticas venden por unidad, blíster o caja (Ley 29459, art. 27.5), cada una con su precio. En el TPV de Odoo 19 la línea va siempre en la unidad del producto y el precio unitario se redondea a dos decimales: un blíster de 7 a S/ 1,00 sumaría S/ 0,98."
-  nota: "**Alcance del prototipo:** el precio de la presentación es fijo (no aplica listas de precios) y la unidad SUNAT de la presentación se configura en su unidad de medida."
+  nota: "**Listas de precios:** el porcentaje o la fórmula se aplica al precio de la presentación; las reglas de precio fijo o sobre el costo son por unidad del producto, como en Odoo."
 
 funcionalidades:
   - "Alternativas al elegir una marca: genéricos en DCI primero, por precio (Ley 32033)."
@@ -36,6 +36,10 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: 3.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Listas de precios en las presentaciones: el porcentaje o la fórmula se aplica al precio de la caja o el blíster, y se recalcula al cambiar la lista o la cantidad."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

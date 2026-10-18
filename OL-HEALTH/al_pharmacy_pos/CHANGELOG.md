@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261018 — 18/10/2026
+
+- Listas de precios en las presentaciones: el porcentaje o la fórmula se aplica al precio de la caja o el blíster, y se recalcula al cambiar la lista o la cantidad.
+
 ## 2.20261018 — 18/10/2026
 
 - Entrega 2: alternativas genéricas, receta en la caja, control del Q.F., lotes FEFO y registro de la dispensación.

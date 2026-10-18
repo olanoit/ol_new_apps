@@ -48,6 +48,11 @@ de barras de la caja (empaque del producto) vende directamente la caja.
     frasco BO, bolsa BG, paquete PK; las demás, el de la unidad del producto
     (NIU).
 
-!!! warning "Importante"
-    El precio de la presentación es fijo: no le aplican listas de precios ni
-    descuentos por convenio.
+La lista de precios del pedido también se aplica a la presentación: un
+convenio del 10 % deja la caja de S/ 50,00 en S/ 45,00, y al elegir en la caja
+un cliente con convenio se recalculan las líneas que nadie cambió a mano.
+
+!!! note "Nota"
+    Las reglas con precio fijo o calculadas sobre el costo son por unidad del
+    producto, como en el resto de Odoo: con ellas la caja vale ese precio por
+    sus unidades.

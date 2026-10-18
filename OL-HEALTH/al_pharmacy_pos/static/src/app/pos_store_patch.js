@@ -46,7 +46,11 @@ patch(PosStore.prototype, {
             ...presentations.map((presentation) => ({
                 id: presentation.id,
                 label: `${presentation.display_name} — ${formatCurrency(
-                    presentation.price,
+                    productTemplate.getPharmacyPresentationUnitPrice(
+                        presentation,
+                        order.pricelist_id,
+                        presentation.factor
+                    ) * presentation.factor,
                     currencyId
                 )}`,
                 item: presentation,
@@ -61,13 +65,19 @@ patch(PosStore.prototype, {
     _pharmacyPresentationValues(vals, presentation, order) {
         const sign = order.preset_id?.is_return ? -1 : 1;
         const count = Math.abs(vals.qty || 1);
+        const qty = sign * count * presentation.factor;
         return {
             ...vals,
             pharmacy_presentation_id: presentation,
-            qty: sign * count * presentation.factor,
+            qty,
             // Sin redondear: la línea suma exactamente el precio de la
-            // presentación (ver setUnitPrice).
-            price_unit: presentation.price / presentation.factor,
+            // presentación (ver setUnitPrice), con la lista de precios del
+            // pedido (ver presentation_pricelist.js).
+            price_unit: presentation.product_tmpl_id.getPharmacyPresentationUnitPrice(
+                presentation,
+                order.pricelist_id,
+                qty
+            ),
         };
     },
 

@@ -32,3 +32,24 @@ registry.category("web_tour.tours").add("al_pharmacy_pos_presentation", {
             ReceiptScreen.receiptIsThere(),
         ].flat(),
 });
+
+registry.category("web_tour.tours").add("al_pharmacy_pos_presentation_pricelist", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            ProductScreen.clickDisplayedProduct("Loratadina 10 mg"),
+            choosePresentation("Blíster x 7"),
+            ProductScreen.selectedOrderlineHas("Loratadina 10 mg (Blíster x 7)", "1", "1.00"),
+            // El convenio del 10 % se aplica al precio del blíster, no al de la tableta.
+            ProductScreen.clickPriceList("Convenio 10%"),
+            ProductScreen.selectedOrderlineHas("Loratadina 10 mg (Blíster x 7)", "1", "0.90"),
+            ProductScreen.clickDisplayedProduct("Loratadina 10 mg"),
+            choosePresentation("0.90"),
+            ProductScreen.totalAmountIs("1.80"),
+            ProductScreen.clickPayButton(),
+            PaymentScreen.clickPaymentMethod("Bank", true, { remaining: "0.00" }),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.receiptIsThere(),
+        ].flat(),
+});
