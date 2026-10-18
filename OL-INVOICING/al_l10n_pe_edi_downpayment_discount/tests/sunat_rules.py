@@ -58,7 +58,10 @@ def validar(xml):
     root = etree.fromstring(xml) if isinstance(xml, (bytes, str)) else xml
     kind = etree.QName(root).localname        # Invoice / CreditNote
     line_tag = 'cac:InvoiceLine' if kind == 'Invoice' else 'cac:CreditNoteLine'
-    qty_tag = 'cbc:InvoicedQuantity' if kind == 'Invoice' else 'cbc:CreditedQuantity'
+    qty_tag = {'Invoice': 'cbc:InvoicedQuantity', 'CreditNote': 'cbc:CreditedQuantity',
+               'DebitNote': 'cbc:DebitedQuantity'}[kind]
+    if kind == 'DebitNote':
+        line_tag = 'cac:DebitNoteLine'
     errores = []
 
     def err(code, msg):
@@ -72,6 +75,10 @@ def validar(xml):
         lid = line.findtext('cbc:ID', namespaces=NS)
         lea = _d(line, 'cbc:LineExtensionAmount')
         qty = _d(line, qty_tag)
+        qty_node = line.find(qty_tag, NS)
+        if qty_node is not None and not qty_node.get('unitCode'):
+            err({'Invoice': '2883', 'CreditNote': '2138', 'DebitNote': '2188'}[kind],
+                f'línea {lid}: {qty_tag}/@unitCode vacío')
         price = _d(line, 'cac:Price/cbc:PriceAmount')
         acs = _acs(line)
         lines_ac.extend(acs)

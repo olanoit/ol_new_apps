@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_downpayment_discount.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261018 — 18/10/2026
+
+- Líneas sin producto (descuento de una NC, intereses de una ND) con la unidad ZZ: SUNAT beta las rechazaba por unitCode vacío (2138/2188).
+
 ## 3.20261008 — 08/10/2026
 
 - Ícono nativo de la app de Odoo a la que pertenece (sin imágenes propias ni el logo de la Marca Perú).

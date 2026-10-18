@@ -297,3 +297,31 @@ class TestSunatRules(AccountTestInvoicingCommon):
                                          'tax_ids': [(6, 0, self.igv.ids)]})]})
         errors = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')._check_move_configuration(refund)
         self.assertTrue(any('cantidades negativas' in str(error) for error in errors))
+
+    # ------------------------------------------------- pruebas SUNAT beta 18/10/2026
+    def test_lines_without_product_have_unit_code(self):
+        """Descuento de una NC o intereses de una ND sin producto: SUNAT beta
+        los rechazaba por ``unitCode`` vacío (2138/2188)."""
+        invoice = self._invoice([('Servicio A', self.p_a, 2, 100.0, 0, self.igv)])
+        wizard = self.env['account.move.reversal'].with_context(
+            active_model='account.move', active_ids=invoice.ids).create({
+                'reason': 'Descuento', 'journal_id': invoice.journal_id.id, 'l10n_pe_edi_refund_reason': '04'})
+        refund = self.env['account.move'].browse(wizard.refund_moves()['res_id'])
+        refund.invoice_line_ids = [(5, 0, 0), (0, 0, {'name': 'Descuento por pronto pago', 'quantity': 1,
+                                                       'price_unit': 10.0, 'tax_ids': [(6, 0, self.igv.ids)]})]
+        root = self.assertSunatValid(self._post(refund))
+        self.assertEqual(root.find('cac:CreditNoteLine/cbc:CreditedQuantity', NS).get('unitCode'), 'ZZ')
+
+        debit_wizard = self.env['account.debit.note'].with_context(
+            active_model='account.move', active_ids=invoice.ids).create({
+                'reason': 'Intereses', 'l10n_pe_edi_charge_reason': '01', 'journal_id': invoice.journal_id.id})
+        debit = self.env['account.move'].browse(debit_wizard.create_debit()['res_id'])
+        debit.invoice_line_ids = [(5, 0, 0), (0, 0, {'name': 'Intereses moratorios', 'quantity': 1,
+                                                      'price_unit': 5.0, 'tax_ids': [(6, 0, self.igv.ids)]})]
+        root = self._xml(self._post(debit))
+        self.assertEqual(validar(root), [])
+        self.assertEqual(root.find('cac:DebitNoteLine/cbc:DebitedQuantity', NS).get('unitCode'), 'ZZ')
+
+    def test_product_unit_code_is_kept(self):
+        root = self.assertSunatValid(self._invoice([('Servicio A', self.p_a, 1, 100.0, 0, self.igv)]))
+        self.assertEqual(root.find('cac:InvoiceLine/cbc:InvoicedQuantity', NS).get('unitCode'), 'NIU')

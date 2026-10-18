@@ -18,6 +18,9 @@ rechaza, verificado contra las reglas de validación oficiales (26.08.2026):
   ítems como descuento de línea ``00``.
 * **Notas de crédito y débito** de facturas con anticipos, descuento global o
   descuento de línea: se publican y el XML informa el valor neto por ítem.
+* **Líneas sin producto** (descuento de una nota de crédito, intereses de una
+  nota de débito): unidad ``ZZ`` del catálogo 03; sin ella SUNAT rechaza por
+  ``unitCode`` vacío (2883, 2138, 2188).
 
 El asiento contable no cambia: todo ocurre al generar el XML.
     """,
@@ -27,7 +30,7 @@ El asiento contable no cambia: todo ocurre al generar el XML.
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '3.20261008',
+    'version': '4.20261018',
     'license': 'OPL-1',
     'countries': ['pe'],
     # sale: los anticipos nacen del asistente de facturación del pedido

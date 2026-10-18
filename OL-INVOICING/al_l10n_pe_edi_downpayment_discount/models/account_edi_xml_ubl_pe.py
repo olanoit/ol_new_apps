@@ -10,6 +10,12 @@ from odoo.tools import float_round
 # 3x inafecto → 06. La exportación (40) no tiene código de anticipo propio.
 PREPAYMENT_REASON_CODES = {'1': '04', '2': '05', '3': '06'}
 
+# Unidad de las líneas sin producto ni unidad (descuento, intereses,
+# penalidad): catálogo 03, «unidad de medida para servicios». Sin ella el
+# atributo ``unitCode`` sale vacío y SUNAT rechaza (2883 factura, 2138 NC,
+# 2188 ND).
+SERVICE_UNIT_CODE = 'ZZ'
+
 # Importes de ``tax_details`` que se reparten al trasladar una línea negativa a
 # las positivas de su mismo impuesto. Los ``raw_*`` no se tocan: de ellos sale
 # el valor bruto del ítem, y así la diferencia queda como descuento de línea.
@@ -121,6 +127,13 @@ class AccountEdiXmlUbl_Pe(models.AbstractModel):
                     spread(neg_tax[field], currency, add_tax)
         for base_line in positives:
             base_line['_al_folded'] = True
+
+    def _add_invoice_line_amount_nodes(self, line_node, vals):
+        super()._add_invoice_line_amount_nodes(line_node, vals)
+        quantity_tag = self._get_tags_for_document_type(vals)['line_quantity']
+        quantity_node = line_node.get(quantity_tag)
+        if quantity_node is not None and not quantity_node.get('unitCode'):
+            quantity_node['unitCode'] = SERVICE_UNIT_CODE
 
     # -------------------------------------------------------------------------
     # Precio y descuento de línea
