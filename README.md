@@ -217,7 +217,7 @@ módulo | versión | licencia | resumen
 [al_pos_pe_partner_lookup](OL-POS/al_pos_pe_partner_lookup/) | 2.20261014 | OPL-1 | En la lista de clientes del TPV, un RUC o DNI que no está registrado se crea en un clic con los datos de SUNAT/RENIEC y queda elegido para la venta.
 [al_pos_pe_wallet_qr](OL-POS/al_pos_pe_wallet_qr/) | 1.20261014 | OPL-1 | El QR de cobro de Yape, Plin u otra billetera como método de pago QR del TPV: se muestra en la caja y en la pantalla del cliente, y el cajero confirma el pago.
 [al_pos_product_view](OL-POS/al_pos_product_view/) | 7.20261011 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
-[al_pos_theme](OL-POS/al_pos_theme/) | 2.20261008 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
+[al_pos_theme](OL-POS/al_pos_theme/) | 3.20261018 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
 [al_pos_vendedor](OL-POS/al_pos_vendedor/) | 4.20261011 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
 
 ### OL-INVENTORY
@@ -276,7 +276,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_pharmacy_edi](OL-HEALTH/al_l10n_pe_pharmacy_edi/) | 2.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
 [al_l10n_pe_prescriber_cmp](OL-HEALTH/al_l10n_pe_prescriber_cmp/) | 3.20261018 | OPL-1 | Abre el portal «Conoce a tu médico» del Colegio Médico del Perú para buscar la colegiatura y registra si el médico está hábil, con fecha y responsable.
 [al_pharmacy_base](OL-HEALTH/al_pharmacy_base/) | 3.20261018 | OPL-1 | Maestro farmacéutico: principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias.
-[al_pharmacy_pos](OL-HEALTH/al_pharmacy_pos/) | 4.20261018 | OPL-1 | Caja de farmacia: venta por caja, blíster o unidad con su precio, alternativas genéricas primero, receta en la caja, control del químico farmacéutico, lotes disponibles por vencimiento y receta y dispensación registradas al vender.
+[al_pharmacy_pos](OL-HEALTH/al_pharmacy_pos/) | 5.20261018 | OPL-1 | Caja de farmacia: venta por caja, blíster o unidad con su precio, alternativas genéricas primero, receta en la caja, control del químico farmacéutico, lotes disponibles por vencimiento y receta y dispensación registradas al vender.
 [al_pharmacy_prescription](OL-HEALTH/al_pharmacy_prescription/) | 2.20261018 | OPL-1 | Receta médica con prescriptor y paciente, dispensación parcial y alternativas, retención con folio, alergias del paciente, libro de recetas y etiqueta de dispensación.
 [al_pharmacy_stock](OL-HEALTH/al_pharmacy_stock/) | 2.20261018 | OPL-1 | Recepción con inspección y registro sanitario vigente, lotes en cuarentena o bloqueados que no se venden, vencimientos, bonificaciones de compra, control de temperatura, alertas sanitarias y actas de baja.
 

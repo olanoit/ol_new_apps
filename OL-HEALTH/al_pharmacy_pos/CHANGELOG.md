@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261018 — 18/10/2026
+
+- El precio por presentación de la línea sale del total: el blíster de S/ 1,50 + IGV muestra S/ 1,77 y no S/ 1,80 (precio por tableta redondeado multiplicado por 10).
+
 ## 4.20261018 — 18/10/2026
 
 - Datos de demostración: los medicamentos de la botica se venden en la caja.

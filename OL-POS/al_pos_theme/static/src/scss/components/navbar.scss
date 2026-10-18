@@ -31,14 +31,20 @@
 .pos .alpt-navbar-brand {
     height: 34px;
     min-width: 34px;
-    max-width: 160px;
+    max-width: 240px;
     width: auto;
     padding-inline: 4px 12px;
     margin-inline-end: 8px;
     background-position: left center;
-    // Sin logo el ::after muestra el nombre: el ancho lo da el texto.
+    // Sin logo el ::after muestra el nombre: el ancho lo da el texto. Va a
+    // la izquierda y con puntos suspensivos: centrado, un nombre más ancho
+    // que la caja se cortaba por los dos lados («otica Santa Rosa S.A.C.»).
+    justify-content: flex-start;
     &::after {
         font-size: 16px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 

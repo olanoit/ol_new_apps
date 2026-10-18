@@ -1,5 +1,6 @@
 import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
+import * as Order from "@point_of_sale/../tests/generic_helpers/order_widget_util";
 import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
 import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
 import * as ReceiptScreen from "@point_of_sale/../tests/pos/tours/utils/receipt_screen_util";
@@ -22,6 +23,12 @@ registry.category("web_tour.tours").add("al_pharmacy_pos_presentation", {
             ProductScreen.clickDisplayedProduct("Loratadina 10 mg"),
             choosePresentation("Blíster x 7"),
             ProductScreen.selectedOrderlineHas("Loratadina 10 mg (Blíster x 7)", "1", "1.00"),
+            // Precio por blíster: 1,00, no 7 × 0,14 = 0,98.
+            Order.hasLine({
+                withClass: ".selected",
+                productName: "Loratadina 10 mg (Blíster x 7)",
+                priceUnit: "1.00 / Blíster x 7",
+            }),
             // Unidad suelta al precio del producto.
             ProductScreen.clickDisplayedProduct("Loratadina 10 mg"),
             choosePresentation("Unidad"),

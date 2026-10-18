@@ -27,7 +27,7 @@ Adaptación a la suite AL del tema del TPV de Mobilize
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '2.20261008',
+    'version': '3.20261018',
     'license': 'OPL-1',
     # Solo point_of_sale: convive con los demás módulos TPV usando selectores
     # genéricos del core (ver compat_al.scss).

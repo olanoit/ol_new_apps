@@ -36,6 +36,10 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: '5.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "El precio por presentación de la línea sale del total: el blíster de S/ 1,50 + IGV muestra S/ 1,77 y no S/ 1,80 (precio por tableta redondeado multiplicado por 10)."
   - version: 4.20261018
     fecha: 18/10/2026
     cambios:

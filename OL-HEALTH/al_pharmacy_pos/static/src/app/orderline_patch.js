@@ -12,10 +12,10 @@ patch(Orderline.prototype, {
         if (!presentation || !count) {
             return values;
         }
-        const presentationPrice = formatCurrency(
-            line.displayPriceUnit * presentation.factor,
-            line.currency.id
-        );
+        // Total de la línea entre las presentaciones: el precio unitario ya
+        // viene redondeado (0,177 → 0,18) y por 10 daba S/ 1,80 con un total
+        // de S/ 1,77.
+        const presentationPrice = formatCurrency(line.displayPrice / count, line.currency.id);
         return {
             ...values,
             name: `${values.name} (${presentation.display_name})`,

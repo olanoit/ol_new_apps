@@ -234,6 +234,10 @@ faq:
       nombre, logo y colores.
 
 novedades:
+  - version: '3.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "El nombre de la marca en la barra (cuando la caja no tiene logo) va a la izquierda y con puntos suspensivos: un nombre largo ya no se corta por el principio."
   - version: 2.20261008
     fecha: 08/10/2026
     cambios:
