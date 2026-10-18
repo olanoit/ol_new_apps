@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_controlled_book">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="books[o.book]"/>
+                    <t t-set="doc_extra" t-value="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
+                    <p>Establecimiento: <t t-out="o.warehouse_id.name"/>
+                        <t t-if="o.warehouse_id.pharmacy_establishment_code"> (código <t t-out="o.warehouse_id.pharmacy_establishment_code"/>)</t>
+                        · Director técnico: <t t-out="o.warehouse_id.pharmacy_director_id.name or '-'"/></p>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <th>Fecha</th><th>Producto</th><th>Lote</th><th>Documento</th>
+                                <th>Cliente o proveedor</th><th class="text-end">Entrada</th>
+                                <th class="text-end">Salida</th><th class="text-end">Saldo</th><th>Receta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines[o.id]" t-as="row">
+                                <td><span t-out="row['date']" t-options="{'widget': 'datetime'}"/></td>
+                                <td t-out="row['product'].display_name"/>
+                                <td t-out="row['lot']"/>
+                                <td t-out="row['document']"/>
+                                <td t-out="row['partner']"/>
+                                <td class="text-end" t-out="'%.2f' % row['qty_in'] if row['qty_in'] else ''"/>
+                                <td class="text-end" t-out="'%.2f' % row['qty_out'] if row['qty_out'] else ''"/>
+                                <td class="text-end" t-out="'%.2f' % row['balance']"/>
+                                <td t-out="row['prescription']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_controlled_balance">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="'Balance trimestral'"/>
+                    <t t-set="doc_extra" t-value="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
+                    <p class="pe-doc-text">Declaración jurada del movimiento de
+                        <t t-out="books[o.book].replace('Libro de ', '').replace('Registro de ', '')"/>
+                        del establecimiento <t t-out="o.warehouse_id.name"/>
+                        <t t-if="o.warehouse_id.pharmacy_establishment_code"> (código <t t-out="o.warehouse_id.pharmacy_establishment_code"/>)</t>
+                        de <t t-out="o.company_id.name"/>, RUC <t t-out="o.company_id.vat or ''"/>.</p>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <th>Producto</th><th>Principio activo</th><th>Lista</th><th>Unidad</th>
+                                <th class="text-end">Saldo inicial</th><th class="text-end">Entradas</th>
+                                <th class="text-end">Salidas</th><th class="text-end">Saldo final</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="lines[o.id]" t-as="row">
+                                <td t-out="row['product'].display_name"/>
+                                <td t-out="row['composition']"/>
+                                <td t-out="row['control_list']"/>
+                                <td t-out="row['uom']"/>
+                                <td class="text-end" t-out="'%.2f' % row['initial']"/>
+                                <td class="text-end" t-out="'%.2f' % row['qty_in']"/>
+                                <td class="text-end" t-out="'%.2f' % row['qty_out']"/>
+                                <td class="text-end" t-out="'%.2f' % row['final']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pe-doc-section">Recetas del periodo</div>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead"><th>Folio</th><th>Receta</th><th>Fecha</th><th>Paciente</th><th>Prescriptor</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="prescriptions[o.id]" t-as="p">
+                                <td t-out="p.retention_folio or ''"/>
+                                <td t-out="p.prescription_number or p.name"/>
+                                <td><span t-field="p.date"/></td>
+                                <td t-out="p.patient_id.name or ''"/>
+                                <td t-out="'%s (%s)' % (p.prescriber_id.name or '', p.prescriber_license or '')"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="pe-doc-signatures">
+                        <tr><td><div class="pe-doc-sign-line">Director técnico</div></td>
+                            <td><div class="pe-doc-sign-line">Representante legal</div></td></tr>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

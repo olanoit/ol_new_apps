@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_pharmacy_controlled" model="ir.ui.view">
+        <field name="name">product.template.form.pharmacy.controlled</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="al_pharmacy_base.product_template_form_view_pharmacy_presentation"/>
+        <field name="arch" type="xml">
+            <field name="pharmacy_sale_condition" position="before">
+                <field name="pharmacy_control_list"/>
+                <field name="pharmacy_control_book" invisible="not pharmacy_control_list"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_search_view_pharmacy_controlled" model="ir.ui.view">
+        <field name="name">product.template.search.pharmacy.controlled</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="services" position="after">
+                <filter string="Controlados" name="pharmacy_controlled"
+                        domain="[('pharmacy_control_list', '!=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="pharmacy_controlled_report_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.controlled.report.form</field>
+        <field name="model">pharmacy.controlled.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="report_type" widget="radio"/>
+                        <field name="book"/>
+                        <field name="warehouse_id"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="year"/>
+                        <field name="quarter"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                </group>
+                <div class="text-muted" invisible="report_type != 'balance'">
+                    Balance en formato de declaración jurada (DS 023-2001-SA). Se presenta ante la
+                    DIRIS, DIRESA o GERESA con las recetas especiales originales foliadas.
+                </div>
+                <footer>
+                    <button name="action_print" type="object" string="PDF" class="btn-primary"/>
+                    <button name="action_export_xlsx" type="object" string="Excel"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_controlled_report_action" model="ir.actions.act_window">
+        <field name="name">Libros y balance de controlados</field>
+        <field name="res_model">pharmacy.controlled.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="pharmacy_controlled_product_action" model="ir.actions.act_window">
+        <field name="name">Productos controlados</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('pharmacy_control_list', '!=', False)]</field>
+    </record>
+
+    <record id="action_report_controlled_book" model="ir.actions.report">
+        <field name="name">Libro de controlados</field>
+        <field name="model">pharmacy.controlled.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_pharmacy_controlled.report_controlled_book</field>
+        <field name="report_file">al_l10n_pe_pharmacy_controlled.report_controlled_book</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
+    </record>
+    <record id="action_report_controlled_balance" model="ir.actions.report">
+        <field name="name">Balance trimestral de controlados</field>
+        <field name="model">pharmacy.controlled.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_pharmacy_controlled.report_controlled_balance</field>
+        <field name="report_file">al_l10n_pe_pharmacy_controlled.report_controlled_balance</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+    </record>
+
+    <menuitem id="menu_pharmacy_controlled" name="Controlados" parent="al_pharmacy_base.menu_pharmacy_root"
+              sequence="25" groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+    <menuitem id="menu_pharmacy_controlled_products" name="Productos controlados" parent="menu_pharmacy_controlled"
+              action="pharmacy_controlled_product_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_controlled_report" name="Libros y balance" parent="menu_pharmacy_controlled"
+              action="pharmacy_controlled_report_action" sequence="20"/>
+</odoo>

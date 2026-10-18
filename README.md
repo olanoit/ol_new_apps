@@ -263,7 +263,7 @@ módulo | versión | licencia | resumen
 [al_industry_construction](OL-INDUSTRIES/al_industry_construction/) | 1.20261017 | LGPL-3 | Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil.
 [al_industry_ecommerce](OL-INDUSTRIES/al_industry_ecommerce/) | 1.20261017 | OPL-1 | Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual.
 [al_industry_furniture](OL-INDUSTRIES/al_industry_furniture/) | 1.20261017 | LGPL-3 | Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento.
-[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 4.20261017 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
+[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 5.20261017 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
 [al_industry_restaurant](OL-INDUSTRIES/al_industry_restaurant/) | 2.20261017 | OPL-1 | Restaurante listo para atender: salón con mesas, comandas a cocina, división de cuentas y propinas, boleta y factura electrónica desde la caja, cobro con Yape y Plin y libro de reclamaciones.
 [al_industry_retail](OL-INDUSTRIES/al_industry_retail/) | 2.20261017 | OPL-1 | Bodega o minimarket listo para vender: caja con boleta y factura electrónica, cobro con Yape y Plin, cliente por RUC o DNI, vendedor por venta, kárdex SUNAT y libro de reclamaciones.
 
@@ -271,6 +271,8 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
+[al_l10n_pe_pharmacy_controlled](OL-HEALTH/al_l10n_pe_pharmacy_controlled/) | 1.20261018 | OPL-1 | Listas de fiscalización, receta especial con sus datos y vigencia de 3 días, retención con folio, libros de estupefacientes y psicotrópicos y balance trimestral en PDF y Excel.
+[al_l10n_pe_pharmacy_digemid](OL-HEALTH/al_l10n_pe_pharmacy_digemid/) | 1.20261018 | OPL-1 | Precios para el Observatorio de DIGEMID, cumplimiento del 30 % de genéricos (Ley 32033), lista de precios por DCI, reacciones adversas para NotiMED e IGV exonerado de medicamentos oncológicos, para VIH y para diabetes.
 [al_l10n_pe_pharmacy_edi](OL-HEALTH/al_l10n_pe_pharmacy_edi/) | 1.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
 [al_l10n_pe_prescriber_cmp](OL-HEALTH/al_l10n_pe_prescriber_cmp/) | 2.20261018 | OPL-1 | Abre el portal «Conoce a tu médico» del Colegio Médico del Perú para buscar la colegiatura y registra si el médico está hábil, con fecha y responsable.
 [al_pharmacy_base](OL-HEALTH/al_pharmacy_base/) | 2.20261018 | OPL-1 | Maestro farmacéutico: principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias.

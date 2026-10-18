@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_pharmacy_prescription_retained" model="ir.sequence">
+            <field name="name">Folio de recetas retenidas</field>
+            <field name="code">pharmacy.prescription.retained</field>
+            <field name="prefix">F-%(year)s-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="ir_cron_pharmacy_controlled_balance" model="ir.cron">
+            <field name="name">Farmacia: recordar el balance trimestral de controlados</field>
+            <field name="model_id" ref="model_pharmacy_controlled_report"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_balance_reminder()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+        </record>
+    </data>
+</odoo>

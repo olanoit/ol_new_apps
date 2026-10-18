@@ -30,6 +30,8 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
+[al_l10n_pe_pharmacy_controlled](al_l10n_pe_pharmacy_controlled/) | 1.20261018 | OPL-1 | Listas de fiscalización, receta especial con sus datos y vigencia de 3 días, retención con folio, libros de estupefacientes y psicotrópicos y balance trimestral en PDF y Excel.
+[al_l10n_pe_pharmacy_digemid](al_l10n_pe_pharmacy_digemid/) | 1.20261018 | OPL-1 | Precios para el Observatorio de DIGEMID, cumplimiento del 30 % de genéricos (Ley 32033), lista de precios por DCI, reacciones adversas para NotiMED e IGV exonerado de medicamentos oncológicos, para VIH y para diabetes.
 [al_l10n_pe_pharmacy_edi](al_l10n_pe_pharmacy_edi/) | 1.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
 [al_l10n_pe_prescriber_cmp](al_l10n_pe_prescriber_cmp/) | 2.20261018 | OPL-1 | Abre el portal «Conoce a tu médico» del Colegio Médico del Perú para buscar la colegiatura y registra si el médico está hábil, con fecha y responsable.
 [al_pharmacy_base](al_pharmacy_base/) | 2.20261018 | OPL-1 | Maestro farmacéutico: principio activo y equivalentes, registro sanitario, condición de venta, presentaciones con precio propio, turnos del químico farmacéutico y libro de ocurrencias.

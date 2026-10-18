@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261017 — 18/10/2026
+
+- Instala también los controlados (libros y balance) y DIGEMID (Observatorio, genéricos, reacciones adversas, IGV).
+
 ## 4.20261017 — 18/10/2026
 
 - Instala también la receta y la dispensación y la consulta del médico en el CMP.

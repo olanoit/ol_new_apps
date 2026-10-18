@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '4.20261017',
+    'version': '5.20261017',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
@@ -28,6 +28,8 @@ compañías ▸ Industrias.
         'al_pharmacy_prescription',
         'al_pharmacy_pos',
         'al_l10n_pe_prescriber_cmp',
+        'al_l10n_pe_pharmacy_controlled',
+        'al_l10n_pe_pharmacy_digemid',
         'point_of_sale',
         'purchase_stock',
         'sale_stock',

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Producto -->
+    <record id="product_template_form_view_pharmacy_digemid" model="ir.ui.view">
+        <field name="name">product.template.form.pharmacy.digemid</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="al_pharmacy_base.product_template_form_view_pharmacy_presentation"/>
+        <field name="arch" type="xml">
+            <field name="pharmacy_sanitary_registry" position="after">
+                <field name="pharmacy_digemid_code"/>
+                <field name="pharmacy_igv_regime"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Ajustes -->
+    <record id="res_config_settings_view_form_pharmacy_digemid" model="ir.ui.view">
+        <field name="name">res.config.settings.form.pharmacy.digemid</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_pharmacy_base.res_config_settings_view_form_pharmacy"/>
+        <field name="arch" type="xml">
+            <block name="pharmacy_setting_container" position="inside">
+                <setting company_dependent="1" string="Establecimiento farmacéutico"
+                         help="Tipo y autorización sanitaria (DIGEMID / DIRIS / DIRESA).">
+                    <div class="row"><label class="col-lg-4" for="pharmacy_establishment_category"/><field name="pharmacy_establishment_category" class="col-lg-8"/></div>
+                    <div class="row"><label class="col-lg-4" for="pharmacy_authorization_number"/><field name="pharmacy_authorization_number" class="col-lg-8"/></div>
+                    <div class="row"><label class="col-lg-4" for="pharmacy_authorization_date"/><field name="pharmacy_authorization_date" class="col-lg-8"/></div>
+                </setting>
+                <setting company_dependent="1" string="Microempresa"
+                         help="Exceptuada del 30 % de genéricos (Ley 32033).">
+                    <field name="pharmacy_microenterprise"/>
+                </setting>
+                <setting company_dependent="1" string="Plazo de reacciones adversas no graves"
+                         help="Días para notificar en NotiMED; las graves, 24 horas.">
+                    <field name="pharmacy_adverse_event_days"/> días
+                </setting>
+            </block>
+        </field>
+    </record>
+
+    <!-- Observatorio -->
+    <record id="pharmacy_observatory_price_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.observatory.price.list</field>
+        <field name="model">pharmacy.observatory.price</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-warning="state == 'pending'">
+                <field name="date"/>
+                <field name="product_tmpl_id"/>
+                <field name="digemid_code"/>
+                <field name="unit_price"/>
+                <field name="package_price"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-success="state == 'reported'"/>
+                <field name="reported_date" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_observatory_price_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.observatory.price.search</field>
+        <field name="model">pharmacy.observatory.price</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_tmpl_id"/>
+                <field name="digemid_code"/>
+                <filter string="Pendientes" name="pending" domain="[('state', '=', 'pending')]"/>
+            </search>
+        </field>
+    </record>
+    <record id="pharmacy_observatory_price_action" model="ir.actions.act_window">
+        <field name="name">Precios para el Observatorio</field>
+        <field name="res_model">pharmacy.observatory.price</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_pending': 1}</field>
+    </record>
+    <record id="pharmacy_observatory_export_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.observatory.export.form</field>
+        <field name="model">pharmacy.observatory.export</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="warehouse_id"/>
+                    <field name="scope" widget="radio"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                </group>
+                <div class="text-muted">
+                    Archivo para la carga en el Observatorio Peruano de Productos Farmacéuticos.
+                    Los pendientes exportados pasan a «Informado».
+                </div>
+                <footer>
+                    <button name="action_export" type="object" string="Exportar" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_observatory_export_action" model="ir.actions.act_window">
+        <field name="name">Exportar al Observatorio</field>
+        <field name="res_model">pharmacy.observatory.export</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Genéricos -->
+    <record id="pharmacy_essential_medicine_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.essential.medicine.list</field>
+        <field name="model">pharmacy.essential.medicine</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="ingredient_id"/>
+                <field name="strength"/>
+                <field name="dosage_form_id"/>
+                <field name="list_reference"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_essential_medicine_action" model="ir.actions.act_window">
+        <field name="name">Listado de genéricos esenciales</field>
+        <field name="res_model">pharmacy.essential.medicine</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Importe el listado de genéricos esenciales del MINSA</p>
+            <p>Con «Importar registros» desde una hoja con el principio activo, la concentración y la
+                forma farmacéutica de cada ítem (RM 220-2024/MINSA o la que la reemplace).</p>
+        </field>
+    </record>
+    <record id="pharmacy_generic_compliance_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.generic.compliance.form</field>
+        <field name="model">pharmacy.generic.compliance</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="warehouse_id"/>
+                        <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        <field name="exempt" invisible="not exempt"/>
+                    </group>
+                    <group>
+                        <field name="items_with_brand"/>
+                        <field name="items_with_generic"/>
+                        <field name="ratio"/>
+                        <field name="compliant"/>
+                    </group>
+                </group>
+                <field name="line_ids" readonly="1">
+                    <list decoration-danger="not compliant">
+                        <field name="item_id"/>
+                        <field name="brand_product_ids" widget="many2many_tags"/>
+                        <field name="generic_product_ids" widget="many2many_tags"/>
+                        <field name="compliant"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_compute" type="object" string="Calcular" class="btn-primary"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_generic_compliance_action" model="ir.actions.act_window">
+        <field name="name">Cumplimiento de genéricos (30 %)</field>
+        <field name="res_model">pharmacy.generic.compliance</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Reacciones adversas -->
+    <record id="pharmacy_adverse_event_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.adverse.event.list</field>
+        <field name="model">pharmacy.adverse.event</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="overdue">
+                <field name="name"/>
+                <field name="date_detected"/>
+                <field name="product_id"/>
+                <field name="severity"/>
+                <field name="deadline"/>
+                <field name="overdue" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-success="state == 'notified'"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_adverse_event_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.adverse.event.form</field>
+        <field name="model">pharmacy.adverse.event</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_mark_notified" type="object" string="Marcar como notificada"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group string="Paciente">
+                            <field name="patient_initials"/>
+                            <field name="patient_age"/>
+                            <field name="patient_sex"/>
+                            <field name="patient_weight"/>
+                        </group>
+                        <group string="Medicamento">
+                            <field name="product_id"/>
+                            <field name="lot_id"/>
+                            <field name="dose"/>
+                            <field name="route_id"/>
+                            <field name="therapy_start"/>
+                        </group>
+                        <group string="Reacción">
+                            <field name="date_detected"/>
+                            <field name="reaction_start"/>
+                            <field name="severity"/>
+                            <field name="outcome"/>
+                        </group>
+                        <group string="Notificación">
+                            <field name="deadline"/>
+                            <field name="notified_date"/>
+                            <field name="notimed_reference"/>
+                            <field name="reporter_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="reaction" placeholder="Qué pasó, cuándo y qué se hizo."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_adverse_event_action" model="ir.actions.act_window">
+        <field name="name">Reacciones adversas</field>
+        <field name="res_model">pharmacy.adverse.event</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Lista de precios por DCI -->
+    <record id="action_report_price_list" model="ir.actions.report">
+        <field name="name">Lista de precios por DCI</field>
+        <field name="model">res.company</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_pharmacy_digemid.report_price_list</field>
+        <field name="report_file">al_l10n_pe_pharmacy_digemid.report_price_list</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+    </record>
+    <record id="action_server_price_list" model="ir.actions.server">
+        <field name="name">Lista de precios por DCI</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">action = env.ref('al_l10n_pe_pharmacy_digemid.action_report_price_list').report_action(env.company)</field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_pharmacy_digemid" name="DIGEMID" parent="al_pharmacy_base.menu_pharmacy_root"
+              sequence="35" groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+    <menuitem id="menu_pharmacy_observatory" name="Precios para el Observatorio" parent="menu_pharmacy_digemid"
+              action="pharmacy_observatory_price_action" sequence="10"/>
+    <menuitem id="menu_pharmacy_observatory_export" name="Exportar al Observatorio" parent="menu_pharmacy_digemid"
+              action="pharmacy_observatory_export_action" sequence="11"/>
+    <menuitem id="menu_pharmacy_generic_compliance" name="Cumplimiento de genéricos" parent="menu_pharmacy_digemid"
+              action="pharmacy_generic_compliance_action" sequence="20"/>
+    <menuitem id="menu_pharmacy_price_list" name="Lista de precios por DCI" parent="menu_pharmacy_digemid"
+              action="action_server_price_list" sequence="30"/>
+    <menuitem id="menu_pharmacy_adverse_event" name="Reacciones adversas" parent="menu_pharmacy_digemid"
+              action="pharmacy_adverse_event_action" sequence="40"/>
+    <menuitem id="menu_pharmacy_essential_medicine" name="Listado de genéricos esenciales"
+              parent="al_pharmacy_base.menu_pharmacy_catalogs" action="pharmacy_essential_medicine_action"
+              sequence="40"/>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pharmacy_observatory_price_comp_rule" model="ir.rule">
+        <field name="name">Precio del Observatorio: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_observatory_price"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_adverse_event_comp_rule" model="ir.rule">
+        <field name="name">Reacción adversa: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_adverse_event"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pharmacy_controlled_report_pharmacist,pharmacy.controlled.report químico farmacéutico,model_pharmacy_controlled_report,al_pharmacy_base.group_pharmacy_pharmacist,1,1,1,1

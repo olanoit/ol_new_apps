@@ -1,0 +1,44 @@
+titulo: "PE - Farmacia: DIGEMID, genéricos e IGV"
+subtitulo: "Precios para el Observatorio de DIGEMID, cumplimiento del 30 % de genéricos (Ley 32033), lista de precios por DCI, reacciones adversas para NotiMED e IGV exonerado de medicamentos oncológicos, para VIH y para diabetes."
+categoria: "Salud · Perú"
+etiquetas: [Farmacia, DIGEMID, Observatorio, Ley 32033, NotiMED, IGV]
+
+destacados:
+  - icono: "S/"
+    titulo: "Observatorio de precios"
+    texto: "Cada cambio de precio de un producto con código DIGEMID queda pendiente hasta exportar el archivo."
+  - icono: "30%"
+    titulo: "Genéricos esenciales"
+    texto: "De los ítems del listado que vende de marca, en cuántos tiene el genérico en DCI disponible."
+  - icono: "↓"
+    titulo: "Precios por DCI"
+    texto: "Lista de menor a mayor para exhibir, con el aviso de empresas vinculadas."
+  - icono: "⚠"
+    titulo: "Reacciones adversas"
+    texto: "Registro con plazo (graves 24 h) para notificar en NotiMED; queda en el libro de ocurrencias."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "Las farmacias y boticas informan sus precios al Observatorio (DS 014-2011-SA, art. 30), deben tener genéricos en DCI (Ley 32033), exhibir precios comparativos, notificar reacciones adversas (BPOF 7.5.3) y vender exonerados del IGV los medicamentos de las leyes 27450 y 28553."
+  nota: "**Por confirmar:** la plantilla vigente del Observatorio (DIGEMID rechaza otra estructura) y la periodicidad para boticas; las columnas del archivo se ajustan en el código."
+
+funcionalidades:
+  - "Código DIGEMID del producto e historial de precios pendientes o informados."
+  - "Archivo de precios (pendientes o toda la oferta en existencia) con el código del establecimiento."
+  - "Listado de genéricos esenciales importable y cálculo del cumplimiento por local."
+  - "Lista de precios por DCI en PDF."
+  - "Reacciones adversas con plazo, desenlace y código NotiMED."
+  - "Régimen del IGV que pone el impuesto de exonerados."
+  - "Tipo de establecimiento, autorización sanitaria y microempresa en los ajustes."
+
+configuracion:
+  - "Indique el código de establecimiento en cada local (Inventario ▸ Almacenes)."
+  - "Importe el listado de genéricos esenciales en **Farmacia ▸ Configuración ▸ Catálogos**."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión (entrega 3 del plan)."
+
+relacionados: [al_l10n_pe_pharmacy_controlled, al_pharmacy_base, al_pharmacy_stock]
