@@ -1,0 +1,14 @@
+// Logos de marca de las pasarelas: rectángulo blanco más ancho, sin el
+// relleno del ícono genérico ni la inversión de colores del modo oscuro.
+.pos .payment-screen .paymentmethods .paymentmethod .payment-method-icon.al-brand-logo,
+.pos .payment-screen .paymentmethod img.payment-method-icon.al-brand-logo {
+    width: 64px !important;
+    height: 30px !important;
+    max-width: none !important;
+    max-height: none !important;
+    padding: 3px 5px !important;
+    object-fit: contain;
+    background-color: #fff !important;
+    border: 1px solid rgba(0, 0, 0, .08);
+    filter: none !important;
+}

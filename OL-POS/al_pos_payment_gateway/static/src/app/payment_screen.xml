@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- El logo de la pasarela (Niubiz, Culqi, Izipay) va más ancho que los
+         íconos genéricos para que la marca se lea. -->
+    <t t-inherit="point_of_sale.PaymentScreenMethods" t-inherit-mode="extension">
+        <xpath expr="//img[hasclass('payment-method-icon')]" position="attributes">
+            <attribute name="t-att-class">{'al-brand-logo': paymentMethod.is_online_payment and paymentMethod.image}</attribute>
+        </xpath>
+    </t>
+</templates>

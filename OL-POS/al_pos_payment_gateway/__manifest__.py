@@ -27,7 +27,7 @@ con al_payment_izipay, al_payment_niubiz y al_payment_culqi.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '2.20261018',
+    'version': '3.20261018',
     'license': 'OPL-1',
     'depends': ['al_pos_online_payment'],
     'data': [
@@ -37,7 +37,11 @@ con al_payment_izipay, al_payment_niubiz y al_payment_culqi.
         # Después de pos_online_payment, que va en assets_prod: sus parches
         # deben quedar debajo de los de este módulo.
         'point_of_sale.assets_prod': [
-            'al_pos_payment_gateway/static/src/app/**/*',
+            'al_pos_payment_gateway/static/src/app/**/*.js',
+        ],
+        'point_of_sale._assets_pos': [
+            'al_pos_payment_gateway/static/src/app/**/*.xml',
+            'al_pos_payment_gateway/static/src/app/**/*.scss',
         ],
         'web.assets_tests': [
             'al_pos_payment_gateway/static/tests/tours/**/*',
