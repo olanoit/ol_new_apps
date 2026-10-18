@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- En cada instalación o actualización: tarjetas de regalo y monedero
+         con el impuesto inafecto (el comprobante exige impuesto por línea). -->
+    <function model="res.company" name="_l10n_pe_edi_pos_set_loyalty_taxes"/>
+</odoo>

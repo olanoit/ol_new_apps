@@ -31,7 +31,7 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '13.20261008',
+    'version': '14.20261018',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',
@@ -42,6 +42,7 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
         'al_account_move_name_sequence',
     ],
     'data': [
+        'data/loyalty_taxes_data.xml',
         'views/res_config_settings_views.xml',
         'views/pos_order_views.xml',
         'views/account_move_views.xml',

@@ -206,6 +206,10 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: '14.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Las tarjetas de regalo y las recargas del monedero llevan el impuesto inafecto: sin impuesto la boleta no se emitía y una venta cobrada con Niubiz o Culqi quedaba pagada pero sin cerrar en la caja."
   - version: 13.20261008
     fecha: 14/10/2026
     cambios:
