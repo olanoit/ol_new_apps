@@ -233,14 +233,14 @@ Compras junta en una sola orden lo que piden varias obras:
 | Solicitud | Obra | Pedido | Comprado |
 |---|---|---:|---:|
 | PR00005 | ACACIAS 353 | 100 | 100 |
-| PR00006 | ZZ DEMO | 40 | 40 |
+| PR00006 | TORRE A | 40 | 40 |
 | PR00007 | ACACIAS 353 | 25 | 25 |
 | **Orden** | | | **165** |
 
 - Cada solicitud, y el requerimiento de obra que la originó, muestra como
   comprado solo su parte, aunque la orden tenga una sola línea.
 - El origen de la orden nombra todas las solicitudes con su obra: «PR00005
-  (ACACIAS 353), PR00006 (ZZ DEMO), PR00007 (ACACIAS 353)».
+  (ACACIAS 353), PR00006 (TORRE A), PR00007 (ACACIAS 353)».
 - Si la orden compra más que lo pedido (mínimo del proveedor, redondeo), el
   exceso se reparte en proporción a lo que pidió cada solicitud.
 - Lo que va directo a una obra conserva su destino y no se mezcla con el stock

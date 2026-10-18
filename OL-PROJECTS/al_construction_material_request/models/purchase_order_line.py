@@ -24,7 +24,7 @@ class PurchaseOrder(models.Model):
     def _al_requests_origin(self):
         """Origen de una orden que atiende solicitudes de compra: todas las
         solicitudes con su obra, por ejemplo «PR00005 (ACACIAS 353), PR00006
-        (ZZ DEMO)» (compra masiva consolidada, v1.6, M16-01)."""
+        (TORRE A)» (compra masiva consolidada, v1.6, M16-01)."""
         self.ensure_one()
         labels = []
         for request in self.order_line.purchase_request_lines.request_id.sorted('name'):
