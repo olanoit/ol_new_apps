@@ -22,6 +22,10 @@ class ResCompany(models.Model):
         programs_sudo = self.env['loyalty.program'].sudo().with_context(active_test=False).search(
             [('program_type', 'in', ('gift_card', 'ewallet'))])
         products = programs_sudo.trigger_product_ids.product_tmpl_id
+        # Los productos de Odoo para tarjetas de regalo y recargas del monedero
+        # se venden en el TPV aunque no haya un programa que los use.
+        for xmlid in ('loyalty.gift_card_product_50', 'loyalty.ewallet_product_50'):
+            products |= self.env.ref(xmlid, raise_if_not_found=False).sudo().product_tmpl_id
         companies = self.sudo().search([('account_fiscal_country_id.code', '=', 'PE')])
         for company in companies:
             tax = self.env['account.tax'].sudo().search([

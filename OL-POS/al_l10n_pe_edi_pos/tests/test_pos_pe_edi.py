@@ -353,3 +353,16 @@ class TestPosPeLoyaltyTaxes(AccountTestInvoicingCommon):
         taxes = product_sudo.taxes_id.filtered(
             lambda t: t.company_id == self.env.company)
         self.assertEqual(taxes.l10n_pe_edi_tax_code, '9998')
+
+    def test_recarga_de_monedero_inafecta(self):
+        """El producto de recarga del monedero de Odoo, aunque no haya programa."""
+        if 'loyalty.program' not in self.env:
+            self.skipTest('pos_loyalty no está instalado')
+        # sudo: producto compartido (ver la prueba anterior).
+        product_sudo = self.env.ref('loyalty.ewallet_product_50').sudo()
+        self.env['loyalty.program'].sudo().search([('program_type', '=', 'ewallet')]).action_archive()
+        product_sudo.taxes_id = [(3, tax.id) for tax in product_sudo.taxes_id.filtered(
+            lambda t: t.company_id == self.env.company)]
+        self.env['res.company']._l10n_pe_edi_pos_set_loyalty_taxes()
+        taxes = product_sudo.taxes_id.filtered(lambda t: t.company_id == self.env.company)
+        self.assertEqual(taxes.l10n_pe_edi_tax_code, '9998')

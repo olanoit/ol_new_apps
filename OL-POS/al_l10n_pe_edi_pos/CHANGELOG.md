@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261018 — 18/10/2026
+
+- También la recarga del monedero electrónico de Odoo lleva el impuesto inafecto, aunque no haya un programa de monedero.
+
 ## 14.20261018 — 18/10/2026
 
 - Las tarjetas de regalo y las recargas del monedero llevan el impuesto inafecto: sin impuesto la boleta no se emitía y una venta cobrada con Niubiz o Culqi quedaba pagada pero sin cerrar en la caja.

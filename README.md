@@ -211,7 +211,7 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 14.20261018 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 15.20261018 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
 [al_pos_network_printer](OL-POS/al_pos_network_printer/) | 4.20261009 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
 [al_pos_online_payment](OL-POS/al_pos_online_payment/) | 1.20261016 | OPL-1 | Corrige el TPV de Odoo 19 que, tras un cobro en línea, muestra el pago dos veces y un cambio igual al importe pagado.
 [al_pos_payment_gateway](OL-POS/al_pos_payment_gateway/) | 6.20261018 | OPL-1 | Cada pasarela (Izipay, Niubiz, Culqi…) como método de pago propio del TPV: el cliente paga con el QR en su teléfono y las devoluciones vuelven a su tarjeta.

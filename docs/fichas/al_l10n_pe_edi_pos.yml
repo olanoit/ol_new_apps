@@ -206,6 +206,10 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: '15.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "También la recarga del monedero electrónico de Odoo lleva el impuesto inafecto, aunque no haya un programa de monedero."
   - version: '14.20261018'
     fecha: 18/10/2026
     cambios:
