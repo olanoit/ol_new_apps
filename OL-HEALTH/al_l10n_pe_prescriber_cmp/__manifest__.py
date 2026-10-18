@@ -22,13 +22,14 @@ Reemplaza la lectura automática del portal antiguo de al_peru_medico_data
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '2.20261018',
+    'version': '3.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'l10n_pe'],
     'data': [
         'data/ir_config_parameter_data.xml',
         'views/res_partner_views.xml',
     ],
+    'demo': ['demo/prescriber_cmp_demo.xml'],
     'installable': True,
     'application': False,
 }

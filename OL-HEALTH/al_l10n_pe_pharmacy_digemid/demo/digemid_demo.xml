@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Obligaciones con DIGEMID de la botica de demostración. -->
+    <data noupdate="1">
+        <!-- Códigos del Observatorio y régimen del IGV -->
+        <record id="al_pharmacy_base.product_paracetamol" model="product.template">
+            <field name="pharmacy_digemid_code">05463</field>
+        </record>
+        <record id="al_pharmacy_base.product_dolofen" model="product.template">
+            <field name="pharmacy_digemid_code">05464</field>
+        </record>
+        <record id="al_pharmacy_base.product_ibuprofen" model="product.template">
+            <field name="pharmacy_digemid_code">04120</field>
+        </record>
+        <record id="al_pharmacy_base.product_ibuflam" model="product.template">
+            <field name="pharmacy_digemid_code">04121</field>
+        </record>
+        <record id="al_pharmacy_base.product_loratadine" model="product.template">
+            <field name="pharmacy_digemid_code">06210</field>
+        </record>
+        <record id="al_pharmacy_base.product_omeprazole" model="product.template">
+            <field name="pharmacy_digemid_code">06015</field>
+        </record>
+        <record id="al_pharmacy_base.product_amoxicillin" model="product.template">
+            <field name="pharmacy_digemid_code">01287</field>
+        </record>
+        <record id="al_pharmacy_base.product_amoxival" model="product.template">
+            <field name="pharmacy_digemid_code">01288</field>
+        </record>
+        <record id="al_pharmacy_base.product_azithromycin" model="product.template">
+            <field name="pharmacy_digemid_code">02954</field>
+        </record>
+        <record id="al_pharmacy_base.product_losartan" model="product.template">
+            <field name="pharmacy_digemid_code">03322</field>
+        </record>
+        <record id="al_pharmacy_base.product_metformin" model="product.template">
+            <field name="pharmacy_digemid_code">03510</field>
+            <field name="pharmacy_igv_regime">diabetes</field>
+        </record>
+        <record id="al_pharmacy_base.product_insulin" model="product.template">
+            <field name="pharmacy_digemid_code">03601</field>
+            <field name="pharmacy_igv_regime">diabetes</field>
+        </record>
+        <record id="al_pharmacy_base.product_clonazepam" model="product.template">
+            <field name="pharmacy_digemid_code">02210</field>
+        </record>
+        <record id="al_pharmacy_base.product_alprazolam" model="product.template">
+            <field name="pharmacy_digemid_code">02215</field>
+        </record>
+        <!-- Establecimiento y listado de genéricos esenciales -->
+        <record id="base.main_company" model="res.company">
+            <field name="pharmacy_establishment_category">drugstore</field>
+            <field name="pharmacy_authorization_number">RD 0456-2026-DIRIS-LC</field>
+            <field name="pharmacy_authorization_date" eval="(DateTime.today() + relativedelta(days=-400)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="essential_01" model="pharmacy.essential.medicine">
+            <field name="ingredient_id" ref="al_pharmacy_base.ingredient_paracetamol"/>
+            <field name="strength">500 mg</field>
+            <field name="dosage_form_id" ref="al_pharmacy_base.dosage_form_tablet"/>
+            <field name="list_reference">RM 220-2024/MINSA</field>
+        </record>
+        <record id="essential_02" model="pharmacy.essential.medicine">
+            <field name="ingredient_id" ref="al_pharmacy_base.ingredient_ibuprofeno"/>
+            <field name="strength">400 mg</field>
+            <field name="dosage_form_id" ref="al_pharmacy_base.dosage_form_tablet"/>
+            <field name="list_reference">RM 220-2024/MINSA</field>
+        </record>
+        <record id="essential_03" model="pharmacy.essential.medicine">
+            <field name="ingredient_id" ref="al_pharmacy_base.ingredient_amoxicilina"/>
+            <field name="strength">500 mg</field>
+            <field name="dosage_form_id" ref="al_pharmacy_base.dosage_form_capsule"/>
+            <field name="list_reference">RM 220-2024/MINSA</field>
+        </record>
+        <record id="essential_04" model="pharmacy.essential.medicine">
+            <field name="ingredient_id" ref="al_pharmacy_base.ingredient_losartan"/>
+            <field name="strength">50 mg</field>
+            <field name="dosage_form_id" ref="al_pharmacy_base.dosage_form_coated_tablet"/>
+            <field name="list_reference">RM 220-2024/MINSA</field>
+        </record>
+        <record id="essential_05" model="pharmacy.essential.medicine">
+            <field name="ingredient_id" ref="al_pharmacy_base.ingredient_metformina"/>
+            <field name="strength">850 mg</field>
+            <field name="dosage_form_id" ref="al_pharmacy_base.dosage_form_tablet"/>
+            <field name="list_reference">RM 220-2024/MINSA</field>
+        </record>
+        <record id="essential_06" model="pharmacy.essential.medicine">
+            <field name="ingredient_id" ref="al_pharmacy_base.ingredient_omeprazol"/>
+            <field name="strength">20 mg</field>
+            <field name="dosage_form_id" ref="al_pharmacy_base.dosage_form_capsule"/>
+            <field name="list_reference">RM 220-2024/MINSA</field>
+        </record>
+        <!-- Reacciones adversas: una por notificar y una notificada -->
+        <record id="adverse_event_draft" model="pharmacy.adverse.event">
+            <field name="patient_initials">P.C.Ñ.</field>
+            <field name="patient_age">38</field>
+            <field name="patient_sex">m</field>
+            <field name="patient_weight">78</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id"/>
+            <field name="lot_id" ref="al_pharmacy_stock.product_metformin_lot_1"/>
+            <field name="dose">850 mg cada 12 horas</field>
+            <field name="route_id" ref="al_pharmacy_base.route_oral"/>
+            <field name="therapy_start" eval="(DateTime.today() + relativedelta(days=-10)).strftime('%Y-%m-%d')"/>
+            <field name="reaction_start" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d')"/>
+            <field name="reaction">Náuseas y diarrea desde el octavo día de tratamiento.</field>
+            <field name="severity">non_serious</field>
+            <field name="outcome">recovering</field>
+            <field name="date_detected" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="adverse_event_notified" model="pharmacy.adverse.event">
+            <field name="patient_initials">R.M.V.</field>
+            <field name="patient_age">54</field>
+            <field name="patient_sex">f</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_losartan').product_variant_id.id"/>
+            <field name="dose">50 mg al día</field>
+            <field name="route_id" ref="al_pharmacy_base.route_oral"/>
+            <field name="therapy_start" eval="(DateTime.today() + relativedelta(days=-60)).strftime('%Y-%m-%d')"/>
+            <field name="reaction_start" eval="(DateTime.today() + relativedelta(days=-20)).strftime('%Y-%m-%d')"/>
+            <field name="reaction">Mareos al levantarse.</field>
+            <field name="severity">non_serious</field>
+            <field name="outcome">recovered</field>
+            <field name="date_detected" eval="(DateTime.today() + relativedelta(days=-20)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="state">notified</field>
+            <field name="notified_date" eval="(DateTime.today() + relativedelta(days=-18)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="notimed_reference">NOTI-2026-004512</field>
+        </record>
+    </data>
+</odoo>

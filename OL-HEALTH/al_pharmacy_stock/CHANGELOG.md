@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_stock.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261018 — 18/10/2026
+
+- Datos de demostración: lotes con vencimiento y existencias (uno por vencer), lote en cuarentena, control ambiental con una lectura fuera de rango, compra 12 + 1 con su recepción por inspeccionar, alerta sanitaria y acta de baja en borrador.
+
 ## 1.20261018 — 18/10/2026
 
 - Primera versión (entrega 1 del plan).

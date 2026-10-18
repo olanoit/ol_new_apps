@@ -29,7 +29,7 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261018',
+    'version': '2.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'al_report_base'],
     'data': [
@@ -39,6 +39,7 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
         'views/digemid_views.xml',
         'report/price_list_report.xml',
     ],
+    'demo': ['demo/digemid_demo.xml'],
     'installable': True,
     'application': False,
 }

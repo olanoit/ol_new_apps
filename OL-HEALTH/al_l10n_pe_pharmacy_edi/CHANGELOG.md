@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_pharmacy_edi.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261018 — 18/10/2026
+
+- Datos de demostración: clientes con DNI (boleta) y RUC (factura).
+
 ## 1.20261018 — 18/10/2026
 
 - Primera versión (prototipo E0).

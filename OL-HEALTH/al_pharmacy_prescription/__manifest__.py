@@ -25,7 +25,7 @@ Entrega E2 del plan (docs/farmacia/PLAN_FARMACIA.md), según el Manual BPOF
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261018',
+    'version': '2.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'contacts', 'al_report_base'],
     'data': [
@@ -35,6 +35,7 @@ Entrega E2 del plan (docs/farmacia/PLAN_FARMACIA.md), según el Manual BPOF
         'views/pharmacy_prescription_views.xml',
         'report/pharmacy_prescription_reports.xml',
     ],
+    'demo': ['demo/pharmacy_prescription_demo.xml'],
     'installable': True,
     'application': False,
 }

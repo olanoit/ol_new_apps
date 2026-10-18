@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261018 — 18/10/2026
+
+- La demostración de la botica se reparte entre los módulos de la suite (cada uno se prueba solo); el paquete agrega las categorías del rubro y los productos no farmacéuticos.
+
 ## 6.20261017 — 18/10/2026
 
 - Botica de demostración: 14 medicamentos de marcas inventadas (genéricos y de marca, con receta, controlados, insulina), presentaciones, listado de genéricos, médicos y puntos de control.

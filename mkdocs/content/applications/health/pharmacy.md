@@ -41,6 +41,22 @@ Ley 32033.
     - **Sin Q.F. en turno**: avisar (por defecto) o bloquear.
     - **Aviso de vencimientos**: días de anticipación (90 por defecto).
 
+## Datos de demostración
+
+En una base creada con datos de demostración, cada módulo de la suite trae lo
+que necesita para probarse:
+
+| Módulo | Trae |
+|---|---|
+| Maestro farmacéutico | 14 medicamentos con composición y presentaciones, laboratorios, directora técnica, Q.F., técnica, turnos y libro de ocurrencias |
+| Buenas prácticas de almacenamiento | Lotes y existencias (uno por vencer, uno en cuarentena), control ambiental con una lectura fuera de rango, compra 12 + 1 por recibir, alerta sanitaria y acta de baja en borrador |
+| Receta y dispensación | Prescriptores hábil, sin verificar e inhábil; pacientes con alergia; recetas por validar, vigente, dispensada en parte y vencida |
+| Punto de venta | Los medicamentos disponibles en la caja |
+| Verificación en el CMP | Colegiaturas verificadas con su consejo regional |
+| Estupefacientes y psicotrópicos | Clonazepam y alprazolam (lista IVA), morfina (lista IIA), receta especial vigente y receta retenida con folio |
+| DIGEMID, genéricos e IGV | Códigos y precios por informar al Observatorio, régimen del IGV, autorización del local, genéricos esenciales y reacciones adversas |
+| Unidad SUNAT de las presentaciones | Clientes con DNI y con RUC |
+
 ## Turnos y libro de ocurrencias
 
 - **Farmacia ‣ Establecimiento ‣ Turnos de Q.F.**: quién atiende en cada local.

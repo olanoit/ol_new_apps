@@ -39,7 +39,7 @@ Dispensación en la caja:
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '3.20261018',
+    'version': '4.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
                 'point_of_sale', 'pos_hr'],
@@ -51,6 +51,7 @@ Dispensación en la caja:
             'al_pharmacy_pos/static/tests/tours/**/*',
         ],
     },
+    'demo': ['demo/pharmacy_pos_demo.xml'],
     'installable': True,
     'application': False,
 }

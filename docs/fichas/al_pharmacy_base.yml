@@ -47,6 +47,10 @@ configuracion:
   - "Revise los ajustes en **Farmacia ▸ Configuración ▸ Ajustes**."
 
 novedades:
+  - version: 3.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: 14 medicamentos con composición, presentaciones (blíster y caja), laboratorios, directora técnica, Q.F., técnica, turnos, código del establecimiento y libro de ocurrencias."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

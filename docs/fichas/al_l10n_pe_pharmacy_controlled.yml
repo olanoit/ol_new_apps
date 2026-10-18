@@ -36,6 +36,10 @@ configuracion:
   - "Genere libros y balance en **Farmacia ▸ Controlados ▸ Libros y balance**."
 
 novedades:
+  - version: 2.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: psicotrópicos de la lista IVA, morfina de la lista IIA con existencias, receta especial vigente y receta retenida con folio y dispensación."
   - version: 1.20261018
     fecha: 18/10/2026
     cambios:

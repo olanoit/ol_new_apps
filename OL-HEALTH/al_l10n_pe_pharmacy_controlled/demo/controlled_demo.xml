@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Productos controlados de la botica de demostración. -->
+    <data noupdate="1">
+        <!-- Psicotrópicos de la lista IVA (receta retenida) -->
+        <record id="al_pharmacy_base.product_clonazepam" model="product.template">
+            <field name="pharmacy_control_list">IVA</field>
+        </record>
+        <record id="al_pharmacy_base.product_alprazolam" model="product.template">
+            <field name="pharmacy_control_list">IVA</field>
+        </record>
+        <!-- Estupefaciente de la lista IIA (receta especial) -->
+        <record id="ingredient_morphine" model="pharmacy.ingredient">
+            <field name="name">Morfina</field>
+        </record>
+        <record id="product_morphine" model="product.template">
+            <field name="name">Morfina 10 mg/mL solución inyectable ampolla 1 mL</field>
+            <field name="list_price">9.5</field>
+            <field name="standard_price">5.2</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">controlled</field>
+            <field name="pharmacy_control_list">IIA</field>
+            <field name="pharmacy_sanitary_registry">EN-02211</field>
+            <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_injection"/>
+            <field name="pharmacy_route_id" ref="al_pharmacy_base.route_im"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_morphine'), 'strength': 10, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_morphine_lot" model="stock.lot">
+            <field name="name">MOR2611</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_l10n_pe_pharmacy_controlled.product_morphine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=600)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_morphine_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_l10n_pe_pharmacy_controlled.product_morphine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_morphine_lot"/>
+            <field name="inventory_quantity">20</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <function model="stock.quant" name="action_apply_inventory">
+            <function eval="[[('id', '=', ref('product_morphine_quant'))]]" model="stock.quant" name="search"/>
+        </function>
+        <!-- Documento de identidad de los pacientes (lo exige la receta especial) -->
+        <record id="al_pharmacy_prescription.patient_mendoza" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">41235678</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_castro" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">45879632</field>
+        </record>
+        <!-- Receta especial vigente (3 días) y receta retenida con su folio -->
+        <record id="prescription_special" model="pharmacy.prescription">
+            <field name="prescription_number">RE-000045</field>
+            <field name="prescription_type">special</field>
+            <field name="validity_days">3</field>
+            <field name="prescriber_id" ref="al_pharmacy_prescription.prescriber_torres"/>
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_castro"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Dolor posoperatorio</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'product_id': obj().env.ref('al_l10n_pe_pharmacy_controlled.product_morphine').product_variant_id.id, 'quantity': 3, 'posology': '1 ampolla cada 8 horas', 'duration': '1 día'})]" model="product.template"/>
+        </record>
+        <record id="prescription_retained" model="pharmacy.prescription">
+            <field name="prescription_number">000110</field>
+            <field name="prescriber_id" ref="al_pharmacy_prescription.prescriber_torres"/>
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_mendoza"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')"/>
+            <field name="diagnosis">Trastorno de ansiedad</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="retained" eval="True"/>
+            <field name="retention_folio">RET-2026-0001</field>
+            <field name="line_ids" eval="[Command.create({'product_id': obj().env.ref('al_pharmacy_base.product_clonazepam').product_variant_id.id, 'quantity': 20, 'posology': '1 tableta en la noche', 'duration': '20 días'})]" model="product.template"/>
+        </record>
+        <record id="dispensation_retained" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_retained"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_l10n_pe_pharmacy_controlled.prescription_retained').line_ids[:1].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_clonazepam').product_variant_id.id"/>
+            <field name="quantity">20</field>
+            <field name="lot_id" ref="al_pharmacy_stock.product_clonazepam_lot_1"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="purchaser_name">Rosa Mendoza Vargas</field>
+            <field name="purchaser_vat">41235678</field>
+            <field name="source">Mostrador</field>
+        </record>
+    </data>
+</odoo>

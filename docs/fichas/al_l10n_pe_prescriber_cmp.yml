@@ -25,6 +25,10 @@ funcionalidades:
   - "Consejo regional, fecha y responsable de la verificación."
 
 novedades:
+  - version: 3.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: colegiaturas verificadas en el portal del CMP con su consejo regional."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

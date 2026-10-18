@@ -29,7 +29,7 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261018',
+    'version': '2.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_stock', 'sale', 'l10n_pe', 'al_report_base'],
     'data': [
@@ -38,6 +38,7 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
         'views/controlled_views.xml',
         'report/controlled_reports.xml',
     ],
+    'demo': ['demo/controlled_demo.xml'],
     'installable': True,
     'application': False,
 }

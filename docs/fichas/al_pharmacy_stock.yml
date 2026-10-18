@@ -38,6 +38,10 @@ configuracion:
   - "Cree los puntos de control en **Farmacia ▸ Control ambiental ▸ Puntos de control**."
 
 novedades:
+  - version: 2.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: lotes con vencimiento y existencias (uno por vencer), lote en cuarentena, control ambiental con una lectura fuera de rango, compra 12 + 1 con su recepción por inspeccionar, alerta sanitaria y acta de baja en borrador."
   - version: 1.20261018
     fecha: 18/10/2026
     cambios:

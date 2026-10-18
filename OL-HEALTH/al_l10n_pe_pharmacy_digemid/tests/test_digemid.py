@@ -16,7 +16,9 @@ class TestDigemid(TransactionCase):
         cls.warehouse = cls.env['stock.warehouse'].search(
             [('company_id', '=', cls.env.company.id)], limit=1)
         cls.warehouse.pharmacy_establishment_code = '0012345'
-        cls.ingredient = cls.env['pharmacy.ingredient']._get_or_create('Metformina')
+        # Un principio activo que no está en los datos de demostración: así el
+        # listado de genéricos y las existencias son solo los de la prueba.
+        cls.ingredient = cls.env['pharmacy.ingredient']._get_or_create('Sitagliptina')
         cls.tablet = cls.env.ref('al_pharmacy_base.dosage_form_tablet')
 
     def _product(self, name, product_type, price, code=False, qty=0):

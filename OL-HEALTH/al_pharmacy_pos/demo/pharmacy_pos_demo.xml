@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Caja de la botica de demostración. -->
+    <data noupdate="1">
+        <!-- Los medicamentos de la botica se venden en la caja -->
+        <record id="al_pharmacy_base.product_paracetamol" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_dolofen" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ibuprofen" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ibuflam" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_loratadine" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_omeprazole" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxicillin" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxival" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_azithromycin" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_losartan" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_metformin" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_insulin" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_clonazepam" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_alprazolam" model="product.template">
+            <field name="available_in_pos" eval="True"/>
+        </record>
+    </data>
+</odoo>

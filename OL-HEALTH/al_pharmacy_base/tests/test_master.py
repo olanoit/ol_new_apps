@@ -99,8 +99,9 @@ class TestPharmacyEstablishment(TransactionCase):
             [('entry_type', '=', 'absence'), ('warehouse_id', '=', self.warehouse.id)],
             order='id desc', limit=1)
         self.assertIn('Rosa Quispe', entry.description)
-        self.assertEqual(self.env['pharmacy.shift']._get_pharmacists_on_duty(self.warehouse),
-                         shift.employee_id)
+        # Puede haber otros Q.F. de turno en el local (datos de demostración).
+        self.assertIn(shift.employee_id,
+                      self.env['pharmacy.shift']._get_pharmacists_on_duty(self.warehouse))
 
     def test_shift_dates(self):
         now = fields.Datetime.now()

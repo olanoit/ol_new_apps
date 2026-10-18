@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: 7.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "La demostración de la botica se reparte entre los módulos de la suite (cada uno se prueba solo); el paquete agrega las categorías del rubro y los productos no farmacéuticos."
   - version: 6.20261017
     fecha: 18/10/2026
     cambios:

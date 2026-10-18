@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Botica de demostración: marcas y laboratorios inventados. -->
+    <data noupdate="1">
+        <!-- Laboratorios y principios activos -->
+        <record id="lab_andino" model="res.partner">
+            <field name="name">Laboratorios Andinos S.A.C.</field>
+            <field name="is_company" eval="True"/>
+        </record>
+        <record id="lab_rimac" model="res.partner">
+            <field name="name">Laboratorio Rímac S.A.C.</field>
+            <field name="is_company" eval="True"/>
+        </record>
+        <record id="lab_sol" model="res.partner">
+            <field name="name">Laboratorios Sol del Sur S.A.C.</field>
+            <field name="is_company" eval="True"/>
+        </record>
+        <record id="ingredient_paracetamol" model="pharmacy.ingredient">
+            <field name="name">Paracetamol</field>
+        </record>
+        <record id="ingredient_ibuprofeno" model="pharmacy.ingredient">
+            <field name="name">Ibuprofeno</field>
+        </record>
+        <record id="ingredient_amoxicilina" model="pharmacy.ingredient">
+            <field name="name">Amoxicilina</field>
+        </record>
+        <record id="ingredient_insulina_humana" model="pharmacy.ingredient">
+            <field name="name">Insulina humana</field>
+        </record>
+        <record id="ingredient_azitromicina" model="pharmacy.ingredient">
+            <field name="name">Azitromicina</field>
+        </record>
+        <record id="ingredient_losartan" model="pharmacy.ingredient">
+            <field name="name">Losartán</field>
+        </record>
+        <record id="ingredient_metformina" model="pharmacy.ingredient">
+            <field name="name">Metformina</field>
+        </record>
+        <record id="ingredient_clonazepam" model="pharmacy.ingredient">
+            <field name="name">Clonazepam</field>
+        </record>
+        <record id="ingredient_alprazolam" model="pharmacy.ingredient">
+            <field name="name">Alprazolam</field>
+        </record>
+        <record id="ingredient_loratadina" model="pharmacy.ingredient">
+            <field name="name">Loratadina</field>
+        </record>
+        <record id="ingredient_omeprazol" model="pharmacy.ingredient">
+            <field name="name">Omeprazol</field>
+        </record>
+        <!-- Medicamentos con sus presentaciones -->
+        <record id="product_paracetamol" model="product.template">
+            <field name="name">Paracetamol 500 mg tableta</field>
+            <field name="list_price">0.2</field>
+            <field name="standard_price">0.08</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">otc</field>
+            <field name="pharmacy_sanitary_registry">EN-04512</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 500, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_paracetamol_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_paracetamol"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">1.5</field>
+        </record>
+        <record id="product_paracetamol_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_paracetamol"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">12.0</field>
+        </record>
+        <record id="product_dolofen" model="product.template">
+            <field name="name">Dolofen 500 mg tableta</field>
+            <field name="list_price">0.6</field>
+            <field name="standard_price">0.3</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">innovator</field>
+            <field name="pharmacy_sale_condition">otc</field>
+            <field name="pharmacy_sanitary_registry">E-21876</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 500, 'strength_unit': 'mg'})]"/>
+            <field name="pharmacy_laboratory_id" ref="lab_rimac"/>
+        </record>
+        <record id="product_dolofen_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_dolofen"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">5.5</field>
+        </record>
+        <record id="product_dolofen_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_dolofen"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">50.0</field>
+        </record>
+        <record id="product_ibuprofen" model="product.template">
+            <field name="name">Ibuprofeno 400 mg tableta</field>
+            <field name="list_price">0.25</field>
+            <field name="standard_price">0.1</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">otc</field>
+            <field name="pharmacy_sanitary_registry">EN-03891</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ibuprofeno'), 'strength': 400, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_ibuprofen_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_ibuprofen"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">2.0</field>
+        </record>
+        <record id="product_ibuprofen_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_ibuprofen"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">15.0</field>
+        </record>
+        <record id="product_ibuflam" model="product.template">
+            <field name="name">Ibuflam 400 mg tableta</field>
+            <field name="list_price">0.45</field>
+            <field name="standard_price">0.2</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_brand</field>
+            <field name="pharmacy_sale_condition">otc</field>
+            <field name="pharmacy_sanitary_registry">EG-07722</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ibuprofeno'), 'strength': 400, 'strength_unit': 'mg'})]"/>
+            <field name="pharmacy_laboratory_id" ref="lab_sol"/>
+        </record>
+        <record id="product_ibuflam_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_ibuflam"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">4.0</field>
+        </record>
+        <record id="product_loratadine" model="product.template">
+            <field name="name">Loratadina 10 mg tableta</field>
+            <field name="list_price">0.3</field>
+            <field name="standard_price">0.1</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">otc</field>
+            <field name="pharmacy_sanitary_registry">EN-06102</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_loratadina'), 'strength': 10, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_loratadine_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_loratadine"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">2.5</field>
+        </record>
+        <record id="product_omeprazole" model="product.template">
+            <field name="name">Omeprazol 20 mg cápsula</field>
+            <field name="list_price">0.3</field>
+            <field name="standard_price">0.12</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">otc</field>
+            <field name="pharmacy_sanitary_registry">EN-05988</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_capsule"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_omeprazol'), 'strength': 20, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_omeprazole_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_omeprazole"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">2.5</field>
+        </record>
+        <record id="product_omeprazole_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_omeprazole"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">22.0</field>
+        </record>
+        <record id="product_amoxicillin" model="product.template">
+            <field name="name">Amoxicilina 500 mg cápsula</field>
+            <field name="list_price">0.5</field>
+            <field name="standard_price">0.22</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">EN-05127</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_capsule"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_amoxicillin_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_amoxicillin"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">4.5</field>
+        </record>
+        <record id="product_amoxicillin_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_amoxicillin"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">40.0</field>
+        </record>
+        <record id="product_amoxival" model="product.template">
+            <field name="name">Amoxival 500 mg cápsula</field>
+            <field name="list_price">1.4</field>
+            <field name="standard_price">0.7</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">innovator</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">E-18350</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_capsule"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
+            <field name="pharmacy_laboratory_id" ref="lab_andino"/>
+        </record>
+        <record id="product_amoxival_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_amoxival"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">13.0</field>
+        </record>
+        <record id="product_azithromycin" model="product.template">
+            <field name="name">Azitromicina 500 mg tableta</field>
+            <field name="list_price">3.0</field>
+            <field name="standard_price">1.2</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">EN-04410</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_coated_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_azitromicina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_azithromycin_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_azithromycin"/>
+            <field name="name">Caja</field>
+            <field name="factor">3</field>
+            <field name="price">8.0</field>
+        </record>
+        <record id="product_losartan" model="product.template">
+            <field name="name">Losartán 50 mg tableta</field>
+            <field name="list_price">0.3</field>
+            <field name="standard_price">0.1</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">EN-05341</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_coated_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_losartan'), 'strength': 50, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_losartan_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_losartan"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">2.5</field>
+        </record>
+        <record id="product_losartan_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_losartan"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">20.0</field>
+        </record>
+        <record id="product_metformin" model="product.template">
+            <field name="name">Metformina 850 mg tableta</field>
+            <field name="list_price">0.25</field>
+            <field name="standard_price">0.09</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">EN-04987</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_metformina'), 'strength': 850, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_metformin_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_metformin"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">2.0</field>
+        </record>
+        <record id="product_metformin_presentation_2" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_metformin"/>
+            <field name="name">Caja</field>
+            <field name="factor">100</field>
+            <field name="price">18.0</field>
+        </record>
+        <record id="product_insulin" model="product.template">
+            <field name="name">Insulina humana NPH 100 UI/mL frasco 10 mL</field>
+            <field name="list_price">58.0</field>
+            <field name="standard_price">41.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">BE-01046</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_injection"/>
+            <field name="pharmacy_route_id" ref="route_sc"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_insulina_humana'), 'strength': 100, 'strength_unit': 'ui'})]"/>
+            <field name="pharmacy_cold_chain" eval="True"/>
+            <field name="pharmacy_storage_conditions">Refrigerar entre 2 °C y 8 °C. No congelar.</field>
+        </record>
+        <record id="product_clonazepam" model="product.template">
+            <field name="name">Clonazepam 2 mg tableta</field>
+            <field name="list_price">0.8</field>
+            <field name="standard_price">0.3</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">EN-03117</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_clonazepam'), 'strength': 2, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_clonazepam_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_clonazepam"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">7.5</field>
+        </record>
+        <record id="product_alprazolam" model="product.template">
+            <field name="name">Alprazolam 0,5 mg tableta</field>
+            <field name="list_price">0.6</field>
+            <field name="standard_price">0.25</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="tracking">lot</field>
+            <field name="use_expiration_date" eval="True"/>
+            <field name="expiration_time">730</field>
+            <field name="pharmacy_ok" eval="True"/>
+            <field name="pharmacy_product_type">generic_dci</field>
+            <field name="pharmacy_sale_condition">prescription</field>
+            <field name="pharmacy_sanitary_registry">EN-03205</field>
+            <field name="pharmacy_registry_expiry" eval="(DateTime.today() + relativedelta(days=900)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_dosage_form_id" ref="dosage_form_tablet"/>
+            <field name="pharmacy_route_id" ref="route_oral"/>
+            <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_alprazolam'), 'strength': 0.5, 'strength_unit': 'mg'})]"/>
+        </record>
+        <record id="product_alprazolam_presentation_1" model="pharmacy.presentation">
+            <field name="product_tmpl_id" ref="product_alprazolam"/>
+            <field name="name">Blíster</field>
+            <field name="factor">10</field>
+            <field name="price">5.5</field>
+        </record>
+        <!-- Personal, local y turnos -->
+        <record id="employee_director" model="hr.employee">
+            <field name="name">Rosa Quispe Huamán</field>
+            <field name="job_title">Directora técnica</field>
+            <field name="pharmacy_role">pharmacist</field>
+            <field name="pharmacy_license_number">15432</field>
+            <field name="work_email">rosa.quispe@example.com</field>
+        </record>
+        <record id="employee_pharmacist" model="hr.employee">
+            <field name="name">Luis Paredes Soto</field>
+            <field name="job_title">Químico farmacéutico</field>
+            <field name="pharmacy_role">pharmacist</field>
+            <field name="pharmacy_license_number">18877</field>
+        </record>
+        <record id="employee_technician" model="hr.employee">
+            <field name="name">Carmen Flores Díaz</field>
+            <field name="job_title">Técnica en farmacia</field>
+            <field name="pharmacy_role">technician</field>
+        </record>
+        <record id="stock.warehouse0" model="stock.warehouse">
+            <field name="pharmacy_director_id" ref="employee_director"/>
+            <field name="pharmacy_establishment_code">0123456</field>
+        </record>
+        <record id="shift_director" model="pharmacy.shift">
+            <field name="employee_id" ref="employee_director"/>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="role">director</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="date_end" eval="(DateTime.today() + relativedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="note">Lunes a sábado de 8:00 a 16:00</field>
+        </record>
+        <record id="shift_assistant" model="pharmacy.shift">
+            <field name="employee_id" ref="employee_pharmacist"/>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="role">assistant</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="date_end" eval="(DateTime.today() + relativedelta(days=30)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="note">Lunes a sábado de 16:00 a 22:00</field>
+        </record>
+        <record id="logbook_opening" model="pharmacy.logbook.entry">
+            <field name="entry_type">other</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="description">Apertura del libro de ocurrencias del establecimiento.</field>
+        </record>
+        <record id="logbook_power_cut" model="pharmacy.logbook.entry">
+            <field name="entry_type">incident</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="description">Corte de luz de 40 minutos; la refrigeradora se mantuvo entre 2 °C y 8 °C.</field>
+        </record>
+    </data>
+</odoo>

@@ -36,6 +36,10 @@ configuracion:
   - "Importe el listado de genéricos esenciales en **Farmacia ▸ Configuración ▸ Catálogos**."
 
 novedades:
+  - version: 2.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: códigos del Observatorio con precios por informar, régimen del IGV, autorización del establecimiento, listado de genéricos esenciales y dos reacciones adversas."
   - version: 1.20261018
     fecha: 18/10/2026
     cambios:

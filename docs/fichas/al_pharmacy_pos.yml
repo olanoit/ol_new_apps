@@ -36,6 +36,10 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: 4.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: los medicamentos de la botica se venden en la caja."
   - version: 3.20261018
     fecha: 18/10/2026
     cambios:

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recetas de la botica de demostración. -->
+    <data noupdate="1">
+        <!-- Prescriptores: hábil, sin verificar e inhábil -->
+        <record id="prescriber_torres" model="res.partner">
+            <field name="name">Dra. Ana Torres Quispe</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">067890</field>
+            <field name="pharmacy_specialty">Medicina interna</field>
+            <field name="pharmacy_prescriber_status">enabled</field>
+            <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="prescriber_salazar" model="res.partner">
+            <field name="name">Dr. Jorge Salazar Pérez</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">045678</field>
+            <field name="pharmacy_specialty">Pediatría</field>
+        </record>
+        <record id="prescriber_rojas" model="res.partner">
+            <field name="name">Dr. Martín Rojas León</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">031245</field>
+            <field name="pharmacy_specialty">Psiquiatría</field>
+            <field name="pharmacy_prescriber_status">disabled</field>
+            <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <!-- Pacientes -->
+        <record id="patient_mendoza" model="res.partner">
+            <field name="name">Rosa Mendoza Vargas</field>
+            <field name="phone">987 654 321</field>
+            <field name="street">Jr. Huallaga 345</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-19710)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_allergy_ids" eval="[Command.set([ref('al_pharmacy_base.ingredient_amoxicilina')])]"/>
+            <field name="pharmacy_chronic_conditions">Hipertensión arterial</field>
+        </record>
+        <record id="patient_castro" model="res.partner">
+            <field name="name">Pedro Castro Ñahui</field>
+            <field name="phone">956 123 478</field>
+            <field name="street">Av. Brasil 1820</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-13870)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_chronic_conditions">Diabetes tipo 2</field>
+        </record>
+        <!-- Recetas: por validar, vigente, dispensada en parte y vencida -->
+        <record id="prescription_draft" model="pharmacy.prescription">
+            <field name="prescription_number">000101</field>
+            <field name="prescriber_id" ref="prescriber_salazar"/>
+            <field name="patient_id" ref="patient_castro"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Faringitis aguda</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">draft</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 3, 'posology': '1 tableta al día', 'duration': '3 días', 'product_id': obj().env.ref('al_pharmacy_base.product_azithromycin').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_valid" model="pharmacy.prescription">
+            <field name="prescription_number">000102</field>
+            <field name="prescriber_id" ref="prescriber_torres"/>
+            <field name="patient_id" ref="patient_mendoza"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Hipertensión arterial</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 30, 'posology': '1 tableta al día', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_losartan').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_partial" model="pharmacy.prescription">
+            <field name="prescription_number">000103</field>
+            <field name="prescriber_id" ref="prescriber_torres"/>
+            <field name="patient_id" ref="patient_castro"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Diabetes tipo 2</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 60, 'posology': '1 tableta cada 12 horas', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id}), Command.create({'sequence': 2, 'quantity': 10, 'posology': '1 tableta cada 8 horas', 'duration': '3 días', 'ingredient_id': ref('al_pharmacy_base.ingredient_ibuprofeno')})]" model="product.template"/>
+        </record>
+        <record id="prescription_expired" model="pharmacy.prescription">
+            <field name="prescription_number">000090</field>
+            <field name="prescriber_id" ref="prescriber_torres"/>
+            <field name="patient_id" ref="patient_mendoza"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-45)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Gastritis</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 14, 'posology': '1 cápsula en ayunas', 'duration': '14 días', 'product_id': obj().env.ref('al_pharmacy_base.product_omeprazole').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="dispensation_partial" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_partial"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_partial').line_ids.sorted('sequence')[:1].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id"/>
+            <field name="quantity">30</field>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="source">Mostrador</field>
+        </record>
+        <function model="pharmacy.prescription" name="_cron_expire_prescriptions"/>
+    </data>
+</odoo>

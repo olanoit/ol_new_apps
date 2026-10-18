@@ -28,7 +28,7 @@ Buenas Prácticas de Oficina Farmacéutica (RM 554-2022/MINSA, 7.5.1):
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261018',
+    'version': '2.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'purchase_stock', 'product_expiry', 'al_report_base'],
     'data': [
@@ -39,6 +39,7 @@ Buenas Prácticas de Oficina Farmacéutica (RM 554-2022/MINSA, 7.5.1):
         'views/pharmacy_stock_views.xml',
         'report/pharmacy_destruction_report.xml',
     ],
+    'demo': ['demo/pharmacy_stock_demo.xml'],
     'installable': True,
     'application': False,
 }

@@ -31,6 +31,10 @@ configuracion:
   - "Las ventas del TPV de farmacia registran sus recetas solas; también puede registrarlas en **Farmacia ▸ Dispensación ▸ Recetas**."
 
 novedades:
+  - version: 2.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Datos de demostración: prescriptores (hábil, sin verificar e inhábil), pacientes con alergia y condición crónica, y recetas por validar, vigente, dispensada en parte y vencida."
   - version: 1.20261018
     fecha: 18/10/2026
     cambios:
