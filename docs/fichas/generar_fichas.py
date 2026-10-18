@@ -24,6 +24,7 @@ la ficha completa, pie sincronizado). Esquema del YAML: ``docs/fichas/README.md`
 import ast
 import html
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -106,13 +107,20 @@ def esc(text):
     return html.escape(str(text), quote=True)
 
 
+LINK = re.compile(r'\[([^\]]+)\]\(((?:https://|/)[^)\s"]+)\)')
+
+
 def rich(text):
-    """Texto con marcado mínimo: ``**negrita**``, ```código``` y saltos de
-    párrafo con línea en blanco. El resto se escapa."""
+    """Texto con marcado mínimo: ``**negrita**``, ```código```,
+    ``[enlace](https://…)`` (o una ruta de Odoo que empiece por ``/``) y saltos
+    de párrafo con línea en blanco. El resto se escapa."""
     esc(text)  # rechaza booleanos y nulos antes de convertir a texto
     out = []
     for para in str(text).strip().split('\n\n'):
         chunk = esc(' '.join(para.split()))
+        chunk = LINK.sub(
+            lambda m: '<a href="%s" target="_blank" rel="noopener" style="color:%s;'
+                      'font-weight:600;">%s</a>' % (m.group(2), ACCENT, m.group(1)), chunk)
         parts = chunk.split('**')
         chunk = ''.join(p if i % 2 == 0 else '<strong>%s</strong>' % p
                         for i, p in enumerate(parts))
@@ -416,7 +424,8 @@ def render_examples(data):
         out += ('<div style="%smargin:0 0 22px;"><h3 style="font-size:19px;font-weight:700;'
                 'color:%s;margin:0 0 12px;">%s</h3><div style="font-size:15.5px;color:%s;'
                 'line-height:1.65;">%s</div></div>' % (CARD, INK, esc(ex['titulo']), INK, body))
-    return section(heading('Ejemplos prácticos', data.get('ejemplos_intro'), 'Casos')
+    return section(heading(data.get('ejemplos_titulo', 'Ejemplos prácticos'),
+                           data.get('ejemplos_intro'), 'Casos')
                    + out, anchor='ejemplos')
 
 
@@ -559,7 +568,7 @@ def render_index(data):
         ('campos', 'Referencia de campos', data.get('campos')),
         ('asientos', 'Asientos contables', data.get('asientos')),
         ('funcionalidades', 'Funcionalidades', data.get('funcionalidades')),
-        ('ejemplos', 'Ejemplos prácticos', data.get('ejemplos')),
+        ('ejemplos', data.get('ejemplos_titulo', 'Ejemplos prácticos'), data.get('ejemplos')),
         ('configuracion', 'Instalación y configuración', True),
         ('faq', 'Preguntas frecuentes', data.get('faq')),
     ]

@@ -76,7 +76,7 @@ pasos_intro: >-
 pasos:
   - seccion: Configuración
   - titulo: Claves de Izipay
-    ruta: Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Izipay
+    ruta: Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ Izipay
     texto: >-
       Identificador de la tienda, contraseña y clave pública del Back Office
       Vendedor ▸ Configuración ▸ Tienda ▸ Claves de la API REST. Odoo
@@ -133,12 +133,83 @@ funcionalidades:
 
 configuracion:
   - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
-  - "Indique las claves en **Contabilidad ▸ Configuración ▸ Proveedores de pago ▸ Izipay**."
+  - "Indique las claves en **Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ Izipay**."
   - Publique el proveedor; la URL de la IPN debe ser accesible desde Internet.
 requisitos_nota: >-
   Funciona en Community y Enterprise. No incluye todavía la tarjeta guardada
   ni la captura manual; los medios distintos de la tarjeta (Yape,
   PagoEfectivo) aparecen si la tienda los tiene, pero no están probados.
+
+ejemplos_titulo: Datos de prueba
+ejemplos_intro: >-
+  Todo lo necesario para probar Izipay sin cobrar dinero real: la tienda de
+  prueba pública de Izipay, sus tarjetas de test y los enlaces para revisar
+  la tienda y los pagos.
+ejemplos:
+  - titulo: Tienda de prueba pública de Izipay
+    texto: >-
+      Izipay publica estas claves en su documentación para hacer pruebas. Se
+      cargan en el proveedor con el estado **Modo de prueba**; los pagos se
+      hacen de verdad contra Izipay, pero no se cobra nada. En producción se
+      usan las claves de la propia tienda (`prodpassword_…` y `publickey_…`).
+    tabla:
+      - [Campo del proveedor, Valor de prueba]
+      - [Identificador de la tienda, "`89289758`"]
+      - [Contraseña, "`testpassword_7vAtvN49E8Ad6e6ihMqIOvOHC6QV5YKmIXgxisMm0V7Eq`"]
+      - [Clave pública, "`89289758:testpublickey_TxzPjl9xKlhM0a6tfSVNilcLTOUZ0ndsTogGTByPUATcE`"]
+      - [Estado, Modo de prueba]
+    nota: >-
+      Fuente oficial: [claves de la API REST de Izipay](https://secure.micuentaweb.pe/doc/es-PE/rest/V4.0/javascript/guide/embedded/keys.html).
+      Con las claves de prueba, Odoo rechaza el estado «Activado».
+  - titulo: Tarjetas de test
+    texto: >-
+      Cualquier fecha de vencimiento futura (por ejemplo `12/30`), CVV `123`
+      y cualquier nombre y correo. Solo funcionan con claves de prueba.
+    tabla:
+      - [Tarjeta, Número, Resultado]
+      - [Visa, "`4970100000000055`", Pago aceptado]
+      - [Visa, "`4970110000001003`", Aceptado tras la verificación 3D Secure]
+      - [Visa, "`4970100000000113`", Pago rechazado]
+      - [Visa, "`4970100000000071`", Rechazado por fondos insuficientes; el pedido sigue abierto y se puede reintentar]
+      - [Visa, "`4970100000000063`", Rechazado por autenticación 3D Secure fallida]
+      - [Visa Electron, "`4917480000000057`", Pago aceptado]
+      - [Mastercard, "`5100010000000015`", Pago aceptado]
+    nota: >-
+      Lista completa: [tarjetas de test de Izipay](https://secure.micuentaweb.pe/doc/es-PE/rest/V4.0/api/kb/test_cards.html).
+  - titulo: Qué probar
+    texto: >-
+      **Tienda, portal o enlace de pago:** pagar una factura o un pedido con
+      Izipay y una tarjeta aceptada; el pago queda confirmado y la factura,
+      pagada. Repetir con una tarjeta rechazada y reintentar.
+
+
+      **Punto de venta (con el módulo «Pasarelas de pago en el TPV»):**
+      cobrar un pedido con el método Izipay, pagar desde el QR o el enlace
+      que muestra la caja y comprobar que el TPV marca el pedido como pagado
+      y emite el comprobante.
+
+
+      **Devoluciones:** en el pago, «Reembolsar» un importe parcial y luego
+      el resto. El mismo día Izipay aún no capturó el pago, así que Odoo
+      reduce el importe; después de la captura, reembolsa.
+  - titulo: Revisar la tienda y los pagos
+    texto: >-
+      [Proveedores de pago en Odoo](/odoo/action-payment.action_payment_provider):
+      claves, estado y métodos de pago del proveedor Izipay.
+
+
+      [Back Office Vendedor de Izipay](https://secure.micuentaweb.pe/vads-merchant/):
+      con el usuario de su tienda, los pagos, anulaciones y devoluciones (de
+      test y de producción) y las claves de la API REST en Configuración ▸
+      Tienda.
+
+
+      [Playground de la API REST](https://secure.micuentaweb.pe/doc/es-PE/rest/V4.0/api/playground/Charge/CreatePayment/):
+      prueba de las llamadas a Izipay con la tienda de prueba.
+    nota: >-
+      En Odoo, cada pago queda en **Contabilidad ▸ Configuración ▸ Pagos en
+      línea ▸ Transacciones de pago** con la referencia de Izipay, el estado y el
+      motivo del rechazo, si lo hubo.
 
 faq:
   - pregunta: "¿Por qué Odoo consulta el pago a Izipay al terminar?"
