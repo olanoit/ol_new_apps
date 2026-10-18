@@ -199,3 +199,23 @@ class TestInvoiceReportFixes(AccountTestInvoicingCommon):
         move10 = self._invoice([('Menú', 100.0, igv10, 0.0)], post=False)
         self.assertEqual(move10._l10n_pe_report_igv_label(), 'IGV (10%)')
         self.assertIn('IGV (10%)', self._html(self.ticket, move10))
+
+    # ------------------------------------------------------------------
+    # Unidad de las líneas sin producto
+    # ------------------------------------------------------------------
+    def test_line_without_unit_prints_service(self):
+        """Descuento o intereses sin producto: el XML los informa con la
+        unidad ZZ; el PDF ya no deja la columna «Unidad» vacía."""
+        move = self._invoice([('Intereses moratorios', 5.0, self._tax('1000'), 0.0)])
+        self.assertFalse(move.invoice_line_ids.product_uom_id)
+        html = self._html(self.a4, move)
+        self.assertIn('Servicio', html.split('Intereses moratorios', 1)[1].split('</tr>', 1)[0])
+
+    def test_line_with_unit_prints_its_name(self):
+        product = self.env['product.product'].create({'name': 'Jarabe', 'list_price': 18.5})
+        move = self._invoice([], invoice_line_ids=[Command.create({
+            'product_id': product.id, 'quantity': 2, 'price_unit': 18.5,
+            'tax_ids': [Command.set(self._tax('1000').ids)]})])
+        row = self._html(self.a4, move).split('Jarabe', 1)[1].split('</tr>', 1)[0]
+        self.assertIn(move.invoice_line_ids.product_uom_id.name, row)
+        self.assertNotIn('Servicio', row)

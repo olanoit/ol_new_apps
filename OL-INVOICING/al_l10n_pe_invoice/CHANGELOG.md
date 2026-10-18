@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261018 — 18/10/2026
+
+- Las líneas sin producto (descuento de una NC, intereses de una ND) imprimen «Servicio» en la columna Unidad, como la unidad ZZ del XML.
+
 ## 20.20261011 — 11/10/2026
 
 - El XML de la factura informa la retención del IGV del cliente agente como cargo/descuento global con el código 62 del catálogo 53 (MultiplierFactorNumeric, importe y base), el mismo importe que rebaja el neto pendiente.

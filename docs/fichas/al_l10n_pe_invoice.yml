@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: 21.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Las líneas sin producto (descuento de una NC, intereses de una ND) imprimen «Servicio» en la columna Unidad, como la unidad ZZ del XML."
   - version: 20.20261011
     fecha: 11/10/2026
     cambios:
