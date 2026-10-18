@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_downpayment_discount.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261018 — 18/10/2026
+
+- Comprobante con ítems gratuitos y pagados (leyenda 1002): total de impuestos y valor de venta de lo pagado; SUNAT beta rechazaba con 3294.
+
 ## 4.20261018 — 18/10/2026
 
 - Líneas sin producto (descuento de una NC, intereses de una ND) con la unidad ZZ: SUNAT beta las rechazaba por unitCode vacío (2138/2188).

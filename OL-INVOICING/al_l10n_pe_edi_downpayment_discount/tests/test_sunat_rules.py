@@ -325,3 +325,37 @@ class TestSunatRules(AccountTestInvoicingCommon):
     def test_product_unit_code_is_kept(self):
         root = self.assertSunatValid(self._invoice([('Servicio A', self.p_a, 1, 100.0, 0, self.igv)]))
         self.assertEqual(root.find('cac:InvoiceLine/cbc:InvoicedQuantity', NS).get('unitCode'), 'NIU')
+
+    def test_paid_and_free_items_with_legend_1002(self):
+        """Venta con una muestra gratuita: el total de impuestos y el valor de
+        venta son los de lo pagado (SUNAT beta rechazaba con 3294)."""
+        free_group = self.env['account.chart.template'].with_company(
+            self.company_data['company']).ref('tax_free_group')
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': self.customer.id, 'journal_id': self.journal.id,
+            'l10n_pe_edi_legend': '1002',
+            'invoice_line_ids': [
+                (0, 0, {'name': 'Servicio A', 'product_id': self.p_a.id, 'quantity': 5, 'price_unit': 18.5,
+                        'tax_ids': [(6, 0, self.igv.ids)]}),
+                (0, 0, {'name': 'Muestra', 'product_id': self.p_b.id, 'quantity': 30, 'price_unit': 0.3,
+                        'tax_ids': [(6, 0, free_group.ids)]}),
+            ]})
+        root = self.assertSunatValid(self._post(move))
+        self.assertEqual(move.amount_total, 109.15)
+        self.assertEqual(root.findtext('cac:TaxTotal/cbc:TaxAmount', namespaces=NS), '16.65')
+        totals = root.find('cac:LegalMonetaryTotal', NS)
+        self.assertEqual(totals.findtext('cbc:LineExtensionAmount', namespaces=NS), '92.50')
+        self.assertEqual(totals.findtext('cbc:TaxInclusiveAmount', namespaces=NS), '109.15')
+        self.assertEqual(totals.findtext('cbc:PayableAmount', namespaces=NS), '109.15')
+
+    def test_only_free_items_keep_native_totals(self):
+        free_group = self.env['account.chart.template'].with_company(
+            self.company_data['company']).ref('tax_free_group')
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': self.customer.id, 'journal_id': self.journal.id,
+            'l10n_pe_edi_legend': '1002',
+            'invoice_line_ids': [(0, 0, {'name': 'Muestra', 'product_id': self.p_b.id, 'quantity': 30,
+                                         'price_unit': 0.3, 'tax_ids': [(6, 0, free_group.ids)]})]})
+        root = self._xml(self._post(move))
+        self.assertEqual(root.findtext('cac:TaxTotal/cbc:TaxAmount', namespaces=NS), '0.00')
+        self.assertEqual(root.findtext('cac:LegalMonetaryTotal/cbc:PayableAmount', namespaces=NS), '0.00')

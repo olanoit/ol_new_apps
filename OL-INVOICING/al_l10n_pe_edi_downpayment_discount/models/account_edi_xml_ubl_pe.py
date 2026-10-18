@@ -172,6 +172,53 @@ class AccountEdiXmlUbl_Pe(models.AbstractModel):
         return FREE_AFFECTATION_REASONS
 
     # -------------------------------------------------------------------------
+    # Comprobante con ítems gratuitos y pagados (leyenda 1002)
+    # -------------------------------------------------------------------------
+
+    def _al_paid_base_lines(self, vals):
+        """Líneas onerosas de un comprobante con la leyenda 1002 que además
+        lleva ítems gratuitos (muestra médica, bonificación con la compra).
+        Vacío si todo el comprobante es gratuito: entonces vale el nativo."""
+        if vals['invoice'].l10n_pe_edi_legend != '1002':
+            return []
+        free_reasons = self._al_free_reasons()
+        return [base_line for base_line in vals['base_lines']
+                if base_line['record'].l10n_pe_edi_affectation_reason not in free_reasons]
+
+    def _add_invoice_tax_total_nodes(self, document_node, vals):
+        super()._add_invoice_tax_total_nodes(document_node, vals)
+        # El nativo pone el total de impuestos en 0 con la leyenda 1002, como
+        # si todo fuera gratuito: con ítems pagados SUNAT rechaza (3294). El
+        # total es la suma de los tributos, sin el IGV referencial (9996).
+        if not self._al_paid_base_lines(vals):
+            return
+        tax_total = document_node['cac:TaxTotal']
+        amount = sum(
+            float(subtotal['cbc:TaxAmount']['_text'])
+            for subtotal in tax_total['cac:TaxSubtotal']
+            if subtotal['cac:TaxCategory']['cac:TaxScheme']['cbc:ID']['_text'] != '9996'
+        )
+        tax_total['cbc:TaxAmount']['_text'] = self.format_float(amount, vals['currency_dp'])
+        vals['al_paid_tax_amount'] = amount
+
+    def _add_invoice_monetary_total_nodes(self, document_node, vals):
+        monetary_total_node = super()._add_invoice_monetary_total_nodes(document_node, vals)
+        paid_lines = self._al_paid_base_lines(vals)
+        if not paid_lines or 'al_paid_tax_amount' not in vals:
+            return monetary_total_node
+        # Valor de venta = solo lo oneroso (regla 3278); el nativo lo deja en 0.
+        suffix = vals['currency_suffix']
+        line_extension = sum(base_line['tax_details'][f'total_excluded{suffix}'] for base_line in paid_lines)
+        values = {
+            'cbc:LineExtensionAmount': line_extension,
+            'cbc:TaxExclusiveAmount': line_extension,
+            'cbc:TaxInclusiveAmount': line_extension + vals['al_paid_tax_amount'],
+        }
+        for tag, amount in values.items():
+            monetary_total_node[tag]['_text'] = self.format_float(amount, vals['currency_dp'])
+        return monetary_total_node
+
+    # -------------------------------------------------------------------------
     # Anticipos
     # -------------------------------------------------------------------------
 

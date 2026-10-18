@@ -175,6 +175,10 @@ faq:
       escenarios sin incumplimientos y con el mismo total que el asiento.
 
 novedades:
+  - version: 5.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Comprobante con ítems gratuitos y pagados (leyenda 1002): total de impuestos y valor de venta de lo pagado; SUNAT beta rechazaba con 3294."
   - version: 4.20261018
     fecha: 18/10/2026
     cambios:
