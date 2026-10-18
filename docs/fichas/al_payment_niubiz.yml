@@ -238,6 +238,10 @@ faq:
       insuficientes) y puede pagar con otra tarjeta sin rehacer el pedido.
 
 novedades:
+  - version: '3.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Ícono al estilo de Odoo (marca centrada sobre fondo transparente) y tarjeta de 240 × 160 para el método de pago del TPV."
   - version: 2.20261009
     fecha: 09/10/2026
     cambios:

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+import base64
+
 from odoo import _, fields, models
 from odoo.fields import Command
+from odoo.tools.misc import file_open
 
 
 class PaymentProvider(models.Model):
@@ -14,6 +17,20 @@ class PaymentProvider(models.Model):
         for provider in self:
             provider.al_pos_payment_method_ids = Method.search([
                 ('is_online_payment', '=', True), ('online_payment_provider_ids', 'in', provider.ids)])
+
+    def _al_pos_payment_logo(self):
+        """Imagen del método de pago del TPV: la tarjeta de 240 × 160 de la
+        pasarela, como las de los métodos de pago de Odoo (payment/static/img),
+        si su módulo la trae en ``static/img/<código>_pos.png``; si no, la
+        imagen del proveedor."""
+        self.ensure_one()
+        if self.module_id:
+            try:
+                with file_open(f'{self.module_id.name}/static/img/{self.code}_pos.png', 'rb') as card:
+                    return base64.b64encode(card.read())
+            except (FileNotFoundError, ValueError):
+                pass
+        return self.image_128
 
     def action_al_pos_payment_method(self):
         """Abre el método de pago del TPV de la pasarela; si no hay, lo crea."""

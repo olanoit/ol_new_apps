@@ -225,6 +225,10 @@ faq:
       volver a escribir la tarjeta.
 
 novedades:
+  - version: '2.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Ícono con el logo vectorial oficial de Culqi al estilo de Odoo y tarjeta de 240 × 160 para el método de pago del TPV."
   - version: 1.20261006
     fecha: 06/10/2026
     cambios:

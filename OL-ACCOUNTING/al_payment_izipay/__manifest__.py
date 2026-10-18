@@ -26,7 +26,7 @@ micuentaweb.pe y formulario incrustado) y validado contra su tienda de prueba.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '1.20261014',
+    'version': '2.20261018',
     'license': 'OPL-1',
     'depends': ['payment'],
     'data': [

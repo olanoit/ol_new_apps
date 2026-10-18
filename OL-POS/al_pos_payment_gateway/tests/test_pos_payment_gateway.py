@@ -88,6 +88,21 @@ class TestPosPaymentGateway(TestUi):
         self.online_payment_method_2._al_set_provider_logo()
         self.assertTrue(self.online_payment_method_2.image)
 
+    def test_pos_card_of_peruvian_gateways(self):
+        """Niubiz, Culqi e Izipay traen su tarjeta 240 × 160 para el TPV."""
+        import base64
+        import io
+        from PIL import Image
+        for xmlid in ('al_payment_niubiz.payment_provider_niubiz', 'al_payment_culqi.payment_provider_culqi',
+                      'al_payment_izipay.payment_provider_izipay'):
+            provider = self.env.ref(xmlid, raise_if_not_found=False)
+            if not provider:
+                continue
+            # sudo: el usuario de estas pruebas es de otra compañía que el proveedor.
+            provider_sudo = provider.sudo()
+            card = Image.open(io.BytesIO(base64.b64decode(provider_sudo._al_pos_payment_logo())))
+            self.assertEqual(card.size, (240, 160), xmlid)
+
     def test_payment_recorded_with_provider_method(self):
         """El cajero pide el QR con el segundo método: la página solo admite su
         pasarela y el pago queda con ese método."""

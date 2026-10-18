@@ -223,6 +223,10 @@ faq:
       La opción automática de Izipay anularía el pago completo.
 
 novedades:
+  - version: '2.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Ícono con esquinas redondeadas y el logotipo más grande, y tarjeta de 240 × 160 para el método de pago del TPV."
   - version: 1.20261014
     fecha: 14/10/2026
     cambios:

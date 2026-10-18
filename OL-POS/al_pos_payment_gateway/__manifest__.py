@@ -27,7 +27,7 @@ con al_payment_izipay, al_payment_niubiz y al_payment_culqi.
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '3.20261018',
+    'version': '4.20261018',
     'license': 'OPL-1',
     'depends': ['al_pos_online_payment'],
     'data': [

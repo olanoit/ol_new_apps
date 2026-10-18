@@ -120,6 +120,10 @@ configuracion:
   - "En la pasarela, «Cobrar en el TPV»; luego agregar el método a la caja con la sesión cerrada."
 
 novedades:
+  - version: '4.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "El método de pago del TPV usa la tarjeta de 240 × 160 de la pasarela (como las imágenes de los métodos de pago de Odoo) cuando su módulo la trae."
   - version: '3.20261018'
     fecha: 18/10/2026
     cambios:

@@ -22,13 +22,15 @@ class PosPaymentMethod(models.Model):
         con cajas abiertas (lo necesita la migración que pone los logos)."""
         return super()._is_write_forbidden(fields - {'image'})
 
-    def _al_set_provider_logo(self):
+    def _al_set_provider_logo(self, force=False):
         """Un método en línea sin imagen lleva el logo de su pasarela: en la
         pantalla de pago del TPV el cajero reconoce Niubiz, Culqi o Izipay."""
-        for method in self.filtered(lambda m: m.is_online_payment and not m.image):
-            logo = method.online_payment_provider_ids.filtered('image_128')[:1].image_128
-            if logo:
-                method.image = logo
+        for method in self.filtered(lambda m: m.is_online_payment and (force or not m.image)):
+            for provider in method.online_payment_provider_ids:
+                logo = provider._al_pos_payment_logo()
+                if logo:
+                    method.image = logo
+                    break
 
     @api.constrains('config_ids', 'is_online_payment', 'online_payment_provider_ids')
     def _check_pos_config_online_payment(self):

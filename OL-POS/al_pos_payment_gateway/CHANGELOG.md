@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_payment_gateway.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261018 — 18/10/2026
+
+- El método de pago del TPV usa la tarjeta de 240 × 160 de la pasarela (como las imágenes de los métodos de pago de Odoo) cuando su módulo la trae.
+
 ## 3.20261018 — 18/10/2026
 
 - El logo de la pasarela se ve más ancho, sobre fondo blanco y sin invertir en modo oscuro, para que la marca se lea en la pantalla de pago.

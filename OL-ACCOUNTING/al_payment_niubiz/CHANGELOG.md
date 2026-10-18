@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_payment_niubiz.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261018 — 18/10/2026
+
+- Ícono al estilo de Odoo (marca centrada sobre fondo transparente) y tarjeta de 240 × 160 para el método de pago del TPV.
+
 ## 2.20261009 — 09/10/2026
 
 - Etiquetas más cortas en la transacción: «Fecha Niubiz» y «Constancia PagoEfectivo».
