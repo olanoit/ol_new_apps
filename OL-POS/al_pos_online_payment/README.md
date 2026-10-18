@@ -28,10 +28,10 @@ Los pagos de otros métodos no se tocan.
 
 ## Pruebas
 
-Validado en `ol_pe_v19` (caja «DEMO TPV Pasarelas», Izipay de prueba) con un
+Validado en `ol_pe_v19` (caja «Pasarelas», Izipay de prueba) con un
 script de Playwright que registra las líneas de pago del TPV en cada paso:
 antes de la corrección quedaban la línea local y el pago 78; después, solo
-el pago 80, y el ticket muestra un único «DEMO Pago en línea S/ 4,13». No
+el pago 80, y el ticket muestra un único «Pago en línea S/ 4,13». No
 lleva prueba automática: reproducir el pago exige la pasarela o un tour con
 pago simulado en el servidor.
 

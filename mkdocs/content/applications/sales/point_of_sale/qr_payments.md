@@ -1,5 +1,5 @@
 ---
-modulos: [al_pos_pe_wallet_qr, al_pos_online_payment]
+modulos: [al_pos_pe_wallet_qr, al_pos_online_payment, al_pos_payment_gateway]
 ---
 
 # Cobros con QR y pasarelas en el TPV
@@ -116,6 +116,43 @@ la venta solo.
     solo pago. El módulo `al_pos_online_payment`, que se instala solo con el
     pago en línea, lo corrige: el ticket muestra únicamente el pago que
     registró la pasarela.
+
+### Un método por pasarela
+
+El pago en línea de Odoo admite un solo método por caja: el cliente elige la
+pasarela en su teléfono y el cierre de caja muestra todo junto. Con el módulo
+`al_pos_payment_gateway`, la caja puede tener un método por pasarela
+(«Izipay», «Niubiz», «Culqi»):
+
+- El cajero elige con cuál cobra y el QR abre directamente esa pasarela.
+- El cierre de caja muestra lo cobrado con cada una, para cuadrar con la
+  liquidación de cada proveedor.
+
+Para crear el método, abra la pasarela en **Contabilidad ‣ Configuración ‣
+Proveedores de pago** y haga clic en **Cobrar en el TPV**: Odoo crea el método
+de pago en línea con esa pasarela (o abre el que ya existe). Agréguelo a la
+caja con la sesión cerrada. Una pasarela va en un solo método de la caja.
+
+### Devolver a la tarjeta
+
+Una venta cobrada con una pasarela se devuelve al medio de pago del cliente:
+
+1. En **Órdenes**, abra la venta, elija los productos y haga clic en
+   **Reembolso**.
+2. En la pantalla de pago, elija el método de la pasarela con que se cobró y
+   haga clic en **Validar**.
+3. Odoo pide la devolución a la pasarela y, cuando la confirma, cierra la
+   devolución con el pago de la pasarela.
+
+Si la pasarela no la acepta, el TPV muestra el motivo y la devolución no se
+cierra: elija otro método (por ejemplo, efectivo). Se puede devolver una parte
+del cobro; el importe no puede superar lo que queda por devolver de un mismo
+cobro.
+
+!!! warning "Niubiz"
+    Niubiz acepta devoluciones desde las 48 horas hábiles siguientes al cobro.
+    El mismo día, la venta se anula desde la transacción de pago
+    (**Anular en Niubiz**), no desde el TPV.
 
 !!! info "Ver también"
     - [Cliente por RUC o DNI](customer_lookup.md)

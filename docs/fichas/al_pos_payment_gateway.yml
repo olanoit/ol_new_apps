@@ -1,0 +1,71 @@
+titulo: Cobro con pasarelas en el TPV
+subtitulo: >-
+  Cada pasarela (Izipay, Niubiz, Culqi…) como método de pago propio del TPV:
+  el cliente paga con el QR en su teléfono y las devoluciones vuelven a su
+  tarjeta.
+categoria: Punto de venta
+etiquetas: [Punto de venta, Pago en línea, Izipay, Niubiz, Culqi, Devoluciones]
+
+destacados_intro: >-
+  Completa el pago en línea nativo del TPV para cobrar con varias pasarelas a
+  la vez.
+destacados:
+  - icono: "▦"
+    titulo: Un método por pasarela
+    texto: >-
+      La caja tiene «Izipay», «Niubiz» y «Culqi» a la vez; el QR abre
+      directamente la pasarela que eligió el cajero.
+  - icono: "Σ"
+    titulo: Cierre por pasarela
+    texto: >-
+      El cierre de caja muestra lo cobrado con cada pasarela, para cuadrar con
+      la liquidación de cada proveedor.
+  - icono: "↩"
+    titulo: Devolución a la tarjeta
+    texto: >-
+      La devolución de una venta cobrada con una pasarela vuelve al medio de
+      pago del cliente, total o parcial.
+  - icono: "⚙"
+    titulo: Un clic para configurar
+    texto: >-
+      El botón «Cobrar en el TPV» de la pasarela crea su método de pago.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El pago en línea de Odoo 19 admite un solo método por caja: el cliente
+    elige la pasarela en su teléfono y el cierre muestra todo junto, aunque
+    cada proveedor liquida por separado. Una devolución tampoco puede volver a
+    la tarjeta: Odoo no acepta pagos en línea negativos y el cajero devuelve en
+    efectivo.
+  nota: >-
+    Funciona con cualquier pasarela de Odoo que admita devoluciones. Niubiz
+    acepta devoluciones desde las 48 horas hábiles siguientes al cobro; el
+    mismo día se anula desde la transacción de pago.
+
+funcionalidades:
+  - grupo: Cobro
+    items:
+      - Varios métodos de pago en línea por caja, cada uno con sus pasarelas (una pasarela en un solo método).
+      - El QR de la orden abre solo las pasarelas del método que eligió el cajero.
+      - El pago se registra con el método de la pasarela que cobró.
+  - grupo: Devoluciones
+    items:
+      - Devuelve con la pasarela, sobre el cobro de la venta original, al validar la devolución en el TPV.
+      - Total o parcial, sin superar lo que queda por devolver del cobro.
+      - Si la pasarela no confirma, el TPV muestra el motivo y la devolución no se cierra.
+  - grupo: Configuración
+    items:
+      - Botón «Cobrar en el TPV» en la pasarela, que crea o abre su método de pago.
+
+configuracion:
+  - "Pasarela publicada en modo de prueba o activa: al_payment_izipay, al_payment_niubiz o al_payment_culqi."
+  - "En la pasarela, «Cobrar en el TPV»; luego agregar el método a la caja con la sesión cerrada."
+
+novedades:
+  - version: '1.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión: un método de pago del TPV por pasarela y devoluciones a la tarjeta."
+
+relacionados: [al_pos_online_payment, al_payment_izipay, al_payment_niubiz, al_payment_culqi, al_pos_pe_wallet_qr]
