@@ -1,19 +1,20 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'PE - Farmacia: consulta del médico en el CMP (AL)',
-    'summary': 'Valida al médico prescriptor en el portal «Conoce a tu médico» del Colegio Médico '
-               'del Perú: nombre, especialidad, consejo regional y si está hábil.',
+    'name': 'PE - Farmacia: verificación del médico en el CMP (AL)',
+    'summary': 'Abre el portal «Conoce a tu médico» del Colegio Médico del Perú para buscar la '
+               'colegiatura y registra si el médico está hábil, con fecha y responsable.',
     'description': """
-PE - Farmacia: consulta del médico en el CMP
-============================================
-Botón «Consultar en el CMP» en el prescriptor (médico): con su colegiatura
-consulta el portal público del Colegio Médico del Perú y completa nombre,
-especialidad, consejo regional y estado (hábil o inhábil). Una receta de un
-prescriptor inhábil no se valida.
+PE - Farmacia: verificación del médico en el CMP
+================================================
+La receta debe llevar el nombre y la colegiatura del prescriptor (BPOF
+7.5.2.9). El portal del Colegio Médico (https://conoceatumedico.cmp.org.pe)
+pide iniciar sesión y reCAPTCHA desde 2026, así que no admite consultas
+automáticas: el botón «Consultar en el CMP» lo abre y el químico
+farmacéutico registra el resultado («Verificado: hábil» o «inhábil») con
+fecha y responsable. Una receta de un prescriptor inhábil no se valida.
 
-Porta solo la consulta de al_peru_medico_data (Odoo 18), con lxml en lugar de
-BeautifulSoup y sin su registro propio de médicos: el médico es el contacto
-prescriptor. El portal no tiene API: si cambia, los datos se registran a mano.
+Reemplaza la lectura automática del portal antiguo de al_peru_medico_data
+(Odoo 18), que ya no existe.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -21,7 +22,7 @@ prescriptor. El portal no tiene API: si cambia, los datos se registran a mano.
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261018',
+    'version': '2.20261018',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'l10n_pe'],
     'data': [

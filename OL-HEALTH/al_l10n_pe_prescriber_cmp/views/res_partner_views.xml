@@ -6,10 +6,18 @@
         <field name="inherit_id" ref="al_pharmacy_prescription.res_partner_view_form_pharmacy"/>
         <field name="arch" type="xml">
             <field name="pharmacy_prescriber_license" position="after">
-                <button name="action_pharmacy_check_cmp" type="object" string="Consultar en el CMP"
-                        icon="fa-search" class="btn-link"
-                        invisible="not pharmacy_is_prescriber or pharmacy_profession not in (False, 'physician') or not pharmacy_prescriber_license"/>
-                <field name="pharmacy_cmp_council" invisible="not pharmacy_cmp_council"/>
+                <div colspan="2" invisible="not pharmacy_is_prescriber or not pharmacy_prescriber_license or pharmacy_profession not in (False, 'physician')">
+                    <button name="action_pharmacy_open_cmp" type="object" string="Consultar en el CMP"
+                            icon="fa-external-link" class="btn-link"/>
+                    <button name="action_pharmacy_cmp_enabled" type="object" string="Verificado: hábil"
+                            icon="fa-check" class="btn-link"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <button name="action_pharmacy_cmp_disabled" type="object" string="Verificado: inhábil"
+                            icon="fa-ban" class="btn-link text-danger"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                </div>
+                <field name="pharmacy_cmp_council" invisible="not pharmacy_is_prescriber"/>
+                <field name="pharmacy_prescriber_checked_by_id" invisible="not pharmacy_prescriber_checked_by_id"/>
             </field>
         </field>
     </record>
