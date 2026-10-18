@@ -81,6 +81,12 @@ class TestPosPaymentGateway(TestUi):
         method.image = False
         method.online_payment_provider_ids = [Command.set(provider.ids)]
         self.assertTrue(method.image)
+        # Con la caja abierta también se puede poner el logo (migración).
+        self.pos_config.with_user(self.pos_user).open_ui()
+        self.online_payment_method_2.image = False
+        self.provider_2.image_128 = logo
+        self.online_payment_method_2._al_set_provider_logo()
+        self.assertTrue(self.online_payment_method_2.image)
 
     def test_payment_recorded_with_provider_method(self):
         """El cajero pide el QR con el segundo método: la página solo admite su

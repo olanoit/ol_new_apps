@@ -17,6 +17,11 @@ class PosPaymentMethod(models.Model):
             self._al_set_provider_logo()
         return res
 
+    def _is_write_forbidden(self, fields):
+        """La imagen no cambia cómo se cobra ni se contabiliza: se puede poner
+        con cajas abiertas (lo necesita la migración que pone los logos)."""
+        return super()._is_write_forbidden(fields - {'image'})
+
     def _al_set_provider_logo(self):
         """Un método en línea sin imagen lleva el logo de su pasarela: en la
         pantalla de pago del TPV el cajero reconoce Niubiz, Culqi o Izipay."""
