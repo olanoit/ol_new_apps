@@ -26,12 +26,12 @@ class AlPeDemo(models.AbstractModel):
             'partner_id': company.partner_id.id, 'bank_id': env.ref('l10n_pe.peruvian_national_bank').id,
             'acc_number': '00-045-123456'})
         service = self._demo_record('al_l10n_pe_detraction.demo_product_service', env['product.product'], {
-            'name': 'DEMO SPOT Servicio empresarial', 'type': 'service', 'default_code': 'DEMO-SPOT-01',
+            'name': 'Servicio de asesoría empresarial', 'type': 'service', 'default_code': 'SRV-037',
             'l10n_pe_detraction_type_id': env.ref('al_l10n_pe_detraction.detraction_037').id})
-        partner = self._demo_partner(env, 'al_l10n_pe_detraction.demo_partner', 'DEMO SPOT Contraparte S.A.C.',
+        partner = self._demo_partner(env, 'al_l10n_pe_detraction.demo_partner', 'Consultores Asociados del Sur S.A.C.',
                                      self._demo_ruc('2060555333'))
-        sale = self._demo_journal(env, 'al_l10n_pe_detraction.demo_journal_sale', 'DEMO SPOT Ventas', 'DSPV', 'sale')
-        purchase = self._demo_journal(env, 'al_l10n_pe_detraction.demo_journal_purchase', 'DEMO SPOT Compras',
+        sale = self._demo_journal(env, 'al_l10n_pe_detraction.demo_journal_sale', 'Ventas con detracción', 'DSPV', 'sale')
+        purchase = self._demo_journal(env, 'al_l10n_pe_detraction.demo_journal_purchase', 'Compras con detracción',
                                       'DSPC', 'purchase')
         today = fields.Date.context_today(self)
 
@@ -50,4 +50,4 @@ class AlPeDemo(models.AbstractModel):
         if not bill.l10n_pe_detraction_number:
             env['l10n_pe.detraction.deposit.wizard'].create({
                 'move_id': bill.id, 'journal_id': bank.id, 'payment_date': today - timedelta(days=10),
-                'constancy_number': 'DEMO-%s-0001' % today.year}).action_confirm()
+                'constancy_number': '%s00004512' % today.year}).action_confirm()

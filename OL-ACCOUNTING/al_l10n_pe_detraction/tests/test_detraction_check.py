@@ -188,7 +188,7 @@ class TestDetractionCheck(TransactionCase):
         self._drop_codes('007', '041')
         self.dtype_012.percentage = 10.0
         product = self.env['product.template'].create({
-            'name': 'Servicio de intermediación DEMO',
+            'name': 'Servicio de intermediación laboral',
             'l10n_pe_detraction_type_id': self.dtype_012.id,
         })
         check = self._check()

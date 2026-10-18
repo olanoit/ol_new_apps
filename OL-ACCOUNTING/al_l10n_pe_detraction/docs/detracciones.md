@@ -146,6 +146,6 @@ Puntos clave para el consultor:
 
 ## Datos de prueba
 
-`tools/detraction_demo_data.py` crea el escenario completo «DEMO SPOT» y
+`tools/detraction_demo_data.py` crea el escenario completo de detracción y
 valida 9 puntos del flujo (cálculo, XML, depósito y reportes) vía
 `odoo-bin shell`.

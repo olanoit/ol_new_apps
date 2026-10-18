@@ -24,7 +24,7 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
         super().setUpClass()
         cls.company = cls.company_data['company']
         cls.company.vat = RUC_COMPANY
-        cls.company.partner_id.name = 'SERVICIOS ANDINOS DEMO S.A.C.'
+        cls.company.partner_id.name = 'SERVICIOS ANDINOS DEL SUR S.A.C.'
         cls.company.partner_id.l10n_pe_detraction_account = BN_ACCOUNT
         cls.detraction_type = cls.env['l10n_pe.detraction.type'].search(
             [], limit=1)

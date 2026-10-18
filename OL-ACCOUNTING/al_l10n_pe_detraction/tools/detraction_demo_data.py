@@ -3,7 +3,7 @@
 
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < detraction_demo_data.py
 
-Crea registros «DEMO SPOT» (idempotente) y valida: cálculo en factura,
+Crea el escenario de detracción (idempotente) y valida: cálculo en factura,
 bloque spot del XML nativo, depósito con constancia, y su llegada a los
 reportes PLE 8.3 y 14.2.
 """
@@ -36,15 +36,15 @@ tax_p = env['account.tax'].search([('company_id', '=', company.id),
                                    ('type_tax_use', '=', 'purchase'),
                                    ('amount', '=', 18.0)], limit=1)
 j_sale = get_or_create('account.journal', [('code', '=', 'DPSV')], {
-    'name': 'DEMO PLE Ventas Simpl', 'code': 'DPSV', 'type': 'sale',
+    'name': 'Ventas régimen simplificado', 'code': 'DPSV', 'type': 'sale',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 j_purchase = get_or_create('account.journal', [('code', '=', 'DPSC')], {
-    'name': 'DEMO PLE Compras Simpl', 'code': 'DPSC', 'type': 'purchase',
+    'name': 'Compras régimen simplificado', 'code': 'DPSC', 'type': 'purchase',
     'company_id': company.id, 'l10n_latam_use_documents': False})
 j_bank = env['account.journal'].search(
     [('company_id', '=', company.id), ('type', '=', 'bank')], limit=1)
-partner = get_or_create('res.partner', [('name', '=', 'DEMO SPOT Contraparte SAC')], {
-    'name': 'DEMO SPOT Contraparte SAC', 'vat': '20131312955'})
+partner = get_or_create('res.partner', [('name', '=', 'Consultores Asociados del Sur S.A.C.')], {
+    'name': 'Consultores Asociados del Sur S.A.C.', 'vat': '20131312955'})
 
 # cuenta de detracciones en el Banco de la Nación (requisito del XML)
 national_bank = env.ref('l10n_pe.peruvian_national_bank')
@@ -57,9 +57,9 @@ bn_account = get_or_create(
 
 dtype_37 = env.ref('al_l10n_pe_detraction.detraction_037')  # 12%
 service = get_or_create('product.product',
-                        [('default_code', '=', 'DEMO-SPOT-01')], {
-    'name': 'DEMO SPOT Servicio Empresarial', 'type': 'service',
-    'default_code': 'DEMO-SPOT-01',
+                        [('default_code', '=', 'SRV-037')], {
+    'name': 'Servicio de asesoría empresarial', 'type': 'service',
+    'default_code': 'SRV-037',
     'l10n_pe_detraction_type_id': dtype_37.id})
 log('producto sync', service.l10n_pe_withhold_code == '037'
     and service.l10n_pe_withhold_percentage == 12.0,
@@ -132,10 +132,10 @@ if not bill.l10n_pe_detraction_number:
     wizard = env['l10n_pe.detraction.deposit.wizard'].create({
         'move_id': bill.id, 'journal_id': j_bank.id,
         'payment_date': date(YEAR, int(MONTH), 23),
-        'constancy_number': 'DEMO-2026-0001'})
+        'constancy_number': '202600004512'})
     wizard.action_confirm()
 log('constancia registrada',
-    bill.l10n_pe_detraction_number == 'DEMO-2026-0001'
+    bill.l10n_pe_detraction_number == '202600004512'
     and bool(bill.l10n_pe_detraction_date)
     and bill.payment_state in ('in_payment', 'paid', 'partial'),
     '%s %s estado=%s' % (bill.l10n_pe_detraction_number,
@@ -146,7 +146,7 @@ print('=== 4. Llegada a los reportes PLE (8.3 / 14.2) ===')
 company.l10n_pe_ple_simplified = True
 for label, flag, code, move, checks in (
         ('8.3 constancia', 'export_83', '080300', bill,
-         lambda row: row[23] == '23/07/2026' and row[24] == 'DEMO-2026-0001'),
+         lambda row: row[23] == '23/07/2026' and row[24] == '202600004512'),
         ('14.2 venta', 'export_142', '140200', invoice,
          lambda row: row[12] == '%.2f' % invoice.amount_untaxed
          and row[16] == '%.2f' % invoice.amount_total)):

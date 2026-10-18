@@ -3,8 +3,8 @@
 
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < detraction_split_demo.py
 
-Activa la opción «Separar detracción en el asiento», crea facturas «DEMO
-SPLIT» de cliente y proveedor y las somete al ciclo publicar → borrador →
+Activa la opción «Separar detracción en el asiento», crea facturas «Detracción
+separada» de cliente y proveedor y las somete al ciclo publicar → borrador →
 cambiar monto → republicar, verificando en cada publicación que el asiento
 quede balanceado y el reparto recalculado (sin líneas duplicadas ni
 obsoletas)."""
@@ -28,10 +28,10 @@ def get_or_create(model, domain, vals):
 # --- Configuración: opción + cuentas ------------------------------------
 Account = env['account.account'].with_company(company)
 acc_det_ar = get_or_create('account.account', [('code', '=', '121901')], {
-    'code': '121901', 'name': 'Detracciones por cobrar (DEMO)',
+    'code': '121901', 'name': 'Detracciones por cobrar',
     'account_type': 'asset_receivable', 'reconcile': True})
 acc_det_ap = get_or_create('account.account', [('code', '=', '424901')], {
-    'code': '424901', 'name': 'Detracciones por pagar (DEMO)',
+    'code': '424901', 'name': 'Detracciones por pagar',
     'account_type': 'liability_payable', 'reconcile': True})
 company.write({
     'l10n_pe_detraction_split': True,
@@ -51,14 +51,15 @@ tax_p = env['account.tax'].search([('company_id', '=', company.id),
                                    ('amount', '=', 18.0)], limit=1)
 j_sale = env['account.journal'].search([('code', '=', 'DPSV')], limit=1)
 j_purchase = env['account.journal'].search([('code', '=', 'DPSC')], limit=1)
-partner = get_or_create('res.partner', [('name', '=', 'DEMO SPLIT SAC')], {
-    'name': 'DEMO SPLIT SAC', 'vat': '20131312955'})
+partner = get_or_create('res.partner', [('name', '=', 'Transportes del Centro S.A.C.')], {
+    'name': 'Transportes del Centro S.A.C.', 'vat': '20131312955'})
+# El servicio sujeto al SPOT lo crea tools/detraction_demo_data.py.
 service = env['product.product'].search(
-    [('default_code', '=', 'DEMO-SPOT2-SERV')], limit=1)
+    [('default_code', '=', 'SRV-037')], limit=1)
 
 
 def make_invoice(tag, move_type, price):
-    origin = 'DEMO SPLIT %s' % tag
+    origin = 'Detracción separada %s' % tag
     old = env['account.move'].search([('invoice_origin', '=', origin)])
     if old:
         old.filtered(lambda m: m.state == 'posted').button_draft()
