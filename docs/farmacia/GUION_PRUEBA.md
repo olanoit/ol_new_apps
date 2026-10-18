@@ -89,16 +89,66 @@ Rosa S.A.C.» (RUC de prueba 20557912879), series **B001** (boletas) y **F001**
 | 6.4 | Intentar **Factura electrónica** sin cliente con RUC | La caja lo impide: emita boleta | |
 | 6.5 | Factura con Metformina (IGV exonerado) | Línea con «0% Exo» y total sin IGV de esa línea | |
 
-Prueba hecha el 18/10/2026 desde el servidor: boleta B001-00000001 (1 Caja x
-100, código BX), factura F001-00000001 (blíster + metformina exonerada) y la
-venta de caja «Botica Principal - 000001» con receta → boleta B001-00000002:
-las tres aceptadas por SUNAT beta.
+| 6.6 | Factura con «Plazo de pago» **Crédito 30 y 60 días** | Enviada; el PDF muestra las 2 cuotas | |
+| 6.7 | Factura con un frasco de jarabe y Loratadina como muestra: leyenda **1002** y en la muestra el impuesto **18% Libre Final** | Enviada; el PDF muestra «Op. gratuitas» y el IGV solo del jarabe | |
+| 6.8 | Factura o boleta con **Bolsa plástica mediana** | Línea con IGV e ICBPER S/ 0,50 por bolsa | |
+| 6.9 | Sobre una factura enviada: **Nota de crédito** motivo «Devolución por ítem» y dejar solo una parte | NC FC01-… enviada | |
+| 6.10 | Sobre una factura enviada: **Nota de débito** motivo «Intereses por mora» con una línea «Intereses moratorios» sin producto | ND FD01-… enviada | |
+| 6.11 | Sobre una factura enviada: **Solicitar cancelación** con un motivo; esperar o pulsar **Procesar ahora** dos veces | Estado electrónico **Cancelado** (comunicación de baja aceptada) | |
+| 6.12 | En la caja, **Reembolso** de una boleta | NC BC01-… de la boleta | |
+
+### Batería automática en SUNAT beta (18/10/2026)
+
+El guion [`pruebas_cpe_beta.py`](pruebas_cpe_beta.py) emite cada caso como un
+usuario y lo envía a SUNAT beta. Resultado final: **28 de 28 aceptados**.
+
+| Caso | Comprobante | Resultado |
+|---|---|---|
+| F1 Factura al crédito en 2 cuotas | F001-00000016 | Aceptada |
+| F2 Factura con descuento por línea | F001-00000017 | Aceptada |
+| F3 Factura con descuento global | F001-00000018 | Aceptada |
+| F4 Factura en dólares | F001-00000019 | Aceptada |
+| F5 Factura con muestra médica gratuita y venta | F001-00000020 | Aceptada (con el módulo v5) |
+| F6 Factura gravada, exonerada e inafecta | F001-00000021 | Aceptada |
+| F7 Factura con bolsa plástica (ICBPER) | F001-00000022 | Aceptada |
+| F8 Factura 100 % gratuita | F001-00000023 | Aceptada |
+| B1 Boleta a consumidor final | B001-00000009 | Aceptada |
+| B2 Boleta de más de S/ 700 con DNI | B001-00000010 | Aceptada |
+| N1 NC por anulación (01) | FC01-00000004 | Aceptada |
+| N3 NC por devolución parcial (07) | FC01-00000005 | Aceptada |
+| N5 NC por descuento (04), línea sin producto | FC01-00000006 | Aceptada (con el módulo v4) |
+| N7 NC de boleta | BC01-00000003 | Aceptada |
+| D1 ND por intereses (01), línea sin producto | FD01-00000002 | Aceptada (con el módulo v4) |
+| A1 Comunicación de baja de factura | F001-00000028 | Aceptada (RA) |
+| A3 Baja de boleta | B001-00000012 | Odoo la impide: se anula con NC (N7) |
+| C1 Factura desde la caja (Caja x 100) | F001-00000029 | Aceptada |
+| C2 Boleta desde la caja con bolsa | B001-00000013 | Aceptada |
+| C4 NC por devolución en la caja | BC01-00000004 | Aceptada |
+
+Más las facturas y boletas de origen de las notas (N0, N2, N4, N6, D0, A0, A2,
+C3), todas aceptadas.
+
+Lo que encontró la batería y ya está corregido en
+`al_l10n_pe_edi_downpayment_discount`:
+
+- **v4:** las líneas sin producto (descuento de una NC, intereses de una ND)
+  salían sin unidad de medida: SUNAT rechazaba con 2138 y 2188. Ahora llevan
+  `ZZ`.
+- **v5:** una venta con un ítem gratuito y la leyenda 1002 salía con el total
+  de impuestos en 0: SUNAT rechazaba con 3294. Ahora informa lo pagado.
+
+Reglas de SUNAT que conviene saber (no son defectos):
+
+- Una factura al crédito no puede tener cuotas que venzan el día de emisión
+  (3267): el plazo «30 % ahora, el resto en 60 días» no sirve.
+- Un comprobante rechazado se corrige con **Restablecer a borrador**, se
+  vuelve a publicar con el mismo número y se reenvía.
 
 ## Pendientes conocidos
 
-- Los comprobantes van a SUNAT beta: para producción hacen falta el
-  certificado digital, el usuario SOL u operador (OSE) y el RUC del cliente
-  (ver `configurar_cpe_beta.py`).
+- Los comprobantes van a SUNAT beta: las pruebas de producción (certificado
+  digital, usuario SOL u operador OSE y RUC reales) las hace el usuario (ver
+  `configurar_cpe_beta.py`).
 - El archivo del Observatorio usa columnas por confirmar con DIGEMID.
 - En las listas de precios, las reglas de precio fijo o sobre el costo son por
   unidad del producto (no por presentación).

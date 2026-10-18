@@ -54,3 +54,28 @@ Ley 32033.
 !!! note "Nota"
     Los datos de salud de los pacientes (alergias, condiciones crónicas,
     diagnóstico) solo los ven los químicos farmacéuticos (Ley 29733).
+
+## Comprobantes electrónicos
+
+La botica emite boletas y facturas con la
+[facturación electrónica de la suite](../finance/fiscal_localizations/peru/electronic_invoicing.md):
+series propias para boletas (B001) y facturas (F001), y en la caja el cliente
+elige boleta o factura al pagar. La caja o el blíster sale en el comprobante
+con su unidad SUNAT (BX, BO…) y los medicamentos exonerados con «0% Exo».
+
+| Caso de botica | Cómo se emite |
+|---|---|
+| Venta a un cliente con RUC | Factura; en la caja, solo si el cliente tiene RUC |
+| Venta al público | Boleta; con DNI desde S/ 700 |
+| Muestra médica o bonificación con la compra | Leyenda **1002** y el ítem gratuito con **18% Libre Final** |
+| Bolsa plástica | Producto con IGV e **ICBPER** (S/ 0,50 por bolsa) |
+| Devolución en la caja | Nota de crédito de la boleta o factura original |
+| Venta al crédito | Plazo de pago con cuotas que vencen después de la emisión |
+
+!!! warning "Importante"
+    SUNAT rechaza una factura al crédito si alguna cuota vence el mismo día de
+    la emisión: no use plazos con una parte «ahora» (por ejemplo «30 % ahora, el
+    resto en 60 días»); cree uno con cuotas a 30 y 60 días.
+
+!!! note "Nota"
+    Las boletas no se dan de baja: se anulan con una nota de crédito.

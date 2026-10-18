@@ -154,6 +154,8 @@ final.
 | Anticipo emitido con boleta | El tipo del anticipo (03) se toma del propio comprobante | Nada |
 | Descuentos de un impuesto mayores que sus ítems | Aviso al publicar | Revisar las líneas negativas |
 | Anticipos en dólares o con IGV incluido | Cubiertos | Nada |
+| Venta con un ítem gratuito (muestra, bonificación con la compra) | Total de impuestos y valor de venta de lo pagado; el ítem gratuito va como operación gratuita | Leyenda **1002** e impuesto **18% Libre Final** en el ítem gratuito |
+| Nota de crédito por descuento o nota de débito por intereses sin producto | La línea sale con la unidad `ZZ` (servicio) | Nada |
 
 !!! note "Nota"
     El módulo se comprobó con las reglas de validación oficiales de SUNAT del
