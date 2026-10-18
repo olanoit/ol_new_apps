@@ -10,6 +10,7 @@ de negocio.
 | [Cadena de suministro](inventory_and_mrp/index.md) | Kárdex valorizado, traslados y bienes de terceros |
 | [Recursos humanos](hr/index.md) | Nómina peruana: régimen general y construcción civil, beneficios, asistencia y reportes legales |
 | [Servicios](services/index.md) | Diagrama de Gantt, requerimientos de materiales y planificación de obra |
+| [Salud](health/index.md) | Farmacias y boticas: maestro, almacenamiento, receta y caja, controlados y DIGEMID |
 | [Ajustes generales](general/index.md) | Ayuda contextual, ficha de los módulos y servidor MCP |
 
 Las [novedades de la suite](novedades.md) resumen los cambios recientes.

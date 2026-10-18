@@ -243,3 +243,18 @@ y el uso de farmacia-dev para las pruebas.
    `test_`. Las pruebas automáticas siguen en `test_pe_pharmacy` en local.
    Antes de la primera instalación se añade `OL-HEALTH` al `--addons-path`
    del servicio.
+
+## 12. Estado (18/10/2026)
+
+| Entrega | Commit | Estado |
+|---|---|---|
+| E0 — Prototipo | `a1bc8bf` | Hecha: opción A de R1 validada (precio exacto en la línea, comprobante en la unidad de la presentación) |
+| E1 — Núcleo | `4562b14` | Hecha: `al_pharmacy_base` v2 y `al_pharmacy_stock` |
+| E2 — Venta | `09f5e7f`, `88ce999` | Hecha: `al_pharmacy_prescription`, `al_pharmacy_pos` v2, `al_l10n_pe_prescriber_cmp` (verificación manual: el portal del CMP pide login y reCAPTCHA) |
+| E3 — Perú | `59aff90` | Hecha: `al_l10n_pe_pharmacy_controlled` y `al_l10n_pe_pharmacy_digemid` |
+| E4 — Paquete y salida | (este commit) | Hecha: `al_industry_pharmacy` v6 con botica de demostración, documentación en «Salud ‣ Farmacia», guion [`GUION_PRUEBA.md`](GUION_PRUEBA.md) y despliegue en farmacia-dev |
+
+Pruebas: 72 en `test_pe_industries` (dos tours del TPV en Chrome y el XML UBL
+de la boleta), 0 fallos. Quedan por validar con un establecimiento real los
+[VERIFICAR] de `INVESTIGACION.md` (plantilla del Observatorio, plazos) y la
+revisión contable de las bonificaciones.

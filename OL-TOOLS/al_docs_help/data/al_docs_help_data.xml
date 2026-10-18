@@ -2971,6 +2971,190 @@
         <field name="path">applications/hr/payroll/peru/public_holidays/</field>
         <field name="section">Feriados</field>
     </record>
+    <record id="help_pharmacy_adverse_event" model="al.docs.help">
+        <field name="key">pharmacy.adverse.event</field>
+        <field name="kind">model</field>
+        <field name="name">Sospecha de reacción adversa</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/#reacciones-adversas</field>
+        <field name="section">Reacciones adversas</field>
+    </record>
+    <record id="help_pharmacy_alert" model="al.docs.help">
+        <field name="key">pharmacy.alert</field>
+        <field name="kind">model</field>
+        <field name="name">Alerta sanitaria</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/#alertas-sanitarias-y-retiro</field>
+        <field name="section">Alertas sanitarias y retiro</field>
+    </record>
+    <record id="help_pharmacy_alert_line" model="al.docs.help">
+        <field name="key">pharmacy.alert.line</field>
+        <field name="kind">model</field>
+        <field name="name">Producto de la alerta sanitaria</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/#alertas-sanitarias-y-retiro</field>
+        <field name="section">Alertas sanitarias y retiro</field>
+    </record>
+    <record id="help_pharmacy_controlled_report" model="al.docs.help">
+        <field name="key">pharmacy.controlled.report</field>
+        <field name="kind">model</field>
+        <field name="name">Libro y balance de productos controlados</field>
+        <field name="module">al_l10n_pe_pharmacy_controlled</field>
+        <field name="path">applications/health/pharmacy/controlled/</field>
+        <field name="section">Estupefacientes y psicotrópicos</field>
+    </record>
+    <record id="help_pharmacy_destruction" model="al.docs.help">
+        <field name="key">pharmacy.destruction</field>
+        <field name="kind">model</field>
+        <field name="name">Acta de baja y destrucción</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/#actas-de-baja-y-destrucción</field>
+        <field name="section">Actas de baja y destrucción</field>
+    </record>
+    <record id="help_pharmacy_destruction_line" model="al.docs.help">
+        <field name="key">pharmacy.destruction.line</field>
+        <field name="kind">model</field>
+        <field name="name">Producto del acta de baja</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/</field>
+        <field name="section">Almacenamiento</field>
+    </record>
+    <record id="help_pharmacy_dispensation" model="al.docs.help">
+        <field name="key">pharmacy.dispensation</field>
+        <field name="kind">model</field>
+        <field name="name">Dispensación</field>
+        <field name="module">al_pharmacy_prescription</field>
+        <field name="path">applications/health/pharmacy/dispensing/</field>
+        <field name="section">Receta y dispensación en la caja</field>
+    </record>
+    <record id="help_pharmacy_dosage_form" model="al.docs.help">
+        <field name="key">pharmacy.dosage.form</field>
+        <field name="kind">model</field>
+        <field name="name">Forma farmacéutica</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/products/#producto-farmacéutico</field>
+        <field name="section">Producto farmacéutico</field>
+    </record>
+    <record id="help_pharmacy_environment_point" model="al.docs.help">
+        <field name="key">pharmacy.environment.point</field>
+        <field name="kind">model</field>
+        <field name="name">Punto de control ambiental</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/</field>
+        <field name="section">Almacenamiento</field>
+    </record>
+    <record id="help_pharmacy_environment_reading" model="al.docs.help">
+        <field name="key">pharmacy.environment.reading</field>
+        <field name="kind">model</field>
+        <field name="name">Lectura de temperatura y humedad</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/#temperatura-y-humedad</field>
+        <field name="section">Temperatura y humedad</field>
+    </record>
+    <record id="help_pharmacy_essential_medicine" model="al.docs.help">
+        <field name="key">pharmacy.essential.medicine</field>
+        <field name="kind">model</field>
+        <field name="name">Medicamento esencial genérico (listado MINSA)</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/</field>
+        <field name="section">DIGEMID, genéricos e IGV</field>
+    </record>
+    <record id="help_pharmacy_generic_compliance" model="al.docs.help">
+        <field name="key">pharmacy.generic.compliance</field>
+        <field name="kind">model</field>
+        <field name="name">Cumplimiento de genéricos (Ley 32033)</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/#genéricos-esenciales-ley-32033</field>
+        <field name="section">Genéricos esenciales (Ley 32033)</field>
+    </record>
+    <record id="help_pharmacy_generic_compliance_line" model="al.docs.help">
+        <field name="key">pharmacy.generic.compliance.line</field>
+        <field name="kind">model</field>
+        <field name="name">Ítem del cumplimiento de genéricos</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/</field>
+        <field name="section">DIGEMID, genéricos e IGV</field>
+    </record>
+    <record id="help_pharmacy_ingredient" model="al.docs.help">
+        <field name="key">pharmacy.ingredient</field>
+        <field name="kind">model</field>
+        <field name="name">Principio activo (DCI)</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/products/#producto-farmacéutico</field>
+        <field name="section">Producto farmacéutico</field>
+    </record>
+    <record id="help_pharmacy_logbook_entry" model="al.docs.help">
+        <field name="key">pharmacy.logbook.entry</field>
+        <field name="kind">model</field>
+        <field name="name">Libro de ocurrencias</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/#turnos-y-libro-de-ocurrencias</field>
+        <field name="section">Turnos y libro de ocurrencias</field>
+    </record>
+    <record id="help_pharmacy_observatory_export" model="al.docs.help">
+        <field name="key">pharmacy.observatory.export</field>
+        <field name="kind">model</field>
+        <field name="name">Exportar precios al Observatorio</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/#observatorio-de-precios</field>
+        <field name="section">Observatorio de precios</field>
+    </record>
+    <record id="help_pharmacy_observatory_price" model="al.docs.help">
+        <field name="key">pharmacy.observatory.price</field>
+        <field name="kind">model</field>
+        <field name="name">Precio para el Observatorio de productos farmacéuticos</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/</field>
+        <field name="section">DIGEMID, genéricos e IGV</field>
+    </record>
+    <record id="help_pharmacy_prescription" model="al.docs.help">
+        <field name="key">pharmacy.prescription</field>
+        <field name="kind">model</field>
+        <field name="name">Receta médica</field>
+        <field name="module">al_pharmacy_prescription</field>
+        <field name="path">applications/health/pharmacy/dispensing/</field>
+        <field name="section">Receta y dispensación en la caja</field>
+    </record>
+    <record id="help_pharmacy_prescription_line" model="al.docs.help">
+        <field name="key">pharmacy.prescription.line</field>
+        <field name="kind">model</field>
+        <field name="name">Medicamento de la receta</field>
+        <field name="module">al_pharmacy_prescription</field>
+        <field name="path">applications/health/pharmacy/dispensing/</field>
+        <field name="section">Receta y dispensación en la caja</field>
+    </record>
+    <record id="help_pharmacy_presentation" model="al.docs.help">
+        <field name="key">pharmacy.presentation</field>
+        <field name="kind">model</field>
+        <field name="name">Presentación de venta</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/products/</field>
+        <field name="section">Productos y presentaciones</field>
+    </record>
+    <record id="help_pharmacy_product_ingredient" model="al.docs.help">
+        <field name="key">pharmacy.product.ingredient</field>
+        <field name="kind">model</field>
+        <field name="name">Composición del producto</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/products/</field>
+        <field name="section">Productos y presentaciones</field>
+    </record>
+    <record id="help_pharmacy_route" model="al.docs.help">
+        <field name="key">pharmacy.route</field>
+        <field name="kind">model</field>
+        <field name="name">Vía de administración</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/products/</field>
+        <field name="section">Productos y presentaciones</field>
+    </record>
+    <record id="help_pharmacy_shift" model="al.docs.help">
+        <field name="key">pharmacy.shift</field>
+        <field name="kind">model</field>
+        <field name="name">Turno del químico farmacéutico</field>
+        <field name="module">al_pharmacy_base</field>
+        <field name="path">applications/health/pharmacy/products/</field>
+        <field name="section">Productos y presentaciones</field>
+    </record>
     <record id="help_report_al_l10n_pe_fourth_category_report_certificate" model="al.docs.help">
         <field name="key">report.al_l10n_pe_fourth_category.report_certificate</field>
         <field name="kind">model</field>
@@ -2978,6 +3162,30 @@
         <field name="module">al_l10n_pe_fourth_category</field>
         <field name="path">applications/finance/fiscal_localizations/peru/fourth_category/</field>
         <field name="section">Retención de renta de 4.ª categoría</field>
+    </record>
+    <record id="help_report_al_l10n_pe_pharmacy_controlled_report_controlled_balance" model="al.docs.help">
+        <field name="key">report.al_l10n_pe_pharmacy_controlled.report_controlled_balance</field>
+        <field name="kind">model</field>
+        <field name="name">Balance trimestral de controlados</field>
+        <field name="module">al_l10n_pe_pharmacy_controlled</field>
+        <field name="path">applications/health/pharmacy/controlled/#libros-y-balance-trimestral</field>
+        <field name="section">Libros y balance trimestral</field>
+    </record>
+    <record id="help_report_al_l10n_pe_pharmacy_controlled_report_controlled_book" model="al.docs.help">
+        <field name="key">report.al_l10n_pe_pharmacy_controlled.report_controlled_book</field>
+        <field name="kind">model</field>
+        <field name="name">Libro de controlados</field>
+        <field name="module">al_l10n_pe_pharmacy_controlled</field>
+        <field name="path">applications/health/pharmacy/controlled/</field>
+        <field name="section">Estupefacientes y psicotrópicos</field>
+    </record>
+    <record id="help_report_al_l10n_pe_pharmacy_digemid_report_price_list" model="al.docs.help">
+        <field name="key">report.al_l10n_pe_pharmacy_digemid.report_price_list</field>
+        <field name="kind">model</field>
+        <field name="name">Lista de precios por DCI</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/#lista-de-precios-por-dci</field>
+        <field name="section">Lista de precios por DCI</field>
     </record>
     <record id="help_report_al_project_gantt_base_report_gantt" model="al.docs.help">
         <field name="key">report.al_project_gantt_base.report_gantt</field>

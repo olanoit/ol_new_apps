@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: 6.20261017
+    fecha: 18/10/2026
+    cambios:
+      - "Botica de demostración: 14 medicamentos de marcas inventadas (genéricos y de marca, con receta, controlados, insulina), presentaciones, listado de genéricos, médicos y puntos de control."
   - version: 5.20261017
     fecha: 18/10/2026
     cambios:

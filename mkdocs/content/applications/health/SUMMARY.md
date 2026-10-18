@@ -1,0 +1,7 @@
+* [Salud](index.md)
+* [Farmacia y botica](pharmacy.md)
+    * [Productos y presentaciones](pharmacy/products.md)
+    * [Almacenamiento](pharmacy/storage.md)
+    * [Receta y dispensación en la caja](pharmacy/dispensing.md)
+    * [Estupefacientes y psicotrópicos](pharmacy/controlled.md)
+    * [DIGEMID, genéricos e IGV](pharmacy/digemid.md)
