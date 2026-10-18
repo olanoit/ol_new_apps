@@ -1,0 +1,33 @@
+titulo: "Farmacia: maestro farmacéutico"
+subtitulo: "Presentaciones de venta (caja, blíster, frasco) con precio propio; el stock se lleva en la unidad del producto."
+categoria: "Salud · Farmacia"
+etiquetas: [Farmacia, Botica, Presentaciones, Blíster, Precios]
+
+destacados:
+  - icono: "▦"
+    titulo: "Caja, blíster o unidad"
+    texto: "Cada presentación agrupa un número fijo de unidades y tiene su propio precio, no proporcional al de la unidad."
+  - icono: "⚖"
+    titulo: "Stock exacto"
+    texto: "El inventario se lleva siempre en la unidad del producto: vender una caja descuenta sus unidades."
+  - icono: "⌗"
+    titulo: "Unidad de medida automática"
+    texto: "La unidad «Caja x 100» se crea sola y se agrega a los empaques del producto, para la factura y el código de barras."
+
+funcionalidades:
+  - "Presentaciones por producto con nombre, unidades y precio."
+  - "Precio por unidad calculado sin redondear."
+  - "Unidad de medida de la presentación creada y reutilizada automáticamente."
+  - "Regla multicompañía como la de los productos."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "En el producto, pestaña **Presentaciones**, agregue la caja, el blíster u otras con sus unidades y su precio."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión (prototipo E0): presentaciones de venta con precio propio."
+
+relacionados: [al_pharmacy_pos, al_industry_pharmacy]

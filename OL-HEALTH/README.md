@@ -1,0 +1,36 @@
+OL-HEALTH
+=========
+
+**Salud: farmacias y boticas.**
+
+Para qué es esta carpeta
+------------------------
+
+Suite para administrar farmacias y boticas sobre Odoo 19, con un núcleo general (sirve en cualquier país) y una capa para Perú (DIGEMID, Observatorio de precios, productos controlados, Ley 32033). Plan e investigación en `docs/farmacia/`.
+
+Qué va aquí
+-----------
+
+- Módulos `al_pharmacy_*`: maestro farmacéutico y presentaciones de venta, buenas prácticas de almacenamiento, receta y dispensación, punto de venta.
+- Módulos `al_l10n_pe_pharmacy_*`: obligaciones peruanas (controlados, DIGEMID, consulta al Colegio Médico).
+- Más adelante, otros rubros de salud (clínica, óptica).
+
+Qué no va aquí
+--------------
+
+- El paquete de industria que instala y configura la suite → `OL-INDUSTRIES/al_industry_pharmacy`.
+- Funcionalidad de punto de venta que no es de farmacia → `OL-POS/`.
+
+Módulos disponibles
+-------------------
+
+Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
+(no editar a mano).
+
+[//]: # (addons)
+módulo | versión | licencia | resumen
+--- | --- | --- | ---
+[al_l10n_pe_pharmacy_edi](al_l10n_pe_pharmacy_edi/) | 1.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
+[al_pharmacy_base](al_pharmacy_base/) | 1.20261018 | OPL-1 | Presentaciones de venta (caja, blíster, frasco) con precio propio; el stock se lleva en la unidad del producto.
+[al_pharmacy_pos](al_pharmacy_pos/) | 1.20261018 | OPL-1 | Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación.
+[//]: # (end addons)

@@ -13,7 +13,7 @@ La raíz del repositorio no contiene módulos: cada área es una ruta del
 
 1. Clone el repositorio en el servidor, en la rama de la versión de Odoo
    (`19.0`).
-2. Obtenga las nueve rutas:
+2. Obtenga las diez rutas:
 
     ```bash
     python3 scripts/addons_path.py /ruta/del/clon/ol_new_apps
@@ -32,6 +32,7 @@ La raíz del repositorio no contiene módulos: cada área es una ruta del
                   /ruta/ol_new_apps/OL-INVENTORY,
                   /ruta/ol_new_apps/OL-PROJECTS,
                   /ruta/ol_new_apps/OL-INDUSTRIES,
+                  /ruta/ol_new_apps/OL-HEALTH,
                   /ruta/ol_new_apps/OL-TOOLS,
                   /ruta/ol_new_apps/OL-THIRD-PARTY
     ```
@@ -41,7 +42,7 @@ La raíz del repositorio no contiene módulos: cada área es una ruta del
 
 !!! note "Nota"
     En Odoo.sh, o donde `ol_new_apps` es un submódulo de otro repositorio, hay
-    que agregar las mismas nueve carpetas.
+    que agregar las mismas diez carpetas.
 
 ### Dependencias de Python
 

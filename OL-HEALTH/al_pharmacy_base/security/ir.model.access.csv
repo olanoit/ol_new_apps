@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pharmacy_presentation_user,pharmacy.presentation usuario,model_pharmacy_presentation,base.group_user,1,0,0,0
+access_pharmacy_presentation_manager,pharmacy.presentation responsable de productos,model_pharmacy_presentation,product.group_product_manager,1,1,1,1

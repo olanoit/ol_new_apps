@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_pharmacy_presentation" model="ir.ui.view">
+        <field name="name">product.template.form.pharmacy.presentation</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="after">
+                <page string="Presentaciones" name="pharmacy_presentations" invisible="type != 'consu'">
+                    <field name="pharmacy_presentation_ids" context="{'active_test': False}">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="factor"/>
+                            <field name="price"/>
+                            <field name="unit_price" optional="show"/>
+                            <field name="uom_id" optional="hide"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="active" widget="boolean_toggle" optional="hide"/>
+                        </list>
+                    </field>
+                    <div class="text-muted">
+                        La unidad suelta se vende al precio del producto. Cada presentación
+                        descuenta del stock sus unidades y se factura con su propio precio.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

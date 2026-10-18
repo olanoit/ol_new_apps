@@ -1,0 +1,39 @@
+titulo: "Farmacia: punto de venta"
+subtitulo: "Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación."
+categoria: "Salud · Punto de venta"
+etiquetas: [Farmacia, TPV, Blíster, Venta fraccionada, Boleta]
+
+destacados:
+  - icono: "▣"
+    titulo: "Elegir la presentación"
+    texto: "Al tocar un producto con presentaciones, el cajero elige unidad, blíster o caja, cada una con su precio."
+  - icono: "⌗"
+    titulo: "Código de barras del empaque"
+    texto: "Escanear el código de la caja la vende como caja, con su precio."
+  - icono: "✓"
+    titulo: "Comprobante que cuadra"
+    texto: "La boleta o factura lleva 1 Blíster x 7 a S/ 1,00: no aparece el precio unitario periódico."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "En Perú las boticas venden por unidad, blíster o caja (Ley 29459, art. 27.5), cada una con su precio. En el TPV de Odoo 19 la línea va siempre en la unidad del producto y el precio unitario se redondea a dos decimales: un blíster de 7 a S/ 1,00 sumaría S/ 0,98."
+  nota: "**Alcance del prototipo:** el precio de la presentación es fijo (no aplica listas de precios) y la unidad SUNAT de la presentación se configura en su unidad de medida."
+
+funcionalidades:
+  - "Selector de presentación al agregar el producto."
+  - "Línea con precio unitario exacto y cantidad en unidades."
+  - "Pantalla y ticket con el número de presentaciones y el precio por presentación."
+  - "Venta de la presentación por el código de barras de su empaque."
+  - "Factura o boleta en la unidad de la presentación; las cantidades sueltas quedan en unidades."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión (prototipo E0): venta por presentación con precio propio en el TPV."
+
+relacionados: [al_pharmacy_base, al_l10n_pe_edi_pos, al_industry_pharmacy]

@@ -25,6 +25,7 @@ tabla de los módulos que contiene.
 [OL-INVENTORY](OL-INVENTORY/) | Inventario y existencias: kárdex valorizado.
 [OL-PROJECTS](OL-PROJECTS/) | Proyectos y obras: Gantt y requerimientos de materiales de obra.
 [OL-INDUSTRIES](OL-INDUSTRIES/) | Paquetes por industria (farmacia, construcción, mobiliario, bodega, restaurante, tienda en línea): instalan y configuran los módulos del rubro.
+[OL-HEALTH](OL-HEALTH/) | Salud: suite de farmacias y boticas (presentaciones, receta, buenas prácticas, controlados y DIGEMID).
 [OL-TOOLS](OL-TOOLS/) | Utilidades transversales: información de módulos, servidor MCP, licencia.
 [OL-THIRD-PARTY](OL-THIRD-PARTY/) | Módulos de otros autores que usa el proyecto, con su autoría y licencia; los cambios locales, anotados en su CHANGELOG.
 
@@ -73,13 +74,14 @@ addons_path = ...,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-INVENTORY,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-PROJECTS,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-INDUSTRIES,
+              /home/och/odoo/ce19/myodoo/ol_new_apps/OL-HEALTH,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-TOOLS,
               /home/och/odoo/ce19/myodoo/ol_new_apps/OL-THIRD-PARTY
 ```
 
 En Odoo.sh y en los servidores donde `ol_new_apps` es un submódulo (por
 ejemplo `democonstruccion` o `newallcenter-dev`) hay que añadir las mismas
-nueve carpetas al `addons_path`; con solo la raíz, Odoo no encuentra los
+diez carpetas al `addons_path`; con solo la raíz, Odoo no encuentra los
 módulos.
 
 Estructura
@@ -264,6 +266,14 @@ módulo | versión | licencia | resumen
 [al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 2.20261017 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
 [al_industry_restaurant](OL-INDUSTRIES/al_industry_restaurant/) | 2.20261017 | OPL-1 | Restaurante listo para atender: salón con mesas, comandas a cocina, división de cuentas y propinas, boleta y factura electrónica desde la caja, cobro con Yape y Plin y libro de reclamaciones.
 [al_industry_retail](OL-INDUSTRIES/al_industry_retail/) | 2.20261017 | OPL-1 | Bodega o minimarket listo para vender: caja con boleta y factura electrónica, cobro con Yape y Plin, cliente por RUC o DNI, vendedor por venta, kárdex SUNAT y libro de reclamaciones.
+
+### OL-HEALTH
+
+módulo | versión | licencia | resumen
+--- | --- | --- | ---
+[al_l10n_pe_pharmacy_edi](OL-HEALTH/al_l10n_pe_pharmacy_edi/) | 1.20261018 | OPL-1 | Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto.
+[al_pharmacy_base](OL-HEALTH/al_pharmacy_base/) | 1.20261018 | OPL-1 | Presentaciones de venta (caja, blíster, frasco) con precio propio; el stock se lleva en la unidad del producto.
+[al_pharmacy_pos](OL-HEALTH/al_pharmacy_pos/) | 1.20261018 | OPL-1 | Venta por caja, blíster o unidad en el TPV: cada presentación con su precio, el stock en unidades y el comprobante en la unidad de la presentación.
 
 ### OL-TOOLS
 

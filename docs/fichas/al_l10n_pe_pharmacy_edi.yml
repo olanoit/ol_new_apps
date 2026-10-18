@@ -1,0 +1,24 @@
+titulo: "PE - Farmacia: unidad SUNAT de las presentaciones"
+subtitulo: "Código de unidad del comprobante electrónico (catálogo 03 de SUNAT) para la unidad de cada presentación: caja BX, frasco BO; las demás, el de la unidad del producto."
+categoria: "Salud · Perú"
+etiquetas: [Farmacia, SUNAT, Comprobante electrónico, Presentaciones]
+
+destacados:
+  - icono: "⌗"
+    titulo: "unitCode válido"
+    texto: "La boleta o factura con la línea «1 Caja x 100» lleva el código BX del catálogo 03."
+  - icono: "⚙"
+    titulo: "Automático"
+    texto: "Se instala solo con la farmacia y la facturación electrónica de Perú."
+
+funcionalidades:
+  - "Caja → BX, frasco o botella → BO, bolsa → BG, paquete → PK, kit → KT."
+  - "Otras presentaciones (blíster, tira) → el código de la unidad del producto (NIU)."
+
+novedades:
+  - version: 1.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Primera versión (prototipo E0)."
+
+relacionados: [al_pharmacy_base, al_pharmacy_pos]

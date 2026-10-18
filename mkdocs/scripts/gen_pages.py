@@ -54,6 +54,7 @@ AREA_SITE = {
     'OL-INVENTORY': ('inventario', 'Inventario', 'material/warehouse'),
     'OL-PROJECTS': ('proyectos', 'Proyectos y obras', 'material/crane'),
     'OL-INDUSTRIES': ('industrias', 'Industrias', 'material/domain'),
+    'OL-HEALTH': ('salud', 'Salud', 'material/medical-bag'),
     'OL-TOOLS': ('herramientas', 'Herramientas', 'material/tools'),
     'OL-THIRD-PARTY': ('terceros', 'Terceros', 'material/puzzle'),
 }

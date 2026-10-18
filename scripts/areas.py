@@ -11,6 +11,7 @@ AREAS = [
     'OL-INVENTORY',
     'OL-PROJECTS',
     'OL-INDUSTRIES',
+    'OL-HEALTH',
     'OL-TOOLS',
     'OL-THIRD-PARTY',
 ]
