@@ -120,6 +120,10 @@ configuracion:
   - "En la pasarela, «Cobrar en el TPV»; luego agregar el método a la caja con la sesión cerrada."
 
 novedades:
+  - version: '2.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Cada método de pago en línea lleva el logo de su pasarela en la pantalla de pago del TPV (también los ya creados)."
   - version: '1.20261018'
     fecha: 18/10/2026
     cambios:

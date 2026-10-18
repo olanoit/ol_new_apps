@@ -69,6 +69,19 @@ class TestPosPaymentGateway(TestUi):
         with self.assertRaises(ValidationError):
             self.online_payment_method_2.online_payment_provider_ids = [Command.link(self.payment_provider.id)]
 
+    def test_method_takes_provider_logo(self):
+        """El método creado desde la pasarela lleva su logo."""
+        logo = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+        provider = self.payment_provider.copy({'name': 'Pasarela con logo', 'state': 'test', 'image_128': logo})
+        action = provider.action_al_pos_payment_method()
+        method = self.env['pos.payment.method'].browse(action['res_id'])
+        self.assertEqual(method.online_payment_provider_ids, provider)
+        self.assertTrue(method.image)
+        # Sin imagen, la toma de la pasarela al cambiarla.
+        method.image = False
+        method.online_payment_provider_ids = [Command.set(provider.ids)]
+        self.assertTrue(method.image)
+
     def test_payment_recorded_with_provider_method(self):
         """El cajero pide el QR con el segundo método: la página solo admite su
         pasarela y el pago queda con ese método."""

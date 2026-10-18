@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261018 — 18/10/2026
+
+- Instala las pasarelas Niubiz y Culqi y el cobro con pasarelas en el TPV: cada una es un método de pago de la caja con su logo.
+
 ## 7.20261018 — 18/10/2026
 
 - La demostración de la botica se reparte entre los módulos de la suite (cada uno se prueba solo); el paquete agrega las categorías del rubro y los productos no farmacéuticos.

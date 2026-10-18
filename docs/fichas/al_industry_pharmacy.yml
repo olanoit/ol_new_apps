@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: 8.20261018
+    fecha: 18/10/2026
+    cambios:
+      - "Instala las pasarelas Niubiz y Culqi y el cobro con pasarelas en el TPV: cada una es un método de pago de la caja con su logo."
   - version: 7.20261018
     fecha: 18/10/2026
     cambios:

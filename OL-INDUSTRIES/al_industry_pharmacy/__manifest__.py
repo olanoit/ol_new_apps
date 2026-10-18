@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '7.20261018',
+    'version': '8.20261018',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
@@ -43,6 +43,10 @@ compañías ▸ Industrias.
         'al_pos_product_view',
         'ol_stock_kardex_pe',
         'al_l10n_pe_complaints_book',
+        # Cobro con tarjeta y Yape en la caja: un método por pasarela, con su logo.
+        'al_pos_payment_gateway',
+        'al_payment_niubiz',
+        'al_payment_culqi',
     ],
     'data': [
         'data/al_industry_data.xml',
