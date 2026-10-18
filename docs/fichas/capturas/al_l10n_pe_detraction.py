@@ -170,9 +170,11 @@ with Captura('al_l10n_pe_detraction') as c:
     # ---- Menú Perú ▸ Detracciones -----------------------------------------
     c.abrir_accion('al_l10n_pe_detraction.action_detraction_analysis', ms=3000)
     c.foto('17-analisis', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 480})
-    c.page.get_by_role('button', name='Detracciones').first.click()
+    # Perú ▸ Proveedores: depósitos y facturas con detracción (sección
+    # «Detracciones, retenciones y percepciones»).
+    c.page.locator('.o_menu_sections button:visible:has-text("Proveedores")').first.click()
     c.esperar(800)
-    c.foto('18-menu-detracciones', clip={'x': 0, 'y': 0, 'width': 900, 'height': 230})
+    c.foto('18-menu-detracciones', clip={'x': 0, 'y': 0, 'width': 900, 'height': 520})
     c.abrir_accion('al_l10n_pe_detraction.action_detraction_deposits', ms=3000)
     c.foto('19-depositos', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 330})
     c.abrir_accion('al_l10n_pe_detraction.action_detraction_in_invoices', ms=3000)

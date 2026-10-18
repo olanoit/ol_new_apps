@@ -2,7 +2,7 @@
 
 Datos: periodos RVIE-07-2026 (SIRE desplegado) y RCE-07-2026 del script
 ``docs/sire/pruebas/sire_demo_data.py``, y periodo RVIE-08-2026 en carga manual con una
-propuesta simulada (``DEMO_Propuesta_RVIE_202608.txt``: una factura con otro
+propuesta simulada (``Propuesta_RVIE_202608.txt``: una factura con otro
 importe, una que SUNAT no tiene y una del socio «Inversiones Socio Norte S.A.C.» que Odoo
 no tiene).
 

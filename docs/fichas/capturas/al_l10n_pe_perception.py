@@ -55,16 +55,11 @@ with Captura('al_l10n_pe_perception') as c:
     c.abrir_accion('al_l10n_pe_perception.action_perception_received_fv621', ms=3000)
     c.foto('11-fv621', clip={'x': 0, 'y': 0, 'width': 1440, 'height': 380})
 
-    # 13. Menú Perú ▸ Percepciones IGV
-    # (la barra se desborda: el menú está en «+»)
-    c.page.locator('.o_menu_sections_more .dropdown-toggle').first.click()
+    # 13. Menú Perú ▸ Clientes, sección «Detracciones, retenciones y
+    # percepciones»
+    c.page.locator('.o_menu_sections button:visible:has-text("Clientes")').first.click()
     c.esperar(800)
-    item = c.page.locator('.o-dropdown--menu').get_by_text('Percepciones IGV', exact=True).first
-    item.evaluate("e => e.scrollIntoView({block: 'start'})")
-    c.esperar(400)
-    box = item.bounding_box()
-    c.foto('13-menu', clip={'x': max(0, box['x'] - 30), 'y': max(0, box['y'] - 8),
-                            'width': 420, 'height': 172})
+    c.foto('13-menu', clip={'x': 0, 'y': 0, 'width': 900, 'height': 520})
     c.page.keyboard.press('Escape')
 
     # 12. Factura de proveedor con «Registrar percepción»

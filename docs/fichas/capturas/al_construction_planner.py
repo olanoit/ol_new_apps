@@ -137,12 +137,26 @@ def fase_7(c, v1):
 
     # 27. Cambiar fechas (W-08): postergar la instalación 7 días
     c.texto('Cambiar fechas', ms=2000)
-    for stage in ('stage_production', 'stage_assembly', 'stage_finishing'):
-        c.page.locator(f'.modal-content div[name={stage}] input').uncheck()
-        c.esperar(600)
+    # Las etapas son casillas de stage_ids: solo queda marcada Instalación.
+    checks = c.page.locator('.modal-content div[name=stage_ids] .form-check')
+    for i in range(checks.count()):
+        check = checks.nth(i)
+        if 'Instalaci' not in check.inner_text():
+            check.locator('input').uncheck()
+            c.esperar(600)
     c.esperar(1200)
     c.foto('27-cambiar-fechas', selector=MODAL)
     c.clic('.modal-footer button.btn-secondary', ms=800)
+
+
+def filtrar_etapa(c, codigo=None):
+    """Filtro de etapas del cronograma (desplegable con casillas): solo
+    ``codigo`` o, sin él, todas las etapas."""
+    c.clic('.o_cp_stage_filter .dropdown-toggle', ms=600)
+    c.clic('.o_cp_stage_tree .o_cp_stage_all', ms=600)
+    if codigo:
+        c.clic(f'.o_cp_stage_tree .o_cp_stage_node[data-code="{codigo}"]', ms=600)
+    c.page.keyboard.press('Escape')
 
 
 def fase_8(c, v1):
@@ -155,14 +169,14 @@ def fase_8(c, v1):
     c.foto('28-cronograma', selector=FULL)
 
     # 29. Solo instalación, piso 05 marcado: recursos de la selección
-    c.page.locator('.o_cp_stage_filter').select_option('installation')
+    filtrar_etapa(c, 'installation')
     c.esperar(3000)
     c.page.locator('.gantt_row', has_text='Piso 05').locator('.algantt-check').click()
     c.esperar(2500)
     c.foto('29-cronograma-seleccion', selector=FULL)
 
     # 30. Etapa de instalación de un ambiente: contrata, monto y avance
-    c.page.locator('.o_cp_stage_filter').select_option('')
+    filtrar_etapa(c)
     c.esperar(3000)
     c.clic('.algantt-selection-clear', ms=1500)
     box = c.page.locator('.gantt_task_line.o_cp_stage_installation').first.bounding_box()
@@ -205,7 +219,7 @@ def fase_11(c):
     de tools/planner_demo_schedule.py."""
     project = buscar(c, 'project.project', [['name', '=', 'MOMEN-35-26']])[0]
     # 40. Cronograma valorizado, escenario plan: curva S y tabla semanal
-    c.abrir_accion(f'{M}.action_construction_schedule_report_screen', ms=3000)
+    c.abrir_accion('al_construction_planner_sale.action_construction_schedule_report_screen', ms=3000)
     c.page.locator('.o_cp_sr_project').select_option(str(project))
     c.esperar(3000)
     c.page.locator('.o_cp_sr_table').wait_for()
@@ -226,7 +240,7 @@ def fase_11(c):
     c.foto('43-inicio', selector=FULL)
 
 
-EXAMPLES = Path(__file__).resolve().parents[3] / 'OL-PROJECTS' / M / 'static' / 'examples'
+EXAMPLES = Path(__file__).resolve().parents[3] / 'OL-PROJECTS' / 'al_construction_planner_furniture' / 'static' / 'examples'
 OBRA_EJEMPLO = 'Obra de ejemplo (importación)'
 
 
@@ -247,7 +261,7 @@ def obra_ejemplo(c):
 
 def importar(c, archivo, crear_productos=False):
     """Abre W-15, elige la obra de ejemplo y sube ``archivo``."""
-    c.abrir_accion(f'{M}.action_construction_master_import_wizard', ms=2000)
+    c.abrir_accion('al_construction_planner_furniture.action_construction_master_import_wizard', ms=2000)
     campo = c.page.locator('.modal div[name=project_id] input')
     campo.fill(OBRA_EJEMPLO)
     c.esperar(1200)
@@ -308,9 +322,13 @@ with Captura(M) as c:
     c.texto('Resumen por etapa', ms=1200)
     c.foto('04-resumen-etapa', selector=FULL)
 
-    # 5. Presupuesto analítico creado por la aprobación
-    c.clic('button[name=action_view_budget]', ms=2000)
-    c.foto('05-presupuesto', selector=FULL)
+    # 5. Presupuesto analítico creado por la aprobación (si el plan no lo
+    # tiene, el botón no se muestra y se conserva la captura anterior)
+    if c.page.locator('button[name=action_view_budget]:visible').count():
+        c.clic('button[name=action_view_budget]', ms=2000)
+        c.foto('05-presupuesto', selector=FULL)
+    else:
+        print('sin presupuesto: 05-presupuesto se conserva')
 
     # 6. Asistente «Nueva versión» (W-09)
     c.abrir_registro(PLAN, v1, ms=2000)

@@ -10,12 +10,11 @@ from capturar import Captura  # noqa: E402
 
 ACCION = 'al_l10n_pe_financial_reports.pe_action_statement_changes_equity'
 
-# La app Perú tiene tantas secciones que a 1440 px «Estados financieros» cae
-# en el desplegable «Más»: el menú se abre en una pantalla muy ancha.
-with Captura('al_l10n_pe_financial_reports', viewport={'width': 3840, 'height': 900}) as c:
-    # 01. App Perú ▸ Estados financieros (se entra por una acción de la app)
+with Captura('al_l10n_pe_financial_reports', viewport={'width': 1440, 'height': 900}) as c:
+    # 01. App Perú ▸ Informes, con los estados financieros (se entra por una
+    # acción de la app)
     c.abrir_accion('al_l10n_pe_ple.action_ple_withholding', ms=2000)
-    c.clic('.o_main_navbar button:visible:has-text("Estados financieros")', ms=900)
+    c.clic('.o_menu_sections button:visible:has-text("Informes")', ms=900)
     menu = c.page.locator('.o-dropdown--menu').first.bounding_box()
     c.foto('01-menu-estados-financieros', clip={
         'x': max(menu['x'] - 260, 0), 'y': 0,

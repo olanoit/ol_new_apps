@@ -89,7 +89,7 @@ else:
         'partner_id': customer.id,
         'company_id': company.id,
         'date_order': date(2026, 10, 9),
-        'client_order_ref': 'Contrato MOMEN-35-26 (demo)',
+        'client_order_ref': 'Contrato MOMEN-35-26',
         'order_line': [Command.create({
             'product_id': product.id, 'name': 'Cocinas', 'product_uom_qty': 1,
             'price_unit': price, 'tax_ids': [Command.set(tax.ids)]})],
@@ -138,7 +138,7 @@ else:
     confirm = env['construction.valuation.confirm.wizard'].with_context(
         default_valuation_id=valuation.id).create({
             'confirm_date': date(2026, 11, 18),
-            'confirm_name': 'Ing. Rosa Quispe (demo)',
+            'confirm_name': 'Ing. Rosa Quispe',
             'confirm_role': 'Residente de obra del cliente',
             'attachment_ids': [Command.create({'name': 'Acta de conformidad VAL 1.txt',
                                                'datas': act, 'mimetype': 'text/plain'})],

@@ -217,13 +217,18 @@ def many2one(c, field, texto, opcion):
 if quiero('menu'):
     with Captura(MODULE, viewport={'width': 1920, 'height': 900}) as c:
         c.abrir_accion('al_hr_pe_import.action_al_import_payroll_progress', ms=1500)
-        c.clic('[data-menu-xmlid="al_hr_pe_import.menu_al_hr_pe_import_root"]', ms=800)
-        menu = c.page.locator('.o-dropdown--menu').first.bounding_box()
+        # Nómina ▸ Configuración: «Importar desde Excel» es la última sección y
+        # el desplegable tiene alto máximo, así que se desplaza hasta ella.
+        c.clic('.o_menu_sections button:visible:has-text("Configuración")', ms=800)
+        dropdown = c.page.locator('.o-dropdown--menu').first
+        dropdown.locator('.dropdown-header:has-text("Importar desde Excel")').scroll_into_view_if_needed()
+        dropdown.evaluate('el => el.scrollTop = el.scrollHeight')
+        menu = dropdown.bounding_box()
         c.page.mouse.move(300, 850)
         c.page.wait_for_timeout(250)
         path = c.out / '01-menu.png'
         c.page.screenshot(path=str(path), clip={
-            'x': menu['x'] - 700, 'y': 0, 'width': menu['width'] + 900,
+            'x': 0, 'y': 0, 'width': min(menu['x'] + menu['width'] + 400, 1920),
             'height': menu['y'] + menu['height'] + 16})
         print('captura', path.name)
 

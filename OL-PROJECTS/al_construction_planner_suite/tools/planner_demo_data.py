@@ -55,7 +55,7 @@ ACTIVITIES = [
      {'ml_based': True, 'ml_group': 'low'}),
     ('LMA', 'Limpieza mueble alto', 'finishing', meter, 6.00, 6.00,
      {'ml_based': True, 'ml_group': 'high'}),
-    ('ENP', 'Entrega y protección (ajuste demo)', 'finishing', unit, 1.00, None, {}),
+    ('ENP', 'Entrega y protección (ajuste)', 'finishing', unit, 1.00, None, {}),
 ]
 act = {}
 for code, name, stage, uom, base, site, extra in ACTIVITIES:
@@ -220,7 +220,7 @@ if plan.state == 'draft':
     # W-12 simulado: el planificador aplica el costo del maestro.
     for line in plan.line_ids.filtered(lambda l: l.resource_type == 'material'):
         key = next(k for k, p in prod.items() if p == line.product_id)
-        line.write({'price_unit_planned': cost[key], 'price_basis': 'Costo del maestro (demo)'})
+        line.write({'price_unit_planned': cost[key], 'price_basis': 'Costo del maestro'})
 
 env.flush_all()
 print('Plan', plan.display_name, 'líneas', plan.line_count)

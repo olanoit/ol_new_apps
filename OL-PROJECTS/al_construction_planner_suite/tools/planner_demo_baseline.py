@@ -72,7 +72,7 @@ if plan_v1.state == 'draft':
     if unstaged:
         unstaged.write({'stage': 'production'})
         plan_v1.message_post(body='La melamina RH no tiene etapa en el maestro: se corta en '
-                                  'Producción, como la blanca (demo).')
+                                  'Producción, como la blanca.')
     plan_v1.action_request_approval()
 if plan_v1.state == 'to_approve':
     # validate_tier() abriría el asistente de comentario (has_comment).
