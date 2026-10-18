@@ -5,7 +5,7 @@
          base_tier_validation). Las revisiones se piden en orden: primero el
          nivel de mayor secuencia. -->
     <record id="demo_tier_plan_manager" model="tier.definition">
-        <field name="name">[DEMO] Plan · Nivel 1: jefatura de proyectos</field>
+        <field name="name">Plan · Nivel 1: jefatura de proyectos</field>
         <field name="model_id" ref="al_construction_planner.model_construction_resource_plan"/>
         <field name="review_type">group</field>
         <field name="reviewer_group_id" ref="al_construction_planner.group_planner_project_head"/>
@@ -16,7 +16,7 @@
         <field name="has_comment" eval="True"/>
     </record>
     <record id="demo_tier_plan_operations" model="tier.definition">
-        <field name="name">[DEMO] Plan · Nivel 2: gerencia de operaciones (más de S/ 100 000)</field>
+        <field name="name">Plan · Nivel 2: gerencia de operaciones (más de S/ 100 000)</field>
         <field name="model_id" ref="al_construction_planner.model_construction_resource_plan"/>
         <field name="review_type">group</field>
         <field name="reviewer_group_id" ref="al_construction_material_request.group_construction_operations_manager"/>

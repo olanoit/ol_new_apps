@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261018 — 18/10/2026
+
+- Los datos de demostración usan nombres sin el prefijo «[DEMO]»; en las bases que ya los tienen se renombran al actualizar.
+
 ## 20.20261016 — 16/10/2026
 
 - El despacho lleva un movimiento por línea: el mismo producto pedido para dos niveles ya no se junta y lo validado llega a cada línea (antes caía entero en la primera y el requerimiento no pasaba a Hecho).

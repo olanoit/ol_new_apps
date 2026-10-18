@@ -54,7 +54,7 @@ faltante pasa a requerimiento de compra (`purchase_request`, OCA).
   `purchase_request_tier_validation`; si se instala, sus reglas deben
   llevar el dominio `[('construction_request_id', '=', False)]`.
 
-## Datos demo (ficticios, prefijo `[DEMO]`)
+## Datos demo (de ejemplo)
 
 Planes analíticos Disciplina/Partida, 5 materiales (cemento, fierro, arena,
 ladrillo, clavos), sububicaciones Cementos/Fierros con stock parcial (60

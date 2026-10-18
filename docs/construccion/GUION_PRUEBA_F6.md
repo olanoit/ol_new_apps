@@ -4,7 +4,7 @@ Rama: **ConstruccionDEV** de `vcatacora/DemoConstruccion` (desarrollo: base
 nueva con datos demo en cada compilación). Submódulo `olanoit/ol_new_apps`
 en `1392cc8` (commit `a9e8056` del repo del cliente, 07/10/2026).
 
-Todo lo que lleva `[DEMO]` es ficticio: obras, materiales, costos,
+Los datos demo son de ejemplo: obras, materiales, costos,
 existencias y el umbral de S/ 10 000.
 
 ---
@@ -27,13 +27,13 @@ existencias y el umbral de S/ 10 000.
 | # | Paso | Esperado |
 |---|---|---|
 | 1.1 | Inventario ▸ Ajustes ▸ bloque «Requerimientos de obra» | Ubicación origen (existencias del almacén central), padre `OBRAS` y tipo «Despacho a obra» rellenos |
-| 1.2 | Proyecto «[DEMO] Colegio A» ▸ pestaña de obra | «Es obra» marcado y ubicación `…/OBRAS/[DEMO] Colegio A` |
+| 1.2 | Proyecto «Colegio A» ▸ pestaña de obra | «Es obra» marcado y ubicación `…/OBRAS/Colegio A` |
 | 1.3 | Ajustes ▸ Usuarios: asignar al usuario de prueba los grupos Solicitante, Aprobador y Logística (privilegio «Requerimientos de obra») | |
 
 ## 2. Caso de aceptación: 100 bolsas pedidas, 60 en almacén
 
-Requerimiento demo «[DEMO] Vaciado de zapatas del bloque A», obra
-«[DEMO] Colegio A», 100 bolsas de «[DEMO] Cemento Portland tipo I».
+Requerimiento demo «Vaciado de zapatas del bloque A», obra
+«Colegio A», 100 bolsas de «Cemento Portland tipo I».
 
 | # | Paso | Esperado |
 |---|---|---|

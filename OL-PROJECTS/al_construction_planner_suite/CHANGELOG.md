@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261018 — 18/10/2026
+
+- Las reglas de aprobación de ejemplo ya no llevan el prefijo «[DEMO]».
+
 ## 7.20261017 — 17/10/2026
 
 - Los datos de demostración se instalan en una base nueva: las reglas de aprobación de ejemplo apuntaban a un modelo y un grupo sin el prefijo de `al_construction_planner`.

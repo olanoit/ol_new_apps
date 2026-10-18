@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '21.20261018'
+    fecha: 18/10/2026
+    cambios:
+      - "Los datos de demostración usan nombres sin el prefijo «[DEMO]»; en las bases que ya los tienen se renombran al actualizar."
   - version: 20.20261016
     fecha: 16/10/2026
     cambios:
