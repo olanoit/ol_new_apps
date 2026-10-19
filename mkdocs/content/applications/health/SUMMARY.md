@@ -9,3 +9,4 @@
     * [Faltantes y sugerido de compra](pharmacy/replenishment.md)
     * [Fidelización por DNI](pharmacy/loyalty.md)
     * [Tienda en línea](pharmacy/website.md)
+    * [Convenios con EPS y empresas](pharmacy/insurance.md)

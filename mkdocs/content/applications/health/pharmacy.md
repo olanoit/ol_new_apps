@@ -22,6 +22,7 @@ Ley 32033.
 | [Faltantes y sugerido de compra](pharmacy/replenishment.md) | Lo que se pide y no hay, y compra por consumo de cada local |
 | [Fidelización por DNI](pharmacy/loyalty.md) | Puntos y vales para los clientes sin premiar los medicamentos con receta |
 | [Tienda en línea](pharmacy/website.md) | Genéricos primero, receta validada por el Q.F., recojo en tienda y cadena de frío |
+| [Convenios con EPS y empresas](pharmacy/insurance.md) | Cobertura y copago en la caja, comprobante del paciente por su parte y factura mensual a la aseguradora |
 
 ## Configuración
 
@@ -62,6 +63,7 @@ que necesita para probarse:
 | Unidad SUNAT de las presentaciones | Clientes con DNI y con RUC |
 | Tratamientos crónicos y recompra | Dos pacientes con losartán y metformina |
 | Faltantes y sugerido de compra | Un faltante de losartán y uno de un colirio fuera del catálogo |
+| Convenios con EPS y empresas | Convenio «Salud Andina EPS · Plan regular» (80 %, copago S/ 5) con una afiliada |
 | Fidelización por DNI | Programa «Club de Salud»: 1 punto por S/ 4 y un vale de S/ 5 cada 1 000 puntos |
 
 ## Turnos y libro de ocurrencias

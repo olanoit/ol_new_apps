@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_pharmacy_insurance_liquidation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="'Liquidación de convenio ' + o.name"/>
+                    <p class="pe-doc-text">
+                        <strong>Aseguradora o empresa:</strong> <t t-out="o.partner_id.name"/>
+                        <t t-if="o.partner_id.vat"> · RUC <t t-out="o.partner_id.vat"/></t><br/>
+                        <strong>Convenio:</strong> <t t-out="o.agreement_id.name"/><br/>
+                        <t t-if="o.invoice_id.name and o.invoice_id.name != '/'"><strong>Factura:</strong> <t t-out="o.invoice_id.name"/><br/></t>
+                        <strong>Periodo:</strong>
+                        <span t-field="o.date_from"/> al <span t-field="o.date_to"/>
+                    </p>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <th>Fecha</th><th>Venta</th><th>Comprobante</th><th>Paciente</th>
+                                <th>N.º de afiliado</th><th class="text-end">Total de la venta</th>
+                                <th class="text-end">Cubierto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.order_ids.sorted('date_order')" t-as="order">
+                                <td><span t-field="order.date_order" t-options="{'widget': 'date'}"/></td>
+                                <td t-out="order.name"/>
+                                <td t-out="order.account_move.name or ''"/>
+                                <td t-out="order.partner_id.name"/>
+                                <td t-out="order.pharmacy_insurance_affiliate_id.number"/>
+                                <td class="text-end"><span t-field="order.amount_total"/></td>
+                                <td class="text-end"><span t-field="order.pharmacy_insurance_amount"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="pe-doc-text text-end">
+                        <strong>Total a cobrar: <span t-field="o.amount_total"/></strong>
+                        (<t t-out="o.order_count"/> ventas)
+                    </p>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_pharmacy_insurance_liquidation" model="ir.actions.report">
+        <field name="name">Liquidación de convenio</field>
+        <field name="model">pharmacy.insurance.liquidation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_pharmacy_insurance.report_pharmacy_insurance_liquidation</field>
+        <field name="report_file">al_pharmacy_insurance.report_pharmacy_insurance_liquidation</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_pharmacy_insurance_liquidation"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

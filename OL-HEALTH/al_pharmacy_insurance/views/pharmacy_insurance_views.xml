@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Convenios -->
+    <record id="pharmacy_insurance_agreement_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.agreement.list</field>
+        <field name="model">pharmacy.insurance.agreement</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="coverage_percent"/>
+                <field name="copay_amount"/>
+                <field name="max_per_sale" optional="show"/>
+                <field name="max_per_month" optional="show"/>
+                <field name="date_start" optional="hide"/>
+                <field name="date_end" optional="show"/>
+                <field name="payment_method_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pharmacy_insurance_agreement_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.agreement.form</field>
+        <field name="model">pharmacy.insurance.agreement</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_pos_payment_method" type="object" class="btn-primary"
+                            string="Crear método de pago del TPV"
+                            invisible="payment_method_id or billing_mode != 'direct'"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_affiliates" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="affiliate_count" widget="statinfo" string="Afiliados"/>
+                        </button>
+                        <button name="action_open_liquidations" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="liquidation_count" widget="statinfo" string="Liquidaciones"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Salud Andina EPS · Plan regular"/></h1>
+                    </div>
+                    <group>
+                        <group string="Convenio">
+                            <field name="partner_id"/>
+                            <field name="billing_mode" widget="radio"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="require_prescription"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Cobertura">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="coverage_percent"/>
+                            <field name="copay_amount"/>
+                            <field name="max_per_sale"/>
+                            <field name="max_per_month"/>
+                        </group>
+                        <group string="Cobro">
+                            <field name="payment_method_id"/>
+                            <field name="journal_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Cobertura por producto o categoría" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="categ_id"/>
+                                    <field name="product_id"/>
+                                    <field name="coverage_percent"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="pharmacy_insurance_agreement_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.agreement.search</field>
+        <field name="model">pharmacy.insurance.agreement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_insurance_agreement" model="ir.actions.act_window">
+        <field name="name">Convenios</field>
+        <field name="res_model">pharmacy.insurance.agreement</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un convenio con una aseguradora o empresa</p>
+            <p>La cobertura, el copago y los topes se aplican al cobrar en la caja con el método
+                de pago del convenio.</p>
+        </field>
+    </record>
+
+    <!-- Afiliados -->
+    <record id="pharmacy_insurance_affiliate_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.affiliate.list</field>
+        <field name="model">pharmacy.insurance.affiliate</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="partner_id"/>
+                <field name="agreement_id"/>
+                <field name="number"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="company_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pharmacy_insurance_affiliate_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.affiliate.search</field>
+        <field name="model">pharmacy.insurance.affiliate</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="number"/>
+                <field name="agreement_id"/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+                <filter name="group_agreement" string="Convenio" context="{'group_by': 'agreement_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_insurance_affiliate" model="ir.actions.act_window">
+        <field name="name">Afiliados</field>
+        <field name="res_model">pharmacy.insurance.affiliate</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Liquidaciones -->
+    <record id="pharmacy_insurance_liquidation_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.liquidation.list</field>
+        <field name="model">pharmacy.insurance.liquidation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="agreement_id"/>
+                <field name="partner_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'invoiced'"
+                       decoration-muted="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pharmacy_insurance_liquidation_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.liquidation.form</field>
+        <field name="model">pharmacy.insurance.liquidation</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_load_orders" type="object" string="Cargar ventas"
+                            class="btn-primary" invisible="state != 'draft' or order_ids"/>
+                    <button name="action_load_orders" type="object" string="Volver a cargar"
+                            invisible="state != 'draft' or not order_ids"/>
+                    <button name="action_create_invoice" type="object" string="Crear factura"
+                            class="btn-primary" invisible="state != 'draft' or not order_ids"/>
+                    <button name="%(action_report_pharmacy_insurance_liquidation)d" type="action"
+                            string="Imprimir" invisible="state == 'cancel'"/>
+                    <button name="action_cancel" type="object" string="Anular" invisible="state == 'cancel'"
+                            confirm="Se cancela la factura en borrador y las ventas quedan libres para otra liquidación."/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,invoiced"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_invoice" type="object" class="oe_stat_button"
+                                icon="fa-pencil-square-o" invisible="not invoice_id" string="Factura"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="agreement_id" readonly="state != 'draft'"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_id" invisible="not invoice_id"/>
+                            <field name="invoice_state" invisible="not invoice_id"/>
+                        </group>
+                        <group>
+                            <field name="date_from" readonly="state != 'draft'"/>
+                            <field name="date_to" readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_total"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="order_ids" readonly="1">
+                        <list>
+                            <field name="date_order"/>
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="pharmacy_insurance_affiliate_id"/>
+                            <field name="account_move" optional="show"/>
+                            <field name="amount_total" optional="show"/>
+                            <field name="pharmacy_insurance_amount" sum="Total"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_insurance_liquidation" model="ir.actions.act_window">
+        <field name="name">Liquidaciones</field>
+        <field name="res_model">pharmacy.insurance.liquidation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Liquide un convenio</p>
+            <p>Elija el convenio y el periodo, cargue las ventas cubiertas y cree la factura a la
+                aseguradora por la parte que cubre (Informe SUNAT 029-2013).</p>
+        </field>
+    </record>
+
+    <!-- Caja: venta y método de pago -->
+    <record id="view_pos_pos_form_pharmacy_insurance" model="ir.ui.view">
+        <field name="name">pos.order.form.pharmacy.insurance</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id'][1]" position="after">
+                <field name="pharmacy_insurance_agreement_id" invisible="not pharmacy_insurance_agreement_id"/>
+                <field name="pharmacy_insurance_affiliate_id" invisible="not pharmacy_insurance_affiliate_id"/>
+                <field name="pharmacy_insurance_amount" invisible="not pharmacy_insurance_agreement_id"/>
+                <field name="pharmacy_insurance_liquidation_id" invisible="not pharmacy_insurance_liquidation_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="pos_payment_method_view_form_pharmacy_insurance" model="ir.ui.view">
+        <field name="name">pos.payment.method.form.pharmacy.insurance</field>
+        <field name="model">pos.payment.method</field>
+        <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
+        <field name="arch" type="xml">
+            <field name="split_transactions" position="before">
+                <field name="pharmacy_insurance_agreement_id" invisible="not pharmacy_insurance_agreement_id"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_pharmacy_insurance" name="Convenios" parent="al_pharmacy_base.menu_pharmacy_root"
+              sequence="35"/>
+    <menuitem id="menu_pharmacy_insurance_agreement" name="Convenios" parent="menu_pharmacy_insurance"
+              action="action_pharmacy_insurance_agreement" sequence="10"/>
+    <menuitem id="menu_pharmacy_insurance_affiliate" name="Afiliados" parent="menu_pharmacy_insurance"
+              action="action_pharmacy_insurance_affiliate" sequence="20"/>
+    <menuitem id="menu_pharmacy_insurance_liquidation" name="Liquidaciones" parent="menu_pharmacy_insurance"
+              action="action_pharmacy_insurance_liquidation" sequence="30"/>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pharmacy_insurance_agreement_comp_rule" model="ir.rule">
+        <field name="name">Convenio: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_insurance_agreement"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_insurance_agreement_line_comp_rule" model="ir.rule">
+        <field name="name">Cobertura del convenio: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_insurance_agreement_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_insurance_affiliate_comp_rule" model="ir.rule">
+        <field name="name">Afiliado: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_insurance_affiliate"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_insurance_liquidation_comp_rule" model="ir.rule">
+        <field name="name">Liquidación de convenio: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_insurance_liquidation"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

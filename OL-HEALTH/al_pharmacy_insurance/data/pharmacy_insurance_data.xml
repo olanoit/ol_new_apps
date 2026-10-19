@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="seq_pharmacy_insurance_liquidation" model="ir.sequence">
+        <field name="name">Liquidación de convenio</field>
+        <field name="code">pharmacy.insurance.liquidation</field>
+        <field name="prefix">LIQ/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: '10.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Instala la tienda en línea de la botica (receta validada por el Q.F., genéricos primero) y los convenios con EPS y empresas."
   - version: '9.20261019'
     fecha: 19/10/2026
     cambios:

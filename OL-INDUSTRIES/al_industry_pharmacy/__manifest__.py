@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '9.20261019',
+    'version': '10.20261019',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
@@ -35,6 +35,9 @@ compañías ▸ Industrias.
         'al_pharmacy_care',
         'al_pharmacy_replenishment',
         'al_pharmacy_loyalty',
+        # E9-E10: tienda en línea con receta y convenios con EPS.
+        'al_pharmacy_website',
+        'al_pharmacy_insurance',
         'point_of_sale',
         'purchase_stock',
         'sale_stock',

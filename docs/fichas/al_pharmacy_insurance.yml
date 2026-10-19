@@ -1,0 +1,45 @@
+titulo: "Farmacia: convenios con EPS y empresas"
+subtitulo: "Ventas con cobertura de una aseguradora o empresa: el paciente paga y recibe comprobante por su parte, y la parte cubierta se factura a la aseguradora en la liquidación mensual."
+categoria: "Salud · Punto de venta"
+etiquetas: [Farmacia, EPS, Convenios, Copago, Punto de venta, Facturación]
+
+destacados:
+  - icono: "%"
+    titulo: "Cobertura por convenio"
+    texto: "Porcentaje por defecto y por categoría o producto, copago, tope por venta y tope mensual por afiliado."
+  - icono: "⇄"
+    titulo: "Dos comprobantes"
+    texto: "Boleta o factura del paciente solo por su parte; factura a la aseguradora por la parte cubierta (Informe SUNAT 029-2013)."
+  - icono: "▤"
+    titulo: "En la caja"
+    texto: "El cajero elige el método del convenio: Odoo calcula lo cubierto y el paciente paga el resto."
+  - icono: "∑"
+    titulo: "Liquidación mensual"
+    texto: "Las ventas cubiertas del mes en una factura a la aseguradora con paciente, DNI, afiliado y receta por línea."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "Las boticas atienden a afiliados de EPS y a trabajadores de empresas con convenio: el paciente paga un copago y la aseguradora el resto. SUNAT pide emitir el comprobante de la parte cubierta a nombre de la aseguradora, y cada mes hay que liquidarle las ventas con su sustento."
+  nota: "**Ejemplo:** venta de S/ 35,40 con convenio del 80 % y copago de S/ 5: el paciente paga S/ 16,16 con su boleta y la aseguradora recibe en la liquidación una factura por S/ 19,24. Ingreso e IGV suman lo de la venta."
+
+funcionalidades:
+  - "Convenio con aseguradora o empresa: cobertura por defecto, por categoría y por producto, copago, topes, vigencia, receta obligatoria y modalidad (en caja o reembolso)."
+  - "Afiliados con número único por convenio y vigencia."
+  - "Método de pago del convenio en la caja, creado desde el convenio."
+  - "Reparto de lo cubierto por línea (base e IGV) cuadrado al céntimo."
+  - "Comprobante del paciente solo por su parte; las líneas cubiertas al 100 % no salen."
+  - "Liquidación mensual con factura a la aseguradora y PDF de sustento; una venta se liquida una sola vez."
+  - "Control en el servidor: no se puede cobrar con el convenio más de lo cubierto."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Cree el convenio en **Farmacia ▸ Convenios ▸ Convenios**, indique el diario de ventas de la factura y pulse **Crear método de pago del TPV**."
+  - "Agregue el método a la caja (con la sesión cerrada) y registre los afiliados."
+
+novedades:
+  - version: '1.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Primera versión (mejora E10): convenios con EPS y empresas, cobertura en la caja, comprobante del paciente por su parte y liquidación con factura a la aseguradora."
+
+relacionados: [al_pharmacy_pos, al_l10n_pe_edi_pos, al_industry_pharmacy]
