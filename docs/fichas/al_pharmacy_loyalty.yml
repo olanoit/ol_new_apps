@@ -1,0 +1,42 @@
+titulo: "Farmacia: fidelización por DNI"
+subtitulo: "Puntos y vales para los clientes de la botica, como los clubes de las cadenas, sin premiar los medicamentos con receta ni los controlados."
+categoria: "Salud · Punto de venta"
+etiquetas: [Farmacia, Fidelización, Puntos, Punto de venta, DIGEMID]
+
+destacados:
+  - icono: "★"
+    titulo: "Club de puntos por DNI"
+    texto: "El cliente se identifica con su DNI en la caja y acumula puntos que canjea por vales, como en Inkaclub."
+  - icono: "℞"
+    titulo: "Receta fuera del programa"
+    texto: "Los medicamentos con receta y los controlados no suman puntos ni reciben descuentos o regalos."
+  - icono: "%"
+    titulo: "Descuentos que respetan la norma"
+    texto: "Un descuento sobre el pedido se aplica solo a los productos de venta libre."
+  - icono: "🎁"
+    titulo: "Tarjetas de regalo y monederos intactos"
+    texto: "Son medios de pago: se usan en cualquier compra."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "Las cadenas fidelizan con puntos por DNI, pero en una botica no se puede promover el consumo de medicamentos con premios ni canjes, y menos el de los que necesitan receta. Con los programas de Odoo tal cual, un descuento del 10 % al pedido alcanzaría a un antibiótico."
+  nota: "**Ejemplo:** en una compra de S/ 8 de bloqueador y S/ 40 de amoxicilina, el cliente gana 2 puntos (por los S/ 8) y el 10 % de socio descuenta S/ 0,80, no S/ 4,80."
+
+funcionalidades:
+  - "Opción «Excluir medicamentos con receta» en los programas de fidelización, promociones y cupones (activa por defecto)."
+  - "Puntos y condiciones solo con productos de venta libre, en el TPV y en los pedidos de venta."
+  - "Descuento sobre el pedido limitado a los productos de venta libre."
+  - "Validación: un programa no puede regalar un medicamento con receta."
+  - "Datos de ejemplo: «Club de Salud», 1 punto por S/ 4 y un vale de S/ 5 cada 1 000 puntos."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Configure el programa en **Punto de venta ▸ Productos ▸ Descuentos y fidelización** y agréguelo a la caja."
+
+novedades:
+  - version: '1.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Primera versión (mejora E8): programas de fidelización que excluyen los medicamentos con receta y los controlados."
+
+relacionados: [al_pharmacy_pos, al_pharmacy_base, al_industry_pharmacy]

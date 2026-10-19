@@ -253,6 +253,17 @@ patch(PosStore.prototype, {
                 }
             }
         }
-        return await super.addLineToOrder(vals, order, opts, configure);
+        const line = await super.addLineToOrder(vals, order, opts, configure);
+        if (line && productTemplate?.pharmacy_linked_company) {
+            // DS 020-2024-SA, art. 32-B: se informa al vender.
+            this.notification.add(
+                _t(
+                    "%s es de una empresa vinculada a la botica: infórmelo al cliente.",
+                    productTemplate.display_name
+                ),
+                { type: "warning", sticky: false }
+            );
+        }
+        return line;
     },
 });

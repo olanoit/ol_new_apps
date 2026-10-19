@@ -29,3 +29,22 @@ class ReportPharmacyPriceList(models.AbstractModel):
                 for composition in sorted(by_composition, key=str.lower)]
             linked[company.id] = templates.filtered('pharmacy_linked_company')
         return {'docs': companies, 'groups': groups, 'linked': linked}
+
+
+class ReportPharmacyLinkedPoster(models.AbstractModel):
+    _name = 'report.al_l10n_pe_pharmacy_digemid.report_linked_poster'
+    _description = 'Cartel de productos de empresas vinculadas'
+
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        """Cartel A4 que el establecimiento exhibe (DS 020-2024-SA, art. 32-B):
+        los productos que vende de empresas vinculadas, por DCI."""
+        companies = self.env['res.company'].browse(docids)
+        products = {}
+        for company in companies:
+            products[company.id] = self.env['product.template'].search([
+                ('pharmacy_ok', '=', True), ('sale_ok', '=', True),
+                ('pharmacy_linked_company', '=', True),
+                '|', ('company_id', '=', False), ('company_id', '=', company.id),
+            ]).sorted(lambda t: ((t.pharmacy_composition or t.name).lower(), t.name))
+        return {'docs': companies, 'products': products}

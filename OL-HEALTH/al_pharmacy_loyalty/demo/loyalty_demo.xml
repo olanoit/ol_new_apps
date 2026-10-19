@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Club de puntos de la botica, parecido a Inkaclub: 1 punto por S/ 4 y un
+         vale de S/ 5 cada 1 000 puntos. Los medicamentos con receta no suman. -->
+    <record id="loyalty_program_health_club" model="loyalty.program">
+        <field name="name">Club de Salud</field>
+        <field name="program_type">loyalty</field>
+        <field name="applies_on">both</field>
+        <field name="trigger">auto</field>
+        <field name="portal_visible" eval="True"/>
+        <field name="portal_point_name">Puntos</field>
+        <field name="pharmacy_exclude_prescription" eval="True"/>
+        <field name="rule_ids" eval="[Command.clear(), Command.create({
+            'reward_point_mode': 'money', 'reward_point_amount': 0.25, 'minimum_amount': 0})]"/>
+        <field name="reward_ids" eval="[Command.clear(), Command.create({
+            'reward_type': 'discount', 'discount': 5, 'discount_mode': 'per_order',
+            'discount_applicability': 'order', 'required_points': 1000,
+            'description': 'Vale de S/ 5'})]"/>
+    </record>
+</odoo>

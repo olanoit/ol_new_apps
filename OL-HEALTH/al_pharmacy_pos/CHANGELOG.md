@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261019 — 19/10/2026
+
+- Empresa vinculada (DS 020-2024-SA, art. 32-B): aviso al agregar el producto y leyenda «Empresa vinculada» en la línea y en el ticket.
+- Rótulo de venta fraccionada (art. 48) desde el recibo del TPV o la orden: establecimiento, producto, laboratorio, concentración, vía, lote y vencimiento.
+
 ## 5.20261018 — 18/10/2026
 
 - El precio por presentación de la línea sale del total: el blíster de S/ 1,50 + IGV muestra S/ 1,77 y no S/ 1,80 (precio por tableta redondeado multiplicado por 10).

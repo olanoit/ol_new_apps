@@ -23,6 +23,7 @@ contexto:
   nota: "**Por confirmar:** la plantilla vigente del Observatorio (DIGEMID rechaza otra estructura) y la periodicidad para boticas; las columnas del archivo se ajustan en el código."
 
 funcionalidades:
+  - "Cartel A4 de productos de empresas vinculadas (DS 020-2024-SA, art. 32-B)."
   - "Código DIGEMID del producto e historial de precios pendientes o informados."
   - "Archivo de precios (pendientes o toda la oferta en existencia) con el código del establecimiento."
   - "Listado de genéricos esenciales importable y cálculo del cumplimiento por local."
@@ -36,6 +37,10 @@ configuracion:
   - "Importe el listado de genéricos esenciales en **Farmacia ▸ Configuración ▸ Catálogos**."
 
 novedades:
+  - version: '3.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Cartel A4 de los productos de empresas vinculadas para exhibir en el local (DS 020-2024-SA, art. 32-B)."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

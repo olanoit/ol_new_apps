@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_pharmacy_digemid.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261019 — 19/10/2026
+
+- Cartel A4 de los productos de empresas vinculadas para exhibir en el local (DS 020-2024-SA, art. 32-B).
+
 ## 2.20261018 — 18/10/2026
 
 - Datos de demostración: códigos del Observatorio con precios por informar, régimen del IGV, autorización del establecimiento, listado de genéricos esenciales y dos reacciones adversas.

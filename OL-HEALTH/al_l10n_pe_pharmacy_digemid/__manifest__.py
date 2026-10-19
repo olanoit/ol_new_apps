@@ -17,6 +17,8 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
   30 % por ítem en el local (Ley 32033); microempresas exceptuadas.
 * Lista de precios por DCI de menor a mayor, con el aviso de empresas
   vinculadas.
+* Cartel A4 de los productos de empresas vinculadas para exhibir en el local
+  (DS 020-2024-SA, art. 32-B).
 * Sospechas de reacciones adversas con su plazo (graves 24 h) para notificar
   en NotiMED; quedan en el libro de ocurrencias.
 * Régimen del IGV: exonerado para las listas de las leyes 27450 y 28553.
@@ -29,7 +31,7 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '2.20261018',
+    'version': '3.20261019',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'al_report_base'],
     'data': [

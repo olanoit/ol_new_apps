@@ -47,3 +47,32 @@ class PosOrder(models.Model):
                 'price_unit': extra['price_unit'] * presentation.factor,
             })
         return values
+
+    def _get_pharmacy_fraction_labels(self):
+        """Rótulos de la venta fraccionada (DS 020-2024-SA, art. 48): una
+        etiqueta por producto y lote vendidos por unidad suelta de un producto
+        farmacéutico que tiene presentaciones (caja, blíster). Lleva el
+        establecimiento, el producto, el laboratorio, la concentración, la vía,
+        el lote y el vencimiento."""
+        self.ensure_one()
+        warehouse = self.config_id.picking_type_id.warehouse_id
+        labels = []
+        for line in self.lines:
+            template = line.product_id.product_tmpl_id
+            if (line.qty <= 0 or line.pharmacy_presentation_id or not template.pharmacy_ok
+                    or not template.pharmacy_presentation_ids):
+                continue
+            lots = self.env['stock.lot']
+            lot_names = line.pack_lot_ids.mapped('lot_name')
+            if lot_names:
+                lots = self.env['stock.lot'].search([
+                    ('name', 'in', lot_names), ('product_id', '=', line.product_id.id),
+                    '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id)])
+            for lot in lots or [False]:
+                labels.append({
+                    'product': line.product_id,
+                    'quantity': line.qty,
+                    'lot': lot,
+                    'warehouse': warehouse,
+                })
+        return labels

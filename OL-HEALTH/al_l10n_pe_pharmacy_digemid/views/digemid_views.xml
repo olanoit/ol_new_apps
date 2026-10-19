@@ -250,6 +250,22 @@
         <field name="code">action = env.ref('al_l10n_pe_pharmacy_digemid.action_report_price_list').report_action(env.company)</field>
     </record>
 
+    <!-- Cartel de empresas vinculadas -->
+    <record id="action_report_linked_poster" model="ir.actions.report">
+        <field name="name">Cartel de empresas vinculadas</field>
+        <field name="model">res.company</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_pharmacy_digemid.report_linked_poster</field>
+        <field name="report_file">al_l10n_pe_pharmacy_digemid.report_linked_poster</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+    </record>
+    <record id="action_server_linked_poster" model="ir.actions.server">
+        <field name="name">Cartel de empresas vinculadas</field>
+        <field name="model_id" ref="base.model_res_company"/>
+        <field name="state">code</field>
+        <field name="code">action = env.ref('al_l10n_pe_pharmacy_digemid.action_report_linked_poster').report_action(env.company)</field>
+    </record>
+
     <!-- Menús -->
     <menuitem id="menu_pharmacy_digemid" name="DIGEMID" parent="al_pharmacy_base.menu_pharmacy_root"
               sequence="35" groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
@@ -261,6 +277,8 @@
               action="pharmacy_generic_compliance_action" sequence="20"/>
     <menuitem id="menu_pharmacy_price_list" name="Lista de precios por DCI" parent="menu_pharmacy_digemid"
               action="action_server_price_list" sequence="30"/>
+    <menuitem id="menu_pharmacy_linked_poster" name="Cartel de empresas vinculadas" parent="menu_pharmacy_digemid"
+              action="action_server_linked_poster" sequence="31"/>
     <menuitem id="menu_pharmacy_adverse_event" name="Reacciones adversas" parent="menu_pharmacy_digemid"
               action="pharmacy_adverse_event_action" sequence="40"/>
     <menuitem id="menu_pharmacy_essential_medicine" name="Listado de genéricos esenciales"

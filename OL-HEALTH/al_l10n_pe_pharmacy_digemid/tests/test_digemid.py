@@ -109,3 +109,12 @@ class TestDigemid(TransactionCase):
         html, _ = self.env['ir.actions.report']._render_qweb_html(
             'al_l10n_pe_pharmacy_digemid.report_price_list', self.env.company.ids)
         self.assertLess(html.index(b'Metformina 850 mg tableta'), html.index(b'Glucophage 850 mg'))
+
+    def test_linked_company_poster(self):
+        own = self._product('Metformina Botica 850 mg', 'generic_brand', 0.4)
+        own.pharmacy_linked_company = True
+        self._product('Glucophage 850 mg', 'innovator', 1.5)
+        html, _ = self.env['ir.actions.report']._render_qweb_html(
+            'al_l10n_pe_pharmacy_digemid.report_linked_poster', self.env.company.ids)
+        self.assertIn(b'Metformina Botica 850 mg', html)
+        self.assertNotIn(b'Glucophage 850 mg', html)

@@ -33,16 +33,25 @@ Dispensación en la caja:
   ajuste; cada caso queda en el libro de ocurrencias.
 * Lotes: solo los disponibles, el que vence primero arriba (FEFO).
 * Al guardar la venta pagada se registran la receta y la dispensación.
+
+Cumplimiento (DS 020-2024-SA):
+
+* Empresa vinculada (art. 32-B): aviso al agregar el producto y leyenda en
+  la línea y en el ticket.
+* Venta fraccionada (art. 48): rótulo del envase con el establecimiento, el
+  producto, el laboratorio, la concentración, la vía, el lote y el
+  vencimiento, desde el recibo del TPV o la orden.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '5.20261018',
+    'version': '6.20261019',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
                 'point_of_sale', 'pos_hr'],
+    'data': ['report/pos_fraction_label.xml'],
     'assets': {
         'point_of_sale._assets_pos': [
             'al_pharmacy_pos/static/src/app/**/*',

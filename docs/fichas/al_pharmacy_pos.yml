@@ -20,6 +20,8 @@ contexto:
   nota: "**Listas de precios:** el porcentaje o la fórmula se aplica al precio de la presentación; las reglas de precio fijo o sobre el costo son por unidad del producto, como en Odoo."
 
 funcionalidades:
+  - "Empresa vinculada: aviso al vender y leyenda en el ticket (DS 020-2024-SA, art. 32-B)."
+  - "Rótulo de la venta fraccionada desde el recibo del TPV (art. 48)."
   - "Alternativas al elegir una marca: genéricos en DCI primero, por precio (Ley 32033)."
   - "Receta en la caja (número, fecha, prescriptor, colegiatura, paciente) según el ajuste de la compañía; excepción del Q.F. salvo en controlados."
   - "Aviso o bloqueo si quien atiende no es químico farmacéutico; queda en el libro de ocurrencias."
@@ -36,6 +38,11 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: '6.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Empresa vinculada (DS 020-2024-SA, art. 32-B): aviso al agregar el producto y leyenda «Empresa vinculada» en la línea y en el ticket."
+      - "Rótulo de venta fraccionada (art. 48) desde el recibo del TPV o la orden: establecimiento, producto, laboratorio, concentración, vía, lote y vencimiento."
   - version: '5.20261018'
     fecha: 18/10/2026
     cambios:

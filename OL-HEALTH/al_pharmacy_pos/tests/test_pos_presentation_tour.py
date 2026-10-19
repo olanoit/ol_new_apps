@@ -77,3 +77,21 @@ class TestPosPresentationTour(TestPointOfSaleHttpCommon):
         self.assertEqual(prescription.state, 'dispensed')
         # El cajero de la prueba no es químico farmacéutico: queda el aviso.
         self.assertTrue(order.pharmacy_no_pharmacist_alert)
+
+    def test_linked_company_and_fraction_label(self):
+        common = {'type': 'consu', 'available_in_pos': True, 'taxes_id': [(6, 0, [])],
+                  'pharmacy_ok': True}
+        self.env['product.template'].create({
+            **common, 'name': 'Ibuprofeno Botica 400 mg', 'list_price': 0.50,
+            'pharmacy_linked_company': True})
+        loratadine = self.env['product.template'].create({
+            **common, 'name': 'Loratadina 10 mg', 'list_price': 0.20})
+        self.env['pharmacy.presentation'].create({
+            'product_tmpl_id': loratadine.id, 'name': 'Blíster', 'factor': 7, 'price': 1.00})
+        self.main_pos_config.with_user(self.pos_user).open_ui()
+        self.start_pos_tour('al_pharmacy_pos_compliance')
+
+        order = self.env['pos.order'].search(
+            [('session_id', '=', self.main_pos_config.current_session_id.id)], limit=1)
+        labels = order._get_pharmacy_fraction_labels()
+        self.assertEqual([label['product'].name for label in labels], ['Loratadina 10 mg'])

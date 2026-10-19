@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_pos_fraction_label">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="labels" t-value="o._get_pharmacy_fraction_labels()"/>
+                <div t-if="not labels" class="article" style="font-family: Arial, sans-serif; font-size: 9px;">
+                    <t t-out="o.name"/>: no hay productos vendidos por unidad suelta.
+                </div>
+                <t t-foreach="labels" t-as="label">
+                    <t t-set="product" t-value="label['product']"/>
+                    <div class="article" style="font-family: Arial, sans-serif; font-size: 9px; line-height: 1.2;">
+                        <div style="font-weight: bold; font-size: 10px;">
+                            <t t-out="product.display_name"/> · <t t-out="label['quantity']"/> u.
+                        </div>
+                        <div t-if="product.pharmacy_composition" t-out="product.pharmacy_composition"/>
+                        <div>
+                            <t t-if="product.pharmacy_laboratory_id">Lab.: <t t-out="product.pharmacy_laboratory_id.name"/> · </t>
+                            <t t-if="product.pharmacy_route_id">Vía: <t t-out="product.pharmacy_route_id.name"/></t>
+                        </div>
+                        <div>
+                            Lote: <t t-out="label['lot'].name if label['lot'] else '—'"/>
+                            · Vence: <t t-if="label['lot'] and label['lot'].expiration_date" t-out="label['lot'].expiration_date" t-options="{'widget': 'date'}"/><t t-else="">—</t>
+                        </div>
+                        <div style="margin-top: 2px; border-top: 1px solid #595959;">
+                            <t t-out="o.company_id.name"/>
+                            <t t-if="label['warehouse']"> · <t t-out="label['warehouse'].name"/></t>
+                            <t t-if="label['warehouse'].partner_id.street"> · <t t-out="label['warehouse'].partner_id.street"/></t>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <record id="pos_fraction_label_report" model="ir.actions.report">
+        <field name="name">Rótulo de venta fraccionada</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_pharmacy_pos.report_pos_fraction_label</field>
+        <field name="report_file">al_pharmacy_pos.report_pos_fraction_label</field>
+        <field name="paperformat_id" ref="al_pharmacy_prescription.paperformat_pharmacy_label"/>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

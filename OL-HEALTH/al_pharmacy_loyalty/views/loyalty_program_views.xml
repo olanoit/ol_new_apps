@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="loyalty_program_view_form_pharmacy" model="ir.ui.view">
+        <field name="name">loyalty.program.form.pharmacy</field>
+        <field name="model">loyalty.program</field>
+        <field name="inherit_id" ref="loyalty.loyalty_program_view_form"/>
+        <field name="arch" type="xml">
+            <field name="currency_id" position="before">
+                <field name="pharmacy_exclude_prescription"
+                       invisible="program_type in ('gift_card', 'ewallet')"/>
+            </field>
+        </field>
+    </record>
+</odoo>
