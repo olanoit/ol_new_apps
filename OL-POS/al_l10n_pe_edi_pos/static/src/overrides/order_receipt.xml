@@ -75,7 +75,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="order.lines" t-as="line" t-key="line.uuid">
+                            <tr t-foreach="peReceiptLines" t-as="line" t-key="line.uuid">
                                 <td class="alpe-ctr" t-esc="line.qty"/>
                                 <td>
                                     <t t-esc="line.getFullProductName()"/>
@@ -163,6 +163,10 @@
                             <strong><t t-esc="line.payment_method_id.name"/>:</strong>
                             <t t-esc="formatCurrency(line.getAmount())"/>
                         </li>
+                        <li t-foreach="peExtraPayments" t-as="payment" t-key="payment_index">
+                            <strong><t t-esc="payment.name"/>:</strong>
+                            <t t-esc="formatCurrency(payment.amount)"/>
+                        </li>
                         <li t-if="order.showChange">
                             <strong>Vuelto:</strong>
                             <t t-esc="formatCurrency(order.change)"/>
@@ -177,6 +181,9 @@
                             <t t-esc="order.seller_id.name"/>
                         </li>
                     </ul>
+
+                    <div class="alpe-words" t-foreach="peNotes" t-as="note" t-key="note_index"
+                         t-esc="note"/>
 
                     <!-- QR DE REPRESENTACIÓN IMPRESA -->
                     <div class="alpe-qr" t-if="peQrUrl">

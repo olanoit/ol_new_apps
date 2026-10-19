@@ -206,6 +206,11 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: '16.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Las tarjetas de regalo y las recargas del monedero ya no llevan el impuesto inafecto: no entran en el comprobante (Informe SUNAT 097-2010). Lo hace el nuevo módulo al_l10n_pe_pos_loyalty, que se instala solo."
+      - "El ticket con formato de comprobante admite líneas, pagos y notas que otros módulos ajustan para que diga lo mismo que el comprobante."
   - version: '15.20261018'
     fecha: 18/10/2026
     cambios:

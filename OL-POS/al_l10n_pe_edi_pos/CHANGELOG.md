@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261019 — 19/10/2026
+
+- Las tarjetas de regalo y las recargas del monedero ya no llevan el impuesto inafecto: no entran en el comprobante (Informe SUNAT 097-2010). Lo hace el nuevo módulo al_l10n_pe_pos_loyalty, que se instala solo.
+- El ticket con formato de comprobante admite líneas, pagos y notas que otros módulos ajustan para que diga lo mismo que el comprobante.
+
 ## 15.20261018 — 18/10/2026
 
 - También la recarga del monedero electrónico de Odoo lleva el impuesto inafecto, aunque no haya un programa de monedero.

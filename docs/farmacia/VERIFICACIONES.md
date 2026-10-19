@@ -134,6 +134,7 @@ Norma: **DS 023-2001-SA** (Reglamento de Estupefacientes, Psicotrópicos y otras
   - Si la tarjeta **vence** sin canje y no hay que devolver el dinero, el saldo pasa a ingreso para Renta (Informe 097-2010, conclusión 2). [I] SUNAT no se pronunció sobre el IGV de un saldo vencido. La práctica habitual es no gravarlo, porque no hubo transferencia de bienes. Hay que confirmarlo con el contador.
   - **Riesgo**: si la tarjeta es «por» un producto determinado (por ejemplo, «vale por una caja de X»), puede contar como anticipo o venta gravada (Informe 157-2015).
   - Antes, la suite emitía el CPE en la recarga (commit 0628cb1, «la recarga del monedero también con impuesto inafecto»). Ese criterio **choca con el Informe 097-2010**: emitir una boleta por la recarga y otra por el canje **duplica la base** en el RVIE/PLE.
+  - **Aplicado el 19/10/2026** en `al_l10n_pe_pos_loyalty` (OL-POS), con el visto bueno del usuario: la venta de tarjetas y recargas no entra en el comprobante y va a la 496; el canje paga el comprobante por el total con su IGV. El saldo vencido sin canje se ajusta a mano.
 
 ---
 

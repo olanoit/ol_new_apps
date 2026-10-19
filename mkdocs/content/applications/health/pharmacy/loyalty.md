@@ -23,7 +23,8 @@ medicamentos con receta**, activa por defecto. Con ella:
 - El programa no puede regalar un medicamento con receta.
 
 Vale en la caja y en los pedidos de venta. Las tarjetas de regalo y los
-monederos no cambian: son medios de pago y se usan en cualquier compra.
+monederos no cambian: son medios de pago y se usan en cualquier compra (vea
+[Tarjetas de regalo y monedero](../../sales/point_of_sale/gift_cards.md)).
 
 !!! example "Ejemplo"
     Rosa compra S/ 8 de bloqueador y S/ 40 de amoxicilina con receta. Con el

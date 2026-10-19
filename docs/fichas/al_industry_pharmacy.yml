@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: '11.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Instala las tarjetas de regalo y el monedero con el criterio de SUNAT: su venta no lleva comprobante y su canje paga la boleta con el IGV completo."
   - version: '10.20261019'
     fecha: 19/10/2026
     cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261019 — 19/10/2026
+
+- Instala las tarjetas de regalo y el monedero con el criterio de SUNAT: su venta no lleva comprobante y su canje paga la boleta con el IGV completo.
+
 ## 10.20261019 — 19/10/2026
 
 - Instala la tienda en línea de la botica (receta validada por el Q.F., genéricos primero) y los convenios con EPS y empresas.

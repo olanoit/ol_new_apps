@@ -211,7 +211,8 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 15.20261018 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_l10n_pe_edi_pos](OL-POS/al_l10n_pe_edi_pos/) | 16.20261019 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_l10n_pe_pos_loyalty](OL-POS/al_l10n_pe_pos_loyalty/) | 1.20261019 | OPL-1 | La venta de tarjetas de regalo y recargas del monedero no lleva comprobante y su canje es una forma de pago: la boleta o factura sale con el IGV completo.
 [al_pos_network_printer](OL-POS/al_pos_network_printer/) | 4.20261009 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
 [al_pos_online_payment](OL-POS/al_pos_online_payment/) | 1.20261016 | OPL-1 | Corrige el TPV de Odoo 19 que, tras un cobro en línea, muestra el pago dos veces y un cambio igual al importe pagado.
 [al_pos_payment_gateway](OL-POS/al_pos_payment_gateway/) | 6.20261018 | OPL-1 | Cada pasarela (Izipay, Niubiz, Culqi…) como método de pago propio del TPV: el cliente paga con el QR en su teléfono y las devoluciones vuelven a su tarjeta.
@@ -264,7 +265,7 @@ módulo | versión | licencia | resumen
 [al_industry_construction](OL-INDUSTRIES/al_industry_construction/) | 1.20261017 | LGPL-3 | Constructora lista para planificar y ejecutar obras: plan de recursos por partidas, requerimientos de obra, compras, contratas, cuadrillas, presupuesto, valorización, aprobaciones y planilla de construcción civil.
 [al_industry_ecommerce](OL-INDUSTRIES/al_industry_ecommerce/) | 1.20261017 | OPL-1 | Tienda en línea lista para vender: catálogo web, checkout con RUC o DNI y ubigeo, pagos con Culqi, Niubiz o Izipay, boleta y factura electrónica y libro de reclamaciones virtual.
 [al_industry_furniture](OL-INDUSTRIES/al_industry_furniture/) | 1.20261017 | LGPL-3 | Fábrica de muebles a medida para obras: tipologías con módulos y piezas, lista de materiales, órdenes de fabricación, metrado, despacho e instalación por torre, piso y departamento.
-[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 10.20261019 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
+[al_industry_pharmacy](OL-INDUSTRIES/al_industry_pharmacy/) | 11.20261019 | OPL-1 | Farmacia o botica lista para vender: caja con boleta y factura electrónica, lotes con vencimiento y salida FEFO, datos DIGEMID del producto y libro de reclamaciones.
 [al_industry_restaurant](OL-INDUSTRIES/al_industry_restaurant/) | 2.20261017 | OPL-1 | Restaurante listo para atender: salón con mesas, comandas a cocina, división de cuentas y propinas, boleta y factura electrónica desde la caja, cobro con Yape y Plin y libro de reclamaciones.
 [al_industry_retail](OL-INDUSTRIES/al_industry_retail/) | 2.20261017 | OPL-1 | Bodega o minimarket listo para vender: caja con boleta y factura electrónica, cobro con Yape y Plin, cliente por RUC o DNI, vendedor por venta, kárdex SUNAT y libro de reclamaciones.
 

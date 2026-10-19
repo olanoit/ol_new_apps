@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '10.20261019',
+    'version': '11.20261019',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
@@ -38,6 +38,8 @@ compañías ▸ Industrias.
         # E9-E10: tienda en línea con receta y convenios con EPS.
         'al_pharmacy_website',
         'al_pharmacy_insurance',
+        # Tarjetas de regalo y monedero con el criterio de SUNAT (097-2010).
+        'al_l10n_pe_pos_loyalty',
         'point_of_sale',
         'purchase_stock',
         'sale_stock',

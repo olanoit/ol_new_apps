@@ -21,6 +21,18 @@ patch(OrderReceipt.prototype, {
     get peIssued() {
         return this.peMove?.state === "posted";
     },
+    /** Líneas, pagos y notas del ticket CPE: otros módulos los amplían para
+     * que el ticket diga lo mismo que el comprobante. */
+    get peReceiptLines() {
+        return this.order.lines;
+    },
+    /** Pagos que no son líneas de pago del TPV: [{name, amount}]. */
+    get peExtraPayments() {
+        return [];
+    },
+    get peNotes() {
+        return [];
+    },
     get peDocNumber() {
         return this.peIssued ? this.peMove.l10n_latam_document_number : "";
     },

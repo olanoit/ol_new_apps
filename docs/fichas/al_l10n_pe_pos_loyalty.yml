@@ -1,0 +1,90 @@
+titulo: Tarjetas de regalo y monedero en el TPV
+subtitulo: >-
+  La venta de tarjetas de regalo y recargas del monedero no lleva comprobante y
+  su canje es una forma de pago: la boleta o factura sale con el IGV completo.
+categoria: Punto de venta
+etiquetas: [Punto de venta, Tarjetas de regalo, Monedero, SUNAT, IGV]
+
+destacados_intro: >-
+  El criterio del Informe SUNAT 097-2010 aplicado a los programas de tarjetas
+  de regalo y monedero electrónico de Odoo.
+destacados:
+  - icono: "🎁"
+    titulo: Venta sin comprobante
+    texto: >-
+      La tarjeta vendida o la recarga no entra en la boleta: queda como deuda
+      con el cliente en la 496, no como ingreso.
+  - icono: "S/"
+    titulo: Canje con IGV completo
+    texto: >-
+      El comprobante del canje va por el precio completo y el vale lo paga,
+      como cualquier forma de pago.
+  - icono: "="
+    titulo: El ticket dice lo mismo
+    texto: >-
+      El canje aparece entre los pagos y la tarjeta vendida, fuera del
+      comprobante.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En Odoo estándar, la tarjeta de regalo vendida en el TPV sale en la boleta
+    y su canje es un descuento que rebaja el total y el IGV del comprobante.
+    Para SUNAT, vender una tarjeta o recargar el monedero no es venta de
+    bienes: no lleva IGV ni comprobante, y el comprobante se emite al canjear,
+    por el precio de los productos ([Informe SUNAT 097-2010](https://www.sunat.gob.pe/legislacion/oficios/2010/informe-oficios/i097-2010.pdf)).
+    Emitir boleta en la recarga y otra en el canje duplica la base en el
+    registro de ventas.
+  nota: >-
+    El saldo vencido sin canje pasa a ingreso para Renta al vencer: ese ajuste
+    se hace a mano, con el contador.
+
+funcionalidades:
+  - grupo: Venta de tarjetas y recargas
+    items:
+      - "Una venta solo de tarjetas o recargas sale con ticket, sin comprobante, aunque la caja tenga elegida la boleta o la factura."
+      - "En una venta con productos, la boleta o factura va solo por los productos; la tarjeta se cobra aparte."
+      - "El importe va a la cuenta de pasivo de la compañía (496 Ingresos diferidos por defecto), sin impuestos."
+  - grupo: Canje
+    items:
+      - "El comprobante lleva el importe completo con su IGV."
+      - "Un asiento del vale contra la cuenta por cobrar deja el comprobante pagado."
+      - "En la venta sin comprobante, el canje baja el pasivo sin tocar el IGV, aunque el producto de descuento de Odoo tenga impuestos."
+      - "Con redondeo de efectivo, se redondea el comprobante y no lo cobrado en caja."
+  - grupo: Configuración
+    items:
+      - "Cuenta de tarjetas de regalo y monedero por compañía, en los ajustes del TPV."
+      - "Al instalar, quita el impuesto inafecto de los productos de tarjetas y recargas y el IGV de los productos de canje; los productos de canje nuevos se crean sin IGV."
+
+configuracion:
+  - "Se instala solo con la boleta y factura electrónica del TPV (`al_l10n_pe_edi_pos`) y los programas de fidelización del TPV (`pos_loyalty`)."
+  - "Revise la cuenta en Punto de venta ‣ Configuración ‣ Ajustes, sección Contabilidad, bloque Tarjetas de regalo y monedero."
+  - "Deje sin impuestos los productos con los que vende tarjetas o recargas."
+requisitos_nota: >-
+  Trata las ventas del punto de venta. Las tarjetas de la tienda en línea o de
+  los pedidos de venta siguen el flujo de Odoo.
+
+ejemplos_titulo: Ejemplo de canje
+ejemplos:
+  - titulo: Canje de S/ 20,00
+    texto: >-
+      Ibuprofeno de S/ 50,00 + IGV 9,00 = 59,00. El cliente paga S/ 20,00 con
+      su tarjeta y S/ 39,00 en efectivo: la boleta es de S/ 59,00 con IGV de
+      S/ 9,00.
+    tabla:
+      - [Cuenta, Descripción, Debe, Haber]
+      - ["1212", Boleta por cobrar, "59,00", ""]
+      - ["70121", Mercaderías – venta local, "", "50,00"]
+      - ["40111", IGV, "", "9,00"]
+      - ["101", Caja (cobro en efectivo), "39,00", ""]
+      - ["1212", Cobro de la boleta, "", "39,00"]
+      - ["496", Canje de la tarjeta, "20,00", ""]
+      - ["1212", Pago de la boleta con el vale, "", "20,00"]
+
+novedades:
+  - version: 1.20261019
+    fecha: 19/10/2026
+    cambios:
+      - "Primera versión: venta de tarjetas y recargas sin comprobante y canje como forma de pago (Informe SUNAT 097-2010)."
+
+relacionados: [al_l10n_pe_edi_pos, al_pharmacy_loyalty, al_pos_payment_gateway]

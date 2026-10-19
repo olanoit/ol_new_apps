@@ -30,7 +30,8 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_l10n_pe_edi_pos](al_l10n_pe_edi_pos/) | 15.20261018 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_l10n_pe_edi_pos](al_l10n_pe_edi_pos/) | 16.20261019 | OPL-1 | Boleta/Factura electrónica desde el punto de venta: selector de tipo de documento, diario por tipo y ticket con formato CPE SUNAT.
+[al_l10n_pe_pos_loyalty](al_l10n_pe_pos_loyalty/) | 1.20261019 | OPL-1 | La venta de tarjetas de regalo y recargas del monedero no lleva comprobante y su canje es una forma de pago: la boleta o factura sale con el IGV completo.
 [al_pos_network_printer](al_pos_network_printer/) | 4.20261009 | OPL-1 | Imprime tickets y comandas del TPV en impresoras térmicas ESC/POS genéricas conectadas por red, sin IoT Box.
 [al_pos_online_payment](al_pos_online_payment/) | 1.20261016 | OPL-1 | Corrige el TPV de Odoo 19 que, tras un cobro en línea, muestra el pago dos veces y un cambio igual al importe pagado.
 [al_pos_payment_gateway](al_pos_payment_gateway/) | 6.20261018 | OPL-1 | Cada pasarela (Izipay, Niubiz, Culqi…) como método de pago propio del TPV: el cliente paga con el QR en su teléfono y las devoluciones vuelven a su tarjeta.

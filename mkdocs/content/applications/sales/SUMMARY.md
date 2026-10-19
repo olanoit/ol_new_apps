@@ -5,6 +5,7 @@
     * [Comprobantes electrónicos en el TPV](point_of_sale/electronic_invoicing.md)
     * [Cliente por RUC o DNI](point_of_sale/customer_lookup.md)
     * [Cobros con QR y pasarelas](point_of_sale/qr_payments.md)
+    * [Tarjetas de regalo y monedero](point_of_sale/gift_cards.md)
     * [Vendedor por venta](point_of_sale/salesperson.md)
     * [Vista de productos](point_of_sale/product_view.md)
     * [Impresoras de red](point_of_sale/network_printers.md)

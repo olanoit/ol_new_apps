@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.l10n.pe.pos.loyalty</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@id='pos_accounting_section']" position="inside">
+                <setting id="al_l10n_pe_pos_loyalty_account"
+                         string="Tarjetas de regalo y monedero"
+                         help="Pasivo con el cliente por las tarjetas vendidas y las recargas aún no canjeadas. Su venta no lleva comprobante y su canje paga la boleta o factura (Informe SUNAT 097-2010).">
+                    <div class="content-group mt16">
+                        <div class="row">
+                            <label string="Cuenta" for="l10n_pe_pos_voucher_account_id"
+                                   class="col-lg-4 o_light_label"/>
+                            <field name="l10n_pe_pos_voucher_account_id"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
