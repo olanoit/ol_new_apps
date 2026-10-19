@@ -70,8 +70,6 @@ Fuente: lectura de `newallcenter_dev_1` y `newallcenter_dev_2` el 16-oct-2026. E
 
 ## Pantalla
 
-![Pantalla del requerimiento de obra](Requerimiento%20de%20obra%20%E2%80%94%20selecci%C3%B3n%20de%20nivel%20y%20etapa%20(pantalla).png)
-
 Imagen adjunta: «Requerimiento de obra — selección de nivel y etapa (pantalla).png». El recuadro con borde azul es lo nuevo. Esquema en texto:
 
 ```

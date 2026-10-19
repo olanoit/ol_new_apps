@@ -64,15 +64,44 @@
 - Datos de ejemplo: «Club de Salud» (1 punto por S/ 4, vale de S/ 5 por
   1 000 puntos), parecido a Inkaclub.
 
-## 3. Siguientes etapas (no incluidas)
+## 3. Segunda tanda de mejoras
 
-1. `al_pharmacy_website`: genéricos primero también en la web (art. 49),
-   receta subida por el cliente, validación del Q.F., recojo en tienda y
-   reparto con cadena de frío.
-2. `al_pharmacy_insurance`: convenios con empresas y EPS (cobertura, copago,
-   topes y cuenta por cobrar a la aseguradora).
-3. Precio por vencer: descuento automático en lotes cercanos al vencimiento
-   y canje con la droguería.
-4. Servicios complementarios (presión, glucosa, inyectables) en un área
+### E9 · `al_pharmacy_website`: tienda en línea de la botica
+
+- **Genéricos primero también en la web** (DS 020-2024-SA, art. 49): en la
+  ficha de un producto de marca con equivalentes se muestran primero las
+  alternativas genéricas en DCI y luego las demás, con su precio.
+- **Receta en línea**: los productos con receta piden subir la foto o PDF de
+  la receta antes de pagar; el pedido queda «por validar» hasta que un
+  químico farmacéutico la revisa (aprobar o rechazar con motivo); los
+  controlados no se venden en línea.
+- **Recojo en tienda** y **reparto**: el cliente elige el local; los productos
+  con cadena de frío se marcan en la hoja de reparto.
+- Empresa vinculada: leyenda en la ficha del producto (art. 32-B).
+
+### E10 · `al_pharmacy_insurance`: convenios con empresas y EPS
+
+- **Convenio** con la aseguradora o empresa: cobertura (% por defecto y por
+  categoría o producto), copago fijo, tope por receta y por mes, vigencia,
+  requisito de receta y diario de la cuenta por cobrar.
+- **Afiliado**: paciente, convenio, número de afiliado y vigencia.
+- **En la caja**: al elegir un afiliado, la venta se divide en la parte del
+  paciente (que paga en caja) y la parte del convenio (método de pago
+  «Convenio» que queda como cuenta por cobrar a la aseguradora).
+- **Liquidación mensual** por convenio: lista de ventas cubiertas y factura a
+  la aseguradora.
+
+### E11 · Precio por vencer y canje con la droguería (`al_pharmacy_stock`)
+
+- **Descuento por vencer**: escalas por días al vencimiento (por ejemplo,
+  -20 % a 90 días, -40 % a 30 días) que la caja aplica al vender un lote
+  cercano al vencimiento; nunca se vende un lote vencido.
+- **Canje / devolución a la droguería**: documento por proveedor con los
+  lotes por vencer o vencidos que acepta canjear, devolución de stock y nota
+  de crédito del proveedor.
+
+## 4. Siguientes etapas (no incluidas)
+
+1. Servicios complementarios (presión, glucosa, inyectables) en un área
    propia: la lista oficial de servicios permitidos está por verificar; la
    toma de muestras y la consulta médica están prohibidas en la botica.
