@@ -5,3 +5,6 @@
     * [Receta y dispensación en la caja](pharmacy/dispensing.md)
     * [Estupefacientes y psicotrópicos](pharmacy/controlled.md)
     * [DIGEMID, genéricos e IGV](pharmacy/digemid.md)
+    * [Tratamientos crónicos y recompra](pharmacy/care.md)
+    * [Faltantes y sugerido de compra](pharmacy/replenishment.md)
+    * [Fidelización por DNI](pharmacy/loyalty.md)

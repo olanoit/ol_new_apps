@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '8.20261018',
+    'version': '9.20261019',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',
@@ -30,6 +30,11 @@ compañías ▸ Industrias.
         'al_l10n_pe_prescriber_cmp',
         'al_l10n_pe_pharmacy_controlled',
         'al_l10n_pe_pharmacy_digemid',
+        # Mejoras E5-E8 (docs/farmacia/MEJORAS_PROCESOS.md): crónicos y
+        # recompra, faltantes y sugerido de compra, fidelización sin receta.
+        'al_pharmacy_care',
+        'al_pharmacy_replenishment',
+        'al_pharmacy_loyalty',
         'point_of_sale',
         'purchase_stock',
         'sale_stock',

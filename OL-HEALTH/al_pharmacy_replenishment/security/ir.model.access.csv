@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pharmacy_shortage_pos_user,pharmacy.shortage cajero,model_pharmacy_shortage,point_of_sale.group_pos_user,1,0,1,0
+access_pharmacy_shortage_user,pharmacy.shortage técnico,model_pharmacy_shortage,al_pharmacy_base.group_pharmacy_technician,1,1,1,0
+access_pharmacy_shortage_pharmacist,pharmacy.shortage químico farmacéutico,model_pharmacy_shortage,al_pharmacy_base.group_pharmacy_pharmacist,1,1,1,1
+access_pharmacy_replenishment_wizard,pharmacy.replenishment.wizard comprador,model_pharmacy_replenishment_wizard,purchase.group_purchase_user,1,1,1,1
+access_pharmacy_replenishment_wizard_line,pharmacy.replenishment.wizard.line comprador,model_pharmacy_replenishment_wizard_line,purchase.group_purchase_user,1,1,1,1
+access_pharmacy_shortage_pos_manager,pharmacy.shortage responsable del TPV,model_pharmacy_shortage,point_of_sale.group_pos_manager,1,1,1,0
+access_pharmacy_shortage_purchase_user,pharmacy.shortage comprador,model_pharmacy_shortage,purchase.group_purchase_user,1,1,0,0

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_pharmacy_replenishment" name="Reposición"
+              parent="al_pharmacy_base.menu_pharmacy_root" sequence="25"/>
+    <menuitem id="menu_pharmacy_replenishment_wizard" name="Sugerido de compra"
+              parent="menu_pharmacy_replenishment" action="action_pharmacy_replenishment_wizard"
+              sequence="10" groups="purchase.group_purchase_user"/>
+    <menuitem id="menu_pharmacy_shortage" name="Faltantes" parent="menu_pharmacy_replenishment"
+              action="action_pharmacy_shortage" sequence="20"/>
+    <menuitem id="menu_pharmacy_shortage_analysis" name="Análisis de faltantes"
+              parent="menu_pharmacy_replenishment" action="action_pharmacy_shortage_analysis"
+              sequence="30"/>
+</odoo>

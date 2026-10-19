@@ -13,7 +13,7 @@ comparación de módulo a obra y por etapa.
 
 1. El puente **Planificación de obra: orden de fabricación del mueble**
    (`al_construction_planner_production`) se instala solo con las
-   [aprobaciones en fabricación](approvals.md#orden-de-fabricacion).
+   [aprobaciones en fabricación](approvals.md#orden-de-fabricación).
 2. Asigne el grupo **Planificación de obra: jefe de producción**. En cada
    orden, el jefe de producción puede elegir **Pide los accesorios** para que
    otra persona los pida.

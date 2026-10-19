@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pharmacy_shortage_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.shortage.list</field>
+        <field name="model">pharmacy.shortage</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('done', 'discarded')" decoration-info="state == 'ordered'">
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="description" optional="show"/>
+                <field name="quantity" sum="Total"/>
+                <field name="uom_id" optional="hide"/>
+                <field name="reason"/>
+                <field name="warehouse_id"/>
+                <field name="pos_config_id" optional="show"/>
+                <field name="employee_id" optional="show"/>
+                <field name="user_id" optional="hide"/>
+                <field name="purchase_order_id" optional="hide"/>
+                <field name="picking_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge" decoration-warning="state == 'pending'"
+                       decoration-info="state == 'ordered'" decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pharmacy_shortage_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.shortage.form</field>
+        <field name="model">pharmacy.shortage</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_done" type="object" string="Atendido" class="btn-primary"
+                            invisible="state not in ('pending', 'ordered')"/>
+                    <button name="action_discard" type="object" string="Descartar"
+                            invisible="state not in ('pending', 'ordered')"/>
+                    <button name="action_reset" type="object" string="Volver a pendiente"
+                            invisible="state == 'pending'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,ordered,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Pedido del cliente">
+                            <field name="product_id"/>
+                            <field name="description" required="not product_id"/>
+                            <label for="quantity"/>
+                            <div class="o_row">
+                                <field name="quantity"/>
+                                <field name="uom_id" invisible="not product_id"/>
+                            </div>
+                            <field name="reason"/>
+                        </group>
+                        <group string="Dónde y quién">
+                            <field name="date"/>
+                            <field name="warehouse_id"/>
+                            <field name="pos_session_id" invisible="not pos_session_id"/>
+                            <field name="employee_id"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Reposición" invisible="not purchase_order_id and not picking_id">
+                        <field name="purchase_order_id" invisible="not purchase_order_id"/>
+                        <field name="picking_id" invisible="not picking_id"/>
+                    </group>
+                    <field name="note" placeholder="Nota (por ejemplo, el teléfono del cliente para avisarle)"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="pharmacy_shortage_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.shortage.search</field>
+        <field name="model">pharmacy.shortage</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="product_id"/>
+                <field name="description"/>
+                <field name="warehouse_id"/>
+                <field name="employee_id"/>
+                <filter name="pending" string="Pendientes" domain="[('state', '=', 'pending')]"/>
+                <filter name="ordered" string="Pedidos" domain="[('state', '=', 'ordered')]"/>
+                <separator/>
+                <filter name="no_product" string="Fuera del catálogo" domain="[('product_id', '=', False)]"/>
+                <separator/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_product" string="Producto" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_reason" string="Motivo" context="{'group_by': 'reason'}"/>
+                    <filter name="group_warehouse" string="Local" context="{'group_by': 'warehouse_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'date:week'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pharmacy_shortage_view_pivot" model="ir.ui.view">
+        <field name="name">pharmacy.shortage.pivot</field>
+        <field name="model">pharmacy.shortage</field>
+        <field name="arch" type="xml">
+            <pivot string="Faltantes">
+                <field name="product_id" type="row"/>
+                <field name="reason" type="col"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="pharmacy_shortage_view_graph" model="ir.ui.view">
+        <field name="name">pharmacy.shortage.graph</field>
+        <field name="model">pharmacy.shortage</field>
+        <field name="arch" type="xml">
+            <graph string="Faltantes" type="bar">
+                <field name="product_id"/>
+                <field name="quantity" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_shortage" model="ir.actions.act_window">
+        <field name="name">Faltantes</field>
+        <field name="res_model">pharmacy.shortage</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre lo que pidió un cliente y no había</p>
+            <p>Desde la caja, con el botón «Faltante», o aquí. El sugerido de compra suma los
+                faltantes pendientes.</p>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_shortage_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de faltantes</field>
+        <field name="res_model">pharmacy.shortage</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+    </record>
+</odoo>

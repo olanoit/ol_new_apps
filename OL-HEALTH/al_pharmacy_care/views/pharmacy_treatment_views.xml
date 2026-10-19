@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pharmacy_treatment_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.treatment.list</field>
+        <field name="model">pharmacy.treatment</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="refill_state == 'late'" decoration-warning="refill_state == 'due'"
+                  decoration-muted="state != 'active'">
+                <field name="patient_id"/>
+                <field name="product_id"/>
+                <field name="daily_units" optional="hide"/>
+                <field name="last_purchase_date"/>
+                <field name="covered_until"/>
+                <field name="next_refill_date"/>
+                <field name="days_late" optional="show"/>
+                <field name="refill_state" widget="badge"
+                       decoration-success="refill_state == 'ok'" decoration-warning="refill_state == 'due'"
+                       decoration-danger="refill_state == 'late'"/>
+                <field name="pdc" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="state" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="pharmacy_treatment_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.treatment.form</field>
+        <field name="model">pharmacy.treatment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_whatsapp" type="object" string="WhatsApp" icon="fa-whatsapp"
+                            class="btn-primary" invisible="not whatsapp_url or state != 'active'"/>
+                    <button name="action_update_coverage" type="object" string="Recalcular"
+                            invisible="state != 'active'"/>
+                    <button name="action_pause" type="object" string="Pausar"
+                            invisible="state != 'active'"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <button name="action_activate" type="object" string="Reactivar"
+                            invisible="state == 'active'"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <button name="action_done" type="object" string="Terminar"
+                            invisible="state == 'done'"
+                            groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,paused,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_purchases" type="object" class="oe_stat_button"
+                                icon="fa-shopping-basket" string="Compras en caja"/>
+                    </div>
+                    <widget name="web_ribbon" title="Atrasado" bg_color="text-bg-danger"
+                            invisible="refill_state != 'late' or state != 'active'"/>
+                    <widget name="web_ribbon" title="Por reponer" bg_color="text-bg-warning"
+                            invisible="refill_state != 'due' or state != 'active'"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Tratamiento">
+                            <field name="patient_id"/>
+                            <field name="product_id"/>
+                            <field name="daily_units"/>
+                            <field name="posology"/>
+                            <field name="date_start"/>
+                            <field name="prescription_id"/>
+                        </group>
+                        <group string="Recompra">
+                            <field name="last_purchase_date"/>
+                            <field name="covered_until"/>
+                            <field name="next_refill_date"/>
+                            <field name="days_late" invisible="not days_late"/>
+                            <field name="refill_state"/>
+                            <field name="pdc"/>
+                            <field name="adherent"/>
+                        </group>
+                        <group>
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="warehouse_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="whatsapp_url" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Notas del seguimiento…"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="pharmacy_treatment_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.treatment.search</field>
+        <field name="model">pharmacy.treatment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="patient_id"/>
+                <field name="product_id"/>
+                <field name="user_id"/>
+                <filter name="to_refill" string="Por reponer"
+                        domain="[('refill_state', 'in', ('due', 'late')), ('state', '=', 'active')]"/>
+                <filter name="late" string="Atrasados"
+                        domain="[('refill_state', '=', 'late'), ('state', '=', 'active')]"/>
+                <filter name="not_adherent" string="No adherentes"
+                        domain="[('adherent', '=', False), ('refill_state', '!=', 'no_purchase'), ('state', '=', 'active')]"/>
+                <filter name="no_purchase" string="Sin compras"
+                        domain="[('refill_state', '=', 'no_purchase')]"/>
+                <separator/>
+                <filter name="active_treatments" string="Activos" domain="[('state', '=', 'active')]"/>
+                <filter name="my_treatments" string="Mis pacientes" domain="[('user_id', '=', uid)]"/>
+                <group>
+                    <filter name="group_refill_state" string="Recompra" context="{'group_by': 'refill_state'}"/>
+                    <filter name="group_product" string="Medicamento" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_user" string="Responsable" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="pharmacy_treatment_action" model="ir.actions.act_window">
+        <field name="name">Tratamientos crónicos</field>
+        <field name="res_model">pharmacy.treatment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active_treatments': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre el primer tratamiento crónico</p>
+            <p>Cada compra del paciente suma días cubiertos; la botica recuerda la recompra antes
+                de que se le acabe el medicamento y mide su adherencia.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_pharmacy_treatment" name="Tratamientos crónicos"
+              parent="al_pharmacy_prescription.menu_pharmacy_dispensing" sequence="15"
+              action="pharmacy_treatment_action"/>
+
+    <!-- Receta: crear los tratamientos desde sus medicamentos -->
+    <record id="pharmacy_prescription_view_form_care" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.form.care</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="inherit_id" ref="al_pharmacy_prescription.pharmacy_prescription_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <button name="action_create_treatments" type="object" string="Crear tratamientos"
+                        invisible="state in ('draft', 'cancelled')"
+                        groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="before">
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_treatments" type="object" class="oe_stat_button"
+                            icon="fa-heartbeat" invisible="not treatment_count">
+                        <field name="treatment_count" widget="statinfo" string="Tratamientos"/>
+                    </button>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Paciente: sus tratamientos -->
+    <record id="res_partner_view_form_care" model="ir.ui.view">
+        <field name="name">res.partner.form.care</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_pharmacy_treatments" type="object" class="oe_stat_button"
+                        icon="fa-heartbeat" groups="al_pharmacy_base.group_pharmacy_technician"
+                        invisible="not pharmacy_treatment_count">
+                    <field name="pharmacy_treatment_count" widget="statinfo" string="Tratamientos"
+                           groups="al_pharmacy_base.group_pharmacy_technician"/>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <!-- Ajustes -->
+    <record id="res_config_settings_view_form_care" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.pharmacy.care</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_pharmacy_base.res_config_settings_view_form_pharmacy"/>
+        <field name="arch" type="xml">
+            <block name="pharmacy_setting_container" position="inside">
+                <setting company_dependent="1" string="Recompra de tratamientos crónicos"
+                         help="Días antes de que se acabe el medicamento en que se crea el recordatorio para el responsable.">
+                    <field name="pharmacy_care_reminder_days"/> días
+                    <div class="mt-2">
+                        <field name="pharmacy_care_send_email"/>
+                        <label for="pharmacy_care_send_email" string="Enviar también un correo al paciente"/>
+                    </div>
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

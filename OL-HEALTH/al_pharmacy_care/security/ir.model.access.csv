@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pharmacy_treatment_technician,pharmacy.treatment técnico,model_pharmacy_treatment,al_pharmacy_base.group_pharmacy_technician,1,0,0,0
+access_pharmacy_treatment_pharmacist,pharmacy.treatment químico farmacéutico,model_pharmacy_treatment,al_pharmacy_base.group_pharmacy_pharmacist,1,1,1,0
+access_pharmacy_treatment_manager,pharmacy.treatment administrador,model_pharmacy_treatment,al_pharmacy_base.group_pharmacy_manager,1,1,1,1

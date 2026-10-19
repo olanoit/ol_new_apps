@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="al_pharmacy_replenishment.ShortageDialog">
+        <Dialog size="'md'" title="'Registrar faltante'">
+            <div class="o_pharmacy_shortage_dialog">
+                <p class="text-muted">Lo que el cliente pidió y no se le pudo vender.</p>
+                <div class="form-check mb-3" t-if="props.productId">
+                    <input id="shortage_use_product" type="checkbox" class="form-check-input"
+                           t-model="state.useProduct"/>
+                    <label class="form-check-label" for="shortage_use_product">
+                        Producto: <strong t-esc="props.productName"/>
+                    </label>
+                </div>
+                <div class="row g-2">
+                    <div class="col-12" t-if="!state.useProduct or !props.productId">
+                        <label class="form-label" for="shortage_description">Qué pidió</label>
+                        <input id="shortage_description" class="form-control"
+                               placeholder="Nombre, concentración o presentación"
+                               t-model="state.description"/>
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="shortage_quantity">Cantidad</label>
+                        <input id="shortage_quantity" type="number" min="0" step="any"
+                               class="form-control" t-model="state.quantity"/>
+                    </div>
+                    <div class="col-8">
+                        <label class="form-label" for="shortage_reason">Motivo</label>
+                        <select id="shortage_reason" class="form-select" t-model="state.reason">
+                            <t t-foreach="reasons" t-as="reason" t-key="reason[0]">
+                                <option t-att-value="reason[0]" t-esc="reason[1]"/>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <t t-set-slot="footer">
+                <button class="btn btn-primary btn-lg o_pharmacy_shortage_save"
+                        t-att-disabled="!canSave" t-on-click="save">Registrar</button>
+                <button class="btn btn-secondary btn-lg" t-on-click="props.close">Cancelar</button>
+            </t>
+        </Dialog>
+    </t>
+</templates>

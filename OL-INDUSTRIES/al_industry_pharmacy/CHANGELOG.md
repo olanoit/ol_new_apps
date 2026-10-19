@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_industry_pharmacy.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261019 — 19/10/2026
+
+- Instala las mejoras de la suite: tratamientos crónicos y recompra, faltantes y sugerido de compra, y fidelización por DNI sin medicamentos con receta.
+
 ## 8.20261018 — 18/10/2026
 
 - Instala las pasarelas Niubiz y Culqi y el cobro con pasarelas en el TPV: cada una es un método de pago de la caja con su logo.

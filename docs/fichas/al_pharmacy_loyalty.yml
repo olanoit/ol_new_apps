@@ -31,7 +31,7 @@ funcionalidades:
 
 configuracion:
   - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
-  - "Configure el programa en **Punto de venta ▸ Productos ▸ Descuentos y fidelización** y agréguelo a la caja."
+  - "Configure el programa en **Punto de venta ▸ Productos ▸ Descuentos y programas de lealtad** y agréguelo a la caja."
 
 novedades:
   - version: '1.20261019'

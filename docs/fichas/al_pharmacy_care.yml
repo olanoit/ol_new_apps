@@ -1,0 +1,46 @@
+titulo: "Farmacia: tratamientos crónicos y recompra"
+subtitulo: "Pacientes crónicos con su tratamiento: días cubiertos por cada compra, recordatorio de recompra por WhatsApp o correo, adherencia y aviso en la caja."
+categoria: "Salud · Punto de venta"
+etiquetas: [Farmacia, Pacientes crónicos, Recompra, Adherencia, WhatsApp, Punto de venta]
+
+destacados:
+  - icono: "⏱"
+    titulo: "Cubierto hasta"
+    texto: "Cada compra del medicamento o de un equivalente suma días de tratamiento: Odoo sabe cuándo se le acaba al paciente."
+  - icono: "💬"
+    titulo: "Recordatorio con WhatsApp"
+    texto: "Actividad para el responsable unos días antes y mensaje listo para enviar por WhatsApp o correo."
+  - icono: "%"
+    titulo: "Adherencia (PDC)"
+    texto: "Proporción de días cubiertos de los últimos 180 días; con menos de 80 % el paciente queda marcado."
+  - icono: "🛒"
+    titulo: "Aviso en la caja"
+    texto: "Al elegir al cliente, la caja muestra lo que le toca reponer y lo agrega al pedido con un clic."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "La venta recurrente a pacientes con hipertensión, diabetes o tiroides es el núcleo del ingreso de una botica, y nadie avisa al paciente que se le acaba el tratamiento. Las cadenas internacionales llaman o escriben antes de la fecha y miden la adherencia; la botica pierde la venta y el paciente, la continuidad."
+  nota: "**Ejemplo:** losartán 50 mg, 1 tableta al día. Rosa compra 30 tabletas el 1 de octubre: queda cubierta hasta el 31; con 5 días de aviso, el 26 el responsable recibe la actividad con el mensaje para WhatsApp."
+
+funcionalidades:
+  - "Tratamiento por paciente y medicamento: unidades por día, posología, inicio, responsable, local y estado."
+  - "Creación desde la receta, sin duplicar los tratamientos activos."
+  - "Días cubiertos con las ventas pagadas de la caja y los pedidos de venta confirmados, también de equivalentes; las devoluciones restan."
+  - "Última compra, cubierto hasta, próxima recompra, días de atraso y estado de recompra."
+  - "Adherencia por proporción de días cubiertos (PDC) de los últimos 180 días."
+  - "Cron diario con la actividad «Recompra de tratamiento» y correo opcional al paciente."
+  - "Botón de WhatsApp con el mensaje listo (agrega el 51 a los celulares peruanos)."
+  - "Aviso en la caja al elegir al cliente, solo con el medicamento y la fecha (sin datos de salud)."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Indique los días de aviso y si se envía correo al paciente en **Farmacia ▸ Configuración ▸ Ajustes**."
+  - "Cree los tratamientos en **Farmacia ▸ Dispensación ▸ Tratamientos crónicos** o desde la receta."
+
+novedades:
+  - version: '1.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Primera versión (mejora E5): tratamientos crónicos, recompra, adherencia, WhatsApp y aviso en la caja."
+
+relacionados: [al_pharmacy_prescription, al_pharmacy_pos, al_industry_pharmacy]

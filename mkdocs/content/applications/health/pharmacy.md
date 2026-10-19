@@ -17,7 +17,10 @@ Ley 32033.
 | [Almacenamiento](pharmacy/storage.md) | Recepción, lotes y vencimientos, temperatura, alertas sanitarias, actas de baja y bonificaciones |
 | [Receta y dispensación en la caja](pharmacy/dispensing.md) | Receta, prescriptores y pacientes, alternativas genéricas y control del químico farmacéutico |
 | [Estupefacientes y psicotrópicos](pharmacy/controlled.md) | Receta especial, retención con folio, libros y balance trimestral |
-| [DIGEMID, genéricos e IGV](pharmacy/digemid.md) | Observatorio de precios, 30 % de genéricos, precios por DCI, reacciones adversas e IGV exonerado |
+| [DIGEMID, genéricos e IGV](pharmacy/digemid.md) | Observatorio de precios, 30 % de genéricos, precios por DCI, cartel de empresas vinculadas, reacciones adversas e IGV exonerado |
+| [Tratamientos crónicos y recompra](pharmacy/care.md) | Días cubiertos, recordatorio por WhatsApp, adherencia y aviso en la caja |
+| [Faltantes y sugerido de compra](pharmacy/replenishment.md) | Lo que se pide y no hay, y compra por consumo de cada local |
+| [Fidelización por DNI](pharmacy/loyalty.md) | Puntos y vales para los clientes sin premiar los medicamentos con receta |
 
 ## Configuración
 
@@ -56,6 +59,9 @@ que necesita para probarse:
 | Estupefacientes y psicotrópicos | Clonazepam y alprazolam (lista IVA), morfina (lista IIA), receta especial vigente y receta retenida con folio |
 | DIGEMID, genéricos e IGV | Códigos y precios por informar al Observatorio, régimen del IGV, autorización del local, genéricos esenciales y reacciones adversas |
 | Unidad SUNAT de las presentaciones | Clientes con DNI y con RUC |
+| Tratamientos crónicos y recompra | Dos pacientes con losartán y metformina |
+| Faltantes y sugerido de compra | Un faltante de losartán y uno de un colirio fuera del catálogo |
+| Fidelización por DNI | Programa «Club de Salud»: 1 punto por S/ 4 y un vale de S/ 5 cada 1 000 puntos |
 
 ## Turnos y libro de ocurrencias
 

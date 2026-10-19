@@ -25,6 +25,23 @@ modulos: [al_pharmacy_prescription, al_pharmacy_pos, al_l10n_pe_prescriber_cmp]
     Active **Iniciar sesión con empleados** en el punto de venta: la caja sabe
     quién atiende y si es químico farmacéutico.
 
+## Empresa vinculada y venta fraccionada
+
+El DS 020-2024-SA pide dos cosas más al vender:
+
+- **Empresa vinculada** (art. 32-B): si el producto es de una empresa
+  vinculada a la botica (marca propia), la caja avisa al agregarlo y la línea
+  dice **Empresa vinculada** en pantalla y en el ticket. Marque el producto con
+  **Empresa vinculada** en su ficha. El cartel A4 para exhibir está en
+  [DIGEMID](digemid.md#cartel-de-empresas-vinculadas).
+- **Venta fraccionada** (art. 48): la unidad suelta se entrega en un envase
+  rotulado. Si la venta tiene unidades sueltas de un producto que se vende por
+  caja o blíster, la pantalla del recibo muestra **Rótulo de venta
+  fraccionada**: imprime una etiqueta de 70 x 40 mm por producto y lote con el
+  establecimiento, el producto, el laboratorio, la concentración, la vía, el
+  lote y el vencimiento. También se imprime desde la orden, en
+  **Punto de venta ‣ Pedidos ‣ Pedidos ‣ Imprimir**.
+
 ## Recetas
 
 En **Farmacia ‣ Dispensación ‣ Recetas** están las recetas de la caja y las que

@@ -41,6 +41,10 @@ configuracion:
   - "Registre el registro sanitario de cada medicamento en la pestaña **Farmacia** del producto."
 
 novedades:
+  - version: '9.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Instala las mejoras de la suite: tratamientos crónicos y recompra, faltantes y sugerido de compra, y fidelización por DNI sin medicamentos con receta."
   - version: 8.20261018
     fecha: 18/10/2026
     cambios:

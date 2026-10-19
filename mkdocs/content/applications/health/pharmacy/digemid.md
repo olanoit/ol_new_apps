@@ -31,6 +31,13 @@ modulos: [al_l10n_pe_pharmacy_digemid]
 principio activo, de menor a mayor, con el aviso de los productos de empresas
 vinculadas, para exhibir en el local.
 
+## Cartel de empresas vinculadas
+
+**Farmacia ‣ DIGEMID ‣ Cartel de empresas vinculadas** imprime el cartel A4 que
+el local debe exhibir (DS 020-2024-SA, art. 32-B): los productos a la venta
+marcados como de **Empresa vinculada**, con su principio activo y laboratorio,
+y el recordatorio de que el cliente puede pedir el genérico en DCI.
+
 ## Reacciones adversas
 
 En **Farmacia ‣ DIGEMID ‣ Reacciones adversas** registre cada sospecha: paciente

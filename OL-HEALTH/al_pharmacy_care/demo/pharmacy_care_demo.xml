@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tratamientos crónicos de los pacientes de la botica de demostración. -->
+    <data noupdate="1">
+        <record id="treatment_mendoza_losartan" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_mendoza"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_losartan'))]"/>
+            <field name="daily_units">1</field>
+            <field name="posology">1 tableta cada 24 horas</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-120)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="note">Hipertensión arterial. Prefiere que la llamen por la tarde.</field>
+        </record>
+        <record id="treatment_castro_metformin" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_castro"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_metformin'))]"/>
+            <field name="daily_units">2</field>
+            <field name="posology">1 tableta cada 12 horas con las comidas</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-90)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+        </record>
+    </data>
+</odoo>

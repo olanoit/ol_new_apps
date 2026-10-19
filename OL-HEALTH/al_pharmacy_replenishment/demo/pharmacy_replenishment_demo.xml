@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="shortage_losartan" model="pharmacy.shortage">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_losartan').product_variant_id.id"/>
+            <field name="quantity">30</field>
+            <field name="reason">no_stock</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="note">Cliente crónico: volverá el lunes.</field>
+        </record>
+        <record id="shortage_not_carried" model="pharmacy.shortage">
+            <field name="description">Colirio lubricante 15 ml</field>
+            <field name="quantity">2</field>
+            <field name="reason">not_carried</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+        </record>
+    </data>
+</odoo>

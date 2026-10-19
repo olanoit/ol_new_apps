@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="al_pharmacy_replenishment.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('control-buttons-modal')]" position="inside">
+            <button class="o_pharmacy_shortage_button" t-att-class="buttonClass"
+                    t-on-click="() => this.clickPharmacyShortage()">
+                <i class="fa fa-question-circle me-1" role="img" aria-label="Faltante" title="Faltante"/>
+                Faltante
+            </button>
+        </xpath>
+    </t>
+</templates>

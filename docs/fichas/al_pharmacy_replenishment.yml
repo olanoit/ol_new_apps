@@ -1,0 +1,45 @@
+titulo: "Farmacia: faltantes y sugerido de compra"
+subtitulo: "Registro de lo que el cliente pide y no hay, y sugerido de compra por local según la venta diaria, los faltantes, el stock y lo que está por llegar."
+categoria: "Salud · Compras"
+etiquetas: [Farmacia, Reposición, Faltantes, Compras, Punto de venta]
+
+destacados:
+  - icono: "✎"
+    titulo: "Faltante desde la caja"
+    texto: "El cajero anota en dos toques lo que se pidió y no había: el producto o un texto libre, la cantidad y el motivo."
+  - icono: "∑"
+    titulo: "Sugerido por consumo"
+    texto: "Venta diaria × días de cobertura + faltantes − stock − por llegar, al múltiplo de compra."
+  - icono: "🛒"
+    titulo: "Compra o traslado"
+    texto: "Una solicitud de presupuesto por proveedor o un traslado desde el almacén central."
+  - icono: "📊"
+    titulo: "Demanda perdida a la vista"
+    texto: "Análisis por producto, local y motivo para decidir qué incorporar al surtido."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "En una botica el quiebre de stock es la principal pérdida: el cliente pide un producto que no hay, se va, y nadie se entera. Las cadenas reponen por consumo desde su centro de distribución; la botica compra por intuición o configura mínimos y máximos producto por producto."
+  nota: "**Fórmula:** sugerido = venta diaria promedio × días de cobertura + faltantes pendientes − stock del local − compras y traslados confirmados, redondeado hacia arriba a la unidad del proveedor o a la presentación más grande."
+
+funcionalidades:
+  - "Botón «Faltante» en el menú de acciones de la caja, con el producto de la línea seleccionada."
+  - "Faltantes por local, sesión y cajero, con estados pendiente, pedido, atendido y descartado."
+  - "Análisis de faltantes en tabla dinámica y gráfico."
+  - "Sugerido de compra por local con periodo de análisis y días de cobertura editables."
+  - "Venta diaria con el TPV y las entregas a clientes de pedidos de venta, menos devoluciones."
+  - "Solicitudes de presupuesto agrupadas por proveedor principal o traslado desde el almacén central."
+  - "Los faltantes de los productos pedidos pasan a «pedido» con su documento."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Indique el proveedor principal y su unidad de compra en cada producto (pestaña Compra)."
+  - "Abra **Farmacia ▸ Reposición ▸ Sugerido de compra**, elija el local y calcule."
+
+novedades:
+  - version: '1.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Primera versión (mejora E6): faltantes desde la caja y sugerido de compra por local."
+
+relacionados: [al_pharmacy_pos, al_pharmacy_stock, al_industry_pharmacy]
