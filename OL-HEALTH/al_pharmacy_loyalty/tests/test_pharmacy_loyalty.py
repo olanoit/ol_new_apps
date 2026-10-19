@@ -2,6 +2,7 @@
 from odoo import Command
 from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
+from odoo.tools import SQL
 
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 
@@ -59,6 +60,16 @@ class TestPharmacyLoyalty(TransactionCase):
         reward.invalidate_recordset(['all_discount_product_ids'])
         self.assertIn(self.otc, reward.all_discount_product_ids)
         self.assertNotIn(self.prescription, reward.all_discount_product_ids)
+
+    def test_install_hook_restricts_existing_programs(self):
+        from odoo.addons.al_pharmacy_loyalty import _post_init_hook
+        reward = self.program.reward_ids
+        # Como un programa creado antes de instalar el módulo.
+        self.env.cr.execute(SQL(
+            "UPDATE loyalty_reward SET discount_applicability = 'order' WHERE id = %s", reward.id))
+        reward.invalidate_recordset()
+        _post_init_hook(self.env)
+        self.assertEqual(reward.discount_applicability, 'specific')
 
     def test_cannot_give_away_prescription_medicine(self):
         with self.assertRaises(ValidationError):

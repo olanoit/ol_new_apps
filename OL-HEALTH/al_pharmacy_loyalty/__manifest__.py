@@ -22,6 +22,7 @@ premios ni canjes, y menos el de los que necesitan receta.
   aplicarse solo a los demás productos.
 * Un programa no puede regalar un medicamento con receta.
 * Las tarjetas de regalo y los monederos no cambian: son medios de pago.
+* Al instalar, los programas que ya existían se ajustan igual.
 * Datos de ejemplo: programa «Club de Salud».
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -39,6 +40,7 @@ premios ni canjes, y menos el de los que necesitan receta.
             'al_pharmacy_loyalty/static/tests/tours/**/*',
         ],
     },
+    'post_init_hook': '_post_init_hook',
     'installable': True,
     'application': False,
 }
