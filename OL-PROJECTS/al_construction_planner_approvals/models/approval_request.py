@@ -13,6 +13,18 @@ from odoo.exceptions import UserError
 
 from .construction_approval_route import CHANGE_TYPES
 
+# Resumen de la solicitud en la lista (paquete 1.10, M110-07).
+CHANGE_SUMMARY = [
+    ('quantity', 'Cantidad'),
+    ('material', 'Fuera del plan'),
+    ('both', 'Ambos'),
+]
+
+
+def _qty_text(qty):
+    """Cantidad sin ceros de más: 20, 2.5."""
+    return ('%.4f' % qty).rstrip('0').rstrip('.')
+
 
 class ApprovalCategory(models.Model):
     _inherit = 'approval.category'
@@ -63,6 +75,40 @@ class ApprovalRequest(models.Model):
     construction_refuse_reason = fields.Text(string='Motivo del rechazo', readonly=True)
     # Último estado que se llevó al documento (para no repetirlo).
     construction_notified_status = fields.Char(readonly=True, copy=False)
+    # Datos para decidir desde la lista (paquete 1.10, M110-07).
+    construction_excess_pct = fields.Float(
+        string='Exceso %', digits=(16, 2), compute='_compute_construction_summary', store=True,
+        help='El mayor exceso porcentual de sus materiales.')
+    construction_change_summary = fields.Selection(
+        CHANGE_SUMMARY, string='En el plan', compute='_compute_construction_summary', store=True,
+        help='Cantidad: todos los materiales están en el plan y piden más. Fuera del plan: '
+             'ninguno está en el plan. Ambos: hay de los dos.')
+    construction_excess_lines = fields.Integer(
+        string='Materiales con exceso', compute='_compute_construction_summary', store=True)
+    construction_excess_qty_label = fields.Char(
+        string='Exceso (cantidad)', compute='_compute_construction_summary', store=True,
+        help='Con un material, la cantidad con su unidad; con varios, cuántos son (no se suman '
+             'unidades distintas).')
+
+    @api.depends('product_line_ids.construction_change_type',
+                 'product_line_ids.construction_diff_pct', 'product_line_ids.construction_qty_diff')
+    def _compute_construction_summary(self):
+        for request in self:
+            lines = request.product_line_ids.filtered('construction_change_type')
+            changes = set(lines.mapped('construction_change_type'))
+            request.construction_excess_pct = max(lines.mapped('construction_diff_pct'),
+                                                  default=0.0)
+            request.construction_change_summary = 'both' if len(changes) > 1 else (
+                changes.pop() if changes else False)
+            request.construction_excess_lines = len(lines)
+            if len(lines) == 1:
+                request.construction_excess_qty_label = '%s %s' % (
+                    _qty_text(lines.construction_qty_diff), lines.product_uom_id.name or '')
+            elif lines:
+                request.construction_excess_qty_label = self.env._(
+                    '%s materiales', len(lines))
+            else:
+                request.construction_excess_qty_label = False
 
     # ------------------------------------------------------------------
     # Tramos
@@ -242,19 +288,69 @@ class ApprovalRequest(models.Model):
         return res
 
     def action_refuse(self, approver=None):
+        self._construction_check_late_change()
         res = super().action_refuse(approver=approver)
         self._construction_after_change()
         return res
 
     def action_withdraw(self, approver=None):
+        self._construction_check_late_change()
         res = super().action_withdraw(approver=approver)
         self._construction_after_change()
         return res
 
     def action_cancel(self):
+        self._construction_check_late_change()
         res = super().action_cancel()
         self._construction_after_change()
         return res
+
+    def _construction_check_late_change(self):
+        """Una solicitud ya aprobada cuyo documento siguió con la aprobación
+        no se revierte desde Aprobaciones (paquete 1.10, M110-08): el
+        documento quedaría aprobado y consumiendo saldo."""
+        if self.env.context.get('construction_sync_steps'):
+            return
+        # El documento puede ser de otra área: solo se lee su estado.
+        for request_sudo in self.sudo().filtered('construction_res_model'):
+            if request_sudo.construction_notified_status != 'approved':
+                continue
+            origin = request_sudo._construction_origin()
+            if origin and not origin._construction_awaiting_approval():
+                raise UserError(self.env._(
+                    'El documento %s ya siguió con la aprobación. Para revertirla, devuélvalo a '
+                    'borrador o anúlelo desde el documento.', origin.display_name))
+
+    def action_construction_bulk_approve(self):
+        """Aprobar en bloque desde la lista (M110-07): aprueba las solicitudes
+        en las que el usuario tiene el tramo activo y avisa las demás."""
+        managed = self.filtered('construction_res_model')
+        mine = managed.filtered(
+            lambda r: r.request_status == 'pending' and r._construction_active_approvers(
+                self.env.user))
+        others = self - mine
+        # Una por una: action_approve de Aprobaciones (y de approvals_purchase)
+        # espera una sola solicitud.
+        for request in mine:
+            request.action_approve()
+        messages = []
+        if mine:
+            messages.append(self.env._('Aprobadas: %s.', ', '.join(mine.mapped('name'))))
+        if others:
+            messages.append(self.env._('No le toca aprobar: %s.',
+                                       ', '.join(others.mapped('name'))))
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': self.env._('Aprobar'),
+                'message': ' '.join(messages),
+                'type': 'success' if mine and not others else 'warning',
+                'sticky': bool(others),
+                'next': {'type': 'ir.actions.act_window_close'} if not mine else
+                {'type': 'ir.actions.client', 'tag': 'soft_reload'},
+            },
+        }
 
     def action_draft(self):
         res = super().action_draft()
@@ -273,7 +369,7 @@ class ApprovalRequest(models.Model):
         managed_sudo = self.filtered('construction_res_model').sudo()
         if not managed_sudo:
             return
-        managed_sudo._construction_sync_steps()
+        managed_sudo.with_context(construction_sync_steps=True)._construction_sync_steps()
         for request in managed_sudo:
             status = request.request_status
             if status == request.construction_notified_status:
@@ -295,7 +391,7 @@ class ApprovalRequest(models.Model):
             'res_model': 'construction.approval.refuse.wizard',
             'view_mode': 'form',
             'target': 'new',
-            'context': {'default_approval_id': self.id},
+            'context': {'default_approval_ids': [fields.Command.set(self.ids)]},
         }
 
     def _construction_origin(self):
@@ -329,6 +425,16 @@ class ApprovalApprover(models.Model):
     # usuario (puede estar en varios tramos).
     construction_slots = fields.Char(readonly=True)
 
+    def write(self, vals):
+        # El rechazo desde la lista de aprobadores del formulario pasa por
+        # aquí: el mismo control que en la solicitud (M110-08). Lo que
+        # escribe el propio sistema al mover los tramos no cuenta.
+        if vals.get('status') and vals['status'] != 'approved' \
+                and not self.env.context.get('construction_sync_steps'):
+            changed = self.filtered(lambda a: a.status != vals['status'])
+            changed.request_id._construction_check_late_change()
+        return super().write(vals)
+
     def _construction_slot_list(self):
         result = []
         for token in (self.construction_slots or '').split(','):
@@ -344,12 +450,22 @@ class ApprovalProductLine(models.Model):
     construction_change_type = fields.Selection(
         [item for item in CHANGE_TYPES if item[0] != 'all'], string='Cambio', readonly=True)
     construction_level = fields.Char(string='Nivel', readonly=True)
-    construction_qty_budget = fields.Float(
+    # Cifras de la solicitud (paquete 1.10, M110-08).
+    construction_qty_planned = fields.Float(
         string='Presupuestado', digits='Product Unit', readonly=True,
-        help='Saldo del plan para esta línea, sin contar este documento.')
+        help='Lo presupuestado de las líneas del plan que cubre la línea.')
+    construction_qty_requested_before = fields.Float(
+        string='Ya pedido', digits='Product Unit', readonly=True,
+        help='Lo pedido por otros documentos sobre esas líneas del plan.')
+    construction_qty_budget = fields.Float(
+        string='Saldo', digits='Product Unit', readonly=True,
+        help='Presupuestado menos ya pedido, sin contar este documento. Puede ser negativo.')
     construction_qty_diff = fields.Float(
-        string='Diferencia', digits='Product Unit', readonly=True)
-    construction_diff_pct = fields.Float(string='Diferencia (%)', digits=(16, 2), readonly=True)
+        string='Exceso', digits='Product Unit', readonly=True,
+        help='Lo pedido sobre el saldo positivo; nunca más que lo pedido.')
+    construction_diff_pct = fields.Float(
+        string='Exceso %', digits=(16, 2), readonly=True,
+        help='Exceso sobre lo presupuestado; 100 % si está fuera del plan.')
     construction_amount_diff = fields.Monetary(
         string='Diferencia (monto)', currency_field='construction_currency_id', readonly=True)
     construction_currency_id = fields.Many2one(related='company_id.currency_id')

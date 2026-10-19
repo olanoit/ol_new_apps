@@ -70,6 +70,17 @@ class ConstructionTypologyModule(models.Model):
             values |= value
         return values
 
+    @api.model
+    def _construction_module_bom_values(self, company):
+        """Etapas y planta de la lista del producto de módulo (paquete 1.10,
+        M110-02): solo las etapas que consume la orden de fabricación (sin
+        instalación ni acabado) y, con cadena de plantas, la planta de la
+        última etapa. Los materiales sin etapa se conservan."""
+        Stage = self.env['construction.stage']
+        chain = Stage._production_chain(company)
+        picking_type = chain[-1:].with_company(company).production_picking_type_id
+        return Stage._production_codes(), picking_type
+
     def _ensure_product(self):
         """Producto fabricado del módulo con su lista de materiales."""
         Product = self.env['product.product']
@@ -77,6 +88,8 @@ class ConstructionTypologyModule(models.Model):
         route = self.env.ref('mrp.route_warehouse0_manufacture', raise_if_not_found=False)
         created = Product
         for module in self:
+            company = module.typology_id.company_id or self.env.company
+            codes, picking_type = self._construction_module_bom_values(company)
             typology = module.typology_id
             if module.product_id and module.product_id.active:
                 continue
@@ -102,17 +115,21 @@ class ConstructionTypologyModule(models.Model):
                 'product_id': material.product_id.id, 'product_qty': material.qty,
                 'product_uom_id': (material.uom_id or material.product_id.uom_id).id,
                 'construction_consumption_stage': material.stage or False})
-                for material in module.material_ids]
+                for material in module.material_ids
+                if not material.stage or material.stage in codes]
             if not lines and module.bom_id:
                 lines = [Command.create({
                     'product_id': line.product_id.id, 'product_qty': line.product_qty,
                     'product_uom_id': line.product_uom_id.id,
                     'construction_consumption_stage': line.construction_consumption_stage})
-                    for line in module.bom_id.bom_line_ids]
+                    for line in module.bom_id.bom_line_ids
+                    if not line.construction_consumption_stage
+                    or line.construction_consumption_stage in codes]
             if lines:
                 Bom.create({'product_tmpl_id': template.id, 'product_id': product.id,
                             'product_qty': 1.0, 'type': 'normal',
-                            'company_id': typology.company_id.id, 'bom_line_ids': lines})
+                            'company_id': typology.company_id.id, 'bom_line_ids': lines,
+                            'picking_type_id': picking_type.id or False})
             created |= product
         return created
 
@@ -144,6 +161,9 @@ class ConstructionResourcePlan(models.Model):
                 plan.message_post(body=self.env._(
                     '%s productos de módulo creados en el maestro con su lista de materiales.',
                     len(created)))
+            # Paquete 1.10, M110-02: los módulos son los subproductos de la lista
+            # de fabricación de su tipología.
+            modules_sudo.typology_id._construction_sync_module_byproducts(plan)
 
     def _construction_on_close(self):
         super()._construction_on_close()
@@ -155,14 +175,6 @@ class ConstructionResourcePlan(models.Model):
     # ------------------------------------------------------------------
     # Órdenes de fabricación por módulo y departamento
     # ------------------------------------------------------------------
-    def _department_lot(self, product, apartment):
-        """Lote del departamento para el producto del módulo."""
-        Lot = self.env['stock.lot']
-        name = '%s %s' % (self.project_id.name, apartment.name)
-        lot = Lot.search([('product_id', '=', product.id), ('name', '=', name)], limit=1)
-        return lot or Lot.create({'product_id': product.id, 'name': name,
-                                  'company_id': self.company_id.id})
-
     def action_create_module_productions(self, apartments=None):
         """OF de los productos de módulo, una por producto y departamento, con
         el lote del departamento (M18-15)."""
@@ -184,7 +196,7 @@ class ConstructionResourcePlan(models.Model):
             groups[(template.product_id, module.construction_apartment_task_id)] |= module
         productions = self.env['mrp.production']
         for (product, apartment), tasks in groups.items():
-            lot = self._department_lot(product, apartment)
+            lot = self._module_lot(product, apartment)
             production = self.env['mrp.production'].create({
                 'product_id': product.id, 'product_qty': len(tasks),
                 'product_uom_id': product.uom_id.id, 'company_id': self.company_id.id,
@@ -229,10 +241,9 @@ class ConstructionResourcePlan(models.Model):
         (producto del módulo, lote del departamento) y los recursos sueltos
         ``loose`` = [(producto, cantidad)]."""
         self.ensure_one()
-        warehouse = self.env['stock.warehouse'].search(
-            [('company_id', '=', self.company_id.id)], limit=1)
-        picking_type = warehouse.int_type_id
-        source = warehouse.lot_stock_id
+        # Paquete 1.10, M110-05: el tipo de operación del ajuste de la compañía
+        # (la planta que arma); sin ajuste, el interno del primer almacén.
+        picking_type, source = self._construction_dispatch_picking_type()
         dest = self._construction_site_location()
         Task = self.env['project.task']
         modules = Task.search([('project_id', '=', self.project_id.id),
@@ -257,7 +268,7 @@ class ConstructionResourcePlan(models.Model):
                 'description_picking': '%s · %s' % (apartment.display_name, ', '.join(
                     tasks.construction_space_task_id.mapped('name'))),
                 'construction_module_task_ids': [Command.set(tasks.ids)],
-                'construction_lot_id': self._department_lot(product, apartment).id,
+                'construction_lot_id': self._module_lot(product, apartment).id,
             }))
         for product, qty in loose or []:
             moves.append(Command.create({

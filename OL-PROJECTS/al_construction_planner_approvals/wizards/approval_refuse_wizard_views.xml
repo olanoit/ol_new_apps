@@ -5,8 +5,10 @@
         <field name="model">construction.approval.refuse.wizard</field>
         <field name="arch" type="xml">
             <form string="Rechazar">
-                <field name="approval_id" invisible="1"/>
-                <p class="text-muted">El documento vuelve a borrador con este motivo.</p>
+                <field name="approval_ids" widget="many2many_tags" readonly="1"
+                       invisible="len(approval_ids) &lt; 2"/>
+                <p class="text-muted">Cada documento vuelve a borrador con este motivo. Las
+                    solicitudes en las que no le toca aprobar no se tocan.</p>
                 <field name="reason" placeholder="Por qué se rechaza"/>
                 <footer>
                     <button name="action_refuse" type="object" string="Rechazar" class="btn-primary"
@@ -15,5 +17,15 @@
                 </footer>
             </form>
         </field>
+    </record>
+
+    <!-- Rechazar en bloque desde la lista (paquete 1.10, M110-07). -->
+    <record id="action_construction_approval_refuse_wizard" model="ir.actions.act_window">
+        <field name="name">Rechazar</field>
+        <field name="res_model">construction.approval.refuse.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="approvals.model_approval_request"/>
+        <field name="binding_view_types">list</field>
     </record>
 </odoo>

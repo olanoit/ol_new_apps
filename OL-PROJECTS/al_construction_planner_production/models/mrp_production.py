@@ -33,14 +33,16 @@ class MrpProduction(models.Model):
                 production.construction_accessory_request_ids)
 
     @api.depends_context('uid')
-    @api.depends('construction_accessories_user_id', 'state', 'construction_plan_id')
+    @api.depends('construction_accessories_user_id', 'state', 'construction_plan_id', 'bom_id')
     def _compute_construction_can_request_accessories(self):
         is_head = self.env.user.has_group(PRODUCTION_HEAD_GROUP)
         for production in self:
+            # Solo la orden de una etapa con accesorios a pedido (M110-04).
             production.construction_can_request_accessories = bool(
                 production.construction_plan_id
                 and production.state not in ('done', 'cancel')
-                and (is_head or production.construction_accessories_user_id == self.env.user))
+                and (is_head or production.construction_accessories_user_id == self.env.user)
+                and production._construction_accessory_stages())
 
     # ------------------------------------------------------------------
     # Accesorios de armado (M19-02)
@@ -71,6 +73,14 @@ class MrpProduction(models.Model):
             'res_id': request.id,
             'view_mode': 'form',
         }
+
+    def _construction_accessory_planned(self):
+        """{(nivel, accesorio): presupuestado en la UdM del producto}."""
+        self.ensure_one()
+        planned = defaultdict(float)
+        for line in self._construction_assembly_plan_lines():
+            planned[(line.task_id, line.product_id)] += line._qty_to_product_uom(line.qty_planned)
+        return planned
 
     def _construction_proposed_accessories(self):
         """Por nivel y accesorio del plan (Armado): lo planificado menos lo ya
@@ -128,13 +138,18 @@ class MrpProduction(models.Model):
         return action
 
     def _construction_assembly_plan_lines(self):
-        """Líneas de material de armado del plan en los ambientes de la orden."""
+        """Líneas de material del plan en los ambientes de la orden, de sus
+        etapas con «Accesorios a pedido desde la orden» (paquete 1.10,
+        M110-04). Sin ninguna, la orden no propone accesorios."""
         self.ensure_one()
         production_sudo = self.sudo()
+        stages = production_sudo._construction_accessory_stages()
+        if not stages:
+            return self.env['construction.resource.plan.line'].sudo()
         return self.env['construction.resource.plan.line'].sudo().search([
             ('plan_id', '=', production_sudo.construction_plan_id.id),
             ('resource_type', '=', 'material'), ('product_id', '!=', False),
-            ('stage', '=', 'assembly'),
+            ('stage', 'in', stages),
             ('space_task_id', 'in', production_sudo.construction_space_task_ids.ids)])
 
     def _construction_add_components(self, quantities):
@@ -229,7 +244,7 @@ class MrpProduction(models.Model):
             plan_lines = self.env['construction.resource.plan.line'].sudo().search([
                 ('plan_id', '=', production_sudo.construction_plan_id.id),
                 ('resource_type', '=', 'material'), ('product_id', '!=', False),
-                ('stage', 'in', self.env['construction.stage']._production_codes()),
+                ('stage', 'in', production_sudo._construction_order_stages()),
                 ('space_task_id', 'in', production_sudo.construction_space_task_ids.ids)])
             budget = defaultdict(lambda: [0.0, 0.0])
             for line in plan_lines:

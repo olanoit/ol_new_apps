@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261019 — 19/10/2026
+
+- Pruebas del paquete 1.10 (fabricación por etapas, despacho por departamento, lote, motivo de posventa y aprobaciones en bloque).
+
 ## 8.20261018 — 18/10/2026
 
 - Las reglas de aprobación de ejemplo ya no llevan el prefijo «[DEMO]».

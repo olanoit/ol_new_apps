@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Despacho a obra por departamento (paquete 1.10, M110-05) y formato del
+     lote del módulo (M110-09). -->
+    <record id="view_picking_type_form_construction_dispatch" model="ir.ui.view">
+        <field name="name">stock.picking.type.form.construction.dispatch</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_picking_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='create_backorder']" position="after">
+                <field name="construction_site_dispatch" invisible="code not in ('internal', 'outgoing')"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_form_construction_dispatch" model="ir.ui.view">
+        <field name="name">stock.picking.form.construction.dispatch</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="construction_site_dispatch" invisible="1"/>
+                <field name="construction_project_id" options="{'no_create': True}"
+                       invisible="not construction_site_dispatch and not construction_project_id"
+                       readonly="state in ('done', 'cancel')"/>
+                <field name="construction_apartment_task_id" options="{'no_create': True}"
+                       invisible="not construction_site_dispatch and not construction_apartment_task_id"
+                       readonly="state in ('done', 'cancel')"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_construction_dispatch" model="ir.ui.view">
+        <field name="name">stock.picking.search.construction.dispatch</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="construction_project_id"/>
+                <field name="construction_apartment_task_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_config_settings_view_form_site_dispatch" model="ir.ui.view">
+        <field name="name">res.config.settings.form.site.dispatch</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <block name="construction_planner_contracts" position="inside">
+                <setting company_dependent="1" id="construction_module_lot_pattern"
+                         help="Claves: {obra}, {obra_prefijo}, {obra_nombre}, {unidad}, {unidad_num}, {tipologia} y {modulo}.">
+                    <field name="construction_module_lot_pattern"/>
+                </setting>
+                <setting company_dependent="1" id="construction_dispatch_picking_type_id"
+                         help="Tipo de operación del envío de módulos desde el planificador. Vacío: el interno del primer almacén.">
+                    <field name="construction_dispatch_picking_type_id" options="{'no_create': True}"/>
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

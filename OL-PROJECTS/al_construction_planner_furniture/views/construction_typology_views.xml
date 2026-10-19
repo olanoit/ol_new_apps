@@ -173,6 +173,7 @@
                                 <group>
                                     <field name="product_tmpl_id" options="{'no_create': True}"/>
                                     <field name="bom_id" options="{'no_create': True}"/>
+                                    <field name="production_bom_id" invisible="not production_bom_id"/>
                                 </group>
                             </group>
                         </page>

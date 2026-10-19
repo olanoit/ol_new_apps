@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261019 — 19/10/2026
+
+- Paquete 1.10, M110-07: la lista de Aprobaciones muestra documento, obra, «En el plan», exceso % y cantidad, con filtros «Me toca aprobar» y «Fuera del plan», y aprueba o rechaza en bloque solo las que le tocan al usuario.
+- M110-08: la solicitud muestra presupuestado, ya pedido, saldo, pedido y exceso; con saldo negativo el exceso nunca supera lo pedido. Una solicitud ya aprobada cuyo documento siguió no se rechaza desde Aprobaciones.
+
 ## 2.20261017 — 17/10/2026
 
 - Tipo de documento «Orden de fabricación» en la tabla de rutas (con el puente de aprobaciones en fabricación) y los campos de la solicitud se recalculan al crearla.

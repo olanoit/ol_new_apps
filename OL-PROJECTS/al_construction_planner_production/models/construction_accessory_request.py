@@ -137,19 +137,32 @@ class ConstructionAccessoryRequest(models.Model):
         if values:
             values['all'] = {'percent': max(v['percent'] for v in values.values()),
                              'amount': sum(v['amount'] for v in values.values())}
-        lines = [{
-            'product_id': line.product_id.id,
-            'description': '%s · %s' % (line.task_id.display_name or '',
-                                         line.product_id.display_name),
-            'quantity': line.qty,
-            'product_uom_id': line.uom_id.id,
-            'construction_change_type': line.change_type,
-            'construction_level': line.task_id.display_name,
-            'construction_qty_budget': line.qty_balance,
-            'construction_qty_diff': line.qty - line.qty_balance,
-            'construction_diff_pct': line.diff_pct,
-            'construction_amount_diff': line.amount_diff,
-        } for line in changed]
+        # Cifras de la solicitud (paquete 1.10, M110-08): como el requerimiento,
+        # presupuestado del plan, ya pedido y saldo del accesorio en el nivel.
+        planned = self.production_id._construction_accessory_planned()
+        lines = []
+        for line in changed:
+            qty_planned = planned.get((line.task_id, line.planned_product_id), 0.0) \
+                if line.planned_product_id else 0.0
+            if line.planned_product_id and line.uom_id:
+                qty_planned = line.planned_product_id.uom_id._compute_quantity(
+                    qty_planned, line.uom_id)
+            lines.append({
+                'product_id': line.product_id.id,
+                'description': '%s · %s' % (line.task_id.display_name or '',
+                                             line.product_id.display_name),
+                'quantity': line.qty,
+                'product_uom_id': line.uom_id.id,
+                'construction_change_type': line.change_type,
+                'construction_level': line.task_id.display_name,
+                'construction_qty_planned': qty_planned,
+                'construction_qty_requested_before': qty_planned - line.qty_balance
+                if line.planned_product_id else 0.0,
+                'construction_qty_budget': line.qty_balance,
+                'construction_qty_diff': line._construction_excess_qty(),
+                'construction_diff_pct': line.diff_pct,
+                'construction_amount_diff': line.amount_diff,
+            })
         return {'values': values, 'lines': lines, 'amount': self.amount_diff,
                 'reason': self.note or ''}
 
@@ -225,12 +238,17 @@ class ConstructionAccessoryRequestLine(models.Model):
                 amount = line.qty * (line.price_unit or line.product_id.standard_price)
             elif uom and uom.compare(line.qty, line.qty_balance) > 0:
                 change = 'quantity'
-                diff = line.qty - line.qty_balance
+                diff = line._construction_excess_qty()
                 pct = diff / line.qty_balance * 100 if line.qty_balance else 100.0
                 amount = diff * line.price_unit
             line.change_type = change
             line.diff_pct = pct
             line.amount_diff = amount
+
+    def _construction_excess_qty(self):
+        """Lo pedido sobre el saldo, nunca más que lo pedido (M110-08)."""
+        self.ensure_one()
+        return min(self.qty, self.qty - self.qty_balance)
 
     @api.model
     def _construction_amount_fields(self):

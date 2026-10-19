@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261019 — 19/10/2026
+
+- Paquete 1.10, M110-01: cada etapa de fabricación del catálogo puede tener su planta (operación de fabricación) y la categoría del producto intermedio que entrega, por compañía, y la marca «Accesorios a pedido desde la orden».
+- M110-03: el asistente de órdenes ya no impone la planta; cada orden nace en la planta de su lista de materiales y «Forzar planta» queda opcional.
+- M110-04: la orden hija que crea Odoo por las rutas hereda el plan y los ambientes de la madre, se confirma sin el asistente de exceso y cada orden compara solo las etapas de su lista; el producto intermedio no es cambio de material.
+- M110-06: motivo de fabricación obligatorio en los tipos de operación que lo piden (posventa, garantía, reposición), con lista configurable y etapa analítica.
+
 ## 3.20261016 — 16/10/2026
 
 - Las órdenes de fabricación siguen la política de exceso de producción y registran el exceso autorizado (v1.8).

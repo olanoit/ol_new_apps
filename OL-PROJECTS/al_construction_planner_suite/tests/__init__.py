@@ -50,3 +50,5 @@ from . import test_approvals_v19
 from . import test_measured_v19
 from . import test_production_excess_v19
 from . import test_production_order_v19
+from . import test_stage_chain_v110
+from . import test_approvals_v110

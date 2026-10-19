@@ -523,24 +523,26 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 warn['product_no_cost'].append(code)
             if _decimals(qty) > digits:
                 warn['qty_precision'].append('%s · %s %s' % (typology, code, qty))
-            key = (typology, code)
+            # Un producto en dos etapas queda en dos líneas, como lo trae
+            # Oficina Técnica (paquete 1.10, M110-02).
+            key = (typology, code, stage or False)
             seen[key] += 1
             lines = result['bom'].setdefault(typology, {})
-            if code in lines:
-                lines[code]['qty'] += qty
-                lines[code]['stage'] = lines[code]['stage'] or stage
+            line_key = (code, stage or False)
+            if line_key in lines:
+                lines[line_key]['qty'] += qty
             else:
-                lines[code] = {'qty': qty, 'stage': stage, 'uom': product_uom,
-                               'cost': cost if cost is not None else product_cost}
+                lines[line_key] = {'qty': qty, 'stage': stage or False, 'uom': product_uom,
+                                   'cost': cost if cost is not None else product_cost}
             count += 1
-        for (typology, code), times in seen.items():
+        for (typology, code, _stage), times in seen.items():
             if times > 1:
                 warn['bom_duplicate'].append(self.env._(
                     '%(typology)s · %(code)s (%(times)s filas)',
                     typology=typology, code=code, times=times))
         unstaged_amount = 0.0
         for typology, lines in result['bom'].items():
-            for code, line in lines.items():
+            for (code, _stage), line in lines.items():
                 if not line['stage']:
                     warn['bom_no_stage'].append('%s · %s' % (typology, code))
                     unstaged_amount += line['qty'] * (line['cost'] or 0.0) * space_count[typology]
@@ -638,7 +640,8 @@ class ConstructionMasterImportWizard(models.TransientModel):
             'product_no_cost': self.env._(
                 'Productos sin costo (el planificador lo escribe con «Aplicar costo»)'),
             'bom_duplicate': self.env._(
-                'Productos repetidos en la BOM de una tipología (se suman sus cantidades)'),
+                'Productos repetidos en la misma etapa de la BOM de una tipología (se suman sus '
+                'cantidades)'),
             'qty_precision': self.env._(
                 'Cantidades con más decimales que la precisión de la unidad (se redondean al '
                 'guardar la BOM)'),
@@ -775,7 +778,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 vals, type='consu', is_storable=True, company_id=company.id,
                 uom_id=vals['uom_id']) for vals in data['products_to_create'].values()])
             products.update({product.default_code: product for product in created})
-        codes = {code for lines in data['bom'].values() for code in lines}
+        codes = {code for lines in data['bom'].values() for code, _stage in lines}
         for product in Product_sudo.search([('default_code', 'in', list(codes)),
                                             ('company_id', 'in', [company.id, False])]):
             products.setdefault(product.default_code, product)
@@ -981,7 +984,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
         return summary
 
     def _sync_bom(self, typology, lines, products, product_name, company):
-        """Deja la BOM de la tipología exactamente con ``lines``."""
+        """Deja la BOM de la tipología exactamente con ``lines``
+        ({(código, etapa): línea}). Es la receta completa, con todas las
+        etapas: de ella sale el plan. Con cadena de plantas (paquete 1.10,
+        M110-02) queda detrás de las listas de fabricación."""
         typology_sudo = typology.sudo()
         bom_sudo = typology_sudo.bom_id
         if not bom_sudo:
@@ -997,21 +1003,28 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'product_tmpl_id': template_sudo.id, 'product_qty': 1.0,
                 'company_id': company.id})
             typology.write({'product_tmpl_id': template_sudo.id, 'bom_id': bom_sudo.id})
-        current = {line.product_id.default_code: line for line in bom_sudo.bom_line_ids}
+        current = {}
+        for line in bom_sudo.bom_line_ids:
+            current.setdefault((line.product_id.default_code,
+                                line.construction_consumption_stage or False), line)
         commands = []
-        for code, line in lines.items():
+        for (code, stage), line in lines.items():
             product = products.get(code)
             if not product:
                 continue
             vals = {'product_qty': line['qty'], 'product_uom_id': line['uom'].id,
-                    'construction_consumption_stage': line['stage'] or False}
-            if code in current:
-                commands.append((1, current.pop(code).id, vals))
+                    'construction_consumption_stage': stage or False}
+            if (code, stage) in current:
+                commands.append((1, current.pop((code, stage)).id, vals))
             else:
                 commands.append((0, 0, dict(vals, product_id=product.id)))
         commands += [(2, line.id) for line in current.values()]
         if commands:
             bom_sudo.write({'bom_line_ids': commands})
+        if self.env['construction.stage']._production_chain(company):
+            # La receta queda detrás de las listas de fabricación (secuencia 1):
+            # Odoo elige la lista por secuencia.
+            bom_sudo.write({'sequence': 1000, 'code': self.env._('Receta (presupuesto)')})
 
     # ------------------------------------------------------------------
     # Descargas

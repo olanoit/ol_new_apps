@@ -16,7 +16,8 @@
                         <field name="group_by" widget="radio"/>
                     </group>
                     <group string="Fabricación">
-                        <field name="picking_type_id" options="{'no_create': True}"/>
+                        <field name="picking_type_id" options="{'no_create': True}"
+                               placeholder="La de la lista de materiales"/>
                         <field name="date_start"/>
                     </group>
                 </group>
@@ -25,6 +26,7 @@
                         <field name="group_task_id"/>
                         <field name="typology_id"/>
                         <field name="product_id"/>
+                        <field name="picking_type_id"/>
                         <field name="bom_id" optional="hide"/>
                         <field name="space_count" sum="Total"/>
                         <field name="qty"/>
@@ -35,8 +37,9 @@
                     <field name="note" nolabel="1"/>
                 </div>
                 <p class="text-muted small">
-                    Las OF quedan en borrador con los componentes de la BOM. Al confirmarlas se
-                    controla el saldo de las líneas de producción y armado de sus ambientes.
+                    Las OF quedan en borrador con los componentes de la BOM, cada una en la planta
+                    de su lista de materiales salvo que se fuerce otra. Al confirmarlas se controla
+                    el saldo de las etapas que fabrica cada orden en sus ambientes.
                 </p>
                 <footer>
                     <button name="action_create" type="object" string="Crear órdenes de fabricación" class="btn-primary" data-hotkey="q"/>

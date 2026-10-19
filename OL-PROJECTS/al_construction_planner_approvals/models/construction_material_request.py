@@ -56,22 +56,28 @@ class ConstructionMaterialRequest(models.Model):
             line_sudo = line.sudo()
             uom = line.product_id.uom_id
             plan_lines = line_sudo._construction_candidate_plan_lines(plan_sudo)
+            # Cifras de la solicitud (paquete 1.10, M110-08), en la unidad del
+            # producto: presupuestado, ya pedido por otros documentos y saldo.
+            planned = requested_before = budget = 0.0
             if not plan_lines:
-                change, budget = 'material', 0.0
+                change = 'material'
                 diff, percent = line.product_uom_qty, 100.0
                 price = line.product_id.with_company(self.company_id).standard_price
             else:
                 excess = line_sudo._construction_get_excess()
                 if excess > 0:
-                    diff = excess
+                    # Con saldo negativo todo lo pedido es exceso, pero nunca
+                    # más que lo pedido.
+                    diff = min(line.product_uom_qty, excess)
                 elif line_sudo._construction_is_repeat():
                     diff = line.product_uom_qty
                 else:
                     continue
                 change = 'quantity'
                 planned = sum(pl._qty_to_product_uom(pl.qty_planned) for pl in plan_lines)
-                # Saldo del plan, en la unidad de la línea.
-                budget = line_sudo.construction_plan_remaining
+                budget = sum(plan_lines._supply_balance(
+                    line_sudo.construction_allocation_ids).values())
+                requested_before = planned - budget
                 percent = diff / planned * 100 if planned else 100.0
                 price = sum(plan_lines.mapped('amount_planned')) / planned if planned else 0.0
             amount = diff * price
@@ -86,7 +92,10 @@ class ConstructionMaterialRequest(models.Model):
                 'product_uom_id': line.product_uom_id.id,
                 'construction_change_type': change,
                 'construction_level': line.construction_level_label,
-                'construction_qty_budget': budget,
+                'construction_qty_planned': uom._compute_quantity(planned, line.product_uom_id),
+                'construction_qty_requested_before': uom._compute_quantity(
+                    requested_before, line.product_uom_id),
+                'construction_qty_budget': uom._compute_quantity(budget, line.product_uom_id),
                 'construction_qty_diff': uom._compute_quantity(diff, line.product_uom_id),
                 'construction_diff_pct': percent,
                 'construction_amount_diff': amount,

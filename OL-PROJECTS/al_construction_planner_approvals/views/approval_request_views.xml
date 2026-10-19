@@ -48,6 +48,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='description']" position="after">
                 <field name="construction_change_type" column_invisible="parent.approval_type != 'construction'"/>
+                <field name="construction_qty_planned" column_invisible="parent.approval_type != 'construction'"/>
+                <field name="construction_qty_requested_before" column_invisible="parent.approval_type != 'construction'" optional="show"/>
                 <field name="construction_qty_budget" column_invisible="parent.approval_type != 'construction'"/>
             </xpath>
             <xpath expr="//field[@name='product_uom_id']" position="after">
@@ -67,8 +69,59 @@
         <field name="arch" type="xml">
             <xpath expr="//search" position="inside">
                 <field name="construction_project_id"/>
+                <field name="construction_origin_name"/>
                 <filter name="construction" string="De obra" domain="[('construction_res_model', '!=', False)]"/>
+                <!-- Paquete 1.10, M110-07. -->
+                <filter name="construction_my_turn" string="Me toca aprobar"
+                        domain="[('approver_ids.user_id', '=', uid), ('approver_ids.status', '=', 'pending')]"/>
+                <filter name="construction_out_of_plan" string="Fuera del plan"
+                        domain="[('construction_change_summary', 'in', ('material', 'both'))]"/>
+                <filter name="construction_over_10" string="Exceso mayor a 10 %"
+                        domain="[('construction_excess_pct', '>', 10)]"/>
+                <group>
+                    <filter name="group_construction_project" string="Obra"
+                            context="{'group_by': 'construction_project_id'}"/>
+                    <filter name="group_construction_origin" string="Documento de origen"
+                            context="{'group_by': 'construction_origin_name'}"/>
+                </group>
             </xpath>
         </field>
+    </record>
+
+    <!-- Lista con los datos para decidir (paquete 1.10, M110-07). -->
+    <record id="approval_request_view_tree_construction" model="ir.ui.view">
+        <field name="name">approval.request.list.construction</field>
+        <field name="model">approval.request</field>
+        <field name="inherit_id" ref="approvals.approval_request_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-danger">construction_change_summary in ('material', 'both')</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="construction_res_model" column_invisible="1"/>
+                <field name="construction_origin_name" optional="show"/>
+                <field name="construction_project_id" optional="show"/>
+                <field name="construction_change_summary" optional="show"/>
+                <field name="construction_excess_pct" optional="show"
+                       invisible="not construction_res_model"/>
+                <field name="construction_excess_qty_label" optional="show"/>
+                <field name="construction_currency_id" column_invisible="1"/>
+                <field name="construction_amount" optional="show"
+                       invisible="not construction_res_model"
+                       groups="al_construction_planner.group_planner_amounts"/>
+                <field name="construction_todo" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Aprobar en bloque (M110-07): solo las que le tocan al usuario. -->
+    <record id="action_construction_bulk_approve" model="ir.actions.server">
+        <field name="name">Aprobar</field>
+        <field name="model_id" ref="approvals.model_approval_request"/>
+        <field name="binding_model_id" ref="approvals.model_approval_request"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[Command.link(ref('base.group_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_construction_bulk_approve()</field>
     </record>
 </odoo>

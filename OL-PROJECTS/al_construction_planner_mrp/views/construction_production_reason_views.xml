@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Motivo obligatorio en la orden de posventa (paquete 1.10, M110-06) -->
+    <record id="construction_production_reason_view_list" model="ir.ui.view">
+        <field name="name">construction.production.reason.list</field>
+        <field name="model">construction.production.reason</field>
+        <field name="arch" type="xml">
+            <list string="Motivos de fabricación" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" optional="show"/>
+                <field name="analytic_account_id" optional="show" options="{'no_create': True}"/>
+                <field name="generates_additional"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"
+                       options="{'no_create': True}"/>
+                <field name="note" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_production_reason_view_search" model="ir.ui.view">
+        <field name="name">construction.production.reason.search</field>
+        <field name="model">construction.production.reason</field>
+        <field name="arch" type="xml">
+            <search string="Motivos de fabricación">
+                <field name="name"/>
+                <field name="code"/>
+                <filter name="additional" string="Genera adicional" domain="[('generates_additional', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Archivados" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_production_reason" model="ir.actions.act_window">
+        <field name="name">Motivos de fabricación</field>
+        <field name="res_model">construction.production.reason</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree el primer motivo de fabricación</p>
+            <p>Las órdenes de los tipos de operación que piden motivo (posventa, garantía,
+                reposición urgente) no se confirman sin uno de estos motivos.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_production_reason" name="Motivos de fabricación"
+              parent="mrp.menu_mrp_configuration" action="action_construction_production_reason"
+              sequence="60"/>
+
+    <record id="view_picking_type_form_construction_reason" model="ir.ui.view">
+        <field name="name">stock.picking.type.form.construction.reason</field>
+        <field name="model">stock.picking.type</field>
+        <field name="inherit_id" ref="stock.view_picking_type_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='create_backorder']" position="after">
+                <field name="construction_reason_required" invisible="code != 'mrp_operation'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_form_view_construction_reason" model="ir.ui.view">
+        <field name="name">mrp.production.form.construction.reason</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet//field[@name='user_id']" position="after">
+                <field name="construction_reason_required" invisible="1"/>
+                <field name="construction_reason_id" options="{'no_create': True}"
+                       invisible="not construction_reason_required and not construction_reason_id"
+                       required="construction_reason_required and state == 'draft'"
+                       readonly="state in ('done', 'cancel')"/>
+                <field name="construction_reason_note"
+                       invisible="not construction_reason_required and not construction_reason_note"
+                       readonly="state in ('done', 'cancel')"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_tree_view_construction_reason" model="ir.ui.view">
+        <field name="name">mrp.production.list.construction.reason</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="construction_reason_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_mrp_production_filter_construction_reason" model="ir.ui.view">
+        <field name="name">mrp.production.search.construction.reason</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="construction_reason_id"/>
+            </xpath>
+            <xpath expr="//filter[@name='filter_unbuilt']" position="after">
+                <filter string="Con motivo" name="construction_with_reason"
+                        domain="[('construction_reason_id', '!=', False)]"/>
+                <filter string="Genera adicional" name="construction_additional"
+                        domain="[('construction_reason_id.generates_additional', '=', True)]"/>
+            </xpath>
+            <xpath expr="//filter[@name='status']" position="after">
+                <filter string="Motivo" name="group_construction_reason"
+                        context="{'group_by': 'construction_reason_id'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

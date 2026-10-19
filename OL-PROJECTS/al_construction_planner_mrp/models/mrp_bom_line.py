@@ -12,3 +12,7 @@ class MrpBomLine(models.Model):
         help='Etapa de la obra en la que se consume el componente (columna ETAPA '
              'CONSUMO del maestro). Obligatoria en la BOM de una tipología para '
              'aprobar el plan.')
+    construction_intermediate = fields.Boolean(
+        string='Producto intermedio', readonly=True,
+        help='Lo que entrega la etapa anterior (el paquete de piezas): no se compara con el '
+             'plan ni cuenta como cambio de material (paquete 1.10, M110-02).')

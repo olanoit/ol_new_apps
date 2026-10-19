@@ -88,14 +88,15 @@ class MrpProduction(models.Model):
     # ------------------------------------------------------------------
     def _construction_versus_values(self):
         """Filas por material: presupuestado del plan en los ambientes y las
-        etapas de fabricación de la orden, frente a sus componentes."""
+        etapas que fabrica la orden (paquete 1.10, M110-04: el corte solo lo
+        de producción de piezas), frente a sus componentes."""
         self.ensure_one()
         # La planta no ve el plan: el presupuesto se lee sin sus permisos.
         production_sudo = self.sudo()
         plan_lines = self.env['construction.resource.plan.line'].sudo().search([
             ('plan_id', '=', production_sudo.construction_plan_id.id),
             ('resource_type', '=', 'material'), ('product_id', '!=', False),
-            ('stage', 'in', self.env['construction.stage']._production_codes()),
+            ('stage', 'in', production_sudo._construction_order_stages()),
             ('space_task_id', 'in', production_sudo.construction_space_task_ids.ids)])
         budget = defaultdict(lambda: [0.0, 0.0])
         for line in plan_lines:
@@ -264,14 +265,16 @@ class MrpProduction(models.Model):
         if values:
             values['all'] = {'percent': self.construction_excess_pct,
                              'amount': self.construction_excess_amount}
+        # Paquete 1.10, M110-08: la orden se compara con lo presupuestado de sus
+        # ambientes, no con un saldo: «Ya pedido» y «Saldo» quedan vacíos.
         lines = [{
             'product_id': row.product_id.id,
             'description': row.product_id.display_name,
             'quantity': row.qty_required,
             'product_uom_id': row.uom_id.id,
             'construction_change_type': row.change_type,
-            'construction_qty_budget': row.qty_budget,
-            'construction_qty_diff': row.qty_diff,
+            'construction_qty_planned': row.qty_budget,
+            'construction_qty_diff': min(row.qty_required, row.qty_diff),
             'construction_diff_pct': row.diff_pct,
             'construction_amount_diff': row.amount_diff,
         } for row in rows]
@@ -281,6 +284,12 @@ class MrpProduction(models.Model):
     def _construction_project(self):
         self.ensure_one()
         return self.sudo().construction_plan_id.project_id
+
+    def _construction_awaiting_approval(self):
+        """La orden espera lo que diga su solicitud mientras el exceso siga
+        pendiente (M110-08)."""
+        self.ensure_one()
+        return self.construction_exceed_state == 'exceeded'
 
     def _construction_approval_granted(self, request):
         self.ensure_one()

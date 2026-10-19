@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_production.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261019 — 19/10/2026
+
+- Paquete 1.10, M110-04: «Pedir accesorios» y su aviso salen de las etapas marcadas «Accesorios a pedido desde la orden» (ya no del código de armado) y el informe compara solo las etapas de la orden. M110-08: cifras de la solicitud del pedido de accesorios.
+
 ## 3.20261018 — 18/10/2026
 
 - Confirmar la orden sin accesorios ya no falla para el comprador: el aviso a Logística se arma aunque no pueda leer las compañías de los demás usuarios.

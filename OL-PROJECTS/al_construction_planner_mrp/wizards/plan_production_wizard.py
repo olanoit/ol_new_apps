@@ -21,11 +21,12 @@ class ConstructionPlanProductionWizard(models.TransientModel):
         required=True, default='floor',
         help='Piso: una OF por agrupador (piso, línea) y producto. Selección: una OF por '
              'producto para todo lo seleccionado.')
+    # Paquete 1.10, M110-03: la planta sale de la lista de materiales de cada
+    # orden; el campo solo la fuerza.
     picking_type_id = fields.Many2one(
-        'stock.picking.type', string='Planta', required=True, check_company=True,
+        'stock.picking.type', string='Forzar planta', check_company=True,
         domain="[('code', '=', 'mrp_operation'), ('company_id', '=', company_id)]",
-        default=lambda self: self.env['stock.picking.type'].search([
-            ('code', '=', 'mrp_operation'), ('company_id', '=', self.env.company.id)], limit=1))
+        help='Vacío: cada orden se crea en la planta de su lista de materiales.')
     date_start = fields.Datetime(string='Fecha', required=True, default=fields.Datetime.now)
     line_ids = fields.One2many(
         'construction.plan.production.wizard.line', 'wizard_id', string='Vista previa',
@@ -43,7 +44,7 @@ class ConstructionPlanProductionWizard(models.TransientModel):
         return tasks.filtered(lambda t: t.construction_level == 'space') \
             | tasks.construction_space_task_id
 
-    @api.depends('plan_id', 'task_ids', 'whole_project', 'group_by')
+    @api.depends('plan_id', 'task_ids', 'whole_project', 'group_by', 'picking_type_id')
     def _compute_line_ids(self):
         for wizard in self:
             commands = [Command.clear()]
@@ -92,6 +93,7 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             'typology_id': typology.id if typology else False,
             'product_id': product.id,
             'bom_id': bom.id,
+            'picking_type_id': self._production_picking_type(bom).id,
             'space_task_ids': [Command.set(group_spaces.ids)],
             'space_count': len(group_spaces),
             'qty': qty,
@@ -115,6 +117,17 @@ class ConstructionPlanProductionWizard(models.TransientModel):
                   for line in lines.filtered(lambda l: l.product_id == product))
         return product, bom, qty, self.env['construction.typology']
 
+    def _production_picking_type(self, bom):
+        """Planta de la orden: la forzada, la de su lista de materiales o, si
+        la lista no tiene, la operación de fabricación de la compañía."""
+        self.ensure_one()
+        return self.picking_type_id or bom.picking_type_id or self.env['stock.picking.type'].search([
+            ('code', '=', 'mrp_operation'), ('company_id', '=', self.company_id.id)], limit=1)
+
+    def _production_extra_values(self, line):
+        """Valores propios de cada puente para la orden de la línea."""
+        return {}
+
     def action_create(self):
         self.ensure_one()
         plan = self.plan_id
@@ -130,7 +143,7 @@ class ConstructionPlanProductionWizard(models.TransientModel):
                 'bom_id': bom.id,
                 'product_qty': line.qty,
                 'product_uom_id': bom.product_uom_id.id,
-                'picking_type_id': self.picking_type_id.id,
+                'picking_type_id': self._production_picking_type(bom).id,
                 'date_start': self.date_start,
                 'origin': ' · '.join(filter(None, [
                     plan.display_name, line.group_task_id.display_name,
@@ -140,6 +153,7 @@ class ConstructionPlanProductionWizard(models.TransientModel):
                 'construction_space_task_ids': [Command.set(line.space_task_ids.ids)],
                 'project_id': plan.project_id.id,
             }
+            vals.update(self._production_extra_values(line))
             productions |= self.env['mrp.production'].create(vals)
         productions._construction_sync_allocations()
         plan._mark_in_progress()
@@ -168,6 +182,7 @@ class ConstructionPlanProductionWizardLine(models.TransientModel):
     typology_id = fields.Many2one('construction.typology', string='Tipología')
     product_id = fields.Many2one('product.product', string='Producto')
     bom_id = fields.Many2one('mrp.bom', string='Lista de materiales')
+    picking_type_id = fields.Many2one('stock.picking.type', string='Planta')
     space_task_ids = fields.Many2many(
         'project.task', 'construction_plan_prod_wiz_line_space_rel', 'wizard_line_id',
         'task_id', string='Ambientes')

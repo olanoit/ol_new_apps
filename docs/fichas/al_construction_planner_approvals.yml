@@ -29,6 +29,11 @@ configuracion:
 requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261019'
+  fecha: 19/10/2026
+  cambios:
+  - "Paquete 1.10, M110-07: la lista de Aprobaciones muestra documento, obra, «En el plan», exceso % y cantidad, con filtros «Me toca aprobar» y «Fuera del plan», y aprueba o rechaza en bloque solo las que le tocan al usuario."
+  - "M110-08: la solicitud muestra presupuestado, ya pedido, saldo, pedido y exceso; con saldo negativo el exceso nunca supera lo pedido. Una solicitud ya aprobada cuyo documento siguió no se rechaza desde Aprobaciones."
 - version: '2.20261017'
   fecha: 17/10/2026
   cambios:

@@ -127,6 +127,13 @@ class ConstructionApprovalMixin(models.AbstractModel):
         self.ensure_one()
         return self.project_id
 
+    def _construction_awaiting_approval(self):
+        """El documento sigue esperando lo que diga su solicitud (paquete
+        1.10, M110-08): si ya siguió con la aprobación, la solicitud aprobada
+        no se rechaza desde Aprobaciones."""
+        self.ensure_one()
+        return self.state == 'to_approve'
+
     def _construction_create_approval(self, ladder, info):
         self.ensure_one()
         owner = self.env.user

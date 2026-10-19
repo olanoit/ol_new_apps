@@ -205,15 +205,22 @@ class ConstructionRealRecipe(models.Model):
             return
         Bom = self.env['mrp.bom'].sudo()
         bom = Bom.search([('product_id', '=', product.id)], limit=1)
+        # Paquete 1.10, M110-02: como la lista del producto de módulo, solo las
+        # etapas que consume la orden; la planta de la lista se conserva.
+        company = self.template_id.typology_id.company_id or self.env.company
+        codes, picking_type = self.env['construction.typology.module'] \
+            ._construction_module_bom_values(company)
         lines = [Command.clear()] + [Command.create({
             'product_id': line.product_id.id, 'product_qty': line.qty,
             'product_uom_id': (line.uom_id or line.product_id.uom_id).id,
-            'construction_consumption_stage': line.stage or False}) for line in self.line_ids]
+            'construction_consumption_stage': line.stage or False}) for line in self.line_ids
+            if not line.stage or line.stage in codes]
         if bom:
             bom.bom_line_ids = lines
         else:
             Bom.create({'product_tmpl_id': product.product_tmpl_id.id, 'product_id': product.id,
-                        'product_qty': 1.0, 'bom_line_ids': lines[1:]})
+                        'product_qty': 1.0, 'bom_line_ids': lines[1:],
+                        'picking_type_id': picking_type.id or False})
 
     @api.model
     def _blocking_for(self, tasks):
@@ -319,8 +326,13 @@ class MrpProduction(models.Model):
         recipes = self.env['construction.real.recipe'].sudo()._blocking_for(
             self.construction_module_task_ids)
         if recipes:
+            # Paquete 1.10, M110-03: la orden del asistente lleva todos los
+            # módulos de la tipología y el piso; el mensaje nombra el módulo y
+            # su departamento para que la jefatura lo autorice sin rehacerla.
             raise UserError(self.env._(
                 'La orden de fabricación espera la autorización de la jefatura de proyectos: el '
                 'costo real de %s supera al planificado en más del umbral.',
-                ', '.join(recipes.mapped('name'))))
+                ', '.join('%s (%s)' % (recipe.task_id.name, recipe.apartment_task_id.name)
+                          if recipe.apartment_task_id else recipe.name
+                          for recipe in recipes)))
         return super().action_confirm()

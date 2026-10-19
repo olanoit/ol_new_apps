@@ -4,3 +4,6 @@ from . import mrp_bom_line
 from . import mrp_production
 from . import plan_exceed_wizard
 from . import construction_measurement
+from . import construction_stage
+from . import construction_production_reason
+from . import stock_rule

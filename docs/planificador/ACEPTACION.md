@@ -81,6 +81,39 @@ versión `42.20261016` del núcleo (16/10/2026). Corren en `ol_pe_v19` con
 | M18-21 | Segunda liquidación del mismo módulo espera autorización; re-trabajo «mal armado» se liquida aparte | `test_exceed_v18.test_repeat_payment_waits_for_head`, `test_rework_paid_apart` | **Verde** (la repetición solo puede pagarse dentro de la tolerancia de la OC) |
 | M18-22 | COCINA 04 armada en la hoja con un material nuevo crea árbol, tipología, módulos, BOM, tarifas, contrato y el producto nuevo; un segundo envío no duplica | `al_construction_planner_spreadsheet` `test_worksheet_v18.TestWorksheetV18` (2 tests) | **Verde** con datos sintéticos; tablas dinámicas y listas dependientes pendientes de revisión en el navegador |
 
+## Paquete 1.10 (fabricación por etapas)
+
+Criterios del requerimiento «Planificación de obra — fabricación por etapas (paquete 1.10)»
+(`docs/md/Allcenter_Planificacion_Paquete_1.10_Orden_Fabricacion_Por_Etapas.md`), diseño en
+`DISENO_v1.10.md` (19/10/2026). Corren en `ol_pe_v19` con
+`--test-tags /al_construction_planner_suite`. Escenario sintético con dos plantas de prueba
+(corte y armado), la cocina C07 y el closet CL01B; la prueba E-03 de Montecarmelo se repite
+en dev1 después de desplegar. Resultado del 19/10/2026: 326 pruebas de la suite, asistencia,
+hoja y requerimiento de obra en verde (con la corrección del acceso al catálogo de etapas desde
+planta).
+
+| Req. | Criterio (resumen) | Test que lo cubre | Resultado |
+|---|---|---|---|
+| M110-01 | La cadena devuelve [1.1, 1.2]; sin planta en 1.1, [1.2]; sin plantas u otra compañía, vacía | `test_stage_chain_v110.TestStageChainV110.test_production_chain` | **Verde** |
+| M110-02 | Lista de corte en la planta de corte, solo con producción de piezas; lista de fabricación en la planta de armado con el intermedio y lo de armado (tornillo 4); receta con secuencia 1000 y el tornillo en dos líneas (4 y 54); closet sin armado con su lista de corte y sin intermedio | `test_import_builds_stage_boms` | **Verde** |
+| M110-02 | Volver a importar no duplica y conserva las operaciones | `test_reimport_keeps_operations_and_does_not_duplicate` | **Verde** |
+| M110-02 | Sin planta en ninguna etapa, la receta de hoy y sin listas nuevas | `test_import_without_chain_is_unchanged` | **Verde** |
+| M110-02 | Generar el plan da los mismos materiales con y sin cadena | `test_plan_materials_do_not_depend_on_chain` | **Verde** |
+| M110-02 | Al aprobar el plan, subproductos de módulo que suman 100 %; la lista del módulo sin instalación y en la planta del armado | `test_module_byproducts` | **Verde** |
+| M110-03, M110-04 | Una corrida sin forzar planta: cocinas en armado y closet en corte; módulos ligados; al confirmar las dos madres juntas, una hija por madre con su plan, ambientes y proyecto; cada orden compara solo sus etapas; el paquete no es cambio de material; accesorios solo en el armado | `test_orders_without_forced_plant_and_child_inherits_plan` | **Verde** |
+| M110-03 | Con «Forzar planta», todas las órdenes van a esa planta | `test_forced_plant` | **Verde** |
+| M110-04 | Con la política «bloquear», la madre se confirma y la hija queda «excede» con el aviso en la madre | `test_child_excess_does_not_block_mother` | **Verde** |
+| M110-05 | No se valida sin departamento; «En tránsito» al reservar; «En obra» al validar; despacho parcial: el que no salió sigue «Producido» y sin enlace, con el aviso | `test_site_dispatch_by_apartment` | **Verde** |
+| M110-05 | Una transferencia interna sin la marca no cambia nada | `test_internal_transfer_without_flag_changes_nothing` | **Verde** |
+| M110-06 | La orden de posventa no se confirma sin motivo; con motivo sí; la de armado no pide motivo; el usuario de Fabricación no crea motivos | `test_after_sales_reason` | **Verde** |
+| M110-07 | Resumen «Cantidad», «Fuera del plan» y «Ambos», «N materiales» y filtro «Me toca aprobar» | `test_approvals_v110.TestApprovalsV110.test_summary_fields` | **Verde** |
+| M110-07 | Aprobar en bloque: quien no tiene el tramo no aprueba ninguna; quien lo tiene, todas | `test_bulk_approve` | **Verde** |
+| M110-07 | Rechazar en bloque con un motivo: cada documento vuelve a borrador con el motivo | `test_bulk_refuse` | **Verde** |
+| M110-08 | Saldo negativo: presupuestado, ya pedido, saldo negativo, exceso igual a lo pedido y exceso % | `test_negative_balance_figures` | **Verde** (10 presupuestados y 34 ya pedidos en lugar de 4 y 24) |
+| M110-08 | Una solicitud aprobada cuyo documento ya siguió no se rechaza, tampoco desde los aprobadores; los aprobadores cancelados por el sistema no disparan el error | `test_refuse_after_approval_is_blocked` | **Verde** |
+| M110-09 | Sin ajuste, el lote de hoy; con el formato de Allcenter, OBRA-0301-C07-MB1; módulos distintos, lotes distintos; clave desconocida da error | `test_stage_chain_v110.test_module_lot_pattern` | **Verde** |
+| M110-07 | El jefe de producción no ve la columna de soles | — | **Por revisar en dev1**: la columna lleva el grupo «ve montos» como el resto del planificador |
+
 ## Qué falta para validarlos con MOMEN
 
 1. **Maestro de MOMEN** (`Maestro_Planificacion_MOMEN_v03.xlsx`): el

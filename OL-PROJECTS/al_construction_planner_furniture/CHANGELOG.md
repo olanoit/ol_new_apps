@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261019 — 19/10/2026
+
+- Paquete 1.10, M110-02: el importador separa en dos líneas un producto que está en dos etapas y, con cadena de plantas, arma una lista de fabricación por etapa (producto intermedio y lista final con los módulos como subproductos); la receta de la tipología queda detrás con secuencia 1000.
+- M110-03: la orden del asistente usa la lista de fabricación de la tipología y lleva los módulos de sus ambientes, que pasan a «Producido» al cerrarla.
+- M110-05: despacho a obra por departamento en el despacho nativo (obra y departamento obligatorios para validar); al validarlo los módulos que salieron pasan a «En obra» y se nombran los que faltan.
+- M110-09: formato del lote del módulo configurable por compañía ({obra_prefijo}-{unidad_num}-{tipologia}-{modulo}).
+
 ## 6.20261017 — 17/10/2026
 
 - El aviso de ambientes sin medir de la orden de fabricación nombra el departamento.

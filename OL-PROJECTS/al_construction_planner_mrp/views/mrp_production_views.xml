@@ -12,6 +12,7 @@
                         <group>
                             <field name="construction_plan_id" groups="al_construction_planner.group_planner_progress"/>
                             <field name="construction_space_task_ids" widget="many2many_tags" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="construction_parent_id" invisible="not construction_parent_id"/>
                         </group>
                         <group>
                             <field name="construction_exceed_state" widget="badge" decoration-success="construction_exceed_state == 'ok'" decoration-danger="construction_exceed_state == 'exceeded'" decoration-info="construction_exceed_state == 'approved'"/>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- Etapa con su planta (paquete 1.10, M110-01): la planta y la categoría
+     son de la compañía activa. -->
+    <record id="construction_stage_view_list_production" model="ir.ui.view">
+        <field name="name">construction.stage.list.production</field>
+        <field name="model">construction.stage</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_stage_view_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='production_consumption']" position="after">
+                <field name="production_chain_ok" column_invisible="1"/>
+                <field name="production_picking_type_id" optional="show"
+                       options="{'no_create': True}" invisible="not production_chain_ok"/>
+                <field name="intermediate_categ_id" optional="hide"
+                       options="{'no_create': True}" invisible="not production_chain_ok"/>
+                <field name="accessory_request" optional="show"
+                       invisible="not production_chain_ok"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

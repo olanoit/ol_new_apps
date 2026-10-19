@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals` y `al_construction_planner_mrp`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '2.20261019'
+  fecha: 19/10/2026
+  cambios:
+  - "Paquete 1.10, M110-04 y M110-08: la comparación de la orden usa solo las etapas de su lista de materiales y la solicitud lleva lo presupuestado de la orden."
 - version: '1.20261017'
   fecha: 17/10/2026
   cambios:
