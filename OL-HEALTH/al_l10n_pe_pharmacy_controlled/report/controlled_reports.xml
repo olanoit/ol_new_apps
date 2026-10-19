@@ -10,6 +10,15 @@
                     <p>Establecimiento: <t t-out="o.warehouse_id.name"/>
                         <t t-if="o.warehouse_id.pharmacy_establishment_code"> (código <t t-out="o.warehouse_id.pharmacy_establishment_code"/>)</t>
                         · Director técnico: <t t-out="o.warehouse_id.pharmacy_director_id.name or '-'"/></p>
+                    <t t-set="register" t-value="registers[o.id]"/>
+                    <p t-if="register and register.mode == 'physical'">Libro foliado del
+                        <t t-out="register.folio_from"/> al <t t-out="register.folio_to"/>, visación (D5)
+                        <t t-out="register.visa_number"/>
+                        <t t-if="register.visa_date"> del <span t-field="register.visa_date"/></t>
+                        <t t-if="register.authority"> · <t t-out="register.authority"/></t></p>
+                    <p t-elif="register">Registro electrónico (RE) calificado por la resolución
+                        <t t-out="register.electronic_resolution"/>
+                        <t t-if="register.electronic_date"> del <span t-field="register.electronic_date"/></t></p>
                     <table class="pe-doc-table pe-doc-lines mb-3">
                         <thead>
                             <tr class="pe-doc-thead">
@@ -77,6 +86,69 @@
                         </thead>
                         <tbody>
                             <tr t-foreach="prescriptions[o.id]" t-as="p">
+                                <td t-out="p.retention_folio or ''"/>
+                                <td t-out="p.prescription_number or p.name"/>
+                                <td><span t-field="p.date"/></td>
+                                <td t-out="p.patient_id.name or ''"/>
+                                <td t-out="'%s (%s)' % (p.prescriber_id.name or '', p.prescriber_license or '')"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="pe-doc-signatures">
+                        <tr><td><div class="pe-doc-sign-line">Director técnico</div></td>
+                            <td><div class="pe-doc-sign-line">Representante legal</div></td></tr>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+    <template id="report_controlled_balance_record">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="'Balance trimestral' + (' · %s' % o.form_code if o.form_code else '')"/>
+                    <t t-set="doc_extra" t-value="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
+                    <p class="pe-doc-text">Declaración jurada del movimiento de
+                        <t t-out="'estupefacientes' if o.book == 'narcotic' else 'psicotrópicos'"/>
+                        (listas IIA, IIIA, IIIB y IIIC) del establecimiento <t t-out="o.warehouse_id.name"/>
+                        <t t-if="o.warehouse_id.pharmacy_establishment_code"> (código <t t-out="o.warehouse_id.pharmacy_establishment_code"/>)</t>
+                        de <t t-out="o.company_id.name"/>, RUC <t t-out="o.company_id.vat or ''"/>.
+                        Se presenta hasta el <span t-field="o.deadline"/>.</p>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <th>Producto</th><th>Principio activo</th><th>Lista</th><th>Unidad</th>
+                                <th class="text-end">Saldo anterior</th><th class="text-end">Ingresos</th>
+                                <th class="text-end">Egresos</th><th class="text-end">Saldo final</th>
+                                <th class="text-end">Stock al cierre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_ids" t-as="line">
+                                <td t-out="line.product_id.display_name"/>
+                                <td t-out="line.composition or ''"/>
+                                <td t-out="line.control_list or ''"/>
+                                <td t-out="line.uom_id.name"/>
+                                <td class="text-end" t-out="'%.2f' % line.initial"/>
+                                <td class="text-end" t-out="'%.2f' % line.qty_in"/>
+                                <td class="text-end" t-out="'%.2f' % line.qty_out"/>
+                                <td class="text-end" t-out="'%.2f' % line.final"/>
+                                <td class="text-end" t-out="'%.2f' % line.stock_qty"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <t t-if="o.difference_note">
+                        <div class="pe-doc-section">Diferencias con el stock</div>
+                        <p class="pe-doc-text" t-out="o.difference_note"/>
+                    </t>
+                    <div class="pe-doc-section">Recetas especiales del periodo</div>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead"><th>Folio</th><th>Receta</th><th>Fecha</th><th>Paciente</th><th>Prescriptor</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o._get_period_prescriptions()" t-as="p">
                                 <td t-out="p.retention_folio or ''"/>
                                 <td t-out="p.prescription_number or p.name"/>
                                 <td><span t-field="p.date"/></td>

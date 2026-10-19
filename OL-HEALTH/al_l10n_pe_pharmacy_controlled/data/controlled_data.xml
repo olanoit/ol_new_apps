@@ -17,4 +17,12 @@
             <field name="interval_type">days</field>
         </record>
     </data>
+    <record id="ir_cron_pharmacy_controlled_quarter_balances" model="ir.cron">
+        <field name="name">Farmacia: balances trimestrales de controlados en borrador</field>
+        <field name="model_id" ref="model_pharmacy_controlled_balance"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_quarter_balances()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+    </record>
 </odoo>

@@ -274,5 +274,28 @@
             <field name="witness">Carmen Flores Díaz</field>
             <field name="line_ids" eval="[Command.create({'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin').product_variant_id.id, 'lot_id': ref('product_amoxicillin_lot_2'), 'location_id': obj().env.ref('stock.warehouse0').lot_stock_id.id, 'quantity': 20, 'reason': 'damaged'})]" model="product.template"/>
         </record>
+        <!-- Precio por vencer: -20 % hasta 90 días y -40 % hasta 30 días -->
+        <record id="expiry_discount_90" model="pharmacy.expiry.discount">
+            <field name="days">90</field>
+            <field name="discount">20</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="expiry_discount_30" model="pharmacy.expiry.discount">
+            <field name="days">30</field>
+            <field name="discount">40</field>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <!-- Canje en borrador del lote de amoxicilina que vence en 45 días -->
+        <record id="supplier_return_amoxicillin" model="pharmacy.supplier.return">
+            <field name="partner_id" ref="supplier_pacifico"/>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="note">La droguería canjea por lotes con vencimiento mayor a un año.</field>
+            <field name="line_ids" eval="[Command.create({
+                'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin').product_variant_id.id,
+                'lot_id': ref('product_amoxicillin_lot_2'),
+                'location_id': obj().env.ref('stock.warehouse0').lot_stock_id.id,
+                'quantity': 20, 'reason': 'near_expiry', 'price_unit': 0.35})]" model="product.template"/>
+        </record>
     </data>
 </odoo>

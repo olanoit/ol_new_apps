@@ -25,4 +25,19 @@
         <field name="model_id" ref="model_pharmacy_destruction_line"/>
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
+    <record id="pharmacy_expiry_discount_comp_rule" model="ir.rule">
+        <field name="name">Escala de descuento por vencer: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_expiry_discount"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_supplier_return_comp_rule" model="ir.rule">
+        <field name="name">Canje con la droguería: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_supplier_return"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="pharmacy_supplier_return_line_comp_rule" model="ir.rule">
+        <field name="name">Lote del canje: multicompañía</field>
+        <field name="model_id" ref="model_pharmacy_supplier_return_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
 </odoo>

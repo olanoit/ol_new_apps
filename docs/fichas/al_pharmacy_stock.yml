@@ -23,6 +23,8 @@ contexto:
   nota: "**Bonificaciones:** la unidad bonificada se agrega como una línea a precio cero; la factura del proveedor cuadra y el costo se prorratea solo."
 
 funcionalidades:
+  - "Escalas de descuento por vencer y lista de lotes por vencer con precio sugerido."
+  - "Canje o devolución a la droguería con salida de stock, nota de crédito del proveedor y acta en PDF."
   - "Inspección de la recepción y validación de lote, vencimiento y registro sanitario."
   - "Estado sanitario del lote y reserva solo de lotes disponibles."
   - "Liberación de lotes por un químico farmacéutico."
@@ -38,6 +40,11 @@ configuracion:
   - "Cree los puntos de control en **Farmacia ▸ Control ambiental ▸ Puntos de control**."
 
 novedades:
+  - version: '3.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Precio por vencer: escalas de descuento por días al vencimiento (opcionalmente por categoría) y lista de lotes por vencer con su precio sugerido."
+      - "Canje con la droguería: lotes por vencer o vencidos por proveedor, salida al proveedor, nota de crédito en borrador y acta en PDF."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

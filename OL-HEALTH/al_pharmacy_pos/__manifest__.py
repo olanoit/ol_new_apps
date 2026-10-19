@@ -34,6 +34,14 @@ Dispensación en la caja:
 * Lotes: solo los disponibles, el que vence primero arriba (FEFO).
 * Al guardar la venta pagada se registran la receta y la dispensación.
 
+Precio por vencer (mejora E11):
+
+* Al vender un lote que vence dentro de una escala de descuento por vencer
+  (al_pharmacy_stock), la línea recibe el descuento y la nota «Por vencer:
+  vence dd/mm/aaaa». Si se cambia a un lote sin descuento, vuelve al precio
+  normal.
+* Un lote vencido nunca se ofrece, aunque el cron diario aún no lo marque.
+
 Cumplimiento (DS 020-2024-SA):
 
 * Empresa vinculada (art. 32-B): aviso al agregar el producto y leyenda en
@@ -47,7 +55,7 @@ Cumplimiento (DS 020-2024-SA):
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '6.20261019',
+    'version': '7.20261019',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
                 'point_of_sale', 'pos_hr'],

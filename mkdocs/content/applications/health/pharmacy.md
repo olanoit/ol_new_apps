@@ -14,13 +14,14 @@ Ley 32033.
 | Página | Para qué |
 |---|---|
 | [Productos y presentaciones](pharmacy/products.md) | Principio activo, registro sanitario, condición de venta, equivalentes y venta por caja, blíster o unidad |
-| [Almacenamiento](pharmacy/storage.md) | Recepción, lotes y vencimientos, temperatura, alertas sanitarias, actas de baja y bonificaciones |
+| [Almacenamiento](pharmacy/storage.md) | Recepción, lotes y vencimientos, precio por vencer, canje con la droguería, temperatura, alertas sanitarias, actas de baja y bonificaciones |
 | [Receta y dispensación en la caja](pharmacy/dispensing.md) | Receta, prescriptores y pacientes, alternativas genéricas y control del químico farmacéutico |
 | [Estupefacientes y psicotrópicos](pharmacy/controlled.md) | Receta especial, retención con folio, libros y balance trimestral |
 | [DIGEMID, genéricos e IGV](pharmacy/digemid.md) | Observatorio de precios, 30 % de genéricos, precios por DCI, cartel de empresas vinculadas, reacciones adversas e IGV exonerado |
 | [Tratamientos crónicos y recompra](pharmacy/care.md) | Días cubiertos, recordatorio por WhatsApp, adherencia y aviso en la caja |
 | [Faltantes y sugerido de compra](pharmacy/replenishment.md) | Lo que se pide y no hay, y compra por consumo de cada local |
 | [Fidelización por DNI](pharmacy/loyalty.md) | Puntos y vales para los clientes sin premiar los medicamentos con receta |
+| [Tienda en línea](pharmacy/website.md) | Genéricos primero, receta validada por el Q.F., recojo en tienda y cadena de frío |
 
 ## Configuración
 

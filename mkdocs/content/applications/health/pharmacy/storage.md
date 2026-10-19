@@ -29,6 +29,35 @@ libera. Cada día Odoo marca los vencidos.
 **Farmacia ‣ Inventario ‣ Lotes y vencimientos** abre los lotes **Por vencer**
 según los días de los ajustes.
 
+## Precio por vencer
+
+Para vender antes de que venzan, defina escalas de descuento en
+**Farmacia ‣ Configuración ‣ Descuentos por vencer**: días al vencimiento y
+porcentaje (por ejemplo, -20 % a 90 días y -40 % a 30 días), opcionalmente
+por categoría. Si un lote cae en varias escalas vale la de menos días, y una
+escala con categoría manda sobre las generales.
+
+- **En la caja**: al elegir un lote dentro de una escala, la línea recibe el
+  descuento y la nota «Por vencer: vence dd/mm/aaaa». Los lotes vencidos no
+  se ofrecen.
+- **Farmacia ‣ Inventario ‣ Lotes por vencer**: los días que le quedan a cada
+  lote, su descuento y el precio sugerido.
+
+## Canje con la droguería
+
+Los lotes por vencer, vencidos o dañados que el proveedor acepta canjear se
+gestionan en **Farmacia ‣ Inventario ‣ Canjes con la droguería**:
+
+1. Cree el canje con el proveedor y el local y pulse **Cargar lotes**: trae
+   los lotes por vencer o vencidos recibidos de ese proveedor.
+2. **Marcar como enviado** cuando mande la lista y **Aceptado por el
+   proveedor** cuando la acepte: se prepara la salida al proveedor.
+3. **Devolver y terminar** entrega los lotes y cierra el canje.
+4. **Registrar nota de crédito** crea la nota de crédito del proveedor en
+   borrador con las cantidades y el costo.
+
+El acta de canje se imprime desde el canje.
+
 ## Bonificaciones de compra
 
 En la orden de compra, la columna **Bonificación** agrega las unidades sin costo

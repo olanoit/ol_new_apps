@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hoja de reparto: aviso de cadena de frío (BPOF 7.5.5) -->
+    <template id="report_delivery_document_cold_chain" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[@id='informations']" position="before">
+            <div t-if="o.pharmacy_cold_chain" class="o_pharmacy_cold_chain_slip"
+                 style="border: 2px solid #b45309; padding: 6px 10px; margin-bottom: 10px; font-weight: bold;">
+                CADENA DE FRÍO: conservar entre 2 y 8 °C. Repartir en caja térmica con refrigerante y
+                registrar la temperatura a la entrega.
+                <div style="font-weight: normal;">
+                    <t t-out="', '.join(o.move_ids.product_id.filtered('pharmacy_cold_chain').mapped('display_name'))"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

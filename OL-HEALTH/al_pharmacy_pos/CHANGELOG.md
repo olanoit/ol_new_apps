@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261019 — 19/10/2026
+
+- Precio por vencer: al vender un lote dentro de una escala, la línea recibe el descuento y la nota «Por vencer: vence dd/mm/aaaa»; los lotes vencidos no se ofrecen.
+
 ## 6.20261019 — 19/10/2026
 
 - Empresa vinculada (DS 020-2024-SA, art. 32-B): aviso al agregar el producto y leyenda «Empresa vinculada» en la línea y en el ticket.

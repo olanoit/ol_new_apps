@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
+import base64
+import io
+from datetime import date, timedelta
+
+import openpyxl
 
 from odoo import fields
 from odoo.exceptions import UserError
+
+from odoo.addons.al_l10n_pe_pharmacy_digemid.models.pharmacy_observatory import add_business_days
 from odoo.tests import Form, tagged
 from odoo.tests.common import TransactionCase
 
@@ -35,7 +41,7 @@ class TestDigemid(TransactionCase):
 
     # Observatorio ----------------------------------------------------------
     def test_price_change_is_pending_until_exported(self):
-        product = self._product('Glucophage 850 mg', 'innovator', 1.5, code='DIG-0001')
+        product = self._product('Glucophage 850 mg', 'innovator', 1.5, code='DIG-0001', qty=10)
         Price = self.env['pharmacy.observatory.price']
         pending = Price.search([('product_tmpl_id', '=', product.product_tmpl_id.id)])
         self.assertEqual((pending.state, pending.unit_price), ('pending', 1.5))
@@ -118,3 +124,75 @@ class TestDigemid(TransactionCase):
             'al_l10n_pe_pharmacy_digemid.report_linked_poster', self.env.company.ids)
         self.assertIn(b'Metformina Botica 850 mg', html)
         self.assertNotIn(b'Glucophage 850 mg', html)
+
+    # Envíos al Observatorio ----------------------------------------------
+    def _rows_of(self, wizard):
+        workbook = openpyxl.load_workbook(io.BytesIO(base64.b64decode(wizard.file_data)))
+        sheet = workbook['Hoja1']
+        return [[cell.value for cell in row] for row in sheet.iter_rows()]
+
+    def test_observatory_full_load_then_changes(self):
+        tax = self.env['account.tax'].create({
+            'name': 'IGV 18 % (prueba)', 'amount': 18, 'type_tax_use': 'sale',
+            'company_id': self.env.company.id})
+        product = self._product('Sitagliptina 50 mg', 'generic_dci', 10.0, code='DIG-0100', qty=20)
+        product.taxes_id = tax
+        device = self._product('Glucómetro', 'generic_dci', 50.0, code='DIG-0101', qty=5)
+        device.pharmacy_digemid_class = 'device'
+        Export = self.env['pharmacy.observatory.export']
+        Submission = self.env['pharmacy.observatory.submission']
+        first = Export.create({'warehouse_id': self.warehouse.id})
+        self.assertTrue(first.needs_full)
+        self.assertEqual(first.scope, 'all')
+        first.action_export()
+        rows = self._rows_of(first)
+        self.assertEqual(rows[0], ['CodEstab', 'CodProd', 'Precio 1', 'Precio 2'])
+        mine = [row for row in rows[1:] if row[1] in ('DIG-0100', 'DIG-0101')]
+        # Con IGV, el código del establecimiento como texto y sin el dispositivo médico.
+        self.assertEqual(mine, [['0012345', 'DIG-0100', 11.8, 11.8]])
+        sent = Submission.search([('warehouse_id', '=', self.warehouse.id)])
+        self.assertEqual((sent.state, sent.mode), ('sent', 'full'))
+        self.assertEqual(sent.rectification_deadline, add_business_days(fields.Date.today(), 7))
+
+        # Como si la carga hubiera sido hace un rato.
+        sent.date_sent = fields.Datetime.now() - timedelta(minutes=5)
+        self.env['pharmacy.observatory.price'].search([]).filtered(
+            lambda p: p.date >= sent.date_sent and p.product_tmpl_id != product.product_tmpl_id
+        ).write({'date': sent.date_sent - timedelta(minutes=1)})
+        second = Export.create({'warehouse_id': self.warehouse.id})
+        self.assertFalse(second.needs_full)
+        self.assertEqual(second.scope, 'pending')
+        product.list_price = 12.0
+        second.action_export()
+        self.assertEqual([row for row in self._rows_of(second)[1:]],
+                         [['0012345', 'DIG-0100', 14.16, 14.16]])
+        self.assertEqual(Submission.search([('warehouse_id', '=', self.warehouse.id)]).mapped('mode'),
+                         ['changes', 'full'])
+
+    def test_first_load_of_the_month_is_full(self):
+        self._product('Sitagliptina 50 mg', 'generic_dci', 10.0, code='DIG-0102', qty=5)
+        wizard = self.env['pharmacy.observatory.export'].create({'warehouse_id': self.warehouse.id})
+        wizard.scope = 'pending'
+        with self.assertRaises(UserError):
+            wizard.action_export()
+
+    def test_monthly_reminder_for_the_director(self):
+        user = self.env['res.users'].create({'name': 'Q.F. Directora', 'login': 'qf_directora_obs'})
+        director = self.env['hr.employee'].create({
+            'name': 'Q.F. Directora', 'user_id': user.id, 'pharmacy_role': 'pharmacist'})
+        self.warehouse.pharmacy_director_id = director
+        self.env.company.pharmacy_observatory_reminder_day = 1
+        Submission = self.env['pharmacy.observatory.submission']
+        Submission._cron_monthly_reminder()
+        draft = Submission.search([('warehouse_id', '=', self.warehouse.id)])
+        self.assertEqual(draft.state, 'draft')
+        self.assertEqual(draft.period, fields.Date.today().replace(day=1))
+        self.assertEqual(draft.activity_ids.user_id, user)
+        # Una sola vez por mes.
+        Submission._cron_monthly_reminder()
+        self.assertEqual(Submission.search_count([('warehouse_id', '=', self.warehouse.id)]), 1)
+
+    def test_rectification_counts_business_days(self):
+        # Viernes 16/10/2026 + 7 días hábiles = martes 27/10/2026.
+        self.assertEqual(add_business_days(date(2026, 10, 16), 7), date(2026, 10, 27))
+

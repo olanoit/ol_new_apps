@@ -23,6 +23,7 @@ contexto:
   nota: "**Por confirmar:** la plantilla vigente del Observatorio (DIGEMID rechaza otra estructura) y la periodicidad para boticas; las columnas del archivo se ajustan en el código."
 
 funcionalidades:
+  - "Envíos mensuales al Observatorio por local: carga completa y de cambios, plazo de rectificación y recordatorio."
   - "Cartel A4 de productos de empresas vinculadas (DS 020-2024-SA, art. 32-B)."
   - "Código DIGEMID del producto e historial de precios pendientes o informados."
   - "Archivo de precios (pendientes o toda la oferta en existencia) con el código del establecimiento."
@@ -37,6 +38,11 @@ configuracion:
   - "Importe el listado de genéricos esenciales en **Farmacia ▸ Configuración ▸ Catálogos**."
 
 novedades:
+  - version: '4.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Observatorio según la Directiva 176: Excel con CodEstab, CodProd, Precio 1 (empaque) y Precio 2 (unidad) con IGV; solo medicamentos y biológicos a la venta y con stock."
+      - "Envíos al Observatorio por local y mes: primera carga completa, luego solo cambios, plazo de rectificación de 7 días hábiles y recordatorio mensual para el director técnico."
   - version: '3.20261019'
     fecha: 19/10/2026
     cambios:

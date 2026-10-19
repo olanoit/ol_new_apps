@@ -19,13 +19,7 @@ import xlsxwriter
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-BOOKS = [
-    ('narcotic', 'Libro de estupefacientes'),
-    ('psychotropic', 'Libro de psicotrópicos'),
-    ('cannabis', 'Registro de cannabis'),
-]
-QUARTERS = [('1', 'Enero - marzo'), ('2', 'Abril - junio'), ('3', 'Julio - setiembre'),
-            ('4', 'Octubre - diciembre')]
+from ..models.controlled_compliance import BALANCE_LISTS, BOOKS, QUARTERS
 
 
 class PharmacyControlledReport(models.TransientModel):
@@ -135,7 +129,8 @@ class PharmacyControlledReport(models.TransientModel):
         return rows
 
     def _get_balance_lines(self):
-        """Por producto: saldo inicial, entradas, salidas y saldo final."""
+        """Por producto de las listas del balance (IIA, IIIA, IIIB y IIIC):
+        saldo inicial, entradas, salidas y saldo final."""
         self.ensure_one()
         before, inside = self._move_lines(fields.Date.subtract(self.date_from, days=1))
         period, _inside = self._move_lines(self.date_to, self.date_from)
@@ -148,6 +143,8 @@ class PharmacyControlledReport(models.TransientModel):
             data[move_line.product_id][key] += abs(quantity)
         rows = []
         for product, values in sorted(data.items(), key=lambda item: item[0].display_name):
+            if product.pharmacy_control_list not in BALANCE_LISTS:
+                continue
             final = values['initial'] + values['qty_in'] - values['qty_out']
             rows.append({
                 'product': product,
@@ -252,7 +249,10 @@ class ReportControlledBook(models.AbstractModel):
     @api.model
     def _get_report_values(self, docids, data=None):
         reports = self.env['pharmacy.controlled.report'].browse(docids)
+        Register = self.env['pharmacy.controlled.book.register']
         return {'docs': reports, 'books': dict(BOOKS),
+                'registers': {report.id: Register._get_active(report.warehouse_id, report.book)
+                              for report in reports},
                 'lines': {report.id: report._get_book_lines() for report in reports}}
 
 

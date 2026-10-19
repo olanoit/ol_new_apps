@@ -23,6 +23,8 @@ contexto:
   nota: "**Por confirmar:** el plazo exacto del balance (art. 50); los comunicados de las DIRIS lo fijan hacia el día 15 del mes siguiente al trimestre."
 
 funcionalidades:
+  - "Balance trimestral registrado con cuadre contra el stock y vencimiento a los 15 días."
+  - "Libros oficiales por local y archivo de dos años de las recetas retenidas."
   - "Lista de fiscalización por producto (IIA, IIB, IIIA-C, IVA-B, VI, cannabis) con su condición de venta y su libro."
   - "Validación de la receta especial (art. 23) y vigencia de 3 días."
   - "Solo la receta especial dispensa las listas de receta especial; nombre y documento del adquiriente obligatorios."
@@ -36,6 +38,11 @@ configuracion:
   - "Genere libros y balance en **Farmacia ▸ Controlados ▸ Libros y balance**."
 
 novedades:
+  - version: '3.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Balance trimestral registrado por local (listas IIA, IIIA, IIIB y IIIC): saldos, cuadre contra el stock, vencimiento a los 15 días y borrador automático con actividad para el director técnico."
+      - "Libros oficiales por local (foliados con visación D5 o electrónicos) y archivo de las recetas retenidas por dos años."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

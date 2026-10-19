@@ -1,0 +1,48 @@
+titulo: "Farmacia: tienda en línea"
+subtitulo: "La tienda web de la botica con las reglas de la caja: genéricos primero, receta validada por el químico farmacéutico, controlados fuera de la venta en línea, recojo en tienda y cadena de frío en el reparto."
+categoria: "Salud · Sitio web"
+etiquetas: [Farmacia, Tienda en línea, Receta, Genéricos, Recojo en tienda, Cadena de frío]
+
+destacados:
+  - icono: "℞"
+    titulo: "Receta antes de pagar"
+    texto: "Si el carrito lleva medicamentos con receta, el cliente sube la foto o el PDF; el pedido espera la aprobación del Q.F."
+  - icono: "⇅"
+    titulo: "Genéricos primero"
+    texto: "La ficha de un producto de marca muestra antes las alternativas genéricas en DCI, con su precio (DS 020-2024-SA, art. 49)."
+  - icono: "⛔"
+    titulo: "Controlados solo en el local"
+    texto: "Los estupefacientes y psicotrópicos no se pueden agregar al carrito."
+  - icono: "❄"
+    titulo: "Recojo y reparto"
+    texto: "Recojo en el local elegido y aviso de cadena de frío en la entrega y en la hoja de reparto."
+
+contexto:
+  titulo: "El problema que resuelve"
+  texto: "Las cadenas venden por web y app con delivery y recojo en tienda. Una botica que vende en línea debe cumplir lo mismo que en el mostrador: ofrecer primero los genéricos también en los canales virtuales, no despachar medicamentos con receta sin validarla y no vender controlados a distancia."
+  nota: "**Flujo de la receta:** el cliente sube la receta antes de pagar → el pedido queda «por validar» → el Q.F. aprueba (el pedido se confirma) o rechaza con motivo (el cliente lo ve en su portal y sube otra)."
+
+funcionalidades:
+  - "Alternativas en la ficha del producto: genérico en DCI, genérico de marca e innovador, cada grupo por precio."
+  - "Leyenda de empresa vinculada y avisos de receta o de producto controlado."
+  - "Controlados fuera del carrito y del pago en línea."
+  - "Subida de la receta (JPG, PNG o PDF hasta 5 MB) antes de pagar o desde el portal del pedido."
+  - "Estados de la receta: falta, por validar, aprobada y rechazada con motivo; actividad para el director técnico."
+  - "El pedido pagado no se confirma ni se entrega hasta aprobar la receta."
+  - "Archivo de la receta visible solo para los químicos farmacéuticos."
+  - "Recojo en tienda con «Click & Collect» de Odoo."
+  - "Cadena de frío marcada en el pedido, la entrega y la hoja de reparto."
+
+configuracion:
+  - "Instale el módulo desde Aplicaciones (categoría OL-HEALTH)."
+  - "Publique los productos en la tienda y active el recojo en tienda en **Sitio web ▸ Configuración ▸ Ajustes**."
+  - "Dé a los químicos farmacéuticos el permiso **Ventas: todos los documentos** para que validen las recetas."
+  - "Las recetas por validar están en **Farmacia ▸ Dispensación ▸ Recetas en línea**."
+
+novedades:
+  - version: '1.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Primera versión (mejora E9): tienda en línea con genéricos primero, receta validada por el Q.F., controlados fuera de la venta en línea, recojo en tienda y cadena de frío."
+
+relacionados: [al_pharmacy_prescription, al_pharmacy_pos, al_industry_pharmacy]

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_pharmacy_website" model="ir.ui.view">
+        <field name="name">sale.order.form.pharmacy.website</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-info mb-0" role="alert"
+                     invisible="pharmacy_review_state != 'to_review'">
+                    Pedido en línea con receta por validar: un químico farmacéutico debe aprobarla
+                    para confirmarlo.
+                </div>
+                <div class="alert alert-warning mb-0" role="alert" invisible="not pharmacy_cold_chain">
+                    Cadena de frío: el pedido lleva productos que se conservan entre 2 y 8 °C.
+                </div>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Receta en línea" name="pharmacy_online_prescription"
+                      invisible="not pharmacy_prescription_required">
+                    <group>
+                        <group>
+                            <field name="pharmacy_prescription_required" invisible="1"/>
+                            <field name="pharmacy_cold_chain" invisible="1"/>
+                            <field name="pharmacy_review_state" widget="badge"
+                                   decoration-info="pharmacy_review_state == 'to_review'"
+                                   decoration-success="pharmacy_review_state == 'approved'"
+                                   decoration-danger="pharmacy_review_state == 'rejected'"
+                                   decoration-warning="pharmacy_review_state == 'to_upload'"/>
+                            <field name="pharmacy_prescription_file" filename="pharmacy_prescription_filename"
+                                   readonly="1" groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                            <field name="pharmacy_prescription_filename" invisible="1"
+                                   groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+                        </group>
+                        <group>
+                            <field name="pharmacy_reviewer_id"/>
+                            <field name="pharmacy_review_date"/>
+                            <field name="pharmacy_review_reason"
+                                   readonly="pharmacy_review_state not in ('to_review', 'rejected')"/>
+                        </group>
+                    </group>
+                    <div groups="al_pharmacy_base.group_pharmacy_pharmacist"
+                         invisible="pharmacy_review_state not in ('to_review', 'rejected')">
+                        <button name="action_pharmacy_approve_prescription" type="object"
+                                string="Aprobar receta" class="btn-primary me-2"/>
+                        <button name="action_pharmacy_reject_prescription" type="object"
+                                string="Rechazar receta" class="btn-secondary"
+                                invisible="pharmacy_review_state != 'to_review'"/>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_sales_order_filter_pharmacy_website" model="ir.ui.view">
+        <field name="name">sale.order.search.pharmacy.website</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_activities_my']" position="before">
+                <filter string="Recetas por validar" name="pharmacy_to_review"
+                        domain="[('pharmacy_review_state', '=', 'to_review')]"/>
+                <filter string="Con receta en línea" name="pharmacy_prescription_required"
+                        domain="[('pharmacy_prescription_required', '=', True)]"/>
+                <separator/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_online_prescriptions" model="ir.actions.act_window">
+        <field name="name">Recetas en línea</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('pharmacy_prescription_required', '=', True)]</field>
+        <field name="context">{'search_default_pharmacy_to_review': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay recetas de la tienda en línea por validar</p>
+            <p>Los pedidos en línea con productos de venta con receta llegan aquí cuando el cliente sube
+                la receta.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_pharmacy_online_prescriptions" name="Recetas en línea"
+              parent="al_pharmacy_prescription.menu_pharmacy_dispensing"
+              action="action_pharmacy_online_prescriptions" sequence="15"
+              groups="al_pharmacy_base.group_pharmacy_pharmacist"/>
+
+    <!-- Entregas: cadena de frío -->
+    <record id="view_picking_form_pharmacy_cold_chain" model="ir.ui.view">
+        <field name="name">stock.picking.form.pharmacy.cold.chain</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <field name="pharmacy_cold_chain" invisible="1"/>
+                <div class="alert alert-warning mb-0 o_pharmacy_cold_chain_alert" role="alert"
+                     invisible="not pharmacy_cold_chain">
+                    Cadena de frío: reparta en caja térmica con refrigerante y registre la temperatura
+                    a la entrega.
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="vpicktree_pharmacy_cold_chain" model="ir.ui.view">
+        <field name="name">stock.picking.list.pharmacy.cold.chain</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="pharmacy_cold_chain" optional="show" widget="boolean"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_picking_search_pharmacy_cold_chain" model="ir.ui.view">
+        <field name="name">stock.picking.search.pharmacy.cold.chain</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <filter string="Cadena de frío" name="pharmacy_cold_chain"
+                        domain="[('pharmacy_cold_chain', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

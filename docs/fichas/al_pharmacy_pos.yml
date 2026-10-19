@@ -20,6 +20,7 @@ contexto:
   nota: "**Listas de precios:** el porcentaje o la fórmula se aplica al precio de la presentación; las reglas de precio fijo o sobre el costo son por unidad del producto, como en Odoo."
 
 funcionalidades:
+  - "Descuento automático al vender un lote por vencer; los lotes vencidos no se ofrecen."
   - "Empresa vinculada: aviso al vender y leyenda en el ticket (DS 020-2024-SA, art. 32-B)."
   - "Rótulo de la venta fraccionada desde el recibo del TPV (art. 48)."
   - "Alternativas al elegir una marca: genéricos en DCI primero, por precio (Ley 32033)."
@@ -38,6 +39,10 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: '7.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Precio por vencer: al vender un lote dentro de una escala, la línea recibe el descuento y la nota «Por vencer: vence dd/mm/aaaa»; los lotes vencidos no se ofrecen."
   - version: '6.20261019'
     fecha: 19/10/2026
     cambios:

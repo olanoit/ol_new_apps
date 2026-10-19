@@ -5,7 +5,7 @@ registro de la receta y la dispensación al guardar la venta."""
 import logging
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -64,10 +64,39 @@ class PosOrderLine(models.Model):
         el que vence primero arriba (FEFO)."""
         lots = super().get_existing_lots(company_id, config_id, product_id)
         records = self.env['stock.lot'].browse([lot['id'] for lot in lots])
-        available = {lot.id: lot for lot in records if lot.pharmacy_state == 'available'}
+        # Un lote vencido nunca se vende, aunque el cron diario aún no lo marque.
+        available = {lot.id: lot for lot in records
+                     if lot.pharmacy_state == 'available' and not lot._pharmacy_is_expired()}
         far_future = fields.Datetime.to_datetime('9999-12-31')
         result = [lot for lot in lots if lot['id'] in available]
         result.sort(key=lambda lot: available[lot['id']].expiration_date or far_future)
+        return result
+
+    @api.model
+    def get_pharmacy_lot_expiry(self, config_id, product_id, lot_names):
+        """Descuento por vencer de los lotes elegidos en la caja:
+        ``{lote: {'discount': %, 'expiration_date': 'AAAA-MM-DD'}}``."""
+        self.check_access('read')
+        config = self.env['pos.config'].browse(config_id).exists()
+        if not config or not lot_names:
+            return {}
+        if config.company_id not in self.env.companies:
+            raise AccessError(self.env._('La caja no es de una compañía permitida.'))
+        # Quien atiende la caja no necesariamente lee lotes de inventario; solo
+        # se devuelven la fecha de vencimiento y el descuento de la escala.
+        lots_sudo = self.env['stock.lot'].sudo().with_company(config.company_id).search([
+            ('product_id', '=', product_id), ('name', 'in', lot_names),
+            '|', ('company_id', '=', False), ('company_id', '=', config.company_id.id)])
+        result = {}
+        for lot in lots_sudo:
+            if not lot.expiration_date:
+                continue
+            result[lot.name] = {
+                'discount': lot.pharmacy_expiry_discount,
+                # Día del vencimiento en la hora local de la caja, no en UTC.
+                'expiration_date': fields.Date.to_string(
+                    fields.Date.context_today(self, lot.expiration_date)),
+            }
         return result
 
 

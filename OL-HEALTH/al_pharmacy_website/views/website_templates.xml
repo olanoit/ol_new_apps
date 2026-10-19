@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ficha del producto: genéricos primero, receta, controlado y empresa vinculada -->
+    <template id="product_pharmacy_info" inherit_id="website_sale.product" name="Farmacia: ficha del producto">
+        <xpath expr="//div[hasclass('o_wsale_product_details_content_section_cta')]" position="before">
+            <t t-set="pharmacy_restriction" t-value="product._pharmacy_online_restriction()"/>
+            <div t-if="product.pharmacy_ok" class="o_pharmacy_product_info mb-4">
+                <div t-if="pharmacy_restriction == 'controlled'" class="alert alert-warning o_pharmacy_controlled" role="alert">
+                    <i class="fa fa-ban me-1"/>Medicamento controlado: solo se vende en el local, con la
+                    receta especial.
+                </div>
+                <div t-elif="pharmacy_restriction == 'prescription'" class="alert alert-info o_pharmacy_prescription" role="alert">
+                    <i class="fa fa-file-text-o me-1"/>Venta con receta médica: la subirá antes de pagar y un
+                    químico farmacéutico la valida antes del envío.
+                </div>
+                <div t-if="product.pharmacy_linked_company" class="alert alert-light border o_pharmacy_linked" role="alert">
+                    Producto de una empresa vinculada a esta botica.
+                </div>
+                <t t-set="pharmacy_alternatives" t-value="product._pharmacy_website_alternatives()"/>
+                <div t-if="pharmacy_alternatives" class="o_pharmacy_alternatives">
+                    <h6 class="mb-2">Alternativas (genéricos primero)</h6>
+                    <ul class="list-group">
+                        <li t-foreach="pharmacy_alternatives" t-as="alternative"
+                            class="list-group-item d-flex justify-content-between align-items-center o_pharmacy_alternative">
+                            <a t-att-href="alternative.website_url" class="text-decoration-none">
+                                <span t-out="alternative.name"/>
+                                <small class="text-muted d-block">
+                                    <span t-field="alternative.pharmacy_product_type"/>
+                                </small>
+                            </a>
+                            <span class="fw-bold text-nowrap"
+                                  t-out="alternative._get_combination_info()['price']"
+                                  t-options="{'widget': 'monetary', 'display_currency': website.currency_id}"/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Los controlados no muestran «Agregar al carrito» -->
+    <template id="cta_wrapper_pharmacy" inherit_id="website_sale.cta_wrapper" name="Farmacia: sin carrito para controlados">
+        <xpath expr="//div[@id='o_wsale_cta_wrapper']" position="attributes">
+            <attribute name="t-if">not (product and product._name == 'product.template' and product._pharmacy_online_restriction() == 'controlled')</attribute>
+        </xpath>
+    </template>
+
+    <!-- Paso del checkout: subir la receta -->
+    <template id="prescription_upload" name="Farmacia: subir la receta">
+        <t t-call="website.layout">
+            <div id="wrap" class="o_pharmacy_prescription_upload">
+                <div class="container py-4" style="max-width: 720px;">
+                    <h3 class="mb-3">Receta médica</h3>
+                    <p>El pedido <strong t-out="order.name"/> lleva productos que se venden con receta:</p>
+                    <ul>
+                        <li t-foreach="products" t-as="p" t-out="p.display_name"/>
+                    </ul>
+                    <p class="text-muted">Suba una foto o un PDF de la receta vigente (JPG, PNG o PDF de hasta
+                        5 MB). Un químico farmacéutico la revisa antes de enviar el pedido; si no la
+                        aprueba, le avisamos con el motivo.</p>
+                    <div t-if="error" class="alert alert-danger o_pharmacy_upload_error" role="alert" t-out="error"/>
+                    <div t-if="order.pharmacy_review_state == 'rejected'" class="alert alert-warning" role="alert">
+                        La receta anterior no se aprobó: <t t-out="order.pharmacy_review_reason"/>
+                    </div>
+                    <form t-att-action="action_url" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div class="mb-3">
+                            <input type="file" name="prescription" class="form-control" required="required"
+                                   accept="image/jpeg,image/png,application/pdf"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary o_pharmacy_upload_submit">Subir la receta</button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Confirmación: el pedido queda por validar -->
+    <template id="confirmation_pharmacy" inherit_id="website_sale.confirmation" name="Farmacia: pedido por validar">
+        <xpath expr="//h3[contains(., 'Thank you for your order.')]/.." position="after">
+            <div t-if="order.pharmacy_prescription_required" class="alert alert-info mt-3 o_pharmacy_pending_review" role="alert">
+                Su pedido lleva productos con receta: un químico farmacéutico la valida y le avisamos
+                antes de enviarlo.
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Portal del pedido: estado de la receta -->
+    <template id="sale_order_portal_pharmacy" inherit_id="sale.sale_order_portal_content" name="Farmacia: receta en el portal">
+        <xpath expr="//div[@id='introduction']" position="after">
+            <div t-if="sale_order.pharmacy_prescription_required" class="alert o_pharmacy_portal_review mt-3"
+                 t-attf-class="alert-#{'success' if sale_order.pharmacy_review_state == 'approved' else 'warning' if sale_order.pharmacy_review_state in ('rejected', 'to_upload') else 'info'}"
+                 role="alert">
+                Receta: <strong t-field="sale_order.pharmacy_review_state"/>
+                <t t-if="sale_order.pharmacy_review_state == 'rejected'">
+                    — <t t-out="sale_order.pharmacy_review_reason"/>
+                </t>
+                <a t-if="sale_order.pharmacy_review_state in ('rejected', 'to_upload')"
+                   t-attf-href="/my/orders/#{sale_order.id}/prescription?access_token=#{sale_order.access_token}"
+                   class="btn btn-sm btn-primary ms-2">Subir la receta</a>
+            </div>
+        </xpath>
+    </template>
+</odoo>

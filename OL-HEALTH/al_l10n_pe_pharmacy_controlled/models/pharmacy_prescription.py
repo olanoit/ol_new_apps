@@ -1,14 +1,30 @@
 # -*- coding: utf-8 -*-
 """Receta especial (DS 023-2001-SA, arts. 23, 30 y 36): datos obligatorios,
 vigencia de tres días, retención con folio y datos del adquiriente."""
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 SPECIAL_VALIDITY_DAYS = 3
+# Las recetas retenidas se archivan dos años (DS 023-2001-SA).
+RETENTION_YEARS = 2
 
 
 class PharmacyPrescription(models.Model):
     _inherit = 'pharmacy.prescription'
+
+    retention_date = fields.Date(string='Retenida el', readonly=True, copy=False)
+    retention_until = fields.Date(
+        string='Archivar hasta', compute='_compute_retention_until', store=True,
+        help='Las recetas retenidas se conservan dos años en el establecimiento.')
+
+    @api.depends('retained', 'retention_date')
+    def _compute_retention_until(self):
+        for prescription in self:
+            prescription.retention_until = (
+                prescription.retention_date + relativedelta(years=RETENTION_YEARS)
+                if prescription.retained and prescription.retention_date else False)
 
     @api.onchange('prescription_type')
     def _onchange_prescription_type_special(self):
@@ -66,6 +82,7 @@ class PharmacyPrescription(models.Model):
         if template._pharmacy_retains_prescription() and not self.retained:
             self.write({
                 'retained': True,
+                'retention_date': fields.Date.context_today(self),
                 'retention_folio': self.retention_folio or self.env['ir.sequence'].with_company(
                     self.company_id).next_by_code('pharmacy.prescription.retained'),
             })

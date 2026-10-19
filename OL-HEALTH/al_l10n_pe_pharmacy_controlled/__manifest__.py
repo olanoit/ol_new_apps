@@ -21,6 +21,15 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
   de inventario validados, con saldo y receta.
 * Balance trimestral (declaración jurada) en PDF y Excel con las recetas del
   periodo; recordatorio el primer día de cada trimestre.
+* Balance trimestral registrado por local de las listas IIA, IIIA, IIIB y
+  IIIC: saldo anterior, ingresos, egresos y saldo final, cuadre contra el
+  stock al cierre (art. 41, diferencias justificadas), vencimiento a los 15
+  días calendario del cierre con actividad para el director técnico y
+  formato de la autoridad (cada DIRIS usa el suyo).
+* Libros oficiales por local: foliado y visado (D5) o registro electrónico
+  calificado por DIGEMID; el libro impreso lleva sus datos.
+* Recetas retenidas (listas IIB, IVA, IVB y VI y las de receta especial):
+  fecha de retención y archivo por dos años.
 * Los controlados no se venden por internet ni delivery (BPOF 7.5.5.1).
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -29,14 +38,16 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '2.20261018',
+    'version': '3.20261019',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_stock', 'sale', 'l10n_pe', 'al_report_base'],
     'data': [
         'security/ir.model.access.csv',
+        'security/controlled_security.xml',
         'data/controlled_data.xml',
         'views/controlled_views.xml',
         'report/controlled_reports.xml',
+        'views/controlled_compliance_views.xml',
     ],
     'demo': ['demo/controlled_demo.xml'],
     'installable': True,

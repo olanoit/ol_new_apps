@@ -18,6 +18,10 @@ class ResCompany(models.Model):
     pharmacy_adverse_event_days = fields.Integer(
         string='Plazo de reacciones no graves (días)', default=15,
         help='BPOF 7.5.3.12 indica 15 días calendario; las graves, 24 horas.')
+    pharmacy_observatory_reminder_day = fields.Integer(
+        string='Recordatorio del Observatorio (día del mes)', default=20,
+        help='Desde este día, si un local no informó sus precios en el mes, el director técnico '
+             'recibe la actividad «Informar precios al Observatorio».')
 
 
 class ResConfigSettings(models.TransientModel):
@@ -33,3 +37,5 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.pharmacy_microenterprise', readonly=False)
     pharmacy_adverse_event_days = fields.Integer(
         related='company_id.pharmacy_adverse_event_days', readonly=False)
+    pharmacy_observatory_reminder_day = fields.Integer(
+        related='company_id.pharmacy_observatory_reminder_day', readonly=False)

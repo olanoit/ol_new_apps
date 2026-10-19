@@ -6,16 +6,30 @@ modulos: [al_l10n_pe_pharmacy_digemid]
 
 ## Observatorio de precios
 
-1. En el producto indique el **Código DIGEMID** y en el local el **Código de
+Las farmacias y boticas informan cada mes el precio de venta al público, con
+IGV, de lo que tienen a la venta y en stock (Directiva 176-MINSA/DIGEMID).
+
+1. En el producto indique el **Código DIGEMID** y la **Clase DIGEMID**: solo
+   se informan medicamentos y biológicos. En el local indique el **Código de
    establecimiento**.
 2. Cada alta o cambio de precio queda **Pendiente de informar** en **Farmacia ‣
    DIGEMID ‣ Precios para el Observatorio**.
-3. **Exportar al Observatorio** genera el archivo (solo pendientes o toda la
-   oferta en existencia) y los marca como informados.
+3. **Farmacia ‣ DIGEMID ‣ Envíos al Observatorio** lleva un envío por local y
+   mes:
+    - La **primera carga del mes es completa**: toda la oferta en stock. Las
+      siguientes llevan **solo los cambios** desde la última carga del local.
+    - El archivo es un Excel con la hoja «Hoja1» y las columnas CodEstab,
+      CodProd, Precio 1 (empaque) y Precio 2 (unidad), con IGV y 2 decimales.
+    - Al informar queda la **fecha límite de rectificación** (7 días
+      hábiles).
+4. Desde el día del mes que indique en Ajustes (20 por defecto), si el local no
+   ha informado, se crea el envío «Por informar» con una actividad para el
+   director técnico.
 
 !!! warning "Importante"
-    DIGEMID rechaza archivos que no siguen su plantilla. Antes de la primera
-    carga, confirme las columnas con el gestor del Observatorio.
+    Las columnas siguen la directiva vigente. Antes de la primera carga,
+    compárelas con la plantilla que descarga el aplicativo del Observatorio.
+    La fecha de rectificación no descuenta feriados.
 
 ## Genéricos esenciales (Ley 32033)
 

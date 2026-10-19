@@ -13,6 +13,14 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
   Productos Farmacéuticos: cada cambio de precio queda pendiente de informar
   hasta que se exporta el archivo (columnas ajustables a la plantilla
   vigente).
+* Formato de la Directiva 176-MINSA/DIGEMID: hoja «Hoja1» con CodEstab
+  (texto), CodProd, Precio 1 (empaque) y Precio 2 (unidad), con IGV y 2
+  decimales; solo medicamentos y productos biológicos en oferta y con stock
+  del local (clase DIGEMID del producto).
+* Envíos por local y mes: la primera carga del mes es completa (reemplaza la
+  lista), las siguientes solo con los cambios desde la última carga; plazo de
+  rectificación de 7 días hábiles; recordatorio mensual al director técnico
+  si el local no informó.
 * Listado de genéricos esenciales del MINSA (importable) y cumplimiento del
   30 % por ítem en el local (Ley 32033); microempresas exceptuadas.
 * Lista de precios por DCI de menor a mayor, con el aviso de empresas
@@ -31,7 +39,7 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '3.20261019',
+    'version': '4.20261019',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'al_report_base'],
     'data': [

@@ -10,6 +10,16 @@ IGV_REGIMES = [
     ('diabetes', 'Exonerado: diabetes (Ley 28553)'),
 ]
 
+DIGEMID_CLASSES = [
+    ('medicine', 'Medicamento'),
+    ('biological', 'Producto biológico'),
+    ('device', 'Dispositivo médico'),
+    ('sanitary', 'Producto sanitario'),
+    ('other', 'Otro (dietético, diagnóstico, gas medicinal)'),
+]
+# Clases que se informan al Observatorio.
+OBSERVATORY_CLASSES = ('medicine', 'biological')
+
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -18,6 +28,11 @@ class ProductTemplate(models.Model):
         string='Código DIGEMID', index='btree_not_null',
         help='Código de producto que asigna DIGEMID para el Observatorio Peruano de Productos '
              'Farmacéuticos.')
+    pharmacy_digemid_class = fields.Selection(
+        DIGEMID_CLASSES, string='Clase DIGEMID', default='medicine',
+        help='El Observatorio de precios recibe solo medicamentos y productos biológicos '
+             '(Directiva 176-MINSA/DIGEMID): los dispositivos médicos y los productos sanitarios '
+             'no se informan.')
     pharmacy_igv_regime = fields.Selection(
         IGV_REGIMES, string='Régimen del IGV', default='taxed',
         help='Los medicamentos de las listas de las leyes 27450 y 28553 se venden exonerados del '

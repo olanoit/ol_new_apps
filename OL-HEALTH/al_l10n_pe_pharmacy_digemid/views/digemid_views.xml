@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <field name="pharmacy_sanitary_registry" position="after">
                 <field name="pharmacy_digemid_code"/>
+                <field name="pharmacy_digemid_class"/>
                 <field name="pharmacy_igv_regime"/>
             </field>
         </field>
@@ -33,6 +34,10 @@
                 <setting company_dependent="1" string="Plazo de reacciones adversas no graves"
                          help="Días para notificar en NotiMED; las graves, 24 horas.">
                     <field name="pharmacy_adverse_event_days"/> días
+                </setting>
+                <setting company_dependent="1" string="Recordatorio del Observatorio"
+                         help="Desde este día del mes, el director técnico del local que no informó sus precios recibe una actividad.">
+                    Día <field name="pharmacy_observatory_reminder_day" class="oe_inline"/> del mes
                 </setting>
             </block>
         </field>
@@ -78,14 +83,22 @@
         <field name="model">pharmacy.observatory.export</field>
         <field name="arch" type="xml">
             <form>
+                <div class="alert alert-info" role="alert" invisible="not needs_full">
+                    Primera carga del mes del local: va con toda la oferta en existencia y reemplaza
+                    la lista de precios del establecimiento en el Observatorio.
+                </div>
                 <group>
                     <field name="warehouse_id"/>
-                    <field name="scope" widget="radio"/>
+                    <field name="needs_full" invisible="1"/>
+                    <field name="scope" widget="radio" readonly="needs_full" required="1"/>
                     <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                 </group>
                 <div class="text-muted">
-                    Archivo para la carga en el Observatorio Peruano de Productos Farmacéuticos.
-                    Los pendientes exportados pasan a «Informado».
+                    Excel para la carga masiva del Observatorio Peruano de Productos Farmacéuticos
+                    (Directiva 176-MINSA/DIGEMID): hoja «Hoja1» con CodEstab, CodProd, Precio 1
+                    (empaque) y Precio 2 (unidad), con IGV. Solo medicamentos y productos biológicos
+                    con stock. Confirme las columnas con la plantilla que descarga el aplicativo.
+                    Después de la carga hay una sola rectificación en los 7 días hábiles siguientes.
                 </div>
                 <footer>
                     <button name="action_export" type="object" string="Exportar" class="btn-primary"/>
@@ -99,6 +112,87 @@
         <field name="res_model">pharmacy.observatory.export</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
+    </record>
+    <!-- Envíos al Observatorio -->
+    <record id="pharmacy_observatory_submission_view_list" model="ir.ui.view">
+        <field name="name">pharmacy.observatory.submission.list</field>
+        <field name="model">pharmacy.observatory.submission</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-warning="state == 'draft'">
+                <field name="period" widget="date" options="{'format': 'MM/yyyy'}"/>
+                <field name="warehouse_id"/>
+                <field name="establishment_code" optional="show"/>
+                <field name="mode"/>
+                <field name="date_sent"/>
+                <field name="line_count"/>
+                <field name="rectification_deadline"/>
+                <field name="user_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'sent'"
+                       decoration-warning="state == 'draft'"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="pharmacy_observatory_submission_view_form" model="ir.ui.view">
+        <field name="name">pharmacy.observatory.submission.form</field>
+        <field name="model">pharmacy.observatory.submission</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="%(pharmacy_observatory_export_action)d" type="action" string="Exportar"
+                            class="btn-primary" invisible="state == 'sent'"
+                            context="{'default_warehouse_id': warehouse_id}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="warehouse_id" readonly="1"/>
+                            <field name="establishment_code"/>
+                            <field name="period" readonly="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="mode"/>
+                            <field name="date_sent"/>
+                            <field name="user_id"/>
+                            <field name="line_count"/>
+                            <field name="rectification_deadline"/>
+                            <field name="file_data" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="pharmacy_observatory_submission_view_search" model="ir.ui.view">
+        <field name="name">pharmacy.observatory.submission.search</field>
+        <field name="model">pharmacy.observatory.submission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="warehouse_id"/>
+                <filter name="draft" string="Por informar" domain="[('state', '=', 'draft')]"/>
+                <filter name="sent" string="Informados" domain="[('state', '=', 'sent')]"/>
+                <group>
+                    <filter name="group_period" string="Mes" context="{'group_by': 'period:month'}"/>
+                    <filter name="group_warehouse" string="Local" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="pharmacy_observatory_submission_action" model="ir.actions.act_window">
+        <field name="name">Envíos al Observatorio</field>
+        <field name="res_model">pharmacy.observatory.submission</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay envíos</p>
+            <p>Cada exportación al Observatorio queda aquí con su archivo y el plazo de
+                rectificación. Si un local no informa en el mes, aparece «Por informar».</p>
+        </field>
     </record>
 
     <!-- Genéricos -->
@@ -273,6 +367,8 @@
               action="pharmacy_observatory_price_action" sequence="10"/>
     <menuitem id="menu_pharmacy_observatory_export" name="Exportar al Observatorio" parent="menu_pharmacy_digemid"
               action="pharmacy_observatory_export_action" sequence="11"/>
+    <menuitem id="menu_pharmacy_observatory_submission" name="Envíos al Observatorio"
+              parent="menu_pharmacy_digemid" action="pharmacy_observatory_submission_action" sequence="12"/>
     <menuitem id="menu_pharmacy_generic_compliance" name="Cumplimiento de genéricos" parent="menu_pharmacy_digemid"
               action="pharmacy_generic_compliance_action" sequence="20"/>
     <menuitem id="menu_pharmacy_price_list" name="Lista de precios por DCI" parent="menu_pharmacy_digemid"

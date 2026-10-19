@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_pharmacy_supplier_return">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="doc_title" t-value="'Acta de canje con la droguería'"/>
+                    <t t-set="doc_number" t-value="o.name"/>
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label">Proveedor</td>
+                            <td class="pe-doc-value">
+                                <t t-out="o.partner_id.name"/>
+                                <t t-if="o.partner_id.vat"> · <t t-out="o.partner_id.vat"/></t>
+                            </td>
+                            <td class="pe-doc-label">Fecha</td>
+                            <td class="pe-doc-value"><span t-field="o.date"/></td>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Establecimiento</td>
+                            <td class="pe-doc-value" t-out="o.warehouse_id.name"/>
+                            <td class="pe-doc-label">Director técnico</td>
+                            <td class="pe-doc-value" t-out="o.warehouse_id.pharmacy_director_id.name or ''"/>
+                        </tr>
+                    </table>
+                    <table class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <th>Producto</th>
+                                <th>Registro sanitario</th>
+                                <th>Lote</th>
+                                <th>Vencimiento</th>
+                                <th>Motivo</th>
+                                <th class="text-end">Cantidad</th>
+                                <th class="text-end">Costo</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.line_ids" t-as="line">
+                                <td t-out="line.product_id.display_name"/>
+                                <td t-out="line.product_id.pharmacy_sanitary_registry or ''"/>
+                                <td t-out="line.lot_id.name or ''"/>
+                                <td><span t-out="line.expiration_date" t-options="{'widget': 'date'}"/></td>
+                                <td><span t-field="line.reason"/></td>
+                                <td class="text-end"><t t-out="line.quantity"/> <t t-out="line.uom_id.name"/></td>
+                                <td class="text-end"><span t-field="line.price_unit"/></td>
+                                <td class="text-end"><span t-field="line.subtotal"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-end"><strong>Total: <span t-field="o.amount_total"/></strong></p>
+                    <p t-if="o.note" t-out="o.note"/>
+                    <table class="pe-doc-signatures">
+                        <tr>
+                            <td><div class="pe-doc-sign-line">Director técnico</div></td>
+                            <td><div class="pe-doc-sign-line">Representante del proveedor</div></td>
+                        </tr>
+                    </table>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

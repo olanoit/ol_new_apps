@@ -8,3 +8,4 @@
     * [Tratamientos crónicos y recompra](pharmacy/care.md)
     * [Faltantes y sugerido de compra](pharmacy/replenishment.md)
     * [Fidelización por DNI](pharmacy/loyalty.md)
+    * [Tienda en línea](pharmacy/website.md)

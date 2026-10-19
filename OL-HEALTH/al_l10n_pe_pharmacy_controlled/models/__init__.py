@@ -2,3 +2,4 @@
 from . import product_template
 from . import pharmacy_prescription
 from . import sale_order
+from . import controlled_compliance
