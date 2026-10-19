@@ -54,6 +54,11 @@ class PharmacyInsuranceLiquidation(models.Model):
     invoice_id = fields.Many2one('account.move', string='Factura', readonly=True, copy=False,
                                  check_company=True)
     invoice_state = fields.Selection(related='invoice_id.state', string='Estado de la factura')
+    refund_invoice_ids = fields.Many2many(
+        'account.move', 'pharmacy_insurance_liquidation_refund_rel', 'liquidation_id', 'move_id',
+        string='Notas de crédito', readonly=True, copy=False, check_company=True,
+        help='Devoluciones de ventas que ya se facturaron a la aseguradora en una liquidación '
+             'anterior: una nota de crédito por factura de origen.')
     state = fields.Selection([('draft', 'Borrador'), ('invoiced', 'Facturada'),
                               ('cancel', 'Anulada')], string='Estado', default='draft',
                              required=True, tracking=True, copy=False)
@@ -76,7 +81,7 @@ class PharmacyInsuranceLiquidation(models.Model):
         return Domain([
             ('pharmacy_insurance_agreement_id', '=', self.agreement_id.id),
             ('pharmacy_insurance_liquidation_id', '=', False),
-            ('pharmacy_insurance_amount', '>', 0),
+            ('pharmacy_insurance_amount', '!=', 0),
             ('state', 'in', ('paid', 'done')),
             ('date_order', '>=', local_day_start(self.env, self.date_from)),
             ('date_order', '<', local_day_start(self.env, self.date_to + timedelta(days=1))),
@@ -106,24 +111,23 @@ class PharmacyInsuranceLiquidation(models.Model):
             parts.append(_('Receta %s', order.pharmacy_prescription_number))
         return ' · '.join(parts)
 
-    def _prepare_invoice_line(self, line):
-        """Línea de la factura a la aseguradora por la parte cubierta de una
-        línea vendida, con su base e impuestos exactos (montos manuales del
-        motor de impuestos, como en el comprobante del paciente)."""
+    def _prepare_invoice_line(self, line, base, tax_amounts, quantity):
+        """Línea de la factura (o nota de crédito) a la aseguradora por la
+        parte cubierta de una línea vendida, con su base e impuestos exactos
+        (montos manuales del motor de impuestos, como en el comprobante del
+        paciente)."""
         currency = self.currency_id
         taxes = line.tax_ids_after_fiscal_position
-        tax_amounts = line.pharmacy_insurance_taxes or {}
-        base = line.pharmacy_insurance_base
         price_included = any(tax.price_include for tax in taxes)
         total = base + sum(tax_amounts.values())
-        price_unit = (total if price_included else base) / line.qty
+        price_unit = (total if price_included else base) / quantity
         AccountTax = self.env['account.tax']
         base_line = AccountTax._prepare_base_line_for_taxes_computation(
             None,
             product_id=line.product_id,
             tax_ids=taxes,
             price_unit=price_unit,
-            quantity=line.qty,
+            quantity=quantity,
             discount=0.0,
             currency_id=currency,
             rate=1.0,
@@ -138,7 +142,7 @@ class PharmacyInsuranceLiquidation(models.Model):
         return {
             'product_id': line.product_id.id,
             'name': self._invoice_line_name(line),
-            'quantity': line.qty,
+            'quantity': quantity,
             'product_uom_id': line.product_uom_id.id,
             'price_unit': price_unit,
             'discount': 0.0,
@@ -146,13 +150,57 @@ class PharmacyInsuranceLiquidation(models.Model):
             'extra_tax_data': AccountTax._export_base_line_extra_tax_data(base_line),
         }
 
-    def _prepare_invoice_lines(self):
-        """Una línea por producto vendido con su parte cubierta, con los mismos
-        impuestos de la venta."""
+    def _covered_parts(self):
+        """Partes cubiertas a facturar y a abonar a la aseguradora.
+
+        Una devolución cuya venta está en esta misma liquidación se descuenta
+        de esa línea (el producto devuelto entero desaparece de la factura).
+        Si la venta ya se facturó en una liquidación anterior, la devolución
+        va a una nota de crédito de esa factura.
+
+        :return: ``(to_invoice, to_refund)``: lista de ``(línea, base,
+            impuestos, cantidad)`` en positivo, y dict factura de origen →
+            lista con el mismo formato."""
         self.ensure_one()
-        return [fields.Command.create(self._prepare_invoice_line(line))
-                for order in self.order_ids.sorted('date_order')
-                for line in order.lines.filtered('pharmacy_insurance_amount')]
+        currency = self.currency_id
+        lines = self.order_ids.sorted('date_order').lines.filtered('pharmacy_insurance_amount')
+        sales = {}
+        for line in lines.filtered(lambda l: l.pharmacy_insurance_amount > 0):
+            sales[line] = [line.pharmacy_insurance_base,
+                           dict(line.pharmacy_insurance_taxes or {}), line.qty]
+        to_refund = {}
+        for line in lines.filtered(lambda l: l.pharmacy_insurance_amount < 0):
+            origin = line.refunded_orderline_id
+            taxes = line.pharmacy_insurance_taxes or {}
+            if origin in sales:
+                part = sales[origin]
+                part[0] += line.pharmacy_insurance_base
+                for tax_id, amount in taxes.items():
+                    part[1][tax_id] = part[1].get(tax_id, 0.0) + amount
+                part[2] += line.qty
+                continue
+            origin_invoice = origin.order_id.pharmacy_insurance_liquidation_id.invoice_id
+            if not origin_invoice or origin_invoice.state == 'cancel':
+                raise UserError(_(
+                    'La devolución %(refund)s es de la venta %(order)s, que aún no se factura a la '
+                    'aseguradora: liquide primero el periodo de esa venta o inclúyalo en esta '
+                    'liquidación.', refund=line.order_id.name, order=origin.order_id.name))
+            to_refund.setdefault(origin_invoice, []).append((
+                line, -line.pharmacy_insurance_base,
+                {tax_id: -amount for tax_id, amount in taxes.items()}, -line.qty))
+        to_invoice = [
+            (line, currency.round(base), {k: currency.round(v) for k, v in taxes.items()}, qty)
+            for line, (base, taxes, qty) in sales.items()
+            if qty > 0 and not currency.is_zero(base + sum(taxes.values()))
+        ]
+        return to_invoice, to_refund
+
+    def _prepare_invoice_lines(self):
+        """Una línea por producto vendido con su parte cubierta (menos lo
+        devuelto), con los mismos impuestos de la venta."""
+        self.ensure_one()
+        return [fields.Command.create(self._prepare_invoice_line(*part))
+                for part in self._covered_parts()[0]]
 
     def action_create_invoice(self):
         for liquidation in self:
@@ -163,31 +211,58 @@ class PharmacyInsuranceLiquidation(models.Model):
                 raise UserError(_('La liquidación no tiene ventas: pulse «Cargar ventas».'))
             if not agreement.journal_id:
                 raise UserError(_('Indique el diario de facturación del convenio %s.', agreement.name))
-            invoice = self.env['account.move'].with_company(liquidation.company_id).create({
-                'move_type': 'out_invoice',
+            to_invoice, to_refund = liquidation._covered_parts()
+            Move = self.env['account.move'].with_company(liquidation.company_id)
+            common = {
                 'partner_id': agreement.partner_id.id,
                 'journal_id': agreement.journal_id.id,
                 'invoice_date': liquidation.date_to,
                 'invoice_origin': liquidation.name,
-                'ref': _('Liquidación %(name)s · %(agreement)s', name=liquidation.name,
-                         agreement=agreement.name),
-                'invoice_line_ids': liquidation._prepare_invoice_lines(),
-            })
-            liquidation.write({'invoice_id': invoice.id, 'state': 'invoiced'})
-        return self.action_open_invoice() if len(self) == 1 else True
+            }
+            invoice = Move
+            if to_invoice:
+                invoice = Move.create({
+                    **common,
+                    'move_type': 'out_invoice',
+                    'ref': _('Liquidación %(name)s · %(agreement)s', name=liquidation.name,
+                             agreement=agreement.name),
+                    'invoice_line_ids': [fields.Command.create(liquidation._prepare_invoice_line(*part))
+                                         for part in to_invoice],
+                })
+            refunds = Move
+            for origin_invoice, parts in to_refund.items():
+                refunds |= Move.create({
+                    **common,
+                    'move_type': 'out_refund',
+                    'reversed_entry_id': origin_invoice.id,
+                    'ref': _('Devoluciones de %(invoice)s · liquidación %(name)s',
+                             invoice=origin_invoice.name, name=liquidation.name),
+                    'invoice_line_ids': [fields.Command.create(liquidation._prepare_invoice_line(*part))
+                                         for part in parts],
+                })
+            liquidation.write({'invoice_id': invoice.id, 'refund_invoice_ids': [fields.Command.set(refunds.ids)],
+                               'state': 'invoiced'})
+        return self.action_open_invoice() if len(self) == 1 and self.invoice_id else True
 
     def action_cancel(self):
         for liquidation in self:
-            invoice = liquidation.invoice_id
-            if invoice.state == 'posted':
+            moves = liquidation.invoice_id | liquidation.refund_invoice_ids
+            posted = moves.filtered(lambda move: move.state == 'posted')
+            if posted:
                 raise UserError(_(
-                    'La factura %s ya está validada: anúlela con una nota de crédito y luego anule '
-                    'la liquidación.', invoice.name))
-            if invoice.state == 'draft':
-                invoice.button_cancel()
+                    'El comprobante %s ya está validado: anúlelo con una nota de crédito (o una de '
+                    'débito, si es una nota de crédito) y luego anule la liquidación.', posted[0].name))
+            moves.filtered(lambda move: move.state == 'draft').button_cancel()
             liquidation.order_ids.write({'pharmacy_insurance_liquidation_id': False})
             liquidation.state = 'cancel'
         return True
+
+    def action_open_refunds(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window', 'res_model': 'account.move', 'name': _('Notas de crédito'),
+            'domain': [('id', 'in', self.refund_invoice_ids.ids)], 'view_mode': 'list,form',
+        }
 
     def action_open_invoice(self):
         self.ensure_one()

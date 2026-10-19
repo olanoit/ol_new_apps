@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
+from decimal import Decimal
+
+from lxml import etree
 
 from odoo import Command, fields
+from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.addons.point_of_sale.tests.common import TestPoSCommon
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 from odoo.exceptions import UserError, ValidationError
@@ -216,6 +220,100 @@ class TestPharmacyInsurance(TestPoSCommon):
         self.assertFalse(order.pharmacy_insurance_liquidation_id)
         self.assertEqual(liquidation.invoice_id.state, 'cancel')
 
+    # ------------------------------------------------------------------
+    # Devoluciones y redondeo
+    # ------------------------------------------------------------------
+    def _refund(self, order, lines, payments, invoiced=False):
+        """Devolución en caja de ``lines`` (línea de origen → cantidad)."""
+        data = self.create_ui_order_data(
+            [{'product': line.product_id, 'quantity': -qty, 'refunded_orderline_id': line.id}
+             for line, qty in lines.items()],
+            customer=self.patient, is_invoiced=invoiced, payments=payments)
+        self.env['pos.order'].sync_from_ui([data])
+        return self.env['pos.order'].search([('uuid', '=', data['uuid'])])
+
+    def test_full_refund_in_same_period_nets_the_liquidation(self):
+        self.open_new_session()
+        order = self._sync([(self.insurance_pm, 19.24), (self.cash_pm1, 16.16)], invoiced=True)
+        refund = self._refund(order, {line: 1 for line in order.lines},
+                              [(self.insurance_pm, -19.24), (self.cash_pm1, -16.16)], invoiced=True)
+        self.assertAlmostEqual(refund.pharmacy_insurance_amount, -19.24)
+        self.assertEqual(refund.pharmacy_insurance_affiliate_id, self.affiliate)
+        # La nota de crédito del paciente va solo por lo que él pagó.
+        credit_note = refund.account_move
+        self.assertEqual(credit_note.move_type, 'out_refund')
+        self.assertAlmostEqual(credit_note.amount_total, 16.16)
+        self.assertTrue(credit_note.currency_id.is_zero(credit_note.amount_residual))
+        # El tope del mes queda libre otra vez.
+        self.assertAlmostEqual(self._coverage()['amount'], 19.24)
+        self.pos_session.action_pos_session_validate()
+        self.assertEqual(self.pos_session.state, 'closed')
+        liquidation = self.env['pharmacy.insurance.liquidation'].create({
+            'agreement_id': self.agreement.id, 'date_from': self.today.replace(day=1),
+            'date_to': self.today})
+        liquidation.action_load_orders()
+        self.assertEqual(liquidation.order_ids, order | refund)
+        self.assertAlmostEqual(liquidation.amount_total, 0.0)
+        liquidation.action_create_invoice()
+        self.assertFalse(liquidation.invoice_id)
+        self.assertFalse(liquidation.refund_invoice_ids)
+
+    def test_refund_after_liquidation_is_a_credit_note_to_the_insurer(self):
+        self.open_new_session()
+        order = self._sync([(self.insurance_pm, 19.24), (self.cash_pm1, 16.16)])
+        first = self._liquidate()
+        losartan = order.lines.filtered(lambda line: line.product_id == self.losartan)
+        covered = losartan.pharmacy_insurance_amount
+        refund = self._refund(order, {losartan: 1},
+                              [(self.insurance_pm, -covered), (self.cash_pm1, -(23.60 - covered))])
+        self.assertAlmostEqual(refund.lines.pharmacy_insurance_amount, -covered)
+        second = self.env['pharmacy.insurance.liquidation'].create({
+            'agreement_id': self.agreement.id, 'date_from': self.today.replace(day=1),
+            'date_to': self.today})
+        second.action_load_orders()
+        self.assertEqual(second.order_ids, refund)
+        second.action_create_invoice()
+        self.assertFalse(second.invoice_id)
+        credit_note = second.refund_invoice_ids
+        self.assertEqual(credit_note.move_type, 'out_refund')
+        self.assertEqual(credit_note.reversed_entry_id, first.invoice_id)
+        self.assertEqual(credit_note.partner_id, self.insurer)
+        self.assertAlmostEqual(credit_note.amount_total, covered)
+        self.assertAlmostEqual(credit_note.amount_untaxed, losartan.pharmacy_insurance_base)
+        # Una devolución de una venta sin facturar a la aseguradora no se abona sola.
+        second.action_cancel()
+        first.invoice_id.button_draft()
+        first.action_cancel()
+        third = self.env['pharmacy.insurance.liquidation'].create({
+            'agreement_id': self.agreement.id, 'date_from': self.today.replace(day=1),
+            'date_to': self.today})
+        third.order_ids = refund
+        with self.assertRaises(UserError):
+            third.action_create_invoice()
+
+    def test_refund_must_return_covered_part_with_agreement(self):
+        self.open_new_session()
+        order = self._sync([(self.insurance_pm, 19.24), (self.cash_pm1, 16.16)])
+        with self.assertRaises(ValidationError):
+            self._refund(order, {line: 1 for line in order.lines}, [(self.cash_pm1, -35.40)])
+
+    def test_cash_rounding_rounds_only_the_patient_invoice(self):
+        rounding = self.env['account.cash.rounding'].create({
+            'name': 'Redondeo 0,10', 'rounding': 0.10, 'strategy': 'add_invoice_line',
+            'profit_account_id': self.company['default_cash_difference_income_account_id'].id,
+            'loss_account_id': self.company['default_cash_difference_expense_account_id'].id,
+            'rounding_method': 'HALF-UP'})
+        self.config.write({'cash_rounding': True, 'rounding_method': rounding.id,
+                           'only_round_cash_method': False})
+        self.open_new_session()
+        order = self._sync([(self.insurance_pm, 19.24), (self.cash_pm1, 16.20)], invoiced=True)
+        invoice = order.account_move
+        # 16,16 del paciente redondeado a 16,20; lo cubierto no entra al ajuste.
+        self.assertAlmostEqual(invoice.amount_total, 16.20)
+        rounding_line = invoice.line_ids.filtered(lambda line: line.display_type == 'rounding')
+        self.assertAlmostEqual(rounding_line.balance, -0.04)
+        self.assertTrue(invoice.currency_id.is_zero(invoice.amount_residual))
+
     def test_posted_invoice_needs_credit_note_to_cancel(self):
         self.open_new_session()
         self._sync([(self.insurance_pm, 19.24), (self.cash_pm1, 16.16)])
@@ -252,3 +350,71 @@ class TestPharmacyInsuranceTour(TestPointOfSaleHttpCommon):
         self.assertEqual(order.lines.pharmacy_insurance_amount, 14.0)
         self.assertEqual(sum(order.payment_ids.filtered(
             lambda p: p.payment_method_id != agreement.payment_method_id).mapped('amount')), 6.0)
+
+
+@tagged('post_install', 'post_install_l10n', '-at_install')
+class TestPharmacyInsurancePeXml(TestPoSCommon):
+    """La boleta del paciente con los montos manuales de su parte, en una
+    compañía peruana: el XML UBL cumple las reglas de cuadre de SUNAT y lleva
+    el IGV de la parte del paciente."""
+
+    @classmethod
+    @AccountTestInvoicingCommon.setup_country('pe')
+    def setUpClass(cls):
+        super().setUpClass()
+        company = cls.company_data['company']
+        ruc = cls.env.ref('l10n_pe.it_RUC')
+        # TestPoSCommon pisa el país de la compañía con uno ficticio.
+        company.write({'country_id': cls.env.ref('base.pe').id, 'vat': '20557912879'})
+        company.partner_id.l10n_latam_identification_type_id = ruc
+        cls.config = cls.basic_config
+        cls.config.invoice_journal_id.l10n_latam_use_documents = True
+        cls.igv = cls.env['account.chart.template'].with_company(company).ref('sale_tax_igv_18')
+        cls.analgesic = cls.create_product('Paracetamol 500 mg', cls.categ_basic, 10.0, tax_ids=cls.igv.ids)
+        cls.losartan = cls.create_product('Losartán 50 mg', cls.categ_basic, 20.0, tax_ids=cls.igv.ids)
+        cls.insurer = cls.env['res.partner'].create({
+            'name': 'Salud Andina EPS S.A.', 'is_company': True, 'vat': '20100070970',
+            'l10n_latam_identification_type_id': ruc.id, 'country_id': cls.env.ref('base.pe').id})
+        cls.patient = cls.env['res.partner'].create({
+            'name': 'María Torres Quispe', 'vat': '44556677', 'country_id': cls.env.ref('base.pe').id,
+            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id})
+        today = fields.Date.context_today(cls.env.user)
+        cls.agreement = cls.env['pharmacy.insurance.agreement'].create({
+            'name': 'Salud Andina · Plan regular', 'partner_id': cls.insurer.id,
+            'coverage_percent': 80, 'copay_amount': 2, 'company_id': company.id,
+            'date_start': today - timedelta(days=60),
+            'journal_id': cls.company_data['default_journal_sale'].id})
+        cls.env['pharmacy.insurance.affiliate'].create({
+            'agreement_id': cls.agreement.id, 'partner_id': cls.patient.id, 'number': 'SA-001',
+            'date_start': today - timedelta(days=30)})
+        cls.agreement.action_create_pos_payment_method()
+        cls.insurance_pm = cls.agreement.payment_method_id
+        cls.config.write({'payment_method_ids': [Command.link(cls.insurance_pm.id)]})
+
+    def test_patient_boleta_xml_follows_sunat_rules(self):
+        try:
+            from odoo.addons.al_l10n_pe_edi_downpayment_discount.tests.sunat_rules import NS, validar
+        except ImportError:
+            self.skipTest('Falta el validador de reglas SUNAT (al_l10n_pe_edi_downpayment_discount).')
+        self.open_new_session()
+        # 11,80 + 23,60 = 35,40. El convenio cubre 80 % menos 2,00 de copago: 26,32.
+        data = self.create_ui_order_data([(self.analgesic, 1), (self.losartan, 1)],
+                                         customer=self.patient, is_invoiced=True,
+                                         payments=[(self.insurance_pm, 26.32), (self.cash_pm1, 9.08)])
+        self.env['pos.order'].with_context(generate_pdf=False).sync_from_ui([data])
+        order = self.env['pos.order'].search([('uuid', '=', data['uuid'])])
+        boleta = order.account_move
+        self.assertEqual(boleta.l10n_latam_document_type_id.code, '03')
+        self.assertAlmostEqual(boleta.amount_total, 9.08)
+        xml, errors = self.env['account.edi.xml.ubl_pe']._export_invoice(boleta)
+        self.assertFalse(errors, errors)
+        root = etree.fromstring(xml)
+        self.assertEqual(validar(root), [])
+        # El XML lleva la base y el IGV de la parte del paciente.
+        self.assertEqual(Decimal(root.findtext('cac:LegalMonetaryTotal/cbc:PayableAmount', namespaces=NS)),
+                         Decimal('9.08'))
+        self.assertEqual(Decimal(root.findtext('cac:TaxTotal/cbc:TaxAmount', namespaces=NS)),
+                         Decimal(str(boleta.amount_tax)).quantize(Decimal('0.01')))
+        line_taxes = sum(Decimal(node.text) for node in root.findall(
+            'cac:InvoiceLine/cac:TaxTotal/cbc:TaxAmount', NS))
+        self.assertEqual(line_taxes, Decimal(str(boleta.amount_tax)).quantize(Decimal('0.01')))

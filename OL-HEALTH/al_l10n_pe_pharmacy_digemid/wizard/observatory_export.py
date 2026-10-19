@@ -21,7 +21,6 @@ import xlsxwriter
 from odoo import api, fields, models
 from odoo.exceptions import UserError
 
-from ..models.pharmacy_observatory import add_business_days
 from ..models.product_template import OBSERVATORY_CLASSES
 
 OBSERVATORY_SHEET = 'Hoja1'
@@ -163,7 +162,8 @@ class PharmacyObservatoryExport(models.TransientModel):
         values = {
             'state': 'sent', 'mode': 'full' if self.scope == 'all' else 'changes',
             'date_sent': now, 'user_id': self.env.uid, 'line_count': len(rows),
-            'rectification_deadline': add_business_days(today, RECTIFICATION_BUSINESS_DAYS),
+            'rectification_deadline': self.company_id._pharmacy_add_business_days(
+                today, RECTIFICATION_BUSINESS_DAYS),
             'file_data': base64.b64encode(buffer.getvalue()), 'file_name': file_name,
         }
         if submission:

@@ -4,7 +4,9 @@ Ley 29459, art. 28-A): el establecimiento informa el precio de su oferta y lo
 actualiza cuando cambia o entra un producto nuevo. Cada cambio de precio de
 un producto con código DIGEMID queda «pendiente de informar» hasta que se
 exporta."""
-from datetime import timedelta
+from datetime import datetime, time, timedelta
+
+import pytz
 
 from dateutil.relativedelta import relativedelta
 
@@ -62,14 +64,52 @@ class PharmacyPresentation(models.Model):
         return result
 
 
-def add_business_days(day, days):
-    """``days`` días hábiles (lunes a viernes) después de ``day``. No resta
-    feriados: la ventana de rectificación es una guía para el usuario."""
+def add_business_days(day, days, holidays=()):
+    """``days`` días hábiles después de ``day``: de lunes a viernes, sin los
+    días de ``holidays``."""
     while days > 0:
         day += timedelta(days=1)
-        if day.weekday() < 5:
+        if day.weekday() < 5 and day not in holidays:
             days -= 1
     return day
+
+
+class ResCompany(models.Model):
+    _inherit = 'res.company'
+
+    def _pharmacy_holidays(self, date_from, date_to):
+        """Feriados entre dos fechas: las ausencias globales (sin recurso) del
+        calendario laboral de la compañía, como en Empleados ‣ Configuración ‣
+        Horarios de trabajo. Del calendario no cuenta el horario, solo los
+        feriados: los días hábiles son de lunes a viernes."""
+        self.ensure_one()
+        calendar = self.resource_calendar_id
+        if not calendar:
+            return set()
+        tz = pytz.timezone(calendar.tz or 'America/Lima')
+        start = tz.localize(datetime.combine(date_from, time.min)).astimezone(pytz.utc).replace(tzinfo=None)
+        end = tz.localize(datetime.combine(date_to, time.max)).astimezone(pytz.utc).replace(tzinfo=None)
+        # sudo: los feriados son configuración de Recursos Humanos que el
+        # director técnico puede no ver; solo se leen sus fechas.
+        leaves_sudo = self.env['resource.calendar.leaves'].sudo().search([
+            ('calendar_id', 'in', (calendar.id, False)), ('resource_id', '=', False),
+            ('company_id', 'in', (self.id, False)),
+            ('date_from', '<=', end), ('date_to', '>=', start)])
+        holidays = set()
+        for leave_sudo in leaves_sudo:
+            day = pytz.utc.localize(leave_sudo.date_from).astimezone(tz).date()
+            # Una ausencia que termina a las 00:00 no toma el día siguiente.
+            last = pytz.utc.localize(leave_sudo.date_to - timedelta(seconds=1)).astimezone(tz).date()
+            while day <= last:
+                holidays.add(day)
+                day += timedelta(days=1)
+        return holidays
+
+    def _pharmacy_add_business_days(self, day, days):
+        """Fecha a ``days`` días hábiles de ``day``, sin los feriados de la
+        compañía (se miran hasta dos meses adelante)."""
+        self.ensure_one()
+        return add_business_days(day, days, self._pharmacy_holidays(day, day + timedelta(days=60)))
 
 
 class PharmacyObservatorySubmission(models.Model):
@@ -101,7 +141,7 @@ class PharmacyObservatorySubmission(models.Model):
     rectification_deadline = fields.Date(
         string='Rectificación hasta', readonly=True,
         help='Una sola rectificación dentro de los 7 días hábiles siguientes a la carga '
-             '(no descuenta feriados).')
+             '(sin los feriados del calendario laboral de la compañía).')
     file_data = fields.Binary(string='Archivo', readonly=True, attachment=True)
     file_name = fields.Char(readonly=True)
     company_id = fields.Many2one('res.company', string='Compañía', required=True, readonly=True,

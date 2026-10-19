@@ -20,8 +20,10 @@ IGV, de lo que tienen a la venta y en stock (Directiva 176-MINSA/DIGEMID).
       siguientes llevan **solo los cambios** desde la última carga del local.
     - El archivo es un Excel con la hoja «Hoja1» y las columnas CodEstab,
       CodProd, Precio 1 (empaque) y Precio 2 (unidad), con IGV y 2 decimales.
-    - Al informar queda la **fecha límite de rectificación** (7 días
-      hábiles).
+    - Al informar queda la **fecha límite de rectificación**: 7 días hábiles,
+      de lunes a viernes y sin los feriados del calendario laboral de la
+      compañía (**Empleados ‣ Configuración ‣ Horarios de trabajo**, ausencias
+      globales).
 4. Desde el día del mes que indique en Ajustes (20 por defecto), si el local no
    ha informado, se crea el envío «Por informar» con una actividad para el
    director técnico.
@@ -29,7 +31,8 @@ IGV, de lo que tienen a la venta y en stock (Directiva 176-MINSA/DIGEMID).
 !!! warning "Importante"
     Las columnas siguen la directiva vigente. Antes de la primera carga,
     compárelas con la plantilla que descarga el aplicativo del Observatorio.
-    La fecha de rectificación no descuenta feriados.
+    Registre los feriados nacionales en el calendario de la compañía para que
+    la fecha de rectificación los descuente.
 
 ## Genéricos esenciales (Ley 32033)
 

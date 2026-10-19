@@ -2,6 +2,24 @@ import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { PaymentScreen } from "@point_of_sale/app/screens/payment_screen/payment_screen";
+import OrderPaymentValidation from "@point_of_sale/app/utils/order_payment_validation";
+import { roundPrecision } from "@web/core/utils/numbers";
+
+/**
+ * Parte cubierta que vuelve a la aseguradora en una devolución (negativa):
+ * la proporción devuelta de lo cubierto en cada línea de origen, redondeada
+ * por línea como en el servidor.
+ */
+function insuranceRefundAmount(order, currency) {
+    return order.lines.reduce((total, line) => {
+        const origin = line.refunded_orderline_id;
+        if (!origin?.pharmacy_insurance_amount || !origin.qty) {
+            return total;
+        }
+        const part = (origin.pharmacy_insurance_amount * line.qty) / origin.qty;
+        return roundPrecision(total + roundPrecision(part, currency.rounding), currency.rounding);
+    }, 0);
+}
 
 patch(PaymentScreen.prototype, {
     /**
@@ -15,6 +33,16 @@ patch(PaymentScreen.prototype, {
             return await super.addNewPaymentLine(paymentMethod);
         }
         const order = this.currentOrder;
+        const refundAmount = insuranceRefundAmount(order, this.pos.currency);
+        if (refundAmount) {
+            // Devolución: vuelve a la aseguradora lo que ella pagó.
+            const added = await super.addNewPaymentLine(paymentMethod);
+            if (added) {
+                this.paymentLines.at(-1).setAmount(refundAmount);
+                this.numberBuffer.set(refundAmount.toString());
+            }
+            return added;
+        }
         const coverage = await this.pos.data.call("pharmacy.insurance.agreement", "get_pos_coverage", [
             paymentMethod.id,
             order.getPartner()?.id || false,
@@ -51,5 +79,29 @@ patch(PaymentScreen.prototype, {
             { type: "info" }
         );
         return added;
+    },
+});
+
+patch(OrderPaymentValidation.prototype, {
+    // Una devolución de una venta con convenio devuelve al paciente solo lo
+    // que pagó: la parte cubierta va con el método del convenio.
+    async isOrderValid(isForceValidate) {
+        const expected = insuranceRefundAmount(this.order, this.pos.currency);
+        if (expected) {
+            const paid = this.order.payment_ids
+                .filter((line) => line.payment_method_id.pharmacy_is_insurance)
+                .reduce((total, line) => total + line.getAmount(), 0);
+            if (Math.abs(paid - expected) > this.pos.currency.rounding / 2) {
+                this.pos.dialog.add(AlertDialog, {
+                    title: _t("Convenio"),
+                    body: _t(
+                        "Devuelva %(amount)s con el método del convenio: es la parte que pagó la aseguradora.",
+                        { amount: this.pos.env.utils.formatCurrency(expected) }
+                    ),
+                });
+                return false;
+            }
+        }
+        return super.isOrderValid(...arguments);
     },
 });

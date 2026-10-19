@@ -40,8 +40,9 @@ El comprobante del paciente lleva cada línea solo por su parte (base e IGV);
 las líneas cubiertas al 100 % no salen.
 
 !!! example "Ejemplo"
-    Paracetamol S/ 10 y losartán S/ 20, más IGV: S/ 35,40. Con 80 % de
-    cobertura y S/ 5 de copago, el convenio cubre S/ 19,24. El paciente paga
+    Paracetamol S/ 10 y losartán S/ 20, más IGV: S/ 35,40. El convenio cubre
+    80 % del paracetamol y 50 % del losartán (categoría de crónicos), menos
+    S/ 2 de copago: S/ 19,24, de los que S/ 10,69 son del losartán. El paciente paga
     S/ 16,16 con su boleta; la aseguradora recibe S/ 19,24 en la factura de la
     liquidación.
 
@@ -57,7 +58,33 @@ las líneas cubiertas al 100 % no salen.
 Para corregir, **Anular** cancela la factura si sigue en borrador; si ya está
 validada, emita una nota de crédito.
 
-!!! warning "Importante"
-    Una devolución en la caja de una venta con convenio devuelve el total al
-    paciente: la parte de la aseguradora se corrige con una nota de crédito a
-    su factura.
+## Devoluciones
+
+La devolución se hace en la caja, como cualquier otra, y el paciente recupera
+solo lo que pagó:
+
+1. En **Órdenes**, abra la venta y pulse **Reembolsar** con los productos que
+   devuelve.
+2. En el pago, elija el método del convenio: la caja propone la parte que
+   pagó la aseguradora, en negativo. Devuelva el resto al paciente con su
+   medio de pago. Sin la parte del convenio, la caja no deja validar.
+3. La nota de crédito del paciente va solo por su parte.
+
+En la liquidación, la devolución se carga con las ventas del periodo:
+
+| Venta original | Qué hace la liquidación |
+|---|---|
+| En la misma liquidación | Resta lo devuelto de esa línea de la factura (un producto devuelto entero no sale) |
+| Ya facturada en una liquidación anterior | Crea una **nota de crédito** a la aseguradora sobre esa factura |
+| Aún sin liquidar, en otro periodo | Aviso: liquide primero el periodo de la venta |
+
+!!! example "Ejemplo"
+    Del ejemplo anterior, el paciente devuelve el losartán después de la
+    liquidación. El convenio cubrió S/ 10,69 de esa línea: la caja devuelve
+    S/ 10,69 con el método del convenio y S/ 12,91 al paciente, y la
+    liquidación del mes siguiente emite una nota de crédito de S/ 10,69 a la
+    aseguradora.
+
+!!! note "Nota"
+    Con redondeo de efectivo en la caja, se redondea solo el comprobante del
+    paciente: lo cobrado con el convenio no entra en el ajuste.

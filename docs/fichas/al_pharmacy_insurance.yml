@@ -37,6 +37,13 @@ configuracion:
   - "Agregue el método a la caja (con la sesión cerrada) y registre los afiliados."
 
 novedades:
+  - version: '2.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "Devoluciones en la caja: el paciente recupera solo lo que pagó y la parte cubierta vuelve a la aseguradora con el método del convenio."
+      - "La liquidación resta las devoluciones de su periodo y emite una nota de crédito a la aseguradora si la venta ya se le facturó."
+      - "Con redondeo de efectivo, se redondea solo el comprobante del paciente."
+      - "Probado el XML de la boleta del paciente en una compañía peruana contra las reglas de cuadre de SUNAT."
   - version: '1.20261019'
     fecha: 19/10/2026
     cambios:

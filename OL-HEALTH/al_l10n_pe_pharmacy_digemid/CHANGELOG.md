@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_pharmacy_digemid.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261019 — 19/10/2026
+
+- La fecha límite de rectificación del Observatorio descuenta los feriados del calendario laboral de la compañía.
+
 ## 4.20261019 — 19/10/2026
 
 - Observatorio según la Directiva 176: Excel con CodEstab, CodProd, Precio 1 (empaque) y Precio 2 (unidad) con IGV; solo medicamentos y biológicos a la venta y con stock.

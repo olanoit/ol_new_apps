@@ -38,6 +38,10 @@ configuracion:
   - "Importe el listado de genéricos esenciales en **Farmacia ▸ Configuración ▸ Catálogos**."
 
 novedades:
+  - version: '5.20261019'
+    fecha: 19/10/2026
+    cambios:
+      - "La fecha límite de rectificación del Observatorio descuenta los feriados del calendario laboral de la compañía."
   - version: '4.20261019'
     fecha: 19/10/2026
     cambios:

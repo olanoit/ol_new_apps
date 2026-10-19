@@ -12,6 +12,7 @@ del paciente es el resto. Los dos comprobantes usan esos montos tal cual, así
 suman exactamente la venta."""
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.fields import Command
 
 
 class PosPaymentMethod(models.Model):
@@ -47,6 +48,34 @@ class PosOrderLine(models.Model):
         help='Impuesto de la parte cubierta, por id de impuesto.')
     pharmacy_insurance_amount = fields.Monetary(
         string='Cubierto por el convenio', currency_field='currency_id', readonly=True, copy=False)
+
+    @api.model
+    def _load_pos_data_fields(self, config):
+        # La caja calcula con esto lo que se devuelve a la aseguradora.
+        return super()._load_pos_data_fields(config) + ['pharmacy_insurance_amount']
+
+    def _pharmacy_insurance_refund_values(self):
+        """Parte cubierta que vuelve a la aseguradora en una línea devuelta: la
+        proporción devuelta de lo cubierto en la línea de origen (negativa).
+        El total se redondea como en la caja; el último impuesto lleva el
+        residuo para que base + impuestos = total. None si el origen no tiene
+        convenio."""
+        self.ensure_one()
+        origin = self.refunded_orderline_id
+        if not origin.pharmacy_insurance_amount or not origin.qty:
+            return None
+        currency = self.order_id.currency_id
+        ratio = self.qty / origin.qty
+        amount = currency.round(origin.pharmacy_insurance_amount * ratio)
+        taxes = {tax_id: currency.round(tax_amount * ratio)
+                 for tax_id, tax_amount in (origin.pharmacy_insurance_taxes or {}).items()}
+        if not taxes:
+            return {'base': amount, 'taxes': {}, 'amount': amount}
+        base = currency.round(origin.pharmacy_insurance_base * ratio)
+        last = list(taxes)[-1]
+        taxes[last] = currency.round(amount - base - sum(
+            tax_amount for tax_id, tax_amount in taxes.items() if tax_id != last))
+        return {'base': base, 'taxes': taxes, 'amount': amount}
 
     def _pharmacy_insurance_line_values(self):
         self.ensure_one()
@@ -102,14 +131,18 @@ class PosOrderLine(models.Model):
         base_line['price_unit'] = self.price_unit * (part / whole) if whole else 0.0
         rate = base_line.get('rate') or 1.0
         company_currency = self.order_id.company_id.currency_id
-        base_line['manual_total_excluded_currency'] = patient['base']
-        base_line['manual_total_excluded'] = company_currency.round(patient['base'] / rate)
+        # En una devolución, Odoo pone la cantidad en positivo: los montos de
+        # la línea (negativos) se pasan con el mismo signo que su cantidad.
+        sign = -1 if self.qty and base_line['quantity'] * self.qty < 0 else 1
+        patient_base = sign * patient['base']
+        base_line['manual_total_excluded_currency'] = patient_base
+        base_line['manual_total_excluded'] = company_currency.round(patient_base / rate)
         base_line['manual_tax_amounts'] = {
             tax_id: {
-                'base_amount_currency': patient['base'],
-                'tax_amount_currency': amount,
-                'base_amount': company_currency.round(patient['base'] / rate),
-                'tax_amount': company_currency.round(amount / rate),
+                'base_amount_currency': patient_base,
+                'tax_amount_currency': sign * amount,
+                'base_amount': company_currency.round(patient_base / rate),
+                'tax_amount': company_currency.round(sign * amount / rate),
             } for tax_id, amount in patient['taxes'].items()
         }
         return base_line
@@ -147,14 +180,15 @@ class PosOrder(models.Model):
         for order in self:
             payments = order.payment_ids.filtered(
                 lambda p: p.payment_method_id.pharmacy_insurance_agreement_id)
+            refund_lines = order.lines.filtered('refunded_orderline_id.pharmacy_insurance_amount')
+            if refund_lines or (payments and (order.is_refund or order.amount_total < 0)):
+                order._pharmacy_insurance_register_refund(payments, refund_lines)
+                continue
             if not payments:
                 continue
             agreements = payments.payment_method_id.pharmacy_insurance_agreement_id
             if len(agreements) > 1:
                 raise ValidationError(_('Una venta solo se cobra con un convenio.'))
-            if order.is_refund or order.amount_total < 0:
-                raise ValidationError(_('Las devoluciones de ventas con convenio se hacen con una nota '
-                                        'de crédito a la aseguradora, no en la caja.'))
             amount = sum(payments.mapped('amount'))
             args = (order.partner_id, order._pharmacy_insurance_lines(),
                     fields.Date.context_today(self, order.date_order),
@@ -180,6 +214,43 @@ class PosOrder(models.Model):
                 'pharmacy_insurance_amount': amount,
             })
 
+    def _pharmacy_insurance_register_refund(self, payments, refund_lines):
+        """Devolución de una venta con convenio: el paciente recupera solo lo
+        que pagó y la parte cubierta vuelve a la aseguradora con el método del
+        convenio (en negativo). Cada línea devuelta lleva la proporción de lo
+        cubierto en su origen, así la nota de crédito del paciente va solo por
+        su parte y la liquidación descuenta lo devuelto."""
+        self.ensure_one()
+        origins = refund_lines.refunded_orderline_id.order_id
+        agreement = origins.pharmacy_insurance_agreement_id
+        if not agreement:
+            raise ValidationError(_(
+                'La devolución %s usa el método de un convenio, pero la venta de origen no tiene '
+                'convenio.', self.name))
+        if len(agreement) > 1:
+            raise ValidationError(_('Devuelva por separado las ventas de convenios distintos.'))
+        if payments.payment_method_id.pharmacy_insurance_agreement_id - agreement:
+            raise ValidationError(_(
+                'La devolución %(order)s debe usar el método del convenio %(agreement)s.',
+                order=self.name, agreement=agreement.name))
+        values = {line: line._pharmacy_insurance_refund_values() for line in refund_lines}
+        expected = self.currency_id.round(sum(value['amount'] for value in values.values()))
+        paid = sum(payments.mapped('amount'))
+        if self.currency_id.compare_amounts(paid, expected) != 0:
+            raise ValidationError(_(
+                'La devolución %(order)s debe devolver %(expected)s con el convenio %(agreement)s '
+                '(la parte que pagó la aseguradora) y devuelve %(paid)s.',
+                order=self.name, expected=expected, agreement=agreement.name, paid=paid))
+        for line, value in values.items():
+            line.write({'pharmacy_insurance_base': value['base'],
+                        'pharmacy_insurance_taxes': value['taxes'],
+                        'pharmacy_insurance_amount': value['amount']})
+        self.write({
+            'pharmacy_insurance_agreement_id': agreement.id,
+            'pharmacy_insurance_affiliate_id': origins.pharmacy_insurance_affiliate_id[:1].id,
+            'pharmacy_insurance_amount': expected,
+        })
+
     def _pharmacy_insurance_has_prescription(self):
         self.ensure_one()
         return self.pharmacy_prescription_number or self.pharmacy_prescription_id
@@ -194,6 +265,48 @@ class PosOrder(models.Model):
             extra.update({'price_unit': values['price_unit'], 'quantity': values['quantity'],
                           'discount': values.get('discount', 0.0)})
         return values
+
+    def _create_invoice(self, move_vals):
+        """El redondeo de efectivo de Odoo iguala el comprobante a lo cobrado
+        en caja, y eso incluye lo cobrado con el convenio, que no está en el
+        comprobante del paciente: se descuenta del ajuste para redondear solo
+        su parte."""
+        invoice = super()._create_invoice(move_vals)
+        covered = sum(self.payment_ids.filtered(
+            'payment_method_id.pharmacy_insurance_agreement_id').mapped('amount'))
+        if (self.currency_id.is_zero(covered) or not self.config_id.cash_rounding
+                or not invoice.invoice_cash_rounding_id):
+            return invoice
+        rounding_line = invoice.line_ids.filtered(
+            lambda line: line.display_type == 'rounding' and not line.tax_line_id)
+        terms_line = invoice.line_ids.filtered(lambda line: line.display_type == 'payment_term')\
+            .sorted(lambda line: -abs(line.amount_currency))[:1]
+        if not rounding_line or not terms_line:
+            return invoice
+        amount_sign = -1 if sum(self.mapped('amount_total')) < 0.0 else 1
+        difference_currency = -invoice.direction_sign * amount_sign * covered
+        rate = invoice.invoice_currency_rate
+        difference_balance = invoice.company_currency_id.round(difference_currency / rate) if rate else 0.0
+        rounding_amount = rounding_line.amount_currency + difference_currency
+        if self.currency_id.is_zero(rounding_amount):
+            rounding_command = Command.delete(rounding_line.id)
+        else:
+            cash_rounding = invoice.invoice_cash_rounding_id
+            rounding_command = Command.update(rounding_line.id, {
+                'amount_currency': rounding_amount,
+                'balance': rounding_line.balance + difference_balance,
+                'account_id': (cash_rounding.loss_account_id if rounding_amount > 0.0
+                               else cash_rounding.profit_account_id).id,
+            })
+        with self.env['account.move']._check_balanced({'records': invoice}):
+            invoice.with_context(skip_invoice_sync=True).line_ids = [
+                rounding_command,
+                Command.update(terms_line.id, {
+                    'amount_currency': terms_line.amount_currency - difference_currency,
+                    'balance': terms_line.balance - difference_balance,
+                }),
+            ]
+        return invoice
 
     def _prepare_invoice_lines(self, move_type):
         """El comprobante del paciente no lleva las líneas que el convenio

@@ -185,6 +185,8 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_invoice" type="object" class="oe_stat_button"
                                 icon="fa-pencil-square-o" invisible="not invoice_id" string="Factura"/>
+                        <button name="action_open_refunds" type="object" class="oe_stat_button"
+                                icon="fa-undo" invisible="not refund_invoice_ids" string="Notas de crédito"/>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
@@ -195,6 +197,7 @@
                             <field name="partner_id"/>
                             <field name="invoice_id" invisible="not invoice_id"/>
                             <field name="invoice_state" invisible="not invoice_id"/>
+                            <field name="refund_invoice_ids" widget="many2many_tags" invisible="not refund_invoice_ids"/>
                         </group>
                         <group>
                             <field name="date_from" readonly="state != 'draft'"/>

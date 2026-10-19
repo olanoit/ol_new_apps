@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 import io
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 import openpyxl
 
@@ -152,7 +152,8 @@ class TestDigemid(TransactionCase):
         self.assertEqual(mine, [['0012345', 'DIG-0100', 11.8, 11.8]])
         sent = Submission.search([('warehouse_id', '=', self.warehouse.id)])
         self.assertEqual((sent.state, sent.mode), ('sent', 'full'))
-        self.assertEqual(sent.rectification_deadline, add_business_days(fields.Date.today(), 7))
+        self.assertEqual(sent.rectification_deadline,
+                         self.env.company._pharmacy_add_business_days(fields.Date.today(), 7))
 
         # Como si la carga hubiera sido hace un rato.
         sent.date_sent = fields.Datetime.now() - timedelta(minutes=5)
@@ -195,4 +196,23 @@ class TestDigemid(TransactionCase):
     def test_rectification_counts_business_days(self):
         # Viernes 16/10/2026 + 7 días hábiles = martes 27/10/2026.
         self.assertEqual(add_business_days(date(2026, 10, 16), 7), date(2026, 10, 27))
+
+    def test_rectification_skips_company_holidays(self):
+        company = self.env.company
+        calendar = company.resource_calendar_id or self.env['resource.calendar'].create(
+            {'name': 'Lima', 'tz': 'America/Lima'})
+        company.resource_calendar_id = calendar
+        calendar.tz = 'America/Lima'
+        # Feriado el martes 20/10/2026: de 00:00 a 00:00 del día siguiente en Lima (UTC−5).
+        leave = self.env['resource.calendar.leaves'].create({
+            'name': 'Feriado de prueba', 'calendar_id': calendar.id, 'company_id': company.id,
+            'date_from': datetime(2026, 10, 20, 5, 0), 'date_to': datetime(2026, 10, 21, 5, 0)})
+        # Otros módulos ajustan las horas al crear según el huso del usuario.
+        leave.write({'date_from': datetime(2026, 10, 20, 5, 0), 'date_to': datetime(2026, 10, 21, 5, 0)})
+        self.assertEqual((leave.date_from, leave.date_to),
+                         (datetime(2026, 10, 20, 5, 0), datetime(2026, 10, 21, 5, 0)))
+        self.assertEqual(company._pharmacy_holidays(date(2026, 10, 16), date(2026, 10, 31)),
+                         {date(2026, 10, 20)})
+        # Viernes 16/10 + 7 días hábiles sin el feriado = miércoles 28/10.
+        self.assertEqual(company._pharmacy_add_business_days(date(2026, 10, 16), 7), date(2026, 10, 28))
 

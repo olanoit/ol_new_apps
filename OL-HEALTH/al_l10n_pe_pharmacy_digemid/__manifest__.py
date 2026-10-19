@@ -39,9 +39,10 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '4.20261019',
+    'version': '5.20261019',
     'license': 'OPL-1',
-    'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'al_report_base'],
+    # resource: feriados del calendario laboral para el plazo de rectificación.
+    'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'resource', 'al_report_base'],
     'data': [
         'security/ir.model.access.csv',
         'security/digemid_security.xml',

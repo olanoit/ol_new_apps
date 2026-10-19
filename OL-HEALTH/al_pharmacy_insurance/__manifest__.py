@@ -30,7 +30,7 @@ Entrega E10 de las mejoras (docs/farmacia/MEJORAS_PROCESOS.md).
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261019',
+    'version': '2.20261019',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_pos', 'account', 'al_report_base'],
     'data': [
