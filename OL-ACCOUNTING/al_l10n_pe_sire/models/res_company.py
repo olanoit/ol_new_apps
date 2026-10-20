@@ -1,4 +1,10 @@
-from odoo import fields, models
+from odoo import _, fields, models
+
+POST_CHECK_SELECTION = [
+    ('none', 'No validar'),
+    ('warn', 'Avisar en el comprobante'),
+    ('block', 'Impedir la publicación'),
+]
 
 
 class ResCompany(models.Model):
@@ -25,7 +31,13 @@ class ResCompany(models.Model):
     l10n_pe_sire_token_expiry = fields.Datetime(
         string='Caducidad del token SIRE', copy=False,
         groups='base.group_system')
-
+    l10n_pe_sire_post_check = fields.Selection(
+        POST_CHECK_SELECTION, string='Validar con las reglas del SIRE al publicar',
+        default='warn',
+        help='Revisa cada factura, boleta o nota con las mismas reglas que el '
+             'registro SIRE (RUC, DNI, serie y número, nota sin documento '
+             'modificado, boleta sobre S/ 700 sin cliente, IGV…) en el momento '
+             'de publicarla, y no al cerrar el mes.')
 
     def write(self, vals):
         # Con otras credenciales el token guardado es de la cuenta anterior:
@@ -52,3 +64,26 @@ class ResConfigSettings(models.TransientModel):
     l10n_pe_sire_client_secret = fields.Char(
         related='company_id.l10n_pe_sire_client_secret', readonly=False,
         groups='base.group_system')
+    l10n_pe_sire_post_check = fields.Selection(
+        related='company_id.l10n_pe_sire_post_check', readonly=False)
+
+    def action_l10n_pe_sire_test_connection(self):
+        """Pide un token nuevo con las credenciales guardadas."""
+        self.ensure_one()
+        # sudo: credenciales y token son de base.group_system (el botón también).
+        company_sudo = self.company_id.sudo().root_id
+        company_sudo.write({'l10n_pe_sire_token': False, 'l10n_pe_sire_token_expiry': False})
+        self.env['l10n_pe.sire.api']._sire_get_token(company_sudo)
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'type': 'success',
+                'message': _('SUNAT aceptó las credenciales del SIRE de %(company)s; '
+                             'el token vence el %(expiry)s.',
+                             company=company_sudo.name,
+                             expiry=fields.Datetime.context_timestamp(
+                                 self, company_sudo.l10n_pe_sire_token_expiry
+                             ).strftime('%d/%m/%Y %H:%M')),
+            },
+        }

@@ -109,7 +109,7 @@ class L10nPeSirePeriodServices(models.AbstractModel):
                          ticket_required=True):
         """Sube ``rows`` como TXT en ZIP por TUS y registra la operación."""
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         if not rows:
             raise UserError(_('No hay comprobantes que enviar.'))
         zip_name = txt_name.rsplit('.', 1)[0] + '.zip'
@@ -133,7 +133,7 @@ class L10nPeSirePeriodServices(models.AbstractModel):
     def _sire_json_call(self, kind, method, endpoint, payload=None, params=None, detail=None):
         """Llamada síncrona (SUNAT responde «OK»), registrada como operación."""
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         token = self._sire_get_token(self.company_id)
         response = self._sire_send_json(method, token, endpoint, payload, params=params)
         ticket = self._sire_ticket_from(response)

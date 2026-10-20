@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <list create="0" edit="0" delete="0"
                   decoration-danger="check_detail"
+                  decoration-warning="check_warning and not check_detail"
                   decoration-info="compare_state == '1'">
                 <field name="type_line"/>
                 <field name="compare_state" widget="badge" optional="show"/>
@@ -24,6 +25,7 @@
                 <field name="moneda" optional="show"/>
                 <field name="tipo_cambio" optional="hide"/>
                 <field name="check_detail" optional="show"/>
+                <field name="check_warning" optional="show"/>
                 <field name="diff_detail" optional="hide"/>
             </list>
         </field>
@@ -45,6 +47,8 @@
                         domain="[('compare_state', 'in', ('1', '2', '3'))]"/>
                 <filter name="filter_invalid" string="Con observaciones"
                         domain="[('check_detail', '!=', False)]"/>
+                <filter name="filter_warning" string="Con avisos"
+                        domain="[('check_warning', '!=', False)]"/>
                 <group>
                     <filter name="group_type_line" string="Origen" context="{'group_by': 'type_line'}"/>
                     <filter name="group_compare_state" string="Comparación"
@@ -61,6 +65,7 @@
         <field name="arch" type="xml">
             <list create="0" edit="0" delete="0"
                   decoration-danger="check_detail"
+                  decoration-warning="check_warning and not check_detail"
                   decoration-info="compare_state == '1'">
                 <field name="type_line"/>
                 <field name="compare_state" widget="badge" optional="show"/>
@@ -79,6 +84,7 @@
                 <field name="moneda" optional="show"/>
                 <field name="tipo_cambio" optional="hide"/>
                 <field name="check_detail" optional="show"/>
+                <field name="check_warning" optional="show"/>
                 <field name="diff_detail" optional="hide"/>
             </list>
         </field>
@@ -100,6 +106,8 @@
                         domain="[('compare_state', 'in', ('1', '2', '3'))]"/>
                 <filter name="filter_invalid" string="Con observaciones"
                         domain="[('check_detail', '!=', False)]"/>
+                <filter name="filter_warning" string="Con avisos"
+                        domain="[('check_warning', '!=', False)]"/>
                 <group>
                     <filter name="group_type_line" string="Origen" context="{'group_by': 'type_line'}"/>
                     <filter name="group_compare_state" string="Comparación"

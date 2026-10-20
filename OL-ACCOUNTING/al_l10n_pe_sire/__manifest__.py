@@ -16,6 +16,10 @@ trabajo (XLSX).
 * Exportación XLSX (hojas SIRE y Sistema) y TXT de reemplazo con nombre oficial.
 * Envío a SUNAT por API: aceptación de la propuesta, carga del reemplazo (TUS) y
   registro del preliminar; la generación del registro se completa en el portal.
+* Validación al publicar: cada comprobante pasa por las reglas del registro
+  (RUC, DNI, serie, nota sin documento, boleta sobre S/ 700, IGV) al publicarse.
+* Roles: el aprobador SIRE envía, cierra y reabre (con motivo); el contable prepara.
+* Bitácora de cada llamada a la API (90 días) y prueba de conexión.
 """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -24,7 +28,7 @@ trabajo (XLSX).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/account/static/description/icon.png',
-    'version': '21.20261012',
+    'version': '22.20261012',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
@@ -34,8 +38,8 @@ trabajo (XLSX).
         'python': ['xlsxwriter', 'requests'],
     },
     'data': [
-        'security/ir.model.access.csv',
         'security/sire_security.xml',
+        'security/ir.model.access.csv',
         'data/sire_compare_fields.xml',
         'data/sire_cron.xml',
         'data/res_country_sire.xml',
@@ -46,7 +50,9 @@ trabajo (XLSX).
         'views/sire_operation_views.xml',
         'views/sire_line_views.xml',
         'views/res_country_views.xml',
+        'views/sire_api_log_views.xml',
         'wizard/sire_action_wizard_views.xml',
+        'wizard/sire_reopen_wizard_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu.xml',
     ],

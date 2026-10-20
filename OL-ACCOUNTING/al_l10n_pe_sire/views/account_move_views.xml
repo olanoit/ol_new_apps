@@ -8,6 +8,9 @@
         <field name="arch" type="xml">
             <!-- «Contabilidad PE ▸ Registros electrónicos» (al_account_base). -->
             <xpath expr="//group[@name='l10n_pe_books_right']" position="inside">
+                <field name="l10n_pe_sire_declared" invisible="1"/>
+                <field name="l10n_pe_sire_book_info" invisible="not l10n_pe_sire_book_info"
+                       decoration-success="l10n_pe_sire_declared"/>
                 <group string="SIRE" name="l10n_pe_sire_group" colspan="2"
                        invisible="move_type not in ('in_invoice', 'in_refund')">
                     <field name="l10n_pe_sire_goods_class"/>

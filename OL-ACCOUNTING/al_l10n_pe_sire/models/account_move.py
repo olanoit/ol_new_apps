@@ -1,8 +1,13 @@
 import re
 
-from odoo import api, fields, models
+from markupsafe import Markup
+
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 from .sire_country_codes import SIRE_COUNTRY_CODES
+from .sire_rce import RCE_EXCLUDED_DOC_TYPES
+from .sire_rvie import RVIE_EXCLUDED_DOC_TYPES
 
 #: Tabla 17 del anexo 1 (R.S. 040-2022): vinculación económica.
 ND_LINK_SELECTION = [
@@ -125,7 +130,9 @@ class AccountMove(models.Model):
         ],
         string='Clase de bien o servicio',
         help='Tabla 30 SUNAT — columna "Clasif de Bss y Sss" del RCE. Obligatoria '
-             'para contribuyentes con ingresos mayores a 1500 UIT.')
+             'para contribuyentes con ingresos mayores a 1500 UIT. Si se deja '
+             'vacía, al publicar se sugiere desde las cuentas y productos de las '
+             'líneas; se puede cambiar.')
 
     # --- Registro de compras de no domiciliados (anexo 9, R.S. 040-2022).
     # Nombres propios: l10n_pe_reports (Enterprise) tiene campos parecidos
@@ -159,7 +166,9 @@ class AccountMove(models.Model):
         compute='_compute_l10n_pe_sire_nd_net_income', store=True, readonly=False)
     l10n_pe_sire_nd_withholding_rate = fields.Float(string='Tasa de retención (%)', digits=(5, 2))
     l10n_pe_sire_nd_withheld_tax = fields.Monetary(
-        string='Impuesto retenido', currency_field='company_currency_id')
+        string='Impuesto retenido', currency_field='company_currency_id',
+        compute='_compute_l10n_pe_sire_nd_withheld_tax', store=True, readonly=False,
+        help='Renta neta por la tasa de retención; se puede corregir a mano.')
     l10n_pe_sire_nd_agreement = fields.Selection(
         ND_AGREEMENT_SELECTION, string='Convenio de doble imposición', default='00')
     l10n_pe_sire_nd_exemption = fields.Selection(
@@ -180,6 +189,126 @@ class AccountMove(models.Model):
                 move.move_type in ('in_invoice', 'in_refund')
                 and move.l10n_latam_document_type_id.code in ('00', '91', '97', '98')
                 and country and country.code != 'PE')
+
+    l10n_pe_sire_book_info = fields.Char(
+        string='Registro SIRE', compute='_compute_l10n_pe_sire_book_info',
+        help='Periodo del RVIE o RCE en que se desplegó el comprobante y su estado.')
+    l10n_pe_sire_declared = fields.Boolean(
+        string='Enviado en el SIRE', compute='_compute_l10n_pe_sire_book_info')
+
+    def _l10n_pe_sire_suggest_goods_class(self):
+        """Tabla 30 a partir de las líneas: activo fijo, bienes o gastos."""
+        self.ensure_one()
+        if self.move_type not in ('in_invoice', 'in_refund'):
+            return False
+        lines = self.invoice_line_ids.filtered(lambda l: l.display_type == 'product')
+        if not lines:
+            return False
+        if any(line.account_id.account_type == 'asset_fixed' for line in lines):
+            return '2'
+        if any(line.product_id.type == 'consu' for line in lines):
+            return '1'
+        return '5'
+
+    @api.depends('l10n_pe_sire_nd_net_income', 'l10n_pe_sire_nd_withholding_rate')
+    def _compute_l10n_pe_sire_nd_withheld_tax(self):
+        for move in self:
+            move.l10n_pe_sire_nd_withheld_tax = move.company_currency_id.round(
+                move.l10n_pe_sire_nd_net_income * move.l10n_pe_sire_nd_withholding_rate / 100)
+
+    def _compute_l10n_pe_sire_book_info(self):
+        self.l10n_pe_sire_book_info = False
+        self.l10n_pe_sire_declared = False
+        origins = self._origin.filtered('id')
+        if not origins:
+            return
+        by_move = {}
+        for model in ('l10n_pe.sire.rvie.line', 'l10n_pe.sire.rce.line'):
+            # sudo: quien solo factura no lee el SIRE, pero sí ve en qué
+            # periodo quedó su comprobante; solo se leen nombre y estado.
+            groups = self.env[model].sudo()._read_group(
+                [('move_id', 'in', origins.ids), ('type_line', '=', 'system')],
+                ['move_id', 'sire_id'])
+            for move, period in groups:
+                by_move[move.id] = period
+        for move in self:
+            period = by_move.get(move._origin.id)
+            if not period:
+                continue
+            state = dict(period._fields['state']._description_selection(self.env))[period.state]
+            move.l10n_pe_sire_book_info = '%s · %s' % (period.display_name, state)
+            move.l10n_pe_sire_declared = period.state in ('submitted', 'done')
+
+    # ------------------------------------------------------------------
+    # Validación al publicar
+    # ------------------------------------------------------------------
+
+    def _post(self, soft=True):
+        posted = super()._post(soft)
+        # Al publicar y no al crear: con las líneas ya completas, y sin pisar
+        # lo que el usuario eligió.
+        for move in posted.filtered(lambda m: not m.l10n_pe_sire_goods_class):
+            suggestion = move._l10n_pe_sire_suggest_goods_class()
+            if suggestion:
+                move.l10n_pe_sire_goods_class = suggestion
+        posted._l10n_pe_sire_check_on_post()
+        return posted
+
+    def _l10n_pe_sire_check_on_post(self):
+        """Las reglas del registro SIRE, en el momento de publicar.
+
+        Lo que el libro rechazaría a fin de mes (un RUC mal digitado, una
+        nota sin el comprobante que modifica, una boleta de S/ 900 sin
+        cliente…) se avisa o se bloquea ahora, cuando aún es fácil corregir.
+        """
+        blocked = []
+        for move in self:
+            mode = move.company_id.l10n_pe_sire_post_check
+            if not mode or mode == 'none':
+                continue
+            errors, warnings = move._l10n_pe_sire_book_check()
+            if errors and mode == 'block':
+                blocked.append('%s:\n%s' % (move.display_name, '\n'.join(
+                    '  · %s' % error for error in errors)))
+            elif errors or warnings:
+                items = Markup().join(
+                    Markup('<li>%s</li>') % text for text in errors + warnings)
+                move.message_post(body=Markup('<p>%s</p><ul>%s</ul>') % (
+                    _('Este comprobante no pasa las reglas del registro SIRE:')
+                    if errors else _('Avisos del registro SIRE:'), items))
+        if blocked:
+            raise UserError(_(
+                'Corrija estos comprobantes antes de publicarlos; el registro '
+                'SIRE los rechazaría:\n%s', '\n'.join(blocked)))
+
+    def _l10n_pe_sire_book_check(self):
+        """(errores, avisos) del comprobante como línea del RVIE o el RCE."""
+        self.ensure_one()
+        code = self.l10n_latam_document_type_id.code
+        if self.country_code != 'PE' or not code or self.state != 'posted' \
+                or self.journal_id.l10n_pe_exclude_from_books:
+            return [], []
+        if self.move_type in ('out_invoice', 'out_refund'):
+            if code in RVIE_EXCLUDED_DOC_TYPES:
+                return [], []
+            book, date = 'l10n_pe.sire.rvie', self.invoice_date
+        elif self.move_type in ('in_invoice', 'in_refund'):
+            if code in RCE_EXCLUDED_DOC_TYPES or self.l10n_pe_sire_is_non_domiciled:
+                return [], []
+            book, date = 'l10n_pe.sire.rce', self.date
+        else:
+            return [], []
+        if not date:
+            return [], []
+        # sudo: solo se arman registros en memoria (new) para aplicar las
+        # reglas; quien factura no necesita acceso al SIRE.
+        period = self.env[book].sudo().new({
+            'year': date.year, 'month': '%02d' % date.month,
+            'company_id': self.company_id.id})
+        vals = period._sire_system_line_vals(self)
+        line_model = period._fields['system_line_ids'].comodel_name
+        line = self.env[line_model].sudo().new(dict(vals, type_line='system'))
+        return period._sire_line_errors(line), period._sire_line_warnings(line)
 
     @api.depends('l10n_pe_sire_nd_gross_income', 'l10n_pe_sire_nd_deduction')
     def _compute_l10n_pe_sire_nd_net_income(self):

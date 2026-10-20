@@ -55,3 +55,26 @@ def tax_mismatch(base, tax, rates):
     if not base:
         return True
     return min(abs(abs(tax) - abs(base) * rate) for rate in rates) > AMOUNT_TOLERANCE
+
+
+#: Boletas: por encima de este importe el comprador se identifica con su
+#: documento y nombre (art. 8, num. 3.10 del Reglamento de Comprobantes).
+BOLETA_IDENTIFY_LIMIT = 700.0
+#: Documentos de identidad que no identifican a nadie: «0» (sin documento)
+#: y los números de relleno que usan algunos TPV para el cliente varios.
+ANONYMOUS_ID_TYPES = ('', '0', '-')
+ANONYMOUS_ID_NUMBERS = ('', '0', '-', '00000000', '99999999')
+#: Plazo para anotar una compra con derecho a crédito fiscal: los 12
+#: periodos siguientes al de emisión (art. 2 de la Ley 29215).
+RCE_CREDIT_MONTHS = 12
+
+
+def is_anonymous(id_type, id_number):
+    """``True`` si el tipo y número de documento no identifican al cliente."""
+    return (id_type or '').strip() in ANONYMOUS_ID_TYPES \
+        or (id_number or '').strip() in ANONYMOUS_ID_NUMBERS
+
+
+def months_between(earlier, later):
+    """Periodos (meses) que van de ``earlier`` a ``later``; 0 si es el mismo mes."""
+    return (later.year - earlier.year) * 12 + later.month - earlier.month

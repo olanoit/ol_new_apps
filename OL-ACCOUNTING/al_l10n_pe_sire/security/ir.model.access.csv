@@ -14,3 +14,5 @@ access_sire_operation_read,l10n_pe.sire.operation readonly,model_l10n_pe_sire_op
 access_sire_action_wizard_user,l10n_pe.sire.action.wizard user,model_l10n_pe_sire_action_wizard,account.group_account_user,1,1,1,1
 access_sire_rce_nd_line_user,l10n_pe.sire.rce.nd.line user,model_l10n_pe_sire_rce_nd_line,account.group_account_user,1,1,1,1
 access_sire_rce_nd_line_read,l10n_pe.sire.rce.nd.line readonly,model_l10n_pe_sire_rce_nd_line,account.group_account_readonly,1,0,0,0
+access_sire_api_log_approver,l10n_pe.sire.api.log approver,model_l10n_pe_sire_api_log,group_sire_approver,1,0,0,0
+access_sire_reopen_wizard_approver,l10n_pe.sire.reopen.wizard approver,model_l10n_pe_sire_reopen_wizard,group_sire_approver,1,1,1,0

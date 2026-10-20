@@ -47,18 +47,66 @@ servicio web para hacerlo desde fuera.
    Credenciales de API SUNAT**).
 2. Vaya a **Ajustes ‣ Perú**, sección **SIRE (RVIE / RCE)**, y escriba el
    **Usuario SOL (SIRE)**, la **Clave SOL (SIRE)**, el **Client ID** y el
-   **Client Secret**. Se guardan en la compañía raíz (el RUC).
+   **Client Secret**. Se guardan en la compañía raíz (el RUC). Haga clic en
+   **Probar conexión**: Odoo pide un token a SUNAT y muestra hasta cuándo vale.
 3. Sin credenciales, use la **Carga manual** en cada periodo: suba el TXT
-   exportado del portal. Los pasos siguientes son los mismos.
+   o el ZIP exportado del portal. Los pasos siguientes son los mismos.
 4. En las facturas de compra, complete el tipo de documento y, en los tipos que
    la exigen, la fecha de vencimiento. El destino de las compras gravadas sale
    del grupo de impuesto (DG, DGNG, DNG) y la **Clasificación de bienes y
-   servicios** (tabla 30) de la pestaña **Otra información**.
-5. Opcional: en **Perú ‣ Configuración ‣ SIRE: campos de comparación**, active
+   servicios** (tabla 30) de la pestaña **Otra información**. Si la deja vacía,
+   al publicar se completa sola: **2 - Activo fijo** si alguna línea va a una
+   cuenta de activo fijo, **1 - Mercadería** si alguna lleva un producto
+   (bien) y **5 - Otros gastos** en el resto. Puede cambiarla después.
+5. En **Validar al publicar**, elija qué hacer cuando un comprobante no pasa
+   las reglas del registro (ver [Validación al publicar](#validacion-al-publicar)):
+   **Avisar en el comprobante** (por defecto), **Impedir la publicación** o
+   **No validar**.
+6. Asigne el grupo **SIRE ‣ Aprobador SIRE** a quien declara (ver
+   [Roles](#roles)). Los administradores de contabilidad ya lo tienen.
+7. Opcional: en **Perú ‣ Configuración ‣ SIRE: campos de comparación**, active
    o archive las columnas del cruce. Por defecto se comparan fechas, tipo,
    serie y número, documento del socio, importes y estado; la razón social, el
    tipo de cambio y la fecha de vencimiento están archivados (filtro
    **Archivados ‣ Desarchivar** para activarlos).
+
+## Validación al publicar
+
+Las reglas que el registro aplica a fin de mes se aplican también al publicar
+cada factura, boleta o nota de venta o de compra, cuando aún es fácil
+corregir:
+
+- tipo de comprobante de la tabla 10, serie de 4 caracteres y número de hasta
+  8 dígitos en facturas, boletas y notas;
+- RUC con dígito verificador correcto y DNI de 8 dígitos;
+- RUC del cliente en las facturas (salvo exportación) y del proveedor en las
+  facturas de compra;
+- notas de crédito y débito con el comprobante que modifican;
+- **boletas de más de S/ 700** con el documento y el nombre del cliente;
+- IGV que corresponde a la base (18 % o 10 %) y total igual a la suma de bases
+  e impuestos;
+- tipo de cambio en los comprobantes en moneda extranjera.
+
+Con **Avisar en el comprobante**, la factura se publica y el chatter lista lo
+que falla. Con **Impedir la publicación**, Odoo no la publica y dice qué
+corregir. Los diarios marcados como ajenos a los libros, los tipos que no van
+al RVIE o al RCE y los no domiciliados no se revisan.
+
+Desde la factura, el campo **Registro SIRE** (pestaña **Contabilidad PE ‣
+Registros electrónicos**) indica el periodo en que se desplegó y su estado; en
+verde, si ya se envió a SUNAT.
+
+## Roles
+
+| Rol | Quién | Qué hace |
+|---|---|---|
+| Preparador | Usuario de contabilidad | Solicita y descarga la propuesta, despliega, compara, valida y descarga el XLSX o el TXT |
+| Aprobador SIRE | Grupo **SIRE ‣ Aprobador SIRE** (lo tienen los administradores de contabilidad) | Acepta la propuesta, envía el reemplazo, registra el preliminar, envía complementos y ajustes, marca el periodo como realizado y lo reabre |
+
+**Reabrir** un periodo realizado pide un motivo, que queda en el historial.
+Lo enviado a SUNAT no se deshace: las correcciones de un periodo ya generado
+van como ajustes posteriores. Un periodo con observaciones no se puede marcar
+como realizado.
 
 ## Conciliar el periodo
 
@@ -77,7 +125,9 @@ servicio web para hacerlo desde fuera.
    **Diferencias** lista todos los campos discrepantes con ambos valores (tipo
    de documento, serie, número, fechas, RUC, moneda, tipo de cambio, bases,
    impuestos y total).
-5. Revise las pestañas **Diferencias** y **Observaciones** y descargue el
+5. Revise las pestañas **Diferencias** y **Observaciones** (en rojo lo que
+   SUNAT rechazaría; en amarillo los **avisos**, que no impiden el envío) y
+   descargue el
    **XLSX** de trabajo (hojas SIRE y Sistema con el formato de SUNAT).
 
 ![Periodo nuevo del SIRE](sire/new-period.png)
@@ -171,6 +221,8 @@ de no domiciliados anteriores al SIRE.
 | DAM o DSI (tipos 50-54) con el valor en aduana en una cuenta puente | El total del RCE es base + IGV + otros derechos, no el total de la factura | Nada |
 | Liquidación de compra (tipo 04) con IGV y renta retenidos | El RCE informa el total del comprobante, no el neto que recibe el vendedor: las retenciones no lo reducen | Nada; ver [liquidación de compra](electronic_invoicing/purchase_settlement.md) |
 | Observaciones de validación (RUC, serie, IGV, fechas) | **Enviar reemplazo** se niega | Corrija las facturas y vuelva a desplegar el sistema |
+| Compra emitida hace más de 12 periodos | Aviso: su IGV ya no da crédito fiscal (art. 2 de la Ley 29215); SUNAT la recibe igual | Revise si debe ir sin crédito fiscal |
+| Error de SUNAT difícil de entender | Cada llamada a la API queda en **Perú ‣ Configuración ‣ SIRE: bitácora de la API** con su respuesta, aunque haya fallado (90 días, solo aprobadores; el token no se guarda) | Abra la llamada y lea la respuesta |
 | Ticket que no termina | La acción planificada reintenta hasta 30 veces y luego deja una actividad | Consulte a mano o espere |
 | Sin credenciales | La API no funciona | Use la carga manual del TXT |
 

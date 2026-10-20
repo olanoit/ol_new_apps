@@ -50,17 +50,17 @@
                     <button name="action_compare" string="Comparar"
                             type="object" class="btn-primary"
                             invisible="state != 'system_loaded'"/>
-                    <button name="action_accept_proposal" groups="account.group_account_user" string="Aceptar propuesta"
+                    <button name="action_accept_proposal" groups="al_l10n_pe_sire.group_sire_approver" string="Aceptar propuesta"
                             type="object" class="btn-primary"
                             invisible="state != 'compared' or submission_ticket"
                             confirm="Se aceptará la propuesta de SUNAT tal como está. ¿Continuar?"/>
-                    <button name="action_send_replacement" groups="account.group_account_user" string="Enviar reemplazo"
+                    <button name="action_send_replacement" groups="al_l10n_pe_sire.group_sire_approver" string="Enviar reemplazo"
                             type="object"
                             invisible="state != 'compared' or submission_ticket"
                             confirm="Se enviará a SUNAT el reemplazo con las líneas del sistema. ¿Continuar?"/>
                     <button name="action_check_submission" groups="account.group_account_user" string="Consultar envío"
                             type="object" invisible="not submission_ticket or state == 'done'"/>
-                    <button name="action_register_preliminary" groups="account.group_account_user" string="Registrar preliminar"
+                    <button name="action_register_preliminary" groups="al_l10n_pe_sire.group_sire_approver" string="Registrar preliminar"
                             type="object" class="btn-primary"
                             invisible="not submission_ticket or preliminary_registered or submission_state not in ('04', '06')"/>
                     <button name="action_export_xlsx" string="Descargar XLSX"
@@ -68,7 +68,11 @@
                     <button name="action_export_replacement" string="TXT de reemplazo"
                             type="object" invisible="state not in ('compared', 'submitted', 'done')"/>
                     <button name="action_done" string="Marcar realizado"
+                            groups="al_l10n_pe_sire.group_sire_approver"
                             type="object" invisible="state not in ('compared', 'submitted')"/>
+                    <button name="action_reopen" string="Reabrir"
+                            groups="al_l10n_pe_sire.group_sire_approver"
+                            type="object" invisible="state != 'done'"/>
                     <button name="action_reset" string="Reiniciar"
                             type="object" invisible="state in ('draft', 'done') or submission_ticket"
                             confirm="Se eliminarán las líneas desplegadas. ¿Continuar?"/>
@@ -113,6 +117,8 @@
                             <field name="count_only_system"/>
                             <field name="count_invalid"
                                    decoration-danger="count_invalid"/>
+                            <field name="count_warning"
+                                   decoration-warning="count_warning"/>
                         </group>
                     </group>
                     <notebook>
@@ -168,9 +174,10 @@
                             </field>
                         </page>
                         <page string="Observaciones" name="invalid_lines"
-                              invisible="not count_invalid">
+                              invisible="not count_invalid and not count_warning">
                             <field name="invalid_line_ids" readonly="1">
-                                <list decoration-danger="1">
+                                <list decoration-danger="check_detail"
+                                      decoration-warning="not check_detail">
                                     <field name="move_id"/>
                                     <field name="fecha_emision"/>
                                     <field name="tipo_cp"/>
@@ -179,6 +186,7 @@
                                     <field name="nro_doc_identidad" optional="show"/>
                                     <field name="total_cp"/>
                                     <field name="check_detail"/>
+                                    <field name="check_warning"/>
                                 </list>
                             </field>
                         </page>

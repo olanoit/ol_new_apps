@@ -3,7 +3,10 @@ from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 from .sire_api import SIRE_UPLOAD_ADJUSTMENT_ENDPOINT
-from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, IVAP_RATES, tax_mismatch
+from .sire_validation import (
+    AMOUNT_TOLERANCE, BOLETA_IDENTIFY_LIMIT, IGV_RATES, IVAP_RATES, is_anonymous,
+    tax_mismatch,
+)
 
 # Notas de venta y documentos internos que no van al RVIE
 RVIE_EXCLUDED_DOC_TYPES = ('NV',)
@@ -32,7 +35,8 @@ class L10nPeSireRvie(models.Model):
         domain=[('res_model', '=', 'l10n_pe.sire.rvie')])
     invalid_line_ids = fields.One2many(
         'l10n_pe.sire.rvie.line', 'sire_id', string='Observaciones', copy=False,
-        domain=[('type_line', '=', 'system'), ('check_detail', '!=', False)])
+        domain=[('type_line', '=', 'system'),
+                '|', ('check_detail', '!=', False), ('check_warning', '!=', False)])
 
     _period_uniq = models.Constraint(
         'unique (company_id, year, month)',
@@ -357,6 +361,14 @@ class L10nPeSireRvie(models.Model):
             errors.append(_('Una factura exige el RUC del cliente (salvo exportación).'))
         if line.estado_cp == '2':
             return errors
+        # Una boleta resumida (rango con número final) no identifica a nadie;
+        # la que va sola y pasa el límite, sí.
+        if line.tipo_cp == '03' and not line.nro_final \
+                and abs(line.total_cp) > BOLETA_IDENTIFY_LIMIT \
+                and is_anonymous(line.tipo_doc_identidad, line.nro_doc_identidad):
+            errors.append(_(
+                'Una boleta de más de S/ %(limit).2f exige el documento y el nombre '
+                'del cliente.', limit=BOLETA_IDENTIFY_LIMIT))
         if tax_mismatch(line.bi_gravada, line.igv_ipm, IGV_RATES) \
                 or tax_mismatch(line.dscto_bi, line.dscto_igv, IGV_RATES):
             errors.append(_('El IGV/IPM no corresponde a la base gravada (18 % o 10 %).'))

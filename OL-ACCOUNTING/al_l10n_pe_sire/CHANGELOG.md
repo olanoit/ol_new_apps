@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261012 — 20/10/2026
+
+- Validación al publicar: cada factura, boleta o nota pasa por las reglas del RVIE o el RCE al publicarse (avisar, impedir o no validar, por compañía).
+- Regla nueva: boleta de más de S/ 700 con el documento y el nombre del cliente. Aviso (no bloquea) de compras con más de 12 periodos, sin crédito fiscal.
+- Rol Aprobador SIRE: solo él acepta, reemplaza, registra el preliminar, envía ajustes, cierra y reabre (con motivo); no se cierra un periodo con observaciones.
+- Bitácora de cada llamada a la API SIRE (90 días, sin guardar el token) y botón Probar conexión en Ajustes.
+- Propuesta manual en ZIP, clasificación de la tabla 30 sugerida al publicar, retención de renta de no domiciliados calculada y periodo SIRE visible desde la factura.
+
 ## 21.20261012 — 12/10/2026
 
 - Menú en Perú ▸ SUNAT ▸ SIRE.

@@ -3,7 +3,9 @@ from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 from .sire_api import SIRE_UPLOAD_ADJUSTMENT_ENDPOINT, SIRE_UPLOAD_ENDPOINT
-from .sire_validation import AMOUNT_TOLERANCE, IGV_RATES, tax_mismatch
+from .sire_validation import (
+    AMOUNT_TOLERANCE, IGV_RATES, RCE_CREDIT_MONTHS, months_between, tax_mismatch,
+)
 
 # Tipos de documento que no van al RCE (recibos por honorarios van al RHE)
 RCE_EXCLUDED_DOC_TYPES = ('02', '91', '97', '98')
@@ -38,7 +40,8 @@ class L10nPeSireRce(models.Model):
         domain=[('res_model', '=', 'l10n_pe.sire.rce')])
     invalid_line_ids = fields.One2many(
         'l10n_pe.sire.rce.line', 'sire_id', string='Observaciones', copy=False,
-        domain=[('type_line', '=', 'system'), ('check_detail', '!=', False)])
+        domain=[('type_line', '=', 'system'),
+                '|', ('check_detail', '!=', False), ('check_warning', '!=', False)])
 
     _period_uniq = models.Constraint(
         'unique (company_id, year, month)',
@@ -349,7 +352,7 @@ class L10nPeSireRce(models.Model):
     def _sire_send_exchange_rates(self, rates):
         """5.10 con el archivo del anexo 10 (RCETCA), en multipart y no por TUS."""
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         usd_books = self.company_id.currency_id.name == 'USD'
         rows = [[self._sire_period(), self._sire_fmt_date(date), currency, '%.3f' % rate,
                  '%.3f' % rate if usd_books and currency == 'USD' else '']
@@ -426,7 +429,7 @@ class L10nPeSireRce(models.Model):
         del manual (la tabla dice «no aplica»).
         """
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         kind = operation.adjustment_kind or operation.kind
         path, phase = self.ADJUSTMENT_SEND[kind]
         base = '/libros/rce/ajustesposteriores/web/comprobantesajuspost/%s' % self._sire_period()
@@ -503,6 +506,19 @@ class L10nPeSireRce(models.Model):
             errors.append(_('El total %(total).2f no es la suma de bases e impuestos '
                             '(%(sum).2f).', total=line.total_cp, sum=components))
         return errors
+
+    def _sire_line_warnings(self, line):
+        warnings = super()._sire_line_warnings(line)
+        date_from, dummy = self._sire_period_bounds()
+        # El IGV de una compra anotada fuera de plazo no da crédito fiscal;
+        # SUNAT la recibe igual, así que avisa sin bloquear el envío.
+        if line.fecha_emision and line.estado_cp != '2' \
+                and months_between(line.fecha_emision, date_from) > RCE_CREDIT_MONTHS:
+            warnings.append(_(
+                'Emitido el %(date)s: más de %(months)s meses antes del periodo, '
+                'su IGV ya no da derecho a crédito fiscal (art. 2 de la Ley 29215).',
+                date=line.fecha_emision.strftime('%d/%m/%Y'), months=RCE_CREDIT_MONTHS))
+        return warnings
 
     def _sire_xlsx_headers(self):
         return [

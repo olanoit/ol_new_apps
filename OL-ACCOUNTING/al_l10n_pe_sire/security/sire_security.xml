@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <record id="res_groups_privilege_sire" model="res.groups.privilege">
+        <field name="name">SIRE</field>
+        <field name="sequence">70</field>
+    </record>
+
+    <!-- Quien prepara el periodo no es quien lo declara: aceptar, reemplazar,
+         registrar el preliminar, enviar ajustes y cerrar queda para el
+         aprobador. Lo tienen los administradores de contabilidad. -->
+    <record id="group_sire_approver" model="res.groups">
+        <field name="name">Aprobador SIRE</field>
+        <field name="comment">Envía a SUNAT (aceptación, reemplazo, preliminar, ajustes), cierra y reabre los periodos y ve la bitácora de la API.</field>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_sire"/>
+        <field name="implied_ids" eval="[(4, ref('account.group_account_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="account.group_account_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_sire_approver'))]"/>
+    </record>
+
     <data noupdate="1">
 
         <!-- Multicompañía: cada periodo SIRE (y sus líneas) solo es visible
@@ -34,6 +56,12 @@
             <field name="name">SIRE operación: multicompañía</field>
             <field name="model_id" ref="model_l10n_pe_sire_operation"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="sire_api_log_company_rule" model="ir.rule">
+            <field name="name">SIRE bitácora de la API: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_sire_api_log"/>
+            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
         </record>
 
     </data>

@@ -10,6 +10,10 @@
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="SIRE (RVIE / RCE)" name="pe_sire_block"
                        groups="base.group_system">
+                    <setting company_dependent="1" string="Validar al publicar"
+                             help="Revisa cada comprobante con las reglas del registro SIRE cuando se publica, no al cerrar el mes.">
+                        <field name="l10n_pe_sire_post_check"/>
+                    </setting>
                     <setting company_dependent="1" string="API SIRE (SUNAT)" invisible="not is_root_company"
                              help="Credenciales para descargar la propuesta RVIE/RCE por servicio web. Se generan en SOL: Empresas → Credenciales de API SUNAT.">
                         <div class="content-group">
@@ -29,6 +33,8 @@
                                 <label for="l10n_pe_sire_client_secret" class="col-lg-5 o_light_label"/>
                                 <field name="l10n_pe_sire_client_secret" password="True"/>
                             </div>
+                            <button name="action_l10n_pe_sire_test_connection" type="object"
+                                    string="Probar conexión" icon="fa-plug" class="btn-link"/>
                         </div>
                     </setting>
                     <setting string="API SIRE (SUNAT)" invisible="is_root_company"

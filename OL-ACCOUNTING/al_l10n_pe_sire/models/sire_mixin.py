@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_compare
 
 from .sire_validation import (
@@ -154,9 +154,13 @@ class L10nPeSireMixin(models.AbstractModel):
     count_invalid = fields.Integer(
         string='Con observaciones', compute='_compute_compare_counts',
         help='Líneas del sistema que no pasan las validaciones de SUNAT.')
+    count_warning = fields.Integer(
+        string='Con avisos', compute='_compute_compare_counts',
+        help='Líneas que SUNAT recibe, pero que conviene revisar (p. ej. '
+             'compras fuera del plazo del crédito fiscal).')
 
     @api.depends('sire_line_ids.compare_state', 'system_line_ids.compare_state',
-                 'system_line_ids.check_detail')
+                 'system_line_ids.check_detail', 'system_line_ids.check_warning')
     def _compute_compare_counts(self):
         for record in self:
             sire_lines = record.sire_line_ids
@@ -169,6 +173,7 @@ class L10nPeSireMixin(models.AbstractModel):
             record.count_only_system = len(
                 system_lines.filtered(lambda l: l.compare_state == '3'))
             record.count_invalid = len(system_lines.filtered('check_detail'))
+            record.count_warning = len(system_lines.filtered('check_warning'))
 
     # ------------------------------------------------------------------
     # A definir por cada libro
@@ -330,6 +335,20 @@ class L10nPeSireMixin(models.AbstractModel):
         """
         self.check_access('write')
 
+    def _sire_check_approver(self):
+        """Lo que cambia lo registrado en SUNAT lo hace el aprobador.
+
+        Quien prepara el periodo (descarga, compara, valida) no es quien
+        acepta, reemplaza, registra el preliminar o lo da por cerrado. El
+        grupo lo tienen los administradores de contabilidad.
+        """
+        self._sire_check_can_submit()
+        if not self.env.su and not self.env.user.has_group(
+                'al_l10n_pe_sire.group_sire_approver'):
+            raise AccessError(_(
+                'Solo el aprobador SIRE puede enviar a SUNAT o cerrar el periodo; '
+                'pídale que revise %s.', ', '.join(self.mapped('display_name'))))
+
     def action_request_proposal(self):
         self.ensure_one()
         self._sire_check_can_submit()
@@ -379,12 +398,24 @@ class L10nPeSireMixin(models.AbstractModel):
     # Despliegue
     # ------------------------------------------------------------------
 
+    def _sire_unzip_proposal(self, content):
+        """El TXT de la propuesta, aunque se haya cargado el ZIP del portal."""
+        if not zipfile.is_zipfile(io.BytesIO(content)):
+            return content
+        with zipfile.ZipFile(io.BytesIO(content)) as archive:
+            names = [name for name in archive.namelist() if name.lower().endswith('.txt')]
+            if not names:
+                raise UserError(_('El ZIP de la propuesta no contiene ningún TXT.'))
+            return archive.read(names[0])
+
     def action_load_sire(self):
         self.ensure_one()
         if not self.proposal_file:
             raise UserError(_('No hay archivo de propuesta SIRE para desplegar.'))
-        # El TXT exportado a mano desde SOL puede venir en latin-1.
-        content = self._sire_decode(base64.b64decode(self.proposal_file)).strip('\n')
+        # El TXT exportado a mano desde SOL puede venir en latin-1, y el
+        # portal lo entrega comprimido.
+        content = self._sire_decode(
+            self._sire_unzip_proposal(base64.b64decode(self.proposal_file))).strip('\n')
         commands = [(5, 0, 0)]
         min_cols = self._sire_min_columns()
         for index, row in enumerate(content.split('\n')[1:], start=2):
@@ -846,7 +877,7 @@ class L10nPeSireMixin(models.AbstractModel):
         dice que está mal, así que se avisa.
         """
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         self._sire_check_submittable()
         if self.count_diff or self.count_only_sire or self.count_only_system:
             raise UserError(_(
@@ -871,7 +902,7 @@ class L10nPeSireMixin(models.AbstractModel):
     def action_send_replacement(self):
         """Sube el TXT de reemplazo por la API en vez de a mano en SOL."""
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         self._sire_check_submittable()
         self._sire_check_replacement_lines()
         txt_name, payload = self._sire_replacement_zip()
@@ -926,7 +957,7 @@ class L10nPeSireMixin(models.AbstractModel):
         hacerla desde fuera.
         """
         self.ensure_one()
-        self._sire_check_can_submit()
+        self._sire_check_approver()
         if not self.submission_ticket:
             raise UserError(_(
                 'Acepte la propuesta o envíe el reemplazo antes de registrar '
@@ -957,14 +988,21 @@ class L10nPeSireMixin(models.AbstractModel):
         """Revisa las líneas del sistema y avisa del resultado."""
         self.ensure_one()
         invalid = self._sire_validate_system_lines()
+        warned = self.system_line_ids.filtered('check_warning') - invalid
+        if invalid:
+            message = _('%s líneas con observaciones; revise la pestaña '
+                        '«Observaciones».', len(invalid))
+        elif warned:
+            message = _('Las líneas pasan las validaciones; %s tienen avisos que '
+                        'conviene revisar.', len(warned))
+        else:
+            message = _('Todas las líneas del sistema pasan las validaciones.')
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'type': 'warning' if invalid else 'success',
-                'message': _('%s líneas con observaciones; revise la pestaña '
-                             '«Observaciones».', len(invalid)) if invalid
-                else _('Todas las líneas del sistema pasan las validaciones.'),
+                'type': 'warning' if invalid or warned else 'success',
+                'message': message,
                 'next': {'type': 'ir.actions.act_window_close'},
             },
         }
@@ -979,15 +1017,20 @@ class L10nPeSireMixin(models.AbstractModel):
         by_detail = {}
         for line in self.system_line_ids:
             detail = '\n'.join(self._sire_line_errors(line)) or False
-            by_detail.setdefault(detail, []).append(line.id)
+            warning = '\n'.join(self._sire_line_warnings(line)) or False
+            by_detail.setdefault((detail, warning), []).append(line.id)
         Line = self.env[self.system_line_ids._name]
-        for detail, ids in by_detail.items():
-            Line.browse(ids).write({'check_detail': detail})
+        for (detail, warning), ids in by_detail.items():
+            Line.browse(ids).write({'check_detail': detail, 'check_warning': warning})
         return self.system_line_ids.filtered('check_detail')
 
     def _sire_period_bounds(self):
         date_from = fields.Date.to_date('%04d-%s-01' % (self.year, self.month))
         return date_from, fields.Date.end_of(date_from, 'month')
+
+    def _sire_line_warnings(self, line):
+        """Avisos que no impiden el envío; cada libro añade los suyos."""
+        return []
 
     def _sire_line_errors(self, line):
         """Reglas comunes a RVIE y RCE; cada libro añade las suyas."""
@@ -1239,8 +1282,35 @@ class L10nPeSireMixin(models.AbstractModel):
         return True
 
     def action_done(self):
+        self._sire_check_approver()
+        for record in self:
+            if record.system_line_ids.filtered('check_detail'):
+                raise UserError(_(
+                    '%s tiene líneas con observaciones: corríjalas antes de darlo '
+                    'por cerrado.', record.display_name))
         self.write({'state': 'done'})
         return True
+
+    def action_reopen(self):
+        """Pide el motivo: reabrir un periodo cerrado queda en el historial."""
+        self.ensure_one()
+        self._sire_check_approver()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Reabrir %s', self.display_name),
+            'res_model': 'l10n_pe.sire.reopen.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_res_model': self._name, 'default_res_id': self.id},
+        }
+
+    def _sire_reopen(self, reason):
+        self.ensure_one()
+        self._sire_check_approver()
+        if self.state != 'done':
+            raise UserError(_('Solo se reabre un periodo realizado.'))
+        self.state = 'submitted' if self.submission_ticket else 'compared'
+        self._sire_log(_('Periodo reabierto. Motivo: %s', reason))
 
 
 class L10nPeSireLineMixin(models.AbstractModel):
@@ -1291,3 +1361,6 @@ class L10nPeSireLineMixin(models.AbstractModel):
         string='Observaciones', readonly=True, copy=False,
         help='Reglas de SUNAT que la línea no cumple; se revisan al '
              'desplegar el sistema y antes de enviar el reemplazo.')
+    check_warning = fields.Text(
+        string='Avisos', readonly=True, copy=False,
+        help='Lo que SUNAT acepta pero conviene revisar; no impide el envío.')

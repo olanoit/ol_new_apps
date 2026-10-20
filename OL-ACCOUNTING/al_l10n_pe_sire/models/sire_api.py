@@ -2,6 +2,7 @@ import base64
 import io
 import json
 import re
+import time
 import zipfile
 from datetime import timedelta
 from urllib.parse import urljoin, urlparse
@@ -105,13 +106,20 @@ class L10nPeSireApi(models.AbstractModel):
             'username': '%s%s' % (cred['ruc'], cred['user']),
             'password': cred['password'],
         }
+        started = time.monotonic()
         try:
             response = requests.post(
                 SIRE_AUTH_URL % cred['client_id'], data=payload,
                 headers={'Content-Type': 'application/x-www-form-urlencoded'},
                 timeout=SIRE_TIMEOUT)
         except requests.RequestException as error:
+            self._sire_log_call('POST', SIRE_AUTH_URL % '…', started, error=error,
+                                company=company_sudo)
             raise UserError(_('No se pudo conectar con SUNAT: %s', error)) from error
+        # La respuesta trae el token: solo se registra si es un error.
+        self._sire_log_call('POST', SIRE_AUTH_URL % '…', started, response=response,
+                            company=company_sudo,
+                            body=None if response.status_code == 200 else response.text)
         if response.status_code != 200:
             raise UserError(_(
                 'SUNAT rechazó la autenticación (HTTP %(code)s): %(text)s',
@@ -128,6 +136,46 @@ class L10nPeSireApi(models.AbstractModel):
             'l10n_pe_sire_token_expiry': now + timedelta(seconds=seconds),
         })
         return token
+
+    def _sire_log_call(self, method, url, started, response=None, error=None,
+                       company=None, body=False):
+        """Deja la llamada en la bitácora (``l10n_pe.sire.api.log``).
+
+        ``body`` sustituye al texto de la respuesta; ``None`` lo omite (el
+        token no se guarda nunca).
+        """
+        record = self[:1] if self._name != 'l10n_pe.sire.api' else self.browse()
+        if company is None:
+            company = record.company_id if record and 'company_id' in record._fields \
+                else self.env.company
+        if body is False:
+            body = str(error) if error is not None else self._sire_log_body(response)
+        status = getattr(response, 'status_code', 0)
+        status = status if isinstance(status, int) else 0
+        self.env['l10n_pe.sire.api.log']._sire_log({
+            'company_id': company.id,
+            'user_id': self.env.uid,
+            'res_model': record._name if record else False,
+            'res_id': record.id if record else False,
+            'method': method,
+            'endpoint': urlparse(url).path.replace(urlparse(SIRE_BASE_URL).path, '') or url,
+            'url': url.split('?')[0],
+            'status_code': status,
+            'duration': time.monotonic() - started,
+            'is_error': error is not None or status not in (200, 201, 204),
+            'response': body if isinstance(body, str) else '',
+        })
+
+    @staticmethod
+    def _sire_log_body(response):
+        """Texto de la respuesta, salvo los archivos (ZIP o binarios)."""
+        if response is None:
+            return ''
+        content_type = str((response.headers or {}).get('Content-Type') or '')
+        content = response.content if isinstance(response.content, bytes) else b''
+        if 'json' in content_type or 'text' in content_type or not content:
+            return response.text if isinstance(response.text, str) else ''
+        return '(%s, %s bytes)' % (content_type or 'binario', len(content))
 
     def _sire_json(self, response):
         """Cuerpo JSON (dict) de una respuesta correcta de SUNAT.
@@ -174,13 +222,17 @@ class L10nPeSireApi(models.AbstractModel):
         if files:
             # requests arma el multipart y su frontera: no se fija a mano.
             request_headers.pop('Content-Type', None)
+        target = url or (SIRE_BASE_URL + endpoint)
+        started = time.monotonic()
         try:
             response = requests.request(
-                method, url or (SIRE_BASE_URL + endpoint), params=params or {},
+                method, target, params=params or {},
                 headers=request_headers, data=data, files=files,
                 timeout=SIRE_TIMEOUT)
         except requests.RequestException as error:
+            self._sire_log_call(method, target, started, error=error)
             raise UserError(_('No se pudo conectar con SUNAT: %s', error)) from error
+        self._sire_log_call(method, target, started, response=response)
         if response.status_code == 401:
             # Token revocado antes de caducar: se descarta para que la
             # próxima acción pida otro en vez de fallar hasta la caducidad.

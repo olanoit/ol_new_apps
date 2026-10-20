@@ -1,5 +1,6 @@
 from . import res_company
 from . import sire_api
+from . import sire_api_log
 from . import sire_compare_field
 from . import sire_mixin
 from . import sire_period_services
