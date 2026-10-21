@@ -203,9 +203,11 @@ producto se pida para dos niveles: lo validado llega a cada línea. Hasta que
 el almacén valida, la línea dice **Por despachar**.
 
 Si el tipo de operación del despacho está marcado **Despacho a obra por
-unidad**, la transferencia lleva el departamento que recibe. Cuando todas las
-líneas que despacha son de un mismo departamento, lo toma de ellas; si son de
-varios, el almacén lo elige antes de validar.
+unidad**, la transferencia toma el departamento de sus líneas cuando todas son
+de un mismo departamento. El departamento solo es obligatorio si el despacho
+lleva productos de módulo: el material de un requerimiento (tornillos,
+accesorios) se valida sin él, aunque se haya pedido para varios departamentos
+o para todo el piso.
 
 Para pegar en el bulto, imprima en la transferencia **Imprimir ‣ Vale de
 despacho** (la opción solo sale en transferencias con requerimiento). El vale

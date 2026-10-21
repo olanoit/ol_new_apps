@@ -198,9 +198,18 @@ class TestRequestDispatchApartmentV111(TestRequestScope):
         self.assertEqual(picking.state, 'done')
         self.assertEqual(request.line_ids.qty_dispatched, 1)
 
-    def test_two_apartments_still_ask(self):
+    def test_material_without_apartment_does_not_ask(self):
+        """Material de dos departamentos o de todo el piso: sin productos de
+        módulo, se valida sin departamento."""
+        for tasks in (self.space_501 | self.space_502, self.floor):
+            _request, picking = self._dispatch(tasks)
+            self.assertFalse(picking.construction_apartment_task_id)
+            picking.button_validate()
+            self.assertEqual(picking.state, 'done')
+
+    def test_module_products_still_ask(self):
         _request, picking = self._dispatch(self.space_501 | self.space_502)
-        self.assertFalse(picking.construction_apartment_task_id)
+        self.p_hinge.product_tmpl_id.construction_project_id = self.project
         with self.assertRaises(UserError):
             picking.button_validate()
         picking.construction_apartment_task_id = self.apt_502

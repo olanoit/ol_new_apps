@@ -308,9 +308,19 @@ class StockPicking(models.Model):
     # ------------------------------------------------------------------
     # Validar
     # ------------------------------------------------------------------
+    def _construction_has_module_products(self):
+        """La transferencia lleva productos de módulo (los que tienen «Obra del
+        módulo»), no solo material."""
+        self.ensure_one()
+        return any(move.product_id.product_tmpl_id.construction_project_id
+                   for move in self.move_ids if move.state != 'cancel')
+
     def button_validate(self):
         self._construction_fill_request_apartment()
-        missing = self.filtered(lambda p: p.construction_site_dispatch and (
+        # Sin productos de módulo (material de un requerimiento) no hay módulos
+        # que pasar a «En obra»: no se exige departamento (21-oct-2026).
+        missing = self.filtered(lambda p: p.construction_site_dispatch
+                                and p._construction_has_module_products() and (
             not p.construction_project_id or not p.construction_apartment_task_id))
         if missing:
             raise UserError(self.env._(

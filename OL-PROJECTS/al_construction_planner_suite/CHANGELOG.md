@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261021 — 21/10/2026
+
+- Pruebas del despacho por unidad con material sin departamento y con productos de módulo.
+
 ## 12.20261021 — 21/10/2026
 
 - Prueba del departamento tomado de las líneas del requerimiento en el despacho a obra por unidad.
