@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261022 — 22/10/2026
+
+- Ficha del producto en la caja con la información farmacéutica: condición de venta, composición, forma, vía, laboratorio, registro sanitario, DIGEMID, IGV, almacenamiento, presentaciones, lotes por vencimiento y equivalentes con precio y stock.
+- Filtro por principio activo en lugar del de etiquetas (ajuste por caja, activo por defecto).
+- Búsqueda de productos también por principio activo y sus sinónimos, en lo cargado y en el servidor.
+
 ## 7.20261019 — 19/10/2026
 
 - Precio por vencer: al vender un lote dentro de una escala, la línea recibe el descuento y la nota «Por vencer: vence dd/mm/aaaa»; los lotes vencidos no se ofrecen.

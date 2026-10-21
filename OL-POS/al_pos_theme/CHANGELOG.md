@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_theme.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261022 — 22/10/2026
+
+- Ajuste «Ocultar categorías de productos» por caja en Apariencia.
+
 ## 3.20261018 — 18/10/2026
 
 - El nombre de la marca en la barra (cuando la caja no tiene logo) va a la izquierda y con puntos suspensivos: un nombre largo ya no se corta por el principio.

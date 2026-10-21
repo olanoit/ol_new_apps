@@ -55,11 +55,11 @@ Cumplimiento (DS 020-2024-SA):
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/point_of_sale/static/description/icon.png',
-    'version': '7.20261019',
+    'version': '8.20261022',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
                 'point_of_sale', 'pos_hr'],
-    'data': ['report/pos_fraction_label.xml'],
+    'data': ['report/pos_fraction_label.xml', 'views/res_config_settings_views.xml'],
     'assets': {
         'point_of_sale._assets_pos': [
             'al_pharmacy_pos/static/src/app/**/*',

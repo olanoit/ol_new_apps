@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 
 PHARMACY_PRODUCT_FIELDS = [
     'pharmacy_ok', 'pharmacy_sale_condition', 'pharmacy_equivalence_key', 'pharmacy_product_type',
-    'pharmacy_composition', 'pharmacy_cold_chain', 'pharmacy_linked_company',
+    'pharmacy_composition', 'pharmacy_cold_chain', 'pharmacy_linked_company', 'pharmacy_ingredient_ids',
 ]
 
 

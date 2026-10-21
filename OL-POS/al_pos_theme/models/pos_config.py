@@ -120,6 +120,11 @@ class PosConfig(models.Model):
     al_theme_color_background = fields.Char(
         string="Color de fondo", default=AL_THEME_DEFAULTS["al_theme_color_background"],
     )
+    al_theme_hide_categories = fields.Boolean(
+        string="Ocultar categorías de productos",
+        help="Quita la barra de categorías de la pantalla de productos: el cajero busca o filtra "
+             "y el catálogo gana espacio.",
+    )
 
     @api.constrains(*AL_THEME_DEFAULTS)
     def _check_al_theme_colors(self):

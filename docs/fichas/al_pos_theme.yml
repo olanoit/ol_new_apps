@@ -234,6 +234,10 @@ faq:
       nombre, logo y colores.
 
 novedades:
+  - version: '4.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "Ajuste «Ocultar categorías de productos» por caja en Apariencia."
   - version: '3.20261018'
     fecha: 18/10/2026
     cambios:

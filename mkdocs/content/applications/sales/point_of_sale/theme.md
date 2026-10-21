@@ -25,7 +25,10 @@ contenido fiscal del ticket lo pone
     - **Nombre**, **Logo** e **Icono de pestaña**, en buena resolución;
     - los colores **Primario**, **Secundario**, **Acento** y **Fondo**, en
       formato `#RRGGBB`. Un valor no válido se rechaza.
-3. Cierre y vuelva a abrir el TPV para ver los cambios. No hace falta
+3. Opcional: **Ocultar categorías de productos** quita la barra de categorías
+   de la pantalla de productos; el cajero busca o filtra (en farmacia, por
+   principio activo) y el catálogo gana espacio.
+4. Cierre y vuelva a abrir el TPV para ver los cambios. No hace falta
    actualizar el módulo.
 
 ![Sección Apariencia con el nombre, el logo y los cuatro colores de la caja](theme/appearance-settings.png)

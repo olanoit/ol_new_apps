@@ -39,6 +39,12 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: '8.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "Ficha del producto en la caja con la información farmacéutica: condición de venta, composición, forma, vía, laboratorio, registro sanitario, DIGEMID, IGV, almacenamiento, presentaciones, lotes por vencimiento y equivalentes con precio y stock."
+      - "Filtro por principio activo en lugar del de etiquetas (ajuste por caja, activo por defecto)."
+      - "Búsqueda de productos también por principio activo y sus sinónimos, en lo cargado y en el servidor."
   - version: '7.20261019'
     fecha: 19/10/2026
     cambios:

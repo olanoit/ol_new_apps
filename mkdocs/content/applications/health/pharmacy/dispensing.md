@@ -21,6 +21,35 @@ modulos: [al_pharmacy_prescription, al_pharmacy_pos, al_l10n_pe_prescriber_cmp]
    arriba).
 5. Al cobrar, Odoo registra la **receta** y la **dispensación** de la venta.
 
+### Buscar y filtrar por principio activo
+
+- El **buscador** de la caja encuentra los productos también por su principio
+  activo y sus sinónimos: «paracetamol» trae el genérico, el jarabe, los
+  antigripales que lo contienen y las marcas (como Dolofen); «acetaminofén»
+  encuentra lo mismo.
+- Bajo las categorías, **Filtrar por principio activo** reemplaza al filtro por
+  etiquetas: escriba parte del nombre, elija uno o varios (cada uno muestra
+  cuántos productos lo llevan) y el catálogo muestra solo los productos que
+  contienen alguno. **Limpiar** quita el filtro.
+
+![Filtro por principio activo con amoxicilina elegida](dispensing/ingredient-filter.png)
+
+Se activa por caja en **Punto de venta ‣ Configuración ‣ Ajustes ‣ Interfaz
+del PdV ‣ Filtrar por principio activo** (activo por defecto).
+
+### Información del producto
+
+El botón **i** de cada producto abre su ficha con la **información
+farmacéutica** primero: condición de venta, principio activo, forma, vía,
+laboratorio, registro sanitario y su vencimiento, código DIGEMID, régimen del
+IGV, condiciones de almacenamiento y ubicación; las **presentaciones** con su
+precio; los **lotes disponibles** del local ordenados por vencimiento (los que
+vencen en 90 días o menos, resaltados); los **equivalentes** con su precio y
+existencias (al tocarlos, la caja los busca), y las indicaciones,
+contraindicaciones y efectos adversos.
+
+![Ficha del producto con la información farmacéutica](dispensing/product-info.png)
+
 !!! tip "Consejo"
     Active **Iniciar sesión con empleados** en el punto de venta: la caja sabe
     quién atiende y si es químico farmacéutico.

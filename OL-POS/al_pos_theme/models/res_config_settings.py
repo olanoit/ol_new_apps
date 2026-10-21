@@ -13,3 +13,5 @@ class ResConfigSettings(models.TransientModel):
     pos_al_theme_color_secondary = fields.Char(related="pos_config_id.al_theme_color_secondary", readonly=False)
     pos_al_theme_color_accent = fields.Char(related="pos_config_id.al_theme_color_accent", readonly=False)
     pos_al_theme_color_background = fields.Char(related="pos_config_id.al_theme_color_background", readonly=False)
+    pos_al_theme_hide_categories = fields.Boolean(
+        related="pos_config_id.al_theme_hide_categories", readonly=False)

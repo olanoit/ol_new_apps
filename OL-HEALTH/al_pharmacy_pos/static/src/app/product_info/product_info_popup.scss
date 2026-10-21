@@ -1,0 +1,92 @@
+.alph-info {
+    .alph-info__grid {
+        display: grid;
+        grid-template-columns: minmax(150px, max-content) 1fr;
+        gap: 0.35rem 1rem;
+    }
+    .alph-info__label {
+        color: #64748b;
+        font-weight: 600;
+    }
+    .alph-info__value {
+        color: inherit;
+    }
+    .alph-info__subtitle {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .alph-info__text {
+        white-space: pre-line;
+    }
+    .alph-pill {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        background: var(--alpt-primary-subtle, #eef2ff);
+    }
+    .alph-lots {
+        td, th {
+            padding: 0.3rem 0.5rem;
+        }
+        .alph-lot--near td {
+            background: #fff7e6;
+        }
+        .alph-lot--expired td {
+            background: #fdecec;
+            text-decoration: line-through;
+        }
+    }
+    .alph-equivalents {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 0.5rem;
+    }
+    .alph-equivalent {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+        text-align: left;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        background: transparent;
+        padding: 0.5rem 0.75rem;
+        &:hover {
+            border-color: var(--alpt-primary, #2563eb);
+        }
+        .alph-equivalent__name {
+            font-weight: 600;
+        }
+        .alph-equivalent__price {
+            font-weight: 700;
+            color: var(--alpt-primary, #2563eb);
+        }
+    }
+}
+.alph-badge {
+    display: inline-block;
+    border-radius: 6px;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background: #2e9e4f;
+    &.alph-badge--prescription {
+        background: #1d2733;
+    }
+    &.alph-badge--controlled {
+        background: #b71c1c;
+    }
+    &.alph-badge--cold {
+        background: #0b8dcf;
+    }
+    &.alph-badge--warning {
+        background: #f29e1f;
+    }
+    &.alph-badge--generic {
+        background: transparent;
+        color: #2e9e4f;
+        border: 2px solid #2e9e4f;
+    }
+}
