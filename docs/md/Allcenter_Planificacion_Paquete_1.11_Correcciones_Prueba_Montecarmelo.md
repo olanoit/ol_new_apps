@@ -342,7 +342,7 @@ Las siete correcciones están desarrolladas en el commit `12b16572` (rama 19.0),
 | M111-03 | Órdenes de armado y de corte con orden de trabajo en su estación; lista con operaciones a mano conservada; etapa sin estación, lista sin operaciones | **Cumple** (prueba automática y E-03 en dev1 y dev2: 27 de 27 órdenes con su orden de trabajo) |
 | M111-04 | Ninguna orden «excede» sin cambios; el 3103002 de C07 igual en las dos columnas; un exceso real de una unidad se sigue marcando | **Cumple** (E-03: 0 excesos en 54 órdenes; 3103002 de C07: 0.21 y 0.21. El exceso real está cubierto por prueba automática) |
 | M111-05 | Con base «por orden», la solicitud muestra el % de la orden; con «por material», el mayor de las líneas | **Cumple** (prueba automática). En la E-03 ninguna orden pidió aprobación |
-| M111-06 | RQO por 74 y luego por 20: presupuestado 54, ya pedido 74, saldo −20, exceso 20 y 37.04 % | **Cumple** en dev1 con RQO/2026/00017 y 00018 (ver «Prueba de M111-06 en dev1») y en prueba automática |
+| M111-06 | RQO por 74 y luego por 20: presupuestado 54, ya pedido 74, saldo −20, exceso 20 y 37.04 % | **Cumple** en dev1 con RQO/2026/00017 y 00018, en dev2 con RQO/2026/00007 y 00008 (ver «Prueba de M111-06 en dev1 y dev2») y en prueba automática |
 | M111-07 | Vale desde BRE/DO/00016 como el ejemplo; después de la compra; desde el requerimiento sin «En este bulto»; solo en transferencias con requerimiento; el vale actual no cambia | **Cumple** (prueba automática; en dev1 el vale de RQO/2026/00023 desde BRE/DO/00016 da «Va completo en este bulto» para los tapatornillos y «En compra · PR00005» para los burletes, sin montos) |
 
 ### Prueba E-03 repetida (21-oct)
@@ -364,8 +364,9 @@ El piso 3 de cada obra ya estaba fabricado y despachado. Por eso se copió como 
 
 Frente a la corrida del 19-oct: aquella dio excesos falsos de céntimos en el corte de las cocinas y ninguna orden de trabajo. Esta no dio excesos, y las 54 órdenes pasaron por su estación.
 
-### Prueba de M111-06 en dev1 (21-oct)
+### Prueba de M111-06 en dev1 y dev2 (21-oct)
 
+**dev1.** 
 RQO/2026/00017 (74 tornillos 4x30 para instalación, ya aprobada) no se tocó. RQO/2026/00018 seguía «Por aprobar» con la solicitud del 19-oct, calculada antes de la corrección. Se pasó a borrador, lo que canceló esa solicitud, y se volvió a enviar con el mismo usuario.
 
 | Cifra | Solicitud del 19-oct | Solicitud del 21-oct | Criterio |
@@ -380,6 +381,20 @@ RQO/2026/00017 (74 tornillos 4x30 para instalación, ya aprobada) no se tocó. R
 - El pedido sigue con una sola línea del plan asignada (20 unidades); las cifras salen de las 7 líneas del material bajo su nivel y su etapa.
 - La solicitud usa el plan PLR/2026/00006 (v2), que reemplazó a PLR/2026/00004 en la E-03: las asignaciones pasaron a la v2 y las cifras no cambian.
 - La solicitud quedó pendiente, a cargo de Kevin Jimenez o Annabelees León.
+
+**dev2.** No tenía RQO/2026/00017 ni 00018: la prueba del 19-oct se hizo solo en dev1. Se armó el mismo caso en ZZMONTEC-40-26: tornillos 4x30 (3105097) para la instalación de la cocina del Dpto 301, con 54 presupuestados en 7 líneas del plan PLR/2026/00007.
+
+| Cifra | RQO/2026/00007 (74) | RQO/2026/00008 (20) | Criterio del segundo |
+| --- | --- | --- | --- |
+| Presupuestado | 54 | 54 | 54 |
+| Ya pedido | 0 | 74 | 74 |
+| Saldo | 54 | −20 | −20 |
+| Exceso | 20 | 20 | 20 |
+| Exceso % | 37.04 | 37.04 | 37.04 |
+| Estado | Aprobado por Annabelees | Pendiente (Annabelees) | |
+
+- RQO/2026/00008 tiene asignada una sola línea del plan; sus cifras salen de las 7 líneas del nivel.
+- Los números 00005 y 00006 los consumió una simulación previa sin guardar, porque la numeración no se revierte.
 
 ### Decidido el 21-oct-2026 [D]
 
