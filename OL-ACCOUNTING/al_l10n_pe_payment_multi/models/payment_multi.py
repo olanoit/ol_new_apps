@@ -204,6 +204,9 @@ class L10nPePaymentMulti(models.Model):
         if move_line.account_id in self._l10n_pe_excluded_accounts():
             return _('%s: la detracción se deposita en el Banco de la Nación con «Registrar depósito».',
                      move.display_name)
+        reason = move_line._l10n_pe_payment_block_reason()
+        if reason:
+            return reason
         if 'l10n_pe_retention_applies' in move._fields and move.l10n_pe_retention_applies:
             return _('%s está sujeta a retención del IGV: páguela con «Registrar pago», que emite el '
                      'comprobante de retención del proveedor.', move.display_name)

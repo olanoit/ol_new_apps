@@ -187,3 +187,24 @@ class TestLetterBankFlow(TransactionCase):
         partner, currency, move_type, state, total = groups[0]
         self.assertEqual((partner, move_type, state), (self.partner, 'out_invoice', 'redeemed'))
         self.assertAlmostEqual(total, 1000.0)
+
+    # ------------------------------------------------------------------
+    # Letras en el banco: no se cobran con un pago directo
+    # ------------------------------------------------------------------
+    def test_banked_letter_cannot_be_paid_directly(self):
+        """En cartera se puede cobrar con un pago; enviada al banco la cobra el
+        banco y el asistente de pago lo impide."""
+        from odoo.exceptions import UserError
+        letter = self._redeemed_letter(letters=1, amount=1000.0)
+        line = letter.letter_line_ids
+        self.assertFalse(line._l10n_pe_open_line()._l10n_pe_payment_block_reason(), 'en cartera')
+        self._send_to_bank(letter, date(2026, 8, 20))
+        bank_line = line._l10n_pe_open_line()
+        self.assertIn('Cobro del banco', bank_line._l10n_pe_payment_block_reason())
+        journal = self.env['account.journal'].search([
+            ('company_id', '=', self.company.id), ('type', '=', 'bank')], limit=1)
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move.line', active_ids=bank_line.ids).create({'journal_id': journal.id})
+        self.assertIn('l10n_pe_payment_block', wizard.actionable_errors)
+        with self.assertRaisesRegex(UserError, 'la cobra el banco'):
+            wizard._create_payments()

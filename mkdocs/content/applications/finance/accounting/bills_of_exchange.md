@@ -198,6 +198,7 @@ solo registro; los canjes de origen pasan a **Historial de canje**.
 | No aparece ningún diario en el canje | Solo se ofrecen diarios con «letra» y «cobrar» o «pagar» en el nombre | Renombrar o crear el diario |
 | No aparece la factura | Solo se ofrecen apuntes publicados, con saldo, del socio y de la moneda del diario | Revisar el socio, la moneda y el tipo de documento |
 | «No se ha configurado la cuenta» al enviar al banco | Falta la fila de cuenta para ese tipo de letra y moneda | Completar **Cuentas de letras** |
+| Se intenta cobrar con **Pagar**, un pago múltiple o una aplicación de documentos una letra que está en el banco (cobranza libre o descuento) | Bloqueado: la letra la cobra el banco | **Cobro del banco** en el canje cuando el banco abone, o **Protesto** si no se pagó (protestada, se puede cobrar directo) |
 
 ## Datos de demostración
 

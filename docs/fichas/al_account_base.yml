@@ -324,6 +324,10 @@ faq:
       dependencia y se instala con ellos.
 
 novedades:
+  - version: 18.20261013
+    fecha: 21/10/2026
+    cambios:
+      - "Gancho común de bloqueo: los saldos que cobra un tercero (letra en el banco, factura cedida con recurso) no se pagan con el asistente de pago, que lo avisa al abrirse."
   - version: 17.20261013
     fecha: 13/10/2026
     cambios:

@@ -6,3 +6,4 @@ from . import factoring
 from . import account_move
 from . import cavali
 from . import al_pe_demo
+from . import account_move_line

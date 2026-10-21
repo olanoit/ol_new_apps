@@ -105,6 +105,7 @@ asiento inverso y vuelve a abrir los documentos.
 | Situación | Qué pasa |
 |---|---|
 | Documento de otro socio | La aplicación se rechaza |
+| Letra en el banco o factura cedida con recurso | No se carga y la aplicación se rechaza: la cobra el banco o el factor |
 | Importe mayor que el saldo | Se rechaza |
 | Lado deudor distinto del acreedor | Se rechaza (solo se admiten los céntimos del redondeo, que van a diferencia de cambio) |
 | Anticipo sin cuenta configurada | No se puede confirmar |

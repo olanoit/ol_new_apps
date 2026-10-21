@@ -374,7 +374,7 @@ credenciales. En **Ajustes ‣ Perú ‣ CAVALI (facturas negociables)**:
 | Cliente agente de retención | El nominal excluye el 3 % | Registrar la retención sufrida con el comprobante del cliente |
 | Nominal mayor que el saldo de la factura | Error al ceder | Corregir el valor nominal |
 | Intereses y comisiones mayores que el adelanto | Error en el desembolso | Revisar la liquidación del factor |
-| Se intenta **Pagar** una factura cedida | Bloqueado | Registrar el cobro desde la operación |
+| Se intenta **Pagar** una factura cedida con recurso (desde la factura, sus apuntes, un pago múltiple o una aplicación de documentos) | Bloqueado | Registrar el cobro desde la operación |
 | El cliente pagó a la empresa | El adelanto se debe al factor | **Cobro recibido por la empresa** y luego **Transferir al factor** |
 | «La línea de … es …» o «El límite por cliente …» | La cesión supera la línea de crédito o el límite por cliente | Esperar cobros, ampliar la línea o ceder menos facturas |
 | «No se transfiere sin conformidad» | La factura no tiene conformidad expresa ni presunta | Esperar los 8 días o registrar la conformidad expresa |

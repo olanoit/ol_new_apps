@@ -1,6 +1,8 @@
 """Pago múltiple: un solo pago para documentos de varios socios, anticipos y otros pagos."""
 from datetime import date
 
+from unittest.mock import patch
+
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
@@ -266,3 +268,21 @@ class TestPaymentMulti(TransactionCase):
         self.assertIn('Varios (ver detalle)', html)
         self.assertIn('PROVEEDOR DOS SAC', html)
         self.assertEqual(multi.action_print_receipt()['type'], 'ir.actions.report')
+
+    def test_document_held_by_a_third_party_is_refused(self):
+        """Letra en el banco o factura cedida con recurso (gancho de al_account_base)."""
+        held = self._document('in_invoice', self.supplier_a, 100)
+        free = self._document('in_invoice', self.supplier_b, 100)
+        AML = self.env.registry['account.move.line']
+        original = AML._l10n_pe_payment_block_reason
+
+        def block(line):
+            return 'En el banco' if line.move_id == held else original(line)
+        with patch.object(AML, '_l10n_pe_payment_block_reason', block):
+            multi = self._multi()
+            multi.partner_ids = self.supplier_a | self.supplier_b
+            multi.action_load_documents()
+            self.assertEqual(multi.line_ids.move_id, free, 'no se carga')
+            multi.line_ids = [Command.create(self._doc_line(held))]
+            with self.assertRaisesRegex(UserError, 'En el banco'):
+                multi.action_post()

@@ -1,5 +1,6 @@
 """Anticipos (122/422), aplicación a facturas, compensación y reversión."""
 from datetime import date
+from unittest.mock import patch
 
 from odoo import Command
 from odoo.exceptions import UserError
@@ -216,3 +217,23 @@ class TestPaymentApplication(TransactionCase):
         lines = self.env['account.move.line'].search(action['domain'])
         self.assertIn(advance.move_id.line_ids.filtered(lambda l: l.account_id == self.acc_122), lines)
         self.assertFalse(lines.filtered(lambda l: l.account_id == self.acc_422))
+
+    def test_document_held_by_a_third_party_is_refused(self):
+        """Letra en el banco o factura cedida con recurso (gancho de al_account_base)."""
+        self._advance('supplier', 500)
+        bill = self._document('in_invoice', 500)
+        AML = self.env.registry['account.move.line']
+        original = AML._l10n_pe_payment_block_reason
+
+        def block(line):
+            return 'Cedida al factor' if line.move_id == bill else original(line)
+        with patch.object(AML, '_l10n_pe_payment_block_reason', block):
+            application = self.env['l10n_pe.payment.application'].create({
+                'partner_id': self.partner.id, 'application_type': 'advance', 'date': D2})
+            application.action_load_documents()
+            self.assertNotIn(bill, application.line_ids.move_id, 'no se carga')
+            application.line_ids = [Command.create({'move_line_id': bill.line_ids.filtered(
+                lambda l: l.account_id.account_type == 'liability_payable').id, 'amount': 500})]
+            application.action_distribute()
+            with self.assertRaisesRegex(UserError, 'Cedida al factor'):
+                application.action_post()

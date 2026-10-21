@@ -32,7 +32,7 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Cierre de caja diario por sucursal y método de pago | `close.sale.report` | Solo POS | `al_l10n_pe_cash_closing` | **Cubierto** (P4) |
 | Proyección de cobranza / flujo de caja | `payment_projection` (3 900 líneas) | Flujo de efectivo histórico (EE) | `al_l10n_pe_cash_forecast` | **Cubierto** (P5) |
 | Plazos de pago: monto fijo en soles con factura en USD | `dv_..._payment_term_foreign_currency` | Plazos rediseñados en 17+ | `al_l10n_pe_payment_term_currency` | **Cubierto** (P7) |
-| Bloqueo de pagos de letras ya bancarizadas | `inveragro_letter_validation` | — | Verificar en letras/factoring | P9 |
+| Bloqueo de pagos de letras ya bancarizadas | `inveragro_letter_validation` | — | Letras y factoring (gancho en `al_account_base`) | **Cubierto** (P9) |
 | Pagos recurrentes | `om_recurring_payments` | — | — | Baja prioridad |
 | Importación de extractos | `om_account_bank_statement_import` | CSV/OFX/CAMT (EE) | — | Formatos de bancos PE: P11 |
 | Ticket 80 mm de factura | `invoice_ticket.xml` | — | `al_l10n_pe_invoice` (ticket) | Cubierto |
@@ -141,6 +141,11 @@ gasto sin comprobante; o un depósito de cliente que cubre facturas de varios so
   compra/venta, con la diferencia a 776/676.
 
 ### P9. Bloqueo de pagos de documentos bancarizados — prioridad baja
+
+> **Hecho (21/10/2026)**. Verificado: el factoring ya bloqueaba «Pagar» en la factura cedida con recurso;
+> las letras en el banco no tenían bloqueo. Gancho `account.move.line._l10n_pe_payment_block_reason()` en
+> `al_account_base`, implementado por letras (cobranza libre/descuento) y factoring (con recurso, cedida) y
+> consultado por el asistente de pago (aviso + bloqueo), el pago múltiple y la aplicación de documentos.
 
 - Impedir registrar un pago directo a una letra o factura negociable que ya está en el banco
   (cobranza libre/descuento): debe cancelarse con el abono del banco. Verificar si letras y

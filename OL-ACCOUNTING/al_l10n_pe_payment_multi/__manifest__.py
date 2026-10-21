@@ -21,7 +21,7 @@ Pago múltiple
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/account/static/description/icon.png',
-    'version': '1.20261021',
+    'version': '2.20261021',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_payment_application'],

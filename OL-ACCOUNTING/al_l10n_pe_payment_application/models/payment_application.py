@@ -103,6 +103,8 @@ class L10nPePaymentApplication(models.Model):
             lines = self.env['account.move.line'].search(
                 application._l10n_pe_open_lines_domain() + [('id', 'not in', present.ids)],
                 order='date_maturity, date, id')
+            # Letras en el banco y facturas cedidas con recurso: no se aplican.
+            lines = lines.filtered(lambda l: not l._l10n_pe_payment_block_reason())
             application.line_ids = [Command.create({'move_line_id': line.id}) for line in lines]
         return True
 
@@ -167,6 +169,9 @@ class L10nPePaymentApplication(models.Model):
                 raise UserError(_('%s es de otro socio.', move_line.move_id.display_name))
             if move_line.reconciled or move_line.parent_state != 'posted':
                 raise UserError(_('%s ya no está abierto.', move_line.move_id.display_name))
+            reason = move_line._l10n_pe_payment_block_reason()
+            if reason:
+                raise UserError(reason)
             if line.amount < 0 or line.currency_id.compare_amounts(line.amount, line.residual) > 0:
                 raise UserError(_(
                     '%(doc)s: el importe a aplicar (%(amount)s) supera su saldo (%(residual)s).',

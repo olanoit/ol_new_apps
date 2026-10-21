@@ -79,6 +79,7 @@ un pago múltiple no se anula desde el propio pago, solo desde su pago múltiple
 
 | Situación | Qué pasa |
 |---|---|
+| Letra en el banco o factura cedida con recurso | No se carga; si se agrega a mano, se rechaza: la cobra el banco o el factor (se registra desde el canje de letras o la operación de factoring) |
 | Factura sujeta a retención del IGV | Se rechaza: páguela con **Registrar pago**, que emite el comprobante de retención de ese proveedor |
 | Cuota de detracción (cuenta de detracciones) | No se carga: se deposita en el Banco de la Nación con **Registrar depósito** ([Detracciones](../fiscal_localizations/peru/detractions.md)) |
 | Importe mayor que el saldo | Se rechaza |

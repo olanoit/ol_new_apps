@@ -364,3 +364,25 @@ class TestFactoring(FactoringCommon):
         self.assertAlmostEqual(self._balance(operation, loss), 40.0, places=2,
                                msg='800 USD × (3,80 − 3,75)')
         self._assert_balanced(operation)
+
+    def test_with_recourse_receivable_is_blocked_everywhere(self):
+        """Cedida con recurso, el saldo de la factura no se paga desde sus apuntes
+        (pago, pago múltiple, aplicación); recomprada, vuelve a la empresa."""
+        invoice = self._invoice(1200.0)
+        operation = self._operation(invoice, modality='with_recourse', percent=80.0)
+        operation.action_assign()
+        receivable = invoice.line_ids.filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable' and not l.reconciled)
+        self.assertIn('Cobro recibido por la empresa', receivable._l10n_pe_payment_block_reason())
+        wizard = self.env['account.payment.register'].with_context(
+            active_model='account.move.line', active_ids=receivable.ids).create({'journal_id': self.bank_journal.id})
+        with self.assertRaises(UserError):
+            wizard._create_payments()
+        self._wizard(operation, 'disburse')
+        self._wizard(operation, 'repurchase')
+        self.assertFalse(receivable._l10n_pe_payment_block_reason(), 'recomprada: la cobra la empresa')
+
+    def test_without_recourse_does_not_block(self):
+        invoice = self._invoice(500.0)
+        self._operation(invoice).action_assign()
+        self.assertFalse(any(invoice.line_ids.mapped(lambda l: l._l10n_pe_payment_block_reason())))

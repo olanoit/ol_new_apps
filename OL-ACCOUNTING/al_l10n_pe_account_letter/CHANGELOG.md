@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261018 — 21/10/2026
+
+- Una letra en el banco (cobranza libre o descuento) ya no se puede cobrar con un pago directo, un pago múltiple ni una aplicación de documentos: se registra con «Cobro del banco» o «Protesto».
+
 ## 21.20261018 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.

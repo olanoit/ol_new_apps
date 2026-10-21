@@ -630,6 +630,10 @@ faq:
       debe ser igual o posterior a la fecha de canje.
 
 novedades:
+  - version: 22.20261018
+    fecha: 21/10/2026
+    cambios:
+      - "Una letra en el banco (cobranza libre o descuento) ya no se puede cobrar con un pago directo, un pago múltiple ni una aplicación de documentos: se registra con «Cobro del banco» o «Protesto»."
   - version: 21.20261018
     fecha: 18/10/2026
     cambios:

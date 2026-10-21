@@ -31,11 +31,11 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](al_account_base/) | 17.20261013 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_base](al_account_base/) | 18.20261013 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
 [al_account_destinations](al_account_destinations/) | 12.20261012 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](al_account_move_name_sequence/) | 13.20261008 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](al_account_payments/) | 10.20261012 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
-[al_l10n_pe_account_letter](al_l10n_pe_account_letter/) | 21.20261018 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
+[al_l10n_pe_account_letter](al_l10n_pe_account_letter/) | 22.20261018 | OPL-1 | Canje, refinanciación y gestión de letras de cambio para clientes y proveedores (Perú).
 [al_l10n_pe_batch_payment](al_l10n_pe_batch_payment/) | 5.20261018 | OPL-1 | Lotes de pago a proveedores con el archivo TXT de BCP, BBVA, Interbank, Scotiabank y Banco de la Nación: cuenta o CCI del proveedor, controles y totales del archivo.
 [al_l10n_pe_cash_closing](al_l10n_pe_cash_closing/) | 1.20261021 | OPL-1 | Cierre diario de cada caja: saldo según libros, cobros y pagos por medio de pago, arqueo por denominación, asiento del faltante o sobrante y bloqueo del día cerrado.
 [al_l10n_pe_cash_forecast](al_l10n_pe_cash_forecast/) | 1.20261021 | OPL-1 | Proyección de cobros y pagos por semana o mes desde los saldos de bancos, las cuentas por cobrar y por pagar, cheques, depósitos a plazo y partidas manuales, con escenario editable y comparación con lo real.
@@ -45,7 +45,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_currency](al_l10n_pe_currency/) | 15.20261012 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
 [al_l10n_pe_detraction](al_l10n_pe_detraction/) | 25.20261018 | OPL-1 | Detracciones SUNAT (SPOT): catálogo 54 administrable con porcentajes y montos mínimos, cálculo automático en facturas, depósito/constancia y enlace con el PLE 8.1.
 [al_l10n_pe_exchange_closure](al_l10n_pe_exchange_closure/) | 12.20261018 | OPL-1 | Ajuste mensual por diferencia de cambio de las partidas monetarias en moneda extranjera: T.C. compra para activos y T.C. venta para pasivos (art. 61 LIR / art. 34 Reglamento).
-[al_l10n_pe_factoring](al_l10n_pe_factoring/) | 9.20261018 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
+[al_l10n_pe_factoring](al_l10n_pe_factoring/) | 10.20261018 | OPL-1 | Cesión de facturas a un factor con y sin recurso: asientos de cesión, desembolso, devengo de intereses, cobro del factor y recompra, con cuentas del PCGE configurables.
 [al_l10n_pe_financial_reports](al_l10n_pe_financial_reports/) | 3.20261012 | OPL-1 | Estados financieros peruanos sobre el motor de informes de Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al Balance y el Estado de resultados, en la app Perú.
 [al_l10n_pe_fourth_category](al_l10n_pe_fourth_category/) | 4.20261018 | OPL-1 | Recibos por honorarios: retención del 8 % sobre el tope, suspensión (Formulario 1609), reporte y archivo .4ta para la PLAME y certificado anual.
 [al_l10n_pe_import_dua](al_l10n_pe_import_dua/) | 4.20261018 | OPL-1 | La DUA (tipo 50) como documento de compra: IGV e IPM con crédito fiscal, derechos aduaneros, percepción aduanera y costos en destino del producto.
@@ -53,8 +53,8 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_lease](al_l10n_pe_lease/) | 5.20261018 | OPL-1 | Contratos de alquiler como arrendatario según NIIF 16: pasivo a valor presente, derecho de uso con su depreciación, cuotas del arrendador, remedición, terminación anticipada, contratos en dólares e impuesto diferido.
 [al_l10n_pe_monthly_tax](al_l10n_pe_monthly_tax/) | 3.20261012 | OPL-1 | Régimen tributario, pago a cuenta del impuesto a la renta y resumen del Formulario Virtual 621 con saldo a favor, percepciones y retenciones.
 [al_l10n_pe_multicurrency_revaluation](al_l10n_pe_multicurrency_revaluation/) | 6.20261012 | OPL-1 | Revalúa cada cuenta con el tipo de cambio SUNAT de compra o de venta en el informe de ganancias/pérdidas de moneda no realizadas, y muestra el T.C. aplicado en cada línea.
-[al_l10n_pe_payment_application](al_l10n_pe_payment_application/) | 1.20261021 | OPL-1 | Anticipos de clientes (122) y a proveedores (422) como pagos, su aplicación a facturas, compensaciones entre cuentas por cobrar y por pagar y control de anticipos pendientes.
-[al_l10n_pe_payment_multi](al_l10n_pe_payment_multi/) | 1.20261021 | OPL-1 | Un solo pago o cobro bancario que cancela documentos de varios socios, entrega anticipos y registra otros pagos sin comprobante.
+[al_l10n_pe_payment_application](al_l10n_pe_payment_application/) | 2.20261021 | OPL-1 | Anticipos de clientes (122) y a proveedores (422) como pagos, su aplicación a facturas, compensaciones entre cuentas por cobrar y por pagar y control de anticipos pendientes.
+[al_l10n_pe_payment_multi](al_l10n_pe_payment_multi/) | 2.20261021 | OPL-1 | Un solo pago o cobro bancario que cancela documentos de varios socios, entrega anticipos y registra otros pagos sin comprobante.
 [al_l10n_pe_payment_receipt](al_l10n_pe_payment_receipt/) | 2.20261021 | OPL-1 | Recibo de ingreso y comprobante de egreso numerados con serie propia por diario, con el detalle de lo pagado, el monto en letras y las firmas.
 [al_l10n_pe_payment_term_currency](al_l10n_pe_payment_term_currency/) | 1.20261021 | OPL-1 | Plazos de pago con cuotas de importe fijo en soles que se convierten al tipo de cambio de la factura cuando esta es en dólares u otra moneda.
 [al_l10n_pe_perception](al_l10n_pe_perception/) | 4.20261018 | OPL-1 | Régimen de percepciones del IGV: comprobante de percepción electrónico (tipo 40) como agente, percepciones que nos cobran para el F.V. 621 y resumen del F.V. 697.

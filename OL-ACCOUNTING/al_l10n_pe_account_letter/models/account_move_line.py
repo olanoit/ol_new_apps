@@ -21,3 +21,19 @@ class AccountMoveLine(models.Model):
         string='N.º de documento',
         related='partner_id.vat',
     )
+
+    def _l10n_pe_payment_block_reason(self):
+        """Una letra en el banco (cobranza libre o descuento) la cobra el banco:
+        se cancela con «Cobro del banco» (o la liquidación del descuento), no
+        con un pago directo. Protestada, vuelve a la empresa y se puede cobrar."""
+        letter_line = self.l10n_pe_letter_line_id
+        if (letter_line and letter_line.move_invoice_type == 'out_invoice'
+                and letter_line.letter_type in ('billing', 'discount') and not self.reconciled):
+            kind = dict(letter_line._fields['letter_type']._description_selection(self.env))[letter_line.letter_type]
+            return self.env._(
+                'La letra %(letter)s está en %(bank)s (%(kind)s): la cobra el banco. Regístrela con '
+                '«Cobro del banco» en el canje de letras cuando el banco abone, o con «Protesto» si '
+                'no se pagó.',
+                letter=letter_line.nro_letter or letter_line.display_name,
+                bank=letter_line.bank_id.name or self.env._('el banco'), kind=kind.lower())
+        return super()._l10n_pe_payment_block_reason()

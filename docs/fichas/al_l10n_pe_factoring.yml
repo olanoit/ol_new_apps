@@ -260,6 +260,10 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: 10.20261018
+    fecha: 21/10/2026
+    cambios:
+      - "Una factura cedida con recurso tampoco se puede pagar desde sus apuntes, un pago múltiple ni una aplicación de documentos."
   - version: 9.20261018
     fecha: 18/10/2026
     cambios:

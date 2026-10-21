@@ -72,6 +72,10 @@ faq:
       factura.
 
 novedades:
+  - version: 2.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "No carga ni aplica letras en el banco ni facturas cedidas con recurso."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

@@ -97,6 +97,10 @@ faq:
       Sí: seleccione las facturas y elija Acción ▸ Pago múltiple.
 
 novedades:
+  - version: 2.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "No carga ni acepta letras en el banco ni facturas cedidas con recurso."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:
