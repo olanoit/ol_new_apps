@@ -413,11 +413,27 @@ Al validar BRE/DO/00021 (dev1, RQO/2026/00018) y BRE/DO/00007 (dev2, RQO/2026/00
 
 Corrección (decisión de Vicente del 21-oct-2026): el despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando todas son del mismo departamento; lo pone al confirmar la transferencia y, si falta, al validarla. Con líneas de varios departamentos se sigue pidiendo. Va en `al_construction_planner_furniture` 9.20261021 (commit `c76ad7f3`), con su prueba en la suite, y está desplegada en dev1 y dev2. Se comprobó con despachos reales: BRE/DO/00023 en dev1 y BRE/DO/00008 en dev2 tomaron el Dpto 301 al confirmarse y se validaron sin escribirlo.
 
+### Despachos con el tipo «Control de calidad» en dev1 (21-oct)
+
+Las transferencias BRE/QC/00001 a 00006 son despachos de requerimientos procesados el 18 y 19 de octubre. En ese momento, el tipo de despacho de la compañía era «ALMACEN BREÑA: Control de calidad», una operación interna de Azcona/Entrada a Azcona/Control de calidad. Desde el 18-oct a las 21:18 el tipo es «ALMACEN BREÑA: Despacho a obra» (BRE/DO), marcado «Despacho a obra por unidad». Se revisó la configuración y está bien.
+
+- **RQO/2026/00021 (ZZMONTEC2-41-26):**
+  - BRE/QC/00005 se validó con lo reservado.
+  - Para BRE/QC/00006 se hizo la compra PR00004 → OC P00009 a RODAS IMPORT E.I.R.L., con el tirador a S/ 4.50 y el tornillo 3.5x17 a S/ 0.00, porque no tiene precio conocido. Se recibió en BRE/IN/02170 y luego se validó la transferencia.
+  - El requerimiento quedó «Hecho».
+- **Pendientes pasados a BRE/DO:** se cancelaron BRE/QC/00002 (RQO/2026/00004, ZZMONTEC-40-26) y BRE/QC/00004 (RQO/2026/00010, ACACIAS353-24-26). Sus movimientos se crearon en BRE/DO/00026 y BRE/DO/00027, en espera de las compras PR00002 y PR00003, que aún no tienen orden de compra.
+  - El enlace con la compra pasó a los movimientos nuevos, así que OCA no dejó avisos de abastecimiento cancelado.
+  - Lo ya despachado (BRE/QC/00001) no cambió.
+
+### Decidido el 21-oct-2026 [D]
 
 - **% de la solicitud del plan:** muestra 0 %. Con la primera versión de M111-05 mostraba lo que sube frente a la versión vigente: 99.93 % en la v2 de la E-03, que agrega un piso entero. Corregido en `al_construction_planner_approvals` 5.20261021.
 
 ### Para decidir
 
+- **Requerimiento sin departamento en un despacho por unidad.** RQO/2026/00004 se pidió para todo el Piso 03 y RQO/2026/00010 no tiene tarea. Al validar BRE/DO/00026 y 00027, el almacén tendrá que elegir el departamento, y si el material va a varios, repartirlo en varios despachos. Hay dos caminos:
+  - pedir siempre el material por departamento o ambiente;
+  - que el despacho por unidad no exija departamento cuando no lleva productos de módulo.
 - **Estación de armado de Breña:** Azcona o Castrovirreyna 2.º piso, a confirmar por Producción.
 
 ## Fuentes
