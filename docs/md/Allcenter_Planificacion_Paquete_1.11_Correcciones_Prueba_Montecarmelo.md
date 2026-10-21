@@ -1,6 +1,6 @@
 # Planificación de obra — correcciones de la prueba Montecarmelo (paquete 1.11)
 
-19-oct-2026 · versión 1 · @Vicente · Para Cristóbal Och
+19-oct-2026 · versión 2 (21-oct-2026: resultados del desarrollo y de la prueba) · @Vicente · Para Cristóbal Och
 
 ## Objetivo y alcance
 
@@ -10,7 +10,8 @@ Marcas de fuente:
 - [V] leído o probado en `newallcenter_dev_1` el 19-oct-2026;
 - [C] código leído en `olanoit/ol_new_apps`, rama 19.0: commit `38b5ada` para M111-01 y commit `2ef3210` (paquete 1.10 publicado) desde M111-02;
 - [D] decisión de Vicente, con fecha;
-- [P] propuesta de la asesoría, por validar.
+- [P] propuesta de la asesoría, por validar;
+- [R] resultado del desarrollo y de la prueba, 21-oct-2026 (commit `12b16572`).
 
 | Código | Corrección | Hallazgo | Módulo | Tamaño [P] |
 | --- | --- | --- | --- | --- |
@@ -304,6 +305,71 @@ Un reporte nuevo, «Vale de despacho», en `al_construction_material_request`, c
 
 Efecto en Manufactura: ninguno directo. La obra sabe qué le falta recibir sin llamar al almacén.
 
+## Resultado del desarrollo y de la prueba (21-oct-2026) [R]
+
+Las siete correcciones están desarrolladas en el commit `12b16572` (rama 19.0), publicado y desplegado el 21-oct en `newallcenter_dev_1`, `newallcenter_dev_2` y `creval_dev_1`, con respaldo previo de cada base. Pruebas automáticas: 415 en verde en la base de desarrollo (planificador con sus puentes, asistencia, hoja de cálculo y requerimiento de obra).
+
+### Qué se hizo en cada corrección
+
+| Código | Cómo quedó | Desvío de la propuesta |
+| --- | --- | --- |
+| M111-01 | «Con asistencia» se calcula sin los permisos del usuario. Las sedes de obra llevan los grupos de Nómina: quien no tiene Nómina lee o exporta la obra sin ese campo. | Además, quien marca una obra sin tener Nómina ya puede crearle su sede automática (fallaba por el mismo permiso). La prueba está en `al_construction_attendance/tests/test_permissions_v111.py`, no en la suite. |
+| M111-02 | El asistente usa `approval_count` en lugar de `len()`. Una prueba nueva revisa que ninguna vista del planificador use en `invisible`, `readonly` o `required` una función que el navegador no evalúa. | La prueba de vista es esa revisión de todas las vistas más un `Form` del asistente con una y con dos solicitudes, no un recorrido en el navegador. |
+| M111-03 | «Estación de la etapa» y «Minutos por unidad» por compañía en Configuración › Etapas. Al importar, la lista por etapa sin operaciones recibe una con el nombre de la etapa, esa estación y ese tiempo. La obra tiene el botón «Completar operaciones». | Ninguno. |
+| M111-04 | Se tomó la opción recomendada: la lista suma las cantidades por módulo ya redondeadas como el plan. | Ninguno. El punto donde el plan redondea es la precisión de «Cantidad» de la línea del plan, una línea por módulo. |
+| M111-05 | El documento de origen da el «Exceso %» al crear la solicitud. Las solicitudes anteriores conservan el mayor % de sus líneas. | Para un plan de recursos, el documento da lo que sube frente a la versión que reemplaza (ver «Para decidir»). |
+| M111-06 | Las cifras de la solicitud salen de todas las líneas del plan del material bajo el nivel y la etapa del pedido. El cálculo del exceso no cambia. | Ninguno. |
+| M111-07 | Reporte «Vale de despacho» con las columnas y los textos de «Situación» propuestos. Se imprime desde la transferencia (solo si tiene requerimiento) y desde el requerimiento (botón «Imprimir vale de despacho», en proceso o hecho). | El texto «Pendiente» aparece cuando la línea no tiene transferencia ni compra. El resumen separa los pendientes por tipo: «Pendientes: 2 (1 en compra, 1 por despachar).» |
+
+### Configuración hecha en dev1 y dev2 (21-oct)
+
+- **M111-01:** en dev1 se le quitó a Annabelees el grupo «Nómina: Encargado: gestionar todos los contratos». En dev2 ya no lo tenía. Con su usuario se comprobó que lee los avances y abre LIQ/2026/00001 sin error.
+- **M111-03:**
+  - etapa 1.1 con «Producción de piezas · Puente Piedra» y etapa 1.2 con «Armado · Azcona», las dos con 60 minutos por unidad;
+  - se tomó Azcona porque es la estación que Producción puso a mano en las listas de ZZMONTEC-40-26 (falta que Producción lo confirme);
+  - si se elige Castrovirreyna 2.º piso, se cambia la etapa 1.2 y también la operación de cada lista que ya la tiene.
+- **M111-04:** se rehicieron las listas de ZZMONTEC-40-26 y de ZZMONTEC2-41-26 en dev1 y de ZZMONTEC-40-26 en dev2, con la misma regla que el importador. Antes se simuló sin guardar:
+  - en cada obra cambiaron 16 líneas, todas por redondeo (como mucho 0.02);
+  - el 3103002 de C07 pasó de 0.23 a 0.21, lo mismo que el plan;
+  - las listas con operaciones puestas a mano las conservaron.
+
+### Criterios de aceptación
+
+| Código | Criterio | Resultado |
+| --- | --- | --- |
+| M111-01 | Sin Nómina se abre la liquidación con «Avances liquidados», se valida un avance y «Avances sin asistencia» muestra lo mismo que al administrador; las sedes siguen cerradas | **Cumple** (prueba automática; en dev1 y dev2 con el usuario de Annabelees) |
+| M111-02 | Rechazar desde el formulario y desde la lista; aviso de M110-08 con una solicitud ya aprobada | **Cumple** en las pruebas automáticas; en dev1 se verificó que la vista ya no usa `len()`. En la E-03 no hubo excesos, así que no se rechazó nada en pantalla |
+| M111-03 | Órdenes de armado y de corte con orden de trabajo en su estación; lista con operaciones a mano conservada; etapa sin estación, lista sin operaciones | **Cumple** (prueba automática y E-03 en dev1 y dev2: 27 de 27 órdenes con su orden de trabajo) |
+| M111-04 | Ninguna orden «excede» sin cambios; el 3103002 de C07 igual en las dos columnas; un exceso real de una unidad se sigue marcando | **Cumple** (E-03: 0 excesos en 54 órdenes; 3103002 de C07: 0.21 y 0.21. El exceso real está cubierto por prueba automática) |
+| M111-05 | Con base «por orden», la solicitud muestra el % de la orden; con «por material», el mayor de las líneas | **Cumple** (prueba automática). En la E-03 ninguna orden pidió aprobación |
+| M111-06 | RQO por 74 y luego por 20: presupuestado 54, ya pedido 74, saldo −20, exceso 20 y 37.04 % | **Cumple** en prueba automática con el mismo caso a escala (presupuestado 20, ya pedido 44, saldo −24, exceso 20). No se repitió con RQO/2026/00017 y 00018 en dev1 |
+| M111-07 | Vale desde BRE/DO/00016 como el ejemplo; después de la compra; desde el requerimiento sin «En este bulto»; solo en transferencias con requerimiento; el vale actual no cambia | **Cumple** (prueba automática; en dev1 el vale de RQO/2026/00023 desde BRE/DO/00016 da «Va completo en este bulto» para los tapatornillos y «En compra · PR00005» para los burletes, sin montos) |
+
+### Prueba E-03 repetida (21-oct)
+
+El piso 3 de cada obra ya estaba fabricado y despachado. Por eso se copió como «Piso 04», con los Dptos 401 a 403, sus 14 ambientes y sus 60 módulos en «Planificado». Luego se generó una versión nueva del plan, que aprobó Annabelees, y la versión anterior quedó «Reemplazado».
+
+| Paso | dev1 · ZZMONTEC2-41-26 | dev2 · ZZMONTEC-40-26 |
+| --- | --- | --- |
+| Plan | PLR/2026/00006 (v2) | PLR/2026/00007 (v2)¹ |
+| Órdenes en una corrida | 14 de corte (PPD/MO/00049 a 00062) y 13 de armado (BRE/MO/00044 a 00056) | 14 de corte (PPD/MO/00015 a 00028) y 13 de armado (BRE/MO/00014 a 00026) |
+| Excesos al confirmar | 0 | 0 |
+| Órdenes de trabajo | 27, en su estación, terminadas | 27, en su estación, terminadas |
+| Traslados Puente Piedra → Breña | PPD/OUT/00225 a 00237, BRE/IN/02156 a 02168, BRE/PC/00044 a 00056 | 13 salidas, 13 recepciones y 13 preparaciones, hechas |
+| Despacho por departamento | BRE/DO/00018 a 00020 y PPD/DO/00004 (closet CL01B) | BRE/DO/00004 a 00006 y PPD/DO/00002 (closet CL01B) |
+| Módulos | 60 «En obra» | 60 «En obra» |
+| Aprobación en bloque | Nada que aprobar | Nada que aprobar |
+
+¹ En dev2, 19 líneas del segundo módulo de closet (MCL02) no tenían costo, porque el plan anterior de dev2 es de antes de la corrección de los closets. Se les puso el costo del plan de dev1: corredera 55 cm (3105222) 9.08, corredera 45 cm (3105412) 7.70 y melamina blanco fantasía (3101161) 72.43.
+
+Frente a la corrida del 19-oct: aquella dio excesos falsos de céntimos en el corte de las cocinas y ninguna orden de trabajo. Esta no dio excesos, y las 54 órdenes pasaron por su estación.
+
+### Para decidir
+
+- **% de la solicitud del plan.** Con M111-05, la solicitud de un plan muestra lo que sube frente a la versión vigente. La v2 de la E-03 mostró 99.93 %, porque agrega un piso entero. Antes las solicitudes de plan mostraban 0. Si para los planes se prefiere ver 0 o ninguna cifra, es un ajuste pequeño.
+- **Estación de armado de Breña:** Azcona o Castrovirreyna 2.º piso, a confirmar por Producción.
+- **M111-06 en dev1:** falta repetir el caso con RQO/2026/00017 y 00018, si se quiere ver en pantalla.
+
 ## Fuentes
 
 - **Base `newallcenter_dev_1`**, 19-oct-2026:
@@ -317,3 +383,4 @@ Efecto en Manufactura: ninguno directo. La obra sabe qué le falta recibir sin l
 - **Repositorio en el commit `2ef3210`:** `al_construction_planner_furniture`, `al_construction_planner_approvals`, `al_construction_planner_approvals_mrp` y `al_construction_planner_purchase`.
 - **Caso de prueba integral Montecarmelo:** hallazgos HM-30 y HM-40 a HM-44.
 - **Vale de despacho (M111-07):** pedido de Vicente del 20-oct-2026 y su ajuste del mismo día; vale de RQO/2026/00023 impreso en dev1; RQO/2026/00023 y sus transferencias en dev1; grupos de Lady Silva; `al_construction_material_request` en el repositorio; `stock/report/report_deliveryslip.xml` de Odoo 19 (github.com/odoo/odoo, rama 19.0).
+- **Resultados (21-oct-2026):** commit `12b16572`; pruebas automáticas en la base de desarrollo; configuración y prueba E-03 en `newallcenter_dev_1` y `newallcenter_dev_2`, con respaldos del 21-oct previos a cada cambio.
