@@ -1,0 +1,66 @@
+titulo: Extractos de bancos peruanos
+subtitulo: >-
+  Importa los movimientos que descarga la banca por internet (Excel, Excel en HTML, CSV o
+  TXT) sin mapear columnas: reconoce la tabla por sus encabezados.
+categoria: Localización Perú · Tesorería
+etiquetas: [Extracto bancario, Conciliación, Excel, Bancos]
+
+destacados_intro: >-
+  Sobre la importación de extractos de Odoo 19: el archivo reconocido se importa directo; el
+  resto sigue el importador nativo.
+destacados:
+  - icono: "▦"
+    titulo: Cualquier formato habitual
+    texto: >-
+      XLSX, XLS, el «Excel» que es una tabla HTML, CSV y TXT con separador.
+  - icono: "⌕"
+    titulo: Por encabezados
+    texto: >-
+      Encuentra la tabla bajo los títulos y reconoce fecha, descripción, n.º de operación,
+      monto o cargo y abono, y saldo.
+  - icono: "="
+    titulo: Saldos
+    texto: >-
+      Saldo inicial y final del banco, que Odoo cuadra con los movimientos.
+  - icono: "↺"
+    titulo: Sin duplicados
+    texto: >-
+      Volver a importar un archivo, o uno que se superpone, no duplica movimientos.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Los bancos peruanos no exportan OFX ni CAMT. Sus archivos traen títulos encima de la
+    tabla, cargo y abono en columnas separadas y montos con «S/», y el mapeo manual de
+    columnas falla o hay que rehacerlo cada vez.
+  nota: >-
+    **Recaudación.** Los archivos de recaudación usan especificaciones que cada banco
+    entrega a sus clientes; se implementan cuando se cuenta con ella.
+
+pasos_intro: >-
+  Movimientos descargados de la banca por internet.
+pasos:
+  - titulo: Importar
+    ruta: Contabilidad ▸ Tablero ▸ diario del banco ▸ Importar
+    texto: >-
+      Elegir el archivo: se crea el extracto y se abre la conciliación bancaria.
+
+configuracion:
+  - "Nada que configurar: funciona con el botón Importar de cada diario de banco."
+
+faq:
+  - pregunta: "¿Qué pasa si mi banco usa otros nombres de columna?"
+    respuesta: >-
+      Se abre el importador nativo para mapear las columnas a mano; avise para agregar los
+      nombres de su banco.
+  - pregunta: "¿Puedo importar dos veces el mismo periodo?"
+    respuesta: >-
+      Sí: los movimientos ya importados se reconocen y no se duplican.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: importación de extractos de bancos peruanos por encabezados (XLSX, XLS, HTML, CSV y TXT) con saldos y sin duplicados."
+
+relacionados: [al_l10n_pe_itf, al_l10n_pe_batch_payment, al_l10n_pe_cash_closing]

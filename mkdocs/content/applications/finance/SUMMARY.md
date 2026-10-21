@@ -39,6 +39,7 @@
     * [Cierre de caja y arqueo](accounting/cash_closing.md)
     * [Flujo de caja proyectado](accounting/cash_forecast.md)
     * [Cuota fija en soles](accounting/payment_terms_pen.md)
+    * [Extractos de bancos peruanos](accounting/bank_statements_pe.md)
     * [Arrendamientos (NIIF 16)](accounting/leases.md)
     * [DUA de importación](accounting/import_dua.md)
 * Proveedores de pago

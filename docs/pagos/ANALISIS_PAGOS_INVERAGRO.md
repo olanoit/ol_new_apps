@@ -34,7 +34,7 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Plazos de pago: monto fijo en soles con factura en USD | `dv_..._payment_term_foreign_currency` | Plazos rediseñados en 17+ | `al_l10n_pe_payment_term_currency` | **Cubierto** (P7) |
 | Bloqueo de pagos de letras ya bancarizadas | `inveragro_letter_validation` | — | Letras y factoring (gancho en `al_account_base`) | **Cubierto** (P9) |
 | Pagos recurrentes | `om_recurring_payments` | — | — | Baja prioridad |
-| Importación de extractos | `om_account_bank_statement_import` | CSV/OFX/CAMT (EE) | — | Formatos de bancos PE: P11 |
+| Importación de extractos | `om_account_bank_statement_import` | CSV/OFX/CAMT (EE) | `al_l10n_pe_bank_statement_import` | **Cubierto** (P11; falta recaudación) |
 | Ticket 80 mm de factura | `invoice_ticket.xml` | — | `al_l10n_pe_invoice` (ticket) | Cubierto |
 | Metas de venta, cierre por sectorista, venta gratuita en pedido | Varios | — | — | Específico del cliente: no se desarrolla |
 
@@ -156,6 +156,11 @@ gasto sin comprobante; o un depósito de cliente que cubre facturas de varios so
 > **P10 hecho (21/10/2026)** en `al_l10n_pe_check_printing`: formato de chequera calibrable por diario
 > (posiciones en mm, prueba de impresión, papel del tamaño de la hoja vía `get_paperformat`), sobre los
 > cheques propios de `l10n_latam_check`. No se inventan formatos de banco: se calibra con la chequera.
+>
+> **P11 extractos hecho (21/10/2026)** en `al_l10n_pe_bank_statement_import`: analizador por encabezados
+> (sinónimos, fila de encabezados bajo títulos, monto o cargo/abono, saldo; XLSX/XLS/HTML/CSV/TXT) en
+> `_parse_bank_statement_file`, antes del mapeo nativo. **Pendiente:** TXT de recaudación (requiere la
+> especificación de cada banco, que entrega al cliente).
 
 ## 3. Recomendación de orden
 
