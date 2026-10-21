@@ -1,5 +1,5 @@
 ---
-modulos: [al_l10n_pe_check]
+modulos: [al_l10n_pe_check, al_l10n_pe_check_printing]
 ---
 
 # Cheques recibidos y girados
@@ -102,6 +102,41 @@ decidir qué depositar:
    a quedar abierta.
 
 ![Cheque propio diferido entregado a un proveedor](checks/05-cheques-propios.png)
+
+## Imprimir cheques propios
+
+Con el módulo **Impresión de cheques** (`al_l10n_pe_check_printing`), el cheque propio se
+imprime sobre la hoja de la chequera del banco.
+
+### Configurar el formato de la chequera
+
+1. En **Perú ‣ Configuración ‣ Contabilidad ‣ Formatos de cheque**, cree un formato por
+   chequera: el **tamaño de la hoja** y la **posición** (en milímetros desde la esquina
+   superior izquierda) de la fecha, la fecha de pago de un cheque diferido, el
+   beneficiario, el importe y el importe en letras. Opcionalmente, la ciudad delante de la
+   fecha y la leyenda **No negociable**.
+2. Haga clic en **Imprimir prueba**: sale una hoja con datos de ejemplo. Imprímala en papel
+   común, superpóngala a una hoja de la chequera a contraluz y corrija las posiciones. Si
+   todo sale corrido por igual, basta con el **desplazamiento** horizontal o vertical.
+3. En el diario del banco, pestaña **Configuración avanzada**, elija el **Formato de
+   cheque**.
+
+### Imprimir
+
+Desde el pago con **Cheques propios**, o desde el cheque, haga clic en **Imprimir
+cheque**. Para varios cheques a la vez, selecciónelos en la lista y use **Acción ‣
+Imprimir cheques** (todos del mismo formato). Cada cheque sale en una hoja del tamaño de
+la chequera:
+
+- la fecha del pago, con la ciudad si se indicó;
+- en un cheque de pago diferido, **Pagar desde** y la fecha de pago;
+- el beneficiario (el socio del pago);
+- el importe con asteriscos delante («S/ ******4,870.50»), que impiden agregar cifras;
+- el importe en letras («CUATRO MIL OCHOCIENTOS SETENTA Y 50/100 SOLES»).
+
+![Cheque diferido impreso](checks/printed_check.png)
+
+Los cheques de terceros no se imprimen.
 
 ## Datos de demostración
 

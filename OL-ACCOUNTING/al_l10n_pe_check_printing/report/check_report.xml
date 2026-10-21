@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Una hoja por cheque, del tamaño de la hoja de la chequera (formato de
+         papel del formato de cheque). Cada dato va en su posición en mm desde
+         la esquina superior izquierda, más el desplazamiento de calibración. -->
+    <template id="report_check">
+        <t t-call="web.html_container">
+            <t t-foreach="items" t-as="item">
+                <t t-set="l" t-value="item['layout']"/>
+                <t t-set="ox" t-value="l.offset_x"/>
+                <t t-set="oy" t-value="l.offset_y"/>
+                <div class="article" t-attf-style="position: relative; width: {{l.paper_width}}mm; height: {{l.paper_height}}mm; overflow: hidden; font-family: Arial, sans-serif; font-size: {{l.font_size}}pt; color: #000;">
+                    <!-- Dentro del article: Odoo arma el PDF solo con estos nodos.
+                         Sin el relleno del contenedor de Bootstrap, las posiciones
+                         se miden desde el borde de la hoja. -->
+                    <style>
+                        body, .container, .container-fluid { margin: 0 !important; padding: 0 !important; max-width: none !important; }
+                    </style>
+                    <span class="o_pe_check_date" t-attf-style="position: absolute; left: {{l.date_x + ox}}mm; top: {{l.date_y + oy}}mm; white-space: nowrap;" t-out="item['date']"/>
+                    <span t-if="item['due_date']" class="o_pe_check_due" t-attf-style="position: absolute; left: {{l.due_date_x + ox}}mm; top: {{l.due_date_y + oy}}mm; white-space: nowrap;">Pagar desde: <t t-out="item['due_date']"/></span>
+                    <span class="o_pe_check_payee" t-attf-style="position: absolute; left: {{l.payee_x + ox}}mm; top: {{l.payee_y + oy}}mm; width: {{l.payee_width}}mm; white-space: nowrap; overflow: hidden;" t-out="item['payee']"/>
+                    <span class="o_pe_check_amount" t-attf-style="position: absolute; left: {{l.amount_x + ox}}mm; top: {{l.amount_y + oy}}mm; white-space: nowrap; font-weight: bold;" t-out="item['amount']"/>
+                    <span class="o_pe_check_words" t-attf-style="position: absolute; left: {{l.words_x + ox}}mm; top: {{l.words_y + oy}}mm; width: {{l.words_width}}mm;" t-out="item['words']"/>
+                    <span t-if="l.print_not_negotiable" class="o_pe_check_nn" t-attf-style="position: absolute; left: {{l.not_negotiable_x + ox}}mm; top: {{l.not_negotiable_y + oy}}mm; white-space: nowrap; font-weight: bold;">NO NEGOCIABLE</span>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_check" model="ir.actions.report">
+        <field name="name">Cheque</field>
+        <field name="model">l10n_latam.check</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_check_printing.report_check</field>
+        <field name="report_file">al_l10n_pe_check_printing.report_check</field>
+        <field name="print_report_name">'Cheque %s' % (object.name or '')</field>
+    </record>
+</odoo>

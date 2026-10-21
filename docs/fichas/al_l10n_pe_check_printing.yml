@@ -1,0 +1,71 @@
+titulo: Impresión de cheques
+subtitulo: >-
+  Los cheques propios se imprimen sobre la hoja de la chequera de cada banco: fecha,
+  beneficiario, importe con asteriscos e importe en letras, con un formato que se calibra
+  contra la chequera real.
+categoria: Localización Perú · Tesorería
+etiquetas: [Cheques, Chequera, Impresión, Cheque diferido]
+portada: screenshots/check.png
+
+destacados_intro: >-
+  Sobre los cheques propios nativos de Odoo (l10n_latam_check) que adapta la suite.
+destacados:
+  - icono: "▭"
+    titulo: Formato por chequera
+    texto: >-
+      Tamaño de la hoja y posición de cada dato en milímetros, con desplazamiento general.
+  - icono: "✓"
+    titulo: Prueba de impresión
+    texto: >-
+      Hoja con datos de ejemplo para calibrar a contraluz contra la chequera.
+  - icono: "*"
+    titulo: Importe protegido
+    texto: >-
+      Asteriscos delante del importe e importe en letras «Y 00/100 SOLES».
+  - icono: "⏱"
+    titulo: Cheque diferido
+    texto: >-
+      Imprime la fecha desde la que se puede cobrar.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo imprime cheques solo con formatos de otros países. En Perú cada banco tiene su
+    chequera y los cheques se llenaban a mano, con errores en el importe en letras.
+  nota: >-
+    **Calibración.** No hay un formato único de cheque peruano: cada formato se ajusta a su
+    chequera con la prueba de impresión.
+
+pasos_intro: >-
+  Un cheque diferido de S/ 4 870,50 a un proveedor.
+pasos:
+  - titulo: Configurar la chequera
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Formatos de cheque
+    texto: >-
+      Tamaño de la hoja y posiciones; «Imprimir prueba» y ajustar. Luego elegir el formato
+      en el diario del banco.
+  - titulo: Imprimir el cheque
+    texto: >-
+      Desde el pago con «Cheques propios»: «Imprimir cheque».
+    imagen: screenshots/check.png
+
+configuracion:
+  - "Perú ▸ Configuración ▸ Contabilidad ▸ Formatos de cheque."
+  - "Diario del banco ▸ Configuración avanzada ▸ Formato de cheque."
+
+faq:
+  - pregunta: "¿Qué hago si todo sale corrido?"
+    respuesta: >-
+      Corrija el desplazamiento horizontal o vertical del formato: se suma a todas las
+      posiciones.
+  - pregunta: "¿Puedo imprimir varios cheques a la vez?"
+    respuesta: >-
+      Sí, desde la lista de cheques con Acción ▸ Imprimir cheques, si son del mismo formato.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: formato de chequera calibrable, prueba de impresión y cheques propios impresos en el tamaño de la hoja."
+
+relacionados: [al_l10n_pe_check, al_l10n_pe_payment_receipt]

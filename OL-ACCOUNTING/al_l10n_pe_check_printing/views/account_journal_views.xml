@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form_check_layout" model="ir.ui.view">
+        <field name="name">account.journal.form.inherit.pe.check.layout</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='advanced_settings']/group" position="inside">
+                <group string="Cheques propios" name="l10n_pe_check_layout" invisible="type != 'bank'">
+                    <field name="l10n_pe_check_layout_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

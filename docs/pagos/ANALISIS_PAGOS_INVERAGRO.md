@@ -19,7 +19,7 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Detracciones: pago, constancias, TXT masivo | `modo_pago=detraccion`, TXT SPOT (parcialmente roto) | Bloque SPOT en XML | `al_l10n_pe_detraction` (depósito, TXT, importación de constancias) | **Cubierto** |
 | Percepciones | — | — | `al_l10n_pe_perception` | Cubierto (más que Inveragro) |
 | Pagos masivos a bancos | TXT Telecrédito BCP | Lotes (EE) sin formatos PE | `al_l10n_pe_batch_payment` (BCP, BBVA, Interbank, Scotiabank, BN) | **Cubierto** |
-| Cheques recibidos y emitidos | `dv_account_inbound_check` | `l10n_latam_check` | `al_l10n_pe_check` | **Cubierto** (falta impresión, P10) |
+| Cheques recibidos y emitidos | `dv_account_inbound_check` | `l10n_latam_check` | `al_l10n_pe_check`, `al_l10n_pe_check_printing` | **Cubierto** |
 | Letras de cambio | `dv_account_letter` (5 600 líneas) | — | `al_l10n_pe_account_letter` | **Cubierto** |
 | Facturas negociables | `dv_negotiable_invoices` | — | `al_l10n_pe_factoring` (con CAVALI) | **Cubierto** |
 | Caja chica / entregas a rendir / movilidad | `account.petty.cash`, `account.renders.payroll` | — | `al_l10n_pe_cash_fund` | **Cubierto** (arqueo en `al_l10n_pe_cash_closing`) |
@@ -152,6 +152,10 @@ gasto sin comprobante; o un depósito de cliente que cubre facturas de varios so
   factoring ya lo impiden.
 
 ### P10–P11. Impresión de cheques con formato de banco peruano; TXT de recaudación y extractos de bancos peruanos — prioridad baja
+
+> **P10 hecho (21/10/2026)** en `al_l10n_pe_check_printing`: formato de chequera calibrable por diario
+> (posiciones en mm, prueba de impresión, papel del tamaño de la hoja vía `get_paperformat`), sobre los
+> cheques propios de `l10n_latam_check`. No se inventan formatos de banco: se calibra con la chequera.
 
 ## 3. Recomendación de orden
 

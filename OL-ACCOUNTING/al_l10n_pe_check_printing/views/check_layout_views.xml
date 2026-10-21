@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_check_layout_form" model="ir.ui.view">
+        <field name="name">l10n_pe.check.layout.form</field>
+        <field name="model">l10n_pe.check.layout</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_print_test" type="object" string="Imprimir prueba" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title"><h1><field name="name" placeholder="p. ej. Chequera BCP"/></h1></div>
+                    <group>
+                        <group string="Hoja">
+                            <field name="bank_id"/>
+                            <field name="paper_width"/>
+                            <field name="paper_height"/>
+                            <field name="offset_x"/>
+                            <field name="offset_y"/>
+                            <field name="font_size"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Fecha">
+                            <field name="city"/>
+                            <field name="date_style"/>
+                            <label for="date_x" string="Posición (X, Y)"/>
+                            <div class="o_row"><field name="date_x"/><field name="date_y"/></div>
+                            <field name="print_due_date"/>
+                            <label for="due_date_x" string="Fecha de pago (X, Y)" invisible="not print_due_date"/>
+                            <div class="o_row" invisible="not print_due_date">
+                                <field name="due_date_x"/><field name="due_date_y"/>
+                            </div>
+                        </group>
+                        <group string="Beneficiario e importe">
+                            <label for="payee_x" string="Beneficiario (X, Y, ancho)"/>
+                            <div class="o_row"><field name="payee_x"/><field name="payee_y"/><field name="payee_width"/></div>
+                            <label for="amount_x" string="Importe (X, Y)"/>
+                            <div class="o_row"><field name="amount_x"/><field name="amount_y"/></div>
+                            <field name="amount_fill"/>
+                            <label for="words_x" string="En letras (X, Y, ancho)"/>
+                            <div class="o_row"><field name="words_x"/><field name="words_y"/><field name="words_width"/></div>
+                        </group>
+                        <group string="Leyendas">
+                            <field name="print_not_negotiable"/>
+                            <label for="not_negotiable_x" string="«No negociable» (X, Y)" invisible="not print_not_negotiable"/>
+                            <div class="o_row" invisible="not print_not_negotiable">
+                                <field name="not_negotiable_x"/><field name="not_negotiable_y"/>
+                            </div>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        Medidas en milímetros desde la esquina superior izquierda de la hoja. Imprima una
+                        prueba en papel común, superpóngala a una hoja de la chequera a contraluz y corrija
+                        las posiciones o el desplazamiento.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_check_layout_list" model="ir.ui.view">
+        <field name="name">l10n_pe.check.layout.list</field>
+        <field name="model">l10n_pe.check.layout</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="bank_id"/>
+                <field name="paper_width"/>
+                <field name="paper_height"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_check_layout" model="ir.actions.act_window">
+        <field name="name">Formatos de cheque</field>
+        <field name="res_model">l10n_pe.check.layout</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Configure la chequera de cada banco</p>
+            <p>Indique el tamaño de la hoja y dónde va cada dato, e imprima una prueba para calibrarlo.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_check_layout" name="Formatos de cheque"
+              parent="al_account_base.al_l10n_pe_config_accounting" action="action_check_layout"
+              sequence="62" groups="account.group_account_manager"/>
+</odoo>
