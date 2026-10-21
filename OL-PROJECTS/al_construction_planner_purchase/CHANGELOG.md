@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261021 — 21/10/2026
+
+- Resumen de inventario: botones pequeños y en una sola línea (en las tarjetas angostas se partían y se veían más grandes).
+
 ## 7.20261021 — 21/10/2026
 
 - Resumen de inventario compacto: sin gráficos en las tarjetas de los tipos de operación, tarjetas más angostas y etiquetas en español (Con demora, En espera, Órdenes parciales, Movimientos).

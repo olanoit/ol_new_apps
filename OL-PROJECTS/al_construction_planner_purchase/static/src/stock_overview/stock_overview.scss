@@ -13,6 +13,24 @@
         }
         .row.mt-3 {
             margin-top: .5rem !important;
+            flex-wrap: nowrap;
+
+            // Botón del tamaño de su texto, en una línea y pequeño (como
+            // btn-sm): la tarjeta angosta lo partía en dos líneas.
+            > div:first-child {
+                flex: 0 0 auto;
+                width: auto;
+            }
+            > .stock-overview-links {
+                flex: 1 1 auto;
+                width: auto;
+            }
+            .btn {
+                white-space: nowrap;
+                padding: .25rem .6rem;
+                font-size: .8125rem;
+                line-height: 1.4;
+            }
         }
     }
     .stock-overview-links {
