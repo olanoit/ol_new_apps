@@ -35,6 +35,7 @@
     * [Comprobante de pago](accounting/payment_receipts.md)
     * [Anticipos y aplicación de documentos](accounting/advances.md)
     * [Pago múltiple](accounting/multiple_payments.md)
+    * [ITF automático](accounting/itf.md)
     * [Arrendamientos (NIIF 16)](accounting/leases.md)
     * [DUA de importación](accounting/import_dua.md)
 * Proveedores de pago

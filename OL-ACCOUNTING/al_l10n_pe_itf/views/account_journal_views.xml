@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form_itf" model="ir.ui.view">
+        <field name="name">account.journal.form.inherit.pe.itf</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='advanced_settings']/group" position="inside">
+                <group string="ITF" name="l10n_pe_itf" invisible="type != 'bank'">
+                    <field name="l10n_pe_itf_applies"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

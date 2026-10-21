@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_payment_form_itf" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.pe.itf</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="al_account_payments.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="bank_operation_number" position="after">
+                <field name="l10n_pe_itf_journal_applies" invisible="1"/>
+                <label for="l10n_pe_itf_amount" invisible="not l10n_pe_itf_journal_applies"/>
+                <div class="d-flex gap-3" invisible="not l10n_pe_itf_journal_applies">
+                    <field name="l10n_pe_itf_amount" class="oe_inline"/>
+                    <span class="d-flex gap-1">
+                        <field name="l10n_pe_itf_exempt" readonly="state != 'draft'" nolabel="1"/>
+                        <label for="l10n_pe_itf_exempt" class="o_light_label"/>
+                    </span>
+                </div>
+                <field name="l10n_pe_itf_move_id" invisible="not l10n_pe_itf_move_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>

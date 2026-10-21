@@ -109,7 +109,8 @@ Antes de operar, complete en este orden:
    detracciones, comprobantes de retención y de percepción, retención de 4.ª
    categoría en los recibos por honorarios,
    [pagos masivos](../accounting/batch_payments.md) y
-   [pagos múltiples](../accounting/multiple_payments.md).
+   [pagos múltiples](../accounting/multiple_payments.md), con su
+   [ITF](../accounting/itf.md).
 3. **Cierre del mes**: [diferencia de cambio](peru/exchange_differences.md) y
    cuadre de los [asientos de destino](peru/destination_entries.md).
 4. **Declaraciones**: [declaración mensual 621](peru/monthly_tax.md),

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Análisis del ITF: apuntes de gasto de los asientos del ITF. -->
+    <record id="view_itf_line_list" model="ir.ui.view">
+        <field name="name">account.move.line.itf.list</field>
+        <field name="model">account.move.line</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list create="0" edit="0" delete="0">
+                <field name="date"/>
+                <field name="journal_id"/>
+                <field name="move_id"/>
+                <field name="name"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_currency_id" column_invisible="True"/>
+                <field name="amount_currency" string="ITF (moneda)" optional="show"/>
+                <field name="balance" string="ITF (M.N.)" sum="Total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_itf_analysis" model="ir.actions.act_window">
+        <field name="name">ITF</field>
+        <field name="res_model">account.move.line</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="view_id" ref="view_itf_line_list"/>
+        <field name="domain">[('move_id.l10n_pe_itf_payment_id', '!=', False), ('parent_state', '=', 'posted'),
+                              ('balance', '>', 0)]</field>
+        <field name="context">{'search_default_journal': 1, 'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay ITF registrado</p>
+            <p>Marque los diarios bancarios afectos al ITF: se registra al confirmar cada pago o cobro.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_itf_analysis" name="ITF" parent="al_account_base.al_l10n_pe_reporting_analysis"
+              action="action_itf_analysis" sequence="80" groups="account.group_account_readonly"/>
+</odoo>

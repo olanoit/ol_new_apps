@@ -1,0 +1,105 @@
+titulo: ITF automático
+subtitulo: >-
+  El Impuesto a las Transacciones Financieras (0,005 %) se registra solo al confirmar
+  cada pago o cobro de los bancos afectos, listo para conciliar con el extracto.
+categoria: Localización Perú · Tesorería
+etiquetas: [ITF, Ley 28194, 6412, Bancos, Conciliación bancaria]
+portada: screenshots/payment.png
+
+destacados_intro: >-
+  Sobre el pago estándar de Odoo 19: un asiento propio por pago, sin tocar el del pago.
+destacados:
+  - icono: "%"
+    titulo: Cálculo de la ley
+    texto: >-
+      0,005 % con el redondeo del art. 13: se suprime el tercer decimal y el segundo
+      se ajusta a 0 o a 5.
+  - icono: "→"
+    titulo: Al confirmar
+    texto: >-
+      Cargo a la 6412 y abono a la cuenta de pagos pendientes del banco, en el mismo
+      diario.
+  - icono: "⇄"
+    titulo: Extracto
+    texto: >-
+      La línea «ITF» del banco se concilia con ese apunte; sin cuenta de pendientes,
+      con la regla de conciliación «ITF».
+  - icono: "∅"
+    titulo: Exoneraciones
+    texto: >-
+      Sin ITF entre cuentas propias, en los diarios exonerados ni en los pagos
+      marcados como exonerados.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Cada cargo y abono bancario paga ITF y el contador lo registra a mano al revisar el
+    extracto, o no lo registra. Con muchos pagos pequeños la diferencia entre el banco y
+    la contabilidad aparece recién al conciliar.
+  nota: >-
+    **Norma.** TUO de la Ley 28194: tasa del 0,005 % (art. 10), redondeo a múltiplos de
+    0,05 (art. 13) y no gravadas las operaciones entre cuentas de un mismo titular
+    (art. 9 a).
+
+pasos_intro: >-
+  Un pago de S/ 15 750,00 a un proveedor desde un banco afecto.
+pasos:
+  - titulo: Marcar el banco
+    ruta: Contabilidad ▸ Configuración ▸ Diarios ▸ Banco ▸ Configuración avanzada
+    texto: >-
+      Casilla «Afecto al ITF». Las cuentas de detracciones, remuneraciones o CTS
+      exoneradas se dejan sin marcar.
+  - titulo: Confirmar el pago
+    texto: >-
+      El pago muestra el ITF (0,7875 → S/ 0,75) y, al confirmarlo, su asiento de ITF.
+    imagen: screenshots/payment.png
+  - titulo: Revisar el ITF del mes
+    ruta: Perú ▸ Informes ▸ Análisis ▸ ITF
+    texto: >-
+      ITF registrado por banco, con vista pivote por mes.
+    imagen: screenshots/analysis.png
+
+asientos_intro: >-
+  El asiento del ejemplo, en el diario del banco.
+asientos:
+  - titulo: ITF del pago
+    referencia: ITF PBNK1/2026/00031
+    lineas:
+      - ["6412", "Impuesto a las transacciones financieras", "0,75", ""]
+      - ["1041", "Pagos pendientes (banco)", "", "0,75"]
+
+ejemplos_intro: >-
+  Redondeo del art. 13 de la Ley 28194.
+ejemplos:
+  - titulo: Importes y su ITF
+    tabla:
+      - [Importe, "0,005 %", ITF]
+      - ["S/ 999,99", "0,0499", "0,00"]
+      - ["S/ 1 000,00", "0,0500", "0,05"]
+      - ["S/ 1 999,99", "0,0999", "0,05"]
+      - ["S/ 15 750,00", "0,7875", "0,75"]
+
+configuracion:
+  - "Ajustes ▸ Perú ▸ ITF: tasa (0,005 %) y cuenta del gasto (vacía, la 6412 del plan)."
+  - "Diarios de banco: «Afecto al ITF» en Configuración avanzada."
+
+faq:
+  - pregunta: "¿Y si anulo el pago?"
+    respuesta: >-
+      Su asiento de ITF queda anulado; si lo vuelve a confirmar, se registra uno nuevo.
+  - pregunta: "¿Funciona con cuentas en dólares?"
+    respuesta: >-
+      Sí: el ITF se calcula en dólares, como lo cobra el banco, y se registra al cambio
+      de la fecha del pago.
+  - pregunta: "¿Mi diario no tiene cuenta de pagos pendientes?"
+    respuesta: >-
+      El pago no tiene asiento hasta conciliar el extracto; use la regla de conciliación
+      «ITF» para registrar la línea del banco.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: ITF al confirmar pagos y cobros de los bancos afectos, redondeo del art. 13, exoneraciones, regla de conciliación y análisis."
+
+relacionados: [al_account_payments, al_l10n_pe_payment_multi, al_l10n_pe_term_deposit, al_l10n_pe_batch_payment]

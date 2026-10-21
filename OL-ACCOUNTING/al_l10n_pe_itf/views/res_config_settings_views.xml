@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_itf" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pe.itf</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="72"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="ITF" name="pe_itf_block">
+                    <setting string="Impuesto a las Transacciones Financieras"
+                             help="Se registra al confirmar los pagos y cobros de los diarios bancarios marcados como afectos al ITF (pestaña Configuración avanzada del diario).">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_itf_rate" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_itf_rate"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_itf_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_itf_account_id" placeholder="6412 del plan contable"/>
+                            </div>
+                        </div>
+                        <button name="action_l10n_pe_itf_reconcile_model" type="object" class="btn-link"
+                                icon="oi-arrow-right" string="Regla de conciliación del extracto"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>
