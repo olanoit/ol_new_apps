@@ -380,7 +380,7 @@ RQO/2026/00017 (74 tornillos 4x30 para instalación, ya aprobada) no se tocó. R
 
 - El pedido sigue con una sola línea del plan asignada (20 unidades); las cifras salen de las 7 líneas del material bajo su nivel y su etapa.
 - La solicitud usa el plan PLR/2026/00006 (v2), que reemplazó a PLR/2026/00004 en la E-03: las asignaciones pasaron a la v2 y las cifras no cambian.
-- La solicitud quedó pendiente, a cargo de Kevin Jimenez o Annabelees León.
+- La solicitud la aprobó Annabelees León el 21-oct.
 
 **dev2.** No tenía RQO/2026/00017 ni 00018: la prueba del 19-oct se hizo solo en dev1. Se armó el mismo caso en ZZMONTEC-40-26: tornillos 4x30 (3105097) para la instalación de la cocina del Dpto 301, con 54 presupuestados en 7 líneas del plan PLR/2026/00007.
 
@@ -391,16 +391,27 @@ RQO/2026/00017 (74 tornillos 4x30 para instalación, ya aprobada) no se tocó. R
 | Saldo | 54 | −20 | −20 |
 | Exceso | 20 | 20 | 20 |
 | Exceso % | 37.04 | 37.04 | 37.04 |
-| Estado | Aprobado por Annabelees | Pendiente (Annabelees) | |
+| Aprobación | Annabelees | Annabelees | |
 
 - RQO/2026/00008 tiene asignada una sola línea del plan; sus cifras salen de las 7 líneas del nivel.
 - Los números 00005 y 00006 los consumió una simulación previa sin guardar, porque la numeración no se revierte.
+
+**Cierre del flujo (21-oct).** Los cuatro requerimientos de la prueba se procesaron y se despacharon. Lo hizo Lady Silva, la almacenera. Había stock en Azcona/Racks, así que no hubo compras. Los cuatro quedaron «Hecho».
+
+| Base | Requerimiento | Cantidad | Despacho | Departamento |
+| --- | --- | --- | --- | --- |
+| dev1 | RQO/2026/00017 | 74 | BRE/DO/00023 | Dpto 301, tomado de la línea |
+| dev1 | RQO/2026/00018 | 20 | BRE/DO/00021 | Dpto 301, a mano (antes de la corrección) |
+| dev2 | RQO/2026/00007 | 74 | BRE/DO/00008 | Dpto 301, tomado de la línea |
+| dev2 | RQO/2026/00008 | 20 | BRE/DO/00007 | Dpto 301, a mano (antes de la corrección) |
+
+En dev1, el número BRE/DO/00022 lo consumió una simulación sin guardar.
 
 ### Hallazgo corregido: departamento del despacho de un requerimiento (21-oct)
 
 Al validar BRE/DO/00021 (dev1, RQO/2026/00018) y BRE/DO/00007 (dev2, RQO/2026/00008), Odoo pidió «Indique la obra y el departamento…». BRE/DO está marcado «Despacho a obra por unidad» (M110-05) y la regla se aplicaba también al material de un requerimiento, como los tornillos. En esos dos despachos se puso a mano el Dpto 301 de la línea.
 
-Corrección (decisión de Vicente del 21-oct-2026): el despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando todas son del mismo departamento; lo pone al confirmar la transferencia y, si falta, al validarla. Con líneas de varios departamentos se sigue pidiendo. Va en `al_construction_planner_furniture` 9.20261021, con su prueba en la suite.
+Corrección (decisión de Vicente del 21-oct-2026): el despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando todas son del mismo departamento; lo pone al confirmar la transferencia y, si falta, al validarla. Con líneas de varios departamentos se sigue pidiendo. Va en `al_construction_planner_furniture` 9.20261021 (commit `c76ad7f3`), con su prueba en la suite, y está desplegada en dev1 y dev2. Se comprobó con despachos reales: BRE/DO/00023 en dev1 y BRE/DO/00008 en dev2 tomaron el Dpto 301 al confirmarse y se validaron sin escribirlo.
 
 
 - **% de la solicitud del plan:** muestra 0 %. Con la primera versión de M111-05 mostraba lo que sube frente a la versión vigente: 99.93 % en la v2 de la E-03, que agrega un piso entero. Corregido en `al_construction_planner_approvals` 5.20261021.
