@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_dashboard_tax_list" model="ir.ui.view">
+        <field name="name">l10n_pe.dashboard.tax.list</field>
+        <field name="model">l10n_pe.dashboard.tax</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="move_id"/>
+                <field name="document_type_id"/>
+                <field name="partner_id"/>
+                <field name="kind"/>
+                <field name="base" sum="Total"/>
+                <field name="igv" sum="Total"/>
+                <field name="total" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_dashboard_tax_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.dashboard.tax.pivot</field>
+        <field name="model">l10n_pe.dashboard.tax</field>
+        <field name="arch" type="xml">
+            <pivot sample="1">
+                <field name="date" interval="month" type="row"/>
+                <field name="kind" type="col"/>
+                <field name="base" type="measure"/>
+                <field name="igv" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_dashboard_tax_search" model="ir.ui.view">
+        <field name="name">l10n_pe.dashboard.tax.search</field>
+        <field name="model">l10n_pe.dashboard.tax</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="move_id"/>
+                <field name="document_type_id"/>
+                <filter name="sales" string="Ventas" domain="[('kind', '=', 'sale')]"/>
+                <filter name="purchases" string="Compras" domain="[('kind', '=', 'purchase')]"/>
+                <separator/>
+                <filter name="date" string="Fecha contable" date="date"/>
+                <group>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date:month'}"/>
+                    <filter name="group_kind" string="Operación" context="{'group_by': 'kind'}"/>
+                    <filter name="group_document_type" string="Tipo de comprobante"
+                            context="{'group_by': 'document_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_dashboard_tax" model="ir.actions.act_window">
+        <field name="name">Ventas, compras e IGV</field>
+        <field name="res_model">l10n_pe.dashboard.tax</field>
+        <field name="view_mode">pivot,list</field>
+    </record>
+</odoo>

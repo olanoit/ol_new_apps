@@ -2,6 +2,7 @@
 * Localizaciones fiscales
     * [Perú](fiscal_localizations/peru.md)
         * [Configuración contable básica](fiscal_localizations/peru/accounting_base.md)
+        * [Tablero de la app Perú](fiscal_localizations/peru/dashboard.md)
         * [Consulta de RUC y DNI](fiscal_localizations/peru/ruc_dni_lookup.md)
         * [Numeración de asientos y series](fiscal_localizations/peru/entry_numbering.md)
         * [Medios de pago SUNAT](fiscal_localizations/peru/payment_methods.md)

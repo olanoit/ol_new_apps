@@ -1,0 +1,82 @@
+titulo: Tablero Perú
+subtitulo: >-
+  El resumen tributario y de tesorería de la compañía al abrir la app Perú: IGV,
+  comprobantes electrónicos, detracciones, retenciones, percepciones, letras y declaraciones.
+categoria: Localización Perú · Informes
+etiquetas: [Tablero, IGV, SUNAT, Comprobantes electrónicos, Detracciones, Hoja de cálculo]
+portada: screenshots/dashboard.png
+
+destacados_intro: >-
+  Tablero nativo de Odoo 19 (app Tableros), con datos en vivo y filtros por periodo y tercero.
+destacados:
+  - icono: "%"
+    titulo: IGV del periodo
+    texto: >-
+      Base de ventas y compras, débito y crédito fiscal e IGV resultante, por mes y por
+      tipo de comprobante.
+  - icono: "✓"
+    titulo: SUNAT al día
+    texto: >-
+      Comprobantes por enviar, con error y bajas pendientes; guías y CRE por enviar.
+  - icono: "↘"
+    titulo: Detracciones y más
+    texto: >-
+      Detracciones, retenciones y percepciones de ventas y compras, y lo depositado en el
+      Banco de la Nación.
+  - icono: "▦"
+    titulo: Según lo instalado
+    texto: >-
+      Cada bloque aparece si su módulo está instalado; el tablero se rearma solo.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    La información fiscal está repartida en decenas de menús: para saber cuánto IGV se
+    generó, qué comprobantes no llegaron a SUNAT o qué detracciones faltan depositar hay
+    que abrir varios listados. El tablero lo reúne en una sola pantalla al entrar a la app.
+  nota: >-
+    **Cifras de control.** El IGV resultante es débito menos crédito del periodo; el IGV a
+    pagar, con saldos a favor, percepciones y retenciones, es el de la declaración mensual.
+
+pasos_intro: >-
+  Revisión del cierre de un mes.
+pasos:
+  - titulo: Abrir la app Perú
+    ruta: Perú ▸ Tablero
+    texto: >-
+      Elija el periodo **Mes** en la barra superior y revise ventas, compras e IGV.
+    imagen: screenshots/dashboard.png
+  - titulo: Comprobantes electrónicos
+    texto: >-
+      Atienda los comprobantes por enviar o con error antes de cerrar el mes; cada fila
+      abre el comprobante.
+    imagen: screenshots/edi.png
+  - titulo: Detracciones y tesorería
+    texto: >-
+      Compare las detracciones de compras con lo depositado y revise letras y saldos.
+    imagen: screenshots/withholdings_treasury.png
+
+configuracion:
+  - "Sin configuración: lo ven los usuarios con permiso de contable o de auditor."
+  - "Para adaptarlo, duplíquelo en la app Tableros y edite la copia."
+
+faq:
+  - pregunta: "¿Por qué no veo el bloque de detracciones?"
+    respuesta: >-
+      Aparece solo si el módulo de detracciones está instalado. Al instalarlo, el tablero
+      se rearma solo.
+  - pregunta: "¿El IGV resultante es lo que pago?"
+    respuesta: >-
+      No necesariamente: es débito menos crédito del periodo. El IGV a pagar descuenta
+      saldos a favor, percepciones y retenciones en la declaración mensual (621).
+  - pregunta: "¿Puedo cambiar los gráficos?"
+    respuesta: >-
+      Sí, sobre una copia: duplíquelo en la app Tableros. El original lo mantiene el módulo.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: tablero de la app Perú con ventas, compras e IGV, comprobantes electrónicos, detracciones, retenciones, percepciones, tesorería y declaraciones, según los módulos instalados."
+
+relacionados: [al_account_base, al_l10n_pe_monthly_tax, al_l10n_pe_detraction, al_l10n_pe_retention, al_l10n_pe_collection]

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Primer menú de la app Perú: al abrir la app se ve el tablero. -->
+    <menuitem id="menu_pe_dashboard" name="Tablero" parent="al_account_base.al_l10n_pe_root"
+              action="action_pe_dashboard" sequence="1"
+              groups="account.group_account_user,account.group_account_readonly"/>
+    <menuitem id="menu_pe_dashboard_tax" name="Ventas, compras e IGV"
+              parent="al_account_base.al_l10n_pe_reporting_analysis"
+              action="action_dashboard_tax" sequence="5"
+              groups="account.group_account_user,account.group_account_readonly"/>
+</odoo>

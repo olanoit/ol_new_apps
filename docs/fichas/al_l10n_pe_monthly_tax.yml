@@ -71,6 +71,10 @@ pasos:
     imagen: screenshots/04-regimen.png
 
 novedades:
+  - version: 4.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "El auditor (contabilidad de solo lectura) puede consultar las declaraciones y los regímenes."
   - version: 3.20261012
     fecha: 12/10/2026
     cambios:

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tablero de la app Perú a la manera de Odoo 19: hoja de cálculo de la
+         app Tableros. El contenido lo arma l10n_pe.dashboard.builder según los
+         módulos instalados (no se declara aquí para no pisarlo al actualizar). -->
+    <record id="dashboard_pe" model="spreadsheet.dashboard">
+        <field name="name">Perú</field>
+        <field name="main_data_model_ids" eval="[Command.link(ref('account.model_account_move'))]"/>
+        <field name="dashboard_group_id" ref="spreadsheet_dashboard.spreadsheet_dashboard_group_finance"/>
+        <field name="group_ids" eval="[Command.set([ref('account.group_account_readonly'), ref('account.group_account_user')])]"/>
+        <field name="sequence">25</field>
+        <field name="is_published">True</field>
+    </record>
+    <function model="l10n_pe.dashboard.builder" name="_refresh_dashboard" eval="[True]"/>
+
+    <!-- Abre la app de tableros directamente en el de Perú. -->
+    <record id="action_pe_dashboard" model="ir.actions.client">
+        <field name="name">Tablero</field>
+        <field name="tag">action_spreadsheet_dashboard</field>
+        <field name="params" eval="{'dashboard_id': ref('dashboard_pe')}"/>
+    </record>
+</odoo>

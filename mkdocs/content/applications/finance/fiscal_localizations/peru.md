@@ -20,12 +20,13 @@ generales y, dentro de cada una, encabezados por tema.
 
 | Menú | Qué reúne |
 |---|---|
+| **Tablero** | Resumen tributario y de tesorería (ver [Tablero de la app Perú](peru/dashboard.md)) |
 | **Clientes** | Guías de remisión, letras por cobrar, factoring, detracciones de ventas, retenciones sufridas, percepciones cobradas y cheques de terceros |
 | **Proveedores** | Liquidaciones de compra, DUA, recibos por honorarios, letras por pagar, detracciones, retenciones efectuadas, CRE sin pago, percepciones que nos cobran y pagos por lote |
 | **Tesorería** | Tipo de cambio y compra y venta de moneda, entregas a rendir y caja chica, depósitos y garantías |
 | **Contabilidad** | Cierre del mes (cierre de tipo de cambio, ganancias no realizadas, asientos de destino), arrendamientos y kardex |
 | **SUNAT** | Declaraciones (621, PDT 626, F.V. 697, retenciones de 4.ª), registros SIRE y libros PLE |
-| **Informes** | Estados financieros y análisis (letras, factoring, depósitos, detracciones, retenciones, arrendamientos, guías) |
+| **Informes** | Estados financieros y análisis (ventas, compras e IGV, letras, factoring, depósitos, detracciones, retenciones, arrendamientos, guías) |
 | **Configuración** | Ajustes, catálogos y cuentas de cada módulo |
 
 Cada menú aparece solo si su módulo está instalado. Los mismos documentos
