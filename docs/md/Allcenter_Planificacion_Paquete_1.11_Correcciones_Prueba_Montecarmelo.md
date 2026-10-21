@@ -429,7 +429,7 @@ Las transferencias BRE/QC/00001 a 00006 son despachos de requerimientos procesad
 
 - **% de la solicitud del plan:** muestra 0 %. Con la primera versión de M111-05 mostraba lo que sube frente a la versión vigente: 99.93 % en la v2 de la E-03, que agrega un piso entero. Corregido en `al_construction_planner_approvals` 5.20261021.
 
-- **Departamento en el despacho por unidad:** solo se exige si el despacho lleva productos de módulo (los que tienen «Obra del módulo»). El material de un requerimiento se valida sin departamento, aunque se pida para varios departamentos o para todo el piso, como RQO/2026/00004 y RQO/2026/00010. Va en `al_construction_planner_furniture` 10.20261021.
+- **Departamento en el despacho por unidad:** solo se exige si el despacho lleva productos de módulo (los que tienen «Obra del módulo»). El material de un requerimiento se valida sin departamento, aunque se pida para varios departamentos o para todo el piso, como RQO/2026/00004 y RQO/2026/00010. Va en `al_construction_planner_furniture` 10.20261021 (commit `21126b01`), desplegada en dev1 y dev2. En dev1 se comprobó la regla: BRE/DO/00026 y 00027, que solo llevan material, ya no exigen departamento; BRE/DO/00018, con módulos, sí.
 
 ### Para decidir
 
