@@ -1,0 +1,63 @@
+titulo: Cuota fija en soles
+subtitulo: >-
+  Plazos de pago con una cuota fija pactada en soles que, en una factura en dólares, se
+  convierte al tipo de cambio de la factura.
+categoria: Localización Perú · Facturación
+etiquetas: [Plazos de pago, Cuotas, Moneda extranjera, Dólares]
+
+destacados_intro: >-
+  Un ajuste pequeño sobre el cálculo estándar de cuotas de Odoo 19.
+destacados:
+  - icono: "S/"
+    titulo: Cuota en soles
+    texto: >-
+      Casilla «En soles» en las cuotas de importe fijo del plazo de pago.
+  - icono: "$"
+    titulo: Al cambio de la factura
+    texto: >-
+      En una factura en dólares la cuota se convierte con el tipo de cambio de la
+      factura; el saldo absorbe la diferencia.
+  - icono: "="
+    titulo: Comprobante electrónico
+    texto: >-
+      Las cuotas se informan en la moneda de la factura y suman el total.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En Odoo el importe de una cuota fija está en la moneda de la factura: un plazo con
+    «S/ 1 500 a los 15 días» pediría US$ 1 500 en una factura en dólares. Cuando la
+    inicial o las arras se pactan en soles, había que calcular la cuota a mano en cada
+    factura.
+  nota: >-
+    **Detracciones.** La cuota de detracción en soles la separa el módulo de
+    Detracciones; no hace falta marcarla aquí.
+
+ejemplos_intro: >-
+  Factura de US$ 2 360,00 al tipo de cambio 3,45 con «S/ 1 500 a los 15 días y saldo a
+  30 días».
+ejemplos:
+  - titulo: Cuotas resultantes
+    tabla:
+      - [Cuota, "US$", "S/"]
+      - ["1 (15 días)", "434,78", "1 500,00"]
+      - ["2 (30 días, saldo)", "1 925,22", "6 642,00"]
+
+configuracion:
+  - "Contabilidad ▸ Configuración ▸ Plazos de pago: marcar «En soles» en la cuota de importe fijo."
+
+faq:
+  - pregunta: "¿Y en una factura en soles?"
+    respuesta: >-
+      No cambia nada: la cuota vale el importe indicado.
+  - pregunta: "¿Puedo marcar la última cuota?"
+    respuesta: >-
+      La última cuota siempre es el saldo de la factura, por eso la marca no la cambia.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: cuotas de importe fijo en soles convertidas al tipo de cambio de la factura."
+
+relacionados: [al_l10n_pe_detraction, al_l10n_pe_currency]
