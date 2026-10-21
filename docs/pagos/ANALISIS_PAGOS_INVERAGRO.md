@@ -30,7 +30,7 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Anticipos de cliente/proveedor (122/422) y su aplicación | `account.payment.anticipos`, `is_anticipo`, `inveragro_aplicacion` | Anticipo de pedido; saldo a favor sin cuenta propia | `al_l10n_pe_payment_application` | **Cubierto** (P3) |
 | Cruce / compensación de documentos | `application.document` (APD/AJD) | Conciliación manual | `al_l10n_pe_payment_application` | **Cubierto** (P3) |
 | Cierre de caja diario por sucursal y método de pago | `close.sale.report` | Solo POS | `al_l10n_pe_cash_closing` | **Cubierto** (P4) |
-| Proyección de cobranza / flujo de caja | `payment_projection` (3 900 líneas) | Flujo de efectivo histórico (EE) | — | **Brecha P5** |
+| Proyección de cobranza / flujo de caja | `payment_projection` (3 900 líneas) | Flujo de efectivo histórico (EE) | `al_l10n_pe_cash_forecast` | **Cubierto** (P5) |
 | Plazos de pago: monto fijo en soles con factura en USD | `dv_..._payment_term_foreign_currency` | Plazos rediseñados en 17+ | — | **Brecha P7** (verificar si hace falta) |
 | Bloqueo de pagos de letras ya bancarizadas | `inveragro_letter_validation` | — | Verificar en letras/factoring | P9 |
 | Pagos recurrentes | `om_recurring_payments` | — | — | Baja prioridad |
@@ -99,6 +99,10 @@ gasto sin comprobante; o un depósito de cliente que cubre facturas de varios so
 - Inveragro clasifica por **nombre** del diario («EFECTIVO»); aquí, por tipo de diario y método.
 
 ### P5. Proyección de cobranzas y pagos (flujo de caja proyectado) — prioridad media, esfuerzo medio
+
+> **Hecho (21/10/2026)** en `al_l10n_pe_cash_forecast`: saldo disponible + partidas desde los libros
+> (tránsito, cobrar/pagar con letras, cheques, depósitos a plazo, detracciones, manuales), escenario
+> editable que se conserva al actualizar, real vs. proyectado en periodos terminados, pivote y XLSX.
 
 - Por semanas/meses: cuentas por cobrar y por pagar por vencimiento, letras en cartera y en banco,
   cheques diferidos, depósitos a plazo que vencen, detracciones por liberar; saldo de bancos.

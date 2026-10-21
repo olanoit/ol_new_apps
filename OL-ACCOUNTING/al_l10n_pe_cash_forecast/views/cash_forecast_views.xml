@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cash_forecast_form" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.forecast.form</field>
+        <field name="model">l10n_pe.cash.forecast</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_refresh" type="object" string="Actualizar" class="btn-primary"/>
+                    <button name="action_export_xlsx" type="object" string="Exportar a Excel"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="fa-bar-chart"
+                                string="Análisis"/>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <label for="period_count"/>
+                            <div class="o_row">
+                                <field name="period_count" class="oe_inline"/>
+                                <field name="period_type" class="oe_inline"/>
+                            </div>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="refreshed_on"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="opening_balance"/>
+                            <field name="total_in"/>
+                            <field name="total_out"/>
+                            <field name="closing_balance" class="fw-bold"/>
+                            <field name="min_balance" decoration-danger="min_balance &lt; 0"/>
+                            <field name="restricted_balance" invisible="not restricted_balance"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Resumen por periodo" name="periods">
+                            <field name="period_ids" readonly="1">
+                                <list decoration-danger="closing &lt; 0">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="name" width="150px"/>
+                                    <field name="opening"/>
+                                    <field name="inflows"/>
+                                    <field name="outflows"/>
+                                    <field name="net"/>
+                                    <field name="closing" class="fw-bold"/>
+                                    <field name="is_past" column_invisible="True"/>
+                                    <field name="actual_net" invisible="not is_past" optional="show"/>
+                                    <field name="variance" invisible="not is_past" optional="show"
+                                           decoration-danger="variance &lt; 0"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Partidas" name="lines">
+                            <field name="line_ids" context="{'default_category': 'manual', 'default_date_expected': date_from}">
+                                <list editable="bottom" decoration-muted="amount == 0"
+                                      decoration-warning="is_overdue" decoration-info="is_edited">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="period_id" readonly="1" optional="show"/>
+                                    <field name="category" readonly="category != 'manual' or move_line_id or source_ref"/>
+                                    <field name="move_line_id" column_invisible="True"/>
+                                    <field name="source_ref" column_invisible="True"/>
+                                    <field name="partner_id" readonly="category != 'manual'"/>
+                                    <field name="name" readonly="category != 'manual'"/>
+                                    <field name="account_id" optional="hide"/>
+                                    <field name="date_due" optional="show"/>
+                                    <field name="is_overdue" optional="hide"/>
+                                    <field name="date_expected"/>
+                                    <field name="amount" sum="Neto"/>
+                                    <field name="is_edited" optional="show"/>
+                                    <button name="action_reset" type="object" icon="fa-undo" title="Quitar el ajuste"
+                                            invisible="not is_edited or category == 'manual'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_cash_forecast_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.forecast.list</field>
+        <field name="model">l10n_pe.cash.forecast</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="period_count" optional="show"/>
+                <field name="period_type" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="opening_balance"/>
+                <field name="closing_balance"/>
+                <field name="refreshed_on" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cash_forecast_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.forecast.line.pivot</field>
+        <field name="model">l10n_pe.cash.forecast.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Flujo de caja" sample="1">
+                <field name="category" type="row"/>
+                <field name="period_id" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_cash_forecast_line_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.forecast.line.graph</field>
+        <field name="model">l10n_pe.cash.forecast.line</field>
+        <field name="arch" type="xml">
+            <graph string="Flujo de caja" type="bar" stacked="1">
+                <field name="period_id"/>
+                <field name="direction"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_cash_forecast_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.forecast.line.list</field>
+        <field name="model">l10n_pe.cash.forecast.line</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="currency_id" column_invisible="True"/>
+                <field name="period_id" readonly="1"/>
+                <field name="category"/>
+                <field name="partner_id"/>
+                <field name="name"/>
+                <field name="date_due"/>
+                <field name="date_expected"/>
+                <field name="amount" sum="Neto"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cash_forecast_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.forecast.line.search</field>
+        <field name="model">l10n_pe.cash.forecast.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="name"/>
+                <filter name="inflows" string="Ingresos" domain="[('amount', '&gt;', 0)]"/>
+                <filter name="outflows" string="Egresos" domain="[('amount', '&lt;', 0)]"/>
+                <separator/>
+                <filter name="overdue" string="Vencidas" domain="[('is_overdue', '=', True)]"/>
+                <filter name="edited" string="Ajustadas" domain="[('is_edited', '=', True)]"/>
+                <group>
+                    <filter name="group_period" string="Periodo" context="{'group_by': 'period_id'}"/>
+                    <filter name="group_category" string="Tipo" context="{'group_by': 'category'}"/>
+                    <filter name="group_partner" string="Socio" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cash_forecast" model="ir.actions.act_window">
+        <field name="name">Flujo de caja proyectado</field>
+        <field name="res_model">l10n_pe.cash.forecast</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Proyecte sus cobros y pagos</p>
+            <p>Elija desde qué fecha y cuántas semanas o meses: el flujo parte del saldo de bancos y
+               caja y suma lo que vence por cobrar y por pagar.</p>
+        </field>
+    </record>
+</odoo>

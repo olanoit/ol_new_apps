@@ -1,0 +1,87 @@
+titulo: Flujo de caja proyectado
+subtitulo: >-
+  Cuánto dinero habrá en bancos y caja semana a semana o mes a mes, armado desde los
+  libros: cobranzas, pagos, cheques y depósitos por vencer, con un escenario que el
+  tesorero ajusta.
+categoria: Localización Perú · Tesorería
+etiquetas: [Flujo de caja, Tesorería, Proyección, Cobranzas, Pagos]
+portada: screenshots/form.png
+
+destacados_intro: >-
+  Nada se digita dos veces: el flujo lee los libros y el usuario solo corrige lo que
+  sabe que cambiará.
+destacados:
+  - icono: "→"
+    titulo: Desde los libros
+    texto: >-
+      Saldo de bancos y caja, cuentas por cobrar y por pagar por vencimiento (con
+      letras), tránsito, cheques y depósitos a plazo.
+  - icono: "✎"
+    titulo: Escenario
+    texto: >-
+      Fecha esperada e importe editables por partida, y partidas manuales; se conservan
+      al actualizar.
+  - icono: "≈"
+    titulo: Proyectado y real
+    texto: >-
+      En los periodos terminados, el movimiento real de bancos y caja y la diferencia
+      con lo proyectado.
+  - icono: "▦"
+    titulo: Análisis y Excel
+    texto: >-
+      Tabla dinámica y gráfico por tipo y periodo; descarga a Excel del resumen y el
+      detalle.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo muestra el flujo de efectivo histórico, pero no proyecta. El tesorero arma una
+    hoja de cálculo cada semana copiando saldos y vencimientos, y deja fuera los cheques
+    diferidos, los depósitos que vencen o la planilla.
+  nota: >-
+    **Fondos no disponibles.** La cuenta de detracciones del Banco de la Nación se
+    marca en su diario: su saldo se muestra aparte y no suma al disponible.
+
+pasos_intro: >-
+  Un flujo de 12 semanas desde el 21/10/2026, con la planilla de octubre y el pago a
+  cuenta del mes como partidas manuales.
+pasos:
+  - titulo: Crear el flujo
+    ruta: Perú ▸ Tesorería ▸ Planificación ▸ Flujo de caja proyectado
+    texto: >-
+      Fecha «Desde», 12 semanas. El resumen muestra saldo inicial, ingresos, egresos y
+      saldo final de cada semana, y el saldo mínimo del horizonte.
+    imagen: screenshots/form.png
+  - titulo: Ajustar el escenario
+    texto: >-
+      En Partidas, cambiar la fecha esperada de un cobro o agregar la planilla y los
+      impuestos.
+  - titulo: Analizar
+    texto: >-
+      Análisis: tipo de partida por semana en una tabla dinámica, o Exportar a Excel.
+    imagen: screenshots/pivot.png
+
+configuracion:
+  - "Diarios de banco o caja no disponibles (detracciones): «Fondos no disponibles» en Configuración avanzada."
+
+faq:
+  - pregunta: "¿Qué pasa con lo vencido?"
+    respuesta: >-
+      Entra en el primer periodo marcado como vencido; si sabe cuándo se cobrará, cambie
+      su fecha esperada.
+  - pregunta: "¿Pierdo mis ajustes al actualizar?"
+    respuesta: >-
+      No: las partidas ajustadas y las manuales se conservan; las ya cobradas o pagadas
+      salen solas.
+  - pregunta: "¿Incluye los anticipos?"
+    respuesta: >-
+      No: los anticipos de clientes y a proveedores se aplican a la factura, no generan
+      cobros ni pagos.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: flujo por semanas o meses desde los libros (tránsito, cobrar y pagar, cheques, depósitos a plazo, detracciones, manuales), escenario editable, real frente a proyectado, tabla dinámica y Excel."
+
+relacionados: [al_l10n_pe_cash_closing, al_l10n_pe_account_letter, al_l10n_pe_check, al_l10n_pe_term_deposit]

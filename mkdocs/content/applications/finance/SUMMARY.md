@@ -37,6 +37,7 @@
     * [Pago múltiple](accounting/multiple_payments.md)
     * [ITF automático](accounting/itf.md)
     * [Cierre de caja y arqueo](accounting/cash_closing.md)
+    * [Flujo de caja proyectado](accounting/cash_forecast.md)
     * [Arrendamientos (NIIF 16)](accounting/leases.md)
     * [DUA de importación](accounting/import_dua.md)
 * Proveedores de pago

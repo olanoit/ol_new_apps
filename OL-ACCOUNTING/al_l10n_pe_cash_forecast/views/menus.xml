@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- App Perú: Tesorería ▸ Planificación; espejo en Contabilidad ▸ Informes. -->
+    <menuitem id="menu_pe_treasury_planning" name="Planificación"
+              parent="al_account_base.al_l10n_pe_menu_treasury" sequence="40"
+              groups="account.group_account_user,account.group_account_readonly"/>
+    <menuitem id="menu_pe_cash_forecast" name="Flujo de caja proyectado"
+              parent="menu_pe_treasury_planning" action="action_cash_forecast" sequence="10"/>
+    <menuitem id="menu_account_cash_forecast" name="Flujo de caja proyectado"
+              parent="account.menu_finance_reports" action="action_cash_forecast" sequence="90"
+              groups="account.group_account_user,account.group_account_readonly"/>
+</odoo>
