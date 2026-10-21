@@ -22,14 +22,14 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Cheques recibidos y emitidos | `dv_account_inbound_check` | `l10n_latam_check` | `al_l10n_pe_check` | **Cubierto** (falta impresión, P10) |
 | Letras de cambio | `dv_account_letter` (5 600 líneas) | — | `al_l10n_pe_account_letter` | **Cubierto** |
 | Facturas negociables | `dv_negotiable_invoices` | — | `al_l10n_pe_factoring` (con CAVALI) | **Cubierto** |
-| Caja chica / entregas a rendir / movilidad | `account.petty.cash`, `account.renders.payroll` | — | `al_l10n_pe_cash_fund` | **Cubierto** (falta arqueo, P4) |
+| Caja chica / entregas a rendir / movilidad | `account.petty.cash`, `account.renders.payroll` | — | `al_l10n_pe_cash_fund` | **Cubierto** (arqueo en `al_l10n_pe_cash_closing`) |
 | Transferencia entre cuentas con TC bancario | `transfer` + TC bancario | Transferencias internas | `al_account_payments` (compraventa de moneda), `al_l10n_pe_itf` | **Cubierto** |
 | Bancos: código SUNAT, tipo de cuenta, CCI | `dv_l10n_pe_res_bank*` | — | `al_l10n_pe_batch_payment` | Cubierto |
 | Recibo de caja / comprobante de pago impreso | Muerto (no cargado) | Recibo genérico | `al_l10n_pe_payment_receipt` | **Cubierto** (P1) |
 | Pago de varias facturas de **varios socios** en un pago | Núcleo del motor (`pago_multiproveedor`) | Agrupado solo por socio; lotes (EE) | `al_l10n_pe_payment_multi` | **Cubierto** (P2) |
 | Anticipos de cliente/proveedor (122/422) y su aplicación | `account.payment.anticipos`, `is_anticipo`, `inveragro_aplicacion` | Anticipo de pedido; saldo a favor sin cuenta propia | `al_l10n_pe_payment_application` | **Cubierto** (P3) |
 | Cruce / compensación de documentos | `application.document` (APD/AJD) | Conciliación manual | `al_l10n_pe_payment_application` | **Cubierto** (P3) |
-| Cierre de caja diario por sucursal y método de pago | `close.sale.report` | Solo POS | — | **Brecha P4** |
+| Cierre de caja diario por sucursal y método de pago | `close.sale.report` | Solo POS | `al_l10n_pe_cash_closing` | **Cubierto** (P4) |
 | Proyección de cobranza / flujo de caja | `payment_projection` (3 900 líneas) | Flujo de efectivo histórico (EE) | — | **Brecha P5** |
 | Plazos de pago: monto fijo en soles con factura en USD | `dv_..._payment_term_foreign_currency` | Plazos rediseñados en 17+ | — | **Brecha P7** (verificar si hace falta) |
 | Bloqueo de pagos de letras ya bancarizadas | `inveragro_letter_validation` | — | Verificar en letras/factoring | P9 |
@@ -87,6 +87,10 @@ gasto sin comprobante; o un depósito de cliente que cubre facturas de varios so
   sin comprobante (y el de proveedor, que SUNAT no exige facturar si no hay entrega).
 
 ### P4. Cierre de caja diario y arqueo — prioridad media, esfuerzo medio
+
+> **Hecho (21/10/2026)** en `al_l10n_pe_cash_closing`: saldo según libros por las cuentas de liquidez
+> del diario (agrupado por asiento), arqueo por denominación, asiento del faltante/sobrante, bloqueo
+> del día y reapertura por el administrador.
 
 - Por diario de caja / sucursal y fecha: cobros y pagos del día por **método de pago**, ventas al
   contado vs. crédito, depósitos en tránsito, saldo inicial y final.

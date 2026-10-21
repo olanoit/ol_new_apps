@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cash_closing_form" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.closing.form</field>
+        <field name="model">l10n_pe.cash.closing</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_refresh" type="object" string="Actualizar movimientos"
+                            invisible="state != 'open'"/>
+                    <button name="action_close" type="object" string="Cerrar caja" class="btn-primary"
+                            invisible="state != 'open'"
+                            confirm="Se registra la diferencia del arqueo y la caja queda bloqueada hasta esta fecha. ¿Continuar?"/>
+                    <button name="action_print" type="object" string="Imprimir"/>
+                    <button name="action_reopen" type="object" string="Reabrir" invisible="state != 'closed'"
+                            groups="account.group_account_manager"
+                            confirm="Se anula el asiento de la diferencia y la caja vuelve a admitir movimientos de esta fecha. ¿Continuar?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="journal_id" readonly="state != 'open' or id" options="{'no_create': True}"/>
+                            <field name="date" readonly="state != 'open' or id"/>
+                            <field name="user_id" readonly="state != 'open'"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="balance_start"/>
+                            <field name="amount_in"/>
+                            <field name="amount_out"/>
+                            <field name="balance_book" class="fw-bold"/>
+                            <field name="balance_counted" class="fw-bold"/>
+                            <field name="difference" decoration-danger="difference &lt; 0"
+                                   decoration-success="difference &gt; 0"/>
+                            <field name="move_id" invisible="not move_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Arqueo" name="count">
+                            <group>
+                                <group>
+                                    <field name="count_ids" nolabel="1" colspan="2" readonly="state != 'open'">
+                                        <list editable="bottom" create="0" delete="0">
+                                            <field name="denomination_id" readonly="1"/>
+                                            <field name="currency_id" column_invisible="True"/>
+                                            <field name="quantity"/>
+                                            <field name="subtotal" sum="Efectivo"/>
+                                        </list>
+                                    </field>
+                                </group>
+                                <group>
+                                    <field name="other_values" readonly="state != 'open'"/>
+                                    <field name="shortage_account_id" readonly="state != 'open'"
+                                           invisible="difference &gt;= 0 and state == 'open'"/>
+                                    <field name="shortage_partner_id" readonly="state != 'open'"
+                                           invisible="not shortage_account_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Movimientos del día" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list decoration-danger="amount &lt; 0">
+                                    <field name="move_id"/>
+                                    <field name="category"/>
+                                    <field name="sale_kind" optional="show"/>
+                                    <field name="partner_id"/>
+                                    <field name="name" optional="show"/>
+                                    <field name="pe_payment_method_id" optional="show"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount" sum="Neto"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <field name="note" placeholder="Observaciones del cierre"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_cash_closing_list" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.closing.list</field>
+        <field name="model">l10n_pe.cash.closing</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'open'" decoration-danger="difference &lt; 0">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="journal_id"/>
+                <field name="user_id" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="balance_start" optional="hide"/>
+                <field name="amount_in" sum="Ingresos" optional="show"/>
+                <field name="amount_out" sum="Egresos" optional="show"/>
+                <field name="balance_book"/>
+                <field name="balance_counted"/>
+                <field name="difference" sum="Diferencia"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_cash_closing_search" model="ir.ui.view">
+        <field name="name">l10n_pe.cash.closing.search</field>
+        <field name="model">l10n_pe.cash.closing</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="journal_id"/>
+                <field name="user_id"/>
+                <filter name="open" string="Abiertos" domain="[('state', '=', 'open')]"/>
+                <filter name="closed" string="Cerrados" domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter name="with_difference" string="Con diferencia" domain="[('difference', '!=', 0)]"/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_journal" string="Caja" context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_user" string="Cajero" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_cash_closing" model="ir.actions.act_window">
+        <field name="name">Cierres de caja</field>
+        <field name="res_model">l10n_pe.cash.closing</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cierre la caja del día</p>
+            <p>Elija la caja y la fecha: el saldo y los movimientos salen de los libros. Cuente el
+               efectivo por denominación y cierre.</p>
+        </field>
+    </record>
+</odoo>

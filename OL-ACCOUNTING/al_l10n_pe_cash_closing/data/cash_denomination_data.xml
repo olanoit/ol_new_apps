@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Billetes y monedas en circulación (BCRP). La moneda de 5 céntimos dejó de
+         circular el 1/1/2019. Se pueden archivar o agregar en Configuración. -->
+    <record id="denomination_pen_200" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">200</field>
+        <field name="kind">bill</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="denomination_pen_100" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">100</field>
+        <field name="kind">bill</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="denomination_pen_50" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">50</field>
+        <field name="kind">bill</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="denomination_pen_20" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">20</field>
+        <field name="kind">bill</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="denomination_pen_10" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">10</field>
+        <field name="kind">bill</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="denomination_pen_5" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">5</field>
+        <field name="kind">coin</field>
+        <field name="sequence">6</field>
+    </record>
+    <record id="denomination_pen_2" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">2</field>
+        <field name="kind">coin</field>
+        <field name="sequence">7</field>
+    </record>
+    <record id="denomination_pen_1" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">1</field>
+        <field name="kind">coin</field>
+        <field name="sequence">8</field>
+    </record>
+    <record id="denomination_pen_0_5" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">0.5</field>
+        <field name="kind">coin</field>
+        <field name="sequence">9</field>
+    </record>
+    <record id="denomination_pen_0_2" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">0.2</field>
+        <field name="kind">coin</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="denomination_pen_0_1" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.PEN"/>
+        <field name="value">0.1</field>
+        <field name="kind">coin</field>
+        <field name="sequence">11</field>
+    </record>
+    <record id="denomination_usd_100" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">100</field>
+        <field name="kind">bill</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="denomination_usd_50" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">50</field>
+        <field name="kind">bill</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="denomination_usd_20" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">20</field>
+        <field name="kind">bill</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="denomination_usd_10" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">10</field>
+        <field name="kind">bill</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="denomination_usd_5" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">5</field>
+        <field name="kind">bill</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="denomination_usd_2" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">2</field>
+        <field name="kind">bill</field>
+        <field name="sequence">6</field>
+    </record>
+    <record id="denomination_usd_1" model="l10n_pe.cash.denomination">
+        <field name="currency_id" ref="base.USD"/>
+        <field name="value">1</field>
+        <field name="kind">bill</field>
+        <field name="sequence">7</field>
+    </record>
+</odoo>

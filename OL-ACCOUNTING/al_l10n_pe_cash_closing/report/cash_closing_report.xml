@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cierre de caja: formato común de la suite (al_report_base). -->
+    <template id="report_cash_closing_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="cur" t-value="o.currency_id"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="'Cierre de caja'"/>
+            <t t-set="doc_number" t-value="o.name"/>
+            <t t-set="doc_extra" t-value="o.state == 'open' and 'BORRADOR (caja abierta)' or ''"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 18%;">Caja</td>
+                    <td class="pe-doc-value" style="width: 42%;"><span t-out="o.journal_id.name"/></td>
+                    <td class="pe-doc-label" style="width: 15%;">Fecha</td>
+                    <td class="pe-doc-value"><span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Cajero</td>
+                    <td class="pe-doc-value"><span t-out="o.user_id.name"/></td>
+                    <td class="pe-doc-label">Moneda</td>
+                    <td class="pe-doc-value"><span t-out="cur.name"/></td>
+                </tr>
+            </table>
+
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 70%;">Saldo inicial según libros</td>
+                    <td class="text-end"><span t-out="o.balance_start" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr t-foreach="o._l10n_pe_summary_by_category()" t-as="row">
+                    <td class="pe-doc-label" style="padding-left: 16px;"><span t-out="row[0]"/></td>
+                    <td class="text-end"><span t-out="row[1]" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label"><strong>Saldo final según libros</strong></td>
+                    <td class="text-end"><strong t-out="o.balance_book" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label"><strong>Saldo arqueado</strong></td>
+                    <td class="text-end"><strong t-out="o.balance_counted" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">
+                        <t t-if="o.difference &lt; 0">Faltante</t><t t-elif="o.difference &gt; 0">Sobrante</t><t t-else="">Diferencia</t>
+                        <t t-if="o.move_id"> (<span t-out="o.move_id.name"/>)</t>
+                    </td>
+                    <td class="text-end"><span t-out="o.difference" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+            </table>
+
+            <table class="pe-doc-table pe-doc-lines mb-3" t-if="o.line_ids">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Medio de pago</td>
+                        <td class="text-end" style="width: 20%;">Ingresos</td>
+                        <td class="text-end" style="width: 20%;">Egresos</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o._l10n_pe_summary_by_method()" t-as="row">
+                        <td><span t-out="row[0]"/></td>
+                        <td class="text-end"><span t-out="row[1]" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><span t-out="row[2]" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="pe-doc-table pe-doc-lines mb-3" t-if="o.line_ids">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td style="width: 18%;">Asiento</td>
+                        <td style="width: 16%;">Tipo</td>
+                        <td>Socio / concepto</td>
+                        <td class="text-end" style="width: 16%;">Importe</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.line_ids" t-as="line">
+                        <td><span t-out="line.move_id.name"/></td>
+                        <td><span t-field="line.category"/></td>
+                        <td><span t-out="line.partner_id.name or line.name"/></td>
+                        <td class="text-end"><span t-out="line.amount" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="pe-doc-table pe-doc-lines mb-3 pe-doc-keep">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Arqueo</td>
+                        <td class="text-end" style="width: 16%;">Cantidad</td>
+                        <td class="text-end" style="width: 20%;">Subtotal</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.count_ids.filtered('quantity')" t-as="count">
+                        <td><span t-out="count.denomination_id.display_name"/></td>
+                        <td class="text-end"><span t-out="count.quantity"/></td>
+                        <td class="text-end"><span t-out="count.subtotal" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                    <tr t-if="o.other_values">
+                        <td>Otros valores</td>
+                        <td/>
+                        <td class="text-end"><span t-out="o.other_values" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p t-if="o.note" class="mb-3"><strong>Observaciones:</strong> <span t-out="o.note"/></p>
+
+            <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+                <tr>
+                    <td><div class="pe-doc-sign-line">Cajero<br/><span t-out="o.user_id.name"/></div></td>
+                    <td><div class="pe-doc-sign-line">Supervisor<br/>Nombre y DNI</div></td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+    <template id="report_cash_closing">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_cash_closing.report_cash_closing_document"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_cash_closing" model="ir.actions.report">
+        <field name="name">Cierre de caja</field>
+        <field name="model">l10n_pe.cash.closing</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_cash_closing.report_cash_closing</field>
+        <field name="report_file">al_l10n_pe_cash_closing.report_cash_closing</field>
+        <field name="print_report_name">'Cierre de caja %s' % object.name</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="model_l10n_pe_cash_closing"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

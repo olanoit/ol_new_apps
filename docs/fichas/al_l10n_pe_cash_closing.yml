@@ -1,0 +1,96 @@
+titulo: Cierre de caja y arqueo
+subtitulo: >-
+  El cierre diario de cada caja: saldo según libros, cobros y pagos del día por medio
+  de pago, arqueo por billetes y monedas, asiento del faltante o sobrante y bloqueo del
+  día cerrado.
+categoria: Localización Perú · Tesorería
+etiquetas: [Cierre de caja, Arqueo, Faltante, Sobrante, Efectivo]
+portada: screenshots/form.png
+
+destacados_intro: >-
+  Todo sale de los libros: el cierre no se escribe a mano, se cuenta.
+destacados:
+  - icono: "="
+    titulo: Saldo según libros
+    texto: >-
+      Saldo inicial, cobros (contado y cobranza), pagos, transferencias y saldo final
+      de la caja.
+  - icono: "#"
+    titulo: Arqueo
+    texto: >-
+      Billetes y monedas en soles y dólares, configurables, más otros valores (vales,
+      vouchers).
+  - icono: "±"
+    titulo: Faltante o sobrante
+    texto: >-
+      Asiento automático a las cuentas de diferencias de la caja o al cajero
+      responsable.
+  - icono: "🔒"
+    titulo: Día bloqueado
+    texto: >-
+      Cerrada la caja, nadie publica ni modifica movimientos de esa fecha; reabre solo
+      el administrador.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo controla la caja del punto de venta, pero no la caja de la oficina o de la
+    tienda que cobra y paga desde Contabilidad. Sin cierre diario, las diferencias se
+    descubren a fin de mes y ya no se sabe de qué día ni de qué cajero son.
+  nota: >-
+    **Sucursales.** Cada sucursal lleva su propia caja (diario de efectivo de la
+    sucursal); el cierre es por caja y día.
+
+pasos_intro: >-
+  Una caja con S/ 4 317,78 de saldo inicial, dos cobros y un pago en el día y un
+  faltante de 50 céntimos.
+pasos:
+  - titulo: Crear el cierre
+    ruta: Perú ▸ Tesorería ▸ Caja ▸ Cierres de caja
+    texto: >-
+      Caja y fecha: Odoo trae el saldo inicial y los movimientos del día; el saldo según
+      libros es S/ 5 828,28.
+  - titulo: Contar el efectivo
+    texto: >-
+      Cantidad de cada billete y moneda en la pestaña Arqueo. Arqueado: S/ 5 827,78.
+    imagen: screenshots/form.png
+  - titulo: Cerrar e imprimir
+    texto: >-
+      Se registra el faltante de S/ 0,50 y la caja queda bloqueada hasta esa fecha. El
+      PDF resume por tipo y medio de pago, con el arqueo y las firmas.
+    imagen: screenshots/report.png
+
+asientos_intro: >-
+  El faltante del ejemplo, en el diario de la caja.
+asientos:
+  - titulo: Faltante de caja
+    referencia: CSH1/2026/00002
+    lineas:
+      - ["9990002", "Pérdida por diferencias de caja", "0,50", ""]
+      - ["1010000", "Caja", "", "0,50"]
+
+configuracion:
+  - "Diario de efectivo con sus cuentas de pérdidas y ganancias por diferencias (Configuración avanzada)."
+  - "Perú ▸ Configuración ▸ Contabilidad ▸ Billetes y monedas (vienen los soles y dólares en circulación)."
+
+faq:
+  - pregunta: "¿Puedo cargar el faltante al cajero?"
+    respuesta: >-
+      Sí: indique la cuenta del faltante (p. ej. 1413 Cuentas por cobrar al personal) y
+      el responsable antes de cerrar.
+  - pregunta: "Cerré y falta registrar un cobro, ¿qué hago?"
+    respuesta: >-
+      Un administrador de contabilidad reabre el cierre (se anula el asiento de la
+      diferencia), se registra el cobro y se vuelve a cerrar.
+  - pregunta: "¿Funciona si los pagos de caja van a una cuenta de pendientes?"
+    respuesta: >-
+      Sí: el saldo según libros suma la cuenta de la caja y las de pendientes de sus
+      métodos de pago, en los asientos de esa caja.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: cierre diario por caja con saldo según libros, arqueo por denominación, asiento del faltante o sobrante, bloqueo del día, reapertura y PDF."
+
+relacionados: [al_l10n_pe_cash_fund, al_account_payments, al_l10n_pe_payment_receipt]

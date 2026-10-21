@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cash_closing_invoice,l10n_pe.cash.closing invoice,model_l10n_pe_cash_closing,account.group_account_invoice,1,1,1,1
+access_cash_closing_read,l10n_pe.cash.closing readonly,model_l10n_pe_cash_closing,account.group_account_readonly,1,0,0,0
+access_cash_closing_line_invoice,l10n_pe.cash.closing.line invoice,model_l10n_pe_cash_closing_line,account.group_account_invoice,1,1,1,1
+access_cash_closing_line_read,l10n_pe.cash.closing.line readonly,model_l10n_pe_cash_closing_line,account.group_account_readonly,1,0,0,0
+access_cash_closing_count_invoice,l10n_pe.cash.closing.count invoice,model_l10n_pe_cash_closing_count,account.group_account_invoice,1,1,1,1
+access_cash_closing_count_read,l10n_pe.cash.closing.count readonly,model_l10n_pe_cash_closing_count,account.group_account_readonly,1,0,0,0
+access_cash_denomination_read,l10n_pe.cash.denomination read,model_l10n_pe_cash_denomination,account.group_account_invoice,1,0,0,0
+access_cash_denomination_readonly,l10n_pe.cash.denomination readonly,model_l10n_pe_cash_denomination,account.group_account_readonly,1,0,0,0
+access_cash_denomination_manager,l10n_pe.cash.denomination manager,model_l10n_pe_cash_denomination,account.group_account_manager,1,1,1,1

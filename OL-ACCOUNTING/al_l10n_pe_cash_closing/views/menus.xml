@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- App Perú: Tesorería ▸ Caja (sección propia, como la caja chica) y Configuración ▸ Contabilidad. -->
+    <menuitem id="menu_pe_cash_root" name="Caja"
+              parent="al_account_base.al_l10n_pe_menu_treasury" sequence="15"
+              groups="account.group_account_invoice,account.group_account_readonly"/>
+    <menuitem id="menu_pe_cash_closing" name="Cierres de caja"
+              parent="menu_pe_cash_root" action="action_cash_closing" sequence="10"/>
+    <menuitem id="menu_pe_cash_denomination" name="Billetes y monedas"
+              parent="al_account_base.al_l10n_pe_config_accounting"
+              action="action_cash_denomination" sequence="60"
+              groups="account.group_account_manager"/>
+
+    <!-- Ubicación nativa en Contabilidad. -->
+    <menuitem id="menu_account_cash_closing" name="Cierres de caja"
+              parent="account.account_transactions_menu" action="action_cash_closing"
+              sequence="45" groups="account.group_account_invoice,account.group_account_readonly"/>
+</odoo>
