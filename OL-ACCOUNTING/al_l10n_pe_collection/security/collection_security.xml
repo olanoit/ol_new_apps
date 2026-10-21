@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="collection_privilege" model="res.groups.privilege">
+        <field name="name">Cobranza</field>
+        <field name="sequence">25</field>
+    </record>
+
+    <!-- Gestor: ve y gestiona la cartera de los clientes que tiene asignados. -->
+    <record id="group_collection_user" model="res.groups">
+        <field name="name">Gestor</field>
+        <field name="privilege_id" ref="collection_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+    </record>
+
+    <!-- Administrador: toda la cartera, metas y configuración. -->
+    <record id="group_collection_manager" model="res.groups">
+        <field name="name">Administrador</field>
+        <field name="privilege_id" ref="collection_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('group_collection_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <!-- Multicompañía -->
+        <record id="collection_action_company_rule" model="ir.rule">
+            <field name="name">Gestión de cobranza: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_action"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_promise_company_rule" model="ir.rule">
+            <field name="name">Compromiso de pago: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_promise"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_forecast_company_rule" model="ir.rule">
+            <field name="name">Proyección de cobranza: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_forecast"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_forecast_line_company_rule" model="ir.rule">
+            <field name="name">Partida de la proyección de cobranza: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_forecast_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_target_company_rule" model="ir.rule">
+            <field name="name">Meta de cobranza: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_target"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_portfolio_company_rule" model="ir.rule">
+            <field name="name">Cartera: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_portfolio"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <!-- El gestor solo ve lo suyo; el administrador, todo. -->
+        <record id="collection_action_user_rule" model="ir.rule">
+            <field name="name">Gestión de cobranza: solo las propias</field>
+            <field name="model_id" ref="model_l10n_pe_collection_action"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_action_manager_rule" model="ir.rule">
+            <field name="name">Gestión de cobranza: todas</field>
+            <field name="model_id" ref="model_l10n_pe_collection_action"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_promise_user_rule" model="ir.rule">
+            <field name="name">Compromiso de pago: solo los propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_promise"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_promise_manager_rule" model="ir.rule">
+            <field name="name">Compromiso de pago: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_promise"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_portfolio_user_rule" model="ir.rule">
+            <field name="name">Cartera: solo la propia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_portfolio"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_portfolio_manager_rule" model="ir.rule">
+            <field name="name">Cartera: toda</field>
+            <field name="model_id" ref="model_l10n_pe_collection_portfolio"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_target_user_rule" model="ir.rule">
+            <field name="name">Meta de cobranza: solo las propias</field>
+            <field name="model_id" ref="model_l10n_pe_collection_target"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_target_manager_rule" model="ir.rule">
+            <field name="name">Meta de cobranza: todas</field>
+            <field name="model_id" ref="model_l10n_pe_collection_target"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+    </data>
+</odoo>

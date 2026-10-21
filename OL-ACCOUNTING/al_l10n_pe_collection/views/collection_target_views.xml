@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_target_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.target.list</field>
+        <field name="model">l10n_pe.collection.target</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" decoration-success="progress &gt;= 100">
+                <field name="user_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="collected_amount" sum="Total"/>
+                <field name="progress" widget="progressbar"/>
+                <field name="portfolio_amount" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_target_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.target.search</field>
+        <field name="model">l10n_pe.collection.target</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <filter name="current" string="Vigentes"
+                        domain="[('date_from', '&lt;=', context_today().strftime('%Y-%m-%d')), ('date_to', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter name="group_user" string="Gestor" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_collection_target" model="ir.actions.act_window">
+        <field name="name">Metas de cobranza</field>
+        <field name="res_model">l10n_pe.collection.target</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_current': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Fije la meta de cobranza de cada gestor</p>
+            <p>El avance es lo cobrado de los clientes asignados al gestor en el periodo.</p>
+        </field>
+    </record>
+</odoo>

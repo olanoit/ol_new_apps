@@ -1,0 +1,102 @@
+titulo: Cobranza
+subtitulo: >-
+  La aplicación del equipo de cobranza: cartera por gestor, gestiones, compromisos de pago
+  evaluados solos, proyección de cobranza, metas, indicadores, estado de cuenta y avisos.
+categoria: Localización Perú · Tesorería
+etiquetas: [Cobranza, Cartera, Compromisos de pago, Proyección, DSO, Estado de cuenta]
+portada: screenshots/dashboard.png
+
+destacados_intro: >-
+  Sobre el seguimiento de pagos nativo de Odoo: el gestor es su responsable y los
+  recordatorios siguen siendo los niveles de seguimiento.
+destacados:
+  - icono: "▦"
+    titulo: Cartera por gestor
+    texto: >-
+      Antigüedad por tramos, zona y compromiso vigente, en lista y tabla dinámica.
+  - icono: "☎"
+    titulo: Gestiones
+    texto: >-
+      Llamadas, visitas, correos y WhatsApp con su resultado y la próxima acción.
+  - icono: "✓"
+    titulo: Compromisos
+    texto: >-
+      Se evalúan solos: cumplido, parcial o incumplido, con alerta al gestor.
+  - icono: "↗"
+    titulo: Proyección
+    texto: >-
+      Por compromiso, historial de pago del cliente y probabilidad por antigüedad;
+      proyectado frente a cobrado.
+  - icono: "%"
+    titulo: Metas e indicadores
+    texto: >-
+      Meta por gestor, % vencido, DSO y cumplimiento de compromisos en un tablero.
+  - icono: "✉"
+    titulo: Avisos
+    texto: >-
+      Recordatorio al cliente, alerta de incumplidos y resumen diario a cada gestor.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo recuerda las facturas vencidas, pero no registra qué se habló con el cliente, qué
+    prometió pagar ni si cumplió, ni proyecta cuánto se cobrará. El equipo de cobranza lo
+    llevaba en hojas de cálculo que nadie podía consolidar.
+  nota: >-
+    **Cartera.** Excluye los anticipos de clientes (122) y las detracciones por cobrar, que
+    van al Banco de la Nación.
+
+pasos_intro: >-
+  Una cartera de 24 clientes repartida entre dos gestoras.
+pasos:
+  - titulo: Asignar la cartera
+    ruta: Cobranza ▸ Cartera ▸ Clientes y gestores
+    texto: >-
+      Gestor de cobranza y zona de cada cliente, en lote.
+  - titulo: Revisar la antigüedad
+    ruta: Cobranza ▸ Cartera ▸ Antigüedad
+    texto: >-
+      Saldo por gestor y tramo de días de atraso.
+    imagen: screenshots/aging.png
+  - titulo: Registrar gestiones y compromisos
+    ruta: Cobranza ▸ Gestión ▸ Gestiones
+    texto: >-
+      Cada llamada con su resultado; «Promete pagar» crea el compromiso, que se evalúa solo.
+    imagen: screenshots/promises.png
+  - titulo: Proyectar la cobranza
+    ruta: Cobranza ▸ Proyección y metas ▸ Proyección de cobranza
+    texto: >-
+      Cobranza esperada por semana con su origen: compromiso, historial o vencimiento.
+    imagen: screenshots/forecast.png
+  - titulo: Enviar el estado de cuenta
+    texto: >-
+      Desde la ficha del cliente o a varios clientes a la vez.
+    imagen: screenshots/statement.png
+
+configuracion:
+  - "Permisos Cobranza / Gestor o Administrador."
+  - "Cobranza ▸ Configuración: zonas, tramos de antigüedad con su probabilidad y resultados de gestión."
+  - "Ajustes ▸ Perú ▸ Cobranza: compromisos, historial, resumen diario y carga de niveles de seguimiento en español."
+
+faq:
+  - pregunta: "¿Reemplaza al seguimiento de pagos de Odoo?"
+    respuesta: >-
+      No: lo usa. El gestor es el responsable de seguimiento y los niveles siguen enviando
+      los recordatorios; la app agrega gestiones, compromisos, proyección, metas e
+      indicadores.
+  - pregunta: "¿Un gestor ve la cartera de otros?"
+    respuesta: >-
+      No: el permiso Gestor ve solo sus clientes, gestiones y compromisos; el
+      Administrador ve todo.
+  - pregunta: "¿De dónde sale el atraso promedio de un cliente?"
+    respuesta: >-
+      De sus facturas pagadas en los últimos meses (12 por defecto): días entre el
+      vencimiento y el pago, ponderados por importe.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: cartera por gestor y zona, gestiones, compromisos evaluados solos, proyección de cobranza, metas, tablero, estado de cuenta, recordatorios, resumen diario y niveles de seguimiento en español."
+
+relacionados: [al_l10n_pe_cash_forecast, al_l10n_pe_account_letter, al_l10n_pe_payment_receipt]

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Estado de cuenta del cliente: formato común de la suite (al_report_base). -->
+    <template id="report_statement_document">
+        <t t-set="company" t-value="res_company"/>
+        <t t-set="data" t-value="o._l10n_pe_collection_statement_values(company)"/>
+        <t t-set="cur" t-value="data['currency']"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="'Estado de cuenta'"/>
+            <t t-set="doc_extra" t-value="'Al %s' % data['today'].strftime('%d/%m/%Y')"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 15%;">Cliente</td>
+                    <td class="pe-doc-value" style="width: 50%;"><span t-out="o.name"/></td>
+                    <td class="pe-doc-label" style="width: 15%;"><span t-out="o.l10n_latam_identification_type_id.name or 'Documento'"/></td>
+                    <td class="pe-doc-value"><span t-out="o.vat or '—'"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Dirección</td>
+                    <td class="pe-doc-value" colspan="3"><span t-out="', '.join(p for p in (o.street, o.city, o.state_id.name) if p)"/></td>
+                </tr>
+            </table>
+
+            <table class="pe-doc-table pe-doc-lines mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Documento</td>
+                        <td style="width: 12%;">Emisión</td>
+                        <td style="width: 12%;">Vencimiento</td>
+                        <td class="text-end" style="width: 9%;">Días de atraso</td>
+                        <td class="text-end" style="width: 15%;">Importe</td>
+                        <td class="text-end" style="width: 15%;">Saldo</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data['documents']" t-as="doc" t-att-style="doc['overdue'] and 'color: #b91c1c;' or None">
+                        <td><t t-if="doc['document']"><span t-out="doc['document']"/> </t><span t-out="doc['name']"/></td>
+                        <td><span t-out="doc['date'] and doc['date'].strftime('%d/%m/%Y')"/></td>
+                        <td><span t-out="doc['date_due'] and doc['date_due'].strftime('%d/%m/%Y')"/></td>
+                        <td class="text-end"><t t-if="doc['is_credit']">A favor</t><t t-else=""><span t-out="doc['days'] or ''"/></t></td>
+                        <td class="text-end"><span t-out="doc['total_currency']" t-options="{'widget': 'monetary', 'display_currency': doc['currency']}"/></td>
+                        <td class="text-end"><span t-out="doc['residual_currency']" t-options="{'widget': 'monetary', 'display_currency': doc['currency']}"/></td>
+                    </tr>
+                    <tr t-if="not data['documents']">
+                        <td colspan="6">No hay documentos pendientes de pago.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="pe-doc-table mb-3 pe-doc-keep" style="width: 45%; margin-left: auto;">
+                <tr>
+                    <td class="pe-doc-label">Vencido</td>
+                    <td class="text-end"><span t-out="data['overdue']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Por vencer</td>
+                    <td class="text-end"><span t-out="data['due']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr t-if="data['credit']">
+                    <td class="pe-doc-label">Saldo a favor</td>
+                    <td class="text-end"><span t-out="data['credit']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label"><strong>Total por pagar</strong></td>
+                    <td class="text-end"><strong t-out="data['total']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                </tr>
+            </table>
+            <p class="pe-doc-fs-11">Saldos en <span t-out="cur.name"/> al tipo de cambio de registro de cada documento; los
+                documentos en moneda extranjera muestran su importe y saldo en su moneda. Si ya realizó algún pago,
+                por favor no lo considere.</p>
+        </t>
+    </template>
+
+    <template id="report_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_collection.report_statement_document" t-lang="o.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_statement" model="ir.actions.report">
+        <field name="name">Estado de cuenta</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_collection.report_statement</field>
+        <field name="report_file">al_l10n_pe_collection.report_statement</field>
+        <field name="print_report_name">'Estado de cuenta %s' % object.name</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

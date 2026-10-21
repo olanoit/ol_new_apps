@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Tramos de antigüedad y probabilidad de cobro iniciales: referenciales, se ajustan
+         en Cobranza ▸ Configuración ▸ Tramos de antigüedad según la experiencia de la empresa. -->
+    <record id="bucket_1" model="l10n_pe.collection.bucket">
+        <field name="name">Por vencer</field>
+        <field name="days_from">-36500</field>
+        <field name="days_to">0</field>
+        <field name="probability">98</field>
+    </record>
+    <record id="bucket_2" model="l10n_pe.collection.bucket">
+        <field name="name">1 a 30 días</field>
+        <field name="days_from">1</field>
+        <field name="days_to">30</field>
+        <field name="probability">95</field>
+    </record>
+    <record id="bucket_3" model="l10n_pe.collection.bucket">
+        <field name="name">31 a 60 días</field>
+        <field name="days_from">31</field>
+        <field name="days_to">60</field>
+        <field name="probability">85</field>
+    </record>
+    <record id="bucket_4" model="l10n_pe.collection.bucket">
+        <field name="name">61 a 90 días</field>
+        <field name="days_from">61</field>
+        <field name="days_to">90</field>
+        <field name="probability">70</field>
+    </record>
+    <record id="bucket_5" model="l10n_pe.collection.bucket">
+        <field name="name">91 a 180 días</field>
+        <field name="days_from">91</field>
+        <field name="days_to">180</field>
+        <field name="probability">45</field>
+    </record>
+    <record id="bucket_6" model="l10n_pe.collection.bucket">
+        <field name="name">Más de 180 días</field>
+        <field name="days_from">181</field>
+        <field name="days_to">0</field>
+        <field name="probability">15</field>
+    </record>
+</odoo>

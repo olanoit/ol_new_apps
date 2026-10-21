@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Plantillas en noupdate: la empresa las adapta a su tono. -->
+    <data noupdate="1">
+        <!-- Recordatorio del compromiso de pago al cliente. -->
+        <record id="mail_template_promise_reminder" model="mail.template">
+            <field name="name">Cobranza: recordatorio de compromiso de pago</field>
+            <field name="model_id" ref="model_l10n_pe_collection_promise"/>
+            <field name="email_from">{{ (object.user_id.email_formatted or object.company_id.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">{{ object.company_id.name }}: recordatorio de su compromiso de pago del {{ format_date(object.date) }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Estimado(a) <t t-out="object.partner_id.name or ''"/>:</p>
+                    <p>
+                        Le recordamos el compromiso de pago acordado con nosotros por
+                        <b><t t-out="format_amount(object.amount, object.currency_id) or ''"/></b>
+                        para el <b><t t-out="format_date(object.date) or ''"/></b>.
+                    </p>
+                    <p t-if="object.line_ids">
+                        Documentos: <t t-out="', '.join(object.line_ids.mapped('move_id.name'))"/>.
+                    </p>
+                    <p>Si ya realizó el pago, le agradeceremos enviarnos la constancia y no considerar este mensaje.</p>
+                    <p>Atentamente,<br/><t t-out="object.user_id.name or ''"/><br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Estado de cuenta con el PDF adjunto. -->
+        <record id="mail_template_statement" model="mail.template">
+            <field name="name">Cobranza: estado de cuenta</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">{{ (object.followup_responsible_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.id }}</field>
+            <field name="subject">{{ user.company_id.name }}: estado de cuenta de {{ object.name }}</field>
+            <field name="report_template_ids" eval="[(4, ref('al_l10n_pe_collection.action_report_statement'))]"/>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Estimado(a) <t t-out="object.name or ''"/>:</p>
+                    <p>Le enviamos adjunto su estado de cuenta al día de hoy, con los documentos pendientes de pago.</p>
+                    <p>Ante cualquier consulta o diferencia, por favor comuníquese con nosotros.</p>
+                    <p>Atentamente,<br/><t t-out="(object.followup_responsible_id or user).name or ''"/><br/><t t-out="user.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <!-- Niveles de seguimiento en español (se cargan desde Ajustes ▸ Cobranza). -->
+        <record id="mail_template_followup_preventive" model="mail.template">
+            <field name="name">Cobranza: recordatorio de vencimiento</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">{{ object._get_followup_responsible().email_formatted }}</field>
+            <field name="use_default_to" eval="True"/>
+            <field name="subject">{{ (object.company_id or object._get_followup_responsible().company_id).name }}: documentos próximos a vencer</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Estimado(a) <t t-out="object.name or ''"/>:</p>
+                    <p>Le recordamos que tiene documentos próximos a vencer por un total de
+                        <b><t t-out="format_amount(object.total_due, object.currency_id) or ''"/></b>.</p>
+                    <p>Si ya programó el pago, por favor no considere este mensaje.</p>
+                    <p>Atentamente,<br/><t t-out="object._get_followup_responsible().name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+        <record id="mail_template_followup_overdue" model="mail.template">
+            <field name="name">Cobranza: aviso de deuda vencida</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">{{ object._get_followup_responsible().email_formatted }}</field>
+            <field name="use_default_to" eval="True"/>
+            <field name="subject">{{ (object.company_id or object._get_followup_responsible().company_id).name }}: documentos vencidos pendientes de pago</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Estimado(a) <t t-out="object.name or ''"/>:</p>
+                    <p>Según nuestros registros, su cuenta tiene un saldo vencido de
+                        <b><t t-out="format_amount(object.total_overdue_followup, object.currency_id) or ''"/></b>.
+                        Le agradeceremos regularizarlo a la brevedad o comunicarse con nosotros para acordar
+                        una fecha de pago.</p>
+                    <p>Si ya realizó el pago, por favor envíenos la constancia y no considere este mensaje.</p>
+                    <p>Atentamente,<br/><t t-out="object._get_followup_responsible().name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+        <record id="mail_template_followup_last" model="mail.template">
+            <field name="name">Cobranza: último aviso</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="email_from">{{ object._get_followup_responsible().email_formatted }}</field>
+            <field name="use_default_to" eval="True"/>
+            <field name="subject">{{ (object.company_id or object._get_followup_responsible().company_id).name }}: último aviso de deuda vencida</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Estimado(a) <t t-out="object.name or ''"/>:</p>
+                    <p>A pesar de nuestros avisos anteriores, su cuenta mantiene un saldo vencido de
+                        <b><t t-out="format_amount(object.total_overdue_followup, object.currency_id) or ''"/></b>.</p>
+                    <p>Le solicitamos regularizarlo en un plazo de 5 días hábiles. De no recibir su pago o una
+                        propuesta de pago, nos veremos obligados a evaluar otras acciones de cobranza.</p>
+                    <p>Atentamente,<br/><t t-out="object._get_followup_responsible().name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+    </data>
+
+    <!-- Cuerpo del resumen diario a cada gestor. -->
+    <template id="collection_digest_mail">
+        <div style="font-family: Arial, sans-serif; font-size: 13px; color: #1f2937;">
+            <p>Hola <t t-out="user.name"/>, este es el resumen de cobranza del <t t-out="today.strftime('%d/%m/%Y')"/>.</p>
+            <div t-if="promises">
+                <h3 style="font-size: 14px; margin: 16px 0 6px;">Compromisos de pago para hoy o vencidos (<t t-out="len(promises)"/>)</h3>
+                <table style="border-collapse: collapse; width: 100%;">
+                    <tr t-foreach="promises" t-as="p">
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="p.date.strftime('%d/%m/%Y')"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="p.partner_id.name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb; text-align: right;"><t t-out="currency.format(p.amount)"/></td>
+                    </tr>
+                </table>
+            </div>
+            <div t-if="broken">
+                <h3 style="font-size: 14px; margin: 16px 0 6px; color: #b91c1c;">Compromisos incumplidos hoy (<t t-out="len(broken)"/>)</h3>
+                <table style="border-collapse: collapse; width: 100%;">
+                    <tr t-foreach="broken" t-as="p">
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="p.partner_id.name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb; text-align: right;">Comprometido <t t-out="currency.format(p.amount)"/>, cobrado <t t-out="currency.format(p.collected_amount)"/></td>
+                    </tr>
+                </table>
+            </div>
+            <div t-if="activities">
+                <h3 style="font-size: 14px; margin: 16px 0 6px;">Gestiones pendientes (<t t-out="len(activities)"/>)</h3>
+                <table style="border-collapse: collapse; width: 100%;">
+                    <tr t-foreach="activities" t-as="a">
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="a.date_deadline.strftime('%d/%m/%Y')"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="a.res_name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="a.summary or a.activity_type_id.name"/></td>
+                    </tr>
+                </table>
+            </div>
+            <div t-if="due_soon">
+                <h3 style="font-size: 14px; margin: 16px 0 6px;">Vencen en los próximos 3 días (<t t-out="currency.format(sum(due_soon.mapped('amount_residual')))"/>)</h3>
+                <table style="border-collapse: collapse; width: 100%;">
+                    <tr t-foreach="due_soon" t-as="l">
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="l.date_maturity.strftime('%d/%m/%Y')"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="l.partner_id.name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="l.move_id.name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb; text-align: right;"><t t-out="currency.format(l.amount_residual)"/></td>
+                    </tr>
+                </table>
+            </div>
+            <div t-if="new_overdue">
+                <h3 style="font-size: 14px; margin: 16px 0 6px;">Vencieron ayer (<t t-out="currency.format(sum(new_overdue.mapped('amount_residual')))"/>)</h3>
+                <table style="border-collapse: collapse; width: 100%;">
+                    <tr t-foreach="new_overdue" t-as="l">
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="l.partner_id.name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb;"><t t-out="l.move_id.name"/></td>
+                        <td style="padding: 3px 6px; border-bottom: 1px solid #e5e7eb; text-align: right;"><t t-out="currency.format(l.amount_residual)"/></td>
+                    </tr>
+                </table>
+            </div>
+            <p style="color: #6b7280; font-size: 11px; margin-top: 18px;"><t t-out="company.name"/> · Cobranza</p>
+        </div>
+    </template>
+</odoo>

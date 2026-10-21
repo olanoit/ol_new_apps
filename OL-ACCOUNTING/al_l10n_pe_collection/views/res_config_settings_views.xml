@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_collection" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pe.collection</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="74"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Cobranza" name="pe_collection_block">
+                    <setting string="Compromisos de pago"
+                             help="Cuándo se evalúa un compromiso y cuándo se recuerda al cliente.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_promise_tolerance" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_promise_tolerance"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_promise_reminder_days" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_promise_reminder_days"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_promise_min_percent" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_promise_min_percent"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Proyección y avisos"
+                             help="Historial con que se calcula el atraso promedio de cada cliente y resumen diario a los gestores.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_history_months" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_history_months"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_digest" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_digest"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Niveles de seguimiento en español"
+                             help="Agrega los niveles que falten: recordatorio 3 días antes, aviso al vencer y a los 15, 30 y 60 días.">
+                        <button name="action_l10n_pe_collection_load_followup_levels" type="object"
+                                string="Cargar niveles" class="btn-link" icon="oi-arrow-right"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

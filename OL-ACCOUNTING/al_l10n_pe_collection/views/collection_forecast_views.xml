@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_forecast_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.forecast.form</field>
+        <field name="model">l10n_pe.collection.forecast</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_refresh" type="object" string="Actualizar" class="btn-primary"/>
+                    <button name="action_export_xlsx" type="object" string="Exportar a Excel"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="fa-bar-chart"
+                                string="Análisis"/>
+                    </div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <label for="period_count"/>
+                            <div class="o_row">
+                                <field name="period_count" class="oe_inline"/>
+                                <field name="period_type" class="oe_inline"/>
+                            </div>
+                            <field name="user_ids" widget="many2many_tags"/>
+                            <field name="zone_ids" widget="many2many_tags"/>
+                            <field name="use_behavior"/>
+                            <field name="use_probability"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="portfolio_amount"/>
+                            <field name="overdue_amount"/>
+                            <field name="expected_amount" class="fw-bold"/>
+                            <field name="refreshed_on"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Resumen por periodo" name="periods">
+                            <field name="period_ids" readonly="1">
+                                <list>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="name" width="150px"/>
+                                    <field name="residual"/>
+                                    <field name="expected_amount"/>
+                                    <field name="cumulative_amount"/>
+                                    <field name="is_past" column_invisible="True"/>
+                                    <field name="collected_amount" invisible="not is_past" optional="show"/>
+                                    <field name="variance" invisible="not is_past" optional="show"
+                                           decoration-danger="variance &lt; 0" decoration-success="variance &gt; 0"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Partidas" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom" create="0" decoration-info="is_edited"
+                                      decoration-warning="days_overdue &gt; 0">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="period_id" readonly="1" optional="show"/>
+                                    <field name="user_id" optional="show"/>
+                                    <field name="partner_id"/>
+                                    <field name="move_id"/>
+                                    <field name="date_due"/>
+                                    <field name="days_overdue" optional="show"/>
+                                    <field name="bucket_id" optional="hide"/>
+                                    <field name="residual" sum="Cartera"/>
+                                    <field name="probability" optional="show"/>
+                                    <field name="expected_amount" sum="Esperado"/>
+                                    <field name="expected_date"/>
+                                    <field name="source" optional="show"/>
+                                    <field name="is_edited" column_invisible="True"/>
+                                    <button name="action_reset" type="object" icon="fa-undo" title="Quitar el ajuste"
+                                            invisible="not is_edited"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_collection_forecast_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.forecast.list</field>
+        <field name="model">l10n_pe.collection.forecast</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="period_count" optional="show"/>
+                <field name="period_type" optional="show"/>
+                <field name="user_ids" widget="many2many_tags" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="portfolio_amount"/>
+                <field name="expected_amount"/>
+                <field name="refreshed_on" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_forecast_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.forecast.line.pivot</field>
+        <field name="model">l10n_pe.collection.forecast.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Proyección de cobranza" sample="1">
+                <field name="user_id" type="row"/>
+                <field name="period_id" type="col"/>
+                <field name="expected_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_collection_forecast_line_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.forecast.line.graph</field>
+        <field name="model">l10n_pe.collection.forecast.line</field>
+        <field name="arch" type="xml">
+            <graph string="Proyección de cobranza" type="bar" stacked="1">
+                <field name="period_id"/>
+                <field name="user_id"/>
+                <field name="expected_amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_collection_forecast_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.forecast.line.list</field>
+        <field name="model">l10n_pe.collection.forecast.line</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="period_id"/>
+                <field name="user_id"/>
+                <field name="partner_id"/>
+                <field name="move_id"/>
+                <field name="date_due"/>
+                <field name="days_overdue"/>
+                <field name="residual" sum="Cartera"/>
+                <field name="expected_amount" sum="Esperado"/>
+                <field name="expected_date"/>
+                <field name="source"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_forecast_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.forecast.line.search</field>
+        <field name="model">l10n_pe.collection.forecast.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter name="overdue" string="Vencidas" domain="[('days_overdue', '&gt;', 0)]"/>
+                <filter name="promise" string="Con compromiso" domain="[('source', '=', 'promise')]"/>
+                <filter name="edited" string="Ajustadas" domain="[('is_edited', '=', True)]"/>
+                <group>
+                    <filter name="group_user" string="Gestor" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_zone" string="Zona" context="{'group_by': 'zone_id'}"/>
+                    <filter name="group_period" string="Periodo" context="{'group_by': 'period_id'}"/>
+                    <filter name="group_partner" string="Cliente" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_source" string="Origen de la fecha" context="{'group_by': 'source'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_collection_forecast" model="ir.actions.act_window">
+        <field name="name">Proyección de cobranza</field>
+        <field name="res_model">l10n_pe.collection.forecast</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Proyecte la cobranza de las próximas semanas o meses</p>
+            <p>Se calcula desde la cartera, los compromisos de pago y el historial de pago de cada cliente.</p>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="result_promise" model="l10n_pe.collection.result">
+        <field name="name">Promete pagar</field>
+        <field name="sequence">10</field>
+        <field name="is_promise" eval="True"/>
+        <field name="is_contact" eval="True"/>
+        <field name="next_action_days">0</field>
+    </record>
+    <record id="result_paid" model="l10n_pe.collection.result">
+        <field name="name">Dice que ya pagó (verificar)</field>
+        <field name="sequence">20</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="True"/>
+        <field name="next_action_days">2</field>
+    </record>
+    <record id="result_statement" model="l10n_pe.collection.result">
+        <field name="name">Pide estado de cuenta</field>
+        <field name="sequence">30</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="True"/>
+        <field name="next_action_days">2</field>
+    </record>
+    <record id="result_claim" model="l10n_pe.collection.result">
+        <field name="name">Reclamo o disconformidad</field>
+        <field name="sequence">40</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="True"/>
+        <field name="next_action_days">3</field>
+    </record>
+    <record id="result_refuse" model="l10n_pe.collection.result">
+        <field name="name">Se niega a pagar</field>
+        <field name="sequence">50</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="True"/>
+        <field name="next_action_days">7</field>
+    </record>
+    <record id="result_no_answer" model="l10n_pe.collection.result">
+        <field name="name">No contesta</field>
+        <field name="sequence">60</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="False"/>
+        <field name="next_action_days">1</field>
+    </record>
+    <record id="result_message" model="l10n_pe.collection.result">
+        <field name="name">Dejó mensaje</field>
+        <field name="sequence">70</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="False"/>
+        <field name="next_action_days">2</field>
+    </record>
+    <record id="result_wrong" model="l10n_pe.collection.result">
+        <field name="name">Número o dirección equivocados</field>
+        <field name="sequence">80</field>
+        <field name="is_promise" eval="False"/>
+        <field name="is_contact" eval="False"/>
+        <field name="next_action_days">0</field>
+    </record>
+</odoo>

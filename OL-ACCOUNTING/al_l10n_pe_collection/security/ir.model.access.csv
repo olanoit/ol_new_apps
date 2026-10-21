@@ -1,0 +1,19 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_zone_user,l10n_pe.collection.zone user,model_l10n_pe_collection_zone,group_collection_user,1,0,0,0
+access_zone_manager,l10n_pe.collection.zone manager,model_l10n_pe_collection_zone,group_collection_manager,1,1,1,1
+access_bucket_user,l10n_pe.collection.bucket user,model_l10n_pe_collection_bucket,group_collection_user,1,0,0,0
+access_bucket_manager,l10n_pe.collection.bucket manager,model_l10n_pe_collection_bucket,group_collection_manager,1,1,1,1
+access_result_user,l10n_pe.collection.result user,model_l10n_pe_collection_result,group_collection_user,1,0,0,0
+access_result_manager,l10n_pe.collection.result manager,model_l10n_pe_collection_result,group_collection_manager,1,1,1,1
+access_action_user,l10n_pe.collection.action user,model_l10n_pe_collection_action,group_collection_user,1,1,1,0
+access_action_manager,l10n_pe.collection.action manager,model_l10n_pe_collection_action,group_collection_manager,1,1,1,1
+access_promise_user,l10n_pe.collection.promise user,model_l10n_pe_collection_promise,group_collection_user,1,1,1,0
+access_promise_manager,l10n_pe.collection.promise manager,model_l10n_pe_collection_promise,group_collection_manager,1,1,1,1
+access_portfolio_user,l10n_pe.collection.portfolio user,model_l10n_pe_collection_portfolio,group_collection_user,1,0,0,0
+access_forecast_user,l10n_pe.collection.forecast user,model_l10n_pe_collection_forecast,group_collection_user,1,1,1,1
+access_forecast_period_user,l10n_pe.collection.forecast.period user,model_l10n_pe_collection_forecast_period,group_collection_user,1,1,1,1
+access_forecast_line_user,l10n_pe.collection.forecast.line user,model_l10n_pe_collection_forecast_line,group_collection_user,1,1,1,1
+access_target_user,l10n_pe.collection.target user,model_l10n_pe_collection_target,group_collection_user,1,0,0,0
+access_target_manager,l10n_pe.collection.target manager,model_l10n_pe_collection_target,group_collection_manager,1,1,1,1
+access_dashboard_user,l10n_pe.collection.dashboard user,model_l10n_pe_collection_dashboard,group_collection_user,1,1,1,1
+access_statement_send_user,l10n_pe.collection.statement.send user,model_l10n_pe_collection_statement_send,group_collection_user,1,1,1,1
