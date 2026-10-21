@@ -139,6 +139,7 @@ asistencia y el requerimiento de obra. Resultado del 21/10/2026: 415 pruebas en 
 | M111-07 | Vale desde el primer bulto: cemento «Va completo en este bulto», fierro «En compra · PR…», resumen, sin montos ni disponible | `al_construction_material_request` `test_dispatch_slip.test_slip_from_first_bundle` | **Verde** |
 | M111-07 | Con la compra: «OC … · llega dd/mm»; el segundo bulto muestra despachado antes 100 y «Completo», y 50 en este bulto | `test_slip_after_purchase` | **Verde** |
 | M111-07 | Desde el requerimiento, sin «En este bulto»; la opción solo en transferencias con requerimiento; el vale actual no cambia | `test_slip_from_request_and_binding` | **Verde** |
+| Hallazgo 21-oct | El despacho a obra por unidad de un requerimiento toma el departamento de sus líneas; con dos departamentos lo sigue pidiendo | `test_v111.TestRequestDispatchApartmentV111` | **Verde** |
 
 Configuración de Allcenter después de publicar (no la hace el código):
 

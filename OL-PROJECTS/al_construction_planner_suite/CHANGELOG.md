@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261021 — 21/10/2026
+
+- Prueba del departamento tomado de las líneas del requerimiento en el despacho a obra por unidad.
+
 ## 11.20261021 — 21/10/2026
 
 - Prueba de que la solicitud de una versión nueva del plan muestra 0 %.

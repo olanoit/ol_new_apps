@@ -9,6 +9,7 @@ import ast
 from lxml import etree
 
 from odoo import Command
+from odoo.exceptions import UserError
 from odoo.tests import Form, TransactionCase, tagged
 
 from .common import PlannerCommon
@@ -161,6 +162,53 @@ class TestProductionPctV111(TestProductionExcess):
 
 
 @tagged('post_install', '-at_install')
+class TestRequestDispatchApartmentV111(TestRequestScope):
+    """El despacho a obra por unidad de un requerimiento toma el departamento
+    de sus líneas (21-oct-2026): el almacenero no lo escribe en cada despacho
+    de material."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company.construction_dispatch_type_id.construction_site_dispatch = True
+        cls.p_hinge.is_storable = True
+        cls.env['stock.quant']._update_available_quantity(
+            cls.p_hinge, cls.company.construction_src_location_id, 100)
+
+    def _dispatch(self, tasks):
+        request = self._new_request()
+        request.write({'line_ids': [Command.create({
+            'product_id': self.p_hinge.id, 'product_qty': 1, 'task_id': task.id,
+            'construction_stage': 'assembly'}) for task in tasks]})
+        request.with_user(self.requester).action_request_approval()
+        self.assertEqual(request.state, 'approved')
+        # El almacén procesa y valida, no el solicitante.
+        request = request.with_env(self.env)
+        request.action_process()
+        picking = request.picking_ids.filtered(lambda p: p.state != 'cancel')
+        self.assertEqual(len(picking), 1)
+        self.assertTrue(picking.construction_site_dispatch)
+        picking.move_ids.picked = True
+        return request, picking
+
+    def test_one_apartment_is_taken_from_the_lines(self):
+        request, picking = self._dispatch(self.space_501)
+        self.assertEqual(picking.construction_apartment_task_id, self.apt_501)
+        picking.button_validate()
+        self.assertEqual(picking.state, 'done')
+        self.assertEqual(request.line_ids.qty_dispatched, 1)
+
+    def test_two_apartments_still_ask(self):
+        _request, picking = self._dispatch(self.space_501 | self.space_502)
+        self.assertFalse(picking.construction_apartment_task_id)
+        with self.assertRaises(UserError):
+            picking.button_validate()
+        picking.construction_apartment_task_id = self.apt_502
+        picking.button_validate()
+        self.assertEqual(picking.state, 'done')
+
+
+@tagged('post_install', '-at_install')
 class TestStageChainV111(TestStageChainV110):
     """M111-03 y M111-04 sobre la obra de prueba del paquete 1.10, con un canto
     de 0.024 por módulo en el corte: el plan guarda 0.02 por módulo."""
@@ -275,6 +323,7 @@ class TestStageChainV111(TestStageChainV110):
 for _class, _bases in (
         (TestApprovalsV111, (TestApprovalsRequest, TestRequestScope, PlannerCommon)),
         (TestPlanPctV111, (TestApprovalsPlan, PlannerCommon)),
+        (TestRequestDispatchApartmentV111, (TestRequestScope, PlannerCommon)),
         (TestProductionPctV111, (TestProductionExcess, PlannerCommon)),
         (TestStageChainV111, (TestStageChainV110, PlannerCommon))):
     for _base in _bases:

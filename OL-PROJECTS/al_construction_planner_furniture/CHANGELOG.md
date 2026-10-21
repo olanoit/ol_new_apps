@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261021 — 21/10/2026
+
+- El despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando son de un solo departamento (al confirmar y al validar); con varios, se sigue pidiendo.
+
 ## 8.20261021 — 21/10/2026
 
 - Paquete 1.11, M111-03: las listas por etapa sin operaciones reciben la de la estación de su etapa al importar, y la obra tiene «Completar operaciones» para las ya importadas; las operaciones puestas a mano se conservan.

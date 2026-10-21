@@ -202,6 +202,11 @@ Cada línea del requerimiento tiene su propio movimiento, aunque el mismo
 producto se pida para dos niveles: lo validado llega a cada línea. Hasta que
 el almacén valida, la línea dice **Por despachar**.
 
+Si el tipo de operación del despacho está marcado **Despacho a obra por
+unidad**, la transferencia lleva el departamento que recibe. Cuando todas las
+líneas que despacha son de un mismo departamento, lo toma de ellas; si son de
+varios, el almacén lo elige antes de validar.
+
 Para pegar en el bulto, imprima en la transferencia **Imprimir ‣ Vale de
 despacho** (la opción solo sale en transferencias con requerimiento). El vale
 lista todo el requerimiento, sin precios ni stock del almacén:

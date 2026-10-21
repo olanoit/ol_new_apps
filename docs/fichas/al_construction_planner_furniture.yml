@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '9.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "El despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando son de un solo departamento (al confirmar y al validar); con varios, se sigue pidiendo."
 - version: '8.20261021'
   fecha: 21/10/2026
   cambios:

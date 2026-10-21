@@ -396,7 +396,12 @@ RQO/2026/00017 (74 tornillos 4x30 para instalación, ya aprobada) no se tocó. R
 - RQO/2026/00008 tiene asignada una sola línea del plan; sus cifras salen de las 7 líneas del nivel.
 - Los números 00005 y 00006 los consumió una simulación previa sin guardar, porque la numeración no se revierte.
 
-### Decidido el 21-oct-2026 [D]
+### Hallazgo corregido: departamento del despacho de un requerimiento (21-oct)
+
+Al validar BRE/DO/00021 (dev1, RQO/2026/00018) y BRE/DO/00007 (dev2, RQO/2026/00008), Odoo pidió «Indique la obra y el departamento…». BRE/DO está marcado «Despacho a obra por unidad» (M110-05) y la regla se aplicaba también al material de un requerimiento, como los tornillos. En esos dos despachos se puso a mano el Dpto 301 de la línea.
+
+Corrección (decisión de Vicente del 21-oct-2026): el despacho a obra por unidad de un requerimiento toma el departamento de sus líneas cuando todas son del mismo departamento; lo pone al confirmar la transferencia y, si falta, al validarla. Con líneas de varios departamentos se sigue pidiendo. Va en `al_construction_planner_furniture` 9.20261021, con su prueba en la suite.
+
 
 - **% de la solicitud del plan:** muestra 0 %. Con la primera versión de M111-05 mostraba lo que sube frente a la versión vigente: 99.93 % en la v2 de la E-03, que agrega un piso entero. Corregido en `al_construction_planner_approvals` 5.20261021.
 

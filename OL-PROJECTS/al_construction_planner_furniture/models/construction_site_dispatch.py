@@ -240,7 +240,38 @@ class StockPicking(models.Model):
             (linked - chosen).write({'construction_shipment_picking_id': False})
             (chosen - linked).write({'construction_shipment_picking_id': picking.id})
 
+    def _construction_request_apartment(self):
+        """Departamento de las líneas del requerimiento de obra que lleva la
+        transferencia, si es uno solo. El enlace del movimiento con la línea
+        es del requerimiento de obra, que este puente no exige."""
+        self.ensure_one()
+        Task = self.env['project.task']
+        if 'construction_request_line_id' not in self.env['stock.move']._fields:
+            return Task
+        # Logística no lee necesariamente las tareas de la obra: solo se
+        # busca el departamento de las líneas que despacha.
+        moves_sudo = self.sudo().move_ids.filtered(lambda m: m.state != 'cancel')
+        apartments = moves_sudo.construction_request_line_id.task_id.construction_apartment_task_id
+        if len(apartments) != 1 or (self.construction_project_id
+                                    and apartments.project_id != self.construction_project_id):
+            return Task
+        return apartments.sudo(False)
+
+    def _construction_fill_request_apartment(self):
+        """Un despacho a obra por unidad de un requerimiento toma el
+        departamento de sus líneas (paquete 1.11): el almacenero no lo
+        escribe a mano en cada despacho de material."""
+        for picking in self.filtered(lambda p: p.construction_site_dispatch
+                                     and not p.construction_apartment_task_id
+                                     and p.state not in ('done', 'cancel')):
+            apartment = picking._construction_request_apartment()
+            if apartment:
+                picking.construction_apartment_task_id = apartment
+                if not picking.construction_project_id:
+                    picking.construction_project_id = apartment.project_id
+
     def action_confirm(self):
+        self._construction_fill_request_apartment()
         res = super().action_confirm()
         self._construction_link_dispatch_modules()
         self._construction_propose_dispatch_lots()
@@ -278,6 +309,7 @@ class StockPicking(models.Model):
     # Validar
     # ------------------------------------------------------------------
     def button_validate(self):
+        self._construction_fill_request_apartment()
         missing = self.filtered(lambda p: p.construction_site_dispatch and (
             not p.construction_project_id or not p.construction_apartment_task_id))
         if missing:
