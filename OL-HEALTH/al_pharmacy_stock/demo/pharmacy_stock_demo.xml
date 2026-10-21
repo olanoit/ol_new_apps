@@ -2,8 +2,8 @@
 <odoo>
     <!-- Almacén de la botica de demostración. -->
     <data noupdate="1">
-        <!-- Lotes y existencias: uno por medicamento; la amoxicilina tiene además
-             un lote que vence en 45 días (aviso «Por vencer») -->
+        <!-- Lotes y existencias: uno por medicamento y, en algunos, un segundo lote
+             por vencer (aviso «Por vencer» y precio rebajado) -->
         <record id="product_paracetamol_lot_1" model="stock.lot">
             <field name="name">054632610</field>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_paracetamol').product_variant_id.id"/>
@@ -26,6 +26,18 @@
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_dolofen').product_variant_id.id"/>
             <field name="lot_id" ref="product_dolofen_lot_1"/>
             <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_paracetamol_syrup_lot_1" model="stock.lot">
+            <field name="name">054702610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_paracetamol_syrup').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_paracetamol_syrup_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_paracetamol_syrup').product_variant_id.id"/>
+            <field name="lot_id" ref="product_paracetamol_syrup_lot_1"/>
+            <field name="inventory_quantity">60</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
         <record id="product_ibuprofen_lot_1" model="stock.lot">
@@ -52,6 +64,78 @@
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
+        <record id="product_ibuprofen_suspension_lot_1" model="stock.lot">
+            <field name="name">041252610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ibuprofen_suspension').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_ibuprofen_suspension_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ibuprofen_suspension').product_variant_id.id"/>
+            <field name="lot_id" ref="product_ibuprofen_suspension_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_naproxen_lot_1" model="stock.lot">
+            <field name="name">043102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_naproxen').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_naproxen_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_naproxen').product_variant_id.id"/>
+            <field name="lot_id" ref="product_naproxen_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_naproxen_lot_2" model="stock.lot">
+            <field name="name">043102604</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_naproxen').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=75)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_naproxen_lot_2_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_naproxen').product_variant_id.id"/>
+            <field name="lot_id" ref="product_naproxen_lot_2"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_diclofenac_gel_lot_1" model="stock.lot">
+            <field name="name">044202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_diclofenac_gel').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_diclofenac_gel_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_diclofenac_gel').product_variant_id.id"/>
+            <field name="lot_id" ref="product_diclofenac_gel_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_aspirin_lot_1" model="stock.lot">
+            <field name="name">001252610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_aspirin').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_aspirin_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_aspirin').product_variant_id.id"/>
+            <field name="lot_id" ref="product_aspirin_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_antiflu_lot_1" model="stock.lot">
+            <field name="name">054802610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_antiflu').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_antiflu_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_antiflu').product_variant_id.id"/>
+            <field name="lot_id" ref="product_antiflu_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
         <record id="product_loratadine_lot_1" model="stock.lot">
             <field name="name">062102610</field>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_loratadine').product_variant_id.id"/>
@@ -64,6 +148,90 @@
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
+        <record id="product_loratadine_lot_2" model="stock.lot">
+            <field name="name">062102604</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_loratadine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=60)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_loratadine_lot_2_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_loratadine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_loratadine_lot_2"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_cetirizine_lot_1" model="stock.lot">
+            <field name="name">062302610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_cetirizine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_cetirizine_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_cetirizine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_cetirizine_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_chlorphenamine_lot_1" model="stock.lot">
+            <field name="name">061902610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_chlorphenamine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_chlorphenamine_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_chlorphenamine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_chlorphenamine_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_ambroxol_syrup_lot_1" model="stock.lot">
+            <field name="name">070102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ambroxol_syrup').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_ambroxol_syrup_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ambroxol_syrup').product_variant_id.id"/>
+            <field name="lot_id" ref="product_ambroxol_syrup_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_ambroxol_syrup_lot_2" model="stock.lot">
+            <field name="name">070102604</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ambroxol_syrup').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=80)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_ambroxol_syrup_lot_2_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ambroxol_syrup').product_variant_id.id"/>
+            <field name="lot_id" ref="product_ambroxol_syrup_lot_2"/>
+            <field name="inventory_quantity">12</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_dextromethorphan_syrup_lot_1" model="stock.lot">
+            <field name="name">070252610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_dextromethorphan_syrup').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_dextromethorphan_syrup_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_dextromethorphan_syrup').product_variant_id.id"/>
+            <field name="lot_id" ref="product_dextromethorphan_syrup_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_saline_nasal_lot_1" model="stock.lot">
+            <field name="name">071102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_saline_nasal').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_saline_nasal_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_saline_nasal').product_variant_id.id"/>
+            <field name="lot_id" ref="product_saline_nasal_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
         <record id="product_omeprazole_lot_1" model="stock.lot">
             <field name="name">060152610</field>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_omeprazole').product_variant_id.id"/>
@@ -73,6 +241,138 @@
         <record id="product_omeprazole_lot_1_quant" model="stock.quant">
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_omeprazole').product_variant_id.id"/>
             <field name="lot_id" ref="product_omeprazole_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_antacid_lot_1" model="stock.lot">
+            <field name="name">060402610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_antacid').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_antacid_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_antacid').product_variant_id.id"/>
+            <field name="lot_id" ref="product_antacid_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_simethicone_lot_1" model="stock.lot">
+            <field name="name">060702610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_simethicone').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_simethicone_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_simethicone').product_variant_id.id"/>
+            <field name="lot_id" ref="product_simethicone_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_loperamide_lot_1" model="stock.lot">
+            <field name="name">060902610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_loperamide').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_loperamide_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_loperamide').product_variant_id.id"/>
+            <field name="lot_id" ref="product_loperamide_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_ors_lot_1" model="stock.lot">
+            <field name="name">061202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ors').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_ors_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ors').product_variant_id.id"/>
+            <field name="lot_id" ref="product_ors_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_mebendazole_lot_1" model="stock.lot">
+            <field name="name">080102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_mebendazole').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_mebendazole_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_mebendazole').product_variant_id.id"/>
+            <field name="lot_id" ref="product_mebendazole_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_albendazole_lot_1" model="stock.lot">
+            <field name="name">080202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_albendazole').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_albendazole_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_albendazole').product_variant_id.id"/>
+            <field name="lot_id" ref="product_albendazole_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_clotrimazole_cream_lot_1" model="stock.lot">
+            <field name="name">090102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_clotrimazole_cream').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_clotrimazole_cream_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_clotrimazole_cream').product_variant_id.id"/>
+            <field name="lot_id" ref="product_clotrimazole_cream_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_artificial_tears_lot_1" model="stock.lot">
+            <field name="name">091102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_artificial_tears').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_artificial_tears_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_artificial_tears').product_variant_id.id"/>
+            <field name="lot_id" ref="product_artificial_tears_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_vitamin_c_lot_1" model="stock.lot">
+            <field name="name">100102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_vitamin_c').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_vitamin_c_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_vitamin_c').product_variant_id.id"/>
+            <field name="lot_id" ref="product_vitamin_c_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_vitamin_c_lot_2" model="stock.lot">
+            <field name="name">100102604</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_vitamin_c').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=25)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_vitamin_c_lot_2_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_vitamin_c').product_variant_id.id"/>
+            <field name="lot_id" ref="product_vitamin_c_lot_2"/>
+            <field name="inventory_quantity">30</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_ferrous_sulfate_lot_1" model="stock.lot">
+            <field name="name">100302610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ferrous_sulfate').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_ferrous_sulfate_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ferrous_sulfate').product_variant_id.id"/>
+            <field name="lot_id" ref="product_ferrous_sulfate_lot_1"/>
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
@@ -112,6 +412,30 @@
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
+        <record id="product_amoxicillin_suspension_lot_1" model="stock.lot">
+            <field name="name">012902610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_amoxicillin_suspension').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_amoxicillin_suspension_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_amoxicillin_suspension').product_variant_id.id"/>
+            <field name="lot_id" ref="product_amoxicillin_suspension_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_amoxicillin_clavulanate_lot_1" model="stock.lot">
+            <field name="name">012952610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_amoxicillin_clavulanate').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_amoxicillin_clavulanate_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_amoxicillin_clavulanate').product_variant_id.id"/>
+            <field name="lot_id" ref="product_amoxicillin_clavulanate_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
         <record id="product_azithromycin_lot_1" model="stock.lot">
             <field name="name">029542610</field>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_azithromycin').product_variant_id.id"/>
@@ -121,6 +445,42 @@
         <record id="product_azithromycin_lot_1_quant" model="stock.quant">
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_azithromycin').product_variant_id.id"/>
             <field name="lot_id" ref="product_azithromycin_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_cephalexin_lot_1" model="stock.lot">
+            <field name="name">014102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_cephalexin').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_cephalexin_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_cephalexin').product_variant_id.id"/>
+            <field name="lot_id" ref="product_cephalexin_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_ciprofloxacin_lot_1" model="stock.lot">
+            <field name="name">015202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ciprofloxacin').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_ciprofloxacin_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_ciprofloxacin').product_variant_id.id"/>
+            <field name="lot_id" ref="product_ciprofloxacin_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_metronidazole_lot_1" model="stock.lot">
+            <field name="name">016102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metronidazole').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_metronidazole_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metronidazole').product_variant_id.id"/>
+            <field name="lot_id" ref="product_metronidazole_lot_1"/>
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
@@ -136,6 +496,66 @@
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
+        <record id="product_tensiloz_lot_1" model="stock.lot">
+            <field name="name">033232610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_tensiloz').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_tensiloz_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_tensiloz').product_variant_id.id"/>
+            <field name="lot_id" ref="product_tensiloz_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_enalapril_lot_1" model="stock.lot">
+            <field name="name">033102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_enalapril').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_enalapril_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_enalapril').product_variant_id.id"/>
+            <field name="lot_id" ref="product_enalapril_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_amlodipine_lot_1" model="stock.lot">
+            <field name="name">033402610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_amlodipine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_amlodipine_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_amlodipine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_amlodipine_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_atorvastatin_lot_1" model="stock.lot">
+            <field name="name">034102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_atorvastatin').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_atorvastatin_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_atorvastatin').product_variant_id.id"/>
+            <field name="lot_id" ref="product_atorvastatin_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_colestrina_lot_1" model="stock.lot">
+            <field name="name">034112610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_colestrina').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_colestrina_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_colestrina').product_variant_id.id"/>
+            <field name="lot_id" ref="product_colestrina_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
         <record id="product_metformin_lot_1" model="stock.lot">
             <field name="name">035102610</field>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id"/>
@@ -148,6 +568,18 @@
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
+        <record id="product_glibenclamide_lot_1" model="stock.lot">
+            <field name="name">035202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_glibenclamide').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_glibenclamide_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_glibenclamide').product_variant_id.id"/>
+            <field name="lot_id" ref="product_glibenclamide_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
         <record id="product_insulin_lot_1" model="stock.lot">
             <field name="name">036012610</field>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_insulin').product_variant_id.id"/>
@@ -157,6 +589,90 @@
         <record id="product_insulin_lot_1_quant" model="stock.quant">
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_insulin').product_variant_id.id"/>
             <field name="lot_id" ref="product_insulin_lot_1"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_insulin_glargine_lot_1" model="stock.lot">
+            <field name="name">036102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_insulin_glargine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_insulin_glargine_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_insulin_glargine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_insulin_glargine_lot_1"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_levothyroxine_lot_1" model="stock.lot">
+            <field name="name">037102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_levothyroxine').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_levothyroxine_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_levothyroxine').product_variant_id.id"/>
+            <field name="lot_id" ref="product_levothyroxine_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_salbutamol_lot_1" model="stock.lot">
+            <field name="name">072102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_salbutamol').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_salbutamol_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_salbutamol').product_variant_id.id"/>
+            <field name="lot_id" ref="product_salbutamol_lot_1"/>
+            <field name="inventory_quantity">60</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_prednisone_lot_1" model="stock.lot">
+            <field name="name">073102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_prednisone').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_prednisone_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_prednisone').product_variant_id.id"/>
+            <field name="lot_id" ref="product_prednisone_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_dexamethasone_lot_1" model="stock.lot">
+            <field name="name">073202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_dexamethasone').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_dexamethasone_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_dexamethasone').product_variant_id.id"/>
+            <field name="lot_id" ref="product_dexamethasone_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_sertraline_lot_1" model="stock.lot">
+            <field name="name">023102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_sertraline').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_sertraline_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_sertraline').product_variant_id.id"/>
+            <field name="lot_id" ref="product_sertraline_lot_1"/>
+            <field name="inventory_quantity">500</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_tamoxifen_lot_1" model="stock.lot">
+            <field name="name">048102610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_tamoxifen').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_tamoxifen_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_tamoxifen').product_variant_id.id"/>
+            <field name="lot_id" ref="product_tamoxifen_lot_1"/>
             <field name="inventory_quantity">500</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
@@ -184,8 +700,20 @@
             <field name="inventory_quantity">30</field>
             <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
         </record>
+        <record id="product_diazepam_lot_1" model="stock.lot">
+            <field name="name">022202610</field>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_diazepam').product_variant_id.id"/>
+            <field name="expiration_date" eval="(DateTime.today() + relativedelta(days=540)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+        <record id="product_diazepam_lot_1_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_diazepam').product_variant_id.id"/>
+            <field name="lot_id" ref="product_diazepam_lot_1"/>
+            <field name="inventory_quantity">30</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
         <function model="stock.quant" name="action_apply_inventory">
-            <function eval="[[('id', 'in', [ref('product_paracetamol_lot_1_quant'), ref('product_dolofen_lot_1_quant'), ref('product_ibuprofen_lot_1_quant'), ref('product_ibuflam_lot_1_quant'), ref('product_loratadine_lot_1_quant'), ref('product_omeprazole_lot_1_quant'), ref('product_amoxicillin_lot_1_quant'), ref('product_amoxicillin_lot_2_quant'), ref('product_amoxival_lot_1_quant'), ref('product_azithromycin_lot_1_quant'), ref('product_losartan_lot_1_quant'), ref('product_metformin_lot_1_quant'), ref('product_insulin_lot_1_quant'), ref('product_clonazepam_lot_1_quant'), ref('product_alprazolam_lot_1_quant')])]]" model="stock.quant" name="search"/>
+            <function eval="[[('id', 'in', [ref('product_paracetamol_lot_1_quant'), ref('product_dolofen_lot_1_quant'), ref('product_paracetamol_syrup_lot_1_quant'), ref('product_ibuprofen_lot_1_quant'), ref('product_ibuflam_lot_1_quant'), ref('product_ibuprofen_suspension_lot_1_quant'), ref('product_naproxen_lot_1_quant'), ref('product_naproxen_lot_2_quant'), ref('product_diclofenac_gel_lot_1_quant'), ref('product_aspirin_lot_1_quant'), ref('product_antiflu_lot_1_quant'), ref('product_loratadine_lot_1_quant'), ref('product_loratadine_lot_2_quant'), ref('product_cetirizine_lot_1_quant'), ref('product_chlorphenamine_lot_1_quant'), ref('product_ambroxol_syrup_lot_1_quant'), ref('product_ambroxol_syrup_lot_2_quant'), ref('product_dextromethorphan_syrup_lot_1_quant'), ref('product_saline_nasal_lot_1_quant'), ref('product_omeprazole_lot_1_quant'), ref('product_antacid_lot_1_quant'), ref('product_simethicone_lot_1_quant'), ref('product_loperamide_lot_1_quant'), ref('product_ors_lot_1_quant'), ref('product_mebendazole_lot_1_quant'), ref('product_albendazole_lot_1_quant'), ref('product_clotrimazole_cream_lot_1_quant'), ref('product_artificial_tears_lot_1_quant'), ref('product_vitamin_c_lot_1_quant'), ref('product_vitamin_c_lot_2_quant'), ref('product_ferrous_sulfate_lot_1_quant'), ref('product_amoxicillin_lot_1_quant'), ref('product_amoxicillin_lot_2_quant'), ref('product_amoxival_lot_1_quant'), ref('product_amoxicillin_suspension_lot_1_quant'), ref('product_amoxicillin_clavulanate_lot_1_quant'), ref('product_azithromycin_lot_1_quant'), ref('product_cephalexin_lot_1_quant'), ref('product_ciprofloxacin_lot_1_quant'), ref('product_metronidazole_lot_1_quant'), ref('product_losartan_lot_1_quant'), ref('product_tensiloz_lot_1_quant'), ref('product_enalapril_lot_1_quant'), ref('product_amlodipine_lot_1_quant'), ref('product_atorvastatin_lot_1_quant'), ref('product_colestrina_lot_1_quant'), ref('product_metformin_lot_1_quant'), ref('product_glibenclamide_lot_1_quant'), ref('product_insulin_lot_1_quant'), ref('product_insulin_glargine_lot_1_quant'), ref('product_levothyroxine_lot_1_quant'), ref('product_salbutamol_lot_1_quant'), ref('product_prednisone_lot_1_quant'), ref('product_dexamethasone_lot_1_quant'), ref('product_sertraline_lot_1_quant'), ref('product_tamoxifen_lot_1_quant'), ref('product_clonazepam_lot_1_quant'), ref('product_alprazolam_lot_1_quant'), ref('product_diazepam_lot_1_quant')])]]" model="stock.quant" name="search"/>
         </function>
         <!-- Control ambiental (BPA) -->
         <record id="environment_point_room" model="pharmacy.environment.point">
@@ -291,11 +819,7 @@
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="company_id" ref="base.main_company"/>
             <field name="note">La droguería canjea por lotes con vencimiento mayor a un año.</field>
-            <field name="line_ids" eval="[Command.create({
-                'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin').product_variant_id.id,
-                'lot_id': ref('product_amoxicillin_lot_2'),
-                'location_id': obj().env.ref('stock.warehouse0').lot_stock_id.id,
-                'quantity': 20, 'reason': 'near_expiry', 'price_unit': 0.35})]" model="product.template"/>
+            <field name="line_ids" eval="[Command.create({'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin').product_variant_id.id, 'lot_id': ref('product_amoxicillin_lot_2'), 'location_id': obj().env.ref('stock.warehouse0').lot_stock_id.id, 'quantity': 20, 'reason': 'near_expiry', 'price_unit': 0.35})]" model="product.template"/>
         </record>
     </data>
 </odoo>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Faltantes de la botica de demostración. -->
     <data noupdate="1">
         <record id="shortage_losartan" model="pharmacy.shortage">
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_losartan').product_variant_id.id"/>
@@ -9,10 +10,24 @@
             <field name="note">Cliente crónico: volverá el lunes.</field>
         </record>
         <record id="shortage_not_carried" model="pharmacy.shortage">
-            <field name="description">Colirio lubricante 15 ml</field>
+            <field name="description">Colirio antialérgico 10 mL</field>
             <field name="quantity">2</field>
             <field name="reason">not_carried</field>
             <field name="warehouse_id" ref="stock.warehouse0"/>
+        </record>
+        <record id="shortage_insulin_glargine" model="pharmacy.shortage">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_insulin_glargine').product_variant_id.id"/>
+            <field name="quantity">2</field>
+            <field name="reason">no_stock</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="note">Paciente con receta del endocrinólogo.</field>
+        </record>
+        <record id="shortage_probiotic" model="pharmacy.shortage">
+            <field name="description">Probiótico en sobres x 10</field>
+            <field name="quantity">1</field>
+            <field name="reason">not_carried</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="note">Lo piden varias madres.</field>
         </record>
     </data>
 </odoo>

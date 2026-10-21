@@ -11,6 +11,10 @@
             <field name="categ_id" ref="product_category_medicines_otc"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
+        <record id="al_pharmacy_base.product_paracetamol_syrup" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
         <record id="al_pharmacy_base.product_ibuprofen" model="product.template">
             <field name="categ_id" ref="product_category_medicines_otc"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
@@ -19,11 +23,91 @@
             <field name="categ_id" ref="product_category_medicines_otc"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
+        <record id="al_pharmacy_base.product_ibuprofen_suspension" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_naproxen" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_diclofenac_gel" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_aspirin" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_antiflu" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
         <record id="al_pharmacy_base.product_loratadine" model="product.template">
             <field name="categ_id" ref="product_category_medicines_otc"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
+        <record id="al_pharmacy_base.product_cetirizine" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_chlorphenamine" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_ambroxol_syrup" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_dextromethorphan_syrup" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_saline_nasal" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
         <record id="al_pharmacy_base.product_omeprazole" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_antacid" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_simethicone" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_loperamide" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_ors" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_mebendazole" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_albendazole" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_clotrimazole_cream" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_artificial_tears" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_vitamin_c" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_otc"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_ferrous_sulfate" model="product.template">
             <field name="categ_id" ref="product_category_medicines_otc"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
@@ -35,7 +119,27 @@
             <field name="categ_id" ref="product_category_medicines_rx"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
+        <record id="al_pharmacy_base.product_amoxicillin_suspension" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxicillin_clavulanate" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
         <record id="al_pharmacy_base.product_azithromycin" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_cephalexin" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_ciprofloxacin" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_metronidazole" model="product.template">
             <field name="categ_id" ref="product_category_medicines_rx"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
@@ -43,11 +147,63 @@
             <field name="categ_id" ref="product_category_medicines_rx"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
+        <record id="al_pharmacy_base.product_tensiloz" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_enalapril" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_amlodipine" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_atorvastatin" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_colestrina" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
         <record id="al_pharmacy_base.product_metformin" model="product.template">
             <field name="categ_id" ref="product_category_medicines_rx"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
+        <record id="al_pharmacy_base.product_glibenclamide" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
         <record id="al_pharmacy_base.product_insulin" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_insulin_glargine" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_levothyroxine" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_salbutamol" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_prednisone" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_dexamethasone" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_sertraline" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_rx"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_tamoxifen" model="product.template">
             <field name="categ_id" ref="product_category_medicines_rx"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
@@ -56,6 +212,10 @@
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
         <record id="al_pharmacy_base.product_alprazolam" model="product.template">
+            <field name="categ_id" ref="product_category_medicines_controlled"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
+        </record>
+        <record id="al_pharmacy_base.product_diazepam" model="product.template">
             <field name="categ_id" ref="product_category_medicines_controlled"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_01')])]"/>
         </record>
@@ -72,6 +232,95 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_sunscreen.jpg"/>
+        </record>
+        <record id="product_moisturizer" model="product.template">
+            <field name="name">Crema hidratante corporal x 400 mL</field>
+            <field name="categ_id" ref="product_category_dermo"/>
+            <field name="list_price">32.9</field>
+            <field name="standard_price">16.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_moisturizer.jpg"/>
+        </record>
+        <record id="product_toothpaste" model="product.template">
+            <field name="name">Pasta dental con flúor x 90 g</field>
+            <field name="categ_id" ref="product_category_personal_care"/>
+            <field name="list_price">6.5</field>
+            <field name="standard_price">3.2</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_toothpaste.jpg"/>
+        </record>
+        <record id="product_hand_gel" model="product.template">
+            <field name="name">Alcohol en gel antibacterial x 500 mL</field>
+            <field name="categ_id" ref="product_category_personal_care"/>
+            <field name="list_price">12.9</field>
+            <field name="standard_price">5.8</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_hand_gel.jpg"/>
+        </record>
+        <record id="product_alcohol" model="product.template">
+            <field name="name">Alcohol medicinal 70° x 250 mL</field>
+            <field name="categ_id" ref="product_category_personal_care"/>
+            <field name="list_price">5.9</field>
+            <field name="standard_price">2.4</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_alcohol.jpg"/>
+        </record>
+        <record id="product_diapers" model="product.template">
+            <field name="name">Pañales para bebé talla M x 30</field>
+            <field name="categ_id" ref="product_category_baby"/>
+            <field name="list_price">39.9</field>
+            <field name="standard_price">26.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_04')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_diapers.jpg"/>
+        </record>
+        <record id="product_baby_wipes" model="product.template">
+            <field name="name">Toallitas húmedas para bebé x 80</field>
+            <field name="categ_id" ref="product_category_baby"/>
+            <field name="list_price">9.9</field>
+            <field name="standard_price">4.9</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_04')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_baby_wipes.jpg"/>
+        </record>
+        <record id="product_multivitamin" model="product.template">
+            <field name="name">Multivitamínico adultos x 30 tabletas</field>
+            <field name="categ_id" ref="product_category_nutrition"/>
+            <field name="list_price">34.9</field>
+            <field name="standard_price">17.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_05')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_multivitamin.jpg"/>
+        </record>
+        <record id="product_nutritional_shake" model="product.template">
+            <field name="name">Suplemento nutricional en polvo sabor vainilla x 400 g</field>
+            <field name="categ_id" ref="product_category_nutrition"/>
+            <field name="list_price">59.9</field>
+            <field name="standard_price">36.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_05')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_nutritional_shake.jpg"/>
         </record>
         <record id="product_thermometer" model="product.template">
             <field name="name">Termómetro digital</field>
@@ -82,6 +331,125 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_thermometer.jpg"/>
         </record>
+        <record id="product_bp_monitor" model="product.template">
+            <field name="name">Tensiómetro digital de brazo</field>
+            <field name="categ_id" ref="product_category_medical_devices"/>
+            <field name="list_price">149.0</field>
+            <field name="standard_price">88.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_bp_monitor.jpg"/>
+        </record>
+        <record id="product_glucose_strips" model="product.template">
+            <field name="name">Tiras reactivas para glucómetro x 50</field>
+            <field name="categ_id" ref="product_category_medical_devices"/>
+            <field name="list_price">79.0</field>
+            <field name="standard_price">48.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_glucose_strips.jpg"/>
+        </record>
+        <record id="product_face_masks" model="product.template">
+            <field name="name">Mascarillas quirúrgicas descartables x 50</field>
+            <field name="categ_id" ref="product_category_medical_devices"/>
+            <field name="list_price">15.0</field>
+            <field name="standard_price">6.0</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_face_masks.jpg"/>
+        </record>
+        <record id="product_gauze" model="product.template">
+            <field name="name">Gasa estéril 10 x 10 cm x 10 unidades</field>
+            <field name="categ_id" ref="product_category_medical_devices"/>
+            <field name="list_price">4.5</field>
+            <field name="standard_price">1.8</field>
+            <field name="type">consu</field>
+            <field name="is_storable" eval="True"/>
+            <field name="available_in_pos" eval="True"/>
+            <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
+            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_gauze.jpg"/>
+        </record>
+        <!-- Existencias de los productos no farmacéuticos -->
+        <record id="product_sunscreen_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_sunscreen').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_moisturizer_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_moisturizer').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_toothpaste_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_toothpaste').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_hand_gel_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_hand_gel').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_alcohol_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_alcohol').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_diapers_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_diapers').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_baby_wipes_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_baby_wipes').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_multivitamin_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_multivitamin').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_nutritional_shake_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_nutritional_shake').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_thermometer_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_thermometer').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_bp_monitor_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_bp_monitor').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_glucose_strips_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_glucose_strips').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_face_masks_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_face_masks').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <record id="product_gauze_quant" model="stock.quant">
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_industry_pharmacy.product_gauze').product_variant_id.id"/>
+            <field name="inventory_quantity">40</field>
+            <field name="location_id" model="stock.location" eval="obj().env.ref('stock.warehouse0').lot_stock_id.id"/>
+        </record>
+        <function model="stock.quant" name="action_apply_inventory">
+            <function eval="[[('id', 'in', [ref('product_sunscreen_quant'), ref('product_moisturizer_quant'), ref('product_toothpaste_quant'), ref('product_hand_gel_quant'), ref('product_alcohol_quant'), ref('product_diapers_quant'), ref('product_baby_wipes_quant'), ref('product_multivitamin_quant'), ref('product_nutritional_shake_quant'), ref('product_thermometer_quant'), ref('product_bp_monitor_quant'), ref('product_glucose_strips_quant'), ref('product_face_masks_quant'), ref('product_gauze_quant')])]]" model="stock.quant" name="search"/>
+        </function>
     </data>
 </odoo>

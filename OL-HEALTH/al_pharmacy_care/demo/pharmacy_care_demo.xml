@@ -19,5 +19,48 @@
             <field name="date_start" eval="(DateTime.today() + relativedelta(days=-90)).strftime('%Y-%m-%d')"/>
             <field name="user_id" ref="base.user_admin"/>
         </record>
+        <record id="treatment_quispe_enalapril" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_quispe"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_enalapril'))]"/>
+            <field name="daily_units">2</field>
+            <field name="posology">1 tableta cada 12 horas</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-200)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="note">Vive sola: avisar también a su hija.</field>
+        </record>
+        <record id="treatment_quispe_atorvastatin" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_quispe"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_atorvastatin'))]"/>
+            <field name="daily_units">1</field>
+            <field name="posology">1 tableta en la noche</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-200)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+        </record>
+        <record id="treatment_salinas_levothyroxine" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_salinas"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_levothyroxine'))]"/>
+            <field name="daily_units">1</field>
+            <field name="posology">1 tableta en ayunas</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-60)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+        </record>
+        <record id="treatment_benites_metformin" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_benites"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_metformin'))]"/>
+            <field name="daily_units">2</field>
+            <field name="posology">1 tableta cada 12 horas</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-365)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="note">Control de glucosa cada mes.</field>
+        </record>
+        <record id="treatment_ramos_salbutamol" model="pharmacy.treatment">
+            <field name="patient_id" ref="al_pharmacy_prescription.patient_ramos"/>
+            <field name="product_id" search="[('product_tmpl_id', '=', ref('al_pharmacy_base.product_salbutamol'))]"/>
+            <field name="daily_units">0.2</field>
+            <field name="posology">2 inhalaciones cada 6 horas si hay falta de aire</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-30)).strftime('%Y-%m-%d')"/>
+            <field name="user_id" ref="base.user_admin"/>
+            <field name="note">Un inhalador le dura unos 5 días de crisis.</field>
+        </record>
     </data>
 </odoo>

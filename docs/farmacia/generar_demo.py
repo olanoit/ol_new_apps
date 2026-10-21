@@ -3,12 +3,18 @@
 Cada módulo lleva los registros que necesita para probarse solo (con sus
 dependencias): instalar uno con datos de demostración basta para recorrer
 sus pantallas, sus reportes y su guion de prueba. El catálogo es el de una
-botica con marcas y laboratorios inventados y precios en soles.
+botica peruana (unos 55 medicamentos y 14 productos de tocador, bebé,
+nutrición y dispositivos) con marcas y laboratorios inventados, precios en
+soles y fotos reales de Wikimedia Commons con licencia libre.
 
 Uso (desde la raíz del repositorio)::
 
-    python3 docs/farmacia/generar_demo.py          # escribe los demo/*.xml
-    python3 docs/farmacia/generar_demo.py --check  # ¿están al día?
+    python3 docs/farmacia/descargar_imagenes_demo.py  # fotos (demo_images.json) y CREDITS.md
+    python3 docs/farmacia/generar_demo.py             # escribe los demo/*.xml
+    python3 docs/farmacia/generar_demo.py --check     # ¿están al día?
+
+En una base sin demo (farmacia-dev) los mismos datos se cargan o actualizan
+con ``docs/farmacia/cargar_demo.py`` (odoo shell).
 """
 import sys
 from pathlib import Path
@@ -20,6 +26,8 @@ LABS = {
     'lab_andino': 'Laboratorios Andinos S.A.C.',
     'lab_rimac': 'Laboratorio Rímac S.A.C.',
     'lab_sol': 'Laboratorios Sol del Sur S.A.C.',
+    'lab_huascaran': 'Laboratorios Huascarán S.A.C.',
+    'lab_chavin': 'Biofarma Chavín S.A.C.',
 }
 INGREDIENTS = {
     'ingredient_paracetamol': 'Paracetamol', 'ingredient_ibuprofeno': 'Ibuprofeno',
@@ -28,62 +36,371 @@ INGREDIENTS = {
     'ingredient_metformina': 'Metformina', 'ingredient_clonazepam': 'Clonazepam',
     'ingredient_alprazolam': 'Alprazolam', 'ingredient_loratadina': 'Loratadina',
     'ingredient_omeprazol': 'Omeprazol',
+    'ingredient_naproxeno': 'Naproxeno', 'ingredient_diclofenaco': 'Diclofenaco',
+    'ingredient_acido_acetilsalicilico': 'Ácido acetilsalicílico', 'ingredient_cetirizina': 'Cetirizina',
+    'ingredient_clorfenamina': 'Clorfenamina', 'ingredient_fenilefrina': 'Fenilefrina',
+    'ingredient_ambroxol': 'Ambroxol', 'ingredient_dextrometorfano': 'Dextrometorfano',
+    'ingredient_sales_rehidratacion': 'Sales de rehidratación oral', 'ingredient_simeticona': 'Simeticona',
+    'ingredient_loperamida': 'Loperamida', 'ingredient_hidroxido_aluminio': 'Hidróxido de aluminio',
+    'ingredient_hidroxido_magnesio': 'Hidróxido de magnesio', 'ingredient_clotrimazol': 'Clotrimazol',
+    'ingredient_acido_ascorbico': 'Ácido ascórbico', 'ingredient_sulfato_ferroso': 'Sulfato ferroso',
+    'ingredient_hipromelosa': 'Hipromelosa', 'ingredient_cloruro_sodio': 'Cloruro de sodio',
+    'ingredient_mebendazol': 'Mebendazol', 'ingredient_albendazol': 'Albendazol',
+    'ingredient_cefalexina': 'Cefalexina', 'ingredient_ciprofloxacino': 'Ciprofloxacino',
+    'ingredient_acido_clavulanico': 'Ácido clavulánico', 'ingredient_enalapril': 'Enalapril',
+    'ingredient_amlodipino': 'Amlodipino', 'ingredient_atorvastatina': 'Atorvastatina',
+    'ingredient_levotiroxina': 'Levotiroxina', 'ingredient_glibenclamida': 'Glibenclamida',
+    'ingredient_insulina_glargina': 'Insulina glargina', 'ingredient_salbutamol': 'Salbutamol',
+    'ingredient_prednisona': 'Prednisona', 'ingredient_dexametasona': 'Dexametasona',
+    'ingredient_sertralina': 'Sertralina', 'ingredient_diazepam': 'Diazepam',
+    'ingredient_metronidazol': 'Metronidazol', 'ingredient_tamoxifeno': 'Tamoxifeno',
 }
+
+
+def P(pid, name, ptype, cond, ingredients, form, route, price, cost, presentations, registry, code,
+      categ, lab=None, ind=None, **extra):
+    """Medicamento de la demo (ver la tupla de PRODUCTS)."""
+    extra.update(categ=categ)
+    if lab:
+        extra['lab'] = lab
+    if ind:
+        extra['ind'] = ind
+    return (pid, name, ptype, cond, ingredients, form, route, price, cost, presentations, registry, code, extra)
+
+
+BLISTER = 'Blíster'
 # (xmlid, nombre, tipo, condición, [(ingrediente, concentración, unidad)], forma, vía,
 #  precio por unidad, costo, [(presentación, unidades, precio)], registro sanitario,
-#  código DIGEMID, extra)
+#  código DIGEMID, extra). Marcas y laboratorios inventados.
 PRODUCTS = [
-    ('product_paracetamol', 'Paracetamol 500 mg tableta', 'generic_dci', 'otc',
-     [('ingredient_paracetamol', 500, 'mg')], 'tablet', 'oral', 0.20, 0.08,
-     [('Blíster', 10, 1.50), ('Caja', 100, 12.00)], 'EN-04512', '05463', {'categ': 'otc'}),
-    ('product_dolofen', 'Dolofen 500 mg tableta', 'innovator', 'otc',
-     [('ingredient_paracetamol', 500, 'mg')], 'tablet', 'oral', 0.60, 0.30,
-     [('Blíster', 10, 5.50), ('Caja', 100, 50.00)], 'E-21876', '05464', {'lab': 'lab_rimac', 'categ': 'otc'}),
-    ('product_ibuprofen', 'Ibuprofeno 400 mg tableta', 'generic_dci', 'otc',
-     [('ingredient_ibuprofeno', 400, 'mg')], 'tablet', 'oral', 0.25, 0.10,
-     [('Blíster', 10, 2.00), ('Caja', 100, 15.00)], 'EN-03891', '04120', {'categ': 'otc'}),
-    ('product_ibuflam', 'Ibuflam 400 mg tableta', 'generic_brand', 'otc',
-     [('ingredient_ibuprofeno', 400, 'mg')], 'tablet', 'oral', 0.45, 0.20,
-     [('Blíster', 10, 4.00)], 'EG-07722', '04121', {'lab': 'lab_sol', 'categ': 'otc'}),
-    ('product_loratadine', 'Loratadina 10 mg tableta', 'generic_dci', 'otc',
-     [('ingredient_loratadina', 10, 'mg')], 'tablet', 'oral', 0.30, 0.10,
-     [('Blíster', 10, 2.50)], 'EN-06102', '06210', {'categ': 'otc'}),
-    ('product_omeprazole', 'Omeprazol 20 mg cápsula', 'generic_dci', 'otc',
-     [('ingredient_omeprazol', 20, 'mg')], 'capsule', 'oral', 0.30, 0.12,
-     [('Blíster', 10, 2.50), ('Caja', 100, 22.00)], 'EN-05988', '06015', {'categ': 'otc'}),
-    ('product_amoxicillin', 'Amoxicilina 500 mg cápsula', 'generic_dci', 'prescription',
-     [('ingredient_amoxicilina', 500, 'mg')], 'capsule', 'oral', 0.50, 0.22,
-     [('Blíster', 10, 4.50), ('Caja', 100, 40.00)], 'EN-05127', '01287', {'categ': 'rx'}),
-    ('product_amoxival', 'Amoxival 500 mg cápsula', 'innovator', 'prescription',
-     [('ingredient_amoxicilina', 500, 'mg')], 'capsule', 'oral', 1.40, 0.70,
-     [('Blíster', 10, 13.00)], 'E-18350', '01288', {'lab': 'lab_andino', 'categ': 'rx'}),
-    ('product_azithromycin', 'Azitromicina 500 mg tableta', 'generic_dci', 'prescription',
-     [('ingredient_azitromicina', 500, 'mg')], 'coated_tablet', 'oral', 3.00, 1.20,
-     [('Caja', 3, 8.00)], 'EN-04410', '02954', {'categ': 'rx'}),
-    ('product_losartan', 'Losartán 50 mg tableta', 'generic_dci', 'prescription',
-     [('ingredient_losartan', 50, 'mg')], 'coated_tablet', 'oral', 0.30, 0.10,
-     [('Blíster', 10, 2.50), ('Caja', 100, 20.00)], 'EN-05341', '03322', {'categ': 'rx'}),
-    ('product_metformin', 'Metformina 850 mg tableta', 'generic_dci', 'prescription',
-     [('ingredient_metformina', 850, 'mg')], 'tablet', 'oral', 0.25, 0.09,
-     [('Blíster', 10, 2.00), ('Caja', 100, 18.00)], 'EN-04987', '03510', {'igv': 'diabetes', 'categ': 'rx'}),
-    ('product_insulin', 'Insulina humana NPH 100 UI/mL frasco 10 mL', 'generic_dci', 'prescription',
-     [('ingredient_insulina_humana', 100, 'ui')], 'injection', 'sc', 58.00, 41.00,
-     [], 'BE-01046', '03601', {'igv': 'diabetes', 'cold': True, 'categ': 'rx'}),
-    ('product_clonazepam', 'Clonazepam 2 mg tableta', 'generic_dci', 'prescription',
-     [('ingredient_clonazepam', 2, 'mg')], 'tablet', 'oral', 0.80, 0.30,
-     [('Blíster', 10, 7.50)], 'EN-03117', '02210', {'control': 'IVA', 'categ': 'controlled'}),
-    ('product_alprazolam', 'Alprazolam 0,5 mg tableta', 'generic_dci', 'prescription',
-     [('ingredient_alprazolam', 0.5, 'mg')], 'tablet', 'oral', 0.60, 0.25,
-     [('Blíster', 10, 5.50)], 'EN-03205', '02215', {'control': 'IVA', 'categ': 'controlled'}),
+    # --- Analgésicos, antiinflamatorios y antigripales (venta libre)
+    P('product_paracetamol', 'Paracetamol 500 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_paracetamol', 500, 'mg')], 'tablet', 'oral', 0.20, 0.08,
+      [(BLISTER, 10, 1.50), ('Caja', 100, 12.00)], 'EN-04512', '05463', 'otc',
+      ind='Dolor leve a moderado y fiebre.'),
+    P('product_dolofen', 'Dolofen 500 mg tableta', 'innovator', 'otc',
+      [('ingredient_paracetamol', 500, 'mg')], 'tablet', 'oral', 0.60, 0.30,
+      [(BLISTER, 10, 5.50), ('Caja', 100, 50.00)], 'E-21876', '05464', 'otc', 'lab_rimac',
+      ind='Dolor leve a moderado y fiebre.'),
+    P('product_paracetamol_syrup', 'Paracetamol 120 mg/5 mL jarabe frasco 60 mL', 'generic_dci', 'otc',
+      [('ingredient_paracetamol', 120, 'mg_5ml')], 'syrup', 'oral', 4.50, 1.80, [], 'EN-04630', '05470',
+      'otc', ind='Fiebre y dolor en niños, según peso.'),
+    P('product_ibuprofen', 'Ibuprofeno 400 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_ibuprofeno', 400, 'mg')], 'tablet', 'oral', 0.25, 0.10,
+      [(BLISTER, 10, 2.00), ('Caja', 100, 15.00)], 'EN-03891', '04120', 'otc',
+      ind='Dolor, inflamación y fiebre.'),
+    P('product_ibuflam', 'Ibuflam 400 mg tableta', 'generic_brand', 'otc',
+      [('ingredient_ibuprofeno', 400, 'mg')], 'tablet', 'oral', 0.45, 0.20,
+      [(BLISTER, 10, 4.00)], 'EG-07722', '04121', 'otc', 'lab_sol', ind='Dolor, inflamación y fiebre.'),
+    P('product_ibuprofen_suspension', 'Ibuprofeno 100 mg/5 mL suspensión frasco 60 mL', 'generic_dci', 'otc',
+      [('ingredient_ibuprofeno', 100, 'mg_5ml')], 'suspension', 'oral', 6.50, 2.60, [], 'EN-04015', '04125',
+      'otc', ind='Fiebre y dolor en niños mayores de 6 meses.'),
+    P('product_naproxen', 'Naproxeno sódico 550 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_naproxeno', 550, 'mg')], 'coated_tablet', 'oral', 0.50, 0.18,
+      [(BLISTER, 10, 4.50), ('Caja', 100, 40.00)], 'EN-05210', '04310', 'otc', ind='Dolor e inflamación.'),
+    P('product_diclofenac_gel', 'Diclofenaco 1 % gel tubo 50 g', 'generic_dci', 'otc',
+      [('ingredient_diclofenaco', 1, 'percent')], 'gel', 'topical', 9.90, 3.90, [], 'EN-04772', '04420',
+      'otc', ind='Dolor muscular y articular localizado.'),
+    P('product_aspirin', 'Ácido acetilsalicílico 100 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_acido_acetilsalicilico', 100, 'mg')], 'tablet', 'oral', 0.15, 0.05,
+      [(BLISTER, 10, 1.20), ('Caja', 100, 10.00)], 'EN-02987', '00125', 'otc',
+      ind='Prevención cardiovascular, por indicación médica.'),
+    P('product_antiflu', 'Antigripal Andino tableta', 'generic_brand', 'otc',
+      [('ingredient_paracetamol', 500, 'mg'), ('ingredient_fenilefrina', 10, 'mg'),
+       ('ingredient_clorfenamina', 4, 'mg')], 'tablet', 'oral', 0.70, 0.28,
+      [(BLISTER, 4, 2.50), ('Caja', 100, 60.00)], 'EG-08120', '05480', 'otc', 'lab_andino',
+      ind='Síntomas del resfrío común y la gripe.'),
+    # --- Alergias y vías respiratorias
+    P('product_loratadine', 'Loratadina 10 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_loratadina', 10, 'mg')], 'tablet', 'oral', 0.30, 0.10,
+      [(BLISTER, 10, 2.50)], 'EN-06102', '06210', 'otc', ind='Rinitis alérgica y urticaria.'),
+    P('product_cetirizine', 'Cetirizina 10 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_cetirizina', 10, 'mg')], 'coated_tablet', 'oral', 0.35, 0.12,
+      [(BLISTER, 10, 3.00)], 'EN-06155', '06230', 'otc', ind='Rinitis alérgica y urticaria.'),
+    P('product_chlorphenamine', 'Clorfenamina 4 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_clorfenamina', 4, 'mg')], 'tablet', 'oral', 0.10, 0.03,
+      [(BLISTER, 10, 0.80)], 'EN-01988', '06190', 'otc', ind='Alergias y picaduras.'),
+    P('product_ambroxol_syrup', 'Ambroxol 30 mg/5 mL jarabe frasco 120 mL', 'generic_dci', 'otc',
+      [('ingredient_ambroxol', 30, 'mg_5ml')], 'syrup', 'oral', 7.90, 3.10, [], 'EN-03344', '07010',
+      'otc', ind='Tos con flema.'),
+    P('product_dextromethorphan_syrup', 'Dextrometorfano 15 mg/5 mL jarabe frasco 120 mL', 'generic_dci', 'otc',
+      [('ingredient_dextrometorfano', 15, 'mg_5ml')], 'syrup', 'oral', 8.50, 3.40, [], 'EN-03410', '07025',
+      'otc', ind='Tos seca.'),
+    P('product_saline_nasal', 'Cloruro de sodio 0,9 % gotas nasales frasco 30 mL', 'generic_dci', 'otc',
+      [('ingredient_cloruro_sodio', 0.9, 'percent')], 'drops', 'nasal', 5.50, 1.90, [], 'EN-02190', '07110',
+      'otc', ind='Limpieza y descongestión nasal.'),
+    # --- Aparato digestivo y antiparasitarios
+    P('product_omeprazole', 'Omeprazol 20 mg cápsula', 'generic_dci', 'otc',
+      [('ingredient_omeprazol', 20, 'mg')], 'capsule', 'oral', 0.30, 0.12,
+      [(BLISTER, 10, 2.50), ('Caja', 100, 22.00)], 'EN-05988', '06015', 'otc', ind='Acidez y gastritis.'),
+    P('product_antacid', 'Hidróxido de aluminio + magnesio suspensión frasco 150 mL', 'generic_dci', 'otc',
+      [('ingredient_hidroxido_aluminio', 200, 'mg_5ml'), ('ingredient_hidroxido_magnesio', 200, 'mg_5ml')],
+      'suspension', 'oral', 9.50, 3.60, [], 'EN-02455', '06040', 'otc', ind='Acidez estomacal.'),
+    P('product_simethicone', 'Simeticona 80 mg tableta masticable', 'generic_dci', 'otc',
+      [('ingredient_simeticona', 80, 'mg')], 'tablet', 'oral', 0.40, 0.14,
+      [(BLISTER, 10, 3.50)], 'EN-03780', '06070', 'otc', ind='Gases y distensión abdominal.'),
+    P('product_loperamide', 'Loperamida 2 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_loperamida', 2, 'mg')], 'tablet', 'oral', 0.30, 0.10,
+      [(BLISTER, 10, 2.50)], 'EN-03812', '06090', 'otc', ind='Diarrea aguda en adultos.'),
+    P('product_ors', 'Sales de rehidratación oral sobre 27,9 g', 'generic_dci', 'otc',
+      [('ingredient_sales_rehidratacion', 27.9, 'g')], 'powder', 'oral', 1.50, 0.55, [('Caja', 20, 26.00)],
+      'EN-01540', '06120', 'otc', ind='Deshidratación por diarrea.'),
+    P('product_mebendazole', 'Mebendazol 100 mg/5 mL suspensión frasco 30 mL', 'generic_dci', 'otc',
+      [('ingredient_mebendazol', 100, 'mg_5ml')], 'suspension', 'oral', 5.00, 1.80, [], 'EN-02670', '08010',
+      'otc', ind='Parásitos intestinales.'),
+    P('product_albendazole', 'Albendazol 400 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_albendazol', 400, 'mg')], 'tablet', 'oral', 1.50, 0.50, [(BLISTER, 2, 2.80)],
+      'EN-02710', '08020', 'otc', ind='Parásitos intestinales.'),
+    # --- Piel, ojos y vitaminas
+    P('product_clotrimazole_cream', 'Clotrimazol 1 % crema tubo 20 g', 'generic_dci', 'otc',
+      [('ingredient_clotrimazol', 1, 'percent')], 'cream', 'topical', 4.90, 1.70, [], 'EN-03050', '09010',
+      'otc', ind='Infecciones de la piel por hongos.'),
+    P('product_artificial_tears', 'Hipromelosa 0,3 % lágrimas artificiales frasco 15 mL', 'generic_dci', 'otc',
+      [('ingredient_hipromelosa', 0.3, 'percent')], 'drops', 'ophthalmic', 12.90, 5.10, [], 'EN-04880',
+      '09110', 'otc', ind='Sequedad e irritación ocular.'),
+    P('product_vitamin_c', 'Vitamina C 1 g tableta efervescente', 'generic_dci', 'otc',
+      [('ingredient_acido_ascorbico', 1, 'g')], 'tablet', 'oral', 1.20, 0.45, [('Tubo', 10, 11.00)],
+      'EN-02330', '10010', 'otc', ind='Suplemento de vitamina C.'),
+    P('product_ferrous_sulfate', 'Sulfato ferroso 300 mg tableta', 'generic_dci', 'otc',
+      [('ingredient_sulfato_ferroso', 300, 'mg')], 'coated_tablet', 'oral', 0.20, 0.06,
+      [(BLISTER, 10, 1.50), ('Caja', 100, 12.00)], 'EN-02390', '10030', 'otc', ind='Anemia por falta de hierro.'),
+    # --- Antibióticos (con receta)
+    P('product_amoxicillin', 'Amoxicilina 500 mg cápsula', 'generic_dci', 'prescription',
+      [('ingredient_amoxicilina', 500, 'mg')], 'capsule', 'oral', 0.50, 0.22,
+      [(BLISTER, 10, 4.50), ('Caja', 100, 40.00)], 'EN-05127', '01287', 'rx', ind='Infecciones bacterianas.'),
+    P('product_amoxival', 'Amoxival 500 mg cápsula', 'innovator', 'prescription',
+      [('ingredient_amoxicilina', 500, 'mg')], 'capsule', 'oral', 1.40, 0.70,
+      [(BLISTER, 10, 13.00)], 'E-18350', '01288', 'rx', 'lab_andino', ind='Infecciones bacterianas.'),
+    P('product_amoxicillin_suspension', 'Amoxicilina 250 mg/5 mL polvo para suspensión frasco 60 mL',
+      'generic_dci', 'prescription', [('ingredient_amoxicilina', 250, 'mg_5ml')], 'powder', 'oral', 7.50, 2.90,
+      [], 'EN-05140', '01290', 'rx', ind='Infecciones bacterianas en niños.'),
+    P('product_amoxicillin_clavulanate', 'Amoxicilina + ácido clavulánico 875/125 mg tableta', 'generic_dci',
+      'prescription', [('ingredient_amoxicilina', 875, 'mg'), ('ingredient_acido_clavulanico', 125, 'mg')],
+      'coated_tablet', 'oral', 2.20, 0.95, [('Caja', 14, 28.00)], 'EN-05188', '01295', 'rx',
+      ind='Infecciones bacterianas resistentes.'),
+    P('product_azithromycin', 'Azitromicina 500 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_azitromicina', 500, 'mg')], 'coated_tablet', 'oral', 3.00, 1.20,
+      [('Caja', 3, 8.00)], 'EN-04410', '02954', 'rx', ind='Infecciones respiratorias.'),
+    P('product_cephalexin', 'Cefalexina 500 mg cápsula', 'generic_dci', 'prescription',
+      [('ingredient_cefalexina', 500, 'mg')], 'capsule', 'oral', 0.70, 0.28, [(BLISTER, 10, 6.50)],
+      'EN-03960', '01410', 'rx', ind='Infecciones de piel y vías urinarias.'),
+    P('product_ciprofloxacin', 'Ciprofloxacino 500 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_ciprofloxacino', 500, 'mg')], 'coated_tablet', 'oral', 0.60, 0.22, [(BLISTER, 10, 5.50)],
+      'EN-04120', '01520', 'rx', ind='Infecciones urinarias.'),
+    P('product_metronidazole', 'Metronidazol 500 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_metronidazol', 500, 'mg')], 'tablet', 'oral', 0.35, 0.12, [(BLISTER, 10, 3.00)],
+      'EN-02810', '01610', 'rx', ind='Infecciones por parásitos y bacterias anaerobias.'),
+    # --- Crónicos: presión, colesterol, diabetes, tiroides
+    P('product_losartan', 'Losartán 50 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_losartan', 50, 'mg')], 'coated_tablet', 'oral', 0.30, 0.10,
+      [(BLISTER, 10, 2.50), ('Caja', 100, 20.00)], 'EN-05341', '03322', 'rx', ind='Hipertensión arterial.'),
+    P('product_tensiloz', 'Tensiloz 50 mg tableta', 'generic_brand', 'prescription',
+      [('ingredient_losartan', 50, 'mg')], 'coated_tablet', 'oral', 0.90, 0.40, [(BLISTER, 10, 8.50)],
+      'EG-09012', '03323', 'rx', 'lab_huascaran', ind='Hipertensión arterial.'),
+    P('product_enalapril', 'Enalapril 10 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_enalapril', 10, 'mg')], 'tablet', 'oral', 0.15, 0.05,
+      [(BLISTER, 10, 1.20), ('Caja', 100, 10.00)], 'EN-03250', '03310', 'rx', ind='Hipertensión arterial.'),
+    P('product_amlodipine', 'Amlodipino 5 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_amlodipino', 5, 'mg')], 'tablet', 'oral', 0.20, 0.07,
+      [(BLISTER, 10, 1.80), ('Caja', 100, 15.00)], 'EN-04510', '03340', 'rx', ind='Hipertensión arterial.'),
+    P('product_atorvastatin', 'Atorvastatina 20 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_atorvastatina', 20, 'mg')], 'coated_tablet', 'oral', 0.45, 0.16,
+      [(BLISTER, 10, 4.00), ('Caja', 30, 11.00)], 'EN-05010', '03410', 'rx', ind='Colesterol alto.'),
+    P('product_colestrina', 'Colestrina 20 mg tableta', 'innovator', 'prescription',
+      [('ingredient_atorvastatina', 20, 'mg')], 'coated_tablet', 'oral', 2.80, 1.30, [('Caja', 30, 79.00)],
+      'E-23015', '03411', 'rx', 'lab_chavin', ind='Colesterol alto.'),
+    P('product_metformin', 'Metformina 850 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_metformina', 850, 'mg')], 'tablet', 'oral', 0.25, 0.09,
+      [(BLISTER, 10, 2.00), ('Caja', 100, 18.00)], 'EN-04987', '03510', 'rx', igv='diabetes',
+      ind='Diabetes tipo 2.'),
+    P('product_glibenclamide', 'Glibenclamida 5 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_glibenclamida', 5, 'mg')], 'tablet', 'oral', 0.15, 0.05, [(BLISTER, 10, 1.20)],
+      'EN-03020', '03520', 'rx', igv='diabetes', ind='Diabetes tipo 2.'),
+    P('product_insulin', 'Insulina humana NPH 100 UI/mL frasco 10 mL', 'generic_dci', 'prescription',
+      [('ingredient_insulina_humana', 100, 'ui')], 'injection', 'sc', 58.00, 41.00,
+      [], 'BE-01046', '03601', 'rx', igv='diabetes', cold=True, ind='Diabetes que requiere insulina.'),
+    P('product_insulin_glargine', 'Insulina glargina 100 UI/mL lapicero 3 mL', 'innovator', 'prescription',
+      [('ingredient_insulina_glargina', 100, 'ui')], 'injection', 'sc', 69.00, 48.00, [('Caja', 5, 330.00)],
+      'BE-01210', '03610', 'rx', 'lab_rimac', igv='diabetes', cold=True, ind='Diabetes tipo 1 y 2.'),
+    P('product_levothyroxine', 'Levotiroxina 100 mcg tableta', 'generic_dci', 'prescription',
+      [('ingredient_levotiroxina', 100, 'mcg')], 'tablet', 'oral', 0.30, 0.11, [('Caja', 100, 25.00)],
+      'EN-04260', '03710', 'rx', ind='Hipotiroidismo.'),
+    # --- Otros con receta
+    P('product_salbutamol', 'Salbutamol 100 mcg/dosis inhalador 200 dosis', 'generic_dci', 'prescription',
+      [('ingredient_salbutamol', 100, 'mcg')], 'inhaler', 'inhalation', 14.50, 6.20, [], 'EN-03590',
+      '07210', 'rx', ind='Asma y broncoespasmo.'),
+    P('product_prednisone', 'Prednisona 20 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_prednisona', 20, 'mg')], 'tablet', 'oral', 0.40, 0.14, [(BLISTER, 10, 3.50)],
+      'EN-02940', '07310', 'rx', ind='Procesos inflamatorios y alérgicos.'),
+    P('product_dexamethasone', 'Dexametasona 4 mg/mL solución inyectable ampolla 2 mL', 'generic_dci',
+      'prescription', [('ingredient_dexametasona', 4, 'mg_ml')], 'injection', 'im', 3.50, 1.20,
+      [('Caja', 25, 75.00)], 'EN-03120', '07320', 'rx', ind='Inflamación y alergias graves.'),
+    P('product_sertraline', 'Sertralina 50 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_sertralina', 50, 'mg')], 'coated_tablet', 'oral', 0.80, 0.30, [(BLISTER, 10, 7.50)],
+      'EN-05420', '02310', 'rx', ind='Depresión y ansiedad.'),
+    P('product_tamoxifen', 'Tamoxifeno 20 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_tamoxifeno', 20, 'mg')], 'tablet', 'oral', 1.10, 0.62, [('Caja', 30, 30.00)],
+      'EN-04710', '04810', 'rx', igv='oncology_hiv', ind='Tratamiento del cáncer de mama.'),
+    # --- Controlados (receta retenida)
+    P('product_clonazepam', 'Clonazepam 2 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_clonazepam', 2, 'mg')], 'tablet', 'oral', 0.80, 0.30,
+      [(BLISTER, 10, 7.50)], 'EN-03117', '02210', 'controlled', control='IVA', ind='Trastornos de ansiedad.'),
+    P('product_alprazolam', 'Alprazolam 0,5 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_alprazolam', 0.5, 'mg')], 'tablet', 'oral', 0.60, 0.25,
+      [(BLISTER, 10, 5.50)], 'EN-03205', '02215', 'controlled', control='IVA', ind='Trastornos de ansiedad.'),
+    P('product_diazepam', 'Diazepam 10 mg tableta', 'generic_dci', 'prescription',
+      [('ingredient_diazepam', 10, 'mg')], 'tablet', 'oral', 0.40, 0.14, [(BLISTER, 10, 3.50)],
+      'EN-02105', '02220', 'controlled', control='IVA', ind='Ansiedad y espasmos musculares.'),
 ]
 TRACKED = [p[0] for p in PRODUCTS]
 ESSENTIAL = [('ingredient_paracetamol', '500 mg', 'tablet'), ('ingredient_ibuprofeno', '400 mg', 'tablet'),
              ('ingredient_amoxicilina', '500 mg', 'capsule'), ('ingredient_losartan', '50 mg', 'coated_tablet'),
-             ('ingredient_metformina', '850 mg', 'tablet'), ('ingredient_omeprazol', '20 mg', 'capsule')]
+             ('ingredient_metformina', '850 mg', 'tablet'), ('ingredient_omeprazol', '20 mg', 'capsule'),
+             ('ingredient_enalapril', '10 mg', 'tablet'), ('ingredient_atorvastatina', '20 mg', 'coated_tablet'),
+             ('ingredient_salbutamol', '100 mcg', 'inhaler'), ('ingredient_sales_rehidratacion', '27,9 g', 'powder'),
+             ('ingredient_sulfato_ferroso', '300 mg', 'coated_tablet'), ('ingredient_cefalexina', '500 mg', 'capsule')]
+# Productos que no son medicamentos (al_industry_pharmacy):
+# (xmlid, nombre, categoría, categoría del TPV, precio, costo)
+NON_PHARMA = [
+    ('product_sunscreen', 'Protector solar FPS 50 x 50 mL', 'dermo', '02', 69.9, 38.0),
+    ('product_moisturizer', 'Crema hidratante corporal x 400 mL', 'dermo', '02', 32.9, 16.0),
+    ('product_toothpaste', 'Pasta dental con flúor x 90 g', 'personal_care', '03', 6.5, 3.2),
+    ('product_hand_gel', 'Alcohol en gel antibacterial x 500 mL', 'personal_care', '03', 12.9, 5.8),
+    ('product_alcohol', 'Alcohol medicinal 70° x 250 mL', 'personal_care', '03', 5.9, 2.4),
+    ('product_diapers', 'Pañales para bebé talla M x 30', 'baby', '04', 39.9, 26.0),
+    ('product_baby_wipes', 'Toallitas húmedas para bebé x 80', 'baby', '04', 9.9, 4.9),
+    ('product_multivitamin', 'Multivitamínico adultos x 30 tabletas', 'nutrition', '05', 34.9, 17.0),
+    ('product_nutritional_shake', 'Suplemento nutricional en polvo sabor vainilla x 400 g', 'nutrition', '05',
+     59.9, 36.0),
+    ('product_thermometer', 'Termómetro digital', 'medical_devices', '06', 25.0, 12.0),
+    ('product_bp_monitor', 'Tensiómetro digital de brazo', 'medical_devices', '06', 149.0, 88.0),
+    ('product_glucose_strips', 'Tiras reactivas para glucómetro x 50', 'medical_devices', '06', 79.0, 48.0),
+    ('product_face_masks', 'Mascarillas quirúrgicas descartables x 50', 'medical_devices', '06', 15.0, 6.0),
+    ('product_gauze', 'Gasa estéril 10 x 10 cm x 10 unidades', 'medical_devices', '06', 4.5, 1.8),
+]
 PRESCRIBERS = [
     ('prescriber_torres', 'Dra. Ana Torres Quispe', '067890', 'Medicina interna', 'enabled'),
     ('prescriber_salazar', 'Dr. Jorge Salazar Pérez', '045678', 'Pediatría', False),
     ('prescriber_rojas', 'Dr. Martín Rojas León', '031245', 'Psiquiatría', 'disabled'),
+    ('prescriber_vargas', 'Dr. Raúl Vargas Chávez', '052310', 'Cardiología', 'enabled'),
+    ('prescriber_huaman', 'Dra. Elena Huamán Ccori', '061870', 'Endocrinología', 'enabled'),
+    ('prescriber_paz', 'Dra. Sofía Paz Medina', '073415', 'Medicina general', 'enabled'),
+    ('prescriber_chang', 'Dr. Víctor Chang Lozano', '058902', 'Neumología', 'enabled'),
+]
+# Pacientes: (xmlid, nombre, teléfono, dirección, edad, alergias, condiciones crónicas)
+PATIENTS = [
+    ('patient_mendoza', 'Rosa Mendoza Vargas', '987 654 321', 'Jr. Huallaga 345', 54,
+     ['ingredient_amoxicilina'], 'Hipertensión arterial'),
+    ('patient_castro', 'Pedro Castro Ñahui', '956 123 478', 'Av. Brasil 1820', 38, [], 'Diabetes tipo 2'),
+    ('patient_quispe', 'Julia Quispe Mamani', '945 778 120', 'Av. Arequipa 2870', 67, [],
+     'Hipertensión arterial, colesterol alto'),
+    ('patient_ramos', 'Carlos Ramos Gutiérrez', '991 230 556', 'Calle Las Begonias 415', 45,
+     ['ingredient_acido_acetilsalicilico'], 'Asma'),
+    ('patient_salinas', 'Mariela Salinas Cruz', '938 410 772', 'Jr. Junín 1120', 31, [], 'Hipotiroidismo'),
+    ('patient_benites', 'Óscar Benites Laura', '962 905 314', 'Av. Tacna 650', 72, [],
+     'Diabetes tipo 2, hipertensión arterial'),
+    ('patient_ccahuana', 'Valeria Ccahuana Ríos', '974 682 019', 'Av. La Marina 2310', 6, [], ''),
+    ('patient_lopez', 'Andrea López Tello', '983 117 640', 'Calle Schell 280', 49, ['ingredient_ibuprofeno'],
+     'Cáncer de mama en tratamiento'),
+]
+# Recetas: (xmlid, número, prescriptor, paciente, día, estado, diagnóstico,
+#           [(producto, ingrediente, cantidad, posología, duración)])
+PRESCRIPTIONS = [
+    ('prescription_draft', '000101', 'prescriber_salazar', 'patient_castro', 0, 'draft',
+     'Faringitis aguda', [('product_azithromycin', None, 3, '1 tableta al día', '3 días')]),
+    ('prescription_valid', '000102', 'prescriber_torres', 'patient_mendoza', -1, 'valid',
+     'Hipertensión arterial', [('product_losartan', None, 30, '1 tableta al día', '30 días')]),
+    ('prescription_partial', '000103', 'prescriber_torres', 'patient_castro', -2, 'valid',
+     'Diabetes tipo 2', [('product_metformin', None, 60, '1 tableta cada 12 horas', '30 días'),
+                         (None, 'ingredient_ibuprofeno', 10, '1 tableta cada 8 horas', '3 días')]),
+    ('prescription_expired', '000090', 'prescriber_torres', 'patient_mendoza', -45, 'valid',
+     'Gastritis', [('product_omeprazole', None, 14, '1 cápsula en ayunas', '14 días')]),
+    ('prescription_quispe', '000104', 'prescriber_vargas', 'patient_quispe', -3, 'valid',
+     'Hipertensión arterial y dislipidemia',
+     [('product_enalapril', None, 60, '1 tableta cada 12 horas', '30 días'),
+      ('product_atorvastatin', None, 30, '1 tableta en la noche', '30 días'),
+      ('product_aspirin', None, 30, '1 tableta después del almuerzo', '30 días')]),
+    ('prescription_ramos', '000105', 'prescriber_chang', 'patient_ramos', -1, 'valid', 'Asma bronquial',
+     [('product_salbutamol', None, 1, '2 inhalaciones cada 6 horas si hay falta de aire', '30 días'),
+      ('product_prednisone', None, 10, '1 tableta al día en el desayuno', '10 días')]),
+    ('prescription_salinas', '000106', 'prescriber_huaman', 'patient_salinas', -5, 'valid', 'Hipotiroidismo',
+     [('product_levothyroxine', None, 30, '1 tableta en ayunas', '30 días')]),
+    ('prescription_benites', '000107', 'prescriber_huaman', 'patient_benites', -2, 'valid',
+     'Diabetes tipo 2 insulinorrequiriente',
+     [('product_insulin_glargine', None, 2, '20 UI en la noche', '30 días'),
+      ('product_metformin', None, 60, '1 tableta cada 12 horas', '30 días'),
+      ('product_amlodipine', None, 30, '1 tableta al día', '30 días')]),
+    ('prescription_ccahuana', '000108', 'prescriber_salazar', 'patient_ccahuana', 0, 'valid',
+     'Otitis media aguda (20 kg)',
+     [('product_amoxicillin_suspension', None, 2, '8 mL cada 8 horas', '7 días'),
+      ('product_paracetamol_syrup', None, 1, '10 mL cada 6 horas si hay fiebre', '3 días')]),
+    ('prescription_lopez', '000109', 'prescriber_paz', 'patient_lopez', -4, 'valid',
+     'Cáncer de mama hormonodependiente', [('product_tamoxifen', None, 30, '1 tableta al día', '30 días')]),
+    ('prescription_cystitis', '000111', 'prescriber_paz', 'patient_salinas', -1, 'valid', 'Infección urinaria',
+     [('product_ciprofloxacin', None, 10, '1 tableta cada 12 horas', '5 días')]),
+    ('prescription_cancelled', '000112', 'prescriber_paz', 'patient_quispe', -6, 'cancelled',
+     'Faringitis (anulada: error en la dosis)',
+     [('product_amoxicillin_clavulanate', None, 14, '1 tableta cada 12 horas', '7 días')]),
+]
+# Dispensaciones: (xmlid, receta, línea (orden), producto, cantidad, día)
+DISPENSATIONS = [
+    ('dispensation_partial', 'prescription_partial', 0, 'product_metformin', 30, -1),
+    ('dispensation_quispe_enalapril', 'prescription_quispe', 0, 'product_enalapril', 60, -3),
+    ('dispensation_quispe_atorvastatin', 'prescription_quispe', 1, 'product_atorvastatin', 30, -3),
+    ('dispensation_quispe_aspirin', 'prescription_quispe', 2, 'product_aspirin', 30, -3),
+    ('dispensation_salinas', 'prescription_salinas', 0, 'product_levothyroxine', 30, -5),
+    ('dispensation_benites_metformin', 'prescription_benites', 1, 'product_metformin', 60, -2),
+]
+# Tratamientos crónicos: (xmlid, paciente, producto, unidades por día, posología, inicio, nota)
+TREATMENTS = [
+    ('treatment_mendoza_losartan', 'patient_mendoza', 'product_losartan', 1, '1 tableta cada 24 horas', -120,
+     'Hipertensión arterial. Prefiere que la llamen por la tarde.'),
+    ('treatment_castro_metformin', 'patient_castro', 'product_metformin', 2,
+     '1 tableta cada 12 horas con las comidas', -90, ''),
+    ('treatment_quispe_enalapril', 'patient_quispe', 'product_enalapril', 2, '1 tableta cada 12 horas', -200,
+     'Vive sola: avisar también a su hija.'),
+    ('treatment_quispe_atorvastatin', 'patient_quispe', 'product_atorvastatin', 1, '1 tableta en la noche',
+     -200, ''),
+    ('treatment_salinas_levothyroxine', 'patient_salinas', 'product_levothyroxine', 1, '1 tableta en ayunas',
+     -60, ''),
+    ('treatment_benites_metformin', 'patient_benites', 'product_metformin', 2, '1 tableta cada 12 horas', -365,
+     'Control de glucosa cada mes.'),
+    ('treatment_ramos_salbutamol', 'patient_ramos', 'product_salbutamol', 0.2,
+     '2 inhalaciones cada 6 horas si hay falta de aire', -30, 'Un inhalador le dura unos 5 días de crisis.'),
+]
+
+PRODUCTS_BY_ID = {p[0]: p for p in PRODUCTS}
+# Segundo lote por vencer: días que le quedan y cantidad.
+NEAR_EXPIRY = {'product_amoxicillin': (45, 120), 'product_naproxen': (75, 60), 'product_vitamin_c': (25, 30),
+               'product_loratadine': (60, 40), 'product_ambroxol_syrup': (80, 12)}
+FACILITIES = ['Clínica San Gabriel', 'Hospital Nacional Dos de Mayo', 'Centro Médico Miraflores',
+              'Policlínico Santa Rosa']
+DNIS = ['41235678', '45879632', '08765412', '42319876', '47652013', '06543219', '78123456', '40987123']
+# Faltantes: (xmlid, producto o descripción, cantidad, motivo, nota)
+SHORTAGES = [
+    ('shortage_losartan', 'product_losartan', 30, 'no_stock', 'Cliente crónico: volverá el lunes.'),
+    ('shortage_not_carried', 'Colirio antialérgico 10 mL', 2, 'not_carried', ''),
+    ('shortage_insulin_glargine', 'product_insulin_glargine', 2, 'no_stock', 'Paciente con receta del endocrinólogo.'),
+    ('shortage_probiotic', 'Probiótico en sobres x 10', 1, 'not_carried', 'Lo piden varias madres.'),
+]
+# Aseguradoras: (xmlid, nombre, dirección, correo, convenio, plan, % cubierto, copago, tope por venta,
+#               tope mensual)
+INSURERS = [
+    ('partner_salud_andina', 'Salud Andina EPS S.A.', 'Av. Javier Prado Oeste 1450',
+     'convenios@saludandina.example.com', 'agreement_salud_andina', 'Salud Andina EPS · Plan regular',
+     80, 5, 300, 1000),
+    ('partner_vida_plena', 'Vida Plena EPS S.A.', 'Av. Camino Real 390', 'farmacias@vidaplena.example.com',
+     'agreement_vida_plena', 'Vida Plena EPS · Plan crónicos', 90, 0, 500, 1500),
+]
+AFFILIATES = [
+    ('partner_affiliate_maria', 'María Torres Quispe', '987 123 456'),
+    ('partner_affiliate_jose', 'José Ugarte Paredes', '981 450 237'),
+    ('partner_affiliate_luz', 'Luz Ccopa Ramírez', '952 813 640'),
+]
+AFFILIATIONS = [
+    ('affiliate_maria', 'agreement_salud_andina', 'partner_affiliate_maria', 'SA-0012345'),
+    ('affiliate_jose', 'agreement_salud_andina', 'partner_affiliate_jose', 'SA-0012388'),
+    ('affiliate_luz', 'agreement_vida_plena', 'partner_affiliate_luz', 'VP-2026-00871'),
 ]
 
 BASE = 'al_pharmacy_base'
@@ -131,6 +448,15 @@ def f(name, value=None, **attrs):
     return f'<field name="{name}">{x(value)}</field>'
 
 
+def image(module, xmlid):
+    """Foto real del producto (docs/farmacia/descargar_imagenes_demo.py), si está descargada."""
+    path = f'static/img/demo/{xmlid}.jpg'
+    folder = 'OL-INDUSTRIES' if module.startswith('al_industry') else 'OL-HEALTH'
+    if not (ROOT / folder / module / path).exists():
+        return []
+    return [f('image_1920', type='base64', file=f'{module}/{path}')]
+
+
 def fe(name, expression):
     return f'<field name="{name}" {expression}/>'
 
@@ -167,6 +493,9 @@ def demo_base():
         ]
         if extra.get('lab'):
             fields.append(f('pharmacy_laboratory_id', ref=extra['lab']))
+        if extra.get('ind'):
+            fields.append(f('pharmacy_indications', extra['ind']))
+        fields += image(BASE, pid)
         if extra.get('cold'):
             fields += [f('pharmacy_cold_chain', eval='True'),
                        f('pharmacy_storage_conditions', 'Refrigerar entre 2 °C y 8 °C. No congelar.')]
@@ -209,15 +538,22 @@ def demo_base():
 # ----------------------------------------------------------------------
 def demo_stock():
     body = []
-    body.append('        <!-- Lotes y existencias: uno por medicamento; la amoxicilina tiene además\n'
-                '             un lote que vence en 45 días (aviso «Por vencer») -->')
+    body.append('        <!-- Lotes y existencias: uno por medicamento y, en algunos, un segundo lote\n'
+                '             por vencer (aviso «Por vencer» y precio rebajado) -->')
     quants = []
-    for index, (pid, _name, *_rest) in enumerate(PRODUCTS):
-        code = PRODUCTS[index][11]
-        controlled = bool(PRODUCTS[index][12].get('control'))
-        lots = [(f'{pid}_lot_1', f'{code}2610', 540, 30 if controlled else 500)]
-        if pid == 'product_amoxicillin':
-            lots.append((f'{pid}_lot_2', f'{code}2604', 45, 120))
+    for pid, _name, *_rest, code, extra in PRODUCTS:
+        if extra.get('control'):
+            quantity = 30
+        elif extra.get('cold'):
+            quantity = 40
+        elif not PRODUCTS_BY_ID[pid][9]:  # sin presentaciones: frascos, tubos, inhaladores
+            quantity = 60
+        else:
+            quantity = 500
+        lots = [(f'{pid}_lot_1', f'{code}2610', 540, quantity)]
+        if pid in NEAR_EXPIRY:
+            days_left, near_quantity = NEAR_EXPIRY[pid]
+            lots.append((f'{pid}_lot_2', f'{code}2604', days_left, near_quantity))
         for lot_id, lot_name, expiry, quantity in lots:
             body += record(lot_id, 'stock.lot', [
                 f('name', lot_name), fe('product_id', variant(pid)),
@@ -289,6 +625,19 @@ def demo_stock():
                            ".product_variant_id.id, 'lot_id': ref('product_amoxicillin_lot_2'), "
                            "'location_id': obj().env.ref('stock.warehouse0').lot_stock_id.id, "
                            "'quantity': 20, 'reason': 'damaged'})]")])
+    body.append('        <!-- Precio por vencer: -20 % hasta 90 días y -40 % hasta 30 días -->')
+    for days_left, discount in ((90, 20), (30, 40)):
+        body += record(f'expiry_discount_{days_left}', 'pharmacy.expiry.discount', [
+            f('days', days_left), f('discount', discount), f('company_id', ref='base.main_company')])
+    body.append('        <!-- Canje en borrador del lote de amoxicilina que vence en 45 días -->')
+    body += record('supplier_return_amoxicillin', 'pharmacy.supplier.return', [
+        f('partner_id', ref='supplier_pacifico'), f('warehouse_id', ref='stock.warehouse0'),
+        f('company_id', ref='base.main_company'),
+        f('note', 'La droguería canjea por lotes con vencimiento mayor a un año.'),
+        f('line_ids', eval="[Command.create({'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin')"
+                           ".product_variant_id.id, 'lot_id': ref('product_amoxicillin_lot_2'), "
+                           "'location_id': obj().env.ref('stock.warehouse0').lot_stock_id.id, "
+                           "'quantity': 20, 'reason': 'near_expiry', 'price_unit': 0.35})]")])
     return document('Almacén de la botica de demostración.', body)
 
 
@@ -308,31 +657,19 @@ def prescriber_records(with_status=True):
 
 
 def demo_prescription():
-    body = ['        <!-- Prescriptores: hábil, sin verificar e inhábil -->', *prescriber_records()]
+    body = ['        <!-- Prescriptores: hábiles, sin verificar e inhábil -->', *prescriber_records()]
     body.append('        <!-- Pacientes -->')
-    body += record('patient_mendoza', 'res.partner', [
-        f('name', 'Rosa Mendoza Vargas'), f('phone', '987 654 321'),
-        f('street', 'Jr. Huallaga 345'), f('city', 'Lima'), f('country_id', ref='base.pe'),
-        fe('pharmacy_birthdate', days(-365 * 54, 'date')),
-        f('pharmacy_allergy_ids', eval="[Command.set([ref('al_pharmacy_base.ingredient_amoxicilina')])]"),
-        f('pharmacy_chronic_conditions', 'Hipertensión arterial')])
-    body += record('patient_castro', 'res.partner', [
-        f('name', 'Pedro Castro Ñahui'), f('phone', '956 123 478'),
-        f('street', 'Av. Brasil 1820'), f('city', 'Lima'), f('country_id', ref='base.pe'),
-        fe('pharmacy_birthdate', days(-365 * 38, 'date')), f('pharmacy_chronic_conditions', 'Diabetes tipo 2')])
-    body.append('        <!-- Recetas: por validar, vigente, dispensada en parte y vencida -->')
-    prescriptions = [
-        ('prescription_draft', '000101', 'prescriber_salazar', 'patient_castro', 0, 'draft',
-         'Faringitis aguda', [('product_azithromycin', None, 3, '1 tableta al día', '3 días')]),
-        ('prescription_valid', '000102', 'prescriber_torres', 'patient_mendoza', -1, 'valid',
-         'Hipertensión arterial', [('product_losartan', None, 30, '1 tableta al día', '30 días')]),
-        ('prescription_partial', '000103', 'prescriber_torres', 'patient_castro', -2, 'valid',
-         'Diabetes tipo 2', [('product_metformin', None, 60, '1 tableta cada 12 horas', '30 días'),
-                             (None, 'ingredient_ibuprofeno', 10, '1 tableta cada 8 horas', '3 días')]),
-        ('prescription_expired', '000090', 'prescriber_torres', 'patient_mendoza', -45, 'valid',
-         'Gastritis', [('product_omeprazole', None, 14, '1 cápsula en ayunas', '14 días')]),
-    ]
-    for key, number, prescriber, patient, day, state, diagnosis, lines in prescriptions:
+    for key, name, phone, street, age, allergies, conditions in PATIENTS:
+        fields = [f('name', name), f('phone', phone), f('street', street), f('city', 'Lima'),
+                  f('country_id', ref='base.pe'), fe('pharmacy_birthdate', days(-365 * age - 40, 'date'))]
+        if allergies:
+            ids = ', '.join(f"ref('{ref(i)}')" for i in allergies)
+            fields.append(f('pharmacy_allergy_ids', eval=f'[Command.set([{ids}])]'))
+        if conditions:
+            fields.append(f('pharmacy_chronic_conditions', conditions))
+        body += record(key, 'res.partner', fields)
+    body.append('        <!-- Recetas: por validar, vigentes, dispensadas en parte o del todo, vencida y anulada -->')
+    for key, number, prescriber, patient, day, state, diagnosis, lines in PRESCRIPTIONS:
         commands = []
         for index, (product, ingredient, quantity, posology, duration) in enumerate(lines, 1):
             values = [f"'sequence': {index}", f"'quantity': {quantity}", f"'posology': '{posology}'",
@@ -344,15 +681,17 @@ def demo_prescription():
             commands.append('Command.create({%s})' % ', '.join(values))
         body += record(key, 'pharmacy.prescription', [
             f('prescription_number', number), f('prescriber_id', ref=prescriber), f('patient_id', ref=patient),
-            fe('date', days(day, 'date')), f('health_facility', 'Clínica San Gabriel'),
+            fe('date', days(day, 'date')), f('health_facility', FACILITIES[int(number) % len(FACILITIES)]),
             f('diagnosis', diagnosis), f('warehouse_id', ref='stock.warehouse0'),
             f('manual_state', state), f('line_ids', eval='[%s]' % ', '.join(commands))])
-    body += record('dispensation_partial', 'pharmacy.dispensation', [
-        f('prescription_id', ref='prescription_partial'),
-        f('prescription_line_id', eval="obj().env.ref('al_pharmacy_prescription.prescription_partial')"
-                                       ".line_ids.sorted('sequence')[:1].id", model='pharmacy.prescription'),
-        fe('product_id', variant('product_metformin')), f('quantity', 30), fe('date', days(-1)),
-        f('pharmacist_id', ref='al_pharmacy_base.employee_director'), f('source', 'Mostrador')])
+    body.append('        <!-- Dispensaciones (la receta pasa a «dispensada en parte» o «dispensada») -->')
+    for key, prescription, line, product, quantity, day in DISPENSATIONS:
+        body += record(key, 'pharmacy.dispensation', [
+            f('prescription_id', ref=prescription),
+            f('prescription_line_id', eval=f"obj().env.ref('al_pharmacy_prescription.{prescription}')"
+                                           f".line_ids.sorted('sequence')[{line}].id", model='pharmacy.prescription'),
+            fe('product_id', variant(product)), f('quantity', quantity), fe('date', days(day)),
+            f('pharmacist_id', ref='al_pharmacy_base.employee_director'), f('source', 'Mostrador')])
     body += ['        <function model="pharmacy.prescription" name="_cron_expire_prescriptions"/>']
     return document('Recetas de la botica de demostración.', body)
 
@@ -415,7 +754,8 @@ def demo_controlled():
         f('pharmacy_dosage_form_id', ref='al_pharmacy_base.dosage_form_injection'),
         f('pharmacy_route_id', ref='al_pharmacy_base.route_im'),
         f('pharmacy_ingredient_line_ids', eval="[Command.create({'ingredient_id': ref('ingredient_morphine'), "
-                                               "'strength': 10, 'strength_unit': 'mg'})]")])
+                                               "'strength': 10, 'strength_unit': 'mg'})]"),
+        *image('al_l10n_pe_pharmacy_controlled', 'product_morphine')])
     body += record('product_morphine_lot', 'stock.lot', [
         f('name', 'MOR2611'), fe('product_id', variant('al_l10n_pe_pharmacy_controlled.product_morphine')),
         fe('expiration_date', days(600)), f('company_id', ref='base.main_company')])
@@ -426,7 +766,8 @@ def demo_controlled():
              "            <function eval=\"[[('id', '=', ref('product_morphine_quant'))]]\" "
              'model="stock.quant" name="search"/>', '        </function>']
     body.append('        <!-- Documento de identidad de los pacientes (lo exige la receta especial) -->')
-    for patient, vat in (('patient_mendoza', '41235678'), ('patient_castro', '45879632')):
+    for index, (patient, *_rest) in enumerate(PATIENTS):
+        vat = DNIS[index]
         body += record(f'al_pharmacy_prescription.{patient}', 'res.partner', [
             f('l10n_latam_identification_type_id', ref='l10n_pe.it_DNI'), f('vat', vat)])
     body.append('        <!-- Receta especial vigente (3 días) y receta retenida con su folio -->')
@@ -512,15 +853,98 @@ def demo_industry():
     body += record('al_l10n_pe_pharmacy_controlled.product_morphine', 'product.template', [
         f('categ_id', ref='product_category_medicines_controlled')])
     body.append('        <!-- Productos no farmacéuticos de la botica -->')
-    body += record('product_sunscreen', 'product.template', [
-        f('name', 'Protector solar FPS 50 x 50 mL'), f('categ_id', ref='product_category_dermo'),
-        f('list_price', 69.9), f('standard_price', 38.0), f('type', 'consu'), f('is_storable', eval='True'),
-        f('available_in_pos', eval='True'), f('pos_categ_ids', eval="[Command.set([ref('pos_category_02')])]")])
-    body += record('product_thermometer', 'product.template', [
-        f('name', 'Termómetro digital'), f('categ_id', ref='product_category_medical_devices'),
-        f('list_price', 25.0), f('standard_price', 12.0), f('type', 'consu'), f('is_storable', eval='True'),
-        f('available_in_pos', eval='True'), f('pos_categ_ids', eval="[Command.set([ref('pos_category_06')])]")])
+    for pid, name, categ, pos_categ, price, cost in NON_PHARMA:
+        body += record(pid, 'product.template', [
+            f('name', name), f('categ_id', ref=f'product_category_{categ}'), f('list_price', price),
+            f('standard_price', cost), f('type', 'consu'), f('is_storable', eval='True'),
+            f('available_in_pos', eval='True'),
+            f('pos_categ_ids', eval=f"[Command.set([ref('pos_category_{pos_categ}')])]"),
+            *image('al_industry_pharmacy', pid)])
+    body.append('        <!-- Existencias de los productos no farmacéuticos -->')
+    quants = []
+    for pid, *_rest in NON_PHARMA:
+        body += record(f'{pid}_quant', 'stock.quant', [
+            fe('product_id', variant(f'al_industry_pharmacy.{pid}')), f('inventory_quantity', 40),
+            fe('location_id', stock_location())])
+        quants.append(f'{pid}_quant')
+    ids = ', '.join(f"ref('{q}')" for q in quants)
+    body += ['        <function model="stock.quant" name="action_apply_inventory">',
+             f'            <function eval="[[(\'id\', \'in\', [{ids}])]]" model="stock.quant" name="search"/>',
+             '        </function>']
     return document('Botica de demostración del paquete de industria.', body)
+
+
+# ----------------------------------------------------------------------
+# al_pharmacy_care: tratamientos crónicos
+# ----------------------------------------------------------------------
+def demo_care():
+    body = []
+    for key, patient, product, units, posology, start, note in TREATMENTS:
+        fields = [f('patient_id', ref=f'al_pharmacy_prescription.{patient}'),
+                  f'<field name="product_id" search="[(\'product_tmpl_id\', \'=\', ref(\'{ref(product)}\'))]"/>',
+                  f('daily_units', units), f('posology', posology), fe('date_start', days(start, 'date')),
+                  f('user_id', ref='base.user_admin')]
+        if note:
+            fields.append(f('note', note))
+        body += record(key, 'pharmacy.treatment', fields)
+    return document('Tratamientos crónicos de los pacientes de la botica de demostración.', body)
+
+
+# ----------------------------------------------------------------------
+# al_pharmacy_replenishment: faltantes registrados en la caja
+# ----------------------------------------------------------------------
+def demo_replenishment():
+    body = []
+    for key, product, quantity, reason, note in SHORTAGES:
+        fields = [f('quantity', quantity), f('reason', reason), f('warehouse_id', ref='stock.warehouse0')]
+        if product.startswith('product_'):
+            fields.insert(0, fe('product_id', variant(product)))
+        else:
+            fields.insert(0, f('description', product))
+        if note:
+            fields.append(f('note', note))
+        body += record(key, 'pharmacy.shortage', fields)
+    return document('Faltantes de la botica de demostración.', body)
+
+
+# ----------------------------------------------------------------------
+# al_pharmacy_website: catálogo publicado en la tienda
+# ----------------------------------------------------------------------
+def demo_website():
+    body = ['        <!-- Medicamentos publicados: genéricos y marcas, de venta libre y con receta\n'
+            '             (validada por el Q.F.); los controlados no se venden en línea -->']
+    for pid, *_rest, extra in PRODUCTS:
+        if extra['categ'] != 'controlled':
+            body += record(ref(pid), 'product.template', [f('is_published', eval='True')])
+    return document('Tienda en línea de la botica de demostración.', body)
+
+
+# ----------------------------------------------------------------------
+# al_pharmacy_insurance: convenios con aseguradoras
+# ----------------------------------------------------------------------
+def demo_insurance():
+    body = []
+    for key, name, street, email, *_rest in INSURERS:
+        body += record(key, 'res.partner', [
+            f('name', name), f('is_company', eval='True'), f('street', street), f('city', 'Lima'),
+            f('country_id', ref='base.pe'), f('email', email)])
+    for key, name, phone in AFFILIATES:
+        body += record(key, 'res.partner', [f('name', name), f('city', 'Lima'), f('country_id', ref='base.pe'),
+                                            f('phone', phone)])
+    for partner, _name, _street, _email, agreement, plan, coverage, copay, per_sale, per_month in INSURERS:
+        body += record(agreement, 'pharmacy.insurance.agreement', [
+            f('name', plan), f('partner_id', ref=partner), f('coverage_percent', coverage),
+            f('copay_amount', copay), f('max_per_sale', per_sale), f('max_per_month', per_month),
+            fe('date_start', days(-180, 'date'))])
+    for key, agreement, partner, number in AFFILIATIONS:
+        body += record(key, 'pharmacy.insurance.affiliate', [
+            f('agreement_id', ref=agreement), f('partner_id', ref=partner), f('number', number),
+            fe('date_start', days(-180, 'date'))])
+    for insurer in INSURERS:
+        agreement = insurer[4]
+        body.append('        <function model="pharmacy.insurance.agreement" name="action_create_pos_payment_method"'
+                    f' eval="[[ref(\'{agreement}\')]]"/>')
+    return document('Convenios con aseguradoras de la botica de demostración.', body)
 
 
 FILES = {
@@ -532,6 +956,10 @@ FILES = {
     'OL-HEALTH/al_l10n_pe_prescriber_cmp/demo/prescriber_cmp_demo.xml': demo_cmp,
     'OL-HEALTH/al_l10n_pe_pharmacy_controlled/demo/controlled_demo.xml': demo_controlled,
     'OL-HEALTH/al_l10n_pe_pharmacy_digemid/demo/digemid_demo.xml': demo_digemid,
+    'OL-HEALTH/al_pharmacy_care/demo/pharmacy_care_demo.xml': demo_care,
+    'OL-HEALTH/al_pharmacy_replenishment/demo/pharmacy_replenishment_demo.xml': demo_replenishment,
+    'OL-HEALTH/al_pharmacy_website/demo/website_demo.xml': demo_website,
+    'OL-HEALTH/al_pharmacy_insurance/demo/pharmacy_insurance_demo.xml': demo_insurance,
     'OL-INDUSTRIES/al_industry_pharmacy/demo/pharmacy_demo.xml': demo_industry,
 }
 

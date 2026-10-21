@@ -14,5 +14,21 @@
             <field name="pharmacy_cmp_council">CR III Lima</field>
             <field name="pharmacy_prescriber_checked_by_id" ref="base.user_admin"/>
         </record>
+        <record id="al_pharmacy_prescription.prescriber_vargas" model="res.partner">
+            <field name="pharmacy_cmp_council">CR III Lima</field>
+            <field name="pharmacy_prescriber_checked_by_id" ref="base.user_admin"/>
+        </record>
+        <record id="al_pharmacy_prescription.prescriber_huaman" model="res.partner">
+            <field name="pharmacy_cmp_council">CR III Lima</field>
+            <field name="pharmacy_prescriber_checked_by_id" ref="base.user_admin"/>
+        </record>
+        <record id="al_pharmacy_prescription.prescriber_paz" model="res.partner">
+            <field name="pharmacy_cmp_council">CR III Lima</field>
+            <field name="pharmacy_prescriber_checked_by_id" ref="base.user_admin"/>
+        </record>
+        <record id="al_pharmacy_prescription.prescriber_chang" model="res.partner">
+            <field name="pharmacy_cmp_council">CR III Lima</field>
+            <field name="pharmacy_prescriber_checked_by_id" ref="base.user_admin"/>
+        </record>
     </data>
 </odoo>

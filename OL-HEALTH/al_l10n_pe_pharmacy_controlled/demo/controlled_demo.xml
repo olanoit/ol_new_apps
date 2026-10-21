@@ -9,6 +9,9 @@
         <record id="al_pharmacy_base.product_alprazolam" model="product.template">
             <field name="pharmacy_control_list">IVA</field>
         </record>
+        <record id="al_pharmacy_base.product_diazepam" model="product.template">
+            <field name="pharmacy_control_list">IVA</field>
+        </record>
         <!-- Estupefaciente de la lista IIA (receta especial) -->
         <record id="ingredient_morphine" model="pharmacy.ingredient">
             <field name="name">Morfina</field>
@@ -30,6 +33,7 @@
             <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_injection"/>
             <field name="pharmacy_route_id" ref="al_pharmacy_base.route_im"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_morphine'), 'strength': 10, 'strength_unit': 'mg'})]"/>
+            <field name="image_1920" type="base64" file="al_l10n_pe_pharmacy_controlled/static/img/demo/product_morphine.jpg"/>
         </record>
         <record id="product_morphine_lot" model="stock.lot">
             <field name="name">MOR2611</field>
@@ -54,6 +58,30 @@
         <record id="al_pharmacy_prescription.patient_castro" model="res.partner">
             <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
             <field name="vat">45879632</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_quispe" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">08765412</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_ramos" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">42319876</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_salinas" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">47652013</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_benites" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">06543219</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_ccahuana" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">78123456</field>
+        </record>
+        <record id="al_pharmacy_prescription.patient_lopez" model="res.partner">
+            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="vat">40987123</field>
         </record>
         <!-- Receta especial vigente (3 días) y receta retenida con su folio -->
         <record id="prescription_special" model="pharmacy.prescription">

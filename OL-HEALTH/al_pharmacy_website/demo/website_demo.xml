@@ -1,38 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Medicamentos de la botica publicados en la tienda: genéricos y marcas,
-         con receta (amoxicilina) y con cadena de frío (insulina). -->
-    <record id="al_pharmacy_base.product_paracetamol" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_dolofen" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_ibuprofen" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_ibuflam" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_loratadine" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_omeprazole" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_amoxicillin" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_amoxival" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_losartan" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_metformin" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
-    <record id="al_pharmacy_base.product_insulin" model="product.template">
-        <field name="is_published" eval="True"/>
-    </record>
+    <!-- Tienda en línea de la botica de demostración. -->
+    <data noupdate="1">
+        <!-- Medicamentos publicados: genéricos y marcas, de venta libre y con receta
+             (validada por el Q.F.); los controlados no se venden en línea -->
+        <record id="al_pharmacy_base.product_paracetamol" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_dolofen" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_paracetamol_syrup" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ibuprofen" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ibuflam" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ibuprofen_suspension" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_naproxen" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_diclofenac_gel" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_aspirin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_antiflu" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_loratadine" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_cetirizine" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_chlorphenamine" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ambroxol_syrup" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_dextromethorphan_syrup" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_saline_nasal" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_omeprazole" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_antacid" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_simethicone" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_loperamide" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ors" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_mebendazole" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_albendazole" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_clotrimazole_cream" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_artificial_tears" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_vitamin_c" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ferrous_sulfate" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxicillin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxival" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxicillin_suspension" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amoxicillin_clavulanate" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_azithromycin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_cephalexin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_ciprofloxacin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_metronidazole" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_losartan" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_tensiloz" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_enalapril" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_amlodipine" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_atorvastatin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_colestrina" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_metformin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_glibenclamide" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_insulin" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_insulin_glargine" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_levothyroxine" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_salbutamol" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_prednisone" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_dexamethasone" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_sertraline" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+        <record id="al_pharmacy_base.product_tamoxifen" model="product.template">
+            <field name="is_published" eval="True"/>
+        </record>
+    </data>
 </odoo>

@@ -2,7 +2,7 @@
 <odoo>
     <!-- Recetas de la botica de demostración. -->
     <data noupdate="1">
-        <!-- Prescriptores: hábil, sin verificar e inhábil -->
+        <!-- Prescriptores: hábiles, sin verificar e inhábil -->
         <record id="prescriber_torres" model="res.partner">
             <field name="name">Dra. Ana Torres Quispe</field>
             <field name="pharmacy_is_prescriber" eval="True"/>
@@ -28,6 +28,42 @@
             <field name="pharmacy_prescriber_status">disabled</field>
             <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
         </record>
+        <record id="prescriber_vargas" model="res.partner">
+            <field name="name">Dr. Raúl Vargas Chávez</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">052310</field>
+            <field name="pharmacy_specialty">Cardiología</field>
+            <field name="pharmacy_prescriber_status">enabled</field>
+            <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="prescriber_huaman" model="res.partner">
+            <field name="name">Dra. Elena Huamán Ccori</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">061870</field>
+            <field name="pharmacy_specialty">Endocrinología</field>
+            <field name="pharmacy_prescriber_status">enabled</field>
+            <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="prescriber_paz" model="res.partner">
+            <field name="name">Dra. Sofía Paz Medina</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">073415</field>
+            <field name="pharmacy_specialty">Medicina general</field>
+            <field name="pharmacy_prescriber_status">enabled</field>
+            <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
+        <record id="prescriber_chang" model="res.partner">
+            <field name="name">Dr. Víctor Chang Lozano</field>
+            <field name="pharmacy_is_prescriber" eval="True"/>
+            <field name="pharmacy_profession">physician</field>
+            <field name="pharmacy_prescriber_license">058902</field>
+            <field name="pharmacy_specialty">Neumología</field>
+            <field name="pharmacy_prescriber_status">enabled</field>
+            <field name="pharmacy_prescriber_checked" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        </record>
         <!-- Pacientes -->
         <record id="patient_mendoza" model="res.partner">
             <field name="name">Rosa Mendoza Vargas</field>
@@ -35,7 +71,7 @@
             <field name="street">Jr. Huallaga 345</field>
             <field name="city">Lima</field>
             <field name="country_id" ref="base.pe"/>
-            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-19710)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-19750)).strftime('%Y-%m-%d')"/>
             <field name="pharmacy_allergy_ids" eval="[Command.set([ref('al_pharmacy_base.ingredient_amoxicilina')])]"/>
             <field name="pharmacy_chronic_conditions">Hipertensión arterial</field>
         </record>
@@ -45,16 +81,71 @@
             <field name="street">Av. Brasil 1820</field>
             <field name="city">Lima</field>
             <field name="country_id" ref="base.pe"/>
-            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-13870)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-13910)).strftime('%Y-%m-%d')"/>
             <field name="pharmacy_chronic_conditions">Diabetes tipo 2</field>
         </record>
-        <!-- Recetas: por validar, vigente, dispensada en parte y vencida -->
+        <record id="patient_quispe" model="res.partner">
+            <field name="name">Julia Quispe Mamani</field>
+            <field name="phone">945 778 120</field>
+            <field name="street">Av. Arequipa 2870</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-24495)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_chronic_conditions">Hipertensión arterial, colesterol alto</field>
+        </record>
+        <record id="patient_ramos" model="res.partner">
+            <field name="name">Carlos Ramos Gutiérrez</field>
+            <field name="phone">991 230 556</field>
+            <field name="street">Calle Las Begonias 415</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-16465)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_allergy_ids" eval="[Command.set([ref('al_pharmacy_base.ingredient_acido_acetilsalicilico')])]"/>
+            <field name="pharmacy_chronic_conditions">Asma</field>
+        </record>
+        <record id="patient_salinas" model="res.partner">
+            <field name="name">Mariela Salinas Cruz</field>
+            <field name="phone">938 410 772</field>
+            <field name="street">Jr. Junín 1120</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-11355)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_chronic_conditions">Hipotiroidismo</field>
+        </record>
+        <record id="patient_benites" model="res.partner">
+            <field name="name">Óscar Benites Laura</field>
+            <field name="phone">962 905 314</field>
+            <field name="street">Av. Tacna 650</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-26320)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_chronic_conditions">Diabetes tipo 2, hipertensión arterial</field>
+        </record>
+        <record id="patient_ccahuana" model="res.partner">
+            <field name="name">Valeria Ccahuana Ríos</field>
+            <field name="phone">974 682 019</field>
+            <field name="street">Av. La Marina 2310</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-2230)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="patient_lopez" model="res.partner">
+            <field name="name">Andrea López Tello</field>
+            <field name="phone">983 117 640</field>
+            <field name="street">Calle Schell 280</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="pharmacy_birthdate" eval="(DateTime.today() + relativedelta(days=-17925)).strftime('%Y-%m-%d')"/>
+            <field name="pharmacy_allergy_ids" eval="[Command.set([ref('al_pharmacy_base.ingredient_ibuprofeno')])]"/>
+            <field name="pharmacy_chronic_conditions">Cáncer de mama en tratamiento</field>
+        </record>
+        <!-- Recetas: por validar, vigentes, dispensadas en parte o del todo, vencida y anulada -->
         <record id="prescription_draft" model="pharmacy.prescription">
             <field name="prescription_number">000101</field>
             <field name="prescriber_id" ref="prescriber_salazar"/>
             <field name="patient_id" ref="patient_castro"/>
             <field name="date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
-            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="health_facility">Hospital Nacional Dos de Mayo</field>
             <field name="diagnosis">Faringitis aguda</field>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="manual_state">draft</field>
@@ -65,7 +156,7 @@
             <field name="prescriber_id" ref="prescriber_torres"/>
             <field name="patient_id" ref="patient_mendoza"/>
             <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')"/>
-            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="health_facility">Centro Médico Miraflores</field>
             <field name="diagnosis">Hipertensión arterial</field>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="manual_state">valid</field>
@@ -76,7 +167,7 @@
             <field name="prescriber_id" ref="prescriber_torres"/>
             <field name="patient_id" ref="patient_castro"/>
             <field name="date" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d')"/>
-            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="health_facility">Policlínico Santa Rosa</field>
             <field name="diagnosis">Diabetes tipo 2</field>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="manual_state">valid</field>
@@ -87,18 +178,152 @@
             <field name="prescriber_id" ref="prescriber_torres"/>
             <field name="patient_id" ref="patient_mendoza"/>
             <field name="date" eval="(DateTime.today() + relativedelta(days=-45)).strftime('%Y-%m-%d')"/>
-            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="health_facility">Centro Médico Miraflores</field>
             <field name="diagnosis">Gastritis</field>
             <field name="warehouse_id" ref="stock.warehouse0"/>
             <field name="manual_state">valid</field>
             <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 14, 'posology': '1 cápsula en ayunas', 'duration': '14 días', 'product_id': obj().env.ref('al_pharmacy_base.product_omeprazole').product_variant_id.id})]" model="product.template"/>
         </record>
+        <record id="prescription_quispe" model="pharmacy.prescription">
+            <field name="prescription_number">000104</field>
+            <field name="prescriber_id" ref="prescriber_vargas"/>
+            <field name="patient_id" ref="patient_quispe"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Hipertensión arterial y dislipidemia</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 60, 'posology': '1 tableta cada 12 horas', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_enalapril').product_variant_id.id}), Command.create({'sequence': 2, 'quantity': 30, 'posology': '1 tableta en la noche', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_atorvastatin').product_variant_id.id}), Command.create({'sequence': 3, 'quantity': 30, 'posology': '1 tableta después del almuerzo', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_aspirin').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_ramos" model="pharmacy.prescription">
+            <field name="prescription_number">000105</field>
+            <field name="prescriber_id" ref="prescriber_chang"/>
+            <field name="patient_id" ref="patient_ramos"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Hospital Nacional Dos de Mayo</field>
+            <field name="diagnosis">Asma bronquial</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 1, 'posology': '2 inhalaciones cada 6 horas si hay falta de aire', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_salbutamol').product_variant_id.id}), Command.create({'sequence': 2, 'quantity': 10, 'posology': '1 tableta al día en el desayuno', 'duration': '10 días', 'product_id': obj().env.ref('al_pharmacy_base.product_prednisone').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_salinas" model="pharmacy.prescription">
+            <field name="prescription_number">000106</field>
+            <field name="prescriber_id" ref="prescriber_huaman"/>
+            <field name="patient_id" ref="patient_salinas"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-5)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Centro Médico Miraflores</field>
+            <field name="diagnosis">Hipotiroidismo</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 30, 'posology': '1 tableta en ayunas', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_levothyroxine').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_benites" model="pharmacy.prescription">
+            <field name="prescription_number">000107</field>
+            <field name="prescriber_id" ref="prescriber_huaman"/>
+            <field name="patient_id" ref="patient_benites"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Policlínico Santa Rosa</field>
+            <field name="diagnosis">Diabetes tipo 2 insulinorrequiriente</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 2, 'posology': '20 UI en la noche', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_insulin_glargine').product_variant_id.id}), Command.create({'sequence': 2, 'quantity': 60, 'posology': '1 tableta cada 12 horas', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id}), Command.create({'sequence': 3, 'quantity': 30, 'posology': '1 tableta al día', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_amlodipine').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_ccahuana" model="pharmacy.prescription">
+            <field name="prescription_number">000108</field>
+            <field name="prescriber_id" ref="prescriber_salazar"/>
+            <field name="patient_id" ref="patient_ccahuana"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=0)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Otitis media aguda (20 kg)</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 2, 'posology': '8 mL cada 8 horas', 'duration': '7 días', 'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin_suspension').product_variant_id.id}), Command.create({'sequence': 2, 'quantity': 1, 'posology': '10 mL cada 6 horas si hay fiebre', 'duration': '3 días', 'product_id': obj().env.ref('al_pharmacy_base.product_paracetamol_syrup').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_lopez" model="pharmacy.prescription">
+            <field name="prescription_number">000109</field>
+            <field name="prescriber_id" ref="prescriber_paz"/>
+            <field name="patient_id" ref="patient_lopez"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-4)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Hospital Nacional Dos de Mayo</field>
+            <field name="diagnosis">Cáncer de mama hormonodependiente</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 30, 'posology': '1 tableta al día', 'duration': '30 días', 'product_id': obj().env.ref('al_pharmacy_base.product_tamoxifen').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_cystitis" model="pharmacy.prescription">
+            <field name="prescription_number">000111</field>
+            <field name="prescriber_id" ref="prescriber_paz"/>
+            <field name="patient_id" ref="patient_salinas"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Policlínico Santa Rosa</field>
+            <field name="diagnosis">Infección urinaria</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">valid</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 10, 'posology': '1 tableta cada 12 horas', 'duration': '5 días', 'product_id': obj().env.ref('al_pharmacy_base.product_ciprofloxacin').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <record id="prescription_cancelled" model="pharmacy.prescription">
+            <field name="prescription_number">000112</field>
+            <field name="prescriber_id" ref="prescriber_paz"/>
+            <field name="patient_id" ref="patient_quispe"/>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-6)).strftime('%Y-%m-%d')"/>
+            <field name="health_facility">Clínica San Gabriel</field>
+            <field name="diagnosis">Faringitis (anulada: error en la dosis)</field>
+            <field name="warehouse_id" ref="stock.warehouse0"/>
+            <field name="manual_state">cancelled</field>
+            <field name="line_ids" eval="[Command.create({'sequence': 1, 'quantity': 14, 'posology': '1 tableta cada 12 horas', 'duration': '7 días', 'product_id': obj().env.ref('al_pharmacy_base.product_amoxicillin_clavulanate').product_variant_id.id})]" model="product.template"/>
+        </record>
+        <!-- Dispensaciones (la receta pasa a «dispensada en parte» o «dispensada») -->
         <record id="dispensation_partial" model="pharmacy.dispensation">
             <field name="prescription_id" ref="prescription_partial"/>
-            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_partial').line_ids.sorted('sequence')[:1].id" model="pharmacy.prescription"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_partial').line_ids.sorted('sequence')[0].id" model="pharmacy.prescription"/>
             <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id"/>
             <field name="quantity">30</field>
             <field name="date" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="source">Mostrador</field>
+        </record>
+        <record id="dispensation_quispe_enalapril" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_quispe"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_quispe').line_ids.sorted('sequence')[0].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_enalapril').product_variant_id.id"/>
+            <field name="quantity">60</field>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="source">Mostrador</field>
+        </record>
+        <record id="dispensation_quispe_atorvastatin" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_quispe"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_quispe').line_ids.sorted('sequence')[1].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_atorvastatin').product_variant_id.id"/>
+            <field name="quantity">30</field>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="source">Mostrador</field>
+        </record>
+        <record id="dispensation_quispe_aspirin" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_quispe"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_quispe').line_ids.sorted('sequence')[2].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_aspirin').product_variant_id.id"/>
+            <field name="quantity">30</field>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="source">Mostrador</field>
+        </record>
+        <record id="dispensation_salinas" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_salinas"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_salinas').line_ids.sorted('sequence')[0].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_levothyroxine').product_variant_id.id"/>
+            <field name="quantity">30</field>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
+            <field name="source">Mostrador</field>
+        </record>
+        <record id="dispensation_benites_metformin" model="pharmacy.dispensation">
+            <field name="prescription_id" ref="prescription_benites"/>
+            <field name="prescription_line_id" eval="obj().env.ref('al_pharmacy_prescription.prescription_benites').line_ids.sorted('sequence')[1].id" model="pharmacy.prescription"/>
+            <field name="product_id" model="product.template" eval="obj().env.ref('al_pharmacy_base.product_metformin').product_variant_id.id"/>
+            <field name="quantity">60</field>
+            <field name="date" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d %H:%M:%S')"/>
             <field name="pharmacist_id" ref="al_pharmacy_base.employee_director"/>
             <field name="source">Mostrador</field>
         </record>

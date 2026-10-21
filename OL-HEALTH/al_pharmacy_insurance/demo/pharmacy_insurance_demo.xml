@@ -1,35 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="partner_salud_andina" model="res.partner">
-        <field name="name">Salud Andina EPS S.A.</field>
-        <field name="is_company" eval="True"/>
-        <field name="street">Av. Javier Prado Oeste 1450</field>
-        <field name="city">Lima</field>
-        <field name="country_id" ref="base.pe"/>
-        <field name="email">convenios@saludandina.example.com</field>
-    </record>
-    <record id="partner_affiliate_maria" model="res.partner">
-        <field name="name">María Torres Quispe</field>
-        <field name="city">Lima</field>
-        <field name="country_id" ref="base.pe"/>
-        <field name="phone">987 123 456</field>
-    </record>
-
-    <record id="agreement_salud_andina" model="pharmacy.insurance.agreement">
-        <field name="name">Salud Andina EPS · Plan regular</field>
-        <field name="partner_id" ref="partner_salud_andina"/>
-        <field name="coverage_percent">80</field>
-        <field name="copay_amount">5</field>
-        <field name="max_per_sale">300</field>
-        <field name="max_per_month">1000</field>
-        <field name="date_start" eval="(DateTime.today() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
-    </record>
-    <record id="affiliate_maria" model="pharmacy.insurance.affiliate">
-        <field name="agreement_id" ref="agreement_salud_andina"/>
-        <field name="partner_id" ref="partner_affiliate_maria"/>
-        <field name="number">SA-0012345</field>
-        <field name="date_start" eval="(DateTime.today() - relativedelta(months=6)).strftime('%Y-%m-%d')"/>
-    </record>
-    <function model="pharmacy.insurance.agreement" name="action_create_pos_payment_method"
-              eval="[[ref('agreement_salud_andina')]]"/>
+    <!-- Convenios con aseguradoras de la botica de demostración. -->
+    <data noupdate="1">
+        <record id="partner_salud_andina" model="res.partner">
+            <field name="name">Salud Andina EPS S.A.</field>
+            <field name="is_company" eval="True"/>
+            <field name="street">Av. Javier Prado Oeste 1450</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="email">convenios@saludandina.example.com</field>
+        </record>
+        <record id="partner_vida_plena" model="res.partner">
+            <field name="name">Vida Plena EPS S.A.</field>
+            <field name="is_company" eval="True"/>
+            <field name="street">Av. Camino Real 390</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="email">farmacias@vidaplena.example.com</field>
+        </record>
+        <record id="partner_affiliate_maria" model="res.partner">
+            <field name="name">María Torres Quispe</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="phone">987 123 456</field>
+        </record>
+        <record id="partner_affiliate_jose" model="res.partner">
+            <field name="name">José Ugarte Paredes</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="phone">981 450 237</field>
+        </record>
+        <record id="partner_affiliate_luz" model="res.partner">
+            <field name="name">Luz Ccopa Ramírez</field>
+            <field name="city">Lima</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="phone">952 813 640</field>
+        </record>
+        <record id="agreement_salud_andina" model="pharmacy.insurance.agreement">
+            <field name="name">Salud Andina EPS · Plan regular</field>
+            <field name="partner_id" ref="partner_salud_andina"/>
+            <field name="coverage_percent">80</field>
+            <field name="copay_amount">5</field>
+            <field name="max_per_sale">300</field>
+            <field name="max_per_month">1000</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-180)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="agreement_vida_plena" model="pharmacy.insurance.agreement">
+            <field name="name">Vida Plena EPS · Plan crónicos</field>
+            <field name="partner_id" ref="partner_vida_plena"/>
+            <field name="coverage_percent">90</field>
+            <field name="copay_amount">0</field>
+            <field name="max_per_sale">500</field>
+            <field name="max_per_month">1500</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-180)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="affiliate_maria" model="pharmacy.insurance.affiliate">
+            <field name="agreement_id" ref="agreement_salud_andina"/>
+            <field name="partner_id" ref="partner_affiliate_maria"/>
+            <field name="number">SA-0012345</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-180)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="affiliate_jose" model="pharmacy.insurance.affiliate">
+            <field name="agreement_id" ref="agreement_salud_andina"/>
+            <field name="partner_id" ref="partner_affiliate_jose"/>
+            <field name="number">SA-0012388</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-180)).strftime('%Y-%m-%d')"/>
+        </record>
+        <record id="affiliate_luz" model="pharmacy.insurance.affiliate">
+            <field name="agreement_id" ref="agreement_vida_plena"/>
+            <field name="partner_id" ref="partner_affiliate_luz"/>
+            <field name="number">VP-2026-00871</field>
+            <field name="date_start" eval="(DateTime.today() + relativedelta(days=-180)).strftime('%Y-%m-%d')"/>
+        </record>
+        <function model="pharmacy.insurance.agreement" name="action_create_pos_payment_method" eval="[[ref('agreement_salud_andina')]]"/>
+        <function model="pharmacy.insurance.agreement" name="action_create_pos_payment_method" eval="[[ref('agreement_vida_plena')]]"/>
+    </data>
 </odoo>
