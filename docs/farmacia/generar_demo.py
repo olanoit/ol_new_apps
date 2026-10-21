@@ -5,11 +5,11 @@ dependencias): instalar uno con datos de demostración basta para recorrer
 sus pantallas, sus reportes y su guion de prueba. El catálogo es el de una
 botica peruana (unos 55 medicamentos y 14 productos de tocador, bebé,
 nutrición y dispositivos) con marcas y laboratorios inventados, precios en
-soles y fotos reales de Wikimedia Commons con licencia libre.
+soles y fotos de estudio de sus envases (``generar_empaques.py``).
 
 Uso (desde la raíz del repositorio)::
 
-    python3 docs/farmacia/descargar_imagenes_demo.py  # fotos (demo_images.json) y CREDITS.md
+    ~/odoo/ce19/.venv/bin/python docs/farmacia/generar_empaques.py  # fotos de los envases
     python3 docs/farmacia/generar_demo.py             # escribe los demo/*.xml
     python3 docs/farmacia/generar_demo.py --check     # ¿están al día?
 
@@ -449,7 +449,7 @@ def f(name, value=None, **attrs):
 
 
 def image(module, xmlid):
-    """Foto real del producto (docs/farmacia/descargar_imagenes_demo.py), si está descargada."""
+    """Foto del envase (docs/farmacia/generar_empaques.py), si ya se generó."""
     path = f'static/img/demo/{xmlid}.jpg'
     folder = 'OL-INDUSTRIES' if module.startswith('al_industry') else 'OL-HEALTH'
     if not (ROOT / folder / module / path).exists():
