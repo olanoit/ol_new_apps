@@ -14,7 +14,10 @@ responsable es el **gestor de cobranza** del cliente:
 * **Compromisos de pago** evaluados solos al vencer: cumplido, parcial o incumplido.
 * **Proyección de cobranza** por semanas o meses: compromiso, atraso promedio del cliente
   y probabilidad por antigüedad; proyectado frente a lo cobrado; tabla dinámica y Excel.
-* **Metas** de cobranza por gestor y **tablero** de indicadores (vencido, DSO, cumplimiento).
+* **Tablero** nativo de Odoo 19 (hoja de cálculo en la app Tableros): cartera, vencido,
+  tramos, gestores, vencimientos, compromisos y cobrado, con filtros por gestor, zona,
+  cliente y periodo.
+* **Metas** de cobranza por gestor e indicadores del gestor (vencido, DSO, cumplimiento).
 * **Estado de cuenta** en PDF y por correo.
 * **Notificaciones**: recordatorio de compromisos al cliente, alerta de incumplidos al
   gestor, resumen diario a cada gestor y niveles de seguimiento en español.
@@ -26,10 +29,11 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_collection/static/description/icon.svg',
-    'version': '1.20261021',
+    'version': '2.20261021',
     'license': 'OPL-1',
     'countries': ['pe'],
-    'depends': ['account_followup', 'account_reports', 'al_account_base', 'al_report_base', 'mail'],
+    'depends': ['account_followup', 'account_reports', 'al_account_base', 'al_report_base', 'mail',
+                'spreadsheet_dashboard'],
     'data': [
         'security/collection_security.xml',
         'security/ir.model.access.csv',
@@ -46,6 +50,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
         'views/collection_forecast_views.xml',
         'views/collection_target_views.xml',
         'views/collection_dashboard_views.xml',
+        'data/collection_dashboard_data.xml',
         'views/res_partner_views.xml',
         'views/res_config_settings_views.xml',
         'wizard/statement_send_views.xml',

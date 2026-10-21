@@ -90,10 +90,41 @@ cuánto se espera cobrar (filtrable por gestor o zona):
 
 ![Proyección de cobranza](collection/forecast.png)
 
-## Metas e indicadores
+## Tablero
+
+**Cobranza ‣ Tablero** abre el tablero **Cobranza** de la aplicación **Tableros** de Odoo
+(grupo Finanzas): una hoja de cálculo de solo lectura con datos en vivo. Cada gestor ve
+solo su cartera y sus compromisos; el administrador, toda la cartera.
+
+| Bloque | Qué muestra |
+|---|---|
+| Indicadores | Cartera, vencido (y % de la cartera), vencido más de 90 días, por vencer, comprometido pendiente, compromisos cumplidos sobre evaluados, cobrado en el periodo y clientes con deuda vencida |
+| Cartera por tramo de antigüedad | Saldo por tramo (por vencer, 1 a 30 días… más de 180 días) |
+| Cartera por gestor | Saldo de cada gestor, apilado por tramo |
+| Vencimientos por semana | Lo que vence en las próximas semanas (base de la proyección) |
+| Compromisos pactados por estado | Pendientes, cumplidos, parciales e incumplidos |
+| Cobrado por mes | Cobros de clientes registrados |
+| Tablas | Diez clientes con mayor deuda vencida y próximos compromisos de pago |
+
+Los filtros de la barra superior se aplican a todo el tablero: **Gestor**, **Zona**,
+**Cliente** y **Periodo** (por defecto, el año a la fecha). La cartera es una foto al día,
+por eso el periodo no la filtra: solo afecta a los compromisos (por fecha en que se
+pactaron o se evaluaron) y a lo cobrado. Al hacer clic en un gráfico se abre la lista de
+registros correspondiente.
+
+![Tablas del tablero de cobranza](collection/dashboard_tables.png)
+
+Para adaptarlo, duplíquelo desde la aplicación **Tableros** (requiere permiso de edición
+de tableros): los cambios hechos sobre el original se pueden perder al actualizar el
+módulo.
+
+## Metas e indicadores del gestor
 
 En **Metas de cobranza** se fija el importe a cobrar por gestor y periodo; el avance es lo
-cobrado de sus clientes. El **Tablero** reúne:
+cobrado de sus clientes. **Proyección y metas ‣ Indicadores del gestor** calcula, para un
+gestor o para toda la cartera:
+
+![Indicadores del gestor](collection/indicators.png)
 
 | Indicador | Qué mide |
 |---|---|

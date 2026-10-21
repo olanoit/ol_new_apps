@@ -5,7 +5,7 @@
               groups="al_l10n_pe_collection.group_collection_user"/>
 
     <menuitem id="menu_collection_dashboard" name="Tablero" parent="menu_collection_root"
-              action="action_collection_dashboard" sequence="1"/>
+              action="action_collection_spreadsheet_dashboard" sequence="1"/>
 
     <menuitem id="menu_collection_portfolio_root" name="Cartera" parent="menu_collection_root" sequence="10"/>
     <menuitem id="menu_collection_portfolio" name="Cartera" parent="menu_collection_portfolio_root"
@@ -29,6 +29,8 @@
               action="action_collection_forecast" sequence="10"/>
     <menuitem id="menu_collection_targets" name="Metas de cobranza" parent="menu_collection_planning_root"
               action="action_collection_target" sequence="20"/>
+    <menuitem id="menu_collection_indicators" name="Indicadores del gestor" parent="menu_collection_planning_root"
+              action="action_collection_dashboard" sequence="30"/>
 
     <menuitem id="menu_collection_config_root" name="Configuración" parent="menu_collection_root" sequence="90"
               groups="al_l10n_pe_collection.group_collection_manager"/>

@@ -6,9 +6,10 @@ from odoo import _, api, fields, models
 
 
 class L10nPeCollectionDashboard(models.TransientModel):
-    """Tablero de cobranza: indicadores del gestor elegido (o de todos)."""
+    """Indicadores del gestor elegido (o de todos); el tablero gráfico es la hoja de
+    cálculo «Cobranza» de la app Tableros."""
     _name = 'l10n_pe.collection.dashboard'
-    _description = 'Tablero de cobranza'
+    _description = 'Indicadores del gestor'
 
     company_id = fields.Many2one('res.company', string='Compañía', required=True,
                                  default=lambda self: self.env.company)
@@ -36,7 +37,7 @@ class L10nPeCollectionDashboard(models.TransientModel):
 
     def _compute_display_name(self):
         for board in self:
-            board.display_name = _('Tablero de cobranza')
+            board.display_name = _('Indicadores del gestor')
 
     def _portfolio_domain(self):
         self.ensure_one()
@@ -139,7 +140,7 @@ class L10nPeCollectionDashboard(models.TransientModel):
     @api.model
     def action_open_dashboard(self):
         board = self.create({})
-        return {'type': 'ir.actions.act_window', 'name': _('Tablero de cobranza'), 'res_model': self._name,
+        return {'type': 'ir.actions.act_window', 'name': _('Indicadores del gestor'), 'res_model': self._name,
                 'res_id': board.id, 'view_mode': 'form', 'target': 'current'}
 
     # ------------------------------------------------------------------

@@ -1,5 +1,6 @@
 """App Cobranza: cartera, gestiones, compromisos, proyección, metas, tablero,
 estado de cuenta y notificaciones."""
+import json
 from datetime import timedelta
 
 from odoo import Command, fields
@@ -275,6 +276,28 @@ class TestCollection(TransactionCase):
         self.assertGreater(board.dso, 0)
         self.assertEqual(board.action_open_overdue()['res_model'], 'l10n_pe.collection.portfolio')
         self.assertTrue(self.env['l10n_pe.collection.dashboard'].action_open_dashboard()['res_id'])
+
+    def test_spreadsheet_dashboard(self):
+        """El tablero de la app Tableros: sus fuentes de datos responden con los
+        permisos del gestor y solo con su cartera."""
+        self._invoice(1000, -10)
+        self._invoice(700, -10, partner=self.other_customer)
+        self._promise(200, self.today)
+        self.env['l10n_pe.collection.portfolio'].flush_model()
+        dashboard = self.env.ref('al_l10n_pe_collection.dashboard_collection')
+        self.assertIn(dashboard, self.env['spreadsheet.dashboard'].with_user(self.collector).search([]))
+        action = self.env.ref('al_l10n_pe_collection.action_collection_spreadsheet_dashboard')
+        self.assertEqual(action.params, {'dashboard_id': dashboard.id})
+        dashboard._check_spreadsheet_data()  # modelos y campos del JSON existen
+        data = json.loads(dashboard.spreadsheet_data)
+        for source in list(data['pivots'].values()) + list(data['lists'].values()):
+            model = self.env[source['model']].with_user(self.collector)
+            model.search_count(source['domain'])  # dominio válido y sin error de acceso
+        Portfolio = self.env['l10n_pe.collection.portfolio'].with_user(self.collector)
+        groups = Portfolio._read_group([('in_collection', '=', True), ('is_overdue', '=', True)],
+                                       aggregates=['amount_residual:sum', 'partner_id:count_distinct'])
+        self.assertEqual(groups, [(1000.0, 1)])
+        self.assertFalse(Portfolio.search_count([('in_collection', '=', False)]))
 
     # ------------------------------------------------------------------ estado de cuenta
     def test_statement_pdf_and_send(self):

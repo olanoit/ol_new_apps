@@ -1,0 +1,1467 @@
+{
+ "version": "18.5.10",
+ "sheets": [
+  {
+   "id": "tablero-cobranza",
+   "name": "Tablero",
+   "colNumber": 7,
+   "rowNumber": 74,
+   "rows": {
+    "11": {
+     "size": 40
+    },
+    "27": {
+     "size": 40
+    },
+    "43": {
+     "size": 40
+    },
+    "59": {
+     "size": 40
+    },
+    "60": {
+     "size": 40
+    },
+    "61": {
+     "size": 27
+    },
+    "62": {
+     "size": 27
+    },
+    "63": {
+     "size": 27
+    },
+    "64": {
+     "size": 27
+    },
+    "65": {
+     "size": 27
+    },
+    "66": {
+     "size": 27
+    },
+    "67": {
+     "size": 27
+    },
+    "68": {
+     "size": 27
+    },
+    "69": {
+     "size": 27
+    },
+    "70": {
+     "size": 27
+    }
+   },
+   "cols": {
+    "0": {
+     "size": 225
+    },
+    "1": {
+     "size": 150
+    },
+    "2": {
+     "size": 100
+    },
+    "3": {
+     "size": 50
+    },
+    "4": {
+     "size": 225
+    },
+    "5": {
+     "size": 150
+    },
+    "6": {
+     "size": 100
+    }
+   },
+   "merges": [],
+   "cells": {
+    "A12": "Cartera por tramo de antigüedad",
+    "E12": "Cartera por gestor",
+    "A28": "Vencimientos por semana",
+    "E28": "Compromisos pactados por estado",
+    "A44": "Cobrado por mes",
+    "A60": "Clientes con mayor deuda vencida",
+    "E60": "Próximos compromisos de pago",
+    "A61": "=PIVOT(9, 10, FALSE, FALSE)",
+    "E61": "=ODOO.LIST.HEADER(1, \"partner_id\", \"Cliente\")",
+    "E62": "=ODOO.LIST(1,1,\"partner_id\")",
+    "E63": "=ODOO.LIST(1,2,\"partner_id\")",
+    "E64": "=ODOO.LIST(1,3,\"partner_id\")",
+    "E65": "=ODOO.LIST(1,4,\"partner_id\")",
+    "E66": "=ODOO.LIST(1,5,\"partner_id\")",
+    "E67": "=ODOO.LIST(1,6,\"partner_id\")",
+    "E68": "=ODOO.LIST(1,7,\"partner_id\")",
+    "E69": "=ODOO.LIST(1,8,\"partner_id\")",
+    "E70": "=ODOO.LIST(1,9,\"partner_id\")",
+    "E71": "=ODOO.LIST(1,10,\"partner_id\")",
+    "F61": "=ODOO.LIST.HEADER(1, \"date\", \"Fecha\")",
+    "F62": "=ODOO.LIST(1,1,\"date\")",
+    "F63": "=ODOO.LIST(1,2,\"date\")",
+    "F64": "=ODOO.LIST(1,3,\"date\")",
+    "F65": "=ODOO.LIST(1,4,\"date\")",
+    "F66": "=ODOO.LIST(1,5,\"date\")",
+    "F67": "=ODOO.LIST(1,6,\"date\")",
+    "F68": "=ODOO.LIST(1,7,\"date\")",
+    "F69": "=ODOO.LIST(1,8,\"date\")",
+    "F70": "=ODOO.LIST(1,9,\"date\")",
+    "F71": "=ODOO.LIST(1,10,\"date\")",
+    "G61": "=ODOO.LIST.HEADER(1, \"amount\", \"Importe\")",
+    "G62": "=ODOO.LIST(1,1,\"amount\")",
+    "G63": "=ODOO.LIST(1,2,\"amount\")",
+    "G64": "=ODOO.LIST(1,3,\"amount\")",
+    "G65": "=ODOO.LIST(1,4,\"amount\")",
+    "G66": "=ODOO.LIST(1,5,\"amount\")",
+    "G67": "=ODOO.LIST(1,6,\"amount\")",
+    "G68": "=ODOO.LIST(1,7,\"amount\")",
+    "G69": "=ODOO.LIST(1,8,\"amount\")",
+    "G70": "=ODOO.LIST(1,9,\"amount\")",
+    "G71": "=ODOO.LIST(1,10,\"amount\")"
+   },
+   "styles": {
+    "A12": 1,
+    "A28": 1,
+    "A44": 1,
+    "A60": 1,
+    "E12": 1,
+    "E28": 1,
+    "E44": 1,
+    "E60": 1,
+    "A61": 2,
+    "B61:C61": 5,
+    "E61:G61": 2,
+    "A62:A71": 3,
+    "B62:C71": 4,
+    "E62:G71": 4
+   },
+   "formats": {},
+   "borders": {},
+   "conditionalFormats": [
+    {
+     "id": "barras-deuda",
+     "ranges": [
+      "A62:A71"
+     ],
+     "rule": {
+      "type": "DataBarRule",
+      "color": 16708338,
+      "rangeValues": "B62:B71"
+     }
+    }
+   ],
+   "figures": [
+    {
+     "id": "kpi-1",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 11
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Cartera",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C1",
+      "baseline": "Datos!C9",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "clientes"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-1"
+     }
+    },
+    {
+     "id": "kpi-2",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 255,
+      "y": 11
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Vencido",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C2",
+      "baseline": "Datos!C10",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "de la cartera"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-2"
+     }
+    },
+    {
+     "id": "kpi-3",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 510,
+      "y": 11
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Vencido más de 90 días",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C3",
+      "baseline": "Datos!C11",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "clientes"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-3"
+     }
+    },
+    {
+     "id": "kpi-4",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 765,
+      "y": 11
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Por vencer",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C4",
+      "baseline": "Datos!C12",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "clientes"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-4"
+     }
+    },
+    {
+     "id": "kpi-5",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 140
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Comprometido pendiente",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C5",
+      "baseline": "Datos!C13",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "compromisos"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-5"
+     }
+    },
+    {
+     "id": "kpi-6",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 255,
+      "y": 140
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Compromisos cumplidos",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C6",
+      "baseline": "Datos!C14",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "de los evaluados"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-6"
+     }
+    },
+    {
+     "id": "kpi-7",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 510,
+      "y": 140
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Cobrado en el periodo",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C7",
+      "baseline": "Datos!C15",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "cobros"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-7"
+     }
+    },
+    {
+     "id": "kpi-8",
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 765,
+      "y": 140
+     },
+     "width": 235,
+     "height": 109,
+     "tag": "chart",
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Clientes con deuda vencida",
+       "color": "#434343",
+       "bold": true
+      },
+      "background": "#EFF6FF",
+      "keyValue": "Datos!C8",
+      "baseline": "Datos!C16",
+      "baselineMode": "text",
+      "baselineDescr": {
+       "text": "de los clientes"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965",
+      "humanize": false,
+      "chartId": "kpi-8"
+     }
+    },
+    {
+     "id": "chart-bucket",
+     "col": 0,
+     "row": 12,
+     "offset": {
+      "x": 0,
+      "y": 0
+     },
+     "width": 475,
+     "height": 345,
+     "tag": "chart",
+     "data": {
+      "type": "odoo_bar",
+      "title": {
+       "text": ""
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "none",
+      "metaData": {
+       "groupBy": [
+        "bucket_id"
+       ],
+       "measure": "amount_residual",
+       "order": null,
+       "resModel": "l10n_pe.collection.portfolio",
+       "mode": "bar",
+       "cumulatedStart": false
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {},
+       "domain": [
+        [
+         "in_collection",
+         "=",
+         true
+        ]
+       ],
+       "groupBy": [
+        "bucket_id"
+       ],
+       "orderBy": []
+      },
+      "dataSets": [],
+      "fieldMatching": {
+       "c0b1a001-0000-4000-8000-000000000002": {
+        "chain": "user_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000003": {
+        "chain": "zone_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000004": {
+        "chain": "partner_id",
+        "type": "many2one"
+       }
+      },
+      "chartId": "chart-bucket",
+      "verticalAxisPosition": "left",
+      "stacked": false
+     }
+    },
+    {
+     "id": "chart-user",
+     "col": 4,
+     "row": 12,
+     "offset": {
+      "x": 0,
+      "y": 0
+     },
+     "width": 475,
+     "height": 345,
+     "tag": "chart",
+     "data": {
+      "type": "odoo_bar",
+      "title": {
+       "text": ""
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "top",
+      "metaData": {
+       "groupBy": [
+        "user_id",
+        "bucket_id"
+       ],
+       "measure": "amount_residual",
+       "order": null,
+       "resModel": "l10n_pe.collection.portfolio",
+       "mode": "bar",
+       "cumulatedStart": false
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {},
+       "domain": [
+        [
+         "in_collection",
+         "=",
+         true
+        ]
+       ],
+       "groupBy": [
+        "user_id",
+        "bucket_id"
+       ],
+       "orderBy": []
+      },
+      "dataSets": [],
+      "fieldMatching": {
+       "c0b1a001-0000-4000-8000-000000000002": {
+        "chain": "user_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000003": {
+        "chain": "zone_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000004": {
+        "chain": "partner_id",
+        "type": "many2one"
+       }
+      },
+      "chartId": "chart-user",
+      "verticalAxisPosition": "left",
+      "stacked": true
+     }
+    },
+    {
+     "id": "chart-due",
+     "col": 0,
+     "row": 28,
+     "offset": {
+      "x": 0,
+      "y": 0
+     },
+     "width": 475,
+     "height": 345,
+     "tag": "chart",
+     "data": {
+      "type": "odoo_line",
+      "title": {
+       "text": ""
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "none",
+      "metaData": {
+       "groupBy": [
+        "date_maturity:week"
+       ],
+       "measure": "amount_residual",
+       "order": null,
+       "resModel": "l10n_pe.collection.portfolio",
+       "mode": "line",
+       "cumulatedStart": false
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {},
+       "domain": [
+        "&",
+        "&",
+        [
+         "in_collection",
+         "=",
+         true
+        ],
+        [
+         "is_overdue",
+         "=",
+         false
+        ],
+        [
+         "amount_residual",
+         ">",
+         0
+        ]
+       ],
+       "groupBy": [
+        "date_maturity:week"
+       ],
+       "orderBy": []
+      },
+      "dataSets": [],
+      "fieldMatching": {
+       "c0b1a001-0000-4000-8000-000000000002": {
+        "chain": "user_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000003": {
+        "chain": "zone_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000004": {
+        "chain": "partner_id",
+        "type": "many2one"
+       }
+      },
+      "chartId": "chart-due",
+      "verticalAxisPosition": "left",
+      "stacked": false,
+      "fillArea": true,
+      "cumulatedStart": false
+     }
+    },
+    {
+     "id": "chart-promise",
+     "col": 4,
+     "row": 28,
+     "offset": {
+      "x": 0,
+      "y": 0
+     },
+     "width": 475,
+     "height": 345,
+     "tag": "chart",
+     "data": {
+      "type": "odoo_pie",
+      "title": {
+       "text": ""
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "top",
+      "metaData": {
+       "groupBy": [
+        "state"
+       ],
+       "measure": "amount",
+       "order": null,
+       "resModel": "l10n_pe.collection.promise",
+       "mode": "pie",
+       "cumulatedStart": false
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {},
+       "domain": [
+        [
+         "state",
+         "!=",
+         "cancel"
+        ]
+       ],
+       "groupBy": [
+        "state"
+       ],
+       "orderBy": []
+      },
+      "dataSets": [],
+      "fieldMatching": {
+       "c0b1a001-0000-4000-8000-000000000002": {
+        "chain": "user_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000003": {
+        "chain": "partner_id.l10n_pe_collection_zone_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000004": {
+        "chain": "partner_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000001": {
+        "chain": "date_agreed",
+        "type": "date",
+        "offset": 0
+       }
+      },
+      "chartId": "chart-promise"
+     }
+    },
+    {
+     "id": "chart-paid",
+     "col": 0,
+     "row": 44,
+     "offset": {
+      "x": 0,
+      "y": 0
+     },
+     "width": 1000,
+     "height": 345,
+     "tag": "chart",
+     "data": {
+      "type": "odoo_bar",
+      "title": {
+       "text": ""
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "none",
+      "metaData": {
+       "groupBy": [
+        "date:month"
+       ],
+       "measure": "amount_company_currency_signed",
+       "order": null,
+       "resModel": "account.payment",
+       "mode": "bar",
+       "cumulatedStart": false
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {},
+       "domain": [
+        "&",
+        "&",
+        [
+         "payment_type",
+         "=",
+         "inbound"
+        ],
+        [
+         "partner_type",
+         "=",
+         "customer"
+        ],
+        [
+         "state",
+         "in",
+         [
+          "in_process",
+          "paid"
+         ]
+        ]
+       ],
+       "groupBy": [
+        "date:month"
+       ],
+       "orderBy": []
+      },
+      "dataSets": [],
+      "fieldMatching": {
+       "c0b1a001-0000-4000-8000-000000000001": {
+        "chain": "date",
+        "type": "date",
+        "offset": 0
+       },
+       "c0b1a001-0000-4000-8000-000000000002": {
+        "chain": "partner_id.followup_responsible_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000003": {
+        "chain": "partner_id.l10n_pe_collection_zone_id",
+        "type": "many2one"
+       },
+       "c0b1a001-0000-4000-8000-000000000004": {
+        "chain": "partner_id",
+        "type": "many2one"
+       }
+      },
+      "chartId": "chart-paid",
+      "verticalAxisPosition": "left",
+      "stacked": false
+     }
+    }
+   ],
+   "tables": [
+    {
+     "range": "A61:C71",
+     "type": "static",
+     "config": {
+      "hasFilters": false,
+      "totalRow": false,
+      "firstColumn": false,
+      "lastColumn": false,
+      "numberOfHeaders": 1,
+      "bandedRows": true,
+      "bandedColumns": false,
+      "automaticAutofill": true,
+      "styleId": "None"
+     }
+    },
+    {
+     "range": "E61:G71",
+     "type": "static",
+     "config": {
+      "hasFilters": false,
+      "totalRow": false,
+      "firstColumn": false,
+      "lastColumn": false,
+      "numberOfHeaders": 1,
+      "bandedRows": true,
+      "bandedColumns": false,
+      "automaticAutofill": true,
+      "styleId": "None"
+     }
+    }
+   ],
+   "dataValidationRules": [],
+   "areGridLinesVisible": false,
+   "isVisible": true,
+   "headerGroups": {
+    "ROW": [],
+    "COL": []
+   },
+   "comments": {}
+  },
+  {
+   "id": "datos-cobranza",
+   "name": "Datos",
+   "colNumber": 4,
+   "rowNumber": 21,
+   "rows": {},
+   "cols": {
+    "0": {
+     "size": 220
+    },
+    "1": {
+     "size": 130
+    },
+    "2": {
+     "size": 130
+    }
+   },
+   "merges": [],
+   "cells": {
+    "A1": "Cartera",
+    "B1": "=PIVOT.VALUE(1,\"amount_residual\")",
+    "C1": "=FORMAT.LARGE.NUMBER(B1)",
+    "A2": "Vencido",
+    "B2": "=PIVOT.VALUE(2,\"amount_residual\")",
+    "C2": "=FORMAT.LARGE.NUMBER(B2)",
+    "A3": "Vencido más de 90 días",
+    "B3": "=PIVOT.VALUE(3,\"amount_residual\")",
+    "C3": "=FORMAT.LARGE.NUMBER(B3)",
+    "A4": "Por vencer",
+    "B4": "=PIVOT.VALUE(4,\"amount_residual\")",
+    "C4": "=FORMAT.LARGE.NUMBER(B4)",
+    "A5": "Comprometido pendiente",
+    "B5": "=PIVOT.VALUE(5,\"amount\")",
+    "C5": "=FORMAT.LARGE.NUMBER(B5)",
+    "A6": "Cumplimiento de compromisos",
+    "B6": "=IFERROR(PIVOT.VALUE(7,\"__count\")/PIVOT.VALUE(6,\"__count\"),0)",
+    "C6": "=B6",
+    "A7": "Cobrado en el periodo",
+    "B7": "=PIVOT.VALUE(8,\"amount_company_currency_signed\")",
+    "C7": "=FORMAT.LARGE.NUMBER(B7)",
+    "A8": "Clientes con deuda vencida",
+    "B8": "=PIVOT.VALUE(2,\"partner_id:count_distinct\")",
+    "C8": "=B8",
+    "A9": "Clientes en cartera",
+    "B9": "=PIVOT.VALUE(1,\"partner_id:count_distinct\")",
+    "C9": "=B9",
+    "A10": "% vencido",
+    "B10": "=IFERROR(B2/B1,0)",
+    "C10": "=B10",
+    "A11": "Clientes con más de 90 días",
+    "B11": "=PIVOT.VALUE(3,\"partner_id:count_distinct\")",
+    "C11": "=B11",
+    "A12": "Clientes por vencer",
+    "B12": "=PIVOT.VALUE(4,\"partner_id:count_distinct\")",
+    "C12": "=B12",
+    "A13": "Compromisos pendientes",
+    "B13": "=PIVOT.VALUE(5,\"__count\")",
+    "C13": "=B13",
+    "A14": "Compromisos evaluados",
+    "B14": "=PIVOT.VALUE(6,\"__count\")",
+    "C14": "=B14",
+    "A15": "Cobros",
+    "B15": "=PIVOT.VALUE(8,\"__count\")",
+    "C15": "=B15",
+    "A16": "Vencido sobre clientes en cartera",
+    "B16": "=IFERROR(B8/B9,0)",
+    "C16": "=B16"
+   },
+   "styles": {
+    "C1:C16": 6
+   },
+   "formats": {
+    "C6": 1,
+    "C10": 1,
+    "C16": 1
+   },
+   "borders": {},
+   "conditionalFormats": [],
+   "figures": [],
+   "tables": [],
+   "dataValidationRules": [],
+   "areGridLinesVisible": true,
+   "isVisible": false,
+   "headerGroups": {
+    "ROW": [],
+    "COL": []
+   },
+   "comments": {}
+  }
+ ],
+ "styles": {
+  "1": {
+   "textColor": "#01666b",
+   "bold": true,
+   "fontSize": 16
+  },
+  "2": {
+   "textColor": "#434343",
+   "bold": true,
+   "fontSize": 11
+  },
+  "3": {
+   "textColor": "#01666B",
+   "verticalAlign": "middle"
+  },
+  "4": {
+   "textColor": "#434343",
+   "verticalAlign": "middle"
+  },
+  "5": {
+   "textColor": "#434343",
+   "bold": true,
+   "fontSize": 11,
+   "align": "center"
+  },
+  "6": {
+   "fillColor": "#f8f9fa"
+  }
+ },
+ "formats": {
+  "1": "0.0%"
+ },
+ "borders": {},
+ "revisionId": "START_REVISION",
+ "uniqueFigureIds": true,
+ "settings": {},
+ "pivots": {
+  "1": {
+   "type": "ODOO",
+   "id": "1",
+   "formulaId": "1",
+   "name": "Cartera",
+   "model": "l10n_pe.collection.portfolio",
+   "domain": [
+    [
+     "in_collection",
+     "=",
+     true
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount_residual",
+     "userDefinedName": "Saldo",
+     "id": "amount_residual"
+    },
+    {
+     "id": "partner_id:count_distinct",
+     "fieldName": "partner_id",
+     "aggregator": "count_distinct",
+     "userDefinedName": "Clientes"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "2": {
+   "type": "ODOO",
+   "id": "2",
+   "formulaId": "2",
+   "name": "Vencido",
+   "model": "l10n_pe.collection.portfolio",
+   "domain": [
+    "&",
+    [
+     "in_collection",
+     "=",
+     true
+    ],
+    [
+     "is_overdue",
+     "=",
+     true
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount_residual",
+     "userDefinedName": "Saldo",
+     "id": "amount_residual"
+    },
+    {
+     "id": "partner_id:count_distinct",
+     "fieldName": "partner_id",
+     "aggregator": "count_distinct",
+     "userDefinedName": "Clientes"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "3": {
+   "type": "ODOO",
+   "id": "3",
+   "formulaId": "3",
+   "name": "Vencido más de 90 días",
+   "model": "l10n_pe.collection.portfolio",
+   "domain": [
+    "&",
+    "&",
+    [
+     "in_collection",
+     "=",
+     true
+    ],
+    [
+     "is_overdue",
+     "=",
+     true
+    ],
+    [
+     "days_overdue",
+     ">",
+     90
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount_residual",
+     "userDefinedName": "Saldo",
+     "id": "amount_residual"
+    },
+    {
+     "id": "partner_id:count_distinct",
+     "fieldName": "partner_id",
+     "aggregator": "count_distinct",
+     "userDefinedName": "Clientes"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "4": {
+   "type": "ODOO",
+   "id": "4",
+   "formulaId": "4",
+   "name": "Por vencer",
+   "model": "l10n_pe.collection.portfolio",
+   "domain": [
+    "&",
+    "&",
+    [
+     "in_collection",
+     "=",
+     true
+    ],
+    [
+     "is_overdue",
+     "=",
+     false
+    ],
+    [
+     "amount_residual",
+     ">",
+     0
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount_residual",
+     "userDefinedName": "Saldo",
+     "id": "amount_residual"
+    },
+    {
+     "id": "partner_id:count_distinct",
+     "fieldName": "partner_id",
+     "aggregator": "count_distinct",
+     "userDefinedName": "Clientes"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "5": {
+   "type": "ODOO",
+   "id": "5",
+   "formulaId": "5",
+   "name": "Compromisos pendientes",
+   "model": "l10n_pe.collection.promise",
+   "domain": [
+    [
+     "state",
+     "=",
+     "pending"
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "partner_id.l10n_pe_collection_zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount",
+     "userDefinedName": "Comprometido",
+     "id": "amount"
+    },
+    {
+     "id": "__count",
+     "fieldName": "__count",
+     "userDefinedName": "Cantidad"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "6": {
+   "type": "ODOO",
+   "id": "6",
+   "formulaId": "6",
+   "name": "Compromisos evaluados",
+   "model": "l10n_pe.collection.promise",
+   "domain": [
+    [
+     "state",
+     "in",
+     [
+      "kept",
+      "partial",
+      "broken"
+     ]
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "partner_id.l10n_pe_collection_zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000001": {
+     "chain": "evaluated_on",
+     "type": "date",
+     "offset": 0
+    }
+   },
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count",
+     "userDefinedName": "Cantidad"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "7": {
+   "type": "ODOO",
+   "id": "7",
+   "formulaId": "7",
+   "name": "Compromisos cumplidos",
+   "model": "l10n_pe.collection.promise",
+   "domain": [
+    [
+     "state",
+     "=",
+     "kept"
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "partner_id.l10n_pe_collection_zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000001": {
+     "chain": "evaluated_on",
+     "type": "date",
+     "offset": 0
+    }
+   },
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count",
+     "userDefinedName": "Cantidad"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "8": {
+   "type": "ODOO",
+   "id": "8",
+   "formulaId": "8",
+   "name": "Cobrado",
+   "model": "account.payment",
+   "domain": [
+    "&",
+    "&",
+    [
+     "payment_type",
+     "=",
+     "inbound"
+    ],
+    [
+     "partner_type",
+     "=",
+     "customer"
+    ],
+    [
+     "state",
+     "in",
+     [
+      "in_process",
+      "paid"
+     ]
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000001": {
+     "chain": "date",
+     "type": "date",
+     "offset": 0
+    },
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "partner_id.followup_responsible_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "partner_id.l10n_pe_collection_zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount_company_currency_signed",
+     "userDefinedName": "Cobrado",
+     "id": "amount_company_currency_signed"
+    },
+    {
+     "id": "__count",
+     "fieldName": "__count",
+     "userDefinedName": "Cantidad"
+    }
+   ],
+   "rows": [],
+   "columns": []
+  },
+  "9": {
+   "type": "ODOO",
+   "id": "9",
+   "formulaId": "9",
+   "name": "Cliente",
+   "model": "l10n_pe.collection.portfolio",
+   "domain": [
+    "&",
+    [
+     "in_collection",
+     "=",
+     true
+    ],
+    [
+     "is_overdue",
+     "=",
+     true
+    ]
+   ],
+   "context": {},
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   },
+   "measures": [
+    {
+     "fieldName": "amount_residual",
+     "userDefinedName": "Vencido",
+     "id": "amount_residual"
+    },
+    {
+     "fieldName": "days_overdue",
+     "userDefinedName": "Días de atraso",
+     "id": "days_overdue"
+    }
+   ],
+   "rows": [
+    {
+     "fieldName": "partner_id"
+    }
+   ],
+   "columns": [],
+   "sortedColumn": {
+    "measure": "amount_residual",
+    "order": "desc",
+    "domain": []
+   }
+  }
+ },
+ "pivotNextId": 10,
+ "customTableStyles": {},
+ "globalFilters": [
+  {
+   "id": "c0b1a001-0000-4000-8000-000000000001",
+   "type": "date",
+   "label": "Periodo",
+   "defaultValue": "year_to_date"
+  },
+  {
+   "id": "c0b1a001-0000-4000-8000-000000000002",
+   "type": "relation",
+   "label": "Gestor",
+   "modelName": "res.users",
+   "defaultValueDisplayNames": []
+  },
+  {
+   "id": "c0b1a001-0000-4000-8000-000000000003",
+   "type": "relation",
+   "label": "Zona",
+   "modelName": "l10n_pe.collection.zone",
+   "defaultValueDisplayNames": []
+  },
+  {
+   "id": "c0b1a001-0000-4000-8000-000000000004",
+   "type": "relation",
+   "label": "Cliente",
+   "modelName": "res.partner",
+   "defaultValueDisplayNames": []
+  }
+ ],
+ "lists": {
+  "1": {
+   "id": "1",
+   "name": "Compromisos pendientes",
+   "model": "l10n_pe.collection.promise",
+   "columns": [
+    "partner_id",
+    "date",
+    "amount",
+    "user_id"
+   ],
+   "domain": [
+    [
+     "state",
+     "=",
+     "pending"
+    ]
+   ],
+   "context": {},
+   "orderBy": [
+    {
+     "name": "date",
+     "asc": true
+    }
+   ],
+   "fieldMatching": {
+    "c0b1a001-0000-4000-8000-000000000002": {
+     "chain": "user_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000003": {
+     "chain": "partner_id.l10n_pe_collection_zone_id",
+     "type": "many2one"
+    },
+    "c0b1a001-0000-4000-8000-000000000004": {
+     "chain": "partner_id",
+     "type": "many2one"
+    }
+   }
+  }
+ },
+ "listNextId": 2,
+ "chartOdooMenusReferences": {
+  "chart-bucket": "al_l10n_pe_collection.menu_collection_portfolio",
+  "chart-user": "al_l10n_pe_collection.menu_collection_portfolio",
+  "chart-due": "al_l10n_pe_collection.menu_collection_portfolio",
+  "chart-promise": "al_l10n_pe_collection.menu_collection_promises",
+  "chart-paid": "account.menu_action_account_payments_receivable"
+ }
+}

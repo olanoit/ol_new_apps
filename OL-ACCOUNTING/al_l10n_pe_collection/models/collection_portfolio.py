@@ -9,7 +9,8 @@ class L10nPeCollectionPortfolio(models.Model):
     compañía del contacto (jsonb): se toman de la compañía del apunte o, si no
     tiene valor, de su compañía raíz. Las cuentas que no son cobranza
     (anticipos, detracciones) se excluyen en la acción del menú, porque
-    dependen de la configuración de cada compañía.
+    dependen de la configuración de cada compañía: el campo ``in_collection``
+    las filtra en el menú y en el tablero.
     """
     _name = 'l10n_pe.collection.portfolio'
     _description = 'Cartera por cobrar'
@@ -35,6 +36,9 @@ class L10nPeCollectionPortfolio(models.Model):
     amount_residual = fields.Monetary(string='Saldo', currency_field='company_currency_id', readonly=True)
     promise_date = fields.Date(string='Compromiso', readonly=True,
                                help='Fecha del compromiso de pago pendiente más próximo del cliente.')
+    in_collection = fields.Boolean(string='En cobranza', compute='_compute_in_collection',
+                                   search='_search_in_collection',
+                                   help='Falso para los anticipos y las detracciones por cobrar.')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -78,13 +82,29 @@ class L10nPeCollectionPortfolio(models.Model):
             )
         """, SQL.identifier(self._table)))
 
-    @api.model
-    def action_open(self, overdue=False):
-        """Cartera sin las cuentas que no son cobranza (según la compañía)."""
+    def _excluded_accounts(self):
         excluded = self.env['account.account']
         for company in self.env.companies:
             excluded |= company._l10n_pe_collection_excluded_accounts()
-        domain = [('account_id', 'not in', excluded.ids)]
+        return excluded
+
+    def _compute_in_collection(self):
+        excluded = self._excluded_accounts()
+        for line in self:
+            line.in_collection = line.account_id not in excluded
+
+    def _search_in_collection(self, operator, value):
+        if operator != 'in':
+            return NotImplemented
+        excluded = self._excluded_accounts().ids
+        if True in value and False in value:
+            return []
+        return [('account_id', 'not in' if True in value else 'in', excluded)]
+
+    @api.model
+    def action_open(self, overdue=False):
+        """Cartera sin las cuentas que no son cobranza (según la compañía)."""
+        domain = [('in_collection', '=', True)]
         if overdue:
             domain.append(('is_overdue', '=', True))
         action = self.env['ir.actions.act_window']._for_xml_id('al_l10n_pe_collection.action_collection_portfolio')

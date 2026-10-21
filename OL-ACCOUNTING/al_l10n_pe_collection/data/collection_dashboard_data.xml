@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tablero de cobranza a la manera de Odoo 19: una hoja de cálculo
+         (spreadsheet.dashboard) generada por docs/cobranza/build_collection_dashboard.py.
+         Respeta las reglas de registro: el gestor ve solo su cartera. -->
+    <record id="dashboard_collection" model="spreadsheet.dashboard">
+        <field name="name">Cobranza</field>
+        <field name="spreadsheet_binary_data" type="base64" file="al_l10n_pe_collection/data/files/collection_dashboard.json"/>
+        <field name="main_data_model_ids" eval="[Command.link(ref('al_l10n_pe_collection.model_l10n_pe_collection_portfolio'))]"/>
+        <field name="dashboard_group_id" ref="spreadsheet_dashboard.spreadsheet_dashboard_group_finance"/>
+        <field name="group_ids" eval="[Command.set([ref('al_l10n_pe_collection.group_collection_user')])]"/>
+        <field name="sequence">30</field>
+        <field name="is_published">True</field>
+    </record>
+
+    <!-- Abre la app de tableros directamente en el de cobranza. -->
+    <record id="action_collection_spreadsheet_dashboard" model="ir.actions.client">
+        <field name="name">Tablero</field>
+        <field name="tag">action_spreadsheet_dashboard</field>
+        <field name="params" eval="{'dashboard_id': ref('dashboard_collection')}"/>
+    </record>
+</odoo>

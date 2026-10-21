@@ -28,9 +28,10 @@ destacados:
       Por compromiso, historial de pago del cliente y probabilidad por antigüedad;
       proyectado frente a cobrado.
   - icono: "%"
-    titulo: Metas e indicadores
+    titulo: Tablero y metas
     texto: >-
-      Meta por gestor, % vencido, DSO y cumplimiento de compromisos en un tablero.
+      Tablero nativo de Odoo con filtros por gestor, zona, cliente y periodo; meta por
+      gestor, DSO y cumplimiento de compromisos.
   - icono: "✉"
     titulo: Avisos
     texto: >-
@@ -94,6 +95,11 @@ faq:
       vencimiento y el pago, ponderados por importe.
 
 novedades:
+  - version: 2.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Tablero de cobranza en la aplicación Tableros de Odoo (hoja de cálculo): indicadores, cartera por tramo y por gestor, vencimientos por semana, compromisos por estado, cobrado por mes y tablas de deudores y compromisos, con filtros por gestor, zona, cliente y periodo."
+      - "El formulario de indicadores pasa a «Proyección y metas ‣ Indicadores del gestor»."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:
