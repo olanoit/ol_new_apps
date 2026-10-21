@@ -6,6 +6,8 @@
         <t t-set="company" t-value="o.company_id"/>
         <t t-set="partner" t-value="o.partner_id.commercial_partner_id"/>
         <t t-set="documents" t-value="o._l10n_pe_receipt_documents()"/>
+        <!-- Pago múltiple: varios socios, cada comprobante lleva el suyo. -->
+        <t t-set="many_partners" t-value="len(set(doc['partner'] for doc in documents)) > 1"/>
         <t t-set="others" t-value="o._l10n_pe_receipt_other_lines()"/>
         <t t-set="unapplied" t-value="o._l10n_pe_receipt_unapplied()"/>
         <t t-set="is_advance" t-value="'l10n_pe_is_advance' in o._fields and o.l10n_pe_is_advance"/>
@@ -16,7 +18,7 @@
             <table class="pe-doc-table mb-3">
                 <tr>
                     <td class="pe-doc-label" style="width: 18%;"><t t-if="o.payment_type == 'inbound'">Recibimos de</t><t t-else="">Pagado a</t></td>
-                    <td class="pe-doc-value" style="width: 47%;"><span t-out="partner.name"/></td>
+                    <td class="pe-doc-value" style="width: 47%;"><span t-out="partner.name or 'Varios (ver detalle)'"/></td>
                     <td class="pe-doc-label" style="width: 15%;"><span t-out="partner.l10n_latam_identification_type_id.name or 'Documento'"/></td>
                     <td class="pe-doc-value" style="width: 20%;"><span t-out="partner.vat or '—'"/></td>
                 </tr>
@@ -51,6 +53,7 @@
             <table class="pe-doc-table pe-doc-lines mb-3" t-if="documents">
                 <thead>
                     <tr class="pe-doc-thead">
+                        <td t-if="many_partners">Socio</td>
                         <td>Comprobante</td>
                         <td style="width: 12%;">Fecha</td>
                         <td class="text-end" style="width: 16%;">Total</td>
@@ -60,6 +63,7 @@
                 </thead>
                 <tbody>
                     <tr t-foreach="documents" t-as="doc">
+                        <td t-if="many_partners"><span t-out="doc['partner'].name"/></td>
                         <td><t t-if="doc['document_type']"><span t-out="doc['document_type']"/> </t><span t-out="doc['name']"/></td>
                         <td><span t-out="doc['date'] and doc['date'].strftime('%d/%m/%Y')"/></td>
                         <td class="text-end"><span t-if="doc['total'] is not None" t-out="doc['total']" t-options="{'widget': 'monetary', 'display_currency': doc['currency']}"/></td>

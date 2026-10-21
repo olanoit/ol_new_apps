@@ -25,10 +25,10 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Caja chica / entregas a rendir / movilidad | `account.petty.cash`, `account.renders.payroll` | — | `al_l10n_pe_cash_fund` | **Cubierto** (falta arqueo, P4) |
 | Transferencia entre cuentas con TC bancario | `transfer` + TC bancario | Transferencias internas | `al_account_payments` (compraventa de moneda) | **Cubierto** (falta ITF, P6) |
 | Bancos: código SUNAT, tipo de cuenta, CCI | `dv_l10n_pe_res_bank*` | — | `al_l10n_pe_batch_payment` | Cubierto |
-| Recibo de caja / comprobante de pago impreso | Muerto (no cargado) | Recibo genérico | — | **Brecha P1** |
-| Pago de varias facturas de **varios socios** en un pago | Núcleo del motor (`pago_multiproveedor`) | Agrupado solo por socio; lotes (EE) | Lotes TXT | **Brecha P2** |
-| Anticipos de cliente/proveedor (122/422) y su aplicación | `account.payment.anticipos`, `is_anticipo`, `inveragro_aplicacion` | Anticipo de pedido; saldo a favor sin cuenta propia | — | **Brecha P3** |
-| Cruce / compensación de documentos | `application.document` (APD/AJD) | Conciliación manual | — | **Brecha P3** |
+| Recibo de caja / comprobante de pago impreso | Muerto (no cargado) | Recibo genérico | `al_l10n_pe_payment_receipt` | **Cubierto** (P1) |
+| Pago de varias facturas de **varios socios** en un pago | Núcleo del motor (`pago_multiproveedor`) | Agrupado solo por socio; lotes (EE) | `al_l10n_pe_payment_multi` | **Cubierto** (P2) |
+| Anticipos de cliente/proveedor (122/422) y su aplicación | `account.payment.anticipos`, `is_anticipo`, `inveragro_aplicacion` | Anticipo de pedido; saldo a favor sin cuenta propia | `al_l10n_pe_payment_application` | **Cubierto** (P3) |
+| Cruce / compensación de documentos | `application.document` (APD/AJD) | Conciliación manual | `al_l10n_pe_payment_application` | **Cubierto** (P3) |
 | Cierre de caja diario por sucursal y método de pago | `close.sale.report` | Solo POS | — | **Brecha P4** |
 | Proyección de cobranza / flujo de caja | `payment_projection` (3 900 líneas) | Flujo de efectivo histórico (EE) | — | **Brecha P5** |
 | Plazos de pago: monto fijo en soles con factura en USD | `dv_..._payment_term_foreign_currency` | Plazos rediseñados en 17+ | — | **Brecha P7** (verificar si hace falta) |
@@ -53,6 +53,10 @@ anticipos, otros pagos, pagos múltiples, métodos de pago).
 - Inveragro no lo tiene operativo (su `payment_report.xml` está fuera del manifiesto).
 
 ### P2. Pago múltiple: varios documentos y varios socios en un solo pago — prioridad alta, esfuerzo alto
+
+> **Hecho (21/10/2026)** en `al_l10n_pe_payment_multi`: un solo `account.payment` con el hook
+> nativo `line_ids` (no un asiento suelto ni un pago por socio). Retención y detracción quedan
+> fuera a propósito: el CRE es por proveedor y la detracción va al Banco de la Nación.
 
 Caso: un egreso bancario que paga facturas de varios proveedores, una planilla de movilidad y un
 gasto sin comprobante; o un depósito de cliente que cubre facturas de varios socios del grupo.

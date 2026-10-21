@@ -107,6 +107,7 @@ class AccountPayment(models.Model):
             name = move.l10n_latam_document_number
         return {
             'move': move,
+            'partner': move.commercial_partner_id,
             'name': name,
             'document_type': move.l10n_latam_document_type_id.name
             if 'l10n_latam_document_type_id' in move._fields else '',

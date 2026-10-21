@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_payment_multi_form" model="ir.ui.view">
+        <field name="name">l10n_pe.payment.multi.form</field>
+        <field name="model">l10n_pe.payment.multi</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_load_documents" type="object" string="Cargar documentos"
+                            invisible="state != 'draft'"/>
+                    <button name="action_clean" type="object" string="Quitar sin importe"
+                            invisible="state != 'draft'"/>
+                    <button name="action_post" type="object" string="Validar" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_print_receipt" type="object" string="Imprimir comprobante"
+                            invisible="state != 'posted' or not receipt_number"/>
+                    <button name="action_cancel" type="object" string="Anular" invisible="state != 'posted'"
+                            confirm="El pago queda anulado y los comprobantes vuelven a quedar abiertos. ¿Continuar?"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_payment" type="object" class="oe_stat_button"
+                                icon="fa-money" invisible="not payment_id" string="Pago"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <div invisible="not receipt_number" class="text-muted">
+                            <field name="receipt_number" readonly="1"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="payment_type" widget="radio" options="{'horizontal': true}"
+                                   readonly="state != 'draft' or line_ids"/>
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="payment_method_line_id" options="{'no_create': True}" required="1"
+                                   readonly="state != 'draft'"/>
+                            <field name="pe_payment_method_id" options="{'no_create': True}"
+                                   readonly="state != 'draft'"/>
+                            <field name="bank_operation_number" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="memo" readonly="state != 'draft'"/>
+                            <field name="partner_ids" widget="many2many_tags" invisible="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="payment_id" invisible="not payment_id"/>
+                            <field name="move_id" invisible="not move_id"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'draft'"
+                           context="{'default_direction': payment_type == 'outbound' and 'out' or 'in'}">
+                        <list editable="bottom" decoration-muted="not amount">
+                            <field name="sequence" widget="handle"/>
+                            <field name="line_type"/>
+                            <field name="move_line_id" string="Comprobante" options="{'no_create': True}"
+                                   invisible="line_type != 'document'" required="line_type == 'document'"
+                                   readonly="parent.state != 'draft'"/>
+                            <field name="partner_id" readonly="line_type == 'document'"
+                                   required="line_type == 'advance'"/>
+                            <field name="name" invisible="line_type == 'document'" optional="show"/>
+                            <field name="account_id" readonly="line_type != 'other'"
+                                   required="line_type == 'other'" optional="hide"/>
+                            <field name="analytic_distribution" widget="analytic_distribution"
+                                   invisible="line_type != 'other'" optional="hide"
+                                   groups="analytic.group_analytic_accounting"/>
+                            <field name="date_maturity" optional="hide"/>
+                            <field name="direction" readonly="line_type != 'other'" optional="show"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="multi_currency_id" column_invisible="True"/>
+                            <field name="company_currency_id" column_invisible="True"/>
+                            <field name="residual" invisible="line_type != 'document'"/>
+                            <field name="amount"/>
+                            <field name="amount_payment" optional="hide"/>
+                            <field name="amount_company" optional="hide"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer">
+                        <field name="currency_id" invisible="1"/>
+                        <field name="partner_count"/>
+                        <field name="amount_total" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_payment_multi_list" model="ir.ui.view">
+        <field name="name">l10n_pe.payment.multi.list</field>
+        <field name="model">l10n_pe.payment.multi</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'" decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="payment_type"/>
+                <field name="journal_id"/>
+                <field name="memo" optional="show"/>
+                <field name="receipt_number" optional="show"/>
+                <field name="partner_count" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'posted'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_payment_multi_search" model="ir.ui.view">
+        <field name="name">l10n_pe.payment.multi.search</field>
+        <field name="model">l10n_pe.payment.multi</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="memo"/>
+                <field name="line_ids" string="Socio" filter_domain="[('line_ids.partner_id', 'child_of', self)]"/>
+                <field name="journal_id"/>
+                <filter name="outbound" string="Pagos" domain="[('payment_type', '=', 'outbound')]"/>
+                <filter name="inbound" string="Cobros" domain="[('payment_type', '=', 'inbound')]"/>
+                <separator/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="posted" string="Validado" domain="[('state', '=', 'posted')]"/>
+                <group>
+                    <filter name="group_journal" string="Diario" context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_payment_multi_outbound" model="ir.actions.act_window">
+        <field name="name">Pagos múltiples</field>
+        <field name="res_model">l10n_pe.payment.multi</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('payment_type', '=', 'outbound')]</field>
+        <field name="context">{'default_payment_type': 'outbound'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Pague con un solo movimiento de banco</p>
+            <p>Facturas de varios proveedores, anticipos y otros pagos en un solo egreso.</p>
+        </field>
+    </record>
+
+    <record id="action_payment_multi_inbound" model="ir.actions.act_window">
+        <field name="name">Cobros múltiples</field>
+        <field name="res_model">l10n_pe.payment.multi</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('payment_type', '=', 'inbound')]</field>
+        <field name="context">{'default_payment_type': 'inbound'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un depósito que cubre varios documentos</p>
+            <p>Facturas de varios clientes, anticipos y otros ingresos en un solo cobro.</p>
+        </field>
+    </record>
+</odoo>

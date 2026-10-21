@@ -70,6 +70,10 @@ faq:
       como el asistente de pago.
 
 novedades:
+  - version: 2.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Pagos con varios socios (pago múltiple): «Varios» en la cabecera y el socio de cada comprobante en el detalle."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- App Perú (tercer nivel, bajo las secciones Cobros y Pagos). -->
+    <menuitem id="menu_pe_customer_payment_multi" name="Cobros múltiples"
+              parent="al_account_base.al_l10n_pe_customers_payments"
+              action="action_payment_multi_inbound" sequence="25"
+              groups="account.group_account_user"/>
+    <menuitem id="menu_pe_supplier_payment_multi" name="Pagos múltiples"
+              parent="al_account_base.al_l10n_pe_vendors_payments"
+              action="action_payment_multi_outbound" sequence="25"
+              groups="account.group_account_user"/>
+
+    <!-- Ubicación nativa en Contabilidad. -->
+    <menuitem id="menu_account_customer_payment_multi" name="Cobros múltiples"
+              parent="account.menu_finance_receivables" action="action_payment_multi_inbound"
+              sequence="17" groups="account.group_account_user"/>
+    <menuitem id="menu_account_supplier_payment_multi" name="Pagos múltiples"
+              parent="account.menu_finance_payables" action="action_payment_multi_outbound"
+              sequence="22" groups="account.group_account_user"/>
+</odoo>

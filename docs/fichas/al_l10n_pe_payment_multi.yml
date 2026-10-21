@@ -1,0 +1,105 @@
+titulo: Pago múltiple
+subtitulo: >-
+  Un solo movimiento de banco o caja para pagar facturas de varios proveedores,
+  entregar anticipos y registrar otros pagos; y un solo depósito para cobrar
+  facturas de varios clientes.
+categoria: Localización Perú · Tesorería
+etiquetas: [Pago múltiple, Cobro múltiple, Varios socios, Anticipos, Comprobante de egreso]
+portada: screenshots/form.png
+
+destacados_intro: >-
+  Sobre el pago estándar de Odoo 19: el resultado es un pago normal, con su
+  conciliación y su diferencia de cambio.
+destacados:
+  - icono: "1"
+    titulo: Un movimiento, un pago
+    texto: >-
+      Una línea de banco por el total y una contrapartida por línea: el extracto
+      se concilia con un solo pago.
+  - icono: "∑"
+    titulo: Varios socios
+    texto: >-
+      Facturas de distintos proveedores o clientes, también en parte y con notas
+      de crédito que descuentan.
+  - icono: "+"
+    titulo: Anticipos y otros pagos
+    texto: >-
+      Adelantos a la 422 o la 122 y gastos sin comprobante (comisiones, ITF) con
+      su distribución analítica.
+  - icono: "$"
+    titulo: Otra moneda
+    texto: >-
+      Cada comprobante en su moneda al cambio de la fecha del pago; la diferencia
+      de cambio la registra Odoo.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El banco carga en un solo movimiento lo que la empresa paga a varios
+    proveedores, más la comisión. Odoo solo agrupa pagos de un mismo socio: con
+    varios, el extracto queda contra varios pagos y no hay un comprobante de
+    egreso que muestre el detalle.
+  nota: >-
+    **Retenciones y detracciones.** La factura sujeta a retención se paga con
+    «Registrar pago», que emite el comprobante de retención del proveedor; la
+    detracción se deposita en el Banco de la Nación con su propio asistente.
+
+pasos_intro: >-
+  Dos facturas de proveedores de transporte (S/ 1 475,00 y S/ 566,40), un anticipo
+  de S/ 300,00 a un tercer proveedor y la comisión de S/ 7,50, en una sola
+  transferencia de S/ 2 348,90.
+pasos:
+  - titulo: Crear el pago múltiple
+    ruta: Perú ▸ Proveedores ▸ Pagos múltiples
+    texto: >-
+      Diario, fecha, medio de pago y número de operación. «Cargar documentos» trae
+      las facturas abiertas de los socios elegidos; se agregan el anticipo y la
+      comisión.
+    imagen: screenshots/form.png
+  - titulo: Validar
+    texto: >-
+      Se crea un solo pago con su asiento; cada factura queda conciliada y el
+      anticipo, pendiente de aplicar.
+  - titulo: Imprimir el comprobante de egreso
+    texto: >-
+      «Varios (ver detalle)» y el socio de cada comprobante, el anticipo y la
+      comisión, con el monto en letras.
+    imagen: screenshots/receipt.png
+
+asientos_intro: >-
+  El asiento del ejemplo, en el diario del banco.
+asientos:
+  - titulo: Pago múltiple validado
+    referencia: PBNK1/2026/00030
+    lineas:
+      - ["4212", "F F001-00091001 · Centro Comercial del Sur S.A.", "566,40", ""]
+      - ["4212", "F F001-00091000 · Cementos del Sur SAC", "1.475,00", ""]
+      - ["422", "Anticipo: Consignaciones del Norte S.A.C.", "300,00", ""]
+      - ["6391", "Comisión por transferencia", "7,50", ""]
+      - ["1041", "Pagos pendientes (banco)", "", "2.348,90"]
+
+configuracion:
+  - "Diario de banco o caja con «Comprobante de pago numerado» si quiere imprimir el comprobante de egreso."
+  - "Ajustes ▸ Perú ▸ Anticipos y aplicación de documentos: cuentas 122 y 422 para las líneas de anticipo."
+
+faq:
+  - pregunta: "¿Cómo anulo un pago múltiple?"
+    respuesta: >-
+      Con «Anular» en el pago múltiple: el pago y su asiento quedan anulados y las
+      facturas, abiertas. «Volver a borrador» permite corregirlo y validarlo de
+      nuevo.
+  - pregunta: "¿Puedo pagar una factura en dólares desde un banco en soles?"
+    respuesta: >-
+      Sí: el importe va en dólares y se convierte al cambio de la fecha del pago;
+      Odoo registra la diferencia con el cambio de la factura.
+  - pregunta: "¿Puedo empezar desde la lista de facturas?"
+    respuesta: >-
+      Sí: seleccione las facturas y elija Acción ▸ Pago múltiple.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: pago y cobro múltiple con comprobantes de varios socios, anticipos y otros pagos en un solo pago, comprobante de egreso con el detalle por socio y anulación."
+
+relacionados: [al_l10n_pe_payment_receipt, al_l10n_pe_payment_application, al_l10n_pe_batch_payment, al_account_payments]

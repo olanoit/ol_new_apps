@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Icono neutro (AL): tres comprobantes que salen de un solo pago. -->
+  <rect width="100" height="100" rx="22" fill="#0F766E"/>
+  <rect x="14" y="20" width="22" height="28" rx="3" fill="#FFFFFF"/>
+  <rect x="39" y="20" width="22" height="28" rx="3" fill="#FFFFFF"/>
+  <rect x="64" y="20" width="22" height="28" rx="3" fill="#FFFFFF"/>
+  <rect x="18" y="27" width="14" height="3" rx="1.5" fill="#1E293B" opacity="0.35"/>
+  <rect x="43" y="27" width="14" height="3" rx="1.5" fill="#1E293B" opacity="0.35"/>
+  <rect x="68" y="27" width="14" height="3" rx="1.5" fill="#1E293B" opacity="0.35"/>
+  <path d="M25 52 v6 h50 v-6 M50 58 v8" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <rect x="30" y="66" width="40" height="16" rx="4" fill="#5EEAD4"/>
+  <rect x="38" y="72" width="24" height="4" rx="2" fill="#0F766E"/>
+</svg>
