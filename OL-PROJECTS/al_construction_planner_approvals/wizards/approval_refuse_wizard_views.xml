@@ -6,7 +6,8 @@
         <field name="arch" type="xml">
             <form string="Rechazar">
                 <field name="approval_ids" widget="many2many_tags" readonly="1"
-                       invisible="len(approval_ids) &lt; 2"/>
+                       invisible="approval_count &lt; 2"/>
+                <field name="approval_count" invisible="1"/>
                 <p class="text-muted">Cada documento vuelve a borrador con este motivo. Las
                     solicitudes en las que no le toca aprobar no se tocan.</p>
                 <field name="reason" placeholder="Por qué se rechaza"/>

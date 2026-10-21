@@ -29,6 +29,12 @@ configuracion:
 requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "Paquete 1.11, M111-02: el asistente «Rechazar» vuelve a abrir desde la solicitud y desde la lista (la vista usaba len(), que el navegador no evalúa)."
+  - "M111-05: el «Exceso %» de la solicitud es el del documento de origen con su regla (la orden de fabricación según la base del margen de la compañía); el mayor % por material sigue en cada línea."
+  - "M111-06: presupuestado, ya pedido, saldo y % del requerimiento salen de todas las líneas del plan del material bajo el nivel y la etapa, aunque el pedido ya tenga asignada solo una parte."
 - version: '3.20261019'
   fecha: 19/10/2026
   cambios:

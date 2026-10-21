@@ -29,6 +29,11 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '8.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "Paquete 1.11, M111-03: las listas por etapa sin operaciones reciben la de la estación de su etapa al importar, y la obra tiene «Completar operaciones» para las ya importadas; las operaciones puestas a mano se conservan."
+  - "M111-04: la lista suma las cantidades por módulo ya redondeadas como el plan, así que la orden no sale «excede» por céntimos."
 - version: '7.20261019'
   fecha: 19/10/2026
   cambios:

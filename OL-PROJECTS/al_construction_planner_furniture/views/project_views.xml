@@ -11,6 +11,11 @@
                         context="{'default_project_id': id}"
                         invisible="not is_construction_site"
                         groups="al_construction_planner.group_planner_planner"/>
+                <!-- Listas importadas sin operación de su estación (M111-03). -->
+                <button name="action_construction_complete_operations" type="object"
+                        string="Completar operaciones"
+                        invisible="not is_construction_site"
+                        groups="al_construction_planner.group_planner_planner"/>
             </xpath>
         </field>
     </record>

@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals` y `al_construction_planner_mrp`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "Paquete 1.11, M111-05: la solicitud de exceso lleva el % de la orden, el mismo que ve la planta."
 - version: '2.20261019'
   fecha: 19/10/2026
   cambios:

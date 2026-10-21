@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "Paquete 1.11, M111-06: líneas del plan del material bajo el nivel y la etapa del pedido, con o sin asignaciones, para las cifras de la solicitud de aprobación."
 - version: '5.20261016'
   fecha: 16/10/2026
   cambios:

@@ -18,6 +18,9 @@
                             confirm="Se reservará lo disponible en el almacén central y el faltante pasará a compras. ¿Continuar?"/>
                     <button name="%(al_construction_material_request.action_report_construction_request)d"
                             type="action" string="Imprimir vale" data-hotkey="k"/>
+                    <button name="%(al_construction_material_request.action_report_construction_request_dispatch_slip)d"
+                            type="action" string="Imprimir vale de despacho"
+                            invisible="state not in ('in_progress', 'done')"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state not in ('to_approve', 'rejected', 'cancel')" data-hotkey="o"/>
                     <button name="action_cancel" type="object" string="Cancelar"

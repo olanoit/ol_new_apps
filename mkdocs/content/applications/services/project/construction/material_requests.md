@@ -201,6 +201,23 @@ material queda en `OBRAS/<obra>` y la guía de remisión sale con el motivo 04.
 Cada línea del requerimiento tiene su propio movimiento, aunque el mismo
 producto se pida para dos niveles: lo validado llega a cada línea. Hasta que
 el almacén valida, la línea dice **Por despachar**.
+
+Para pegar en el bulto, imprima en la transferencia **Imprimir ‣ Vale de
+despacho** (la opción solo sale en transferencias con requerimiento). El vale
+lista todo el requerimiento, sin precios ni stock del almacén:
+
+| Columna | Qué dice |
+|---|---|
+| Pedido | Lo pedido en la línea |
+| Despachado antes | Lo despachado a la obra en otras transferencias |
+| En este bulto | Lo preparado en esta transferencia o, ya validada, lo hecho |
+| Pendiente | Pedido menos despachado antes menos este bulto |
+| Situación | **Completo**, **Va completo en este bulto**, **Por despachar** con la transferencia, **En compra** con el requerimiento de compra (y la OC con su fecha de llegada) o **Cancelado** |
+
+Las filas que no van en el bulto salen en gris. Bajo la tabla, un resumen
+(«En este bulto: 1 de 2 materiales. Pendientes: 1 (en compra).») y las firmas
+de quien despacha y de quien recibe en obra. Marcando varias transferencias
+sale un vale por cada una.
 Un traslado interno entre el central y la obra no genera asiento contable: la
 analítica viaja en el movimiento solo como trazabilidad.
 
@@ -296,6 +313,9 @@ bolsas (S/ 11 800,00) pasaría además por gerencia.
 
 - **Vale de requerimiento** (PDF A4): materiales, división, aprobaciones,
   documentos relacionados y firmas.
+- **Vale de despacho** (PDF A4): desde la transferencia, para el bulto; desde
+  el requerimiento (**Imprimir vale de despacho**, en proceso o hecho), la
+  situación de cada material sin la columna **En este bulto**.
 - **Materiales pedidos** (Logística): todas las líneas con su situación.
 - Lista, tablero, calendario por fecha requerida y actividades.
 - Stock por obra: **Inventario ‣ Informes ‣ Existencias**, filtrando la

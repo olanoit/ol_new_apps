@@ -104,7 +104,10 @@ class ProjectProject(models.Model):
     _inherit = 'project.project'
 
     construction_hr_site_ids = fields.One2many(
-        'l10n_pe.hr.construction.site', 'project_id', string='Sedes de la obra')
+        'l10n_pe.hr.construction.site', 'project_id', string='Sedes de la obra',
+        # M111-01: sin Nómina el campo se omite (exportar, duplicar) en vez de
+        # dar error de acceso; los cálculos del planificador lo leen con sudo.
+        groups='hr_payroll.group_hr_payroll_user')
 
     def _construction_site(self):
         self.ensure_one()

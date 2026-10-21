@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261021 — 21/10/2026
+
+- Paquete 1.11, M111-03: «Estación de la etapa» y «Minutos por unidad» por compañía en el catálogo de etapas, para la operación de las listas por etapa.
+
 ## 4.20261019 — 19/10/2026
 
 - Paquete 1.10, M110-01: cada etapa de fabricación del catálogo puede tener su planta (operación de fabricación) y la categoría del producto intermedio que entrega, por compañía, y la marca «Accesorios a pedido desde la orden».

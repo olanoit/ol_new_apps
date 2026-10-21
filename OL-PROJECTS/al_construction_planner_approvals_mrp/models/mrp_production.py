@@ -278,7 +278,10 @@ class MrpProduction(models.Model):
             'construction_diff_pct': row.diff_pct,
             'construction_amount_diff': row.amount_diff,
         } for row in rows]
+        # M111-05: la solicitud muestra el % de la orden (según la base del
+        # margen), no el mayor de sus materiales.
         return {'values': values, 'lines': lines, 'amount': self.construction_excess_amount,
+                'percent': self.construction_excess_pct,
                 'reason': self.construction_exceed_reason or ''}
 
     def _construction_project(self):

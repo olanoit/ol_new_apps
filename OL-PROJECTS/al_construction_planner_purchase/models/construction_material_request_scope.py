@@ -398,13 +398,11 @@ class ConstructionMaterialRequestLine(models.Model):
             else:
                 line.construction_level_label = task.name or False
 
-    def _construction_candidate_plan_lines(self, plan):
+    def _construction_scope_plan_lines(self, plan):
         """Una línea con etapa solo se compara con las líneas del plan de esa
-        etapa (las ya enlazadas mandan)."""
-        lines = super()._construction_candidate_plan_lines(plan)
-        assigned = self.construction_allocation_ids.plan_line_id.filtered(
-            lambda l: l.plan_id == plan)
-        if self.construction_stage and not assigned:
+        etapa (las ya enlazadas mandan, en ``_construction_candidate_plan_lines``)."""
+        lines = super()._construction_scope_plan_lines(plan)
+        if self.construction_stage:
             lines = lines.filtered(lambda l: l.stage == self.construction_stage)
         return lines
 

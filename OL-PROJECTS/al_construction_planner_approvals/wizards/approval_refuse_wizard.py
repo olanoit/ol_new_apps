@@ -11,7 +11,14 @@ class ConstructionApprovalRefuseWizard(models.TransientModel):
 
     # Varias solicitudes con un solo motivo (paquete 1.10, M110-07).
     approval_ids = fields.Many2many('approval.request', string='Solicitudes', required=True)
+    # El evaluador de la vista en el navegador no tiene len() (M111-02).
+    approval_count = fields.Integer(compute='_compute_approval_count')
     reason = fields.Text(string='Motivo', required=True)
+
+    @api.depends('approval_ids')
+    def _compute_approval_count(self):
+        for wizard in self:
+            wizard.approval_count = len(wizard.approval_ids)
 
     @api.model
     def default_get(self, fields_list):

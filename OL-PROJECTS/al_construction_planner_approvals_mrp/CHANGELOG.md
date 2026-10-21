@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261021 — 21/10/2026
+
+- Paquete 1.11, M111-05: la solicitud de exceso lleva el % de la orden, el mismo que ve la planta.
+
 ## 2.20261019 — 19/10/2026
 
 - Paquete 1.10, M110-04 y M110-08: la comparación de la orden usa solo las etapas de su lista de materiales y la solicitud lleva lo presupuestado de la orden.

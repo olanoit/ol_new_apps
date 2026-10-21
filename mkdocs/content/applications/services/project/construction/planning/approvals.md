@@ -94,6 +94,10 @@ orden de fabricación**:
 | Base del margen | **Costo total de la orden**: el exceso neto en soles sobre lo presupuestado de la orden. **Por material**: el material con más exceso |
 | El margen cubre cambios de material | Sin la marca, un material que no está en el plan va siempre a Aprobaciones |
 
+En la lista de Aprobaciones, el **Exceso %** de la solicitud es el de la orden,
+con la base del margen de la compañía: el mismo número que ve la planta. El %
+de cada material sigue en las líneas de la solicitud.
+
 Asigne el grupo **Planificación de obra: jefe de producción** y agregue en la
 tabla de rutas los tramos del documento **Orden de fabricación** (por ejemplo,
 jefatura de proyectos desde 0 y Gerencia desde 15 %).
@@ -116,6 +120,14 @@ detiene la confirmación de la orden.
 Desde el documento: quien tiene la aprobación pendiente del tramo actual ve
 **Aprobar** y **Rechazar** en el requerimiento o el plan. **Rechazar** pide el
 motivo; el documento vuelve a **Borrador** y el motivo queda en su historial.
+
+Desde la lista de **Aprobaciones**, marque varias solicitudes y use
+**Acciones ‣ Rechazar**: el asistente muestra las solicitudes, pide un solo
+motivo y rechaza solo aquellas en las que le toca aprobar.
+
+En el requerimiento, **Presupuestado**, **Ya pedido**, **Saldo** y el % de cada
+línea de la solicitud cuentan todo el material del plan bajo el nivel y la
+etapa del pedido, aunque el pedido ya tenga asignada solo una parte del plan.
 
 Desde **Aprobaciones**: la solicitud tiene el botón **Documento** para abrir el
 plan o el requerimiento; la actividad de aprobación llega a cada aprobador del

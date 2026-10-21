@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261021 — 21/10/2026
+
+- Pruebas del paquete 1.11 (M111-02 a M111-06), con una que revisa que ninguna vista del planificador use funciones que el navegador no evalúa.
+
 ## 9.20261019 — 19/10/2026
 
 - Pruebas del paquete 1.10 (fabricación por etapas, despacho por departamento, lote, motivo de posventa y aprobaciones en bloque).

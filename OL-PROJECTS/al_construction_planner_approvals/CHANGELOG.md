@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261021 — 21/10/2026
+
+- Paquete 1.11, M111-02: el asistente «Rechazar» vuelve a abrir desde la solicitud y desde la lista (la vista usaba len(), que el navegador no evalúa).
+- M111-05: el «Exceso %» de la solicitud es el del documento de origen con su regla (la orden de fabricación según la base del margen de la compañía); el mayor % por material sigue en cada línea.
+- M111-06: presupuestado, ya pedido, saldo y % del requerimiento salen de todas las líneas del plan del material bajo el nivel y la etapa, aunque el pedido ya tenga asignada solo una parte.
+
 ## 3.20261019 — 19/10/2026
 
 - Paquete 1.10, M110-07: la lista de Aprobaciones muestra documento, obra, «En el plan», exceso % y cantidad, con filtros «Me toca aprobar» y «Fuera del plan», y aprueba o rechaza en bloque solo las que le tocan al usuario.

@@ -23,6 +23,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise y los módulos OCA de requerimientos de compra y de aprobación
   por niveles. Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '10.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "Pruebas del paquete 1.11 (M111-02 a M111-06), con una que revisa que ninguna vista del planificador use funciones que el navegador no evalúa."
 - version: '9.20261019'
   fecha: 19/10/2026
   cambios:

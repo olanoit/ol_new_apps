@@ -78,7 +78,12 @@ class ApprovalRequest(models.Model):
     # Datos para decidir desde la lista (paquete 1.10, M110-07).
     construction_excess_pct = fields.Float(
         string='Exceso %', digits=(16, 2), compute='_compute_construction_summary', store=True,
-        help='El mayor exceso porcentual de sus materiales.')
+        help='El del documento de origen, con su regla (la orden de fabricación según la base '
+             'del margen de la compañía); en solicitudes anteriores, el mayor de sus '
+             'materiales.')
+    # Paquete 1.11, M111-05: el % lo da el documento al crear la solicitud.
+    construction_origin_pct = fields.Float(digits=(16, 2), readonly=True, copy=False)
+    construction_origin_pct_set = fields.Boolean(readonly=True, copy=False)
     construction_change_summary = fields.Selection(
         CHANGE_SUMMARY, string='En el plan', compute='_compute_construction_summary', store=True,
         help='Cantidad: todos los materiales están en el plan y piden más. Fuera del plan: '
@@ -91,13 +96,15 @@ class ApprovalRequest(models.Model):
              'unidades distintas).')
 
     @api.depends('product_line_ids.construction_change_type',
-                 'product_line_ids.construction_diff_pct', 'product_line_ids.construction_qty_diff')
+                 'product_line_ids.construction_diff_pct', 'product_line_ids.construction_qty_diff',
+                 'construction_origin_pct', 'construction_origin_pct_set')
     def _compute_construction_summary(self):
         for request in self:
             lines = request.product_line_ids.filtered('construction_change_type')
             changes = set(lines.mapped('construction_change_type'))
-            request.construction_excess_pct = max(lines.mapped('construction_diff_pct'),
-                                                  default=0.0)
+            request.construction_excess_pct = request.construction_origin_pct \
+                if request.construction_origin_pct_set \
+                else max(lines.mapped('construction_diff_pct'), default=0.0)
             request.construction_change_summary = 'both' if len(changes) > 1 else (
                 changes.pop() if changes else False)
             request.construction_excess_lines = len(lines)

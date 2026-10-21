@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261021 — 21/10/2026
+
+- Paquete 1.11, M111-06: líneas del plan del material bajo el nivel y la etapa del pedido, con o sin asignaciones, para las cifras de la solicitud de aprobación.
+
 ## 5.20261016 — 16/10/2026
 
 - La línea agregada a mano toma el nivel y la etapa del recuadro cuando hay uno solo elegido.

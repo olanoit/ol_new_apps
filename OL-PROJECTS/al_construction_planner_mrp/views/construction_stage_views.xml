@@ -13,6 +13,10 @@
                        options="{'no_create': True}" invisible="not production_chain_ok"/>
                 <field name="intermediate_categ_id" optional="hide"
                        options="{'no_create': True}" invisible="not production_chain_ok"/>
+                <field name="production_workcenter_id" optional="show"
+                       options="{'no_create': True}" invisible="not production_chain_ok"/>
+                <field name="production_time_cycle" optional="hide" widget="float_time"
+                       invisible="not production_chain_ok"/>
                 <field name="accessory_request" optional="show"
                        invisible="not production_chain_ok"/>
             </xpath>

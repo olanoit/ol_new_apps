@@ -8,6 +8,9 @@ class ConstructionTaskProgress(models.Model):
 
     attendance_ok = fields.Boolean(
         string='Con asistencia', compute='_compute_attendance_ok', search='_search_attendance_ok',
+        # M111-01: la sede es de Nómina; el valor solo dice si la contrata
+        # marcó ese día, así que se calcula sin los permisos del usuario.
+        compute_sudo=True,
         help='La contrata tuvo personal marcado en la sede de la obra ese día; si no, el avance '
              'queda marcado para revisión.')
 

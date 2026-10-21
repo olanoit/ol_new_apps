@@ -74,12 +74,16 @@ class ConstructionMaterialRequest(models.Model):
                 else:
                     continue
                 change = 'quantity'
-                planned = sum(pl._qty_to_product_uom(pl.qty_planned) for pl in plan_lines)
-                budget = sum(plan_lines._supply_balance(
+                # Paquete 1.11, M111-06: las cifras son las de todo el material
+                # bajo el nivel y la etapa del pedido, aunque el pedido ya
+                # tenga asignada solo una parte del plan.
+                scope = line_sudo._construction_scope_plan_lines(plan_sudo) or plan_lines
+                planned = sum(pl._qty_to_product_uom(pl.qty_planned) for pl in scope)
+                budget = sum(scope._supply_balance(
                     line_sudo.construction_allocation_ids).values())
                 requested_before = planned - budget
                 percent = diff / planned * 100 if planned else 100.0
-                price = sum(plan_lines.mapped('amount_planned')) / planned if planned else 0.0
+                price = sum(scope.mapped('amount_planned')) / planned if planned else 0.0
             amount = diff * price
             total += amount
             bucket = values.setdefault(change, {'percent': 0.0, 'amount': 0.0})

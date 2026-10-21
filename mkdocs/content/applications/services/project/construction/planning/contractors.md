@@ -128,6 +128,12 @@ En **Proyecto ‣ Configuración ‣ Etapas de tareas**, una etapa con **Exige f
 de evidencia** (por ejemplo **Hecha**) no acepta tareas sin adjuntos: antes de
 moverla, adjunte la foto del mueble con su etiqueta.
 
+!!! note "Nota"
+    La columna **Con asistencia** del avance, la pestaña **Avances liquidados**
+    de la liquidación y el menú **Avances sin asistencia** no piden permisos de
+    Nómina: el supervisor y el jefe de producción los ven sin acceder a las
+    sedes de obra, que siguen siendo de Nómina.
+
 ## Liquidar la semana
 
 1. Cada día de liquidación (jueves), una acción programada prepara en borrador

@@ -92,7 +92,8 @@ class ConstructionApprovalMixin(models.AbstractModel):
         """Hook del documento: {'values': {tipo de cambio: {'percent': %,
         'amount': monto}}, 'lines': [valores de approval.product.line],
         'amount': exceso total, 'reason': texto}. Sin ``values``, no hay nada
-        que aprobar."""
+        que aprobar. Opcional ``percent``: el «Exceso %» del documento con su
+        regla (M111-05); si falta, el de ``values['all']``."""
         self.ensure_one()
         return {'values': {}, 'lines': [], 'amount': 0.0, 'reason': ''}
 
@@ -176,6 +177,9 @@ class ConstructionApprovalMixin(models.AbstractModel):
             'construction_origin_name': self.display_name,
             'construction_project_id': project.id,
             'construction_amount': info.get('amount', 0.0),
+            'construction_origin_pct': info.get(
+                'percent', info['values'].get('all', {}).get('percent', 0.0)),
+            'construction_origin_pct_set': True,
             'product_line_ids': [fields.Command.create(vals) for vals in info['lines']],
         })
         request_sudo.write({'approver_ids': [fields.Command.clear()] + [

@@ -6,3 +6,4 @@ from . import test_report
 from . import test_ui_forms
 from . import test_site_code
 from . import test_mass_purchase
+from . import test_dispatch_slip

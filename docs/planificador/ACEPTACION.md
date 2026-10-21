@@ -114,6 +114,39 @@ planta).
 | M110-09 | Sin ajuste, el lote de hoy; con el formato de Allcenter, OBRA-0301-C07-MB1; módulos distintos, lotes distintos; clave desconocida da error | `test_stage_chain_v110.test_module_lot_pattern` | **Verde** |
 | M110-07 | El jefe de producción no ve la columna de soles | — | **Por revisar en dev1**: la columna lleva el grupo «ve montos» como el resto del planificador |
 
+## Paquete 1.11 (correcciones de la prueba Montecarmelo)
+
+Criterios del requerimiento «Planificación de obra — correcciones de la prueba Montecarmelo
+(paquete 1.11)» (`docs/md/Allcenter_Planificacion_Paquete_1.11_Correcciones_Prueba_Montecarmelo.md`),
+21/10/2026. Corren en `ol_pe_v19` con las pruebas de todos los módulos del planificador, la
+asistencia y el requerimiento de obra. Resultado del 21/10/2026: 415 pruebas en verde (las del planificador, sus puentes, la asistencia, la hoja y el requerimiento de obra); la de M111-01 falla, como debe, sin `compute_sudo`.
+
+| Req. | Criterio (resumen) | Test que lo cubre | Resultado |
+|---|---|---|---|
+| M111-01 | Un supervisor sin Nómina lee «Con asistencia», valida el avance y abre la liquidación con «Avances liquidados» | `al_construction_attendance` `test_permissions_v111.test_progress_and_settlement_without_payroll` | **Verde** |
+| M111-01 | «Avances sin asistencia» da lo mismo para el supervisor que para el administrador | `test_menu_without_attendance_matches_admin` | **Verde** |
+| M111-01 | Las sedes de Nómina siguen privadas; la obra se lee sin el campo; marcar una obra sin Nómina crea su sede | `test_sites_stay_private` | **Verde** |
+| M111-02 | Ninguna vista del planificador usa en `invisible`/`readonly`/`required` una función que el navegador no evalúa | `test_v111.TestViewExpressionsV111` | **Verde** |
+| M111-02 | El asistente abre con una solicitud (formulario) y con dos (lista) y rechaza | `TestApprovalsV111.test_refuse_wizard_opens_with_one_and_two` | **Verde** |
+| M111-03 | Al importar, las listas de corte y de armado reciben la operación de su estación; volver a importar conserva la puesta a mano; las órdenes tienen órdenes de trabajo en su estación | `TestStageChainV111.test_import_adds_stage_operation` | **Verde** |
+| M111-03 | Etapa sin estación: lista sin operaciones | `test_stage_without_workcenter_keeps_bom_without_operations` | **Verde** |
+| M111-03 | «Completar operaciones» en una obra ya importada, sin duplicar | `test_complete_operations_on_imported_site` | **Verde** |
+| M111-04 | 0.024 por módulo en dos módulos: lista 0.04 como el plan; la orden de corte no excede; una unidad de más sí | `test_rounding_matches_plan` | **Verde** |
+| M111-05 | Base «por orden»: la solicitud lleva el % de la orden (no el 50 % del material); base «por material»: el mayor | `TestProductionPctV111` | **Verde** |
+| M111-06 | Segundo pedido con una parte del plan asignada: presupuestado del nivel, ya pedido, saldo −24, exceso 20 y % sobre el presupuestado | `TestApprovalsV111.test_figures_with_assigned_plan_lines` | **Verde** |
+| M111-06 | Pedido sin asignaciones: lo mismo que antes | `test_approvals_v110.test_negative_balance_figures` | **Verde** |
+| M111-07 | Vale desde el primer bulto: cemento «Va completo en este bulto», fierro «En compra · PR…», resumen, sin montos ni disponible | `al_construction_material_request` `test_dispatch_slip.test_slip_from_first_bundle` | **Verde** |
+| M111-07 | Con la compra: «OC … · llega dd/mm»; el segundo bulto muestra despachado antes 100 y «Completo», y 50 en este bulto | `test_slip_after_purchase` | **Verde** |
+| M111-07 | Desde el requerimiento, sin «En este bulto»; la opción solo en transferencias con requerimiento; el vale actual no cambia | `test_slip_from_request_and_binding` | **Verde** |
+
+Configuración de Allcenter después de publicar (no la hace el código):
+
+- quitar a Annabelees el grupo «Nómina: Encargado: gestionar todos los contratos» (M111-01);
+- estación y minutos de las etapas 1.1 (corte de Puente Piedra) y 1.2 (armado de Breña) y
+  «Completar operaciones» en las obras de prueba (M111-03); las órdenes de trabajo se ven con
+  «Órdenes de trabajo» activado en Ajustes de Fabricación;
+- volver a importar las obras de prueba para rehacer las listas con el redondeo del plan (M111-04).
+
 ## Qué falta para validarlos con MOMEN
 
 1. **Maestro de MOMEN** (`Maestro_Planificacion_MOMEN_v03.xlsx`): el

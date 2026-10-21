@@ -256,7 +256,9 @@ class ProjectProject(models.Model):
         values = []
         for project in self.filtered(lambda p: p.is_construction_site and not p.is_template):
             company = project.company_id or self.env.company
-            if not company.construction_site_auto_create or project.construction_hr_site_ids:
+            # sudo: quien marca la obra puede no tener Nómina; solo se
+            # comprueba si ya tiene sede (M111-01).
+            if not company.construction_site_auto_create or project.sudo().construction_hr_site_ids:
                 continue
             values.append({
                 'name': project.name, 'company_id': company.id, 'project_id': project.id,

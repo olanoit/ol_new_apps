@@ -15,7 +15,11 @@ además una lista por cada etapa de la cadena:
 
 Las listas de fabricación van con secuencia 1 y la receta con 1000: Odoo
 elige por secuencia. Volver a importar no duplica nada y conserva las
-operaciones puestas a mano."""
+operaciones puestas a mano.
+
+Paquete 1.11: una lista sin operaciones recibe la de la estación de su etapa
+(M111-03) y sus cantidades suman las de los módulos ya redondeadas como el
+plan, para que plan y lista coincidan (M111-04)."""
 from collections import defaultdict
 
 from odoo import Command, fields, models
@@ -24,6 +28,24 @@ from odoo.tools import float_round
 # La receta queda detrás de las listas de fabricación.
 RECIPE_SEQUENCE = 1000
 PRODUCTION_SEQUENCE = 1
+
+
+class MrpBom(models.Model):
+    _inherit = 'mrp.bom'
+
+    def _construction_add_stage_operation(self, stage, company):
+        """Operación de la estación de ``stage`` en las listas sin ninguna
+        (también archivada). Devuelve las listas que la recibieron."""
+        vals = stage._production_operation_vals(company)
+        done = self.browse()
+        if not vals:
+            return done
+        for bom in self:
+            if bom.with_context(active_test=False).operation_ids:
+                continue
+            bom.write({'operation_ids': [Command.create(vals)]})
+            done |= bom
+        return done
 
 
 class ConstructionTypology(models.Model):
@@ -49,10 +71,14 @@ class ConstructionTypology(models.Model):
         result = defaultdict(float)
         materials = self.module_line_ids.material_ids
         if materials:
+            # El plan guarda una línea por módulo con la precisión de la
+            # cantidad: se suma lo mismo para no dar excesos de céntimos.
+            digits = self.env['decimal.precision'].precision_get('Product Unit')
             for material in materials:
                 if material.stage in codes:
                     uom = material.uom_id or material.product_id.uom_id
-                    result[(material.product_id, uom, material.stage)] += material.qty
+                    result[(material.product_id, uom, material.stage)] += float_round(
+                        material.qty, precision_digits=digits)
             return result
         # La receta la lee quien importa, aunque no administre las listas.
         bom_sudo = self.sudo().bom_id
@@ -92,7 +118,8 @@ class ConstructionTypology(models.Model):
 
     def _construction_write_bom(self, bom_sudo, template, stage, company, components,
                                 intermediate):
-        """Crea o actualiza la lista de una etapa: solo sus componentes. Las
+        """Crea o actualiza la lista de una etapa: sus componentes y, si no
+        tiene operaciones, la de la estación de la etapa (M111-03). Las
         operaciones y lo demás puesto a mano se conservan."""
         picking_type = stage.with_company(company).production_picking_type_id
         values = {'sequence': PRODUCTION_SEQUENCE, 'picking_type_id': picking_type.id,
@@ -125,6 +152,7 @@ class ConstructionTypology(models.Model):
                 commands.append(Command.create(dict(vals, product_id=key[0].id)))
         commands += [Command.delete(line.id) for line in current.values()]
         bom_sudo.write({'bom_line_ids': commands})
+        bom_sudo._construction_add_stage_operation(stage, company)
         return bom_sudo
 
     def _construction_sync_stage_boms(self, company=None):
@@ -237,3 +265,35 @@ class ConstructionTypology(models.Model):
                     commands.append(Command.create(dict(vals, product_id=product.id)))
             commands += [Command.delete(byproduct.id) for byproduct in current.values()]
             bom_sudo.write({'byproduct_ids': commands})
+
+
+class ProjectProject(models.Model):
+    _inherit = 'project.project'
+
+    def action_construction_complete_operations(self):
+        """Pone la operación de su etapa en las listas por etapa de la obra que
+        no tienen operaciones (M111-03), para obras importadas antes."""
+        self.ensure_one()
+        company = self.company_id or self.env.company
+        chain = self.env['construction.stage']._production_chain(company)
+        by_type = {stage.with_company(company).production_picking_type_id: stage
+                   for stage in chain}
+        # Las listas de la obra las arma el sistema (como el importador).
+        boms_sudo = self.env['mrp.bom'].sudo().search([
+            ('project_id', '=', self.id), ('sequence', '=', PRODUCTION_SEQUENCE),
+            ('picking_type_id', 'in', [t.id for t in by_type])])
+        done = self.env['mrp.bom'].sudo()
+        for bom_sudo in boms_sudo:
+            done |= bom_sudo._construction_add_stage_operation(
+                by_type[bom_sudo.picking_type_id], company)
+        if done:
+            message = self.env._('Operaciones agregadas en %s listas.', len(done))
+            kind = 'success'
+        else:
+            message = self.env._(
+                'Ninguna lista sin operaciones con estación en su etapa (Configuración › '
+                'Etapas).')
+            kind = 'warning'
+        return {'type': 'ir.actions.client', 'tag': 'display_notification',
+                'params': {'title': self.env._('Completar operaciones'), 'message': message,
+                           'type': kind, 'sticky': False}}

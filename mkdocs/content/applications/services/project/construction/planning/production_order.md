@@ -20,6 +20,24 @@ comparación de módulo a obra y por etapa.
 3. En **Rutas de aprobación** queda la fila **Accesorios de armado: oficina
    técnica**, con el jefe de proyectos como seguidor.
 
+## Estación de cada etapa
+
+Con la cadena de plantas en **Configuración ‣ Etapas** (columna **Planta**),
+el importador arma una lista de fabricación por etapa. Para que sus órdenes
+pasen por una estación y generen órdenes de trabajo:
+
+1. En **Configuración ‣ Etapas**, elija en la etapa su **Estación de la
+   etapa** y, si quiere medir la carga, sus **Minutos por unidad** (puede ser
+   0). Las dos son de la compañía activa.
+2. Al importar el maestro, cada lista por etapa que no tiene operaciones
+   recibe una con el nombre de la etapa, esa estación y ese tiempo. Una lista
+   con operaciones puestas a mano conserva las suyas; una etapa sin estación
+   deja la lista sin operaciones.
+3. Para obras importadas antes, use **Completar operaciones** en la obra.
+
+Las cantidades de cada lista suman las de los módulos ya redondeadas como el
+plan, así que la orden no sale **Excede lo presupuestado** por céntimos.
+
 ## Pedir accesorios de armado
 
 1. En la orden de fabricación, haga clic en **Pedir accesorios**. Se abre un

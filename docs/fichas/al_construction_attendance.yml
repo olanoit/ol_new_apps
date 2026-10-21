@@ -65,6 +65,10 @@ pasos:
       personal propio; al publicarlo crea los apuntes analíticos.
 
 novedades:
+  - version: '4.20261021'
+    fecha: 21/10/2026
+    cambios:
+      - "Paquete 1.11, M111-01: «Con asistencia» del avance se calcula sin los permisos del usuario, así que la liquidación, la lista de avances y «Avances sin asistencia» abren sin grupos de Nómina; las sedes de obra siguen privadas de Nómina y la obra se lee o exporta sin ese campo."
   - version: 3.20261016
     fecha: 16/10/2026
     cambios:

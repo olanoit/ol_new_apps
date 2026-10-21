@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261021 — 21/10/2026
+
+- Paquete 1.11, M111-03: las listas por etapa sin operaciones reciben la de la estación de su etapa al importar, y la obra tiene «Completar operaciones» para las ya importadas; las operaciones puestas a mano se conservan.
+- M111-04: la lista suma las cantidades por módulo ya redondeadas como el plan, así que la orden no sale «excede» por céntimos.
+
 ## 7.20261019 — 19/10/2026
 
 - Paquete 1.10, M110-02: el importador separa en dos líneas un producto que está en dos etapas y, con cadena de plantas, arma una lista de fabricación por etapa (producto intermedio y lista final con los módulos como subproductos); la receta de la tipología queda detrás con secuencia 1000.

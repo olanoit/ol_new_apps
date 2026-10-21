@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '22.20261021'
+    fecha: 21/10/2026
+    cambios:
+      - "Paquete 1.11, M111-07: «Vale de despacho» para pegar en el bulto, desde la transferencia con requerimiento (Imprimir) o desde el requerimiento: todo el requerimiento con pedido, despachado antes, en este bulto, pendiente y situación (en compra, OC y fecha de llegada), sin precios ni stock interno."
   - version: '21.20261018'
     fecha: 18/10/2026
     cambios:

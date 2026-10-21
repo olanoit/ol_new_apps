@@ -238,6 +238,16 @@ class ConstructionMaterialRequestLine(models.Model):
             lambda l: l.plan_id == plan)
         if assigned:
             return assigned
+        return self._construction_scope_plan_lines(plan)
+
+    def _construction_scope_plan_lines(self, plan):
+        """Todas las líneas del plan del mismo material bajo el nivel de esta
+        línea, tengan o no asignaciones (paquete 1.11, M111-06: las cifras
+        de la solicitud de aprobación salen de aquí)."""
+        self.ensure_one()
+        PlanLine = self.env['construction.resource.plan.line']
+        if not plan or not self.product_id:
+            return PlanLine
         domain = [('plan_id', '=', plan.id), ('product_id', '=', self.product_id.id),
                   ('resource_type', 'in', SUPPLY_TYPES)]
         task = self.task_id or self.request_id.task_id

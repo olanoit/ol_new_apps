@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261021 — 21/10/2026
+
+- Paquete 1.11, M111-07: «Vale de despacho» para pegar en el bulto, desde la transferencia con requerimiento (Imprimir) o desde el requerimiento: todo el requerimiento con pedido, despachado antes, en este bulto, pendiente y situación (en compra, OC y fecha de llegada), sin precios ni stock interno.
+
 ## 21.20261018 — 18/10/2026
 
 - Los datos de demostración usan nombres sin el prefijo «[DEMO]»; en las bases que ya los tienen se renombran al actualizar.

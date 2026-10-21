@@ -24,6 +24,15 @@ class ConstructionStage(models.Model):
         'product.category', string='Categoría de lo que entrega', company_dependent=True,
         help='Categoría del producto intermedio que sale de esta etapa hacia la siguiente. '
              'Sus rutas llevan el material entre plantas.')
+    # Operación de las listas por etapa (paquete 1.11, M111-03): sin ella las
+    # órdenes no generan órdenes de trabajo ni pasan por la estación.
+    production_workcenter_id = fields.Many2one(
+        'mrp.workcenter', string='Estación de la etapa', company_dependent=True,
+        help='Estación de la operación que el importador pone en las listas de esta etapa '
+             'cuando no tienen operaciones. Vacía: la lista queda sin operaciones.')
+    production_time_cycle = fields.Float(
+        string='Minutos por unidad', company_dependent=True,
+        help='Tiempo estándar de la operación por unidad fabricada (puede ser 0).')
     accessory_request = fields.Boolean(
         string='Accesorios a pedido desde la orden',
         help='Los materiales de esta etapa se proponen con «Pedir accesorios» en la orden de '
@@ -47,6 +56,17 @@ class ConstructionStage(models.Model):
             '|', ('kind', '=', 'production'), ('production_consumption', '=', True)])
         stages = stages.with_company(company).filtered('production_picking_type_id')
         return self._tree_sorted(stages)
+
+    def _production_operation_vals(self, company):
+        """Valores de la operación de la etapa en ``company`` (M111-03), o
+        None si la etapa no tiene estación."""
+        self.ensure_one()
+        stage = self.with_company(company)
+        workcenter = stage.production_workcenter_id
+        if not workcenter:
+            return None
+        return {'name': stage.name, 'workcenter_id': workcenter.id, 'time_mode': 'manual',
+                'time_cycle_manual': stage.production_time_cycle}
 
     @api.model
     def _accessory_codes(self):
