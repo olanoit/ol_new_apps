@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '7.20261021'
+  fecha: 21/10/2026
+  cambios:
+  - "Resumen de inventario compacto: sin gráficos en las tarjetas de los tipos de operación, tarjetas más angostas y etiquetas en español (Con demora, En espera, Órdenes parciales, Movimientos)."
 - version: '6.20261021'
   fecha: 21/10/2026
   cambios:

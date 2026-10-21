@@ -1,0 +1,42 @@
+// Resumen de inventario compacto: sin gráficos (se quitan en
+// stock.picking.type._get_view), tarjetas angostas y enlaces sin hueco.
+.o_stock_kanban .o_kanban_renderer {
+    --KanbanRecord-width: 340px;
+
+    .o_kanban_record {
+        min-height: 0;
+        padding-top: .5rem;
+        padding-bottom: .5rem;
+
+        .fs-4 {
+            font-size: 1.05rem !important;
+        }
+        .row.mt-3 {
+            margin-top: .5rem !important;
+        }
+    }
+    .stock-overview-links {
+        height: auto;
+        padding-right: .75rem;
+
+        > .row > a {
+            margin-left: 0;
+            width: 100%;
+            padding-right: 0;
+        }
+        .row .row {
+            flex-wrap: nowrap;
+            margin-left: 0;
+            margin-right: 0;
+
+            > span {
+                flex: 1 1 auto;
+                width: auto;
+            }
+            > .o_field_widget {
+                flex: 0 0 auto;
+                width: auto;
+            }
+        }
+    }
+}

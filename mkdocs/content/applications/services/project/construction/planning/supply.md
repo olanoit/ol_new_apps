@@ -174,6 +174,11 @@ estado, también en pivote. Las líneas del plan muestran pedido, comprado,
 despachado, consumido, saldo por pedir y su estado. Lo consumido cuenta lo que
 sale de la ubicación de la obra a una ubicación de consumo.
 
+En **Inventario ‣ Información general**, el resumen de los tipos de operación
+(recepciones, despachos a obra, traslados) se muestra compacto: tarjetas más
+angostas, sin gráficos y con los indicadores en español (*Con demora*, *En
+espera*, *Órdenes parciales*, *Movimientos*).
+
 ## Casos especiales
 
 | Situación | Qué pasa | Qué hacer |
