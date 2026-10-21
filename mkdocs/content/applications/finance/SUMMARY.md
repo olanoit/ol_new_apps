@@ -32,6 +32,8 @@
     * [Factoring](accounting/factoring.md)
     * [Depósitos a plazo y garantías](accounting/term_deposits.md)
     * [Entregas a rendir y caja chica](accounting/cash_fund.md)
+    * [Comprobante de pago](accounting/payment_receipts.md)
+    * [Anticipos y aplicación de documentos](accounting/advances.md)
     * [Arrendamientos (NIIF 16)](accounting/leases.md)
     * [DUA de importación](accounting/import_dua.md)
 * Proveedores de pago

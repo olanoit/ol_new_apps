@@ -1,0 +1,80 @@
+titulo: Anticipos y aplicación de documentos
+subtitulo: >-
+  Anticipos a proveedores (422) y de clientes (122) como pagos normales, su
+  aplicación a la factura y la compensación de cuentas por cobrar y por pagar,
+  con control de saldos pendientes.
+categoria: Localización Perú · Tesorería
+etiquetas: [Anticipos, 422, 122, Compensación, Cruce de documentos, Notas de crédito]
+
+destacados_intro: >-
+  Sobre el pago estándar de Odoo 19: nada de asientos armados a mano.
+destacados:
+  - icono: "→"
+    titulo: Anticipo como pago
+    texto: >-
+      Un pago marcado «Anticipo» va a la 422 o la 122 (y a su cuenta en moneda
+      extranjera si la configura).
+  - icono: "⇄"
+    titulo: Aplicar a la factura
+    texto: >-
+      Botón «Anticipos» en la factura: aplica total o parcial con un asiento en
+      el diario de aplicaciones y conciliación estándar.
+  - icono: "="
+    titulo: Compensar
+    texto: >-
+      Cruce de lo que el socio debe con lo que se le debe, y notas de crédito
+      contra otras facturas.
+  - icono: "$"
+    titulo: Diferencia de cambio
+    texto: >-
+      Cada documento al cambio del día de la aplicación; la diferencia la
+      registra Odoo al conciliar.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo deja un pago sin factura como saldo a favor en la cuenta por pagar o por
+    cobrar. El PCGE pide llevar los anticipos en la 422 y la 122 y trasladarlos al
+    recibir el comprobante, con control de lo pendiente por socio.
+  nota: >-
+    **Ventas.** El anticipo de una venta lleva factura (IGV): para ese caso use el
+    anticipo del pedido; la 122 sin comprobante es para arras, garantías y cobros
+    a cuenta.
+
+pasos_intro: >-
+  Un anticipo de S/ 3 000 a un proveedor y su factura de S/ 5 000.
+pasos:
+  - titulo: Registrar el anticipo
+    ruta: Perú ▸ Proveedores ▸ Anticipos a proveedores
+    texto: >-
+      Pago con la casilla «Anticipo»: el asiento va contra la 422.
+  - titulo: Aplicarlo a la factura
+    ruta: Factura ▸ Anticipos
+    texto: >-
+      Se abre la aplicación con la factura y el anticipo repartidos; al aplicar,
+      la factura queda con S/ 2 000 por pagar.
+  - titulo: Revisar pendientes
+    ruta: Perú ▸ Proveedores ▸ Anticipos pendientes
+    texto: >-
+      Anticipos con saldo agrupados por socio.
+
+configuracion:
+  - "Ajustes ▸ Perú ▸ Anticipos y aplicación de documentos: cuentas 122 y 422 (y de moneda extranjera) y diario de aplicaciones."
+
+faq:
+  - pregunta: "¿Puedo revertir una aplicación?"
+    respuesta: >-
+      Sí, un administrador de contabilidad: se crea el asiento inverso y los
+      documentos vuelven a quedar abiertos.
+  - pregunta: "¿Y si el anticipo está en soles y la factura en dólares?"
+    respuesta: >-
+      Se aplica al cambio del día; Odoo registra la diferencia con el cambio de la
+      factura.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: anticipos 122/422 como pagos, aplicación de documentos (anticipos, compensaciones, notas de crédito) con reversión, botón en la factura y lista de anticipos pendientes."
+
+relacionados: [al_l10n_pe_payment_receipt, al_account_payments, al_l10n_pe_edi_downpayment_discount]

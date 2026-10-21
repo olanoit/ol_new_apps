@@ -1,0 +1,78 @@
+titulo: Comprobante de pago
+subtitulo: >-
+  Recibo de ingreso y comprobante de egreso numerados por diario, con el detalle
+  de lo pagado, el monto en letras y las firmas, listos para imprimir o enviar.
+categoria: Localización Perú · Tesorería
+etiquetas: [Recibo de ingreso, Comprobante de egreso, Pagos, Cobros, Monto en letras]
+portada: screenshots/receipt.png
+
+destacados_intro: >-
+  Odoo imprime un recibo genérico con el número del asiento. Este módulo le da
+  serie propia y el formato de los documentos de la suite.
+destacados:
+  - icono: "#"
+    titulo: Serie por diario
+    texto: >-
+      RI para cobros y RE para pagos, por diario, asignada al confirmar y sin
+      reutilizar números.
+  - icono: "≡"
+    titulo: Detalle de lo pagado
+    texto: >-
+      Cada comprobante con su total, lo aplicado y el saldo, también en pagos
+      parciales o de varias facturas.
+  - icono: "S/"
+    titulo: Monto en letras
+    texto: >-
+      «QUINIENTOS Y 00/100 SOLES», como en los comprobantes electrónicos.
+  - icono: "@"
+    titulo: Imprimir o enviar
+    texto: >-
+      PDF con firmas y envío por correo con el comprobante adjunto.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Caja y tesorería entregan un recibo por cada cobro y piden firma por cada
+    pago. El recibo nativo usa el número del asiento, no lleva el medio de pago
+    SUNAT ni el detalle de lo aplicado.
+  nota: >-
+    **Por diario.** Se activa en cada diario de banco o caja.
+
+pasos_intro: >-
+  Un cobro de S/ 500 a cuenta de una factura de S/ 6 400.
+pasos:
+  - titulo: Activar en el diario
+    ruta: Contabilidad ▸ Configuración ▸ Diarios ▸ Configuración avanzada
+    texto: >-
+      Marque «Comprobante de pago numerado»: se crean las series RI y RE del
+      diario.
+  - titulo: Registrar el cobro
+    ruta: Factura ▸ Pagar
+    texto: >-
+      Con el medio de pago y el número de operación. Al confirmar recibe el
+      número RI-BNK1-000001.
+  - titulo: Imprimir
+    ruta: Pago ▸ Imprimir comprobante
+    texto: >-
+      El PDF muestra lo aplicado (S/ 500) y el saldo de la factura (S/ 5 900).
+    imagen: screenshots/receipt.png
+
+configuracion:
+  - Active «Comprobante de pago numerado» en los diarios de banco y caja.
+
+faq:
+  - pregunta: "¿Qué pasa si anulo un pago?"
+    respuesta: >-
+      Conserva su número; la serie no se reutiliza ni deja huecos.
+  - pregunta: "¿Funciona con diarios sin cuenta de pagos pendientes?"
+    respuesta: >-
+      Sí: el detalle reparte el importe entre las facturas del pago por fecha,
+      como el asistente de pago.
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: series RI/RE por diario, PDF con detalle de lo aplicado, monto en letras, firmas y envío por correo."
+
+relacionados: [al_account_payments, al_l10n_pe_payment_application, al_l10n_pe_cash_fund]

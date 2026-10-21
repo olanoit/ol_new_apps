@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- App Perú (tercer nivel, bajo las secciones Cobros y Pagos). -->
+    <menuitem id="menu_pe_customer_advances" name="Anticipos de clientes"
+              parent="al_account_base.al_l10n_pe_customers_payments"
+              action="action_customer_advances" sequence="30"/>
+    <menuitem id="menu_pe_customer_pending_advances" name="Anticipos pendientes"
+              parent="al_account_base.al_l10n_pe_customers_payments"
+              action="action_pending_advances_customer" sequence="31"/>
+    <menuitem id="menu_pe_customer_application" name="Aplicación de documentos"
+              parent="al_account_base.al_l10n_pe_customers_payments"
+              action="action_payment_application" sequence="32"
+              groups="account.group_account_user"/>
+    <menuitem id="menu_pe_supplier_advances" name="Anticipos a proveedores"
+              parent="al_account_base.al_l10n_pe_vendors_payments"
+              action="action_supplier_advances" sequence="30"/>
+    <menuitem id="menu_pe_supplier_pending_advances" name="Anticipos pendientes"
+              parent="al_account_base.al_l10n_pe_vendors_payments"
+              action="action_pending_advances_supplier" sequence="31"/>
+    <menuitem id="menu_pe_supplier_application" name="Aplicación de documentos"
+              parent="al_account_base.al_l10n_pe_vendors_payments"
+              action="action_payment_application" sequence="32"
+              groups="account.group_account_user"/>
+
+    <!-- Ubicación nativa en Contabilidad. -->
+    <menuitem id="menu_account_customer_advances" name="Anticipos de clientes"
+              parent="account.menu_finance_receivables" action="action_customer_advances" sequence="16"/>
+    <menuitem id="menu_account_supplier_advances" name="Anticipos a proveedores"
+              parent="account.menu_finance_payables" action="action_supplier_advances" sequence="21"/>
+    <menuitem id="menu_account_application" name="Aplicación de documentos"
+              parent="account.account_transactions_menu" action="action_payment_application"
+              sequence="40" groups="account.group_account_user"/>
+</odoo>

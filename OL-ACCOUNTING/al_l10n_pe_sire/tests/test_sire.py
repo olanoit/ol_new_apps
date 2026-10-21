@@ -750,9 +750,13 @@ class TestSire(TransactionCase):
             ('company_id', '=', self.company.id), ('type_tax_use', '=', 'sale'),
             ('l10n_pe_edi_tax_code', '=', '9997')], limit=1)
         self.assertTrue(exo)
+        # Con al_l10n_pe_edi_free, un ítem gratuito exonerado lleva su grupo
+        # (que lo deja en 0): con el exonerado solo se cobraría y no se publica.
+        free_exempt = self.env['account.chart.template'].with_company(self.company).ref(
+            'sale_tax_free_exempt_group', raise_if_not_found=False)
         invoice = self._make_invoice('out_invoice')
         invoice.button_draft()
-        invoice.invoice_line_ids.write({'tax_ids': [(6, 0, exo.ids)]})
+        invoice.invoice_line_ids.write({'tax_ids': [(6, 0, (free_exempt or exo).ids)]})
         invoice.invoice_line_ids.l10n_pe_edi_affectation_reason = '21'
         invoice.action_post()
         vals = self.rvie._sire_system_line_vals(invoice)

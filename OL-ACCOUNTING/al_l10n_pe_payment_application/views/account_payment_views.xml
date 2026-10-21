@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_payment_form_advance" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.pe.advance</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_l10n_pe_apply_advance" type="object" string="Aplicar a factura"
+                        invisible="not l10n_pe_is_advance or state not in ('in_process', 'paid') or not move_id"
+                        groups="account.group_account_user"/>
+            </xpath>
+            <xpath expr="//group[@name='group2']/field[@name='journal_id']" position="before">
+                <field name="l10n_pe_is_advance" readonly="state != 'draft'"
+                       invisible="payment_type not in ('inbound', 'outbound')"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_customer_advances" model="ir.actions.act_window">
+        <field name="name">Anticipos de clientes</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('l10n_pe_is_advance', '=', True), ('partner_type', '=', 'customer')]</field>
+        <field name="context">{'default_l10n_pe_is_advance': True, 'default_payment_type': 'inbound', 'default_partner_type': 'customer'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un anticipo de cliente</p>
+            <p>Va a la cuenta de anticipos de clientes (122) y se aplica después a la factura.</p>
+        </field>
+    </record>
+
+    <record id="action_supplier_advances" model="ir.actions.act_window">
+        <field name="name">Anticipos a proveedores</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('l10n_pe_is_advance', '=', True), ('partner_type', '=', 'supplier')]</field>
+        <field name="context">{'default_l10n_pe_is_advance': True, 'default_payment_type': 'outbound', 'default_partner_type': 'supplier'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un anticipo a proveedor</p>
+            <p>Va a la cuenta de anticipos a proveedores (422) y se aplica a su factura cuando llegue.</p>
+        </field>
+    </record>
+</odoo>

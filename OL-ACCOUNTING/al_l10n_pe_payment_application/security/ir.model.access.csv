@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_application_user,l10n_pe.payment.application user,model_l10n_pe_payment_application,account.group_account_user,1,1,1,1
+access_payment_application_read,l10n_pe.payment.application readonly,model_l10n_pe_payment_application,account.group_account_readonly,1,0,0,0
+access_payment_application_line_user,l10n_pe.payment.application.line user,model_l10n_pe_payment_application_line,account.group_account_user,1,1,1,1
+access_payment_application_line_read,l10n_pe.payment.application.line readonly,model_l10n_pe_payment_application_line,account.group_account_readonly,1,0,0,0

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_payment_receipt_pe" model="mail.template">
+        <field name="name">Pago: comprobante de pago</field>
+        <field name="model_id" ref="account.model_account_payment"/>
+        <field name="subject">{{ object.company_id.name }} - {{ object._l10n_pe_receipt_title() }} {{ object.l10n_pe_receipt_number or object.name }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="report_template_ids" eval="[(4, ref('action_report_payment_receipt_pe'))]"/>
+        <field name="body_html" type="html">
+<div>
+    <p>Estimado(a) <t t-out="object.partner_id.name or ''"/>:</p>
+    <p>Adjuntamos el <t t-out="object._l10n_pe_receipt_title().lower()"/>
+       <strong t-out="object.l10n_pe_receipt_number or object.name"/> por
+       <strong t-out="format_amount(object.amount, object.currency_id)"/>
+       del <t t-out="format_date(object.date)"/>.</p>
+    <p>Atentamente,<br/><t t-out="object.company_id.name or ''"/></p>
+</div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

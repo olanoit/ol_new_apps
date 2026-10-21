@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_application" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pe.application</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="70"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Anticipos y aplicación de documentos" name="pe_payment_application_block">
+                    <setting string="Cuentas de anticipos"
+                             help="Un pago marcado como anticipo va a estas cuentas (PCGE 122 y 422). Las de moneda extranjera son opcionales.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_advance_customer_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_advance_customer_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_advance_customer_fc_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_advance_customer_fc_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_advance_supplier_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_advance_supplier_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_advance_supplier_fc_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_advance_supplier_fc_account_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Diario de aplicaciones"
+                             help="Diario de los asientos que aplican anticipos y compensan documentos.">
+                        <field name="l10n_pe_application_journal_id"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

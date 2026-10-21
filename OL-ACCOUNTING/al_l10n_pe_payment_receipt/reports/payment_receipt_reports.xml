@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recibo de ingreso / comprobante de egreso: formato común de la suite
+         (al_report_base), detalle de lo aplicado y firmas. -->
+    <template id="report_payment_receipt_pe_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="partner" t-value="o.partner_id.commercial_partner_id"/>
+        <t t-set="documents" t-value="o._l10n_pe_receipt_documents()"/>
+        <t t-set="others" t-value="o._l10n_pe_receipt_other_lines()"/>
+        <t t-set="unapplied" t-value="o._l10n_pe_receipt_unapplied()"/>
+        <t t-set="is_advance" t-value="'l10n_pe_is_advance' in o._fields and o.l10n_pe_is_advance"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="o._l10n_pe_receipt_title()"/>
+            <t t-set="doc_number" t-value="o.l10n_pe_receipt_number"/>
+            <t t-set="doc_extra" t-value="o.name"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 18%;"><t t-if="o.payment_type == 'inbound'">Recibimos de</t><t t-else="">Pagado a</t></td>
+                    <td class="pe-doc-value" style="width: 47%;"><span t-out="partner.name"/></td>
+                    <td class="pe-doc-label" style="width: 15%;"><span t-out="partner.l10n_latam_identification_type_id.name or 'Documento'"/></td>
+                    <td class="pe-doc-value" style="width: 20%;"><span t-out="partner.vat or '—'"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Fecha</td>
+                    <td class="pe-doc-value"><span t-field="o.date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
+                    <td class="pe-doc-label">Moneda</td>
+                    <td class="pe-doc-value"><span t-out="o.currency_id.name"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Medio de pago</td>
+                    <td class="pe-doc-value">
+                        <span t-out="o.pe_payment_method_id.display_name or o.payment_method_line_id.name"/>
+                        · <span t-out="o.journal_id.name"/>
+                        <t t-if="o.journal_id.bank_account_id"> · <span t-out="o.journal_id.bank_account_id.acc_number"/></t>
+                    </td>
+                    <td class="pe-doc-label">N.º de operación</td>
+                    <td class="pe-doc-value"><span t-out="o.bank_operation_number or o.payment_reference or '—'"/></td>
+                </tr>
+                <tr t-if="o.memo">
+                    <td class="pe-doc-label">Concepto</td>
+                    <td class="pe-doc-value" colspan="3"><span t-out="o.memo"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Importe</td>
+                    <td class="pe-doc-value pe-doc-fs-14"><strong t-out="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    <td class="pe-doc-label">Son</td>
+                    <td class="pe-doc-value pe-doc-fs-11"><span t-out="o._l10n_pe_receipt_amount_words()"/></td>
+                </tr>
+            </table>
+
+            <table class="pe-doc-table pe-doc-lines mb-3" t-if="documents">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Comprobante</td>
+                        <td style="width: 12%;">Fecha</td>
+                        <td class="text-end" style="width: 16%;">Total</td>
+                        <td class="text-end" style="width: 16%;">Aplicado</td>
+                        <td class="text-end" style="width: 16%;">Saldo</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="documents" t-as="doc">
+                        <td><t t-if="doc['document_type']"><span t-out="doc['document_type']"/> </t><span t-out="doc['name']"/></td>
+                        <td><span t-out="doc['date'] and doc['date'].strftime('%d/%m/%Y')"/></td>
+                        <td class="text-end"><span t-if="doc['total'] is not None" t-out="doc['total']" t-options="{'widget': 'monetary', 'display_currency': doc['currency']}"/></td>
+                        <td class="text-end"><span t-if="doc['applied'] is not None" t-out="doc['applied']" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                        <td class="text-end"><span t-if="doc['residual'] is not None" t-out="doc['residual']" t-options="{'widget': 'monetary', 'display_currency': doc['currency']}"/></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="pe-doc-table mb-3" t-if="others or unapplied or is_advance">
+                <tr t-foreach="others" t-as="line">
+                    <td class="pe-doc-label" style="width: 70%;"><span t-out="line.name or line.account_id.display_name"/></td>
+                    <td class="text-end"><span t-out="abs(line.amount_currency)" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                </tr>
+                <tr t-if="unapplied">
+                    <td class="pe-doc-label"><t t-if="is_advance">Anticipo, queda a cuenta</t><t t-else="">Queda a cuenta (sin aplicar)</t></td>
+                    <td class="text-end"><span t-out="unapplied" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                </tr>
+            </table>
+
+            <table class="pe-doc-plain pe-doc-signatures pe-doc-keep">
+                <tr>
+                    <td><div class="pe-doc-sign-line">Entregué conforme<br/>Nombre y DNI</div></td>
+                    <td><div class="pe-doc-sign-line">Recibí conforme<br/>Nombre y DNI</div></td>
+                </tr>
+            </table>
+        </t>
+    </template>
+
+    <template id="report_payment_receipt_pe">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_payment_receipt.report_payment_receipt_pe_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_payment_receipt_pe" model="ir.actions.report">
+        <field name="name">Comprobante de pago</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_payment_receipt.report_payment_receipt_pe</field>
+        <field name="report_file">al_l10n_pe_payment_receipt.report_payment_receipt_pe</field>
+        <field name="print_report_name">'%s' % (object.l10n_pe_receipt_number or object.name)</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

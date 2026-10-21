@@ -55,7 +55,7 @@ tiene.
 | `al_l10n_pe_fourth_category` | Retención de renta de 4.ª categoría a recibos por honorarios | [Retención de renta de 4.ª categoría](peru/fourth_category.md) |
 | `al_l10n_pe_cpe_validation` | Consulta de validez de los comprobantes de proveedores | [Consulta de validez de comprobantes](peru/cpe_validation.md) |
 | `al_l10n_pe_monthly_tax` | Régimen tributario, pago a cuenta y resumen del F.V. 621 | [Declaración mensual IGV y renta (621)](peru/monthly_tax.md) |
-| `al_l10n_pe_invoice`, `al_l10n_pe_delivery_guide_report`, `al_l10n_pe_edi_downpayment_discount`, `al_l10n_pe_edi_purchase_settlement`, `al_ose_factory_hka` | Comprobante y guía impresos, anticipos y descuentos, liquidación de compra, operador The Factory HKA | [Facturación electrónica](peru/electronic_invoicing.md) |
+| `al_l10n_pe_invoice`, `al_l10n_pe_delivery_guide_report`, `al_l10n_pe_edi_downpayment_discount`, `al_l10n_pe_edi_free`, `al_l10n_pe_edi_purchase_settlement`, `al_ose_factory_hka` | Comprobante y guía impresos, anticipos y descuentos, liquidación de compra, operador The Factory HKA | [Facturación electrónica](peru/electronic_invoicing.md) |
 | `al_l10n_pe_complaints_book` | Libro de reclamaciones en el sitio web | [Libro de reclamaciones](peru/complaints_book.md) |
 | `al_l10n_pe_ple` | Libros PLE que Odoo no genera y formatos simplificados | [Libros electrónicos (PLE)](peru/ple.md) |
 | `al_l10n_pe_sire` | Conciliación y envío del RVIE y el RCE | [Registros SIRE](peru/sire.md) |

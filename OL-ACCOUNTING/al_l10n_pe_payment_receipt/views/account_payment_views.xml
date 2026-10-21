@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_payment_form_receipt" model="ir.ui.view">
+        <field name="name">account.payment.form.inherit.pe.receipt</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_l10n_pe_receipt_print" type="object" string="Imprimir comprobante"
+                        invisible="not l10n_pe_receipt_number"/>
+                <button name="action_l10n_pe_receipt_send" type="object" string="Enviar comprobante"
+                        invisible="not l10n_pe_receipt_number"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_title')]" position="inside">
+                <div invisible="not l10n_pe_receipt_number" class="text-muted">
+                    <field name="l10n_pe_receipt_number" class="oe_inline"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_payment_list_receipt" model="ir.ui.view">
+        <field name="name">account.payment.list.inherit.pe.receipt</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="l10n_pe_receipt_number" optional="show"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_account_payment_search_receipt" model="ir.ui.view">
+        <field name="name">account.payment.search.inherit.pe.receipt</field>
+        <field name="model">account.payment</field>
+        <field name="inherit_id" ref="account.view_account_payment_search"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="l10n_pe_receipt_number"/>
+            </field>
+        </field>
+    </record>
+</odoo>
