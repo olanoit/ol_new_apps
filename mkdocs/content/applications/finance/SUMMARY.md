@@ -17,6 +17,7 @@
             * [Comprobante impreso](fiscal_localizations/peru/electronic_invoicing/invoice_report.md)
             * [Guía de remisión impresa](fiscal_localizations/peru/electronic_invoicing/delivery_guide.md)
             * [Anticipos y descuentos](fiscal_localizations/peru/electronic_invoicing/down_payments_discounts.md)
+            * [Operaciones gratuitas](fiscal_localizations/peru/electronic_invoicing/free_transfers.md)
             * [OSE Factory HKA](fiscal_localizations/peru/electronic_invoicing/ose_factory_hka.md)
             * [Liquidación de compra](fiscal_localizations/peru/electronic_invoicing/purchase_settlement.md)
         * [Libro de reclamaciones](fiscal_localizations/peru/complaints_book.md)

@@ -18,6 +18,7 @@ de remisión impresa.
 | Enviar por el OSE The Factory HKA | `al_ose_factory_hka` | [OSE Factory HKA](electronic_invoicing/ose_factory_hka.md) |
 | Imprimir el comprobante en A4 y ticket, con QR, detracción y cuotas | `al_l10n_pe_invoice` | [Comprobante impreso](electronic_invoicing/invoice_report.md) |
 | Anticipos exonerados o inafectos, anticipos repetidos, descuentos globales y notas de crédito de esas facturas | `al_l10n_pe_edi_downpayment_discount` | [Anticipos y descuentos](electronic_invoicing/down_payments_discounts.md) |
+| Transferencias gratuitas: retiros, bonificaciones y muestras, exoneradas o inafectas, con la leyenda 1002 | `al_l10n_pe_edi_free` | [Operaciones gratuitas](electronic_invoicing/free_transfers.md) |
 | Imprimir la guía de remisión electrónica | `al_l10n_pe_delivery_guide_report` (la envía `l10n_pe_edi_stock`) | [Guía de remisión impresa](electronic_invoicing/delivery_guide.md) |
 | Boletas y facturas desde el punto de venta | `al_l10n_pe_edi_pos` | [Comprobantes electrónicos en el TPV](../../../sales/point_of_sale/electronic_invoicing.md) |
 | Comprobante de retención (CRE) | `al_l10n_pe_retention` | [Retenciones del IGV](withholdings.md) |

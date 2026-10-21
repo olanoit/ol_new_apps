@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_free_transfer" model="ir.ui.view">
+        <field name="name">account.move.form.inherit.pe.free</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_l10n_pe_free_transfer" type="object"
+                        string="Transferencia gratuita"
+                        invisible="state != 'draft' or move_type != 'out_invoice' or country_code != 'PE'"
+                        confirm="Todos los ítems pasan a gratuitos: el precio queda como valor referencial y la factura en 0. ¿Continuar?"
+                        groups="account.group_account_invoice"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

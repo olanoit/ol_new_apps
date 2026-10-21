@@ -1,0 +1,98 @@
+titulo: Operaciones gratuitas en el CPE
+subtitulo: >-
+  Facturas con premios, bonificaciones, muestras o donaciones sin cobrarlas:
+  el valor referencial va a SUNAT, el cliente no debe nada y el comprobante
+  pasa las reglas de validación.
+categoria: Localización Perú · Facturación electrónica
+etiquetas: [Transferencia gratuita, Leyenda 1002, Bonificaciones, Muestras médicas, UBL 2.1, Reglas de validación SUNAT]
+
+destacados_intro: >-
+  Odoo 19 ya emite los retiros gravados con el grupo «18% Free Group». Este
+  módulo completa lo que faltaba, contrastado con las reglas de validación
+  oficiales de SUNAT.
+destacados:
+  - icono: "0"
+    titulo: Gratuitas exoneradas e inafectas
+    texto: >-
+      Impuesto «0% Gratuito exonerado/inafecto» (afectación 21 y 31-37) que
+      deja el ítem en 0; con el «0% Gra» solo, el ítem se cobraba.
+  - icono: "1002"
+    titulo: Leyenda automática
+    texto: >-
+      La leyenda 1002 se pone al publicar si hay ítems gratuitos y se quita si
+      no los hay (regla 2416).
+  - icono: "✓"
+    titulo: Reglas SUNAT al publicar
+    texto: >-
+      Valor referencial mayor a 0 (2641), IGV en los retiros gravados (3111) y
+      sin IGV en los exonerados o inafectos (3110).
+  - icono: "→"
+    titulo: Factura gratuita en un clic
+    texto: >-
+      El botón «Transferencia gratuita» convierte todas las líneas según su
+      impuesto y la factura sale al contado.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    SUNAT exige que un ítem gratuito vaya con precio 0, su valor referencial
+    (código de precio 02), el total gratuito (9996) y la afectación correcta.
+    En Odoo 19 las gratuitas inafectas se cobraban, la afectación 37 salía
+    como onerosa (3234) y la leyenda 1002 había que ponerla a mano.
+
+
+    Este módulo agrega el impuesto para las gratuitas exoneradas o inafectas,
+    trata la 37 como gratuita, pone la leyenda y el contado solos y revisa las
+    reglas al publicar. El XML de las facturas mixtas (pagado y gratuito) lo
+    corrige «Anticipos y descuentos en el CPE».
+  nota: >-
+    **Al instalar** se crea el impuesto «0% Gratuito exonerado/inafecto» en las
+    compañías con el plan peruano.
+
+pasos_intro: >-
+  Una distribuidora entrega un polo promocional (gravado, S/ 100) y tres
+  muestras médicas (inafectas, S/ 10 cada una).
+pasos:
+  - titulo: Factura con el precio normal
+    ruta: Contabilidad ▸ Clientes ▸ Facturas ▸ Nuevo
+    texto: >-
+      Cargue los productos con su precio de venta: será el valor referencial.
+  - titulo: Transferencia gratuita
+    ruta: Factura ▸ Transferencia gratuita
+    texto: >-
+      El polo pasa a «18% Free Group» (afectación 11) y las muestras a «0%
+      Gratuito exonerado/inafecto» (37; cámbiela a 33, muestras médicas).
+    puntos:
+      - "Op. gratuitas S/ 130,00; total S/ 0,00."
+      - "El IGV del polo (S/ 18) lo asume la empresa: 6411 contra 40111."
+  - titulo: Confirmar y enviar
+    ruta: Factura ▸ Confirmar
+    texto: >-
+      Odoo pone la leyenda 1002, quita el plazo de pago (al contado) y revisa
+      las reglas de SUNAT antes de publicar.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-INVOICING); crea el impuesto en las compañías con el plan peruano.
+  - Active la columna «Motivo de afectación EDI» en las líneas de la factura para elegir la afectación (11-16, 21, 31-37).
+
+faq:
+  - pregunta: "¿Puedo regalar solo algunos ítems de una venta?"
+    respuesta: >-
+      Sí: ponga el impuesto gratuito solo en esas líneas. Se cobra lo demás con
+      su plazo de pago y el XML informa aparte el total gratuito.
+  - pregunta: "¿Por qué no puedo dejar el precio en 0?"
+    respuesta: >-
+      SUNAT exige el valor referencial del ítem (reglas 2641 y 3224): el
+      precio unitario es ese valor, y el cliente no paga nada.
+  - pregunta: "¿Cómo se comprobó?"
+    respuesta: >-
+      Con las reglas de validación oficiales de SUNAT del 26.08.2026 aplicadas
+      al XML de cada escenario (gravado, exonerado, inafecto y mixto).
+
+novedades:
+  - version: 1.20261021
+    fecha: 21/10/2026
+    cambios:
+      - "Primera versión: impuesto gratuito exonerado/inafecto, afectación 37 gratuita, leyenda 1002 y contado automáticos, validación de las reglas 2641, 3110 y 3111 al publicar y botón Transferencia gratuita."
+
+relacionados: [al_l10n_pe_edi_downpayment_discount, al_l10n_pe_invoice, al_l10n_pe_sire]

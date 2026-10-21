@@ -1,0 +1,2 @@
+"id","name","description","invoice_label","l10n_pe_edi_tax_code","l10n_pe_edi_affectation_reason","amount","amount_type","type_tax_use","sequence","tax_group_id","children_tax_ids","name@es","description@es","invoice_label@es"
+"sale_tax_free_exempt_group","0% Free Group","Free transfer, exempt or unaffected","0% Free","9996","37","0","group","sale","1","tax_group_gra","sale_tax_gra,tax_free_subtract_base","0% Gratuito exonerado/inafecto","Transferencia gratuita exonerada o inafecta","0% Gratuito"
