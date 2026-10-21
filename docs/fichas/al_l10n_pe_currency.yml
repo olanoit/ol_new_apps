@@ -409,6 +409,10 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: 15.20261012
+    fecha: 21/10/2026
+    cambios:
+      - "T.C. pactado en cobros y pagos: reemplaza a la compra o venta de SUNAT en esa operación; un cobro en soles de una factura en dólares queda pagado con la diferencia en 676 o 776."
   - version: 14.20261012
     fecha: 12/10/2026
     cambios:

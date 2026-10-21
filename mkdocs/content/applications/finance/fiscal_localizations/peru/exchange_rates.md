@@ -127,6 +127,29 @@ S/ 4 012,00 y el cobro canceló S/ 4 001,38):
 | 1212000 | Facturas por cobrar | | 10,62 |
 | **Totales** | | **10,62** | **10,62** |
 
+### Tipo de cambio pactado
+
+Cuando el cliente paga en soles a un tipo de cambio acordado, o el banco aplica el suyo
+en una operación de cambio, indique el **T.C. pactado** en el cobro o el pago (soles por
+dólar). Reemplaza a la compra o venta de SUNAT solo en esa operación:
+
+- **Pago en dólares** (banco en dólares, o en soles registrando dólares): el importe no
+  cambia y el pago se valora en soles al tipo pactado.
+- **Pago en soles** de una factura en dólares: el importe propuesto es el saldo en
+  dólares por el tipo pactado. La diferencia con el cambio del día se marca para
+  saldarla contra la cuenta de diferencia de cambio, de modo que la factura queda
+  pagada.
+
+En ambos casos Odoo registra la diferencia con el tipo de cambio de la factura (676 o
+776). Ejemplo: factura de US$ 1 000,00 a 3,75; el día del cobro SUNAT publica 3,76 y
+con el cliente se pacta 3,72.
+
+| Cobro | Banco | Diferencia de cambio |
+|---|---|---|
+| US$ 1 000,00 a 3,72 | S/ 3 720,00 | Pérdida S/ 30,00 |
+| S/ 3 720,00 (T.C. pactado 3,72) | S/ 3 720,00 | Pérdida S/ 30,00 |
+| Sin T.C. pactado | S/ 3 760,00 | Ganancia S/ 10,00 |
+
 ## Reportes
 
 - Los importes en soles de facturas y pagos, y el tipo de cambio que informan,

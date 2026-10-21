@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_currency.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261012 — 21/10/2026
+
+- T.C. pactado en cobros y pagos: reemplaza a la compra o venta de SUNAT en esa operación; un cobro en soles de una factura en dólares queda pagado con la diferencia en 676 o 776.
+
 ## 14.20261012 — 12/10/2026
 
 - Menús en Perú ▸ Tesorería ▸ Tipo de cambio.

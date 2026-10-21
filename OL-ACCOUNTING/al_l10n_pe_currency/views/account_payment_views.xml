@@ -9,6 +9,9 @@
         <field name="arch" type="xml">
             <field name="date" position="after">
                 <field name="l10n_pe_exchange_rate_type"
+                       invisible="currency_id == company_currency_id or l10n_pe_agreed_rate"
+                       readonly="state != 'draft'"/>
+                <field name="l10n_pe_agreed_rate"
                        invisible="currency_id == company_currency_id"
                        readonly="state != 'draft'"/>
             </field>
@@ -24,7 +27,9 @@
         <field name="arch" type="xml">
             <field name="payment_date" position="after">
                 <field name="l10n_pe_exchange_rate_type"
-                       invisible="currency_id == company_currency_id"/>
+                       invisible="currency_id == company_currency_id or l10n_pe_agreed_rate"/>
+                <field name="l10n_pe_agreed_rate"
+                       invisible="currency_id == company_currency_id and source_currency_id == company_currency_id"/>
             </field>
         </field>
     </record>

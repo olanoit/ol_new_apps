@@ -13,7 +13,7 @@ SQL crudo, cuentas y diarios fijos por código o nombre, y piezas rotas (secció
 | Proceso | Inveragro v16 | Odoo 19 nativo | Nuestra suite | Veredicto |
 |---|---|---|---|---|
 | Medio de pago SUNAT (tabla 1) y nº de operación | `dv_l10n_pe_account_payment`, `number_operation_bank` | — | `al_account_payments` | **Cubierto** |
-| Tipo de cambio compra/venta en el pago | TC manual en el pago | Diferencia de cambio automática | `al_l10n_pe_currency` | **Cubierto** (falta TC pactado, ver P8) |
+| Tipo de cambio compra/venta en el pago | TC manual en el pago | Diferencia de cambio automática | `al_l10n_pe_currency` | **Cubierto** (T.C. pactado en `al_l10n_pe_currency` v15) |
 | Retención IGV + CRE electrónico | Desde el pago y manual (CRE como `out_invoice` 20) | Marco de retención en pagos | `al_l10n_pe_retention` (CRE firmado, mínimo 700, NC deducidas) | **Cubierto** |
 | TXT 0621 de retenciones | `dv_l10n_pe_sunat_0621_document_retention_txt` | — | `al_l10n_pe_monthly_tax` / retención | Verificar el TXT exacto |
 | Detracciones: pago, constancias, TXT masivo | `modo_pago=detraccion`, TXT SPOT (parcialmente roto) | Bloque SPOT en XML | `al_l10n_pe_detraction` (depósito, TXT, importación de constancias) | **Cubierto** |
@@ -131,6 +131,11 @@ gasto sin comprobante; o un depósito de cliente que cubre facturas de varios so
   ya lo resuelven; si no, extender `account.payment.term`.
 
 ### P8. Tipo de cambio pactado por pago — prioridad baja, esfuerzo bajo
+
+> **Hecho (21/10/2026)** en `al_l10n_pe_currency` v15: campo «T.C. pactado» en el pago y en el
+> asistente, con prioridad sobre compra/venta en `_get_conversion_rate`. Pago en dólares: se valora al
+> pactado y Odoo crea la diferencia de cambio. Pago en soles: importe al pactado y diferencia al cambio
+> del día saldada contra 676/776 (write-off nativo de diferencia de cambio).
 
 - TC manual en el pago (operación de cambio con el banco o el cliente) en lugar del SUNAT
   compra/venta, con la diferencia a 776/676.

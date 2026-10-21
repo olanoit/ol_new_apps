@@ -125,7 +125,7 @@ class ResCurrency(models.Model):
 
     def _get_conversion_rate(self, from_currency, to_currency, company=None,
                              date=None):
-        """Respeta el tipo de cambio compra/venta indicado en el contexto.
+        """Respeta el tipo de cambio pactado o compra/venta indicado en el contexto.
 
         Odoo convierte con una única tasa por día. Cuando quien llama sabe qué
         tipo de cambio corresponde —una factura, un pago— lo indica con
@@ -135,6 +135,15 @@ class ResCurrency(models.Model):
         que sea, y únicamente si hay compra/venta registradas para la fecha;
         en cualquier otro caso se mantiene el comportamiento nativo.
         """
+        agreed = self.env.context.get('l10n_pe_agreed_rate')
+        if agreed and from_currency != to_currency:
+            company = company or self.env.company
+            # T.C. pactado con el banco o el cliente (soles por unidad de la
+            # moneda extranjera): manda sobre compra/venta.
+            if to_currency == company.currency_id:
+                return agreed
+            if from_currency == company.currency_id:
+                return 1.0 / agreed
         rate_type = self.env.context.get('l10n_pe_exchange_rate_type')
         if rate_type in ('purchase', 'sale') and from_currency != to_currency:
             company = company or self.env.company
