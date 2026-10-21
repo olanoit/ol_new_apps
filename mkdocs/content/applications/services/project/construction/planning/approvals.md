@@ -70,6 +70,9 @@ aprobarse. La política **Bloquear** sigue bloqueando.
 
 ### Plan de recursos
 
+La solicitud del plan muestra 0 % en **Exceso %**: lo que sube frente a la
+versión vigente solo sirve para elegir los tramos de la tabla de rutas.
+
 **Solicitar aprobación** crea la solicitud con los tramos del plan que
 apliquen por su total o por lo que sube frente a la versión vigente. Sin
 tramos, el plan se aprueba directamente.

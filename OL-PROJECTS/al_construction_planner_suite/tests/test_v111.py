@@ -12,7 +12,7 @@ from odoo import Command
 from odoo.tests import Form, TransactionCase, tagged
 
 from .common import PlannerCommon
-from .test_approvals_v19 import TestApprovalsRequest
+from .test_approvals_v19 import TestApprovalsPlan, TestApprovalsRequest
 from .test_production_excess_v19 import TestProductionExcess
 from .test_request_scope import TestRequestScope
 from .test_stage_chain_v110 import TestStageChainV110
@@ -106,6 +106,31 @@ class TestApprovalsV111(TestApprovalsRequest):
         self.assertEqual(line.quantity, 20)
         self.assertEqual(line.construction_qty_diff, 20)
         self.assertAlmostEqual(line.construction_diff_pct, 20 / planned * 100)
+
+
+@tagged('post_install', '-at_install')
+class TestPlanPctV111(TestApprovalsPlan):
+    """La solicitud de una versión nueva del plan muestra 0 %: lo que sube
+    frente a la versión vigente solo elige los tramos."""
+
+    def test_new_version_shows_zero_pct(self):
+        self._generate()
+        lines = self.plan.line_ids
+        lines.filtered(lambda l: not l.stage).stage = 'production'
+        for line in lines.filtered(lambda l: not l.price_unit_planned):
+            line.price_unit_planned = 10.0
+        self.plan.action_request_approval()
+        self.plan.with_user(self.head).action_construction_approve()
+        wizard = self.env['construction.plan.replan.wizard'].create(
+            {'plan_id': self.plan.id, 'reason': 'Más costo (test v111)'})
+        new = self.env['construction.resource.plan'].browse(
+            wizard.action_create_version()['res_id'])
+        new.line_ids[:1].price_unit_planned += 1000.0
+        self.assertGreater(new._construction_approval_info()['values']['all']['percent'], 0.0)
+        new.action_request_approval()
+        approval = new.construction_approval_id
+        self.assertTrue(approval)
+        self.assertEqual(approval.construction_excess_pct, 0.0)
 
 
 @tagged('post_install', '-at_install')
@@ -249,6 +274,7 @@ class TestStageChainV111(TestStageChainV110):
 # Las pruebas heredadas ya corren en sus clases.
 for _class, _bases in (
         (TestApprovalsV111, (TestApprovalsRequest, TestRequestScope, PlannerCommon)),
+        (TestPlanPctV111, (TestApprovalsPlan, PlannerCommon)),
         (TestProductionPctV111, (TestProductionExcess, PlannerCommon)),
         (TestStageChainV111, (TestStageChainV110, PlannerCommon))):
     for _base in _bases:

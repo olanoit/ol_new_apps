@@ -133,6 +133,7 @@ asistencia y el requerimiento de obra. Resultado del 21/10/2026: 415 pruebas en 
 | M111-03 | «Completar operaciones» en una obra ya importada, sin duplicar | `test_complete_operations_on_imported_site` | **Verde** |
 | M111-04 | 0.024 por módulo en dos módulos: lista 0.04 como el plan; la orden de corte no excede; una unidad de más sí | `test_rounding_matches_plan` | **Verde** |
 | M111-05 | Base «por orden»: la solicitud lleva el % de la orden (no el 50 % del material); base «por material»: el mayor | `TestProductionPctV111` | **Verde** |
+| M111-05 | La solicitud de una versión nueva del plan muestra 0 %, aunque el plan suba (decisión del 21-oct) | `TestPlanPctV111` | **Verde** |
 | M111-06 | Segundo pedido con una parte del plan asignada: presupuestado del nivel, ya pedido, saldo −24, exceso 20 y % sobre el presupuestado | `TestApprovalsV111.test_figures_with_assigned_plan_lines` | **Verde** |
 | M111-06 | Pedido sin asignaciones: lo mismo que antes | `test_approvals_v110.test_negative_balance_figures` | **Verde** |
 | M111-07 | Vale desde el primer bulto: cemento «Va completo en este bulto», fierro «En compra · PR…», resumen, sin montos ni disponible | `al_construction_material_request` `test_dispatch_slip.test_slip_from_first_bundle` | **Verde** |

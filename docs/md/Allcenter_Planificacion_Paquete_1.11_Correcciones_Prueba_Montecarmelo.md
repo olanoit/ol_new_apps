@@ -317,7 +317,7 @@ Las siete correcciones están desarrolladas en el commit `12b16572` (rama 19.0),
 | M111-02 | El asistente usa `approval_count` en lugar de `len()`. Una prueba nueva revisa que ninguna vista del planificador use en `invisible`, `readonly` o `required` una función que el navegador no evalúa. | La prueba de vista es esa revisión de todas las vistas más un `Form` del asistente con una y con dos solicitudes, no un recorrido en el navegador. |
 | M111-03 | «Estación de la etapa» y «Minutos por unidad» por compañía en Configuración › Etapas. Al importar, la lista por etapa sin operaciones recibe una con el nombre de la etapa, esa estación y ese tiempo. La obra tiene el botón «Completar operaciones». | Ninguno. |
 | M111-04 | Se tomó la opción recomendada: la lista suma las cantidades por módulo ya redondeadas como el plan. | Ninguno. El punto donde el plan redondea es la precisión de «Cantidad» de la línea del plan, una línea por módulo. |
-| M111-05 | El documento de origen da el «Exceso %» al crear la solicitud. Las solicitudes anteriores conservan el mayor % de sus líneas. | Para un plan de recursos, el documento da lo que sube frente a la versión que reemplaza (ver «Para decidir»). |
+| M111-05 | El documento de origen da el «Exceso %» al crear la solicitud. Las solicitudes anteriores conservan el mayor % de sus líneas. | Para un plan de recursos, la solicitud muestra 0 % (decisión de Vicente del 21-oct-2026). Lo que sube frente a la versión que reemplaza sigue eligiendo los tramos de la tabla de rutas. |
 | M111-06 | Las cifras de la solicitud salen de todas las líneas del plan del material bajo el nivel y la etapa del pedido. El cálculo del exceso no cambia. | Ninguno. |
 | M111-07 | Reporte «Vale de despacho» con las columnas y los textos de «Situación» propuestos. Se imprime desde la transferencia (solo si tiene requerimiento) y desde el requerimiento (botón «Imprimir vale de despacho», en proceso o hecho). | El texto «Pendiente» aparece cuando la línea no tiene transferencia ni compra. El resumen separa los pendientes por tipo: «Pendientes: 2 (1 en compra, 1 por despachar).» |
 
@@ -364,9 +364,12 @@ El piso 3 de cada obra ya estaba fabricado y despachado. Por eso se copió como 
 
 Frente a la corrida del 19-oct: aquella dio excesos falsos de céntimos en el corte de las cocinas y ninguna orden de trabajo. Esta no dio excesos, y las 54 órdenes pasaron por su estación.
 
+### Decidido el 21-oct-2026 [D]
+
+- **% de la solicitud del plan:** muestra 0 %. Con la primera versión de M111-05 mostraba lo que sube frente a la versión vigente: 99.93 % en la v2 de la E-03, que agrega un piso entero. Corregido en `al_construction_planner_approvals` 5.20261021.
+
 ### Para decidir
 
-- **% de la solicitud del plan.** Con M111-05, la solicitud de un plan muestra lo que sube frente a la versión vigente. La v2 de la E-03 mostró 99.93 %, porque agrega un piso entero. Antes las solicitudes de plan mostraban 0. Si para los planes se prefiere ver 0 o ninguna cifra, es un ajuste pequeño.
 - **Estación de armado de Breña:** Azcona o Castrovirreyna 2.º piso, a confirmar por Producción.
 - **M111-06 en dev1:** falta repetir el caso con RQO/2026/00017 y 00018, si se quiere ver en pantalla.
 

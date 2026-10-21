@@ -36,6 +36,9 @@ class ConstructionResourcePlan(models.Model):
             'values': {'all': {'percent': percent, 'amount': self.amount_total}},
             'lines': [],
             'amount': self.amount_total,
+            # La subida frente a la versión anterior elige los tramos, pero no
+            # es un exceso: la solicitud muestra 0 % (decisión del 21-oct-2026).
+            'percent': 0.0,
             'reason': self.replan_reason or '',
         }
 

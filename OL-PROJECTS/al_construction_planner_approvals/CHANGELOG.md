@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261021 — 21/10/2026
+
+- La solicitud de una versión nueva del plan muestra 0 % de exceso: lo que sube frente a la versión vigente solo elige los tramos de la tabla de rutas.
+
 ## 4.20261021 — 21/10/2026
 
 - Paquete 1.11, M111-02: el asistente «Rechazar» vuelve a abrir desde la solicitud y desde la lista (la vista usaba len(), que el navegador no evalúa).
