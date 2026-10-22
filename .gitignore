@@ -17,3 +17,14 @@ docs/tecport/referencia/
 
 # XML de los escenarios de anticipos (regenerables con docs/anticipos/escenarios_xml.py)
 docs/anticipos/xml/
+
+# Sitio MkDocs: lo genera mkdocs/scripts/gen_pages.py en cada construcción
+# (mkdocs-gen-files); no se versiona.
+mkdocs/content/_media/
+mkdocs/content/developer/reference/
+mkdocs/content/developer/specs/
+mkdocs/content/developer/repository.md
+mkdocs/content/applications/novedades.md
+mkdocs/content/administration/versions.md
+mkdocs/content/index.md
+mkdocs/content/assets/logo.png
