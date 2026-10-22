@@ -1,7 +1,16 @@
 import base64
+import re
+import unicodedata
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+
+def _plain(text):
+    """Solo letras y dígitos en mayúsculas: el banco devuelve el documento sin
+    los caracteres que no acepta (BBVA cambia «/» por espacio)."""
+    text = unicodedata.normalize('NFKD', text or '').encode('ascii', 'ignore').decode('ascii')
+    return re.sub(r'[^A-Z0-9]', '', text.upper())
+
 
 LINE_STATES = [
     ('matched', 'Identificado'),
@@ -184,8 +193,9 @@ class L10nPeBankCollectionResponseLine(models.Model):
                 continue
             open_lines = agreement._open_lines(with_disputed=True).filtered(
                 lambda l: l.partner_id.commercial_partner_id == partner)
-            target = open_lines.filtered(lambda l: line.return_info and line.return_info in (
-                l.move_id.name, l.move_id.ref, l.move_id.payment_reference))
+            info = _plain(line.return_info)
+            target = open_lines.filtered(lambda l: info and info in {
+                _plain(l.move_id.name), _plain(l.move_id.ref), _plain(l.move_id.payment_reference)})
             state = 'matched' if target else 'partner'
             if not target:
                 target = open_lines._l10n_pe_bank_collection_fifo(line.amount, agreement)

@@ -265,10 +265,17 @@ código propio) y Odoo concilia lo cobrado.
 1. **Convenio** (**Cobranza ‣ Configuración ‣ Convenios de recaudación**): diario de la
    cuenta recaudadora, moneda (un convenio por moneda), sucursal y número de cuenta, código
    de servicio, modalidad de validación y con qué código paga el cliente.
-2. **Formato** (**Cobranza ‣ Configuración ‣ Formatos de recaudación**): viene el **CREP del
-   BCP** (archivo de deudores de 250 posiciones y archivo de respuesta). Compárelo con la
-   ficha técnica que el banco entrega al afiliar y ajuste posición, longitud o tipo de
-   cualquier campo; los cambios se conservan al actualizar. Para otro banco, cree su formato.
+2. **Formato** (**Cobranza ‣ Configuración ‣ Formatos de recaudación**):
+
+    | Banco | Formato incluido | Origen |
+    |---|---|---|
+    | BCP | CREP: deudores de 250 posiciones y respuesta | Layout más difundido: compárelo con la ficha técnica del BCP |
+    | BBVA | Entrada de datos de 360 bytes y envío de información de 152 bytes | Ficha técnica oficial E1891 V21 (marzo 2025), publicada por BBVA |
+    | Interbank, Scotiabank | — | Cree el formato con la ficha que el banco entrega al afiliar |
+
+    Puede ajustar posición, longitud, tipo y equivalencias de cualquier campo; los cambios se
+    conservan al actualizar. En BBVA, ajuste la longitud del código de identificación al
+    «tamaño campo código» de su ficha técnica (código y concepto suman 48).
 3. **Archivo de deudores** (**Cobranza ‣ Recaudación bancaria ‣ Archivos de deudores**):
    **Cargar cuotas** trae lo vencido y lo que vence en los próximos días (sin documentos en
    reclamo, anticipos ni detracciones), **Generar archivo** y **Descargar** para subirlo a

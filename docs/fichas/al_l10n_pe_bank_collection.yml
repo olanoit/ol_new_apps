@@ -1,7 +1,7 @@
 titulo: "Recaudación bancaria"
 subtitulo: "El banco cobra con el RUC o DNI del cliente en ventanilla, agentes y banca por internet; Odoo envía el archivo de deudores, importa lo cobrado, crea los pagos y concilia las facturas."
 categoria: "Localización Perú · Tesorería"
-etiquetas: [Recaudación, BCP, CREP, Conciliación, Cobranza]
+etiquetas: [Recaudación, BCP, BBVA, CREP, Conciliación, Cobranza]
 
 destacados:
   - icono: "⇪"
@@ -12,7 +12,7 @@ destacados:
     texto: "Identifica cliente y documento, crea los pagos en la cuenta recaudadora y los concilia."
   - icono: "⚙"
     titulo: "Formato configurable"
-    texto: "Posición, longitud y tipo de cada campo como datos: incluye el CREP del BCP y se ajusta a la ficha técnica del banco sin programar."
+    texto: "Posición, longitud y tipo de cada campo como datos: incluye el CREP del BCP y el formato oficial de BBVA, y se ajusta a la ficha técnica de cada banco sin programar."
   - icono: "✓"
     titulo: "Sin duplicados"
     texto: "Una operación ya pagada no se vuelve a procesar aunque el archivo se importe otra vez."
@@ -21,7 +21,8 @@ funcionalidades:
   - "Convenio por banco y moneda: cuenta recaudadora, diario, sucursal, código de servicio y modalidad de validación (completa, parcial o sin validación)."
   - "Código del depositante: RUC o DNI, referencia del cliente o un código de recaudación propio."
   - "Archivo de reemplazo o de actualización, opcionalmente solo para algunos clientes; excluye los documentos en reclamo, los anticipos y las detracciones."
-  - "Texto en ASCII sin descuadrar las posiciones (á → a, ñ → n) e importes con decimales implícitos."
+  - "Texto en ASCII sin descuadrar las posiciones (á → a, ñ → n), caracteres que el banco no acepta cambiados por espacios e importes con decimales implícitos."
+  - "BBVA: archivo de entrada de datos de 360 bytes (encabezado, detalle y totales, versión del envío del día, carga total o parcial, fecha de bloqueo) y respuesta de 152 bytes con oficina, movimiento, forma de pago y canal, según la ficha técnica E1891 V21 (marzo 2025)."
   - "Respuesta: cobro identificado por documento (información de retorno) o, si no viene, aplicado a las cuotas más antiguas; sin cuotas abiertas queda como anticipo."
   - "Cobros sin identificar: se elige el cliente y se vuelve a identificar, o se descartan."
   - "Control con la cabecera del banco: cantidad de registros y total."
@@ -37,12 +38,22 @@ faq:
       Es el layout CREP más difundido (validación completa, registros de 250 posiciones). El BCP entrega la
       ficha técnica al afiliar a la empresa: compárela y ajuste el formato antes del primer envío; los
       cambios se conservan al actualizar el módulo.
+  - pregunta: "¿Y el formato de BBVA?"
+    respuesta: >-
+      Es el de la ficha técnica oficial publicada por BBVA (E1891 V21, marzo 2025). Solo hay que ajustar
+      la longitud del código de identificación al «tamaño campo código» de la ficha de su empresa.
   - pregunta: "¿Sirve para otros bancos?"
     respuesta: >-
-      Sí: cree un formato con las posiciones de su ficha técnica (BBVA, Interbank, Scotiabank) y úselo en
-      un convenio nuevo.
+      Sí: cree un formato con las posiciones de su ficha técnica (Interbank, Scotiabank…) y úselo en un
+      convenio nuevo. Interbank entrega su formato al afiliar; no es público.
 
 novedades:
+  - version: 2.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Formato oficial de BBVA (ficha técnica E1891 V21): archivo de entrada de datos de 360 bytes y respuesta de 152 bytes."
+      - "Motor de formatos: códigos de carga por banco, caracteres que se cambian por espacios, equivalencias por campo (tipo de documento, canal), fecha de bloqueo, versión del envío del día y registro de totales."
+      - "La respuesta identifica el documento aunque el banco haya quitado caracteres (BBVA cambia «/» por espacio)."
   - version: 1.20261022
     fecha: 22/10/2026
     cambios:

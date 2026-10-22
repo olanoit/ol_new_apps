@@ -1,5 +1,6 @@
 """Recaudación bancaria: formato BCP, archivo de deudores y respuesta."""
 import base64
+from datetime import timedelta
 
 from psycopg2 import IntegrityError
 
@@ -193,3 +194,100 @@ class TestBankCollection(CollectionCommon):
         usd = self.env.ref('base.USD')
         with self.assertRaises(ValidationError):
             self.agreement.currency_id = usd
+
+
+@tagged('post_install', '-at_install')
+class TestBankCollectionBBVA(CollectionCommon):
+    """Formato oficial BBVA (ficha técnica E1891 V21)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company.vat = '20100130204'
+        cls.customer.write({'vat': '20100047218', 'name': 'ÑANDÚ, CÍA; S.A.C.',
+                            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id})
+        cls.agreement = cls.env['l10n_pe.bank.collection.agreement'].create({
+            'name': 'BBVA soles', 'journal_id': cls.bank.id, 'service_code': '123',
+            'account_number': '001102410100001250',
+            'debtors_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_bbva_debtors').id,
+            'response_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_bbva_response').id,
+            'days_ahead': 0, 'block_days': 30,
+        })
+
+    def _batch(self, mode='replace'):
+        batch = self.env['l10n_pe.bank.collection.batch'].create({
+            'agreement_id': self.agreement.id, 'mode': mode,
+            'partner_ids': [Command.set(self.customer.ids)]})
+        batch.action_load()
+        batch.action_generate()
+        return batch
+
+    def test_input_file_positions(self):
+        invoice = self._invoice(1500.25, -4)
+        self._invoice(99.75, -2)
+        batch = self._batch()
+        self.assertEqual(batch.filename, 'RC_123_%s.TXT' % batch.date.strftime('%Y%m%d'))
+        lines = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        self.assertEqual(len(lines), 4)
+        self.assertTrue(all(len(line) == 360 for line in lines))
+        header, first, footer = lines[0], lines[1], lines[-1]
+        self.assertEqual(header[0:2], '01')
+        self.assertEqual(header[2:13], '20100130204')
+        self.assertEqual(header[13:16], '123')
+        self.assertEqual(header[16:19], 'PEN')
+        self.assertEqual(header[19:27], batch.date.strftime('%Y%m%d'))
+        self.assertEqual(header[27:30], '000', 'primera versión del día')
+        self.assertEqual(header[37], 'T', 'carga total')
+        self.assertEqual(first[0:2], '02')
+        self.assertEqual(first[2:32].rstrip(), 'NANDU  CIA  S.A.C.', 'tildes y caracteres especiales')
+        self.assertEqual(first[32:43], '20100047218')
+        self.assertEqual(first[43:80].rstrip(), invoice.name.replace('/', ' '), 'BBVA no acepta «/»')
+        self.assertEqual(first[80:88], invoice.invoice_date_due.strftime('%Y%m%d'))
+        self.assertEqual(first[88:96], (batch.date + timedelta(days=30)).strftime('%Y%m%d'),
+                         'vencida: bloqueo a 30 días de hoy')
+        self.assertEqual(first[96:98], '00')
+        self.assertEqual(first[98:113], '000000000150025')
+        self.assertEqual(first[113:128], '000000000150025', 'validación completa: mínimo = máximo')
+        self.assertEqual(first[128:288], '0' * 160)
+        self.assertEqual(first[288:308], '0' * 20)
+        self.assertEqual(first[308], 'R')
+        self.assertEqual(first[309:324].rstrip(), '20100047218')
+        self.assertEqual(footer[0:2], '03')
+        self.assertEqual(footer[2:11], '000000002')
+        self.assertEqual(footer[11:29], '000000000000160000')
+        self.assertEqual(footer[29:47], '000000000000160000')
+        self.assertEqual(footer[47:65], '0' * 18)
+
+    def test_second_file_same_day_is_next_version(self):
+        self._invoice(100, -1)
+        self._batch()
+        second = self._batch(mode='update')
+        header = base64.b64decode(second.file).decode('ascii')[:38]
+        self.assertEqual(header[27:30], '001')
+        self.assertEqual(header[37], 'P')
+
+    def test_response_official_sample_layout(self):
+        """Respuesta de 152 bytes armada a mano según la ficha técnica."""
+        invoice = self._invoice(5045.43, -3)
+        today = self.today.strftime('%Y%m%d')
+        header = '01' + '20100130204' + '123' + 'PEN' + today + '001102410100001250'
+        # El banco devuelve la referencia tal como se envió: sin «/».
+        detail = ('02' + 'NANDU CIA SAC'.ljust(30) + '20100047218' + invoice.name.replace('/', ' ').ljust(37)
+                  + '000000000504543' + '000000000504543' + '000000000000000' + '0241' + '520578'
+                  + today + '01' + '06')
+        footer = '03' + '000000001' + '000000000504543' + '000000000504543' + '000000000000000'
+        content = '\r\n'.join(line.ljust(152) for line in (header, detail, footer)).encode('ascii')
+        response = self.env['l10n_pe.bank.collection.response'].create({
+            'agreement_id': self.agreement.id, 'file': base64.b64encode(content), 'filename': 'recaudos.txt'})
+        response.action_import()
+        line = response.line_ids
+        self.assertEqual(len(line), 1)
+        self.assertEqual((line.state, line.partner_id), ('matched', self.customer))
+        self.assertAlmostEqual(line.amount, 5045.43)
+        self.assertEqual(line.operation_number, '520578')
+        self.assertEqual(line.branch, '0241')
+        self.assertEqual(line.channel, 'Agentes')
+        self.assertEqual(line.payment_date, self.today)
+        self.assertEqual((response.header_count, response.header_amount), (1, 5045.43))
+        response.action_process()
+        self.assertIn(invoice.payment_state, ('paid', 'in_payment'))

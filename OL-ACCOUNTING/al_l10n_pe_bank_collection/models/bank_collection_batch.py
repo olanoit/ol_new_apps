@@ -90,12 +90,16 @@ class L10nPeBankCollectionBatch(models.Model):
             'return_info': move.name,
             'issue_date': move.invoice_date or move.date,
             'due_date': line.date_maturity,
+            'block_date': fields.Date.add(max(line.date_maturity or self.date, self.date),
+                                          days=agreement.block_days),
             'amount': line.amount,
             'late_amount': 0.0,
             'min_amount': line.amount if agreement.validation == 'full' else 0.0,
             'update_type': 'A',
             'document_number': move.name,
             'depositor_vat': line.partner_id.vat,
+            'depositor_id_type': line.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code
+            if 'l10n_latam_identification_type_id' in line.partner_id._fields else '',
         }
 
     def action_generate(self):
@@ -104,17 +108,24 @@ class L10nPeBankCollectionBatch(models.Model):
             raise UserError(_('El archivo no tiene cuotas.'))
         agreement = self.agreement_id
         layout = agreement.debtors_layout_id
+        details = [self._detail_values(line) for line in self.line_ids]
         header = {
             'account_branch': agreement.account_branch, 'account_number': agreement.account_number,
             'account_full': '%s%s' % (agreement.account_branch or '', agreement.account_number or ''),
             'currency': agreement.currency_id, 'company_name': agreement.company_name or self.company_id.name,
             'company_vat': self.company_id.vat, 'file_date': self.date, 'record_count': len(self.line_ids),
-            'total_amount': self.amount_total, 'file_mode': 'R' if self.mode == 'replace' else 'A',
+            'total_amount': self.amount_total,
+            'total_min_amount': sum(values['min_amount'] for values in details),
+            'file_mode': layout.replace_code if self.mode == 'replace' else layout.update_code,
+            'file_version': self.search_count([
+                ('agreement_id', '=', agreement.id), ('date', '=', self.date), ('state', '!=', 'draft'),
+                ('id', '!=', self.id)]),
             'service_code': agreement.service_code,
         }
-        content = layout._build_file(header, [self._detail_values(line) for line in self.line_ids])
+        content = layout._build_file(header, details)
         filename = (layout.filename or 'recaudacion_%(date)s.txt') % {
-            'date': self.date.strftime('%Y%m%d'), 'currency': layout._currency_code(agreement.currency_id)}
+            'date': self.date.strftime('%Y%m%d'), 'currency': layout._currency_code(agreement.currency_id),
+            'service': agreement.service_code or ''}
         self.write({'file': base64.b64encode(content), 'filename': filename, 'state': 'generated'})
         self.line_ids.move_line_id.write({'l10n_pe_bank_collection_batch_id': self.id})
         return True

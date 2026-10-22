@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- BBVA Perú: ficha técnica oficial del Convenio de Recaudaciones (E1891, V21, marzo
+         2025, publicada en bbva.pe). Archivo de entrada de datos de 360 bytes (encabezado 01,
+         detalle 02, totales 03) y envío de información a la empresa de 152 bytes. La
+         «referencia» (48 posiciones) se divide en el código de identificación (aquí 11, el
+         tamaño del campo código de la ficha técnica de cada empresa) y el concepto. -->
+    <record id="layout_bbva_debtors" model="l10n_pe.bank.collection.layout">
+        <field name="name">BBVA · Archivo de entrada de datos (base de cobros)</field>
+        <field name="file_type">debtors</field>
+        <field name="record_length">360</field>
+        <field name="currency_map">PEN=PEN,USD=USD</field>
+        <field name="replace_code">T</field>
+        <field name="update_code">P</field>
+        <field name="blank_chars">&quot;;,+!#$%/()\¡¿´~[]{}`&lt;&gt;_^:|°¬=?</field>
+        <field name="filename">RC_%(service)s_%(date)s.TXT</field>
+        <field name="note">Ficha técnica BBVA E1891 V21 (marzo 2025). Ajuste la longitud del código de identificación (posiciones 33 en adelante) y del concepto al «tamaño campo código» de su ficha técnica; entre ambos suman 48.</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': '01'}),
+                Command.create({'record_type': 'header', 'name': 'RUC de la empresa', 'start': 3, 'length': 11, 'kind': 'number', 'key': 'company_vat'}),
+                Command.create({'record_type': 'header', 'name': 'Número de clase del recaudo', 'start': 14, 'length': 3, 'kind': 'number', 'key': 'service_code'}),
+                Command.create({'record_type': 'header', 'name': 'Moneda', 'start': 17, 'length': 3, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de generación del archivo', 'start': 20, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Versión', 'start': 28, 'length': 3, 'kind': 'number', 'key': 'file_version'}),
+                Command.create({'record_type': 'header', 'name': 'Vacío', 'start': 31, 'length': 7, 'kind': 'filler'}),
+                Command.create({'record_type': 'header', 'name': 'Indicador tipo de carga (P parcial, T total)', 'start': 38, 'length': 1, 'kind': 'text', 'key': 'file_mode'}),
+                Command.create({'record_type': 'header', 'name': 'Vacío', 'start': 39, 'length': 322, 'kind': 'filler'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': '02'}),
+                Command.create({'record_type': 'detail', 'name': 'Nombre del cliente', 'start': 3, 'length': 30, 'kind': 'text', 'key': 'depositor_name'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia: código de identificación del pago', 'start': 33, 'length': 11, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia: concepto (documento)', 'start': 44, 'length': 37, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de vencimiento', 'start': 81, 'length': 8, 'kind': 'date', 'key': 'due_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de bloqueo', 'start': 89, 'length': 8, 'kind': 'date', 'key': 'block_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Período del pago facturado', 'start': 97, 'length': 2, 'kind': 'constant', 'value': '00'}),
+                Command.create({'record_type': 'detail', 'name': 'Importe máximo a cobrar', 'start': 99, 'length': 15, 'kind': 'amount', 'key': 'amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Importe mínimo a cobrar', 'start': 114, 'length': 15, 'kind': 'amount', 'key': 'min_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Información adicional', 'start': 129, 'length': 32, 'kind': 'constant', 'value': '00000000000000000000000000000000'}),
+                Command.create({'record_type': 'detail', 'name': 'Subconceptos 01 a 08 (código y valor)', 'start': 161, 'length': 128, 'kind': 'constant', 'value': '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de cuenta del cliente', 'start': 289, 'length': 20, 'kind': 'constant', 'value': '00000000000000000000'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de identificación', 'start': 309, 'length': 1, 'kind': 'text', 'key': 'depositor_id_type', 'mapping': '6=R,1=L,4=E,7=P,A=D'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de identificación', 'start': 310, 'length': 15, 'kind': 'text', 'key': 'depositor_vat'}),
+                Command.create({'record_type': 'detail', 'name': 'Vacío', 'start': 325, 'length': 36, 'kind': 'filler'}),
+                Command.create({'record_type': 'footer', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': '03'}),
+                Command.create({'record_type': 'footer', 'name': 'Cantidad de registros cobrables', 'start': 3, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'footer', 'name': 'Total de importes máximos', 'start': 12, 'length': 18, 'kind': 'amount', 'key': 'total_amount'}),
+                Command.create({'record_type': 'footer', 'name': 'Total de importes mínimos', 'start': 30, 'length': 18, 'kind': 'amount', 'key': 'total_min_amount'}),
+                Command.create({'record_type': 'footer', 'name': 'Datos adicionales', 'start': 48, 'length': 18, 'kind': 'constant', 'value': '000000000000000000'}),
+                Command.create({'record_type': 'footer', 'name': 'Vacío', 'start': 66, 'length': 295, 'kind': 'filler'}),
+            ]"/>
+    </record>
+
+    <record id="layout_bbva_response" model="l10n_pe.bank.collection.layout">
+        <field name="name">BBVA · Envío de información a la empresa (recaudos pagados)</field>
+        <field name="file_type">response</field>
+        <field name="record_length">152</field>
+        <field name="currency_map">PEN=PEN,USD=USD</field>
+        <field name="note">Ficha técnica BBVA E1891 V21 (marzo 2025): validación parcial y total, registros de 152 bytes. Llega por correo desde procesos@bbva.com o se descarga en BBVA Net Cash ‣ Recaudaciones ‣ Descarga de archivos de conciliación.</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': '01'}),
+                Command.create({'record_type': 'header', 'name': 'RUC de la empresa', 'start': 3, 'length': 11, 'kind': 'number', 'key': 'company_vat'}),
+                Command.create({'record_type': 'header', 'name': 'Código de clase', 'start': 14, 'length': 3, 'kind': 'number', 'key': 'service_code'}),
+                Command.create({'record_type': 'header', 'name': 'Moneda', 'start': 17, 'length': 3, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de proceso', 'start': 20, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Cuenta recaudadora', 'start': 28, 'length': 18, 'kind': 'number', 'key': 'account_full'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': '02'}),
+                Command.create({'record_type': 'detail', 'name': 'Nombre del cliente', 'start': 3, 'length': 30, 'kind': 'text', 'key': 'depositor_name'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia: código de identificación del pago', 'start': 33, 'length': 11, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia: concepto (documento)', 'start': 44, 'length': 37, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Importe de origen', 'start': 81, 'length': 15, 'kind': 'amount', 'key': 'paid_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Importe depósito', 'start': 96, 'length': 15, 'kind': 'amount', 'key': 'paid_total'}),
+                Command.create({'record_type': 'detail', 'name': 'Importe de mora', 'start': 111, 'length': 15, 'kind': 'amount', 'key': 'late_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Oficina de pago', 'start': 126, 'length': 4, 'kind': 'text', 'key': 'branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de movimiento', 'start': 130, 'length': 6, 'kind': 'text', 'key': 'operation_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de pago', 'start': 136, 'length': 8, 'kind': 'date', 'key': 'payment_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo valor (forma de pago)', 'start': 144, 'length': 2, 'kind': 'text', 'key': 'payment_type', 'mapping': 'Efectivo=01,Cargo en cuenta=02,Cheque BBVA=03,Cheque otro banco=04,Tarjeta de crédito=07,Pago automático=08'}),
+                Command.create({'record_type': 'detail', 'name': 'Canal de entrada', 'start': 146, 'length': 2, 'kind': 'text', 'key': 'channel', 'mapping': 'Ventanilla=01,Cajero BBVA=02,Banca telefónica=03,Banca por internet=04,Pagos en línea=05,Agentes=06,Saldo Express=07,Mis Pagos=08'}),
+                Command.create({'record_type': 'footer', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': '03'}),
+                Command.create({'record_type': 'footer', 'name': 'Total de registros grabados', 'start': 3, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'footer', 'name': 'Total pagos', 'start': 12, 'length': 15, 'kind': 'amount', 'key': 'total_amount'}),
+                Command.create({'record_type': 'footer', 'name': 'Total depósitos', 'start': 27, 'length': 15, 'kind': 'amount', 'key': 'paid_total'}),
+                Command.create({'record_type': 'footer', 'name': 'Total mora', 'start': 42, 'length': 15, 'kind': 'amount', 'key': 'late_amount'}),
+            ]"/>
+    </record>
+</odoo>

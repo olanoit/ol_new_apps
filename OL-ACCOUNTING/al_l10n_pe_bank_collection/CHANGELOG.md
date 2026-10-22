@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_bank_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261022 — 22/10/2026
+
+- Formato oficial de BBVA (ficha técnica E1891 V21): archivo de entrada de datos de 360 bytes y respuesta de 152 bytes.
+- Motor de formatos: códigos de carga por banco, caracteres que se cambian por espacios, equivalencias por campo (tipo de documento, canal), fecha de bloqueo, versión del envío del día y registro de totales.
+- La respuesta identifica el documento aunque el banco haya quitado caracteres (BBVA cambia «/» por espacio).
+
 ## 1.20261022 — 22/10/2026
 
 - Primera versión: convenios, formatos configurables con el CREP del BCP, archivo de deudores, respuesta del banco con pagos y conciliación automática.

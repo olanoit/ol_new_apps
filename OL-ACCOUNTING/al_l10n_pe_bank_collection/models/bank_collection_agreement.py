@@ -47,6 +47,9 @@ class L10nPeBankCollectionAgreement(models.Model):
     days_ahead = fields.Integer(
         string='Enviar lo que vence en (días)', default=30,
         help='Además de lo vencido, las cuotas que vencen dentro de estos días; 0 solo lo vencido.')
+    block_days = fields.Integer(
+        string='Cobrar hasta (días después del vencimiento)', default=90,
+        help='Fecha de bloqueo que piden algunos bancos (BBVA): último día en que el banco acepta el pago.')
     include_disputed = fields.Boolean(string='Incluir documentos en reclamo')
     payment_memo = fields.Char(string='Memo de los pagos', default='Recaudación %(bank)s op. %(operation)s')
 

@@ -26,6 +26,7 @@
                             <field name="code_source"/>
                             <field name="validation"/>
                             <field name="days_ahead"/>
+                            <field name="block_days"/>
                             <field name="include_disputed"/>
                             <field name="payment_memo"/>
                         </group>

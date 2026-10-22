@@ -14,12 +14,15 @@
                             <field name="file_type"/>
                             <field name="filename" invisible="file_type != 'debtors'"/>
                             <field name="currency_map"/>
+                            <field name="replace_code" invisible="file_type != 'debtors'"/>
+                            <field name="update_code" invisible="file_type != 'debtors'"/>
                         </group>
                         <group>
                             <field name="record_length"/>
                             <field name="line_separator"/>
                             <field name="final_newline"/>
                             <field name="encoding"/>
+                            <field name="blank_chars"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
@@ -35,6 +38,7 @@
                             <field name="value" invisible="kind not in ('constant', 'filler')"/>
                             <field name="decimals" invisible="kind != 'amount'" optional="show"/>
                             <field name="date_format" invisible="kind != 'date'" optional="hide"/>
+                            <field name="mapping" invisible="kind in ('constant', 'filler')" optional="show"/>
                             <field name="align" optional="hide"/>
                             <field name="pad" optional="hide"/>
                         </list>
