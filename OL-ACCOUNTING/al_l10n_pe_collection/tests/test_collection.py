@@ -147,9 +147,15 @@ class TestCollection(CollectionCommon):
         line = {l.move_id: l for l in forecast.line_ids}
         self.assertEqual((line[with_promise].source, line[with_promise].expected_date),
                          ('promise', self.today + timedelta(days=3)))
-        self.assertEqual((line[future].source, line[future].expected_date),
-                         ('behavior', self.today + timedelta(days=17)), 'vence en 7 días + 10 de atraso')
-        self.assertEqual((line[other].source, line[other].expected_date), ('due', self.today + timedelta(days=14)))
+        # La fecha de lo demás sale de la predicción de pago (probada aparte): el
+        # cliente pagó 10 días tarde, más el efecto del mes según la cartera de la base.
+        predicted = self.env['l10n_pe.collection.predictor']._predict_lines(
+            self._receivable(future | other), self.company, self.today)
+        for move in (future, other):
+            data = predicted[self._receivable(move)]
+            expected = ('prediction', data['date']) if data['delay'] > 0 else ('due', move.invoice_date_due)
+            self.assertEqual((line[move].source, line[move].expected_date), expected)
+        self.assertEqual(predicted[self._receivable(future)]['source'], 'history')
         self.assertEqual(line[with_promise].bucket_id.name, '31 a 60 días')
         self.assertAlmostEqual(line[with_promise].expected_amount, 1000 * line[with_promise].probability / 100)
         self.assertAlmostEqual(line[future].probability, 98.0)

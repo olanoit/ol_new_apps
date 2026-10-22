@@ -37,6 +37,9 @@ responsable es el **gestor de cobranza** del cliente:
   y sus documentos, sin entrar a Contabilidad.
 * **Cobranza judicial**: proceso por deudor (vía, juzgado, expediente, actuaciones con
   plazos y gastos) que sustenta la provisión y el castigo de la cobranza dudosa.
+* **Predicción de la fecha de pago** de cada cuota (historial del cliente o de la
+  cartera, atraso que ya lleva, estacionalidad y compromisos), con su confianza y su
+  error medido; la usan la cartera («se atrasará») y la proyección.
 * **Pago en línea**: enlace y QR para pagar el saldo con las pasarelas activas (Culqi,
   Niubiz, Izipay…) en los avisos y el estado de cuenta; el pago se aplica a las
   facturas más antiguas.
@@ -48,7 +51,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_collection/static/description/icon.svg',
-    'version': '10.20261022',
+    'version': '11.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account_followup', 'account_payment', 'account_reports', 'al_account_base', 'al_report_base', 'mail',

@@ -44,7 +44,7 @@ HighRadius) y priorización de la cartera de trabajo.
 | M8 | Recaudación bancaria (BCP CREP, BBVA, Interbank, Scotiabank) | P0 | **Hecho** en `al_l10n_pe_bank_collection` con formatos configurables y el CREP del BCP precargado (layout más difundido; verificar con la ficha técnica). BBVA, Interbank y Scotiabank: crear su formato con la ficha de cada banco |
 | M9 | Links de pago / PagoEfectivo / Yape en recordatorios | P1 | **Hecho**: botón y QR «Pagar en línea» en los avisos (v5) y PagoEfectivo (CIP) en `al_payment_pagoefectivo` |
 | M10 | Comisiones de gestores, agencias externas, cobranza judicial | P2 | Hecho (v7 y v8) |
-| M11 | Predicción de fecha de pago con IA, marcador de contact center | P2 | Pendiente |
+| M11 | Predicción de fecha de pago con IA, marcador de contact center | P2 | Predicción hecha (v11, modelo estadístico propio); marcador pendiente |
 
 ## 4. Diseño v3
 

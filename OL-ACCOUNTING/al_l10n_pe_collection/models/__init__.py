@@ -7,6 +7,7 @@ from . import collection_interest
 from . import collection_rate_cap
 from . import collection_promise
 from . import collection_action
+from . import collection_prediction
 from . import collection_portfolio
 from . import collection_forecast
 from . import collection_target

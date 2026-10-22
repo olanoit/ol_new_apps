@@ -16,6 +16,10 @@
                 <field name="bucket_id" optional="show"/>
                 <field name="is_overdue" column_invisible="True"/>
                 <field name="promise_date" optional="show"/>
+                <field name="predicted_date" optional="show" decoration-danger="late_risk"/>
+                <field name="predicted_delay" optional="hide"/>
+                <field name="prediction_confidence" optional="hide"/>
+                <field name="late_risk" column_invisible="True"/>
                 <field name="rating" optional="show"/>
                 <field name="in_dispute" optional="show"/>
                 <field name="hold" optional="hide"/>
@@ -69,6 +73,11 @@
                 <filter name="not_overdue" string="Por vencer" domain="[('is_overdue', '=', False)]"/>
                 <filter name="over_90" string="Más de 90 días" domain="[('days_overdue', '&gt;', 90)]"/>
                 <filter name="with_promise" string="Con compromiso" domain="[('promise_date', '!=', False)]"/>
+                <filter name="late_risk" string="Se atrasará" domain="[('late_risk', '=', True)]"
+                        help="Se espera cobrarla más tarde que el atraso relevante de Ajustes."/>
+                <filter name="late_before_due" string="Por vencer que se atrasará"
+                        domain="[('late_risk', '=', True), ('is_overdue', '=', False)]"
+                        help="Todavía no vence, pero el cliente suele pagar tarde: gestiónela antes."/>
                 <filter name="in_dispute" string="En disputa" domain="[('in_dispute', '=', True)]"/>
                 <filter name="enforceable" string="Exigible" domain="[('in_dispute', '=', False)]"/>
                 <filter name="on_hold" string="Clientes bloqueados" domain="[('hold', 'in', ('auto', 'manual'))]"/>
@@ -79,6 +88,7 @@
                     <filter name="group_bucket" string="Tramo" context="{'group_by': 'bucket_id'}"/>
                     <filter name="group_rating" string="Calificación" context="{'group_by': 'rating'}"/>
                     <filter name="group_due" string="Mes de vencimiento" context="{'group_by': 'date_maturity:month'}"/>
+                    <filter name="group_predicted" string="Mes de pago previsto" context="{'group_by': 'predicted_date:month'}"/>
                 </group>
             </search>
         </field>

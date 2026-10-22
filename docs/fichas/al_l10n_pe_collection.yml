@@ -101,6 +101,12 @@ pasos:
       Aviso previo al deudor, plazo de espera, reporte y aviso al gestor para retirarlo cuando
       paga.
     imagen: screenshots/v3-bureaus.png
+  - titulo: Anticipar los atrasos
+    ruta: Cobranza ▸ Cartera ▸ Cartera (filtro «Se atrasará»)
+    texto: >-
+      Cada cuota tiene su fecha prevista de pago según el historial del cliente; las que se
+      atrasarán se gestionan antes de vencer.
+    imagen: screenshots/v3-prediction.png
   - titulo: Llevar la cobranza judicial
     ruta: Cobranza ▸ Gestión ▸ Cobranza judicial
     texto: >-
@@ -159,6 +165,11 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 11.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Predicción de la fecha de pago de cada cuota (historial del cliente ponderado por importe y recencia, atraso que ya lleva, estacionalidad de la cartera y compromisos), con su confianza; columna y filtros «Se atrasará» en la cartera, atraso típico en el cliente y en la cola de trabajo, y la proyección usa la fecha prevista. Medición de la precisión contra pagos reales."
+      - "La cartera calcula los días de atraso con la fecha de Lima: con el servidor en UTC sumaba un día desde las 19:00."
   - version: 10.20261022
     fecha: 22/10/2026
     cambios:

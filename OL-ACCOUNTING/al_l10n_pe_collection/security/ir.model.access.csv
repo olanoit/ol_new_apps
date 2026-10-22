@@ -68,3 +68,5 @@ access_lawsuit_cost_user,l10n_pe.collection.lawsuit.cost user,model_l10n_pe_coll
 access_lawsuit_cost_agency,l10n_pe.collection.lawsuit.cost agency,model_l10n_pe_collection_lawsuit_cost,group_collection_agency,1,1,1,1
 access_lawsuit_close_user,l10n_pe.collection.lawsuit.close user,model_l10n_pe_collection_lawsuit_close,group_collection_user,1,1,1,1
 access_lawsuit_close_agency,l10n_pe.collection.lawsuit.close agency,model_l10n_pe_collection_lawsuit_close,group_collection_agency,1,1,1,1
+access_prediction_user,l10n_pe.collection.prediction user,model_l10n_pe_collection_prediction,group_collection_user,1,0,0,0
+access_prediction_manager,l10n_pe.collection.prediction manager,model_l10n_pe_collection_prediction,group_collection_manager,1,0,0,0

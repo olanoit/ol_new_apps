@@ -14,6 +14,13 @@
                 <field name="l10n_pe_collection_agency_id" invisible="not l10n_pe_collection_agency_id"/>
                 <field name="l10n_pe_collection_rating" invisible="not l10n_pe_collection_rating"/>
                 <field name="l10n_pe_collection_score" invisible="not l10n_pe_collection_rated_on"/>
+                <label for="l10n_pe_collection_typical_delay" string="Suele pagar"
+                       invisible="not l10n_pe_collection_prediction_confidence"/>
+                <div class="o_row" invisible="not l10n_pe_collection_prediction_confidence">
+                    <field name="l10n_pe_collection_typical_delay" class="oe_inline"/>
+                    <span>días después del vencimiento · confianza</span>
+                    <field name="l10n_pe_collection_prediction_confidence" class="oe_inline"/>
+                </div>
                 <field name="l10n_pe_collection_rated_on" invisible="1"/>
                 <field name="l10n_pe_collection_hold" invisible="not l10n_pe_collection_hold"
                        decoration-danger="l10n_pe_collection_hold in ('auto', 'manual')" widget="badge"/>
@@ -130,6 +137,7 @@
                 <field name="l10n_pe_collection_rating"/>
                 <field name="l10n_pe_collection_score" optional="show"/>
                 <field name="l10n_pe_collection_max_days"/>
+                <field name="l10n_pe_collection_typical_delay" string="Suele pagar (días)" optional="show"/>
                 <field name="total_overdue" string="Vencido" sum="Total"/>
                 <field name="l10n_pe_collection_priority" optional="show"/>
                 <field name="l10n_pe_collection_hold" optional="show"/>

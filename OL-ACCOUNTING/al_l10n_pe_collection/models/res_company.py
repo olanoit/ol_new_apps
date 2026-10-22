@@ -29,6 +29,10 @@ class ResCompany(models.Model):
         string='Resumen diario a los gestores', default=True,
         help='Correo diario a cada gestor con sus compromisos del día, gestiones pendientes, '
              'documentos por vencer y nuevos vencidos.')
+    l10n_pe_collection_prediction_late_days = fields.Integer(
+        string='Atraso previsto relevante (días)', default=7,
+        help='Una cuota se marca con atraso previsto cuando se espera cobrarla más de estos días después de su '
+             'vencimiento.')
     l10n_pe_collection_history_months = fields.Integer(
         string='Historial de pago (meses)', default=12,
         help='Meses de facturas pagadas que se usan para calcular el atraso promedio de cada cliente.')
@@ -100,7 +104,8 @@ class ResCompany(models.Model):
         return super()._get_company_root_delegated_field_names() + [
             'l10n_pe_collection_promise_tolerance', 'l10n_pe_collection_promise_reminder_days',
             'l10n_pe_collection_promise_min_percent', 'l10n_pe_collection_digest',
-            'l10n_pe_collection_history_months', 'l10n_pe_collection_hour_from',
+            'l10n_pe_collection_history_months', 'l10n_pe_collection_prediction_late_days',
+            'l10n_pe_collection_hour_from',
             'l10n_pe_collection_hour_to', 'l10n_pe_collection_consumer_guard',
             'l10n_pe_collection_hold_days', 'l10n_pe_collection_hold_rating_d',
             'l10n_pe_collection_interest_rate', 'l10n_pe_collection_interest_account_id',
@@ -145,6 +150,8 @@ class ResConfigSettings(models.TransientModel):
     l10n_pe_collection_digest = fields.Boolean(related='company_id.l10n_pe_collection_digest', readonly=False)
     l10n_pe_collection_history_months = fields.Integer(
         related='company_id.l10n_pe_collection_history_months', readonly=False)
+    l10n_pe_collection_prediction_late_days = fields.Integer(
+        related='company_id.l10n_pe_collection_prediction_late_days', readonly=False)
 
     l10n_pe_collection_hour_from = fields.Float(related='company_id.l10n_pe_collection_hour_from', readonly=False)
     l10n_pe_collection_hour_to = fields.Float(related='company_id.l10n_pe_collection_hour_to', readonly=False)
@@ -184,6 +191,15 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.l10n_pe_collection_commission_plan_id', readonly=False)
     l10n_pe_collection_commission_product_id = fields.Many2one(
         related='company_id.l10n_pe_collection_commission_product_id', readonly=False)
+
+    def action_l10n_pe_collection_prediction_backtest(self):
+        return self.env['l10n_pe.collection.predictor']._backtest_notification(self.company_id)
+
+    def action_l10n_pe_collection_prediction_refresh(self):
+        count = self.env['l10n_pe.collection.predictor']._refresh(self.company_id)
+        return {'type': 'ir.actions.client', 'tag': 'display_notification',
+                'params': {'title': self.env._('Predicción de pago'), 'type': 'success',
+                           'message': self.env._('%s cuotas abiertas con fecha prevista de pago.', count)}}
 
     def action_l10n_pe_collection_load_followup_levels(self):
         return self.env['account_followup.followup.line']._l10n_pe_load_levels(self.company_id)

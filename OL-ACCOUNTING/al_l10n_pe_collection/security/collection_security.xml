@@ -334,5 +334,11 @@
             <field name="domain_force">[('lawsuit_id.agency_id.user_ids', 'in', [user.id])]</field>
             <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
         </record>
+        <!-- Predicción de pago -->
+        <record id="collection_prediction_company_rule" model="ir.rule">
+            <field name="name">Fecha prevista de pago: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_prediction"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>

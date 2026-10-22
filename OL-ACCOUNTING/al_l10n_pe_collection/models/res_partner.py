@@ -56,6 +56,13 @@ class ResPartner(models.Model):
     l10n_pe_collection_agency_id = fields.Many2one(
         'l10n_pe.collection.agency', string='Agencia de cobranza', readonly=True, index='btree_not_null',
         help='Agencia externa que gestiona hoy la deuda del cliente; se asigna desde Cobranza.')
+    l10n_pe_collection_typical_delay = fields.Integer(
+        string='Atraso típico (días)', company_dependent=True, readonly=True,
+        help='Días después del vencimiento en que se espera que pague una cuota nueva, según su historial (o el de '
+             'la cartera si no tiene). Se recalcula cada día.')
+    l10n_pe_collection_prediction_confidence = fields.Selection(
+        [('high', 'Alta'), ('medium', 'Media'), ('low', 'Baja')], string='Confianza de la predicción',
+        company_dependent=True, readonly=True)
     l10n_pe_collection_action_count = fields.Integer(
         string='Gestiones', compute='_compute_l10n_pe_collection_counts')
     l10n_pe_collection_promise_count = fields.Integer(
@@ -242,6 +249,22 @@ class ResPartner(models.Model):
             rated = self.with_company(company).sudo().search([('l10n_pe_collection_rating', '!=', False)])
             held = self.with_company(company).sudo().search([('l10n_pe_collection_hold', '!=', False)])
             (partners | rated | held).commercial_partner_id._l10n_pe_collection_rate(company, today)
+
+    def _l10n_pe_collection_promise_confidence(self, company=None, today=None):
+        """Confianza en un compromiso del cliente según los que cumplió en 12 meses."""
+        self.ensure_one()
+        company = company or self.env.company
+        today = today or fields.Date.context_today(self)
+        # sudo: cuenta los compromisos de todos los gestores.
+        evaluated_sudo = self.env['l10n_pe.collection.promise'].sudo().search([
+            ('partner_id', '=', self.commercial_partner_id.id),
+            ('company_id', 'child_of', company.root_id.id),
+            ('state', 'in', ('kept', 'partial', 'broken')),
+            ('evaluated_on', '>=', today - relativedelta(months=12))])
+        if not evaluated_sudo:
+            return 'medium'
+        kept = len(evaluated_sudo.filtered(lambda p: p.state == 'kept')) / len(evaluated_sudo)
+        return 'high' if kept >= 0.8 else 'medium' if kept >= 0.5 else 'low'
 
     def _l10n_pe_collection_is_on_hold(self, company=None):
         self.ensure_one()

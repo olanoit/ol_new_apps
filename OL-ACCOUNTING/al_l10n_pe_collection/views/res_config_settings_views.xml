@@ -61,6 +61,22 @@
                                 Últimos <field name="l10n_pe_collection_history_months" class="text-center" style="width: 10%; min-width: 3rem;"/> meses
                             </div>
                         </setting>
+                        <setting id="collection_prediction" string="Predicción de pago" company_dependent="1"
+                                 help="Fecha prevista de pago de cada cuota según el historial del cliente (o de la cartera), el atraso que ya lleva, la estacionalidad y sus compromisos. Se recalcula cada día; la usan la cartera y la proyección."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#predicción-de-pago">
+                            <div class="mt16">
+                                Marcar «se atrasará» desde <field name="l10n_pe_collection_prediction_late_days" class="text-center" style="width: 10%; min-width: 3rem;"/>
+                                días después del vencimiento
+                            </div>
+                            <div class="mt8">
+                                <button name="action_l10n_pe_collection_prediction_backtest" type="object"
+                                        string="Medir la precisión" class="btn-link" icon="fa-bullseye"/>
+                            </div>
+                            <div>
+                                <button name="action_l10n_pe_collection_prediction_refresh" type="object"
+                                        string="Recalcular ahora" class="btn-link" icon="fa-refresh"/>
+                            </div>
+                        </setting>
                         <setting id="collection_digest" company_dependent="1"
                                  help="Correo diario a cada gestor con sus compromisos del día, gestiones pendientes, documentos por vencer y nuevos vencidos."
                                  documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#notificaciones">

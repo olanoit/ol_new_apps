@@ -31,7 +31,7 @@ SMS o carta siguen siendo los niveles de seguimiento.
 
     | Bloque | Qué se configura |
     |---|---|
-    | Cartera y gestión | Zonas, tramos de antigüedad, resultados de gestión y motivos de reclamo; tolerancia, recordatorio y porcentaje de cumplimiento de los compromisos; meses de historial de pago y resumen diario a los gestores; **Cargar niveles** de seguimiento en español (recordatorio 3 días antes y avisos al vencer y a los 15, 30 y 60 días; los que ya existen no se tocan) |
+    | Cartera y gestión | Zonas, tramos de antigüedad, resultados de gestión y motivos de reclamo; predicción de pago (atraso relevante, recalcular y medir la precisión); tolerancia, recordatorio y porcentaje de cumplimiento de los compromisos; meses de historial de pago y resumen diario a los gestores; **Cargar niveles** de seguimiento en español (recordatorio 3 días antes y avisos al vencer y a los 15, 30 y 60 días; los que ya existen no se tocan) |
     | Riesgo y protección al consumidor | Horario de contacto con consumidores (art. 62), bloqueo de crédito por mora y días de espera del aviso a centrales de riesgo |
     | Intereses y cobranza dudosa | Tasa de interés moratorio, su cuenta y las tasas máximas del BCRP; meses, gestiones mínimas, diario y cuentas de la provisión, y valor de la UIT |
     | Cobro, agencias y comisiones | Enlace de pago en línea y proveedores de pago; plan de comisión de los gestores, servicio de la factura de agencias, planes y agencias; convenios y formatos de recaudación bancaria (si está instalada) |
@@ -179,6 +179,45 @@ registros correspondiente.
 Para adaptarlo, duplíquelo desde la aplicación **Tableros** (requiere permiso de edición
 de tableros): los cambios hechos sobre el original se pueden perder al actualizar el
 módulo.
+
+## Predicción de pago
+
+Cada día, Cobranza calcula para cada cuota abierta la **fecha en que se espera cobrarla**.
+Usa un modelo estadístico que corre dentro de Odoo, sin servicios externos:
+
+| Situación | Cómo se estima |
+|---|---|
+| El cliente tiene pagos en el historial | Mediana de sus atrasos. Pesan más los pagos grandes y los recientes, y un pago excepcional no la mueve. |
+| La cuota ya superó su atraso habitual | Solo cuentan los pagos en que se atrasó al menos lo mismo. Si nunca se atrasó tanto, se extrapola con confianza baja. |
+| El mes suele pagarse más tarde o más temprano | Se suma la diferencia del mes de vencimiento en toda la cartera, hasta ±15 días. |
+| El cliente no tiene pagos previos | Comportamiento de toda la cartera, con confianza baja. |
+| Hay un compromiso de pago pendiente | Su fecha. La confianza depende de los compromisos que el cliente cumplió en el año. |
+
+Solo cuentan como pagos los cobros por bancos y cajas. Un castigo o una nota de crédito no
+es un pago.
+
+![Cartera con el pago previsto](collection/prediction.png)
+
+- **Cartera:** columna **Pago previsto** (en rojo si se atrasará). Tiene los filtros **Se
+  atrasará** y **Por vencer que se atrasará**, este último para gestionar antes de que
+  venza. También se puede agrupar por **Mes de pago previsto**.
+- **Cliente:** «Suele pagar N días después del vencimiento», con la confianza. La cola de
+  trabajo lo muestra en una columna.
+- **Proyección de cobranza:** con **Usar la predicción de pago** marcado, la fecha esperada
+  de cada cuota es la prevista (origen **Predicción de pago**).
+
+**Ajustes ‣ Predicción de pago** tiene tres opciones:
+
+- Desde cuántos días de atraso previsto se marca «se atrasará» (7 por defecto).
+- **Recalcular ahora** las predicciones.
+- **Medir la precisión**: predice cada cuota pagada en los últimos 3 meses con lo que se
+  sabía a su vencimiento y compara con el pago real. Muestra el error medio en días, el error
+  de suponer que se paga al vencer y el porcentaje de pagos que cayeron a menos de 7 días de
+  la fecha prevista. El mismo botón está en la proyección.
+
+!!! tip "Consejo"
+    La predicción mejora con el historial. Con menos de 3 pagos del cliente la confianza es
+    baja: úsela como orientación y priorice los compromisos de pago.
 
 ## Metas e indicadores del gestor
 

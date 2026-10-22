@@ -8,6 +8,8 @@
                 <header>
                     <button name="action_refresh" type="object" string="Actualizar" class="btn-primary"/>
                     <button name="action_export_xlsx" type="object" string="Exportar a Excel"/>
+                    <button name="action_prediction_backtest" type="object" string="Precisión de la predicción"
+                            invisible="not use_behavior"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

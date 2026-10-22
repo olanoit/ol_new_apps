@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261022 — 22/10/2026
+
+- Mapa de pantallas actualizado a 481: predicción de pago de Cobranza.
+
 ## 9.20261022 — 22/10/2026
 
 - Mapa de pantallas actualizado a 479: agencias externas, comisiones, planes de comisión y cobranza judicial de Cobranza.

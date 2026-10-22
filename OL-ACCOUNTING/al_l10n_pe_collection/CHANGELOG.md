@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261022 — 22/10/2026
+
+- Predicción de la fecha de pago de cada cuota (historial del cliente ponderado por importe y recencia, atraso que ya lleva, estacionalidad de la cartera y compromisos), con su confianza; columna y filtros «Se atrasará» en la cartera, atraso típico en el cliente y en la cola de trabajo, y la proyección usa la fecha prevista. Medición de la precisión contra pagos reales.
+- La cartera calcula los días de atraso con la fecha de Lima: con el servidor en UTC sumaba un día desde las 19:00.
+
 ## 10.20261022 — 22/10/2026
 
 - Ajustes con el diseño de las apps de Odoo: casilla a la izquierda para lo que se activa, valores en línea con su unidad («Evaluar 2 días después…»), icono de valor por compañía, enlace a la guía en cada ajuste y el castigo (UIT) separado de la provisión.

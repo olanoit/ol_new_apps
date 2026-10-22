@@ -2155,6 +2155,22 @@
         <field name="path">applications/finance/accounting/collection/</field>
         <field name="section">Cobranza</field>
     </record>
+    <record id="help_l10n_pe_collection_prediction" model="al.docs.help">
+        <field name="key">l10n_pe.collection.prediction</field>
+        <field name="kind">model</field>
+        <field name="name">Fecha prevista de pago</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_predictor" model="al.docs.help">
+        <field name="key">l10n_pe.collection.predictor</field>
+        <field name="kind">model</field>
+        <field name="name">Predicción de pagos de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
     <record id="help_l10n_pe_collection_promise" model="al.docs.help">
         <field name="key">l10n_pe.collection.promise</field>
         <field name="kind">model</field>

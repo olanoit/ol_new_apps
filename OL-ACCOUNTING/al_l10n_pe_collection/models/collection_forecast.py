@@ -11,6 +11,7 @@ from odoo.exceptions import ValidationError
 
 SOURCES = [
     ('promise', 'Compromiso'),
+    ('prediction', 'Predicción de pago'),
     ('behavior', 'Historial de pago'),
     ('due', 'Vencimiento'),
     ('manual', 'Ajustada'),
@@ -87,8 +88,9 @@ class L10nPeCollectionForecast(models.Model):
     period_count = fields.Integer(string='Cantidad de periodos', required=True, default=8)
     user_ids = fields.Many2many('res.users', string='Gestores', help='Vacío: todos.')
     zone_ids = fields.Many2many('l10n_pe.collection.zone', string='Zonas', help='Vacío: todas.')
-    use_behavior = fields.Boolean(string='Usar el historial de pago', default=True,
-                                  help='Corre la fecha esperada según el atraso promedio de cada cliente.')
+    use_behavior = fields.Boolean(string='Usar la predicción de pago', default=True,
+                                  help='Corre la fecha esperada según la predicción de pago de cada cuota: historial '
+                                       'del cliente (o de la cartera), atraso que ya lleva y estacionalidad.')
     use_probability = fields.Boolean(string='Aplicar probabilidad por antigüedad', default=True)
     line_ids = fields.One2many('l10n_pe.collection.forecast.line', 'forecast_id', string='Partidas', copy=False)
     period_ids = fields.One2many('l10n_pe.collection.forecast.period', 'forecast_id', string='Resumen', copy=False)
@@ -191,7 +193,10 @@ class L10nPeCollectionForecast(models.Model):
         company = self.company_id
         Bucket = self.env['l10n_pe.collection.bucket']
         promise_dates = self._promise_dates(lines)
-        delays = {}
+        predictions = {}
+        if self.use_behavior:
+            predictions = self.env['l10n_pe.collection.predictor']._predict_lines(
+                lines.filtered(lambda l: l not in promise_dates), company, self.date_from)
         values = []
         for line in lines:
             partner = line.partner_id.commercial_partner_id
@@ -200,14 +205,10 @@ class L10nPeCollectionForecast(models.Model):
             bucket = Bucket._l10n_pe_for_days(days, company)
             if line in promise_dates:
                 expected, source = promise_dates[line], 'promise'
+            elif line in predictions and predictions[line]['delay'] > 0:
+                expected, source = predictions[line]['date'], 'prediction'
             else:
-                if self.use_behavior and partner not in delays:
-                    delays[partner] = partner._l10n_pe_collection_average_delay(company, self.date_from)
-                delay = delays.get(partner, 0)
-                if delay > 0:
-                    expected, source = due + timedelta(days=delay), 'behavior'
-                else:
-                    expected, source = due, 'due'
+                expected, source = due, 'due'
             probability = bucket.probability if self.use_probability and bucket else 100.0
             values.append({
                 'move_line_id': line.id,
@@ -273,6 +274,10 @@ class L10nPeCollectionForecast(models.Model):
             'domain': [('forecast_id', '=', self.id)],
             'context': {'search_default_group_user': 1},
         }
+
+    def action_prediction_backtest(self):
+        self.ensure_one()
+        return self.env['l10n_pe.collection.predictor']._backtest_notification(self.company_id)
 
     def action_export_xlsx(self):
         self.ensure_one()

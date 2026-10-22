@@ -45,4 +45,13 @@
         <field name="interval_type">days</field>
         <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 06:00:00')"/>
     </record>
+    <record id="ir_cron_collection_prediction" model="ir.cron">
+        <field name="name">Cobranza: predecir fechas de pago</field>
+        <field name="model_id" ref="model_l10n_pe_collection_predictor"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_predict()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 07:00:00')"/>
+    </record>
 </odoo>

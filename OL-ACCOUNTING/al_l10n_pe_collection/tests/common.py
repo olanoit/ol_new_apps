@@ -13,6 +13,8 @@ class CollectionCommon(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         use_pe_company(cls)
+        # Hora de Lima, como la cartera: si no, cerca de medianoche «hoy» difiere.
+        cls.env = cls.env(context=dict(cls.env.context, tz='America/Lima'))
         cls.company = cls.env.company
         if not cls.company.external_report_layout_id:
             cls.company.external_report_layout_id = cls.env.ref('web.external_layout_standard')
