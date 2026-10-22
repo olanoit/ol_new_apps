@@ -36,6 +36,16 @@ destacados:
     titulo: Avisos
     texto: >-
       Recordatorio al cliente, alerta de incumplidos y resumen diario a cada gestor.
+  - icono: "A"
+    titulo: Riesgo y bloqueo
+    texto: >-
+      Calificación A–D de cada cliente, cola de trabajo por prioridad y bloqueo de crédito
+      por mora.
+  - icono: "⚖"
+    titulo: Cumplimiento peruano
+    texto: >-
+      Reclamos que pausan la cobranza, protección al consumidor (art. 62), intereses por
+      nota de débito, provisión y castigo tributario y centrales de riesgo.
 
 contexto:
   titulo: El problema que resuelve
@@ -73,11 +83,23 @@ pasos:
     texto: >-
       Desde la ficha del cliente o a varios clientes a la vez.
     imagen: screenshots/statement.png
+  - titulo: Trabajar la cola del día
+    ruta: Cobranza ▸ Cartera ▸ Cola de trabajo
+    texto: >-
+      Clientes con deuda vencida ordenados por vencido y riesgo; «Gestionar» registra la
+      llamada.
+  - titulo: Provisionar la cobranza dudosa
+    ruta: Cobranza ▸ Gestión ▸ Provisión de cobranza dudosa
+    texto: >-
+      Propone las deudas de más de 12 meses con gestiones registradas, contabiliza 68711 / 19,
+      imprime el expediente de cada deudor y después registra recuperaciones y castigos.
 
 configuracion:
   - "Permisos Cobranza / Gestor o Administrador."
   - "Cobranza ▸ Configuración: zonas, tramos de antigüedad con su probabilidad y resultados de gestión."
   - "Ajustes ▸ Perú ▸ Cobranza: compromisos, historial, resumen diario y carga de niveles de seguimiento en español."
+  - "Ajustes ▸ Perú ▸ Cobranza: horario de contacto con consumidores, bloqueo por mora, tasa de interés moratorio, cuentas y diario de provisiones, UIT y plazo del aviso a centrales."
+  - "Feriados: ausencias globales del horario laboral de la compañía (módulo Recursos)."
 
 faq:
   - pregunta: "¿Reemplaza al seguimiento de pagos de Odoo?"
@@ -94,7 +116,31 @@ faq:
       De sus facturas pagadas en los últimos meses (12 por defecto): días entre el
       vencimiento y el pago, ponderados por importe.
 
+  - pregunta: "¿Cómo sabe la app que un cliente es consumidor?"
+    respuesta: >-
+      Por su documento: sin RUC es consumidor. En la ficha del cliente se puede fijar el tipo
+      de deudor a mano.
+  - pregunta: "¿Qué sustenta la provisión ante SUNAT?"
+    respuesta: >-
+      Las gestiones de cobro registradas después del vencimiento (la Casación 15840-2025 pide
+      acciones concretas) o un proceso judicial; el expediente de cobranza en PDF las reúne
+      con los compromisos, reclamos y comunicaciones.
+  - pregunta: "¿Envía la deuda a Equifax o Sentinel?"
+    respuesta: >-
+      No hay API pública: la app lleva el aviso previo, el plazo, el reporte y el retiro, y
+      genera el Excel con los datos que se cargan en la central.
+
 novedades:
+  - version: 3.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Reclamos: los documentos discutidos salen del seguimiento, de la deuda exigible y de las centrales de riesgo hasta resolverse; el resultado «Reclamo o disconformidad» abre el reclamo."
+      - "Protección al consumidor (art. 62 de la Ley 29571): sin gestiones por llamada, visita, WhatsApp o SMS fuera del horario, en fines de semana ni feriados, ni recordatorios antes del vencimiento sin consentimiento."
+      - "Calificación de riesgo A–D de cada cliente y cola de trabajo del gestor ordenada por prioridad."
+      - "Bloqueo de crédito por mora (días de atraso, calificación D o manual) con liberación del administrador; el módulo al_l10n_pe_collection_sale bloquea los pedidos de venta."
+      - "Intereses moratorios (TEA pactada, año de 360 días) en el estado de cuenta y liquidación por nota de débito motivo 01 en borrador."
+      - "Provisión de cobranza dudosa (68711 / 19) con gestiones como sustento, recuperación (7551), castigo hasta 3 UIT y expediente de cobranza en PDF."
+      - "Centrales de riesgo: aviso previo, plazo, reporte, retiro cuando paga o a los 5 años (Ley 27489) y Excel."
   - version: 2.20261021
     fecha: 21/10/2026
     cambios:
@@ -105,4 +151,4 @@ novedades:
     cambios:
       - "Primera versión: cartera por gestor y zona, gestiones, compromisos evaluados solos, proyección de cobranza, metas, tablero, estado de cuenta, recordatorios, resumen diario y niveles de seguimiento en español."
 
-relacionados: [al_l10n_pe_cash_forecast, al_l10n_pe_account_letter, al_l10n_pe_payment_receipt]
+relacionados: [al_l10n_pe_collection_sale, al_l10n_pe_cash_forecast, al_l10n_pe_account_letter, al_l10n_pe_payment_receipt]

@@ -38,6 +38,84 @@
                             </div>
                         </div>
                     </setting>
+                    <setting string="Protección al consumidor"
+                             help="Art. 62 de la Ley 29571: con clientes sin RUC, sin llamadas, visitas ni mensajes fuera del horario, en fines de semana o feriados, ni recordatorios antes del vencimiento sin su consentimiento.">
+                        <field name="l10n_pe_collection_consumer_guard"/>
+                        <div class="content-group" invisible="not l10n_pe_collection_consumer_guard">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_hour_from" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_hour_from" widget="float_time"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_hour_to" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_hour_to" widget="float_time"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Bloqueo de crédito por mora"
+                             help="Se revisa cada día al calificar a los clientes; el bloqueo impide confirmar pedidos de venta. El administrador puede liberar a un cliente por unos días.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_hold_days" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_hold_days"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_hold_rating_d" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_hold_rating_d"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Intereses moratorios"
+                             help="Solo si se pactaron y sin superar el tope del BCRP. Se facturan con nota de débito motivo 01, inafecta al IGV.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_interest_rate" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_interest_rate"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_interest_account_id" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_interest_account_id" options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Provisión y castigo de cobranza dudosa"
+                             help="Art. 21 f) y g) del Reglamento de la LIR. Sin cuentas, se usan 68711 y 1911 del plan contable.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_provision_months" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_provision_months"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_provision_min_actions" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_provision_min_actions"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_provision_journal_id" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_provision_journal_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_provision_expense_account_id" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_provision_expense_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_provision_account_id" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_provision_account_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_uit" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_uit"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Centrales de riesgo"
+                             help="Plazo entre el aviso previo al deudor y el reporte.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_bureau_wait_days" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_bureau_wait_days"/>
+                            </div>
+                        </div>
+                    </setting>
                     <setting string="Niveles de seguimiento en español"
                              help="Agrega los niveles que falten: recordatorio 3 días antes, aviso al vencer y a los 15, 30 y 60 días.">
                         <button name="action_l10n_pe_collection_load_followup_levels" type="object"

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_order_form_collection_hold" model="ir.ui.view">
+        <field name="name">sale.order.form.collection.hold</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger mb-0" role="alert"
+                     invisible="not l10n_pe_collection_hold_warning or state not in ('draft', 'sent')">
+                    <field name="l10n_pe_collection_hold_warning"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

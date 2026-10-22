@@ -4,10 +4,9 @@
               web_icon="al_l10n_pe_collection,static/description/icon.svg"
               groups="al_l10n_pe_collection.group_collection_user"/>
 
-    <menuitem id="menu_collection_dashboard" name="Tablero" parent="menu_collection_root"
-              action="action_collection_spreadsheet_dashboard" sequence="1"/>
-
     <menuitem id="menu_collection_portfolio_root" name="Cartera" parent="menu_collection_root" sequence="10"/>
+    <menuitem id="menu_collection_worklist" name="Cola de trabajo" parent="menu_collection_portfolio_root"
+              action="action_collection_worklist" sequence="5"/>
     <menuitem id="menu_collection_portfolio" name="Cartera" parent="menu_collection_portfolio_root"
               action="action_collection_portfolio_server" sequence="10"/>
     <menuitem id="menu_collection_aging" name="Antigüedad" parent="menu_collection_portfolio_root"
@@ -23,6 +22,16 @@
               action="action_collection_action" sequence="10"/>
     <menuitem id="menu_collection_promises" name="Compromisos de pago" parent="menu_collection_management_root"
               action="action_collection_promise" sequence="20"/>
+    <menuitem id="menu_collection_disputes" name="Reclamos" parent="menu_collection_management_root"
+              action="action_collection_dispute" sequence="30"/>
+    <menuitem id="menu_collection_bureaus" name="Centrales de riesgo" parent="menu_collection_management_root"
+              action="action_collection_bureau" sequence="40"/>
+    <menuitem id="menu_collection_interest" name="Liquidar intereses" parent="menu_collection_management_root"
+              action="action_collection_interest_wizard" sequence="50"
+              groups="al_l10n_pe_collection.group_collection_manager"/>
+    <menuitem id="menu_collection_provision" name="Provisión de cobranza dudosa" parent="menu_collection_management_root"
+              action="action_collection_provision" sequence="60"
+              groups="al_l10n_pe_collection.group_collection_manager"/>
 
     <menuitem id="menu_collection_planning_root" name="Proyección y metas" parent="menu_collection_root" sequence="30"/>
     <menuitem id="menu_collection_forecast" name="Proyección de cobranza" parent="menu_collection_planning_root"
@@ -40,6 +49,8 @@
               action="action_collection_bucket" sequence="20"/>
     <menuitem id="menu_collection_results" name="Resultados de gestión" parent="menu_collection_config_root"
               action="action_collection_result" sequence="30"/>
+    <menuitem id="menu_collection_dispute_reasons" name="Motivos de reclamo" parent="menu_collection_config_root"
+              action="action_collection_dispute_reason" sequence="35"/>
     <menuitem id="menu_collection_followup_levels" name="Niveles de seguimiento" parent="menu_collection_config_root"
               action="account_followup.action_account_followup_line_definition_form" sequence="40"/>
 </odoo>

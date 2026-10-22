@@ -45,3 +45,23 @@ class AccountFollowupLine(models.Model):
                 'next': {'type': 'ir.actions.act_window_close'},
             },
         }
+
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    def _execute_followup_partner(self, options=None):
+        """No envía a un consumidor los niveles previos al vencimiento sin su
+        consentimiento (Indecopi sancionó en 2025 los recordatorios antes del
+        vencimiento). El seguimiento manual queda a criterio del usuario."""
+        if not (options or {}).get('manual_followup') and self._l10n_pe_collection_skip_preventive():
+            return False
+        return super()._execute_followup_partner(options=options)
+
+    def _l10n_pe_collection_skip_preventive(self):
+        self.ensure_one()
+        followup_line = self.followup_line_id or self._get_first_followup_level()
+        return bool(followup_line.delay < 0
+                    and self.env.company.root_id.l10n_pe_collection_consumer_guard
+                    and self._l10n_pe_collection_is_consumer()
+                    and not self.commercial_partner_id.l10n_pe_collection_reminder_consent)

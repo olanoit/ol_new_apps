@@ -1,6 +1,8 @@
 from odoo import api, fields, models, tools
 from odoo.tools import SQL
 
+from .res_partner import HOLD_STATES, RATINGS
+
 
 class L10nPeCollectionPortfolio(models.Model):
     """Cartera: cada cuota abierta por cobrar con su gestor, zona, atraso y tramo.
@@ -16,6 +18,20 @@ class L10nPeCollectionPortfolio(models.Model):
     _description = 'Cartera por cobrar'
     _auto = False
     _order = 'days_overdue desc, date_maturity'
+    # Para que Odoo vuelque estos campos antes de consultar la vista.
+    _depends = {
+        'account.move.line': [
+            'move_id', 'company_id', 'account_id', 'partner_id', 'date', 'date_maturity', 'currency_id',
+            'amount_residual', 'amount_residual_currency', 'parent_state', 'reconciled',
+            'l10n_pe_collection_in_dispute',
+        ],
+        'res.partner': [
+            'commercial_partner_id', 'followup_responsible_id', 'l10n_pe_collection_zone_id',
+            'l10n_pe_collection_rating', 'l10n_pe_collection_hold',
+        ],
+        'l10n_pe.collection.promise': ['partner_id', 'state', 'date'],
+        'l10n_pe.collection.bucket': ['company_id', 'days_from', 'days_to'],
+    }
 
     move_line_id = fields.Many2one('account.move.line', string='Apunte', readonly=True)
     move_id = fields.Many2one('account.move', string='Documento', readonly=True)
@@ -34,6 +50,10 @@ class L10nPeCollectionPortfolio(models.Model):
     amount_residual_currency = fields.Monetary(string='Saldo (moneda)', currency_field='currency_id',
                                                readonly=True, aggregator=None)
     amount_residual = fields.Monetary(string='Saldo', currency_field='company_currency_id', readonly=True)
+    in_dispute = fields.Boolean(string='En disputa', readonly=True,
+                                help='Documento con un reclamo abierto: fuera del seguimiento.')
+    rating = fields.Selection(RATINGS, string='Calificación', readonly=True)
+    hold = fields.Selection(HOLD_STATES, string='Bloqueo de crédito', readonly=True)
     promise_date = fields.Date(string='Compromiso', readonly=True,
                                help='Fecha del compromiso de pago pendiente más próximo del cliente.')
     in_collection = fields.Boolean(string='En cobranza', compute='_compute_in_collection',
@@ -48,6 +68,7 @@ class L10nPeCollectionPortfolio(models.Model):
                     SELECT aml.id, aml.move_id, aml.company_id, aml.account_id, aml.date,
                            COALESCE(aml.date_maturity, aml.date) AS date_maturity,
                            aml.currency_id, aml.amount_residual, aml.amount_residual_currency,
+                           COALESCE(aml.l10n_pe_collection_in_dispute, FALSE) AS in_dispute,
                            p.commercial_partner_id AS partner_id,
                            split_part(c.parent_path, '/', 1) AS root_key,
                            c.currency_id AS company_currency_id
@@ -74,7 +95,11 @@ class L10nPeCollectionPortfolio(models.Model):
                            AND (COALESCE(b.days_to, 0) = 0 OR (CURRENT_DATE - line.date_maturity) <= b.days_to)
                          ORDER BY b.days_from DESC LIMIT 1) AS bucket_id,
                        line.currency_id, line.company_currency_id,
-                       line.amount_residual_currency, line.amount_residual,
+                       line.amount_residual_currency, line.amount_residual, line.in_dispute,
+                       COALESCE(cp.l10n_pe_collection_rating ->> line.company_id::text,
+                                cp.l10n_pe_collection_rating ->> line.root_key) AS rating,
+                       COALESCE(cp.l10n_pe_collection_hold ->> line.company_id::text,
+                                cp.l10n_pe_collection_hold ->> line.root_key) AS hold,
                        (SELECT MIN(pr.date) FROM l10n_pe_collection_promise pr
                          WHERE pr.partner_id = line.partner_id AND pr.state = 'pending') AS promise_date
                   FROM line

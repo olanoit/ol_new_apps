@@ -60,6 +60,9 @@ reglas multicompañía; el gestor solo ve sus clientes salvo el administrador.
 
 ## 3. Fuera de este alcance (siguientes pasos)
 
+> 22/10/2026: v3 cubre bloqueo de ventas, centrales de riesgo, reclamos, intereses,
+> provisión y castigo; ver [INVESTIGACION_Y_MEJORAS_V3.md](INVESTIGACION_Y_MEJORAS_V3.md).
+
 - Bloqueo de pedidos por mora (puente con `sale`).
 - Reporte a centrales de riesgo (Infocorp/Equifax) y cobranza judicial.
 - Comisiones de cobranza.

@@ -11,40 +11,55 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_needaction
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_needaction
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_needaction
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_needaction
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_needaction
 msgid "Action Needed"
 msgstr "Se requiere una acción"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__active
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__active
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_zone__active
 msgid "Active"
 msgstr "Activo"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_ids
 msgid "Activities"
 msgstr "Actividades"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_exception_decoration
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_exception_decoration
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr "Decoración de la actividad de excepción"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_state
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_state
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_state
 msgid "Activity State"
 msgstr "Estado de la actividad"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_type_icon
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_type_icon
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "Icono del tipo de actividad"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_attachment_count
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_attachment_count
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_attachment_count
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_attachment_count
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_attachment_count
 msgid "Attachment Count"
 msgstr "Número de archivos adjuntos"
 
@@ -52,6 +67,11 @@ msgstr "Número de archivos adjuntos"
 #: model:ir.model,name:al_l10n_pe_collection.model_res_company
 msgid "Companies"
 msgstr "Empresas"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard__company_id
+msgid "Company"
+msgstr "Empresa"
 
 #. module: al_l10n_pe_collection
 #: model:ir.model,name:al_l10n_pe_collection.model_res_config_settings
@@ -64,18 +84,20 @@ msgid "Contact"
 msgstr "Contacto"
 
 #. module: al_l10n_pe_collection
-#: model:ir.model,website_form_label:al_l10n_pe_collection.model_res_partner
-msgid "Create a Customer"
-msgstr "Crear un cliente"
-
-#. module: al_l10n_pe_collection
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_action__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bucket__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dashboard__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_line__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_period__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__create_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_statement_send__create_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_target__create_uid
@@ -86,11 +108,18 @@ msgstr "Creado por"
 #. module: al_l10n_pe_collection
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_action__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bucket__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dashboard__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_line__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_period__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__create_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_statement_send__create_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_target__create_date
@@ -105,14 +134,23 @@ msgstr "Moneda"
 
 #. module: al_l10n_pe_collection
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_account_followup_followup_line__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_account_move__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_account_move_line__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_action__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bucket__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dashboard__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_line__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_period__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_portfolio__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__display_name
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_statement_send__display_name
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_target__display_name
@@ -130,66 +168,110 @@ msgid "Follow-up Criteria"
 msgstr "Criterios de seguimiento"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_follower_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_follower_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_follower_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_follower_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_follower_ids
 msgid "Followers"
 msgstr "Seguidores"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_partner_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_partner_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_partner_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_partner_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Seguidores (contactos)"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_type_icon
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_type_icon
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Icono de Font Awesome, por ejemplo, fa-tasks"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__has_message
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__has_message
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__has_message
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__has_message
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__has_message
 msgid "Has Message"
 msgstr "Tiene un mensaje"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_exception_icon
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_exception_icon
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_exception_icon
 msgid "Icon"
 msgstr "Icono"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_exception_icon
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_exception_icon
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "Icono que indica una actividad de excepción."
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_needaction
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_needaction
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_needaction
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_needaction
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Si está seleccionado, hay nuevos mensajes que requieren tu atención."
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_has_error
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_has_sms_error
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_has_error
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_has_sms_error
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_has_error
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_has_sms_error
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_has_error
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_has_sms_error
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_has_error
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr "Si está seleccionado, algunos mensajes tienen error de envío."
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_is_follower
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_is_follower
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_is_follower
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_is_follower
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_is_follower
 msgid "Is Follower"
 msgstr "Es un seguidor"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model,name:al_l10n_pe_collection.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model,name:al_l10n_pe_collection.model_account_move_line
+msgid "Journal Item"
+msgstr "Apunte contable"
+
+#. module: al_l10n_pe_collection
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_action__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bucket__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dashboard__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_line__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_period__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__write_uid
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_statement_send__write_uid
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_target__write_uid
@@ -200,11 +282,18 @@ msgstr "Última actualización por"
 #. module: al_l10n_pe_collection
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_action__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bucket__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dashboard__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_line__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_period__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__write_date
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_statement_send__write_date
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_target__write_date
@@ -213,90 +302,113 @@ msgid "Last Updated on"
 msgstr "Última actualización el"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_has_error
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_has_error
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_has_error
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_has_error
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_has_error
 msgid "Message Delivery error"
 msgstr "Error al enviar el mensaje"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_ids
 msgid "Messages"
 msgstr "Mensajes"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__my_activity_date_deadline
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__my_activity_date_deadline
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "Fecha límite de mi actividad"
 
 #. module: al_l10n_pe_collection
-#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
-msgstr "Siguiente evento en el calendario de actividades"
-
-#. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_date_deadline
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_date_deadline
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "Siguiente fecha límite de la actividad"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_summary
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_summary
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_summary
 msgid "Next Activity Summary"
 msgstr "Resumen de la siguiente actividad"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_type_id
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_type_id
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_type_id
 msgid "Next Activity Type"
 msgstr "Siguiente tipo de actividad"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_needaction_counter
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_needaction_counter
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_needaction_counter
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_needaction_counter
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Número de acciones"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_has_error_counter
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_has_error_counter
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_has_error_counter
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_has_error_counter
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_has_error_counter
 msgid "Number of errors"
 msgstr "Número de errores"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_needaction_counter
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_needaction_counter
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_needaction_counter
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_needaction_counter
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Número de mensajes que requieren una acción"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_has_error_counter
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_has_error_counter
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_has_error_counter
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_has_error_counter
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Número de mensajes con error de envío"
 
 #. module: al_l10n_pe_collection
-#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__rating_ids
-#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__rating_ids
-msgid "Ratings"
-msgstr "Calificaciones"
-
-#. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_user_id
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_user_id
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_user_id
 msgid "Responsible User"
 msgstr "Usuario responsable"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__message_has_sms_error
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__message_has_sms_error
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__message_has_sms_error
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__message_has_sms_error
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Error en el envío del SMS"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute_reason__sequence
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast_period__sequence
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_result__sequence
 msgid "Sequence"
 msgstr "Secuencia"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_state
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_state
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_state
 msgid ""
 "Status based on activities\n"
@@ -310,36 +422,65 @@ msgstr ""
 "Planeada: futuras actividades."
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__residual
+msgid ""
+"The residual amount on a journal item expressed in its currency (possibly "
+"not the company currency)."
+msgstr ""
+"El importe residual en un apunte contable expresado en su moneda (puede no "
+"ser la moneda de la compañía)."
+"El importe residual en un apunte contable en su moneda (es probable que no "
+"sea la que usa la empresa)."
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__residual
+msgid ""
+"The residual amount on a journal item expressed in the company currency."
+msgstr ""
+"El importe residual en un apunte contable expresado en la moneda de la "
+"empresa."
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__date_maturity
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision_line__date_maturity
+msgid ""
+"This field is used for payable and receivable journal entries. You can put "
+"the limit date for the payment of this line."
+msgstr ""
+"Este campo se usa en los asientos por pagar y por cobrar. Puede indicar la "
+"fecha límite de pago de esta línea."
+"Este campo se utiliza en asientos contables por pagar y por cobrar. Puede "
+"establecer la fecha límite para el pago de esta línea."
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_exception_decoration
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_exception_decoration
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "Tipo de la actividad de excepción registrada."
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__website_message_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__website_message_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__website_message_ids
 #: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__website_message_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__website_message_ids
 msgid "Website Messages"
 msgstr "Mensajes del sitio web"
 
 #. module: al_l10n_pe_collection
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_bureau__website_message_ids
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_dispute__website_message_ids
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_forecast__website_message_ids
 #: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_promise__website_message_ids
+#: model:ir.model.fields,help:al_l10n_pe_collection.field_l10n_pe_collection_provision__website_message_ids
 msgid "Website communication history"
 msgstr "Historial de comunicación del sitio web"
 
 #. module: al_l10n_pe_collection
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__overdue
-msgid "Overdue"
-msgstr "Vencidas"
-
-#. module: al_l10n_pe_collection
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__today
-msgid "Today"
-msgstr "Hoy"
-
-#. module: al_l10n_pe_collection
-#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__planned
-msgid "Planned"
-msgstr "Planeado"
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_interest_wizard_line__wizard_id
+msgid "Wizard"
+msgstr "Asistente"
 
 #. module: al_l10n_pe_collection
 #: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_exception_decoration__danger
@@ -350,3 +491,39 @@ msgstr "Error"
 #: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_exception_decoration__warning
 msgid "Alert"
 msgstr "Alerta"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__overdue
+msgid "Overdue"
+msgstr "Vencidas"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__planned
+msgid "Planned"
+msgstr "Planeado"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields.selection,name:mail.selection__mail_activity_mixin__activity_state__today
+msgid "Today"
+msgstr "Hoy"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model,website_form_label:al_l10n_pe_collection.model_res_partner
+msgid "Create a Customer"
+msgstr "Crear un cliente"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__activity_calendar_event_id
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__activity_calendar_event_id
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Siguiente evento en el calendario de actividades"
+
+#. module: al_l10n_pe_collection
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_bureau__rating_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_dispute__rating_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_forecast__rating_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_promise__rating_ids
+#: model:ir.model.fields,field_description:al_l10n_pe_collection.field_l10n_pe_collection_provision__rating_ids
+msgid "Ratings"
+msgstr "Calificaciones"

@@ -9,6 +9,7 @@
                     <group>
                         <group>
                             <field name="partner_id" readonly="id"/>
+                            <field name="is_consumer" invisible="1"/>
                             <field name="contact_id" options="{'no_create': True}"/>
                             <field name="channel"/>
                             <field name="result_id" options="{'no_create': True}"/>
@@ -18,6 +19,19 @@
                             <field name="user_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="promise_id" invisible="not promise_id"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert" invisible="not is_consumer">
+                        Consumidor: el art. 62 del Código de Protección al Consumidor prohíbe llamarlo, visitarlo o
+                        escribirle fuera del horario permitido, en fines de semana o feriados, y comunicar la deuda a
+                        terceros.
+                    </div>
+                    <group string="Reclamo" invisible="not is_dispute">
+                        <group>
+                            <field name="is_dispute" invisible="1"/>
+                            <field name="dispute_reason_id" required="is_dispute" readonly="dispute_id"
+                                   options="{'no_create': True}"/>
+                            <field name="dispute_id" invisible="not dispute_id"/>
                         </group>
                     </group>
                     <group string="Compromiso de pago" invisible="not is_promise">

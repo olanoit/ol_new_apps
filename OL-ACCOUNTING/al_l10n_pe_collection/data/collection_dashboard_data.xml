@@ -19,4 +19,9 @@
         <field name="tag">action_spreadsheet_dashboard</field>
         <field name="params" eval="{'dashboard_id': ref('dashboard_collection')}"/>
     </record>
+
+    <!-- Aquí y no en menus.xml: la hoja de cálculo valida los menús que usa, así que
+         este archivo se carga después de menus.xml. -->
+    <menuitem id="menu_collection_dashboard" name="Tablero" parent="menu_collection_root"
+              action="action_collection_spreadsheet_dashboard" sequence="1"/>
 </odoo>

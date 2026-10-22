@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_dispute_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.dispute.form</field>
+        <field name="model">l10n_pe.collection.dispute</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_resolve_company" type="object" string="A favor de la empresa"
+                            class="btn-primary" invisible="state != 'open'"/>
+                    <button name="action_resolve_customer" type="object" string="A favor del cliente"
+                            invisible="state != 'open'"/>
+                    <button name="action_credit_note" type="object" string="Nota de crédito"
+                            invisible="state != 'customer'"/>
+                    <button name="action_cancel" type="object" string="Cancelar" invisible="state != 'open'"/>
+                    <button name="action_reopen" type="object" string="Reabrir" invisible="state == 'open'"
+                            groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="open,company,customer"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state != 'open'"/>
+                            <field name="reason_id" readonly="state != 'open'" options="{'no_create': True}"/>
+                            <field name="user_id" readonly="state != 'open'"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'open'"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="date_closed" invisible="not date_closed"/>
+                            <field name="action_id" invisible="not action_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'open'" options="{'no_create': True}">
+                        <list>
+                            <field name="move_id"/>
+                            <field name="date_maturity"/>
+                            <field name="company_currency_id" column_invisible="True"/>
+                            <field name="amount_residual" string="Saldo"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="description" placeholder="Qué reclama el cliente"/>
+                        <field name="resolution" placeholder="Cómo se resolvió (obligatorio para cerrar)"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_collection_dispute_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.dispute.list</field>
+        <field name="model">l10n_pe.collection.dispute</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'" decoration-warning="state == 'open'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="reason_id"/>
+                <field name="user_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="date_closed" optional="hide"/>
+                <field name="state" widget="badge" decoration-warning="state == 'open'"
+                       decoration-success="state == 'company'" decoration-info="state == 'customer'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_dispute_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.dispute.search</field>
+        <field name="model">l10n_pe.collection.dispute</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="reason_id"/>
+                <filter name="mine" string="Mis reclamos" domain="[('user_id', '=', uid)]"/>
+                <filter name="open" string="Abiertos" domain="[('state', '=', 'open')]"/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_reason" string="Motivo" context="{'group_by': 'reason_id'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_user" string="Gestor" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_collection_dispute" model="ir.actions.act_window">
+        <field name="name">Reclamos</field>
+        <field name="res_model">l10n_pe.collection.dispute</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre un reclamo del cliente</p>
+            <p>Sus documentos salen del seguimiento y no se reportan a centrales de riesgo hasta que se resuelva.</p>
+        </field>
+    </record>
+
+    <record id="view_collection_dispute_reason_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.dispute.reason.list</field>
+        <field name="model">l10n_pe.collection.dispute.reason</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_collection_dispute_reason" model="ir.actions.act_window">
+        <field name="name">Motivos de reclamo</field>
+        <field name="res_model">l10n_pe.collection.dispute.reason</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+</odoo>

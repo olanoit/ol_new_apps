@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Aviso previo al reporte a una central de riesgo. Redacción neutra: no
+             debe aparentar una notificación judicial (art. 62 de la Ley 29571). -->
+        <record id="mail_template_bureau_notice" model="mail.template">
+            <field name="name">Cobranza: aviso previo de reporte a central de riesgo</field>
+            <field name="model_id" ref="model_l10n_pe_collection_bureau"/>
+            <field name="email_from">{{ (object.user_id.email_formatted or object.company_id.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="subject">{{ object.company_id.name }}: aviso sobre su deuda vencida</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p>Estimado(a) <t t-out="object.partner_id.name or ''"/>:</p>
+                    <p>
+                        Según nuestros registros, mantiene con <t t-out="object.company_id.name or ''"/> una deuda
+                        vencida de <b><t t-out="format_amount(object.amount, object.currency_id) or ''"/></b>
+                        por los documentos <t t-out="', '.join(object.line_ids.mapped('move_id.name'))"/>.
+                    </p>
+                    <p>
+                        Le informamos que, de no regularizarse hasta el
+                        <b><t t-out="format_date(object.date_eligible) or ''"/></b>, la deuda será informada a la
+                        central privada de información de riesgos, conforme a la Ley 27489.
+                    </p>
+                    <p>
+                        Si ya pagó o no reconoce la deuda, por favor responda este correo con la constancia o el
+                        motivo para revisarlo antes de esa fecha.
+                    </p>
+                    <p>Atentamente,<br/><t t-out="object.user_id.name or ''"/><br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+    </data>
+</odoo>

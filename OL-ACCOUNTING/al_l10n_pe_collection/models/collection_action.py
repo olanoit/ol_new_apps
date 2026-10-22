@@ -1,9 +1,11 @@
 from datetime import timedelta
 
+import pytz
+
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-from .collection_config import CHANNELS
+from .collection_config import CHANNELS, GUARDED_CHANNELS
 
 
 class L10nPeCollectionAction(models.Model):
@@ -37,6 +39,11 @@ class L10nPeCollectionAction(models.Model):
     promise_date = fields.Date(string='Fecha comprometida')
     promise_amount = fields.Monetary(string='Importe comprometido')
     promise_id = fields.Many2one('l10n_pe.collection.promise', string='Compromiso', readonly=True, copy=False)
+    is_dispute = fields.Boolean(related='result_id.is_dispute')
+    dispute_reason_id = fields.Many2one('l10n_pe.collection.dispute.reason', string='Motivo del reclamo')
+    dispute_id = fields.Many2one('l10n_pe.collection.dispute', string='Reclamo', readonly=True, copy=False)
+    is_consumer = fields.Boolean(string='Consumidor', compute='_compute_is_consumer',
+                                 help='Protegido por el art. 62 del Código de Protección al Consumidor.')
     next_action_date = fields.Date(string='Próxima acción', compute='_compute_next_action_date',
                                    store=True, readonly=False)
     next_action_summary = fields.Char(string='Qué hacer')
@@ -46,6 +53,11 @@ class L10nPeCollectionAction(models.Model):
         for action in self:
             days = action.result_id.next_action_days
             action.next_action_date = (action.date.date() + timedelta(days=days)) if days and action.date else False
+
+    @api.depends('partner_id')
+    def _compute_is_consumer(self):
+        for action in self:
+            action.is_consumer = bool(action.partner_id) and action.partner_id._l10n_pe_collection_is_consumer()
 
     @api.onchange('partner_id')
     def _onchange_partner_id(self):
@@ -63,6 +75,61 @@ class L10nPeCollectionAction(models.Model):
         for action in self.filtered('is_promise'):
             if not action.promise_date or action.promise_amount <= 0:
                 raise ValidationError(_('Un compromiso de pago necesita fecha e importe.'))
+
+    @api.constrains('result_id', 'dispute_reason_id', 'line_ids')
+    def _check_dispute(self):
+        for action in self.filtered('is_dispute'):
+            if not action.dispute_reason_id or not action.line_ids:
+                raise ValidationError(_('Un reclamo necesita el motivo y los documentos reclamados.'))
+
+    @api.constrains('partner_id', 'channel', 'date')
+    def _check_consumer_contact_time(self):
+        """Art. 62 de la Ley 29571: con consumidores, sin llamadas, visitas ni
+        mensajes entre las 20:00 y las 07:00, ni sábados, domingos o feriados."""
+        for action in self.filtered(lambda a: a.channel in GUARDED_CHANNELS and a.date and a.partner_id):
+            company = action.company_id.root_id
+            if not company.l10n_pe_collection_consumer_guard or not action.is_consumer:
+                continue
+            problem = action._l10n_pe_contact_time_problem()
+            if problem:
+                raise ValidationError(_(
+                    '%(partner)s es consumidor: el art. 62 del Código de Protección al Consumidor prohíbe '
+                    'contactarlo %(problem)s.', partner=action.partner_id.name, problem=problem))
+
+    def _l10n_pe_contact_time_problem(self):
+        """Por qué la fecha de la gestión no está permitida (o '' si lo está)."""
+        self.ensure_one()
+        company = self.company_id.root_id
+        tz = pytz.timezone(self.user_id.tz or self.env.user.tz or 'America/Lima')
+        local = pytz.utc.localize(self.date).astimezone(tz)
+        hour = local.hour + local.minute / 60.0
+        if local.weekday() >= 5:
+            return _('en sábado o domingo')
+        if not company.l10n_pe_collection_hour_from <= hour < company.l10n_pe_collection_hour_to:
+            return _('antes de las %(start)s o después de las %(end)s',
+                     start='%02d:%02d' % divmod(round(company.l10n_pe_collection_hour_from * 60), 60),
+                     end='%02d:%02d' % divmod(round(company.l10n_pe_collection_hour_to * 60), 60))
+        if self._l10n_pe_is_holiday(local.date()):
+            return _('en un feriado')
+        return ''
+
+    def _l10n_pe_is_holiday(self, day):
+        """Feriados = ausencias globales (sin recurso) del calendario laboral de
+        la compañía, si está instalado ``resource``."""
+        Leaves = self.env.get('resource.calendar.leaves')
+        if Leaves is None:
+            return False
+        calendar = self.company_id.resource_calendar_id if 'resource_calendar_id' in self.company_id._fields \
+            else False
+        start = fields.Datetime.to_datetime(day)
+        return bool(Leaves.sudo().search_count([
+            # sudo: el gestor no necesita acceso al calendario para consultar los feriados.
+            ('resource_id', '=', False),
+            ('calendar_id', 'in', [False, calendar.id] if calendar else [False]),
+            ('company_id', 'in', [False, self.company_id.id]),
+            ('date_from', '<', start + timedelta(days=1)),
+            ('date_to', '>', start),
+        ], limit=1))
 
     @api.depends('partner_id', 'channel', 'date')
     def _compute_display_name(self):
@@ -93,12 +160,24 @@ class L10nPeCollectionAction(models.Model):
                 'company_id': self.company_id.id,
                 'note': self.note,
             })
+        if self.is_dispute:
+            self.dispute_id = self.env['l10n_pe.collection.dispute'].create({
+                'partner_id': partner.id,
+                'user_id': self.user_id.id,
+                'reason_id': self.dispute_reason_id.id,
+                'line_ids': [fields.Command.set(self.line_ids.ids)],
+                'description': self.note,
+                'action_id': self.id,
+                'company_id': self.company_id.id,
+            })
         if self.next_action_date:
-            partner.activity_schedule(
+            # sudo: ver _l10n_pe_collection_log; la actividad es del gestor.
+            partner_sudo = partner.sudo()
+            partner_sudo.activity_schedule(
                 'mail.mail_activity_data_call' if self.channel == 'call' else 'mail.mail_activity_data_todo',
                 date_deadline=self.next_action_date, user_id=self.user_id.id,
                 summary=self.next_action_summary or _('Seguimiento de cobranza'),
                 note=self.note or '')
-        partner.message_post(body=_(
+        partner._l10n_pe_collection_log(_(
             'Gestión de cobranza (%(channel)s): %(result)s. %(note)s',
             channel=dict(CHANNELS)[self.channel].lower(), result=self.result_id.name, note=self.note or ''))

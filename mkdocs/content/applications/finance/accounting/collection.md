@@ -1,5 +1,5 @@
 ---
-modulos: [al_l10n_pe_collection]
+modulos: [al_l10n_pe_collection, al_l10n_pe_collection_sale]
 ---
 
 # Cobranza
@@ -32,6 +32,10 @@ SMS o carta siguen siendo los niveles de seguimiento.
 6. **Ajustes ‣ Perú ‣ Cobranza:** tolerancia para evaluar compromisos, días de anticipación
    del recordatorio al cliente, porcentaje para darlos por cumplidos, meses de historial de
    pago y resumen diario a los gestores.
+7. **Ajustes ‣ Perú ‣ Cobranza** (cumplimiento): horario de contacto con consumidores,
+   bloqueo de crédito por mora, tasa de interés moratorio y su cuenta, diario y cuentas de
+   la provisión de cobranza dudosa, valor de la UIT y días de espera del aviso a centrales
+   de riesgo.
 
 ## Cartera
 
@@ -43,6 +47,31 @@ vencimiento, días de atraso, tramo y la fecha del compromiso de pago vigente.
 
 No se incluyen los anticipos de clientes (122) ni las detracciones por cobrar, que se
 depositan en el Banco de la Nación.
+
+## Cola de trabajo
+
+**Cobranza ‣ Cartera ‣ Cola de trabajo** lista los clientes con deuda vencida ordenados por
+**prioridad**: el vencido ponderado por el riesgo del cliente. **Gestionar** abre el
+registro de la gestión. Cada día se recalcula la **calificación** de cada cliente
+(también con **Calificar** en su ficha):
+
+| Factor | Peso |
+|---|---|
+| Atraso promedio de pago (historial) | 40 |
+| Días de la deuda más antigua | 30 |
+| Compromisos incumplidos en 12 meses | 20 |
+| Porcentaje vencido de su cartera | 10 |
+
+El puntaje va de 0 a 100: **A** desde 80, **B** desde 60, **C** desde 40 y **D** por debajo.
+
+## Bloqueo de crédito
+
+Un cliente queda **bloqueado por mora** cuando su deuda más antigua supera los días
+configurados o, si así se ajusta, cuando su calificación es D. También se puede bloquear a
+mano desde la ficha. Con el módulo `al_l10n_pe_collection_sale` (se instala solo con
+Ventas), un cliente bloqueado no puede confirmar pedidos y el pedido lo advierte.
+El **administrador de cobranza** lo libera por siete días (la fecha se puede cambiar);
+vencida la liberación, vuelven a aplicarse las reglas.
 
 ## Gestiones
 
@@ -57,6 +86,36 @@ correo, WhatsApp, SMS o carta), resultado, detalle y documentos. Al guardarla:
   **compromiso de pago**.
 
 Los resultados se configuran en **Cobranza ‣ Configuración ‣ Resultados de gestión**.
+
+### Clientes consumidores
+
+El art. 62 del Código de Protección al Consumidor (Ley 29571) prohíbe llamar o visitar a
+un consumidor entre las 20:00 y las 07:00, los sábados, domingos y feriados, y comunicar
+su deuda a terceros. La app considera **consumidor** a quien no tiene RUC (el **tipo de
+deudor** de la ficha lo cambia) y:
+
+- no deja registrar una gestión por llamada, visita, WhatsApp o SMS fuera del horario
+  (se valida la fecha de la gestión, en la zona horaria del gestor); los feriados son las
+  ausencias globales del horario laboral de la compañía;
+- no le envía los niveles de seguimiento **previos al vencimiento** salvo que la ficha
+  marque **Acepta recordatorios antes del vencimiento** (Indecopi multó en 2025 los
+  recordatorios no consentidos).
+
+Las empresas (con RUC) no tienen estas restricciones.
+
+## Reclamos
+
+Si el cliente discute un documento (precio, cantidad, calidad, comprobante con errores),
+regístrelo en **Cobranza ‣ Gestión ‣ Reclamos**, con **Registrar reclamo** en la ficha o
+con el resultado de gestión **Reclamo o disconformidad**. Mientras está abierto, sus
+documentos:
+
+- salen de los niveles de seguimiento (no se envían recordatorios);
+- aparecen **en disputa** en la cartera y en el estado de cuenta;
+- no generan intereses ni se pueden reportar a una central de riesgo.
+
+Se cierra **a favor de la empresa** o **a favor del cliente** indicando la solución; en el
+segundo caso, **Nota de crédito** abre el asistente nativo sobre la factura.
 
 ## Compromisos de pago
 
@@ -145,6 +204,58 @@ saldo a favor. **Enviar estado de cuenta** lo envía por correo; desde la lista 
 
 ![Estado de cuenta](collection/statement.png)
 
+## Intereses moratorios
+
+Solo si se pactaron con el cliente. La tasa es una **TEA** (la del cliente o, si no tiene,
+la de la compañía) con año de 360 días, desde el vencimiento o desde la última nota de
+débito de intereses. El estado de cuenta muestra los intereses al día, aparte del total.
+
+**Cobranza ‣ Gestión ‣ Liquidar intereses** (o **Acción** en la lista de clientes) calcula
+los intereses de las facturas vencidas y crea una **nota de débito en borrador** por
+factura, motivo **01 Intereses por mora** (catálogo 10), inafecta al IGV. Revísela y
+publíquela como cualquier comprobante; si se anula, esos días vuelven a calcularse.
+
+!!! warning "Tope del BCRP"
+    El interés pactado no puede superar las tasas máximas que fija el BCRP cada semestre
+    (mayo y noviembre). La app no las valida: revise la tasa en cada cambio.
+
+## Provisión y castigo de cobranza dudosa
+
+**Cobranza ‣ Gestión ‣ Provisión de cobranza dudosa** (administrador) aplica el art. 21
+del Reglamento de la Ley del Impuesto a la Renta:
+
+1. **Proponer documentos:** cuotas vencidas hace más de 12 meses (configurable), sin
+   reclamo abierto y no provisionadas antes, con el número de **gestiones de cobro**
+   registradas después del vencimiento. Se marcan las que tienen el mínimo de gestiones;
+   las demás solo se pueden provisionar si se marca **Proceso judicial**.
+2. **Contabilizar:** asiento por documento y deudor, debe **68711** y haber **1911**
+   (configurables), el detalle que pide el Libro de Inventarios (PLE 3.6). La cuenta de
+   estimación no forma parte de la cartera.
+3. **Expedientes:** PDF por deudor con sus documentos, gestiones, compromisos, reclamos,
+   reportes a centrales y comunicaciones. La Casación 15840-2025 exige documentar
+   acciones concretas de cobro: este expediente es el sustento.
+4. **Registrar recuperaciones:** si el cliente paga algo de lo provisionado, asiento
+   1911 contra **7551** Recuperación de cobranza dudosa.
+5. **Castigar** (art. 21 g): asiento 1911 contra la cuenta por cobrar, conciliado con la
+   factura. Solo si la deuda provisionada del deudor no supera **3 UIT** o se marcan las
+   **acciones judiciales agotadas**.
+
+## Centrales de riesgo
+
+**Cobranza ‣ Gestión ‣ Centrales de riesgo** lleva el reporte de un deudor a Equifax
+(Infocorp), Sentinel, Experian u otra:
+
+| Paso | Qué hace |
+|---|---|
+| **Enviar aviso previo** | Correo al deudor con la deuda y la fecha desde la que se reportará (7 días por defecto) |
+| **Marcar reportado** | Pasado el plazo, registra el monto reportado |
+| **Por retirar** | Cada día, si la deuda se pagó o cumplió 5 años de vencida (Ley 27489), el reporte pasa a este estado con una actividad al gestor |
+| **Marcar retirado** | Cuando se retiró de la central |
+
+No se pueden reportar documentos por vencer, en reclamo o vencidos hace más de 5 años.
+Las centrales no tienen una interfaz pública: **Excel** genera el archivo con los datos
+del deudor y de cada documento para cargarlo en la central.
+
 ## Notificaciones
 
 | Aviso | A quién | Cuándo |
@@ -153,5 +264,7 @@ saldo a favor. **Enviar estado de cuenta** lo envía por correo; desde la lista 
 | Recordatorio del compromiso | Cliente | N días antes de la fecha comprometida |
 | Compromiso incumplido o parcial | Gestor (actividad) | Al evaluarse |
 | Resumen diario | Gestor (correo) | Cada mañana: compromisos del día, gestiones pendientes, lo que vence en 3 días y lo que venció ayer |
+| Aviso previo de reporte | Cliente | Al enviar el aviso de central de riesgo |
+| Reporte por retirar | Gestor (actividad) | Cuando la deuda reportada se paga o cumple 5 años |
 
 El resumen no se envía si el gestor no tiene novedades.

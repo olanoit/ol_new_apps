@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_bureau_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.bureau.form</field>
+        <field name="model">l10n_pe.collection.bureau</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_send_notice" type="object" string="Enviar aviso previo" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_report" type="object" string="Marcar reportado" class="btn-primary"
+                            invisible="state != 'notified'"/>
+                    <button name="action_withdraw" type="object" string="Marcar retirado"
+                            class="btn-primary" invisible="state != 'to_withdraw'"/>
+                    <button name="action_withdraw" type="object" string="Retirar"
+                            invisible="state != 'reported'"/>
+                    <button name="action_export_xlsx" type="object" string="Excel"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state not in ('draft', 'notified')"/>
+                    <button name="action_draft" type="object" string="Volver a borrador" invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,notified,reported,withdrawn"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="bureau" readonly="state != 'draft'"/>
+                            <field name="user_id" readonly="state not in ('draft', 'notified')"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="amount_reported" invisible="not amount_reported"/>
+                            <field name="date_notice" invisible="not date_notice"/>
+                            <field name="date_eligible" invisible="not date_eligible"/>
+                            <field name="date_reported" invisible="not date_reported"/>
+                            <field name="date_withdrawn" invisible="not date_withdrawn"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        Solo deudas vencidas, sin reclamo abierto y con menos de 5 años de vencidas (Ley 27489). Al
+                        pagarse, el reporte pasa a «Por retirar» y hay que retirarlo de la central.
+                    </div>
+                    <field name="line_ids" readonly="state != 'draft'" options="{'no_create': True}">
+                        <list>
+                            <field name="move_id"/>
+                            <field name="date_maturity"/>
+                            <field name="company_currency_id" column_invisible="True"/>
+                            <field name="amount_residual" string="Saldo"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Notas"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_collection_bureau_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.bureau.list</field>
+        <field name="model">l10n_pe.collection.bureau</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'to_withdraw'" decoration-muted="state in ('withdrawn', 'cancel')">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="bureau"/>
+                <field name="user_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="date_notice" optional="show"/>
+                <field name="date_eligible" optional="show"/>
+                <field name="date_reported" optional="show"/>
+                <field name="state" widget="badge" decoration-danger="state == 'to_withdraw'"
+                       decoration-warning="state == 'reported'" decoration-info="state == 'notified'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_bureau_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.bureau.search</field>
+        <field name="model">l10n_pe.collection.bureau</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <filter name="active_reports" string="Vigentes" domain="[('state', 'in', ('notified', 'reported', 'to_withdraw'))]"/>
+                <filter name="to_withdraw" string="Por retirar" domain="[('state', '=', 'to_withdraw')]"/>
+                <group>
+                    <filter name="group_bureau" string="Central" context="{'group_by': 'bureau'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_collection_bureau" model="ir.actions.act_window">
+        <field name="name">Centrales de riesgo</field>
+        <field name="res_model">l10n_pe.collection.bureau</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active_reports': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Reporte un deudor a una central de riesgo</p>
+            <p>Aviso previo, plazo de espera, reporte y retiro cuando paga.</p>
+        </field>
+    </record>
+
+    <record id="action_collection_bureau_export" model="ir.actions.server">
+        <field name="name">Exportar a Excel</field>
+        <field name="model_id" ref="model_l10n_pe_collection_bureau"/>
+        <field name="binding_model_id" ref="model_l10n_pe_collection_bureau"/>
+        <field name="binding_view_types">list</field>
+        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = records.action_export_xlsx()</field>
+    </record>
+</odoo>

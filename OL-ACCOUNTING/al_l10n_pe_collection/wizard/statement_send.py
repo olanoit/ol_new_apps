@@ -25,7 +25,7 @@ class L10nPeCollectionStatementSend(models.TransientModel):
             raise UserError(_('Ninguno de los clientes tiene correo.'))
         for partner in partners:
             self.template_id.send_mail(partner.id)
-            partner.message_post(body=_('Estado de cuenta enviado a %s.', partner.email))
+            partner._l10n_pe_collection_log(_('Estado de cuenta enviado a %s.', partner.email))
         return {
             'type': 'ir.actions.client', 'tag': 'display_notification',
             'params': {'title': _('Estado de cuenta'), 'type': 'success', 'sticky': False,

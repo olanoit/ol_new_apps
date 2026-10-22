@@ -16,6 +16,9 @@
                 <field name="bucket_id" optional="show"/>
                 <field name="is_overdue" column_invisible="True"/>
                 <field name="promise_date" optional="show"/>
+                <field name="rating" optional="show"/>
+                <field name="in_dispute" optional="show"/>
+                <field name="hold" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="company_currency_id" column_invisible="True"/>
                 <field name="amount_residual_currency" optional="hide"/>
@@ -66,11 +69,15 @@
                 <filter name="not_overdue" string="Por vencer" domain="[('is_overdue', '=', False)]"/>
                 <filter name="over_90" string="Más de 90 días" domain="[('days_overdue', '&gt;', 90)]"/>
                 <filter name="with_promise" string="Con compromiso" domain="[('promise_date', '!=', False)]"/>
+                <filter name="in_dispute" string="En disputa" domain="[('in_dispute', '=', True)]"/>
+                <filter name="enforceable" string="Exigible" domain="[('in_dispute', '=', False)]"/>
+                <filter name="on_hold" string="Clientes bloqueados" domain="[('hold', 'in', ('auto', 'manual'))]"/>
                 <group>
                     <filter name="group_user" string="Gestor" context="{'group_by': 'user_id'}"/>
                     <filter name="group_zone" string="Zona" context="{'group_by': 'zone_id'}"/>
                     <filter name="group_partner" string="Cliente" context="{'group_by': 'partner_id'}"/>
                     <filter name="group_bucket" string="Tramo" context="{'group_by': 'bucket_id'}"/>
+                    <filter name="group_rating" string="Calificación" context="{'group_by': 'rating'}"/>
                     <filter name="group_due" string="Mes de vencimiento" context="{'group_by': 'date_maturity:month'}"/>
                 </group>
             </search>

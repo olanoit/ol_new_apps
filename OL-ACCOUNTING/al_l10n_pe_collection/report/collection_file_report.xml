@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Expediente de cobranza del deudor: deuda, gestiones, compromisos, reclamos,
+         reportes a centrales y comunicaciones. Sustenta la provisión y el castigo
+         ante SUNAT (art. 21 f y g del Reglamento de la LIR). -->
+    <template id="report_collection_file_document">
+        <t t-set="company" t-value="res_company"/>
+        <t t-set="data" t-value="o._l10n_pe_collection_file_values(company)"/>
+        <t t-set="st" t-value="data['statement']"/>
+        <t t-set="cur" t-value="st['currency']"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="'Expediente de cobranza'"/>
+            <t t-set="doc_extra" t-value="'Al %s' % st['today'].strftime('%d/%m/%Y')"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 15%;">Deudor</td>
+                    <td class="pe-doc-value" style="width: 50%;"><span t-out="o.name"/></td>
+                    <td class="pe-doc-label" style="width: 15%;"><span t-out="o.l10n_latam_identification_type_id.name or 'Documento'"/></td>
+                    <td class="pe-doc-value"><span t-out="o.vat or '—'"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Gestor</td>
+                    <td class="pe-doc-value"><span t-out="o.with_company(company).followup_responsible_id.name or '—'"/></td>
+                    <td class="pe-doc-label">Calificación</td>
+                    <td class="pe-doc-value"><span t-out="o.with_company(company).l10n_pe_collection_rating or '—'"/></td>
+                </tr>
+            </table>
+
+            <p class="pe-doc-label mb-1"><strong>1. Documentos pendientes</strong></p>
+            <table class="pe-doc-table pe-doc-lines mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Documento</td>
+                        <td style="width: 12%;">Emisión</td>
+                        <td style="width: 12%;">Vencimiento</td>
+                        <td class="text-end" style="width: 9%;">Días</td>
+                        <td class="text-end" style="width: 16%;">Saldo</td>
+                        <td style="width: 12%;">Situación</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="st['documents']" t-as="doc">
+                        <td><t t-if="doc['document']"><span t-out="doc['document']"/> </t><span t-out="doc['name']"/></td>
+                        <td><span t-out="doc['date'] and doc['date'].strftime('%d/%m/%Y')"/></td>
+                        <td><span t-out="doc['date_due'] and doc['date_due'].strftime('%d/%m/%Y')"/></td>
+                        <td class="text-end"><span t-out="doc['days'] or ''"/></td>
+                        <td class="text-end"><span t-out="doc['residual_currency']" t-options="{'widget': 'monetary', 'display_currency': doc['currency']}"/></td>
+                        <td><t t-if="doc['in_dispute']">En reclamo</t><t t-elif="doc['is_credit']">A favor</t><t t-elif="doc['overdue']">Vencido</t><t t-else="">Por vencer</t></td>
+                    </tr>
+                    <tr t-if="not st['documents']"><td colspan="6">No hay documentos pendientes.</td></tr>
+                </tbody>
+            </table>
+
+            <p class="pe-doc-label mb-1"><strong>2. Gestiones de cobro</strong></p>
+            <table class="pe-doc-table pe-doc-lines mb-3">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td style="width: 14%;">Fecha</td>
+                        <td style="width: 10%;">Canal</td>
+                        <td style="width: 16%;">Gestor</td>
+                        <td style="width: 18%;">Resultado</td>
+                        <td>Detalle</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="data['actions']" t-as="act">
+                        <td><span t-out="act.date" t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"/></td>
+                        <td><span t-field="act.channel"/></td>
+                        <td><span t-out="act.user_id.name"/></td>
+                        <td><span t-out="act.result_id.name"/></td>
+                        <td><span t-out="act.note or ''"/><t t-if="act.line_ids"> (<span t-out="', '.join(act.line_ids.move_id.mapped('name'))"/>)</t></td>
+                    </tr>
+                    <tr t-if="not data['actions']"><td colspan="5">Sin gestiones registradas.</td></tr>
+                </tbody>
+            </table>
+
+            <t t-if="data['promises']">
+                <p class="pe-doc-label mb-1"><strong>3. Compromisos de pago</strong></p>
+                <table class="pe-doc-table pe-doc-lines mb-3">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <td style="width: 16%;">Número</td>
+                            <td style="width: 14%;">Pactado el</td>
+                            <td style="width: 14%;">Para el</td>
+                            <td class="text-end">Importe</td>
+                            <td class="text-end">Cobrado</td>
+                            <td style="width: 14%;">Estado</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="data['promises']" t-as="pr">
+                            <td><span t-out="pr.name"/></td>
+                            <td><span t-out="pr.date_agreed.strftime('%d/%m/%Y')"/></td>
+                            <td><span t-out="pr.date.strftime('%d/%m/%Y')"/></td>
+                            <td class="text-end"><span t-out="pr.amount" t-options="{'widget': 'monetary', 'display_currency': pr.currency_id}"/></td>
+                            <td class="text-end"><span t-out="pr.collected_amount" t-options="{'widget': 'monetary', 'display_currency': pr.currency_id}"/></td>
+                            <td><span t-field="pr.state"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+
+            <t t-if="data['disputes']">
+                <p class="pe-doc-label mb-1"><strong>4. Reclamos</strong></p>
+                <table class="pe-doc-table pe-doc-lines mb-3">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <td style="width: 16%;">Número</td>
+                            <td style="width: 12%;">Fecha</td>
+                            <td>Motivo</td>
+                            <td class="text-end">Importe</td>
+                            <td style="width: 18%;">Estado</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="data['disputes']" t-as="dis">
+                            <td><span t-out="dis.name"/></td>
+                            <td><span t-out="dis.date.strftime('%d/%m/%Y')"/></td>
+                            <td><span t-out="dis.reason_id.name"/></td>
+                            <td class="text-end"><span t-out="dis.amount" t-options="{'widget': 'monetary', 'display_currency': dis.currency_id}"/></td>
+                            <td><span t-field="dis.state"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+
+            <t t-if="data['bureaus']">
+                <p class="pe-doc-label mb-1"><strong>5. Centrales de riesgo</strong></p>
+                <table class="pe-doc-table pe-doc-lines mb-3">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <td style="width: 16%;">Número</td>
+                            <td>Central</td>
+                            <td style="width: 14%;">Aviso</td>
+                            <td style="width: 14%;">Reporte</td>
+                            <td style="width: 14%;">Retiro</td>
+                            <td style="width: 14%;">Estado</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="data['bureaus']" t-as="bu">
+                            <td><span t-out="bu.name"/></td>
+                            <td><span t-field="bu.bureau"/></td>
+                            <td><span t-out="bu.date_notice and bu.date_notice.strftime('%d/%m/%Y') or ''"/></td>
+                            <td><span t-out="bu.date_reported and bu.date_reported.strftime('%d/%m/%Y') or ''"/></td>
+                            <td><span t-out="bu.date_withdrawn and bu.date_withdrawn.strftime('%d/%m/%Y') or ''"/></td>
+                            <td><span t-field="bu.state"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+
+            <t t-if="data['emails']">
+                <p class="pe-doc-label mb-1"><strong>6. Comunicaciones y notas</strong></p>
+                <table class="pe-doc-table pe-doc-lines mb-3">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <td style="width: 16%;">Fecha</td>
+                            <td style="width: 18%;">Autor</td>
+                            <td>Mensaje</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="data['emails']" t-as="msg">
+                            <td><span t-out="msg.date" t-options="{'widget': 'datetime', 'format': 'dd/MM/yyyy HH:mm'}"/></td>
+                            <td><span t-out="msg.author_id.name or ''"/></td>
+                            <td><t t-if="msg.subject"><strong t-out="msg.subject"/>: </t><span t-out="msg.preview or ''"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </t>
+            <p class="pe-doc-fs-11">Expediente generado por el sistema con los registros de gestión de cobranza de
+                <span t-out="company.name"/>. Saldos en <span t-out="cur.name"/> salvo indicación.</p>
+        </t>
+    </template>
+
+    <template id="report_collection_file">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_l10n_pe_collection.report_collection_file_document" t-lang="o.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_collection_file" model="ir.actions.report">
+        <field name="name">Expediente de cobranza</field>
+        <field name="model">res.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_l10n_pe_collection.report_collection_file</field>
+        <field name="report_file">al_l10n_pe_collection.report_collection_file</field>
+        <field name="print_report_name">'Expediente de cobranza %s' % object.name</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_type">report</field>
+        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_user'))]"/>
+    </record>
+</odoo>

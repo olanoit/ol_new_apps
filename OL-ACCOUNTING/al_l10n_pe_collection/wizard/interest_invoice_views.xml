@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_interest_wizard_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.interest.wizard.form</field>
+        <field name="model">l10n_pe.collection.interest.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="partner_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        <field name="date"/>
+                        <field name="company_id" invisible="1"/>
+                    </group>
+                </group>
+                <p class="text-muted">
+                    Tasa efectiva anual pactada (la del cliente o la de la compañía), año de 360 días, desde el
+                    vencimiento o desde la última nota de débito. Se crea una nota de débito en borrador por factura,
+                    motivo 01 «Intereses por mora», inafecta al IGV. Revísela antes de publicarla.
+                </p>
+                <field name="line_ids">
+                    <list editable="bottom" create="0">
+                        <field name="selected"/>
+                        <field name="partner_id"/>
+                        <field name="move_id"/>
+                        <field name="date_maturity"/>
+                        <field name="days"/>
+                        <field name="currency_id" column_invisible="True"/>
+                        <field name="residual"/>
+                        <field name="amount" sum="Total"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_create" type="object" string="Crear notas de débito" class="btn-primary"/>
+                    <button special="cancel" string="Cancelar"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_collection_interest_wizard" model="ir.actions.act_window">
+        <field name="name">Liquidar intereses moratorios</field>
+        <field name="res_model">l10n_pe.collection.interest.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_manager'))]"/>
+    </record>
+</odoo>

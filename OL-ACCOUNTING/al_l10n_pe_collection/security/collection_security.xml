@@ -102,5 +102,49 @@
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
         </record>
+        <record id="collection_dispute_company_rule" model="ir.rule">
+            <field name="name">Reclamo de cobranza: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_dispute"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_provision_company_rule" model="ir.rule">
+            <field name="name">Provisión de cobranza dudosa: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_provision"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_provision_line_company_rule" model="ir.rule">
+            <field name="name">Documento provisionado: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_provision_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_bureau_company_rule" model="ir.rule">
+            <field name="name">Reporte a central de riesgo: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_bureau"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_dispute_user_rule" model="ir.rule">
+            <field name="name">Reclamo de cobranza: solo los propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_dispute"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_dispute_manager_rule" model="ir.rule">
+            <field name="name">Reclamo de cobranza: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_dispute"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_bureau_user_rule" model="ir.rule">
+            <field name="name">Reporte a central de riesgo: solo los propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_bureau"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_bureau_manager_rule" model="ir.rule">
+            <field name="name">Reporte a central de riesgo: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_bureau"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
     </data>
 </odoo>

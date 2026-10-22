@@ -7,6 +7,16 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261022 — 22/10/2026
+
+- Reclamos: los documentos discutidos salen del seguimiento, de la deuda exigible y de las centrales de riesgo hasta resolverse; el resultado «Reclamo o disconformidad» abre el reclamo.
+- Protección al consumidor (art. 62 de la Ley 29571): sin gestiones por llamada, visita, WhatsApp o SMS fuera del horario, en fines de semana ni feriados, ni recordatorios antes del vencimiento sin consentimiento.
+- Calificación de riesgo A–D de cada cliente y cola de trabajo del gestor ordenada por prioridad.
+- Bloqueo de crédito por mora (días de atraso, calificación D o manual) con liberación del administrador; el módulo al_l10n_pe_collection_sale bloquea los pedidos de venta.
+- Intereses moratorios (TEA pactada, año de 360 días) en el estado de cuenta y liquidación por nota de débito motivo 01 en borrador.
+- Provisión de cobranza dudosa (68711 / 19) con gestiones como sustento, recuperación (7551), castigo hasta 3 UIT y expediente de cobranza en PDF.
+- Centrales de riesgo: aviso previo, plazo, reporte, retiro cuando paga o a los 5 años (Ley 27489) y Excel.
+
 ## 2.20261021 — 21/10/2026
 
 - Tablero de cobranza en la aplicación Tableros de Odoo (hoja de cálculo): indicadores, cartera por tramo y por gestor, vencimientos por semana, compromisos por estado, cobrado por mes y tablas de deudores y compromisos, con filtros por gestor, zona, cliente y periodo.

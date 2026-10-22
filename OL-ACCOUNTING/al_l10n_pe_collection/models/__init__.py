@@ -2,9 +2,13 @@ from . import collection_config
 from . import res_company
 from . import res_partner
 from . import account_followup
+from . import collection_dispute
+from . import collection_interest
 from . import collection_promise
 from . import collection_action
 from . import collection_portfolio
 from . import collection_forecast
 from . import collection_target
 from . import collection_dashboard
+from . import collection_provision
+from . import collection_bureau

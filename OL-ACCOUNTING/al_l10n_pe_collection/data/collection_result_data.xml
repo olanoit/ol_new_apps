@@ -25,6 +25,7 @@
         <field name="name">Reclamo o disconformidad</field>
         <field name="sequence">40</field>
         <field name="is_promise" eval="False"/>
+        <field name="is_dispute" eval="True"/>
         <field name="is_contact" eval="True"/>
         <field name="next_action_days">3</field>
     </record>
@@ -55,5 +56,31 @@
         <field name="is_promise" eval="False"/>
         <field name="is_contact" eval="False"/>
         <field name="next_action_days">0</field>
+    </record>
+
+    <!-- Motivos de reclamo -->
+    <record id="dispute_reason_price" model="l10n_pe.collection.dispute.reason">
+        <field name="name">Precio o descuento</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="dispute_reason_quantity" model="l10n_pe.collection.dispute.reason">
+        <field name="name">Cantidad o producto no recibido</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="dispute_reason_quality" model="l10n_pe.collection.dispute.reason">
+        <field name="name">Calidad o producto defectuoso</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="dispute_reason_document" model="l10n_pe.collection.dispute.reason">
+        <field name="name">Comprobante no recibido o con errores</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="dispute_reason_paid" model="l10n_pe.collection.dispute.reason">
+        <field name="name">El cliente dice que ya pagó</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="dispute_reason_other" model="l10n_pe.collection.dispute.reason">
+        <field name="name">Otro</field>
+        <field name="sequence">90</field>
     </record>
 </odoo>

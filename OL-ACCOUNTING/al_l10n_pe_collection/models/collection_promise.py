@@ -90,7 +90,7 @@ class L10nPeCollectionPromise(models.Model):
         promises = super().create(vals_list)
         for promise in promises:
             promise.residual_at_agreement = sum(promise.line_ids.mapped('amount_residual'))
-            promise.partner_id.message_post(body=_(
+            promise.partner_id._l10n_pe_collection_log(_(
                 'Compromiso de pago %(name)s: %(amount)s para el %(date)s.', name=promise._get_html_link(),
                 amount=promise.currency_id.format(promise.amount), date=promise.date.strftime('%d/%m/%Y')))
         return promises

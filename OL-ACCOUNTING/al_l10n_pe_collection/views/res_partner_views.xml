@@ -11,6 +11,17 @@
             </field>
             <field name="followup_responsible_id" position="after">
                 <field name="l10n_pe_collection_zone_id" options="{'no_create': True}"/>
+                <field name="l10n_pe_collection_rating" invisible="not l10n_pe_collection_rating"/>
+                <field name="l10n_pe_collection_score" invisible="not l10n_pe_collection_rated_on"/>
+                <field name="l10n_pe_collection_rated_on" invisible="1"/>
+                <field name="l10n_pe_collection_hold" invisible="not l10n_pe_collection_hold"
+                       decoration-danger="l10n_pe_collection_hold in ('auto', 'manual')" widget="badge"/>
+                <field name="l10n_pe_collection_hold_until" invisible="l10n_pe_collection_hold != 'released'"
+                       groups="al_l10n_pe_collection.group_collection_manager"/>
+                <field name="l10n_pe_collection_debtor_type"/>
+                <field name="l10n_pe_collection_reminder_consent"
+                       invisible="l10n_pe_collection_debtor_type == 'business'"/>
+                <field name="l10n_pe_collection_interest_rate"/>
                 <div colspan="2" class="d-flex flex-wrap gap-2 mt-2"
                      groups="al_l10n_pe_collection.group_collection_user">
                     <button name="action_l10n_pe_collection_new_action" type="object" string="Registrar gestión"
@@ -19,6 +30,18 @@
                             class="btn-secondary btn-sm"/>
                     <button name="action_l10n_pe_collection_send_statement" type="object" string="Enviar estado de cuenta"
                             class="btn-secondary btn-sm"/>
+                    <button name="action_l10n_pe_collection_file" type="object" string="Expediente"
+                            class="btn-secondary btn-sm"/>
+                    <button name="action_l10n_pe_collection_new_dispute" type="object" string="Registrar reclamo"
+                            class="btn-secondary btn-sm"/>
+                    <button name="action_l10n_pe_collection_rate_now" type="object" string="Calificar"
+                            class="btn-secondary btn-sm"/>
+                    <button name="action_l10n_pe_collection_hold" type="object" string="Bloquear crédito"
+                            class="btn-secondary btn-sm"
+                            invisible="l10n_pe_collection_hold in ('auto', 'manual')"/>
+                    <button name="action_l10n_pe_collection_release" type="object" string="Liberar crédito"
+                            class="btn-secondary btn-sm" groups="al_l10n_pe_collection.group_collection_manager"
+                            invisible="l10n_pe_collection_hold not in ('auto', 'manual')"/>
                 </div>
             </field>
         </field>
@@ -34,6 +57,11 @@
                         groups="al_l10n_pe_collection.group_collection_user"
                         invisible="not l10n_pe_collection_action_count">
                     <field name="l10n_pe_collection_action_count" widget="statinfo" string="Gestiones"/>
+                </button>
+                <button name="action_l10n_pe_collection_disputes" type="object" class="oe_stat_button" icon="fa-exclamation-triangle"
+                        groups="al_l10n_pe_collection.group_collection_user"
+                        invisible="not l10n_pe_collection_dispute_count">
+                    <field name="l10n_pe_collection_dispute_count" widget="statinfo" string="Reclamos"/>
                 </button>
                 <button name="action_l10n_pe_collection_promises" type="object" class="oe_stat_button" icon="fa-handshake-o"
                         groups="al_l10n_pe_collection.group_collection_user"
@@ -55,6 +83,8 @@
                 <field name="vat" readonly="1" optional="show"/>
                 <field name="followup_responsible_id" string="Gestor de cobranza"/>
                 <field name="l10n_pe_collection_zone_id"/>
+                <field name="l10n_pe_collection_debtor_type" optional="hide"/>
+                <field name="l10n_pe_collection_interest_rate" optional="hide"/>
                 <field name="email" readonly="1" optional="show"/>
                 <field name="phone" readonly="1" optional="show"/>
                 <field name="city" readonly="1" optional="hide"/>
@@ -70,6 +100,64 @@
         <field name="domain">[('customer_rank', '&gt;', 0)]</field>
         <field name="help" type="html">
             <p>Seleccione clientes y edite en lote el gestor de cobranza o la zona.</p>
+        </field>
+    </record>
+
+    <!-- Cola de trabajo: clientes con deuda vencida ordenados por prioridad (vencido × riesgo). -->
+    <record id="view_partner_list_collection_worklist" model="ir.ui.view">
+        <field name="name">res.partner.list.collection.worklist</field>
+        <field name="model">res.partner</field>
+        <field name="priority">91</field>
+        <field name="arch" type="xml">
+            <list create="0" default_order="l10n_pe_collection_priority desc"
+                  decoration-danger="l10n_pe_collection_rating == 'D'"
+                  decoration-warning="l10n_pe_collection_rating == 'C'">
+                <field name="name"/>
+                <field name="vat" optional="show"/>
+                <field name="followup_responsible_id" string="Gestor"/>
+                <field name="l10n_pe_collection_rating"/>
+                <field name="l10n_pe_collection_score" optional="show"/>
+                <field name="l10n_pe_collection_max_days"/>
+                <field name="total_overdue" string="Vencido" sum="Total"/>
+                <field name="l10n_pe_collection_priority" optional="show"/>
+                <field name="l10n_pe_collection_hold" optional="show"/>
+                <field name="phone" optional="show"/>
+                <field name="email" optional="hide"/>
+                <button name="action_l10n_pe_collection_new_action" type="object" string="Gestionar" icon="fa-phone"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_partner_search_collection_worklist" model="ir.ui.view">
+        <field name="name">res.partner.search.collection.worklist</field>
+        <field name="model">res.partner</field>
+        <field name="priority">91</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="followup_responsible_id" string="Gestor"/>
+                <filter name="mine" string="Mis clientes" domain="[('followup_responsible_id', '=', uid)]"/>
+                <separator/>
+                <filter name="rating_d" string="Alto riesgo (D)" domain="[('l10n_pe_collection_rating', '=', 'D')]"/>
+                <filter name="rating_c" string="Riesgo (C)" domain="[('l10n_pe_collection_rating', '=', 'C')]"/>
+                <filter name="on_hold" string="Bloqueados" domain="[('l10n_pe_collection_hold', 'in', ('auto', 'manual'))]"/>
+                <group>
+                    <filter name="group_rating" string="Calificación" context="{'group_by': 'l10n_pe_collection_rating'}"/>
+                    <filter name="group_user" string="Gestor" context="{'group_by': 'followup_responsible_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_collection_worklist" model="ir.actions.act_window">
+        <field name="name">Cola de trabajo</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_partner_list_collection_worklist"/>
+        <field name="search_view_id" ref="view_partner_search_collection_worklist"/>
+        <field name="domain">[('l10n_pe_collection_priority', '&gt;', 0)]</field>
+        <field name="context">{'search_default_mine': 1}</field>
+        <field name="help" type="html">
+            <p>No hay clientes con deuda vencida calificados.</p>
+            <p>La calificación se recalcula cada día; también puede calificar un cliente desde su ficha.</p>
         </field>
     </record>
 </odoo>

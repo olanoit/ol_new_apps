@@ -1,6 +1,9 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
+#: Canales en los que el art. 62 de la Ley 29571 limita el horario con consumidores.
+GUARDED_CHANNELS = ('call', 'visit', 'whatsapp', 'sms')
+
 CHANNELS = [
     ('call', 'Llamada'),
     ('visit', 'Visita'),
@@ -71,5 +74,8 @@ class L10nPeCollectionResult(models.Model):
                                 help='La gestión pide fecha e importe y crea el compromiso de pago.')
     is_contact = fields.Boolean(string='Hubo contacto', default=True,
                                 help='Para medir la tasa de contacto de los gestores.')
+    is_dispute = fields.Boolean(string='Es reclamo',
+                                help='La gestión pide el motivo y abre un reclamo con sus documentos, que salen '
+                                     'del seguimiento hasta resolverse.')
     next_action_days = fields.Integer(string='Próxima acción en (días)',
                                       help='Programa una actividad al gestor; 0 para no programar.')

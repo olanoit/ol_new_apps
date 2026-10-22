@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_provision_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.provision.form</field>
+        <field name="model">l10n_pe.collection.provision</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_load" type="object" string="Proponer documentos" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_post" type="object" string="Contabilizar"
+                            invisible="state != 'draft' or not line_ids"/>
+                    <button name="action_recover" type="object" string="Registrar recuperaciones"
+                            invisible="state != 'posted'"/>
+                    <button name="action_print_files" type="object" string="Expedientes"
+                            invisible="not line_ids"/>
+                    <button name="action_cancel" type="object" string="Anular" invisible="state != 'posted'"/>
+                    <button name="action_draft" type="object" string="Volver a borrador" invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="months" readonly="state != 'draft'"/>
+                            <field name="min_actions" readonly="state != 'draft'"/>
+                            <field name="journal_id" readonly="state != 'draft'" required="1"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                            <field name="recovered_amount" invisible="not recovered_amount"/>
+                            <field name="written_off_amount" invisible="not written_off_amount"/>
+                            <field name="move_id" invisible="not move_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        Art. 21 f) del Reglamento de la LIR: la morosidad se acredita con gestiones de cobro
+                        posteriores al vencimiento, un proceso judicial o más de 12 meses de vencida, y la Casación
+                        15840-2025 exige documentar acciones concretas. Imprima el expediente de cada deudor como
+                        sustento.
+                    </div>
+                    <field name="line_ids" readonly="state == 'cancel'">
+                        <list editable="bottom" create="0" decoration-danger="not supported and selected"
+                              decoration-muted="not selected">
+                            <field name="state" column_invisible="True"/>
+                            <field name="selected" readonly="state != 'draft'"/>
+                            <field name="partner_id"/>
+                            <field name="move_id"/>
+                            <field name="date_maturity"/>
+                            <field name="days"/>
+                            <field name="action_count"/>
+                            <field name="judicial" readonly="state != 'draft'"/>
+                            <field name="supported" column_invisible="True"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="residual" optional="show"/>
+                            <field name="recovered_amount" optional="hide"/>
+                            <field name="judicial_exhausted" optional="show" readonly="state != 'posted' or write_off_move_id"/>
+                            <field name="write_off_allowed" optional="show"/>
+                            <field name="write_off_move_id" optional="show"/>
+                            <button name="action_write_off" type="object" string="Castigar" icon="fa-gavel"
+                                    invisible="state != 'posted' or write_off_move_id or not selected"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Notas"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_collection_provision_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.provision.list</field>
+        <field name="model">l10n_pe.collection.provision</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount"/>
+                <field name="recovered_amount" optional="show"/>
+                <field name="written_off_amount" optional="show"/>
+                <field name="move_id" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'posted'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_collection_provision" model="ir.actions.act_window">
+        <field name="name">Provisión de cobranza dudosa</field>
+        <field name="res_model">l10n_pe.collection.provision</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Provisione la cobranza dudosa</p>
+            <p>Propone las deudas vencidas hace más de 12 meses con gestiones de cobro registradas, contabiliza la
+                estimación (68711 / 19) y después registra recuperaciones y castigos.</p>
+        </field>
+    </record>
+</odoo>

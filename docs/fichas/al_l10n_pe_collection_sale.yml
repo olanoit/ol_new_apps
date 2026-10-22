@@ -1,0 +1,25 @@
+titulo: "Cobranza: bloqueo de ventas por mora"
+subtitulo: "No deja confirmar pedidos de venta de clientes con bloqueo de crédito por mora y lo advierte en el pedido."
+categoria: "Localización Perú · Tesorería"
+etiquetas: [Cobranza, Ventas, Bloqueo de crédito]
+
+destacados:
+  - icono: "⛔"
+    titulo: "Pedidos bloqueados"
+    texto: "Un cliente con bloqueo de crédito no puede confirmar pedidos de venta."
+  - icono: "⚙"
+    titulo: "Automático"
+    texto: "Se instala solo con la app Cobranza y Ventas."
+
+funcionalidades:
+  - "Aviso en el pedido desde que se elige un cliente bloqueado."
+  - "Bloqueo por días de atraso, calificación D o a mano, según los ajustes de Cobranza."
+  - "El administrador de cobranza libera al cliente por unos días desde su ficha."
+
+novedades:
+  - version: 1.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Primera versión."
+
+relacionados: [al_l10n_pe_collection]
