@@ -11,9 +11,10 @@ químico farmacéutico la revise.
 
 ## Lo que ve el cliente
 
-- **Ficha del producto**: si el producto es de marca y tiene equivalentes, la
-  ficha muestra primero las alternativas genéricas en DCI, luego los genéricos
-  de marca y los innovadores, cada grupo del más barato al más caro.
+- **Ficha del producto**: si el producto es de marca y tiene equivalentes o
+  bioequivalentes vinculados, la ficha muestra primero las alternativas
+  genéricas en DCI, luego los genéricos de marca y los innovadores, cada grupo
+  del más barato al más caro.
 - **Avisos**: venta con receta médica, producto de una empresa vinculada a la
   botica o medicamento controlado, que solo se vende en el local y no se puede
   agregar al carrito.

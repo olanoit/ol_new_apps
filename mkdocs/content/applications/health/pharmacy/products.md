@@ -21,6 +21,20 @@ Con la composición y la forma, Odoo calcula los **equivalentes**: productos con
 el mismo principio activo, concentración y forma. La caja los ofrece como
 alternativas, primero los genéricos en DCI y del más barato al más caro.
 
+### Bioequivalentes
+
+Algunos productos son intercambiables aunque su composición registrada no sea
+idéntica: otra sal del mismo principio activo o una forma de liberación
+inmediata distinta. Vincúlelos en el campo **Bioequivalentes** de la pestaña
+Farmacia. El vínculo es recíproco: si agrega B en el producto A, A aparece en B,
+y al quitarlo desaparece de los dos. Un bioequivalente vinculado cuenta como
+equivalente en todas partes: en las alternativas de la caja, en la ficha de la
+tienda en línea y al dispensar una receta.
+
+Marque **Equivalencia terapéutica demostrada** en los productos con estudios de
+bioequivalencia aprobados por la DIGEMID (intercambiabilidad de medicamentos).
+La caja los muestra con la etiqueta **Bioequivalente**.
+
 Los catálogos (principios activos, formas, vías) están en **Farmacia ‣
 Configuración ‣ Catálogos**. Los filtros de la lista de productos ayudan a
 revisar el maestro: **Sin registro sanitario**, **Registro vencido**, **Con

@@ -17,11 +17,13 @@ class ProductTemplate(models.Model):
         al más caro."""
         self.ensure_one()
         key = self.pharmacy_equivalence_key
-        if not key:
+        if not key and not self.pharmacy_bioequivalent_ids:
             return self.browse()
-        domain = Domain([
-            ('pharmacy_equivalence_key', '=', key), ('id', '!=', self.id),
-            ('is_published', '=', True), ('sale_ok', '=', True),
+        same = Domain('id', 'in', self.pharmacy_bioequivalent_ids.ids)
+        if key:
+            same |= Domain('pharmacy_equivalence_key', '=', key)
+        domain = same & Domain([
+            ('id', '!=', self.id), ('is_published', '=', True), ('sale_ok', '=', True),
         ])
         website = request and getattr(request, 'website', None)
         if website:

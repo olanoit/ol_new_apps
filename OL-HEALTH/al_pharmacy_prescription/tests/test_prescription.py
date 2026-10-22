@@ -60,6 +60,18 @@ class TestPrescription(TransactionCase):
         with self.assertRaises(UserError):
             prescription._dispense(self.brand, 1)
 
+    def test_linked_bioequivalent_is_a_valid_alternative(self):
+        """Un bioequivalente vinculado a mano se dispensa como alternativa
+        aunque su composición registrada sea otra."""
+        other = self.env['product.product'].create({
+            'name': 'Azitromicina dihidrato 500 mg', 'is_storable': True, 'pharmacy_ok': True})
+        prescription = self._prescription()
+        prescription.action_validate()
+        with self.assertRaises(UserError):
+            prescription._dispense(other, 1)
+        self.brand.product_tmpl_id.pharmacy_bioequivalent_ids = [(4, other.product_tmpl_id.id)]
+        self.assertTrue(prescription._dispense(other, 1).is_alternative)
+
     def test_cannot_exceed_prescribed_quantity(self):
         prescription = self._prescription()
         prescription.action_validate()

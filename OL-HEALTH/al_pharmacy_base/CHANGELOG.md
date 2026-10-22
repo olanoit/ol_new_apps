@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261022 — 22/10/2026
+
+- Bioequivalentes: vínculo manual y recíproco entre productos intercambiables que no comparten la clave (otra sal, otra forma); cuentan como equivalentes.
+- Marca «Equivalencia terapéutica demostrada» (intercambiabilidad DIGEMID); en la demo, en amoxicilina, losartán y atorvastatina.
+
 ## 3.20261018 — 18/10/2026
 
 - Datos de demostración: 14 medicamentos con composición, presentaciones (blíster y caja), laboratorios, directora técnica, Q.F., técnica, turnos, código del establecimiento y libro de ocurrencias.

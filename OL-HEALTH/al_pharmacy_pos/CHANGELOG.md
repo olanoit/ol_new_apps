@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261022 — 22/10/2026
+
+- Bioequivalentes en la caja: entre las alternativas y en la ficha del producto, con la etiqueta «Bioequivalente»; se cargan aunque no entren en el límite de productos.
+- Al tocar un equivalente en la ficha, la caja lo cambia en el pedido con la misma cantidad (antes solo lo buscaba).
+
 ## 8.20261022 — 22/10/2026
 
 - Ficha del producto en la caja con la información farmacéutica: condición de venta, composición, forma, vía, laboratorio, registro sanitario, DIGEMID, IGV, almacenamiento, presentaciones, lotes por vencimiento y equivalentes con precio y stock.

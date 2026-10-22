@@ -876,6 +876,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones bacterianas.</field>
+            <field name="pharmacy_bioequivalent" eval="True"/>
             <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_amoxicillin.jpg"/>
         </record>
         <record id="product_amoxicillin_presentation_1" model="pharmacy.presentation">
@@ -1085,6 +1086,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_losartan'), 'strength': 50, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Hipertensión arterial.</field>
+            <field name="pharmacy_bioequivalent" eval="True"/>
             <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_losartan.jpg"/>
         </record>
         <record id="product_losartan_presentation_1" model="pharmacy.presentation">
@@ -1118,6 +1120,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_losartan'), 'strength': 50, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_huascaran"/>
             <field name="pharmacy_indications">Hipertensión arterial.</field>
+            <field name="pharmacy_bioequivalent" eval="True"/>
             <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_tensiloz.jpg"/>
         </record>
         <record id="product_tensiloz_presentation_1" model="pharmacy.presentation">
@@ -1208,6 +1211,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_atorvastatina'), 'strength': 20, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Colesterol alto.</field>
+            <field name="pharmacy_bioequivalent" eval="True"/>
             <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_atorvastatin.jpg"/>
         </record>
         <record id="product_atorvastatin_presentation_1" model="pharmacy.presentation">

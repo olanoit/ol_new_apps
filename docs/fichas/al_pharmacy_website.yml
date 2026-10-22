@@ -40,6 +40,10 @@ configuracion:
   - "Las recetas por validar están en **Farmacia ▸ Dispensación ▸ Recetas en línea**."
 
 novedades:
+  - version: '2.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "La ficha de la tienda también ofrece los bioequivalentes vinculados, genéricos primero."
   - version: '1.20261019'
     fecha: 19/10/2026
     cambios:

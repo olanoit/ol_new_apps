@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_prescription.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261022 — 22/10/2026
+
+- Un bioequivalente vinculado se puede dispensar como alternativa del producto recetado.
+
 ## 2.20261018 — 18/10/2026
 
 - Datos de demostración: prescriptores (hábil, sin verificar e inhábil), pacientes con alergia y condición crónica, y recetas por validar, vigente, dispensada en parte y vencida.

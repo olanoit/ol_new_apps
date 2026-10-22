@@ -85,8 +85,10 @@ patch(PosStore.prototype, {
     // Alternativas (Ley 32033: genéricos en DCI primero, por precio)
     // ------------------------------------------------------------------
     getPharmacyAlternatives(productTemplate) {
+        // Misma clave (principio, concentración y forma) o bioequivalente vinculado a mano.
         const key = productTemplate.pharmacy_equivalence_key;
-        if (!key) {
+        const linked = new Set((productTemplate.pharmacy_bioequivalent_ids || []).map((t) => t.id));
+        if (!key && !linked.size) {
             return [];
         }
         return this.models["product.template"]
@@ -95,7 +97,7 @@ patch(PosStore.prototype, {
                 (template) =>
                     template.id !== productTemplate.id &&
                     template.available_in_pos &&
-                    template.pharmacy_equivalence_key === key
+                    ((key && template.pharmacy_equivalence_key === key) || linked.has(template.id))
             )
             .sort(
                 (a, b) =>
@@ -107,11 +109,16 @@ patch(PosStore.prototype, {
 
     async choosePharmacyAlternative(productTemplate, alternatives) {
         const currencyId = this.currency.id;
+        const linked = new Set((productTemplate.pharmacy_bioequivalent_ids || []).map((t) => t.id));
         const label = (template, prefix) =>
             `${prefix}${template.display_name} — ${formatCurrency(
                 template.list_price,
                 currencyId
-            )} · ${PRODUCT_TYPE_LABELS[template.pharmacy_product_type] || ""}`;
+            )} · ${PRODUCT_TYPE_LABELS[template.pharmacy_product_type] || ""}${
+                template.pharmacy_bioequivalent || linked.has(template.id)
+                    ? ` · ${_t("Bioequivalente")}`
+                    : ""
+            }`;
         const list = [
             { id: productTemplate.id, label: label(productTemplate, _t("Mantener: ")), item: productTemplate },
             ...alternatives.map((template) => ({
@@ -205,7 +212,12 @@ patch(PosStore.prototype, {
                 ? this.data.models["product.template"].get(vals.product_tmpl_id)
                 : vals.product_tmpl_id;
         if (productTemplate && !("price_unit" in vals) && !vals.pharmacy_presentation_id) {
-            if (configure && !opts.code && productTemplate.pharmacy_product_type !== "generic_dci") {
+            if (
+                configure &&
+                !opts.code &&
+                !opts.pharmacyAlternativeChosen &&
+                productTemplate.pharmacy_product_type !== "generic_dci"
+            ) {
                 const alternatives = this.getPharmacyAlternatives(productTemplate);
                 if (alternatives.length) {
                     const chosen = await this.choosePharmacyAlternative(productTemplate, alternatives);

@@ -234,8 +234,10 @@ class PharmacyPrescriptionLine(models.Model):
         if self.product_id:
             if self.product_id == product:
                 return True
-            key = self.product_id.product_tmpl_id.pharmacy_equivalence_key
-            return bool(key) and key == template.pharmacy_equivalence_key
+            prescribed = self.product_id.product_tmpl_id
+            key = prescribed.pharmacy_equivalence_key
+            return (bool(key) and key == template.pharmacy_equivalence_key) \
+                or template in prescribed.pharmacy_bioequivalent_ids
         return self.ingredient_id in template.pharmacy_ingredient_line_ids.ingredient_id
 
 

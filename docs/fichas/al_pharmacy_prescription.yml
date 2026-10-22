@@ -31,6 +31,10 @@ configuracion:
   - "Las ventas del TPV de farmacia registran sus recetas solas; también puede registrarlas en **Farmacia ▸ Dispensación ▸ Recetas**."
 
 novedades:
+  - version: '3.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "Un bioequivalente vinculado se puede dispensar como alternativa del producto recetado."
   - version: 2.20261018
     fecha: 18/10/2026
     cambios:

@@ -39,6 +39,11 @@ configuracion:
   - "Defina las presentaciones del producto (módulo «Farmacia: maestro farmacéutico»)."
 
 novedades:
+  - version: '9.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "Bioequivalentes en la caja: entre las alternativas y en la ficha del producto, con la etiqueta «Bioequivalente»; se cargan aunque no entren en el límite de productos."
+      - "Al tocar un equivalente en la ficha, la caja lo cambia en el pedido con la misma cantidad (antes solo lo buscaba)."
   - version: '8.20261022'
     fecha: 22/10/2026
     cambios:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 
 SALE_CONDITIONS = [
     ('otc', 'Venta libre'),
@@ -44,7 +44,18 @@ class ProductTemplate(models.Model):
         help='Mismo principio activo, concentración y forma farmacéutica: productos '
              'intercambiables para ofrecer alternativas.')
     pharmacy_equivalent_ids = fields.Many2many(
-        'product.template', string='Equivalentes', compute='_compute_pharmacy_equivalent_ids')
+        'product.template', string='Equivalentes', compute='_compute_pharmacy_equivalent_ids',
+        help='Los de la misma clave de equivalencia más los bioequivalentes vinculados a mano.')
+    pharmacy_bioequivalent_ids = fields.Many2many(
+        'product.template', 'pharmacy_product_bioequivalent_rel', 'src_id', 'dest_id',
+        string='Bioequivalentes', copy=False,
+        help='Productos intercambiables que no comparten la clave automática (otra sal, otra '
+             'forma de liberación inmediata…). El vínculo es recíproco: se agrega o quita en '
+             'ambos productos.')
+    pharmacy_bioequivalent = fields.Boolean(
+        string='Equivalencia terapéutica demostrada',
+        help='Con estudios de bioequivalencia o equivalencia terapéutica aprobados por la '
+             'DIGEMID (intercambiabilidad, DS 024-2018-SA). Se resalta en la caja al ofrecerlo.')
 
     # Registro sanitario y condición de venta (Ley 29459)
     pharmacy_sale_condition = fields.Selection(
@@ -102,17 +113,43 @@ class ProductTemplate(models.Model):
                 ','.join(sorted(line._key() for line in lines)),
                 template.pharmacy_dosage_form_id.id or '')
 
-    @api.depends('pharmacy_equivalence_key')
+    @api.depends('pharmacy_equivalence_key', 'pharmacy_bioequivalent_ids')
     def _compute_pharmacy_equivalent_ids(self):
         keys = [key for key in set(self.mapped('pharmacy_equivalence_key')) if key]
         candidates = self.search([('pharmacy_equivalence_key', 'in', keys)]) if keys else self.browse()
         for template in self:
-            if not template.pharmacy_equivalence_key:
-                template.pharmacy_equivalent_ids = False
-                continue
-            template.pharmacy_equivalent_ids = candidates.filtered(
-                lambda t: t.pharmacy_equivalence_key == template.pharmacy_equivalence_key
-                and t.id != template._origin.id)
+            same_key = candidates.filtered(
+                lambda t: template.pharmacy_equivalence_key
+                and t.pharmacy_equivalence_key == template.pharmacy_equivalence_key)
+            template.pharmacy_equivalent_ids = (same_key | template.pharmacy_bioequivalent_ids).filtered(
+                lambda t: t.id != template._origin.id)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        templates = super().create(vals_list)
+        templates.filtered('pharmacy_bioequivalent_ids')._pharmacy_sync_bioequivalents(
+            {template.id: self.browse() for template in templates})
+        return templates
+
+    def write(self, vals):
+        if 'pharmacy_bioequivalent_ids' not in vals or self.env.context.get('pharmacy_bioequivalent_sync'):
+            return super().write(vals)
+        before = {template.id: template.pharmacy_bioequivalent_ids for template in self}
+        result = super().write(vals)
+        self._pharmacy_sync_bioequivalents(before)
+        return result
+
+    def _pharmacy_sync_bioequivalents(self, before):
+        """Vínculo recíproco: si A es bioequivalente de B, B lo es de A."""
+        self = self.with_context(pharmacy_bioequivalent_sync=True)
+        for template in self:
+            current = template.pharmacy_bioequivalent_ids
+            previous = before.get(template.id, self.browse())
+            for added in current - previous:
+                if template not in added.pharmacy_bioequivalent_ids:
+                    added.pharmacy_bioequivalent_ids = [Command.link(template.id)]
+            for removed in previous - current:
+                removed.pharmacy_bioequivalent_ids = [Command.unlink(template.id)]
 
     def _pharmacy_sorted_alternatives(self):
         """Equivalentes para ofrecer: primero los genéricos en DCI y, entre

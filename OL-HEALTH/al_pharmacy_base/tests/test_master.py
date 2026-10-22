@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -58,6 +58,27 @@ class TestPharmacyMaster(TransactionCase):
                                         self.tablet, 1.0, 'generic_brand')
         self.assertEqual(brand._pharmacy_sorted_alternatives(),
                          generic_cheap + generic_dear + branded_generic)
+
+    def test_bioequivalents_are_reciprocal_and_count_as_equivalents(self):
+        """Otra sal no comparte la clave: el vínculo manual la vuelve equivalente
+        en ambos sentidos, y al quitarlo desaparece de los dos."""
+        sodium = self._product('Naproxeno sódico 550 mg', [(self.naproxen, 550)], self.tablet, 1.5)
+        base = self.env['pharmacy.ingredient']._get_or_create('Naproxeno base (prueba)')
+        other_salt = self._product('Naproxeno 500 mg', [(base, 500)], self.tablet, 1.8)
+        self.assertFalse(other_salt.pharmacy_equivalent_ids)
+        sodium.pharmacy_bioequivalent_ids = [Command.link(other_salt.id)]
+        self.assertEqual(other_salt.pharmacy_bioequivalent_ids, sodium)
+        self.assertIn(other_salt, sodium.pharmacy_equivalent_ids)
+        self.assertIn(sodium, other_salt.pharmacy_equivalent_ids)
+        self.assertIn(other_salt, sodium._pharmacy_sorted_alternatives())
+        linked_on_create = self._product('Naproxeno 500 mg Genfar', [(base, 500)], self.tablet, 1.2)
+        third = self.env['product.template'].create({
+            'name': 'Naproxeno 550 mg cápsula', 'type': 'consu', 'pharmacy_ok': True,
+            'pharmacy_bioequivalent_ids': [Command.set(linked_on_create.ids)]})
+        self.assertEqual(linked_on_create.pharmacy_bioequivalent_ids, third)
+        sodium.pharmacy_bioequivalent_ids = [Command.clear()]
+        self.assertFalse(other_salt.pharmacy_bioequivalent_ids)
+        self.assertNotIn(sodium, other_salt.pharmacy_equivalent_ids)
 
     def test_ingredient_get_or_create_is_case_insensitive(self):
         self.assertEqual(self.env['pharmacy.ingredient']._get_or_create('  paracetamol '),

@@ -74,6 +74,16 @@ class TestPharmacyWebsite(PharmacyWebsiteCommon, TransactionCase):
         self.assertEqual(alternatives.mapped('name'),
                          ['Amoxicilina 500 mg', 'Amoxil genérico 500 mg'])
 
+    def test_alternatives_include_linked_bioequivalents(self):
+        other = self.env['product.template'].create({
+            'name': 'Amoxicilina trihidrato 500 mg tableta', 'type': 'consu', 'is_published': True,
+            'sale_ok': True, 'pharmacy_ok': True, 'list_price': 0.6, 'pharmacy_product_type': 'generic_dci'})
+        self.assertNotIn(other, self.innovator._pharmacy_website_alternatives())
+        self.innovator.pharmacy_bioequivalent_ids = [Command.link(other.id)]
+        self.assertEqual(self.innovator._pharmacy_website_alternatives()[:2].mapped('name'),
+                         ['Amoxicilina trihidrato 500 mg tableta', 'Amoxicilina 500 mg'])
+        self.assertIn(self.innovator, other._pharmacy_website_alternatives())
+
     def test_controlled_not_added_to_cart(self):
         order = self._web_order(self.insulin)
         qty, warning = order._verify_updated_quantity(

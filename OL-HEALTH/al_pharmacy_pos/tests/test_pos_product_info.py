@@ -74,3 +74,21 @@ class TestPosProductInfo(TestPoSCommon):
             found = self.env['product.template'].search(
                 [('pharmacy_ingredient_line_ids.ingredient_id', 'ilike', word)])
             self.assertIn(self.generic, found)
+
+    def test_bioequivalents_in_info_and_pos_load(self):
+        """Un bioequivalente vinculado a mano aparece en la ficha y se carga en
+        la caja aunque no comparta la clave ni entre en la carga normal."""
+        other = self.env['product.template'].create({
+            'name': 'Paracetamol 500 mg cápsula (prueba caja)', 'list_price': 0.30, 'type': 'consu',
+            'available_in_pos': True, 'pharmacy_ok': True, 'pharmacy_product_type': 'generic_brand',
+            'pharmacy_bioequivalent': True})
+        self.generic.pharmacy_bioequivalent_ids = [Command.link(other.id)]
+        info = self.generic.get_product_info_pos(0.20, 1, self.config.id)['pharmacy']
+        by_id = {e['id']: e for e in info['equivalents']}
+        self.assertTrue(by_id[other.id]['bioequivalent'])
+        self.assertFalse(by_id[self.brand.id]['bioequivalent'])
+        self.open_new_session()
+        data = self.pos_session.with_context(pos_limited_loading=False).load_data([])
+        templates = {t['id']: t for t in data['product.template']}
+        self.assertEqual(templates[self.generic.id]['pharmacy_bioequivalent_ids'], [other.id])
+        self.assertEqual(templates[other.id]['pharmacy_bioequivalent_ids'], [self.generic.id])

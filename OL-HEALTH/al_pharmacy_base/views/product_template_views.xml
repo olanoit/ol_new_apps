@@ -18,6 +18,7 @@
                             <field name="pharmacy_laboratory_id"/>
                             <field name="pharmacy_sale_condition"/>
                             <field name="pharmacy_product_type"/>
+                            <field name="pharmacy_bioequivalent"/>
                             <field name="pharmacy_linked_company"/>
                         </group>
                         <group string="Forma y conservación">
@@ -37,8 +38,12 @@
                             <field name="strength_unit"/>
                         </list>
                     </field>
-                    <group invisible="not pharmacy_equivalent_ids">
-                        <field name="pharmacy_equivalent_ids" widget="many2many_tags" readonly="1"/>
+                    <group>
+                        <field name="pharmacy_bioequivalent_ids" widget="many2many_tags"
+                               domain="[('pharmacy_ok', '=', True), ('id', '!=', id)]"
+                               placeholder="Intercambiables que no comparten composición y forma"/>
+                        <field name="pharmacy_equivalent_ids" widget="many2many_tags" readonly="1"
+                               invisible="not pharmacy_equivalent_ids"/>
                     </group>
                     <group string="Ficha">
                         <field name="pharmacy_indications"/>

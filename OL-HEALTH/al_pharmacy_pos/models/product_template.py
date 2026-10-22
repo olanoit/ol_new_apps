@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
+from odoo.fields import Domain
 
 # Datos de la ficha que vienen de módulos opcionales de la suite (controlados,
 # DIGEMID…): se muestran si el campo existe.
@@ -36,6 +37,20 @@ class ProductTemplate(models.Model):
     def _compute_pharmacy_ingredient_ids(self):
         for template in self:
             template.pharmacy_ingredient_ids = template.pharmacy_ingredient_line_ids.ingredient_id
+
+    @api.model
+    def _load_pos_data_search_read(self, data, config):
+        """Como los productos opcionales del TPV: los bioequivalentes vinculados
+        se cargan aunque no entren en el límite de productos, para ofrecerlos
+        y cambiarlos en el pedido sin ir al servidor."""
+        result = super()._load_pos_data_search_read(data, config)
+        loaded = {template['id'] for template in result}
+        missing = {template_id for template in result
+                   for template_id in template.get('pharmacy_bioequivalent_ids') or []} - loaded
+        if missing:
+            domain = Domain(self._load_pos_data_domain(data, config)) & Domain('id', 'in', list(missing))
+            result += self._load_pos_data_read(self._load_product_with_domain(domain), config)
+        return result
 
     @api.model
     def load_product_from_pos(self, config_id, domain, offset=0, limit=0):
@@ -97,6 +112,8 @@ class ProductTemplate(models.Model):
             badges.append({'kind': 'cold', 'label': 'Cadena de frío'})
         if self.pharmacy_product_type == 'generic_dci':
             badges.append({'kind': 'generic', 'label': 'Genérico'})
+        if self.pharmacy_bioequivalent:
+            badges.append({'kind': 'bioequivalent', 'label': 'Equivalencia terapéutica demostrada'})
         # Quien atiende la caja no necesariamente lee lotes ni existencias de
         # inventario: solo se devuelven nombre, vencimiento y cantidad.
         location = config.picking_type_id.default_location_src_id
@@ -122,6 +139,7 @@ class ProductTemplate(models.Model):
             equivalents.append({
                 'id': template.id, 'name': template.display_name, 'price': template.list_price,
                 'type': template._pharmacy_selection('pharmacy_product_type'),
+                'bioequivalent': template.pharmacy_bioequivalent or template in self.pharmacy_bioequivalent_ids,
                 'qty': sum(self.env['stock.quant'].sudo().search([
                     ('product_id', '=', variant.id), ('location_id', 'child_of', location.id)]).mapped('quantity'))
                 if location else 0,

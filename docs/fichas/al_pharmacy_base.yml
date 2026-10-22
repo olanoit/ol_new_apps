@@ -47,6 +47,11 @@ configuracion:
   - "Revise los ajustes en **Farmacia ▸ Configuración ▸ Ajustes**."
 
 novedades:
+  - version: '4.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "Bioequivalentes: vínculo manual y recíproco entre productos intercambiables que no comparten la clave (otra sal, otra forma); cuentan como equivalentes."
+      - "Marca «Equivalencia terapéutica demostrada» (intercambiabilidad DIGEMID); en la demo, en amoxicilina, losartán y atorvastatina."
   - version: 3.20261018
     fecha: 18/10/2026
     cambios:

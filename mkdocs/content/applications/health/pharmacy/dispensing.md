@@ -6,9 +6,10 @@ modulos: [al_pharmacy_prescription, al_pharmacy_pos, al_l10n_pe_prescriber_cmp]
 
 ## En la caja
 
-1. Al tocar un producto **de marca** con equivalentes, la caja ofrece las
-   **alternativas**: primero los genéricos en DCI y del más barato al más caro
-   (Ley 32033). Elija el producto o mantenga el pedido.
+1. Al tocar un producto **de marca** con equivalentes o bioequivalentes, la caja
+   ofrece las **alternativas**: primero los genéricos en DCI y del más barato al
+   más caro (Ley 32033). Los bioequivalentes llevan la etiqueta
+   «Bioequivalente». Elija el producto o mantenga el pedido.
 2. Si el producto se vende **con receta**, la caja pide los datos: número,
    fecha, prescriptor, colegiatura y, si la venta no tiene cliente, el paciente.
     - Con el ajuste **Bloquear**, un químico farmacéutico puede pulsar
@@ -44,9 +45,14 @@ farmacéutica** primero: condición de venta, principio activo, forma, vía,
 laboratorio, registro sanitario y su vencimiento, código DIGEMID, régimen del
 IGV, condiciones de almacenamiento y ubicación; las **presentaciones** con su
 precio; los **lotes disponibles** del local ordenados por vencimiento (los que
-vencen en 90 días o menos, resaltados); los **equivalentes** con su precio y
-existencias (al tocarlos, la caja los busca), y las indicaciones,
-contraindicaciones y efectos adversos.
+vencen en 90 días o menos, resaltados); los **equivalentes y bioequivalentes**
+con su precio y existencias, y las indicaciones, contraindicaciones y efectos
+adversos.
+
+Al tocar un equivalente, la caja **lo cambia en el pedido**: quita las líneas del
+producto de la ficha y agrega el equivalente con la misma cantidad en unidades.
+Si el producto no estaba en el pedido, solo agrega el equivalente. La receta y
+la presentación se piden como siempre; si se cancela, el pedido queda igual.
 
 ![Ficha del producto con la información farmacéutica](dispensing/product-info.png)
 

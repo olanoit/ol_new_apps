@@ -167,7 +167,7 @@ PRODUCTS = [
     # --- Antibióticos (con receta)
     P('product_amoxicillin', 'Amoxicilina 500 mg cápsula', 'generic_dci', 'prescription',
       [('ingredient_amoxicilina', 500, 'mg')], 'capsule', 'oral', 0.50, 0.22,
-      [(BLISTER, 10, 4.50), ('Caja', 100, 40.00)], 'EN-05127', '01287', 'rx', ind='Infecciones bacterianas.'),
+      [(BLISTER, 10, 4.50), ('Caja', 100, 40.00)], 'EN-05127', '01287', 'rx', bioeq=True, ind='Infecciones bacterianas.'),
     P('product_amoxival', 'Amoxival 500 mg cápsula', 'innovator', 'prescription',
       [('ingredient_amoxicilina', 500, 'mg')], 'capsule', 'oral', 1.40, 0.70,
       [(BLISTER, 10, 13.00)], 'E-18350', '01288', 'rx', 'lab_andino', ind='Infecciones bacterianas.'),
@@ -193,10 +193,10 @@ PRODUCTS = [
     # --- Crónicos: presión, colesterol, diabetes, tiroides
     P('product_losartan', 'Losartán 50 mg tableta', 'generic_dci', 'prescription',
       [('ingredient_losartan', 50, 'mg')], 'coated_tablet', 'oral', 0.30, 0.10,
-      [(BLISTER, 10, 2.50), ('Caja', 100, 20.00)], 'EN-05341', '03322', 'rx', ind='Hipertensión arterial.'),
+      [(BLISTER, 10, 2.50), ('Caja', 100, 20.00)], 'EN-05341', '03322', 'rx', bioeq=True, ind='Hipertensión arterial.'),
     P('product_tensiloz', 'Tensiloz 50 mg tableta', 'generic_brand', 'prescription',
       [('ingredient_losartan', 50, 'mg')], 'coated_tablet', 'oral', 0.90, 0.40, [(BLISTER, 10, 8.50)],
-      'EG-09012', '03323', 'rx', 'lab_huascaran', ind='Hipertensión arterial.'),
+      'EG-09012', '03323', 'rx', 'lab_huascaran', bioeq=True, ind='Hipertensión arterial.'),
     P('product_enalapril', 'Enalapril 10 mg tableta', 'generic_dci', 'prescription',
       [('ingredient_enalapril', 10, 'mg')], 'tablet', 'oral', 0.15, 0.05,
       [(BLISTER, 10, 1.20), ('Caja', 100, 10.00)], 'EN-03250', '03310', 'rx', ind='Hipertensión arterial.'),
@@ -205,7 +205,7 @@ PRODUCTS = [
       [(BLISTER, 10, 1.80), ('Caja', 100, 15.00)], 'EN-04510', '03340', 'rx', ind='Hipertensión arterial.'),
     P('product_atorvastatin', 'Atorvastatina 20 mg tableta', 'generic_dci', 'prescription',
       [('ingredient_atorvastatina', 20, 'mg')], 'coated_tablet', 'oral', 0.45, 0.16,
-      [(BLISTER, 10, 4.00), ('Caja', 30, 11.00)], 'EN-05010', '03410', 'rx', ind='Colesterol alto.'),
+      [(BLISTER, 10, 4.00), ('Caja', 30, 11.00)], 'EN-05010', '03410', 'rx', bioeq=True, ind='Colesterol alto.'),
     P('product_colestrina', 'Colestrina 20 mg tableta', 'innovator', 'prescription',
       [('ingredient_atorvastatina', 20, 'mg')], 'coated_tablet', 'oral', 2.80, 1.30, [('Caja', 30, 79.00)],
       'E-23015', '03411', 'rx', 'lab_chavin', ind='Colesterol alto.'),
@@ -495,6 +495,8 @@ def demo_base():
             fields.append(f('pharmacy_laboratory_id', ref=extra['lab']))
         if extra.get('ind'):
             fields.append(f('pharmacy_indications', extra['ind']))
+        if extra.get('bioeq'):
+            fields.append(f('pharmacy_bioequivalent', eval='True'))
         fields += image(BASE, pid)
         if extra.get('cold'):
             fields += [f('pharmacy_cold_chain', eval='True'),

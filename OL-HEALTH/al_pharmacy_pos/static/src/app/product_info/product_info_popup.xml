@@ -53,12 +53,16 @@
                 </div>
 
                 <div t-if="ph.equivalents.length" class="mt-3">
-                    <h4 class="alph-info__subtitle">Equivalentes (mismo principio, concentración y forma)</h4>
+                    <h4 class="alph-info__subtitle">Equivalentes y bioequivalentes
+                        <small class="text-muted">(toque uno para cambiarlo en el pedido)</small></h4>
                     <div class="alph-equivalents">
                         <button t-foreach="ph.equivalents" t-as="equivalent" t-key="equivalent.id" type="button"
-                                class="alph-equivalent" t-on-click="() => this.searchProduct(equivalent.name)">
+                                class="alph-equivalent" t-on-click="() => this.replaceWithPharmacyEquivalent(equivalent)">
                             <span class="alph-equivalent__name" t-esc="equivalent.name"/>
-                            <span class="text-muted small" t-esc="equivalent.type"/>
+                            <span class="d-flex flex-wrap align-items-center gap-1 small">
+                                <span class="text-muted" t-esc="equivalent.type"/>
+                                <span t-if="equivalent.bioequivalent" class="alph-badge alph-badge--bioequivalent">Bioequivalente</span>
+                            </span>
                             <span class="alph-equivalent__price" t-esc="env.utils.formatCurrency(equivalent.price)"/>
                             <span t-attf-class="small {{ equivalent.qty > 0 ? 'text-success' : 'text-danger' }}">
                                 <t t-if="equivalent.qty > 0"><t t-esc="equivalent.qty"/> en stock</t>
