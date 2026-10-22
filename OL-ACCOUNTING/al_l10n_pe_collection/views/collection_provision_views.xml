@@ -49,18 +49,18 @@
                             <field name="selected" readonly="state != 'draft'"/>
                             <field name="partner_id"/>
                             <field name="move_id"/>
-                            <field name="date_maturity"/>
+                            <field name="date_maturity" optional="hide"/>
                             <field name="days"/>
                             <field name="action_count"/>
-                            <field name="judicial" readonly="state != 'draft'"/>
+                            <field name="judicial" string="Judicial" readonly="state != 'draft'"/>
                             <field name="supported" column_invisible="True"/>
                             <field name="currency_id" column_invisible="True"/>
                             <field name="amount" sum="Total"/>
-                            <field name="residual" optional="show"/>
+                            <field name="residual" optional="hide"/>
                             <field name="recovered_amount" optional="hide"/>
-                            <field name="judicial_exhausted" optional="show" readonly="state != 'posted' or write_off_move_id"/>
-                            <field name="write_off_allowed" optional="show"/>
-                            <field name="write_off_move_id" optional="show"/>
+                            <field name="judicial_exhausted" string="Acc. agotadas" optional="show" readonly="state != 'posted' or write_off_move_id"/>
+                            <field name="write_off_allowed" string="Deducible" optional="show"/>
+                            <field name="write_off_move_id" string="Castigo" optional="hide"/>
                             <button name="action_write_off" type="object" string="Castigar" icon="fa-gavel"
                                     invisible="state != 'posted' or write_off_move_id or not selected"/>
                         </list>

@@ -44,8 +44,8 @@
                     </group>
                     <field name="line_ids" readonly="id" options="{'no_create': True}">
                         <list>
-                            <field name="move_id"/>
-                            <field name="date_maturity"/>
+                            <field name="move_id" string="Documento"/>
+                            <field name="date_maturity" string="Vencimiento"/>
                             <field name="company_currency_id" column_invisible="True"/>
                             <field name="amount_residual" string="Saldo"/>
                         </list>

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261022 — 22/10/2026
+
+- Prueba funcional: un cliente sin pagos previos y con deuda antigua se califica por lo vencido abierto (antes salía B); la cola de trabajo muestra a todos al administrador; títulos «Documento» y «Vencimiento» en las listas de documentos.
+
 ## 3.20261022 — 22/10/2026
 
 - Reclamos: los documentos discutidos salen del seguimiento, de la deuda exigible y de las centrales de riesgo hasta resolverse; el resultado «Reclamo o disconformidad» abre el reclamo.

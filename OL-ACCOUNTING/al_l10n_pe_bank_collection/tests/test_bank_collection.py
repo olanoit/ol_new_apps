@@ -23,7 +23,7 @@ class TestBankCollection(CollectionCommon):
         cls.debtors_layout = cls.env.ref('al_l10n_pe_bank_collection.layout_bcp_crep_debtors')
         cls.response_layout = cls.env.ref('al_l10n_pe_bank_collection.layout_bcp_crep_response')
         cls.agreement = cls.env['l10n_pe.bank.collection.agreement'].create({
-            'name': 'BCP soles', 'journal_id': cls.bank.id, 'account_branch': '191',
+            'name': 'BCP soles (prueba)', 'journal_id': cls.bank.id, 'account_branch': '191',
             'account_number': '1234567', 'company_name': 'MI EMPRESA SAC',
             'debtors_layout_id': cls.debtors_layout.id, 'response_layout_id': cls.response_layout.id,
             'days_ahead': 10,
@@ -125,6 +125,7 @@ class TestBankCollection(CollectionCommon):
         # El mismo archivo otra vez: operación ya procesada.
         again = self._response([('20100047218', invoice.name, 500.0, '123456')])
         self.assertEqual(again.line_ids.state, 'duplicate')
+        self.assertEqual(again.payable_count, 0, 'sin cobros por pagar no se ofrece procesar')
         with self.assertRaises(UserError):
             again.action_process()
         with self.assertRaises(UserError):
@@ -207,7 +208,7 @@ class TestBankCollectionBBVA(CollectionCommon):
         cls.customer.write({'vat': '20100047218', 'name': 'ÑANDÚ, CÍA; S.A.C.',
                             'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id})
         cls.agreement = cls.env['l10n_pe.bank.collection.agreement'].create({
-            'name': 'BBVA soles', 'journal_id': cls.bank.id, 'service_code': '123',
+            'name': 'BBVA soles (prueba)', 'journal_id': cls.bank.id, 'service_code': '123',
             'account_number': '001102410100001250',
             'debtors_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_bbva_debtors').id,
             'response_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_bbva_response').id,
@@ -302,7 +303,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
         super().setUpClass()
         cls.customer.write({'vat': '20100047218', 'name': 'COMPAÑÍA, LÓPEZ & HIJOS S.A.'})
         cls.agreement = cls.env['l10n_pe.bank.collection.agreement'].create({
-            'name': 'Scotiabank soles', 'journal_id': cls.bank.id, 'account_branch': '000',
+            'name': 'Scotiabank soles (prueba)', 'journal_id': cls.bank.id, 'account_branch': '000',
             'account_number': '7654321', 'company_name': 'MI EMPRESA SAC',
             'debtors_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_debtors').id,
             'response_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_response').id,

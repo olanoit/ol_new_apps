@@ -160,4 +160,12 @@
             <p>La calificación se recalcula cada día; también puede calificar un cliente desde su ficha.</p>
         </field>
     </record>
+    <record id="action_collection_worklist_server" model="ir.actions.server">
+        <field name="name">Cola de trabajo</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <!-- Con grupo: sin él, Odoo exige escritura sobre los contactos. -->
+        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_user'))]"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_l10n_pe_collection_worklist()</field>
+    </record>
 </odoo>

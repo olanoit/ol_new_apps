@@ -6,7 +6,7 @@
 
     <menuitem id="menu_collection_portfolio_root" name="Cartera" parent="menu_collection_root" sequence="10"/>
     <menuitem id="menu_collection_worklist" name="Cola de trabajo" parent="menu_collection_portfolio_root"
-              action="action_collection_worklist" sequence="5"/>
+              action="action_collection_worklist_server" sequence="5"/>
     <menuitem id="menu_collection_portfolio" name="Cartera" parent="menu_collection_portfolio_root"
               action="action_collection_portfolio_server" sequence="10"/>
     <menuitem id="menu_collection_aging" name="Antigüedad" parent="menu_collection_portfolio_root"

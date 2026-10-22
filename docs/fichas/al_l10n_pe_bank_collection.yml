@@ -53,7 +53,25 @@ faq:
       Del código de la macro oficial que Scotiabank publica para generar el archivo de cobranza y leer
       el de resultados, en sus tres modalidades: validación completa, parcial e importes.
 
+pasos:
+  - titulo: Generar el archivo de deudores
+    ruta: Cobranza ▸ Recaudación bancaria ▸ Archivos de deudores
+    texto: >-
+      Cargar cuotas, generar el archivo en el formato del banco y descargarlo para subirlo a la banca
+      por internet.
+    imagen: screenshots/v3-batch.png
+  - titulo: Importar la respuesta del banco
+    ruta: Cobranza ▸ Recaudación bancaria ▸ Respuestas del banco
+    texto: >-
+      Cada cobro queda identificado, solo con cliente, sin identificar o ya procesado; «Crear pagos y
+      conciliar» paga lo identificado.
+    imagen: screenshots/v3-response.png
+
 novedades:
+  - version: 5.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "La respuesta no ofrece «Crear pagos y conciliar» si no hay cobros por pagar y muestra el estado de cada cobro a la vista."
   - version: 4.20261022
     fecha: 22/10/2026
     cambios:

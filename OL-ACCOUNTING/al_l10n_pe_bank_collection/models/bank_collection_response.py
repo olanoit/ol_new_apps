@@ -49,6 +49,7 @@ class L10nPeBankCollectionResponse(models.Model):
     amount_total = fields.Monetary(string='Total cobrado', compute='_compute_totals')
     amount_done = fields.Monetary(string='Total pagado', compute='_compute_totals')
     pending_count = fields.Integer(string='Por revisar', compute='_compute_totals')
+    payable_count = fields.Integer(string='Cobros por pagar', compute='_compute_totals')
     payment_ids = fields.Many2many('account.payment', string='Pagos', compute='_compute_totals')
     state = fields.Selection([('draft', 'Borrador'), ('imported', 'Importado'), ('done', 'Procesado')],
                              string='Estado', default='draft', required=True, readonly=True, tracking=True, copy=False)
@@ -62,6 +63,7 @@ class L10nPeBankCollectionResponse(models.Model):
             response.amount_total = sum(lines.filtered(lambda l: l.state != 'duplicate').mapped('amount'))
             response.amount_done = sum(lines.filtered(lambda l: l.state == 'done').mapped('amount'))
             response.pending_count = len(lines.filtered(lambda l: l.state in ('partner', 'unmatched')))
+            response.payable_count = len(lines.filtered(lambda l: l.state in ('matched', 'partner') and l.partner_id))
             response.payment_ids = lines.payment_id
 
     @api.model_create_multi

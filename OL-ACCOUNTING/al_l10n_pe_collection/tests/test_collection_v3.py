@@ -159,6 +159,12 @@ class TestCollectionV3(CollectionCommon):
         partner._l10n_pe_collection_rate(self.company, self.today + timedelta(days=8))
         self.assertEqual(partner.l10n_pe_collection_hold, 'auto', 'vencida la liberación, vuelve a bloquear')
 
+    def test_old_debt_without_payment_history_is_rated_d(self):
+        """Un cliente que nunca pagó no tiene historial: su atraso es el de lo vencido."""
+        self._invoice(12400, -400)
+        self.customer._l10n_pe_collection_rate(self.company, self.today)
+        self.assertEqual(self.customer.with_company(self.company).l10n_pe_collection_rating, 'D')
+
     def test_good_payer_is_rated_a(self):
         invoice = self._invoice(500, -30, invoice_date=self.today - timedelta(days=60))
         self._pay(invoice, day=self.today - timedelta(days=30))
@@ -232,7 +238,8 @@ class TestCollectionV3(CollectionCommon):
 
     # ------------------------------------------------------------------ provisión y castigo
     def _provision_journal(self):
-        return self.env['account.journal'].create({'name': 'Provisiones', 'code': 'PROV', 'type': 'general'})
+        # Código propio: la base puede tener ya un diario «PROV» de datos reales.
+        return self.env['account.journal'].create({'name': 'Provisiones (prueba)', 'code': 'TPRV', 'type': 'general'})
 
     def test_provision_requires_actions_and_posts(self):
         old = self._invoice(1000, -400, invoice_date=self.today - timedelta(days=430))
@@ -383,3 +390,7 @@ class TestCollectionV3(CollectionCommon):
         action = self.env['ir.actions.act_window']._for_xml_id('al_l10n_pe_collection.action_collection_worklist')
         partners = self.env['res.partner'].search(ast.literal_eval(action['domain']))
         self.assertIn(self.customer, partners)
+        mine = self.env['res.partner'].with_user(self.collector).action_l10n_pe_collection_worklist()
+        self.assertIn('search_default_mine', str(mine['context']), 'el gestor ve sus clientes')
+        everyone = self.env['res.partner'].action_l10n_pe_collection_worklist()
+        self.assertFalse(everyone['context'], 'el administrador ve a todos')

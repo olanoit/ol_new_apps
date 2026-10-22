@@ -92,6 +92,11 @@ class ResPartner(models.Model):
     def _l10n_pe_collection_average_delay(self, company=None, today=None):
         """Atraso promedio (días) con que el cliente pagó sus facturas del
         historial configurado, ponderado por importe. Cero sin historial."""
+        weighted, total = self._l10n_pe_collection_delay_data(company, today)
+        return round(weighted / total) if total else 0
+
+    def _l10n_pe_collection_delay_data(self, company=None, today=None):
+        """(días × importe, importe) de las cuotas pagadas del historial."""
         self.ensure_one()
         company = company or self.env.company
         today = today or fields.Date.context_today(self)
@@ -115,7 +120,7 @@ class ResPartner(models.Model):
                 amount = abs(term.balance)
                 weighted += (paid_on - due).days * amount
                 total += amount
-        return round(weighted / total) if total else 0
+        return weighted, total
 
     def _l10n_pe_collection_log(self, body):
         """Deja constancia en el historial del cliente a nombre del usuario."""
@@ -152,7 +157,13 @@ class ResPartner(models.Model):
         overdue_lines = lines.filtered(lambda l: (l.date_maturity or l.date) < today)
         overdue = sum(overdue_lines.mapped('amount_residual'))
         max_days = max([(today - (l.date_maturity or l.date)).days for l in overdue_lines], default=0)
-        delay = self._l10n_pe_collection_average_delay(company, today)
+        # Atraso de lo ya pagado y de lo vencido que sigue abierto: sin esto, un
+        # cliente que nunca pagó no tiene historial y quedaba bien calificado.
+        weighted, paid_total = self._l10n_pe_collection_delay_data(company, today)
+        for line in overdue_lines:
+            weighted += (today - (line.date_maturity or line.date)).days * line.amount_residual
+        delay_base = paid_total + overdue
+        delay = weighted / delay_base if delay_base else 0
         broken = self.env['l10n_pe.collection.promise'].sudo().search_count([
             # sudo: el cron califica a todos los clientes, no solo los del gestor.
             ('partner_id', '=', self.commercial_partner_id.id),
@@ -294,6 +305,14 @@ class ResPartner(models.Model):
             'target': 'new',
             'context': {'default_partner_id': self.commercial_partner_id.id},
         }
+
+    @api.model
+    def action_l10n_pe_collection_worklist(self):
+        """Cola de trabajo: el gestor ve sus clientes; el administrador, todos."""
+        action = self.env['ir.actions.act_window']._for_xml_id('al_l10n_pe_collection.action_collection_worklist')
+        if self.env.user.has_group('al_l10n_pe_collection.group_collection_manager'):
+            action['context'] = {}
+        return action
 
     def action_l10n_pe_collection_disputes(self):
         self.ensure_one()

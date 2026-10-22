@@ -88,11 +88,19 @@ pasos:
     texto: >-
       Clientes con deuda vencida ordenados por vencido y riesgo; «Gestionar» registra la
       llamada.
+    imagen: screenshots/v3-worklist.png
   - titulo: Provisionar la cobranza dudosa
     ruta: Cobranza ▸ Gestión ▸ Provisión de cobranza dudosa
     texto: >-
       Propone las deudas de más de 12 meses con gestiones registradas, contabiliza 68711 / 19,
       imprime el expediente de cada deudor y después registra recuperaciones y castigos.
+    imagen: screenshots/v3-provision.png
+  - titulo: Reportar a una central de riesgo
+    ruta: Cobranza ▸ Gestión ▸ Centrales de riesgo
+    texto: >-
+      Aviso previo al deudor, plazo de espera, reporte y aviso al gestor para retirarlo cuando
+      paga.
+    imagen: screenshots/v3-bureaus.png
 
 configuracion:
   - "Permisos Cobranza / Gestor o Administrador."
@@ -131,9 +139,14 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 4.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Prueba funcional: un cliente sin pagos previos y con deuda antigua se califica por lo vencido abierto (antes salía B); la cola de trabajo muestra a todos al administrador; títulos «Documento» y «Vencimiento» en las listas de documentos."
   - version: 3.20261022
     fecha: 22/10/2026
     cambios:
+
       - "Reclamos: los documentos discutidos salen del seguimiento, de la deuda exigible y de las centrales de riesgo hasta resolverse; el resultado «Reclamo o disconformidad» abre el reclamo."
       - "Protección al consumidor (art. 62 de la Ley 29571): sin gestiones por llamada, visita, WhatsApp o SMS fuera del horario, en fines de semana ni feriados, ni recordatorios antes del vencimiento sin consentimiento."
       - "Calificación de riesgo A–D de cada cliente y cola de trabajo del gestor ordenada por prioridad."

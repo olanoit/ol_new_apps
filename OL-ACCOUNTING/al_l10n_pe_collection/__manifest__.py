@@ -39,7 +39,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_collection/static/description/icon.svg',
-    'version': '3.20261022',
+    'version': '4.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account_followup', 'account_reports', 'al_account_base', 'al_report_base', 'mail',
