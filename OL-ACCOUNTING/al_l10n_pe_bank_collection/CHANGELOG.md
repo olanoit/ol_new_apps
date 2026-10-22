@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_bank_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261022 — 22/10/2026
+
+- Formato de Scotiabank (validación completa): archivo de cobranza de 200 posiciones y archivo de resultados, según la macro oficial del banco.
+
 ## 2.20261022 — 22/10/2026
 
 - Formato oficial de BBVA (ficha técnica E1891 V21): archivo de entrada de datos de 360 bytes y respuesta de 152 bytes.

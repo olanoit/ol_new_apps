@@ -1,8 +1,8 @@
 {
     'name': 'Recaudación bancaria (AL)',
     'summary': 'Recaudación por ventanilla, agentes y banca por internet: archivo de deudores para el '
-               'banco, importación de la respuesta, pagos y conciliación automática. Formatos BCP (CREP) '
-               'y BBVA incluidos y configurables.',
+               'banco, importación de la respuesta, pagos y conciliación automática. Formatos BCP (CREP), '
+               'BBVA y Scotiabank incluidos y configurables.',
     'description': """
 Recaudación bancaria
 ====================
@@ -16,15 +16,16 @@ propio) y devuelve un archivo con lo cobrado:
 * **Respuesta del banco**: importa lo cobrado, identifica cliente y documento, crea
   los pagos y los concilia con las facturas; no procesa dos veces la misma operación.
 * **Formatos configurables**: posición, longitud y tipo de cada campo, como datos.
-  Incluye el CREP del BCP (validación completa) y el formato oficial de BBVA (ficha
-  técnica E1891 V21); se ajusta a la ficha técnica de cada banco sin programar.
+  Incluye el CREP del BCP (validación completa), el formato oficial de BBVA (ficha
+  técnica E1891 V21) y el de Scotiabank (macro oficial de validación completa); se
+  ajusta a la ficha técnica de cada banco sin programar.
 """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_bank_collection/static/description/icon.svg',
-    'version': '2.20261022',
+    'version': '3.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_collection'],
@@ -34,6 +35,7 @@ propio) y devuelve un archivo con lo cobrado:
         'data/ir_sequence_data.xml',
         'data/bcp_layout_data.xml',
         'data/bbva_layout_data.xml',
+        'data/scotiabank_layout_data.xml',
         'views/bank_collection_layout_views.xml',
         'views/bank_collection_agreement_views.xml',
         'views/bank_collection_batch_views.xml',

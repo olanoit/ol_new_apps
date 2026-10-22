@@ -291,3 +291,66 @@ class TestBankCollectionBBVA(CollectionCommon):
         self.assertEqual((response.header_count, response.header_amount), (1, 5045.43))
         response.action_process()
         self.assertIn(invoice.payment_state, ('paid', 'in_payment'))
+
+
+@tagged('post_install', '-at_install')
+class TestBankCollectionScotiabank(CollectionCommon):
+    """Formato de Scotiabank (macro oficial de validación completa)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.customer.write({'vat': '20100047218', 'name': 'COMPAÑÍA, LÓPEZ & HIJOS S.A.'})
+        cls.agreement = cls.env['l10n_pe.bank.collection.agreement'].create({
+            'name': 'Scotiabank soles', 'journal_id': cls.bank.id, 'account_branch': '000',
+            'account_number': '7654321', 'company_name': 'MI EMPRESA SAC',
+            'debtors_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_debtors').id,
+            'response_layout_id': cls.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_response').id,
+            'days_ahead': 0,
+        })
+
+    def test_input_file_positions(self):
+        invoice = self._invoice(250.5, -6)
+        batch = self.env['l10n_pe.bank.collection.batch'].create({
+            'agreement_id': self.agreement.id, 'partner_ids': [Command.set(self.customer.ids)]})
+        batch.action_load()
+        batch.action_generate()
+        self.assertEqual(batch.filename, 'RECAUDAC.TXT')
+        header, detail = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        self.assertEqual((len(header), len(detail)), (200, 200))
+        self.assertEqual(header[0:14], 'CC' + '000' + '0' + '7654321' + 'C')
+        self.assertEqual(header[14:54].rstrip(), 'MI EMPRESA SAC')
+        self.assertEqual(header[54:62], batch.date.strftime('%Y%m%d'))
+        self.assertEqual(header[62:71], '000000001')
+        self.assertEqual(header[71:86], '000000000025050')
+        self.assertEqual(header[86], 'R')
+        self.assertEqual(detail[0:13], 'DD' + '000' + '0' + '7654321')
+        self.assertEqual(detail[13:27].rstrip(), '20100047218')
+        self.assertEqual(detail[27:67].rstrip(), 'COMPANIA  LOPEZ   HIJOS S A', 'sin tildes, eñes ni signos')
+        self.assertEqual(detail[67:97].rstrip(), invoice.name.replace('/', ' '))
+        self.assertEqual(detail[105:113], invoice.invoice_date_due.strftime('%Y%m%d'))
+        self.assertEqual(detail[113:128], '000000000025050')
+        self.assertEqual(detail[128:143], '0' * 15)
+        self.assertEqual(detail[143:152], '000025050')
+        self.assertEqual(detail[152], 'A')
+
+    def test_results_file(self):
+        invoice = self._invoice(250.5, -6)
+        today = self.today.strftime('%Y%m%d')
+        header = 'CC' + '000' + '0' + '7654321' + 'C' + today + '000000001' + '000000000025050'
+        detail = ('DD' + '000' + '0' + '7654321' + '20100047218'.ljust(14)
+                  + invoice.name.replace('/', ' ').ljust(30) + today + today
+                  + '000000000025050' + '000000000000000' + '000000000025050'
+                  + '193' + '000045678' + 'REF'.ljust(22) + 'T001' + 'AGENTE'.ljust(12) + '103015'
+                  + ' ' * 10 + '00' + '0' * 15)
+        content = (header + '\r\n' + detail).encode('ascii')
+        response = self.env['l10n_pe.bank.collection.response'].create({
+            'agreement_id': self.agreement.id, 'file': base64.b64encode(content)})
+        response.action_import()
+        line = response.line_ids
+        self.assertEqual((line.state, line.partner_id), ('matched', self.customer))
+        self.assertAlmostEqual(line.amount, 250.5)
+        self.assertEqual((line.branch, line.operation_number, line.channel), ('193', '000045678', 'AGENTE'))
+        self.assertEqual((response.header_count, response.header_amount), (1, 250.5))
+        response.action_process()
+        self.assertIn(invoice.payment_state, ('paid', 'in_payment'))

@@ -271,7 +271,8 @@ código propio) y Odoo concilia lo cobrado.
     |---|---|---|
     | BCP | CREP: deudores de 250 posiciones y respuesta | Layout más difundido: compárelo con la ficha técnica del BCP |
     | BBVA | Entrada de datos de 360 bytes y envío de información de 152 bytes | Ficha técnica oficial E1891 V21 (marzo 2025), publicada por BBVA |
-    | Interbank, Scotiabank | — | Cree el formato con la ficha que el banco entrega al afiliar |
+    | Scotiabank | Validación completa: cobranza de 200 posiciones y resultados | Macro oficial publicada por Scotiabank |
+    | Interbank | — | Cree el formato con la ficha que el banco entrega al afiliar (no es pública) |
 
     Puede ajustar posición, longitud, tipo y equivalencias de cualquier campo; los cambios se
     conservan al actualizar. En BBVA, ajuste la longitud del código de identificación al

@@ -1,7 +1,7 @@
 titulo: "Recaudación bancaria"
 subtitulo: "El banco cobra con el RUC o DNI del cliente en ventanilla, agentes y banca por internet; Odoo envía el archivo de deudores, importa lo cobrado, crea los pagos y concilia las facturas."
 categoria: "Localización Perú · Tesorería"
-etiquetas: [Recaudación, BCP, BBVA, CREP, Conciliación, Cobranza]
+etiquetas: [Recaudación, BCP, BBVA, Scotiabank, CREP, Conciliación, Cobranza]
 
 destacados:
   - icono: "⇪"
@@ -12,7 +12,7 @@ destacados:
     texto: "Identifica cliente y documento, crea los pagos en la cuenta recaudadora y los concilia."
   - icono: "⚙"
     titulo: "Formato configurable"
-    texto: "Posición, longitud y tipo de cada campo como datos: incluye el CREP del BCP y el formato oficial de BBVA, y se ajusta a la ficha técnica de cada banco sin programar."
+    texto: "Posición, longitud y tipo de cada campo como datos: incluye el CREP del BCP y los formatos oficiales de BBVA y Scotiabank, y se ajusta a la ficha técnica de cada banco sin programar."
   - icono: "✓"
     titulo: "Sin duplicados"
     texto: "Una operación ya pagada no se vuelve a procesar aunque el archivo se importe otra vez."
@@ -23,6 +23,7 @@ funcionalidades:
   - "Archivo de reemplazo o de actualización, opcionalmente solo para algunos clientes; excluye los documentos en reclamo, los anticipos y las detracciones."
   - "Texto en ASCII sin descuadrar las posiciones (á → a, ñ → n), caracteres que el banco no acepta cambiados por espacios e importes con decimales implícitos."
   - "BBVA: archivo de entrada de datos de 360 bytes (encabezado, detalle y totales, versión del envío del día, carga total o parcial, fecha de bloqueo) y respuesta de 152 bytes con oficina, movimiento, forma de pago y canal, según la ficha técnica E1891 V21 (marzo 2025)."
+  - "Scotiabank: validación completa con archivo de cobranza de 200 posiciones y archivo de resultados con oficina, operación, referencia, medio y hora de atención, tomados de la macro oficial que publica el banco."
   - "Respuesta: cobro identificado por documento (información de retorno) o, si no viene, aplicado a las cuotas más antiguas; sin cuotas abiertas queda como anticipo."
   - "Cobros sin identificar: se elige el cliente y se vuelve a identificar, o se descartan."
   - "Control con la cabecera del banco: cantidad de registros y total."
@@ -44,10 +45,19 @@ faq:
       la longitud del código de identificación al «tamaño campo código» de la ficha de su empresa.
   - pregunta: "¿Sirve para otros bancos?"
     respuesta: >-
-      Sí: cree un formato con las posiciones de su ficha técnica (Interbank, Scotiabank…) y úselo en un
-      convenio nuevo. Interbank entrega su formato al afiliar; no es público.
+      Sí: cree un formato con las posiciones de su ficha técnica y úselo en un convenio nuevo. Interbank
+      entrega su formato al afiliar; no es público.
+  - pregunta: "¿De dónde sale el formato de Scotiabank?"
+    respuesta: >-
+      Del código de la macro oficial de validación completa que Scotiabank publica para generar el
+      archivo de cobranza y leer el de resultados. Las modalidades de validación parcial y de importes
+      tienen otros formatos: se crean igual si el convenio las usa.
 
 novedades:
+  - version: 3.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Formato de Scotiabank (validación completa): archivo de cobranza de 200 posiciones y archivo de resultados, según la macro oficial del banco."
   - version: 2.20261022
     fecha: 22/10/2026
     cambios:
