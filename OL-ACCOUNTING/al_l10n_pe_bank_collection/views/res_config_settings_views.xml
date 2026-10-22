@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recaudación bancaria en la app «Cobranza» de Ajustes. -->
+    <record id="res_config_settings_view_form_bank_collection" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pe.bank.collection</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_l10n_pe_collection.res_config_settings_view_form_collection"/>
+        <field name="arch" type="xml">
+            <block name="pe_collection_payment_block" position="inside">
+                <setting string="Recaudación bancaria"
+                         help="Convenios con cada banco (cuenta recaudadora, diario y formato) y formatos de los archivos de deudores y de respuesta.">
+                    <div class="mt8 d-flex flex-column">
+                        <button name="%(action_bank_collection_agreement)d" type="action"
+                                string="Convenios de recaudación" class="btn-link" icon="oi-arrow-right"/>
+                        <button name="%(action_bank_collection_layout)d" type="action"
+                                string="Formatos de recaudación" class="btn-link" icon="oi-arrow-right"/>
+                    </div>
+                </setting>
+            </block>
+        </field>
+    </record>
+</odoo>

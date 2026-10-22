@@ -1,148 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Aplicación «Cobranza» en Ajustes, con todos sus ajustes y accesos a sus
+         catálogos; se abre desde Cobranza ‣ Configuración ‣ Ajustes. Otros módulos
+         (recaudación bancaria…) agregan sus ajustes a estos bloques. -->
     <record id="res_config_settings_view_form_collection" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.pe.collection</field>
         <field name="model">res.config.settings</field>
         <field name="priority" eval="74"/>
-        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//app[@name='al_account_base']" position="inside">
-                <block title="Cobranza" name="pe_collection_block">
-                    <setting string="Compromisos de pago"
-                             help="Cuándo se evalúa un compromiso y cuándo se recuerda al cliente.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_promise_tolerance" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_promise_tolerance"/>
+            <xpath expr="//form" position="inside">
+                <app data-string="Cobranza" string="Cobranza" name="al_l10n_pe_collection"
+                     groups="al_l10n_pe_collection.group_collection_manager">
+                    <block title="Cartera y gestión" name="pe_collection_block">
+                        <setting string="Cartera"
+                                 help="Zonas con su gestor por defecto, tramos de antigüedad con su probabilidad de cobro y resultados de gestión.">
+                            <div class="mt8 d-flex flex-column">
+                                <button name="%(action_collection_zone)d" type="action" string="Zonas"
+                                        class="btn-link" icon="oi-arrow-right"/>
+                                <button name="%(action_collection_bucket)d" type="action" string="Tramos de antigüedad"
+                                        class="btn-link" icon="oi-arrow-right"/>
+                                <button name="%(action_collection_result)d" type="action" string="Resultados de gestión"
+                                        class="btn-link" icon="oi-arrow-right"/>
+                                <button name="%(action_collection_dispute_reason)d" type="action" string="Motivos de reclamo"
+                                        class="btn-link" icon="oi-arrow-right"/>
                             </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_promise_reminder_days" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_promise_reminder_days"/>
+                        </setting>
+                        <setting string="Compromisos de pago"
+                                 help="Cuándo se evalúa un compromiso y cuándo se recuerda al cliente.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_promise_tolerance" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_promise_tolerance"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_promise_reminder_days" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_promise_reminder_days"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_promise_min_percent" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_promise_min_percent"/>
+                                </div>
                             </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_promise_min_percent" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_promise_min_percent"/>
+                        </setting>
+                        <setting string="Proyección y avisos"
+                                 help="Historial con que se calcula el atraso promedio de cada cliente y resumen diario a los gestores.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_history_months" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_history_months"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_digest" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_digest"/>
+                                </div>
                             </div>
-                        </div>
-                    </setting>
-                    <setting string="Proyección y avisos"
-                             help="Historial con que se calcula el atraso promedio de cada cliente y resumen diario a los gestores.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_history_months" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_history_months"/>
+                        </setting>
+                        <setting string="Niveles de seguimiento en español"
+                                 help="Agrega los niveles que falten: recordatorio 3 días antes, aviso al vencer y a los 15, 30 y 60 días.">
+                            <div class="mt8 d-flex flex-column">
+                                <button name="action_l10n_pe_collection_load_followup_levels" type="object"
+                                        string="Cargar niveles" class="btn-link" icon="oi-arrow-right"/>
+                                <button name="%(account_followup.action_account_followup_line_definition_form)d"
+                                        type="action" string="Niveles de seguimiento" class="btn-link"
+                                        icon="oi-arrow-right"/>
                             </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_digest" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_digest"/>
+                        </setting>
+                    </block>
+
+                    <block title="Riesgo y protección al consumidor" name="pe_collection_risk_block">
+                        <setting string="Protección al consumidor"
+                                 help="Art. 62 de la Ley 29571: con clientes sin RUC, sin llamadas, visitas ni mensajes fuera del horario, en fines de semana o feriados, ni recordatorios antes del vencimiento sin su consentimiento.">
+                            <field name="l10n_pe_collection_consumer_guard"/>
+                            <div class="content-group" invisible="not l10n_pe_collection_consumer_guard">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_hour_from" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_hour_from" widget="float_time"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_hour_to" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_hour_to" widget="float_time"/>
+                                </div>
                             </div>
-                        </div>
-                    </setting>
-                    <setting string="Protección al consumidor"
-                             help="Art. 62 de la Ley 29571: con clientes sin RUC, sin llamadas, visitas ni mensajes fuera del horario, en fines de semana o feriados, ni recordatorios antes del vencimiento sin su consentimiento.">
-                        <field name="l10n_pe_collection_consumer_guard"/>
-                        <div class="content-group" invisible="not l10n_pe_collection_consumer_guard">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_hour_from" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_hour_from" widget="float_time"/>
+                        </setting>
+                        <setting string="Bloqueo de crédito por mora"
+                                 help="Se revisa cada día al calificar a los clientes; el bloqueo impide confirmar pedidos de venta. El administrador puede liberar a un cliente por unos días.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_hold_days" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_hold_days"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_hold_rating_d" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_hold_rating_d"/>
+                                </div>
                             </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_hour_to" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_hour_to" widget="float_time"/>
+                        </setting>
+                        <setting string="Centrales de riesgo"
+                                 help="Plazo entre el aviso previo al deudor y el reporte.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_bureau_wait_days" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_bureau_wait_days"/>
+                                </div>
                             </div>
-                        </div>
-                    </setting>
-                    <setting string="Bloqueo de crédito por mora"
-                             help="Se revisa cada día al calificar a los clientes; el bloqueo impide confirmar pedidos de venta. El administrador puede liberar a un cliente por unos días.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_hold_days" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_hold_days"/>
+                        </setting>
+                    </block>
+
+                    <block title="Intereses y cobranza dudosa" name="pe_collection_accounting_block">
+                        <setting string="Intereses moratorios"
+                                 help="Solo si se pactaron y sin superar el tope del BCRP. Se facturan con nota de débito motivo 01, inafecta al IGV.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_interest_rate" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_interest_rate"/>
+                                </div>
+                                <div class="alert alert-warning mt8 mb-0" role="alert" invisible="not l10n_pe_collection_interest_warning">
+                                    <field name="l10n_pe_collection_interest_warning" nolabel="1"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_interest_account_id" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_interest_account_id" options="{'no_create': True}"/>
+                                </div>
+                                <button name="%(action_collection_rate_cap)d" type="action" string="Tasas máximas del BCRP"
+                                        class="btn-link" icon="oi-arrow-right"/>
                             </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_hold_rating_d" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_hold_rating_d"/>
+                        </setting>
+                        <setting string="Provisión y castigo de cobranza dudosa"
+                                 help="Art. 21 f) y g) del Reglamento de la LIR. Sin cuentas, se usan 68711 y 1911 del plan contable.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_provision_months" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_months"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_provision_min_actions" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_min_actions"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_provision_journal_id" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_journal_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_provision_expense_account_id" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_expense_account_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_provision_account_id" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_account_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_uit" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_uit"/>
+                                </div>
                             </div>
-                        </div>
-                    </setting>
-                    <setting string="Intereses moratorios"
-                             help="Solo si se pactaron y sin superar el tope del BCRP. Se facturan con nota de débito motivo 01, inafecta al IGV.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_interest_rate" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_interest_rate"/>
+                        </setting>
+                    </block>
+
+                    <block title="Cobro, agencias y comisiones" name="pe_collection_payment_block">
+                        <setting string="Pago en línea"
+                                 help="«Pagar en línea» con el saldo del cliente en los avisos de cobranza y un QR en el estado de cuenta. Usa las pasarelas activas (Culqi, Niubiz, Izipay, PagoEfectivo…); el pago se aplica a las facturas más antiguas.">
+                            <field name="l10n_pe_collection_online_payment"/>
+                            <div class="mt8">
+                                <button name="%(payment.action_payment_provider)d" type="action"
+                                        string="Proveedores de pago" class="btn-link" icon="oi-arrow-right"/>
                             </div>
-                            <div class="alert alert-warning mt8 mb-0" role="alert" invisible="not l10n_pe_collection_interest_warning">
-                                <field name="l10n_pe_collection_interest_warning" nolabel="1"/>
+                        </setting>
+                        <setting string="Comisiones de cobranza"
+                                 help="Plan que se propone en las liquidaciones de los gestores (cada agencia tiene el suyo) y servicio con el que se registra la factura de la agencia.">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_pe_collection_commission_plan_id" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_commission_plan_id" options="{'no_create': True}"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_pe_collection_commission_product_id" class="col-lg-6 o_light_label"/>
+                                    <field name="l10n_pe_collection_commission_product_id"/>
+                                </div>
+                                <div class="d-flex flex-column">
+                                    <button name="%(action_collection_commission_plan)d" type="action"
+                                            string="Planes de comisión" class="btn-link" icon="oi-arrow-right"/>
+                                    <button name="%(action_collection_agency)d" type="action"
+                                            string="Agencias externas" class="btn-link" icon="oi-arrow-right"/>
+                                </div>
                             </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_interest_account_id" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_interest_account_id" options="{'no_create': True}"/>
-                            </div>
-                        </div>
-                    </setting>
-                    <setting string="Provisión y castigo de cobranza dudosa"
-                             help="Art. 21 f) y g) del Reglamento de la LIR. Sin cuentas, se usan 68711 y 1911 del plan contable.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_provision_months" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_provision_months"/>
-                            </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_provision_min_actions" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_provision_min_actions"/>
-                            </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_provision_journal_id" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_provision_journal_id" options="{'no_create': True}"/>
-                            </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_provision_expense_account_id" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_provision_expense_account_id" options="{'no_create': True}"/>
-                            </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_provision_account_id" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_provision_account_id" options="{'no_create': True}"/>
-                            </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_uit" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_uit"/>
-                            </div>
-                        </div>
-                    </setting>
-                    <setting string="Pago en línea"
-                             help="«Pagar en línea» con el saldo del cliente en los avisos de cobranza y un QR en el estado de cuenta. Usa las pasarelas activas (Culqi, Niubiz, Izipay…); el pago se aplica a las facturas más antiguas.">
-                        <field name="l10n_pe_collection_online_payment"/>
-                    </setting>
-                    <setting string="Centrales de riesgo"
-                             help="Plazo entre el aviso previo al deudor y el reporte.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_bureau_wait_days" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_bureau_wait_days"/>
-                            </div>
-                        </div>
-                    </setting>
-                    <setting string="Comisiones de cobranza"
-                             help="Plan que se propone en las liquidaciones de los gestores (cada agencia tiene el suyo) y servicio con el que se registra la factura de la agencia.">
-                        <div class="content-group">
-                            <div class="row mt8">
-                                <label for="l10n_pe_collection_commission_plan_id" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_commission_plan_id" options="{'no_create': True}"/>
-                            </div>
-                            <div class="row">
-                                <label for="l10n_pe_collection_commission_product_id" class="col-lg-6 o_light_label"/>
-                                <field name="l10n_pe_collection_commission_product_id"/>
-                            </div>
-                        </div>
-                    </setting>
-                    <setting string="Niveles de seguimiento en español"
-                             help="Agrega los niveles que falten: recordatorio 3 días antes, aviso al vencer y a los 15, 30 y 60 días.">
-                        <button name="action_l10n_pe_collection_load_followup_levels" type="object"
-                                string="Cargar niveles" class="btn-link" icon="oi-arrow-right"/>
-                    </setting>
-                </block>
+                        </setting>
+                    </block>
+                </app>
             </xpath>
         </field>
+    </record>
+
+    <!-- Ajustes: abre la app «Cobranza» de la pantalla de configuración. -->
+    <record id="action_collection_settings" model="ir.actions.act_window">
+        <field name="name">Ajustes</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'module': 'al_l10n_pe_collection', 'bin_size': False}</field>
     </record>
 </odoo>

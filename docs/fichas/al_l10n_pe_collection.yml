@@ -123,10 +123,10 @@ pasos:
 configuracion:
   - "Permisos Cobranza / Gestor o Administrador; el personal de las agencias recibe «Cobranza: agencia externa» al agregarlo a su agencia."
   - "Cobranza ▸ Configuración: zonas, tramos de antigüedad con su probabilidad y resultados de gestión."
-  - "Ajustes ▸ Perú ▸ Cobranza: compromisos, historial, resumen diario y carga de niveles de seguimiento en español."
-  - "Pago en línea: activar una pasarela (Culqi, Niubiz, Izipay…) en Contabilidad ▸ Configuración ▸ Proveedores de pago; el enlace se desactiva en Ajustes ▸ Perú ▸ Cobranza."
-  - "Ajustes ▸ Perú ▸ Cobranza: horario de contacto con consumidores, bloqueo por mora, tasa de interés moratorio, cuentas y diario de provisiones, UIT y plazo del aviso a centrales."
-  - "Comisiones: plan de los gestores y servicio de la factura de agencias en Ajustes ▸ Perú ▸ Cobranza; planes en Cobranza ▸ Configuración; agencias en Cobranza ▸ Cartera ▸ Agencias externas."
+  - "Cobranza ▸ Configuración ▸ Ajustes (app Cobranza de Ajustes): toda la configuración de la app en cuatro bloques, con accesos a zonas, tramos, resultados, motivos, tasas del BCRP, planes, agencias y proveedores de pago."
+  - "Pago en línea: activar una pasarela (Culqi, Niubiz, Izipay…) en Contabilidad ▸ Configuración ▸ Proveedores de pago; el enlace se desactiva en Cobranza ▸ Configuración ▸ Ajustes ▸ Cobranza."
+  - "Ajustes de Cobranza: horario de contacto con consumidores, bloqueo por mora, tasa de interés moratorio, cuentas y diario de provisiones, UIT y plazo del aviso a centrales."
+  - "Comisiones: plan de los gestores y servicio de la factura de agencias en los Ajustes de Cobranza; planes en Cobranza ▸ Configuración; agencias en Cobranza ▸ Cartera ▸ Agencias externas."
   - "Feriados: ausencias globales del horario laboral de la compañía (módulo Recursos)."
 
 faq:
@@ -159,6 +159,10 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 9.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Ajustes propios: Cobranza ▸ Configuración ▸ Ajustes abre la app Cobranza de Ajustes (antes, un bloque de Ajustes ▸ Perú) con toda la configuración en cuatro bloques y accesos a zonas, tramos, resultados, motivos de reclamo, niveles de seguimiento, tasas del BCRP, planes, agencias y proveedores de pago."
   - version: 8.20261022
     fecha: 22/10/2026
     cambios:

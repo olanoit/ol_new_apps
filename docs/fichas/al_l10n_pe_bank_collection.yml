@@ -68,6 +68,10 @@ pasos:
     imagen: screenshots/v3-response.png
 
 novedades:
+  - version: 6.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Accesos a los convenios y formatos de recaudación en Cobranza ▸ Configuración ▸ Ajustes, bloque «Cobro, agencias y comisiones»."
   - version: 5.20261022
     fecha: 22/10/2026
     cambios:

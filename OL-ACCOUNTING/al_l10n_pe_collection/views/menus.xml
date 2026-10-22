@@ -68,6 +68,8 @@
 
     <menuitem id="menu_collection_config_root" name="Configuración" parent="menu_collection_root" sequence="90"
               groups="al_l10n_pe_collection.group_collection_manager"/>
+    <menuitem id="menu_collection_settings" name="Ajustes" parent="menu_collection_config_root"
+              action="action_collection_settings" sequence="0" groups="base.group_system"/>
     <menuitem id="menu_collection_zones" name="Zonas" parent="menu_collection_config_root"
               action="action_collection_zone" sequence="10"/>
     <menuitem id="menu_collection_buckets" name="Tramos de antigüedad" parent="menu_collection_config_root"

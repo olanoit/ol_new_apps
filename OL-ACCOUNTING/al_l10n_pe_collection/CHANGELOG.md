@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261022 — 22/10/2026
+
+- Ajustes propios: Cobranza ▸ Configuración ▸ Ajustes abre la app Cobranza de Ajustes (antes, un bloque de Ajustes ▸ Perú) con toda la configuración en cuatro bloques y accesos a zonas, tramos, resultados, motivos de reclamo, niveles de seguimiento, tasas del BCRP, planes, agencias y proveedores de pago.
+
 ## 8.20261022 — 22/10/2026
 
 - Cobranza judicial: proceso por deudor con vía, juzgado, expediente, estudio, actuaciones con plazos agendados y gastos; la demanda saca los documentos del seguimiento y sustenta la provisión sin esperar 12 meses, y el cierre como incobrable deja las acciones agotadas para castigar deudas de más de 3 UIT. El expediente PDF incluye los procesos.

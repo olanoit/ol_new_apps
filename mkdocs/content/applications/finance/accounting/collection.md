@@ -23,19 +23,22 @@ SMS o carta siguen siendo los niveles de seguimiento.
 3. **Asignar clientes:** en **Cobranza ‣ Cartera ‣ Clientes y gestores**, seleccione
    clientes y edite en lote el **gestor de cobranza** y la **zona**. También se puede hacer
    desde la ficha del cliente, pestaña Contabilidad.
-4. **Niveles de seguimiento en español:** en **Ajustes ‣ Perú ‣ Cobranza**, **Cargar
-   niveles** agrega los que falten: recordatorio 3 días antes del vencimiento y avisos al
-   vencer y a los 15, 30 y 60 días. Los niveles que ya existen no se tocan.
-5. **Tramos de antigüedad y probabilidad de cobro**, en **Cobranza ‣ Configuración**. Vienen
-   valores referenciales (por vencer 98 %, 1 a 30 días 95 %… más de 180 días 15 %) que
-   conviene ajustar a la experiencia de la empresa.
-6. **Ajustes ‣ Perú ‣ Cobranza:** tolerancia para evaluar compromisos, días de anticipación
-   del recordatorio al cliente, porcentaje para darlos por cumplidos, meses de historial de
-   pago y resumen diario a los gestores.
-7. **Ajustes ‣ Perú ‣ Cobranza** (cumplimiento): horario de contacto con consumidores,
-   bloqueo de crédito por mora, tasa de interés moratorio y su cuenta, diario y cuentas de
-   la provisión de cobranza dudosa, valor de la UIT y días de espera del aviso a centrales
-   de riesgo.
+4. **Ajustes:** **Cobranza ‣ Configuración ‣ Ajustes** (o la app **Cobranza** de
+   **Ajustes**) reúne toda la configuración de la app, con accesos a sus catálogos. Lo ve el
+   administrador del sistema.
+
+    ![Ajustes de Cobranza](collection/settings.png)
+
+    | Bloque | Qué se configura |
+    |---|---|
+    | Cartera y gestión | Zonas, tramos de antigüedad, resultados de gestión y motivos de reclamo; tolerancia, recordatorio y porcentaje de cumplimiento de los compromisos; meses de historial de pago y resumen diario a los gestores; **Cargar niveles** de seguimiento en español (recordatorio 3 días antes y avisos al vencer y a los 15, 30 y 60 días; los que ya existen no se tocan) |
+    | Riesgo y protección al consumidor | Horario de contacto con consumidores (art. 62), bloqueo de crédito por mora y días de espera del aviso a centrales de riesgo |
+    | Intereses y cobranza dudosa | Tasa de interés moratorio, su cuenta y las tasas máximas del BCRP; meses, gestiones mínimas, diario y cuentas de la provisión, y valor de la UIT |
+    | Cobro, agencias y comisiones | Enlace de pago en línea y proveedores de pago; plan de comisión de los gestores, servicio de la factura de agencias, planes y agencias; convenios y formatos de recaudación bancaria (si está instalada) |
+
+5. **Tramos de antigüedad y probabilidad de cobro:** vienen valores referenciales (por
+   vencer 98 %, 1 a 30 días 95 %… más de 180 días 15 %) que conviene ajustar a la experiencia
+   de la empresa.
 
 ## Cartera
 
@@ -444,7 +447,7 @@ saldo del cliente:
 El cliente paga desde la página de pago de Odoo sin iniciar sesión (el enlace lleva un
 código de acceso para ese cliente e importe). Al confirmarse, el pago se registra en el
 diario de la pasarela y se aplica a sus **facturas más antiguas**, sin las que estén en
-reclamo. Se desactiva en **Ajustes ‣ Perú ‣ Cobranza ‣ Pago en línea**.
+reclamo. Se desactiva en **Cobranza ‣ Configuración ‣ Ajustes ‣ Pago en línea**.
 
 ## Recaudación bancaria
 
