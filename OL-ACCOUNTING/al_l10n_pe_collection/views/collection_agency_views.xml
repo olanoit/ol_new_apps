@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Asistente -->
+    <record id="view_collection_agency_assign_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.agency.assign.form</field>
+        <field name="model">l10n_pe.collection.agency.assign</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="agency_id" options="{'no_create': True}"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="replace"/>
+                    </group>
+                </group>
+                <field name="partner_ids" widget="many2many" domain="[('customer_rank', '>', 0)]"
+                       options="{'no_create': True}">
+                    <list>
+                        <field name="name"/>
+                        <field name="vat"/>
+                        <field name="followup_responsible_id" string="Gestor"/>
+                        <field name="total_overdue" string="Vencido"/>
+                        <field name="l10n_pe_collection_agency_id"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_assign" type="object" string="Asignar" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_collection_agency_assign" model="ir.actions.act_window">
+        <field name="name">Asignar a agencia</field>
+        <field name="res_model">l10n_pe.collection.agency.assign</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_manager'))]"/>
+        <field name="binding_model_id" ref="base.model_res_partner"/>
+        <field name="binding_view_types">list</field>
+    </record>
+    <record id="view_collection_agency_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.agency.form</field>
+        <field name="model">l10n_pe.collection.agency</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="%(action_collection_agency_assign)d" type="action" string="Asignar clientes"
+                            class="btn-primary" context="{'default_agency_id': id, 'active_ids': []}"
+                            groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <button name="action_recall_all" type="object" string="Retirar toda la cartera"
+                            invisible="not partner_count" groups="al_l10n_pe_collection.group_collection_manager"
+                            confirm="Los clientes dejan de estar a cargo de la agencia desde hoy. ¿Continuar?"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_assignments" type="object" class="oe_stat_button" icon="fa-users">
+                            <field name="partner_count" widget="statinfo" string="Clientes"/>
+                        </button>
+                        <button name="action_open_commissions" type="object" class="oe_stat_button" icon="fa-money">
+                            <field name="commission_count" widget="statinfo" string="Liquidaciones"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title"><h1><field name="name" placeholder="Nombre de la agencia"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="partner_id" options="{'no_quick_create': True}"/>
+                            <field name="plan_id" options="{'no_create': True}"/>
+                            <field name="user_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="portfolio_amount"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        Los usuarios de la agencia solo ven la cartera, las gestiones, los compromisos y los documentos
+                        de los clientes asignados, y no entran a Contabilidad. Los pagos se reciben en las cuentas de la
+                        empresa; la agencia cobra su comisión sobre lo recuperado.
+                    </div>
+                    <field name="note" placeholder="Condiciones pactadas con la agencia"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_collection_agency_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.agency.list</field>
+        <field name="model">l10n_pe.collection.agency</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="plan_id"/>
+                <field name="partner_count"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="portfolio_amount"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_collection_agency" model="ir.actions.act_window">
+        <field name="name">Agencias externas</field>
+        <field name="res_model">l10n_pe.collection.agency</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre una agencia de cobranza</p>
+            <p>Estudios o call centers a los que se entrega la cartera difícil: ven solo los clientes asignados y
+                cobran una comisión sobre lo recuperado.</p>
+        </field>
+    </record>
+
+    <!-- Asignaciones -->
+    <record id="view_collection_agency_assignment_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.agency.assignment.list</field>
+        <field name="model">l10n_pe.collection.agency.assignment</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-muted="state == 'ended'">
+                <field name="partner_id"/>
+                <field name="agency_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_assigned" sum="Total"/>
+                <field name="amount_residual"/>
+                <field name="amount_recovered"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"/>
+                <button name="action_recall" type="object" string="Retirar" icon="fa-undo"
+                        invisible="state != 'active'" groups="al_l10n_pe_collection.group_collection_manager"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_collection_agency_assignment_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.agency.assignment.form</field>
+        <field name="model">l10n_pe.collection.agency.assignment</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="action_recall" type="object" string="Retirar de la agencia"
+                            invisible="state != 'active'" groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="agency_id" readonly="1"/>
+                            <field name="date_from" readonly="state != 'active'"/>
+                            <field name="date_to" readonly="state != 'active'"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_assigned"/>
+                            <field name="amount_residual"/>
+                            <field name="amount_recovered"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="view_collection_agency_assignment_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.agency.assignment.search</field>
+        <field name="model">l10n_pe.collection.agency.assignment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="partner_id"/>
+                <field name="agency_id"/>
+                <filter name="active" string="Vigentes" domain="[('state', '=', 'active')]"/>
+                <filter name="ended" string="Terminadas" domain="[('state', '=', 'ended')]"/>
+                <group>
+                    <filter name="group_agency" string="Agencia" context="{'group_by': 'agency_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_collection_agency_assignment" model="ir.actions.act_window">
+        <field name="name">Cartera de agencias</field>
+        <field name="res_model">l10n_pe.collection.agency.assignment</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p>Asigne clientes desde la agencia o desde «Clientes y gestores» (Acciones ‣ Asignar a agencia).</p>
+        </field>
+    </record>
+
+</odoo>

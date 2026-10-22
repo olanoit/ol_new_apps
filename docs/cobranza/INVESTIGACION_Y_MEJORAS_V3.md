@@ -43,7 +43,7 @@ HighRadius) y priorización de la cartera de trabajo.
 | M7 | **Centrales de riesgo**: aviso previo por correo, plazo de espera, reporte (Excel para Equifax/Sentinel), baja al pagar; bloquea deudas en disputa o de más de 5 años | P1 | v3 |
 | M8 | Recaudación bancaria (BCP CREP, BBVA, Interbank, Scotiabank) | P0 | **Hecho** en `al_l10n_pe_bank_collection` con formatos configurables y el CREP del BCP precargado (layout más difundido; verificar con la ficha técnica). BBVA, Interbank y Scotiabank: crear su formato con la ficha de cada banco |
 | M9 | Links de pago / PagoEfectivo / Yape en recordatorios | P1 | **Hecho**: botón y QR «Pagar en línea» en los avisos (v5) y PagoEfectivo (CIP) en `al_payment_pagoefectivo` |
-| M10 | Comisiones de gestores, agencias externas, cobranza judicial | P2 | Pendiente |
+| M10 | Comisiones de gestores, agencias externas, cobranza judicial | P2 | Hecho (v7) salvo cobranza judicial |
 | M11 | Predicción de fecha de pago con IA, marcador de contact center | P2 | Pendiente |
 
 ## 4. Diseño v3

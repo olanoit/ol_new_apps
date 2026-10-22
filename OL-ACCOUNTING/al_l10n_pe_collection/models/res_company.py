@@ -88,6 +88,13 @@ class ResCompany(models.Model):
     l10n_pe_collection_bureau_wait_days = fields.Integer(
         string='Días entre el aviso y el reporte', default=7,
         help='Plazo que se da al cliente desde el aviso previo antes de reportarlo a una central de riesgo.')
+    # Comisiones
+    l10n_pe_collection_commission_plan_id = fields.Many2one(
+        'l10n_pe.collection.commission.plan', string='Plan de comisión de los gestores',
+        help='Se propone en las liquidaciones de los gestores; cada agencia tiene el suyo.')
+    l10n_pe_collection_commission_product_id = fields.Many2one(
+        'product.product', string='Servicio de comisión de agencias',
+        help='Producto con el que se registra la factura de la agencia (cuenta de gasto e IGV).')
 
     def _get_company_root_delegated_field_names(self):
         return super()._get_company_root_delegated_field_names() + [
@@ -100,7 +107,8 @@ class ResCompany(models.Model):
             'l10n_pe_collection_provision_months', 'l10n_pe_collection_provision_min_actions',
             'l10n_pe_collection_provision_journal_id', 'l10n_pe_collection_provision_expense_account_id',
             'l10n_pe_collection_provision_account_id', 'l10n_pe_collection_uit',
-            'l10n_pe_collection_bureau_wait_days', 'l10n_pe_collection_online_payment']
+            'l10n_pe_collection_bureau_wait_days', 'l10n_pe_collection_online_payment',
+            'l10n_pe_collection_commission_plan_id', 'l10n_pe_collection_commission_product_id']
 
     def _l10n_pe_collection_account(self, field):
         """Cuenta configurada o, si no hay, la del PCGE de l10n_pe."""
@@ -172,6 +180,10 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.l10n_pe_collection_bureau_wait_days', readonly=False)
     l10n_pe_collection_online_payment = fields.Boolean(
         related='company_id.l10n_pe_collection_online_payment', readonly=False)
+    l10n_pe_collection_commission_plan_id = fields.Many2one(
+        related='company_id.l10n_pe_collection_commission_plan_id', readonly=False)
+    l10n_pe_collection_commission_product_id = fields.Many2one(
+        related='company_id.l10n_pe_collection_commission_product_id', readonly=False)
 
     def action_l10n_pe_collection_load_followup_levels(self):
         return self.env['account_followup.followup.line']._l10n_pe_load_levels(self.company_id)

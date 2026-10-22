@@ -31,6 +31,10 @@ responsable es el **gestor de cobranza** del cliente:
 * **Provisión y castigo de cobranza dudosa** (art. 21 f y g del Reglamento de la LIR) con
   **expediente de cobranza** en PDF como sustento.
 * **Centrales de riesgo**: aviso previo, reporte, retiro al pagar y Excel.
+* **Comisiones** de gestores y agencias sobre lo recuperado, con escala por antigüedad de
+  la deuda, descuento de cobros revertidos y factura de proveedor de la agencia.
+* **Agencias externas**: cartera asignada por fechas; sus usuarios solo ven esos clientes
+  y sus documentos, sin entrar a Contabilidad.
 * **Pago en línea**: enlace y QR para pagar el saldo con las pasarelas activas (Culqi,
   Niubiz, Izipay…) en los avisos y el estado de cuenta; el pago se aplica a las
   facturas más antiguas.
@@ -42,7 +46,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_collection/static/description/icon.svg',
-    'version': '6.20261022',
+    'version': '7.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account_followup', 'account_payment', 'account_reports', 'al_account_base', 'al_report_base', 'mail',
@@ -54,6 +58,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
         'data/collection_bucket_data.xml',
         'data/collection_result_data.xml',
         'data/collection_rate_cap_data.xml',
+        'data/collection_commission_data.xml',
         'report/statement_report.xml',
         'report/collection_file_report.xml',
         'data/mail_template_data.xml',
@@ -69,6 +74,8 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
         'views/collection_portfolio_views.xml',
         'views/collection_forecast_views.xml',
         'views/collection_target_views.xml',
+        'views/collection_commission_views.xml',
+        'views/collection_agency_views.xml',
         'views/collection_dashboard_views.xml',
         'views/res_partner_views.xml',
         'views/res_config_settings_views.xml',

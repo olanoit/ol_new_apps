@@ -195,6 +195,104 @@ gestor o para toda la cartera:
 | DSO | Cartera ÷ ventas de los últimos 90 días × 90 |
 | Cobrado en el mes y avance de la meta | Resultado del periodo |
 
+## Agencias externas
+
+Para entregar la cartera difícil a un estudio o call center, regístrelo en **Cobranza ‣
+Cartera ‣ Agencias externas** (administrador). Cada agencia tiene:
+
+- el **proveedor** al que se le factura la comisión;
+- su **plan de comisión**;
+- sus **usuarios**, el personal de la agencia que entra a Odoo.
+
+![Agencia externa](collection/agency.png)
+
+Para **asignar clientes**, pulse **Asignar clientes** en la agencia o, en **Clientes y
+gestores**, seleccione los clientes y elija **Acciones ‣ Asignar a agencia**. Cada
+asignación guarda:
+
+- la fecha desde la que la agencia tiene al cliente y, si se pactó, hasta cuándo;
+- la deuda vencida que se le entregó;
+- lo recuperado mientras estuvo vigente.
+
+Las asignaciones terminan de tres formas:
+
+- **Retirar** las termina con la fecha de hoy;
+- **Retirar toda la cartera** termina todas las de la agencia;
+- un proceso diario termina las que llegaron a su fecha de fin.
+
+Un cliente está en una sola agencia a la vez. Para pasarlo a otra, marque **Retirar de
+otra agencia** al asignarlo.
+
+![Cartera de agencias](collection/agency-portfolio.png)
+
+Los usuarios de la agencia reciben el permiso **Cobranza: agencia externa**:
+
+- **Pueden** usar la cola de trabajo y la cartera, registrar gestiones y compromisos, y
+  ver sus asignaciones y liquidaciones.
+- **Solo ven** los clientes asignados y los documentos de esos clientes.
+- **No entran** a Contabilidad ni ven las facturas de los demás clientes.
+
+Al retirar un cliente de la agencia, sus usuarios dejan de verlo. Los pagos se reciben
+siempre en las cuentas de la empresa.
+
+!!! warning "Advertencia"
+    No dé a los usuarios de la agencia el permiso **Gestor** ni permisos de Contabilidad:
+    con ellos verían todas las facturas.
+
+## Comisiones
+
+La comisión se calcula sobre **lo recuperado**: los cobros por bancos y cajas aplicados a
+documentos por cobrar. Su porcentaje depende de los **días de atraso** que tenía el
+documento el día del cobro.
+
+**Planes de comisión.** Cada plan es una escala por días de atraso y se configura en
+**Cobranza ‣ Configuración ‣ Planes de comisión**:
+
+- el plan de los gestores se elige en **Ajustes**;
+- cada agencia tiene el suyo;
+- lo que no cae en ningún tramo, por ejemplo lo cobrado antes de vencer, no comisiona.
+
+El plan precargado es una referencia:
+
+![Plan de comisión](collection/commission-plan.png)
+
+| Días de atraso al cobrar | Comisión |
+|---|---|
+| 1 a 30 | 1 % |
+| 31 a 90 | 3 % |
+| 91 a 180 | 6 % |
+| 181 a 360 | 10 % |
+| Más de 360 | 15 % |
+
+**Liquidaciones.** En **Cobranza ‣ Proyección y metas ‣ Comisiones**, cree la liquidación
+de un gestor o de una agencia para un periodo y pulse **Calcular**. A cada uno se le
+atribuye lo siguiente:
+
+- **Gestor:** lo cobrado de sus clientes que **no** estaban en una agencia el día del cobro.
+- **Agencia:** lo cobrado de los clientes que tenía asignados el día del cobro.
+
+Al calcular se aplican estas reglas:
+
+- Cada cobro comisiona **una sola vez**: una vez en una liquidación vigente, no entra en
+  otra.
+- Si un cobro ya liquidado se **desconcilia** (por ejemplo, un cheque rebotado o un pago
+  anulado), la siguiente liquidación del mismo beneficiario lo **descuenta** en negativo.
+
+![Liquidación de comisiones](collection/commission.png)
+
+Ejemplo: una agencia recupera S/ 3 500 de una factura vencida hace 150 días. La comisión es
+el 6 %, S/ 210.
+
+Al **Confirmar** la liquidación de una agencia, **Crear factura de la agencia** genera la
+factura de proveedor en borrador. Para eso, configure en **Ajustes** el servicio de
+comisión: el producto que da la cuenta de gasto y el IGV.
+
+Complete la factura con la serie y el número del comprobante de la agencia, y valídela.
+Para anular una liquidación facturada, anule primero esa factura.
+
+En **Cobros comisionados** está el detalle de todas las liquidaciones, con una tabla
+dinámica por mes. Los gestores ven solo sus liquidaciones; las agencias, las suyas.
+
 ## Estado de cuenta
 
 En la ficha del cliente, **Estado de cuenta** imprime el PDF con los documentos pendientes

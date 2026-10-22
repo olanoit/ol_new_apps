@@ -6,6 +6,7 @@ de error o un error de JavaScript. Deja capturas para las fichas.
     FICHAS_URL=http://127.0.0.1:18069 FICHAS_DB=test_pe_collection \\
         python3 docs/cobranza/pruebas/recorrido_interfaz.py
 """
+import os
 import sys
 from pathlib import Path
 
@@ -26,7 +27,24 @@ PANTALLAS = [
     ('al_l10n_pe_bank_collection', 'al_l10n_pe_bank_collection.action_bank_collection_layout', 'layouts', True),
     ('al_l10n_pe_bank_collection', 'al_l10n_pe_bank_collection.action_bank_collection_batch', 'batch', True),
     ('al_l10n_pe_bank_collection', 'al_l10n_pe_bank_collection.action_bank_collection_response', 'response', True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_agency', 'agency', True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_agency_assignment', 'agency-portfolio', False),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission', 'commission', True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission_line', None, False),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission_plan', 'commission-plan', True),
 ]
+
+#: Lo que ve el usuario de una agencia externa (FICHAS_USER=estudio_recupera).
+PANTALLAS_AGENCIA = [
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_worklist_server', 'agency-worklist', False),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_portfolio_server', 'agency-user-portfolio', False),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_action', None, True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_promise', None, False),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_agency_assignment', None, True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission', None, True),
+]
+if os.environ.get('FICHAS_USER', 'admin') != 'admin':
+    PANTALLAS = PANTALLAS_AGENCIA
 
 problemas = []
 for module, xmlid, foto, abrir in PANTALLAS:

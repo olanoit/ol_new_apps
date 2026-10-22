@@ -53,6 +53,9 @@ class ResPartner(models.Model):
         help='Vacío: la tasa de la compañía.')
     l10n_pe_collection_interest_warning = fields.Char(
         string='Aviso de tope de interés', compute='_compute_l10n_pe_collection_interest_warning')
+    l10n_pe_collection_agency_id = fields.Many2one(
+        'l10n_pe.collection.agency', string='Agencia de cobranza', readonly=True, index='btree_not_null',
+        help='Agencia externa que gestiona hoy la deuda del cliente; se asigna desde Cobranza.')
     l10n_pe_collection_action_count = fields.Integer(
         string='Gestiones', compute='_compute_l10n_pe_collection_counts')
     l10n_pe_collection_promise_count = fields.Integer(
@@ -392,8 +395,14 @@ class ResPartner(models.Model):
     def action_l10n_pe_collection_worklist(self):
         """Cola de trabajo: el gestor ve sus clientes; el administrador, todos."""
         action = self.env['ir.actions.act_window']._for_xml_id('al_l10n_pe_collection.action_collection_worklist')
-        if self.env.user.has_group('al_l10n_pe_collection.group_collection_manager'):
+        user = self.env.user
+        if user.has_group('al_l10n_pe_collection.group_collection_manager'):
             action['context'] = {}
+        elif not user.has_group('al_l10n_pe_collection.group_collection_user'):
+            # Agencia externa: solo los clientes que tiene asignados.
+            action['context'] = {}
+            action['domain'] = [('l10n_pe_collection_priority', '>', 0),
+                                ('l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]
         return action
 
     def action_l10n_pe_collection_disputes(self):

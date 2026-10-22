@@ -11,6 +11,7 @@
             </field>
             <field name="followup_responsible_id" position="after">
                 <field name="l10n_pe_collection_zone_id" options="{'no_create': True}"/>
+                <field name="l10n_pe_collection_agency_id" invisible="not l10n_pe_collection_agency_id"/>
                 <field name="l10n_pe_collection_rating" invisible="not l10n_pe_collection_rating"/>
                 <field name="l10n_pe_collection_score" invisible="not l10n_pe_collection_rated_on"/>
                 <field name="l10n_pe_collection_rated_on" invisible="1"/>
@@ -87,6 +88,7 @@
                 <field name="vat" readonly="1" optional="show"/>
                 <field name="followup_responsible_id" string="Gestor de cobranza"/>
                 <field name="l10n_pe_collection_zone_id"/>
+                <field name="l10n_pe_collection_agency_id" optional="show"/>
                 <field name="l10n_pe_collection_debtor_type" optional="hide"/>
                 <field name="l10n_pe_collection_interest_rate" optional="hide"/>
                 <field name="email" readonly="1" optional="show"/>
@@ -119,6 +121,7 @@
                 <field name="name"/>
                 <field name="vat" optional="show"/>
                 <field name="followup_responsible_id" string="Gestor"/>
+                <field name="l10n_pe_collection_agency_id" optional="show"/>
                 <field name="l10n_pe_collection_rating"/>
                 <field name="l10n_pe_collection_score" optional="show"/>
                 <field name="l10n_pe_collection_max_days"/>
@@ -140,6 +143,8 @@
                 <field name="name"/>
                 <field name="followup_responsible_id" string="Gestor"/>
                 <filter name="mine" string="Mis clientes" domain="[('followup_responsible_id', '=', uid)]"/>
+                <filter name="in_agency" string="En agencia" domain="[('l10n_pe_collection_agency_id', '!=', False)]"/>
+                <filter name="not_in_agency" string="Sin agencia" domain="[('l10n_pe_collection_agency_id', '=', False)]"/>
                 <separator/>
                 <filter name="rating_d" string="Alto riesgo (D)" domain="[('l10n_pe_collection_rating', '=', 'D')]"/>
                 <filter name="rating_c" string="Riesgo (C)" domain="[('l10n_pe_collection_rating', '=', 'C')]"/>
@@ -147,6 +152,7 @@
                 <group>
                     <filter name="group_rating" string="Calificación" context="{'group_by': 'l10n_pe_collection_rating'}"/>
                     <filter name="group_user" string="Gestor" context="{'group_by': 'followup_responsible_id'}"/>
+                    <filter name="group_agency" string="Agencia" context="{'group_by': 'l10n_pe_collection_agency_id'}"/>
                 </group>
             </search>
         </field>
@@ -168,7 +174,7 @@
         <field name="name">Cola de trabajo</field>
         <field name="model_id" ref="base.model_res_partner"/>
         <!-- Con grupo: sin él, Odoo exige escritura sobre los contactos. -->
-        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_user'))]"/>
+        <field name="group_ids" eval="[(4, ref('al_l10n_pe_collection.group_collection_user')), (4, ref('al_l10n_pe_collection.group_collection_agency'))]"/>
         <field name="state">code</field>
         <field name="code">action = model.action_l10n_pe_collection_worklist()</field>
     </record>

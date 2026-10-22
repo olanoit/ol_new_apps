@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Escala de referencia: comisiona más cuanto más antigua era la deuda al
+         cobrarse. Cada empresa la ajusta a lo pactado con gestores y agencias. -->
+    <record id="commission_plan_default" model="l10n_pe.collection.commission.plan">
+        <field name="name">Comisión por antigüedad de la deuda</field>
+        <field name="company_id" eval="False"/>
+        <field name="line_ids" eval="[
+            Command.create({'days_from': 1, 'days_to': 30, 'rate': 1.0}),
+            Command.create({'days_from': 31, 'days_to': 90, 'rate': 3.0}),
+            Command.create({'days_from': 91, 'days_to': 180, 'rate': 6.0}),
+            Command.create({'days_from': 181, 'days_to': 360, 'rate': 10.0}),
+            Command.create({'days_from': 361, 'days_to': 0, 'rate': 15.0}),
+        ]"/>
+    </record>
+</odoo>

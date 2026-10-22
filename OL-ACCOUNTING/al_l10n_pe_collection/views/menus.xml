@@ -2,30 +2,44 @@
 <odoo>
     <menuitem id="menu_collection_root" name="Cobranza" sequence="46"
               web_icon="al_l10n_pe_collection,static/description/icon.svg"
-              groups="al_l10n_pe_collection.group_collection_user"/>
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
 
-    <menuitem id="menu_collection_portfolio_root" name="Cartera" parent="menu_collection_root" sequence="10"/>
+    <menuitem id="menu_collection_portfolio_root" name="Cartera" parent="menu_collection_root" sequence="10"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_worklist" name="Cola de trabajo" parent="menu_collection_portfolio_root"
-              action="action_collection_worklist_server" sequence="5"/>
+              action="action_collection_worklist_server" sequence="5"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_portfolio" name="Cartera" parent="menu_collection_portfolio_root"
-              action="action_collection_portfolio_server" sequence="10"/>
+              action="action_collection_portfolio_server" sequence="10"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_aging" name="Antigüedad" parent="menu_collection_portfolio_root"
-              action="action_collection_portfolio_overdue_server" sequence="20"/>
+              action="action_collection_portfolio_overdue_server" sequence="20"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_followup" name="Seguimiento de clientes" parent="menu_collection_portfolio_root"
-              action="account_reports.action_account_reports_customer_statements" sequence="30"/>
+              action="account_reports.action_account_reports_customer_statements" sequence="30"
+              groups="al_l10n_pe_collection.group_collection_user"/>
     <menuitem id="menu_collection_partners" name="Clientes y gestores" parent="menu_collection_portfolio_root"
               action="action_collection_partner_assignment" sequence="40"
               groups="al_l10n_pe_collection.group_collection_manager"/>
+    <menuitem id="menu_collection_agencies" name="Agencias externas" parent="menu_collection_portfolio_root"
+              action="action_collection_agency" sequence="50" groups="al_l10n_pe_collection.group_collection_manager"/>
+    <menuitem id="menu_collection_agency_assignments" name="Cartera de agencias" parent="menu_collection_portfolio_root"
+              action="action_collection_agency_assignment" sequence="60" groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
 
-    <menuitem id="menu_collection_management_root" name="Gestión" parent="menu_collection_root" sequence="20"/>
+    <menuitem id="menu_collection_management_root" name="Gestión" parent="menu_collection_root" sequence="20"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_actions" name="Gestiones" parent="menu_collection_management_root"
-              action="action_collection_action" sequence="10"/>
+              action="action_collection_action" sequence="10"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_promises" name="Compromisos de pago" parent="menu_collection_management_root"
-              action="action_collection_promise" sequence="20"/>
+              action="action_collection_promise" sequence="20"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_disputes" name="Reclamos" parent="menu_collection_management_root"
-              action="action_collection_dispute" sequence="30"/>
+              action="action_collection_dispute" sequence="30"
+              groups="al_l10n_pe_collection.group_collection_user"/>
     <menuitem id="menu_collection_bureaus" name="Centrales de riesgo" parent="menu_collection_management_root"
-              action="action_collection_bureau" sequence="40"/>
+              action="action_collection_bureau" sequence="40"
+              groups="al_l10n_pe_collection.group_collection_user"/>
     <menuitem id="menu_collection_interest" name="Liquidar intereses" parent="menu_collection_management_root"
               action="action_collection_interest_wizard" sequence="50"
               groups="al_l10n_pe_collection.group_collection_manager"/>
@@ -33,13 +47,21 @@
               action="action_collection_provision" sequence="60"
               groups="al_l10n_pe_collection.group_collection_manager"/>
 
-    <menuitem id="menu_collection_planning_root" name="Proyección y metas" parent="menu_collection_root" sequence="30"/>
+    <menuitem id="menu_collection_planning_root" name="Proyección y metas" parent="menu_collection_root" sequence="30"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_forecast" name="Proyección de cobranza" parent="menu_collection_planning_root"
-              action="action_collection_forecast" sequence="10"/>
+              action="action_collection_forecast" sequence="10"
+              groups="al_l10n_pe_collection.group_collection_user"/>
     <menuitem id="menu_collection_targets" name="Metas de cobranza" parent="menu_collection_planning_root"
-              action="action_collection_target" sequence="20"/>
+              action="action_collection_target" sequence="20"
+              groups="al_l10n_pe_collection.group_collection_user"/>
     <menuitem id="menu_collection_indicators" name="Indicadores del gestor" parent="menu_collection_planning_root"
-              action="action_collection_dashboard" sequence="30"/>
+              action="action_collection_dashboard" sequence="30"
+              groups="al_l10n_pe_collection.group_collection_user"/>
+    <menuitem id="menu_collection_commissions" name="Comisiones" parent="menu_collection_planning_root"
+              action="action_collection_commission" sequence="40" groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
+    <menuitem id="menu_collection_commission_lines" name="Cobros comisionados" parent="menu_collection_planning_root"
+              action="action_collection_commission_line" sequence="50" groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
 
     <menuitem id="menu_collection_config_root" name="Configuración" parent="menu_collection_root" sequence="90"
               groups="al_l10n_pe_collection.group_collection_manager"/>
@@ -55,4 +77,6 @@
               action="account_followup.action_account_followup_line_definition_form" sequence="40"/>
     <menuitem id="menu_collection_rate_caps" name="Tasas máximas del BCRP" parent="menu_collection_config_root"
               action="action_collection_rate_cap" sequence="50"/>
+    <menuitem id="menu_collection_commission_plans" name="Planes de comisión" parent="menu_collection_config_root"
+              action="action_collection_commission_plan" sequence="60"/>
 </odoo>

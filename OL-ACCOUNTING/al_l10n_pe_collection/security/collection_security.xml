@@ -20,6 +20,14 @@
         <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
 
+    <!-- Agencia externa: usuario interno sin acceso a Contabilidad que solo ve los
+         clientes asignados a su agencia y sus documentos. No implica al gestor, que
+         da acceso a todas las facturas. Se asigna desde la agencia de cobranza. -->
+    <record id="group_collection_agency" model="res.groups">
+        <field name="name">Cobranza: agencia externa</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
     <data noupdate="1">
         <!-- Multicompañía -->
         <record id="collection_action_company_rule" model="ir.rule">
@@ -145,6 +153,116 @@
             <field name="model_id" ref="model_l10n_pe_collection_bureau"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <!-- Comisiones y agencias externas -->
+        <record id="collection_agency_company_rule" model="ir.rule">
+            <field name="name">Agencia de cobranza: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_agency"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_assignment_company_rule" model="ir.rule">
+            <field name="name">Asignación a agencia: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_agency_assignment"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_commission_company_rule" model="ir.rule">
+            <field name="name">Liquidación de comisiones: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_commission_line_company_rule" model="ir.rule">
+            <field name="name">Cobro de la liquidación de comisiones: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_commission_plan_company_rule" model="ir.rule">
+            <field name="name">Plan de comisión: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission_plan"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_commission_user_rule" model="ir.rule">
+            <field name="name">Liquidación de comisiones: solo las propias</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission"/>
+            <field name="domain_force">[('beneficiary', '=', 'user'), ('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_commission_manager_rule" model="ir.rule">
+            <field name="name">Liquidación de comisiones: todas</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_commission_line_user_rule" model="ir.rule">
+            <field name="name">Cobro de la liquidación: solo los propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission_line"/>
+            <field name="domain_force">[('commission_id.beneficiary', '=', 'user'), ('commission_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_commission_line_manager_rule" model="ir.rule">
+            <field name="name">Cobro de la liquidación: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_agency_agency_rule" model="ir.rule">
+            <field name="name">Agencia de cobranza: la propia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_agency"/>
+            <field name="domain_force">[('user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_assignment_agency_rule" model="ir.rule">
+            <field name="name">Asignación a agencia: las de la agencia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_agency_assignment"/>
+            <field name="domain_force">[('agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_commission_agency_rule" model="ir.rule">
+            <field name="name">Liquidación de comisiones: las de la agencia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission"/>
+            <field name="domain_force">[('agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_commission_line_agency_rule" model="ir.rule">
+            <field name="name">Cobro de la liquidación: los de la agencia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_commission_line"/>
+            <field name="domain_force">[('commission_id.agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_portfolio_agency_rule" model="ir.rule">
+            <field name="name">Cartera: la asignada a la agencia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_portfolio"/>
+            <field name="domain_force">[('partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_action_agency_rule" model="ir.rule">
+            <field name="name">Gestión de cobranza: clientes de la agencia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_action"/>
+            <field name="domain_force">[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_promise_agency_rule" model="ir.rule">
+            <field name="name">Compromiso de pago: clientes de la agencia</field>
+            <field name="model_id" ref="model_l10n_pe_collection_promise"/>
+            <field name="domain_force">[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_account_move_agency_rule" model="ir.rule">
+            <field name="name">Asientos: clientes de la agencia de cobranza</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="domain_force">[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_account_move_line_agency_rule" model="ir.rule">
+            <field name="name">Apuntes: clientes de la agencia de cobranza</field>
+            <field name="model_id" ref="account.model_account_move_line"/>
+            <field name="domain_force">[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_partial_agency_rule" model="ir.rule">
+            <field name="name">Conciliaciones: clientes de la agencia de cobranza</field>
+            <field name="model_id" ref="account.model_account_partial_reconcile"/>
+            <field name="domain_force">[('debit_move_id.partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
         </record>
     </data>
 </odoo>

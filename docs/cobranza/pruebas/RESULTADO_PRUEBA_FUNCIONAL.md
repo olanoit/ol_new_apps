@@ -58,3 +58,28 @@ Además: 71 pruebas automáticas en verde (cobranza, bloqueo de ventas y recauda
 - La cola de trabajo muestra la calificación del último cálculo diario: un cliente que pagó hoy
   sigue con prioridad hasta la próxima ejecución o hasta pulsar **Calificar** en su ficha.
 - Las fechas del aviso a centrales salen en el idioma del cliente (en esta base, inglés).
+
+## Agencias externas y comisiones (v7, 22/10/2026)
+
+`al_l10n_pe_collection` 7.20261022. Se corre después de la prueba anterior:
+
+```bash
+.venv/bin/python odoo-bin shell -c cfg/my/pe.cfg -d test_pe_collection --no-http \
+    < myodoo/ol_new_apps/docs/cobranza/pruebas/prueba_funcional_comisiones.py
+# Interfaz como la agencia (usuario y clave de prueba en el script):
+FICHAS_URL=http://127.0.0.1:18069 FICHAS_DB=test_pe_collection FICHAS_USER=estudio_recupera \
+    FICHAS_PASSWORD=<clave del script> python3 myodoo/ol_new_apps/docs/cobranza/pruebas/recorrido_interfaz.py
+```
+
+Agencia «Estudio Jurídico Recupera» con una usuaria; se le entregan Ferretería Los Andes y
+Comercial Misti.
+
+| Etapa | Qué se probó | Resultado |
+|---|---|---|
+| F10 Agencia | Grupo automático; cartera entregada; la agencia solo ve sus dos clientes, no lee otras facturas, gestiona a sus clientes y no a los ajenos | 6/6 |
+| F11 Comisiones | Gestora: S/ 4 000 a 50 días al 3 % = S/ 120, sin lo cobrado por la agencia; agencia: 6 % a 95 y 150 días; factura de proveedor en borrador con IGV; cada uno ve solo sus liquidaciones | 6/6 |
+| Interfaz | 17 pantallas como administrador (5 nuevas) y 6 como la agencia, sin errores | 23/23 |
+
+Además: 89 pruebas automáticas en verde (cobranza 66, bloqueo de ventas, recaudación y PagoEfectivo).
+El menú de la agencia muestra solo Cartera (cola, cartera, antigüedad, cartera de agencias),
+Gestión (gestiones, compromisos) y Comisiones; el Tablero quedó solo para gestores.

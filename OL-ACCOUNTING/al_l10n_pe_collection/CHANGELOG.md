@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261022 — 22/10/2026
+
+- Agencias externas de cobranza: cartera asignada por fechas (asistente desde la lista de clientes, retiro y fin automático); sus usuarios solo ven los clientes asignados y sus documentos, sin entrar a Contabilidad.
+- Comisiones de gestores y agencias sobre lo recuperado, con planes por antigüedad de la deuda, cada cobro liquidado una sola vez, descuento de cobros desconciliados y factura de proveedor de la agencia en borrador.
+
 ## 6.20261022 — 22/10/2026
 
 - Tope del BCRP para el interés moratorio: tabla de tasas máximas por periodo y moneda (precargadas mayo 2026–abril 2027), aviso en Ajustes y en el cliente cuando la tasa pactada lo supera, y liquidación de intereses recortada al tope de cada periodo.

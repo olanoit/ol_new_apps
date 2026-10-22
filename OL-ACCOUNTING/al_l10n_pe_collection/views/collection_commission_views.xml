@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Planes de comisión -->
+    <record id="view_collection_commission_plan_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.plan.list</field>
+        <field name="model">l10n_pe.collection.commission.plan</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_collection_commission_plan_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.plan.form</field>
+        <field name="model">l10n_pe.collection.commission.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" placeholder="Nombre del plan"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <div class="text-muted mb-2">
+                        Porcentaje de lo recuperado según los días de atraso que tenía el documento cuando se cobró.
+                        Lo que no cubre ningún tramo (por ejemplo, lo cobrado antes de vencer) no comisiona.
+                    </div>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="days_from" string="Desde (días)"/>
+                            <field name="days_to" string="Hasta (días)"/>
+                            <field name="rate"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Notas"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_collection_commission_plan" model="ir.actions.act_window">
+        <field name="name">Planes de comisión</field>
+        <field name="res_model">l10n_pe.collection.commission.plan</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree un plan de comisión</p>
+            <p>Una escala de porcentajes sobre lo recuperado según la antigüedad de la deuda.</p>
+        </field>
+    </record>
+
+    <!-- Liquidaciones -->
+    <record id="view_collection_commission_form" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.form</field>
+        <field name="model">l10n_pe.collection.commission</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_compute" type="object" string="Calcular" class="btn-primary"
+                            invisible="state != 'draft'" groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <button name="action_confirm" type="object" string="Confirmar"
+                            invisible="state != 'draft' or not line_ids"
+                            groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <button name="action_create_bill" type="object" string="Crear factura de la agencia"
+                            class="btn-primary" invisible="state != 'confirmed' or beneficiary != 'agency'"
+                            groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <button name="action_draft" type="object" string="Volver a borrador"
+                            invisible="state not in ('confirmed', 'cancel')"
+                            groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state in ('draft', 'cancel')"
+                            groups="al_l10n_pe_collection.group_collection_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_bill" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not invoice_id">
+                            <div class="o_stat_info"><span class="o_stat_text">Factura</span></div>
+                        </button>
+                    </div>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="beneficiary" widget="radio" options="{'horizontal': true}"
+                                   readonly="state != 'draft'"/>
+                            <field name="user_id" invisible="beneficiary != 'user'" required="beneficiary == 'user'"
+                                   readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="agency_id" invisible="beneficiary != 'agency'"
+                                   required="beneficiary == 'agency'" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="plan_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <label for="date_from" string="Periodo"/>
+                            <div class="o_row">
+                                <field name="date_from" readonly="state != 'draft'"/>
+                                <span>al</span>
+                                <field name="date_to" readonly="state != 'draft'"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_recovered"/>
+                            <field name="amount_commission"/>
+                            <field name="invoice_id" invisible="not invoice_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        Cuenta lo cobrado por bancos y cajas en el periodo. Al gestor, de sus clientes que no estaban
+                        en una agencia el día del cobro; a la agencia, de los clientes que tenía asignados ese día.
+                        Cada cobro comisiona una sola vez; si se desconcilia después de liquidado, se descuenta en la
+                        siguiente liquidación.
+                    </div>
+                    <field name="line_ids" readonly="1">
+                        <list decoration-danger="line_type == 'clawback' or reversed" decoration-muted="not rate">
+                            <field name="line_type" optional="hide"/>
+                            <field name="partner_id"/>
+                            <field name="move_id"/>
+                            <field name="payment_move_id" optional="hide"/>
+                            <field name="date_maturity" optional="hide"/>
+                            <field name="date"/>
+                            <field name="days_overdue" string="Días"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="rate" string="%"/>
+                            <field name="commission_amount" sum="Total"/>
+                            <field name="reversed" optional="hide"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Notas"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_collection_commission_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.list</field>
+        <field name="model">l10n_pe.collection.commission</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="beneficiary" optional="hide"/>
+                <field name="user_id" optional="show"/>
+                <field name="agency_id" optional="show"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_recovered" sum="Total"/>
+                <field name="amount_commission" sum="Total"/>
+                <field name="state" widget="badge" decoration-success="state in ('confirmed', 'billed')"
+                       decoration-info="state == 'draft'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_commission_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.search</field>
+        <field name="model">l10n_pe.collection.commission</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="agency_id"/>
+                <filter name="users" string="Gestores" domain="[('beneficiary', '=', 'user')]"/>
+                <filter name="agencies" string="Agencias" domain="[('beneficiary', '=', 'agency')]"/>
+                <separator/>
+                <filter name="draft" string="Borrador" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmadas" domain="[('state', 'in', ('confirmed', 'billed'))]"/>
+                <group>
+                    <filter name="group_user" string="Gestor" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_agency" string="Agencia" context="{'group_by': 'agency_id'}"/>
+                    <filter name="group_date" string="Periodo" context="{'group_by': 'date_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_collection_commission" model="ir.actions.act_window">
+        <field name="name">Comisiones</field>
+        <field name="res_model">l10n_pe.collection.commission</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Liquide las comisiones de cobranza</p>
+            <p>Comisión de un gestor o de una agencia externa sobre lo recuperado en un periodo, con el porcentaje
+                del plan según la antigüedad de cada deuda. La de una agencia se registra como factura de proveedor.</p>
+        </field>
+    </record>
+
+    <!-- Detalle de cobros comisionados, para tablas dinámicas. -->
+    <record id="view_collection_commission_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.line.list</field>
+        <field name="model">l10n_pe.collection.commission.line</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="line_type == 'clawback' or reversed">
+                <field name="commission_id"/>
+                <field name="line_type" optional="hide"/>
+                <field name="partner_id"/>
+                <field name="move_id"/>
+                <field name="date"/>
+                <field name="days_overdue" string="Días"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="rate" string="%"/>
+                <field name="commission_amount" sum="Total"/>
+                <field name="reversed" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_collection_commission_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.commission.line.pivot</field>
+        <field name="model">l10n_pe.collection.commission.line</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="commission_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="amount" type="measure"/>
+                <field name="commission_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="action_collection_commission_line" model="ir.actions.act_window">
+        <field name="name">Cobros comisionados</field>
+        <field name="res_model">l10n_pe.collection.commission.line</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="domain">[('commission_id.state', '!=', 'cancel')]</field>
+    </record>
+</odoo>

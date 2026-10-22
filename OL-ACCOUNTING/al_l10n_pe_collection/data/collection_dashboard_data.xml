@@ -23,5 +23,6 @@
     <!-- Aquí y no en menus.xml: la hoja de cálculo valida los menús que usa, así que
          este archivo se carga después de menus.xml. -->
     <menuitem id="menu_collection_dashboard" name="Tablero" parent="menu_collection_root"
-              action="action_collection_spreadsheet_dashboard" sequence="1"/>
+              action="action_collection_spreadsheet_dashboard" sequence="1"
+              groups="al_l10n_pe_collection.group_collection_user"/>
 </odoo>

@@ -123,6 +123,19 @@
                             </div>
                         </div>
                     </setting>
+                    <setting string="Comisiones de cobranza"
+                             help="Plan que se propone en las liquidaciones de los gestores (cada agencia tiene el suyo) y servicio con el que se registra la factura de la agencia.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_collection_commission_plan_id" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_commission_plan_id" options="{'no_create': True}"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_collection_commission_product_id" class="col-lg-6 o_light_label"/>
+                                <field name="l10n_pe_collection_commission_product_id"/>
+                            </div>
+                        </div>
+                    </setting>
                     <setting string="Niveles de seguimiento en español"
                              help="Agrega los niveles que falten: recordatorio 3 días antes, aviso al vencer y a los 15, 30 y 60 días.">
                         <button name="action_l10n_pe_collection_load_followup_levels" type="object"

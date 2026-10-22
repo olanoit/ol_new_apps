@@ -14,3 +14,5 @@ from . import collection_dashboard
 from . import collection_provision
 from . import collection_bureau
 from . import payment_transaction
+from . import collection_commission
+from . import collection_agency
