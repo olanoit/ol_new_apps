@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261022 — 22/10/2026
+
+- Ajustes con el diseño de las apps de Odoo: casilla a la izquierda para lo que se activa, valores en línea con su unidad («Evaluar 2 días después…»), icono de valor por compañía, enlace a la guía en cada ajuste y el castigo (UIT) separado de la provisión.
+
 ## 9.20261022 — 22/10/2026
 
 - Ajustes propios: Cobranza ▸ Configuración ▸ Ajustes abre la app Cobranza de Ajustes (antes, un bloque de Ajustes ▸ Perú) con toda la configuración en cuatro bloques y accesos a zonas, tramos, resultados, motivos de reclamo, niveles de seguimiento, tasas del BCRP, planes, agencias y proveedores de pago.

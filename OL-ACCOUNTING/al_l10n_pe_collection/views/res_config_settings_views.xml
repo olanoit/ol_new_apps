@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Aplicación «Cobranza» en Ajustes, con todos sus ajustes y accesos a sus
-         catálogos; se abre desde Cobranza ‣ Configuración ‣ Ajustes. Otros módulos
+    <!-- Aplicación «Cobranza» en Ajustes, con el patrón de las apps de Odoo
+         (Inventario, Facturación): casilla a la izquierda para lo que se activa,
+         valores en línea con su unidad, accesos con btn-link y enlace a la guía.
+         Se abre desde Cobranza ‣ Configuración ‣ Ajustes; otros módulos
          (recaudación bancaria…) agregan sus ajustes a estos bloques. -->
     <record id="res_config_settings_view_form_collection" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.pe.collection</field>
@@ -12,177 +14,201 @@
             <xpath expr="//form" position="inside">
                 <app data-string="Cobranza" string="Cobranza" name="al_l10n_pe_collection"
                      groups="al_l10n_pe_collection.group_collection_manager">
+
                     <block title="Cartera y gestión" name="pe_collection_block">
-                        <setting string="Cartera"
-                                 help="Zonas con su gestor por defecto, tramos de antigüedad con su probabilidad de cobro y resultados de gestión.">
-                            <div class="mt8 d-flex flex-column">
+                        <setting id="collection_portfolio" string="Cartera"
+                                 help="Zonas con su gestor por defecto, tramos de antigüedad con su probabilidad de cobro, resultados de gestión y motivos de reclamo."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#configuración">
+                            <div class="mt8">
                                 <button name="%(action_collection_zone)d" type="action" string="Zonas"
                                         class="btn-link" icon="oi-arrow-right"/>
+                            </div>
+                            <div>
                                 <button name="%(action_collection_bucket)d" type="action" string="Tramos de antigüedad"
                                         class="btn-link" icon="oi-arrow-right"/>
+                            </div>
+                            <div>
                                 <button name="%(action_collection_result)d" type="action" string="Resultados de gestión"
                                         class="btn-link" icon="oi-arrow-right"/>
+                            </div>
+                            <div>
                                 <button name="%(action_collection_dispute_reason)d" type="action" string="Motivos de reclamo"
                                         class="btn-link" icon="oi-arrow-right"/>
                             </div>
                         </setting>
-                        <setting string="Compromisos de pago"
-                                 help="Cuándo se evalúa un compromiso y cuándo se recuerda al cliente.">
-                            <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_promise_tolerance" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_promise_tolerance"/>
+                        <setting id="collection_promises" string="Compromisos de pago" company_dependent="1"
+                                 help="Cuándo se evalúa un compromiso, cuándo se le recuerda al cliente y desde qué porcentaje se da por cumplido."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#compromisos-de-pago">
+                            <div class="content-group mt16">
+                                <div>
+                                    Evaluar <field name="l10n_pe_collection_promise_tolerance" class="text-center" style="width: 10%; min-width: 3rem;"/>
+                                    días después de la fecha comprometida
                                 </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_promise_reminder_days" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_promise_reminder_days"/>
+                                <div>
+                                    Recordar al cliente <field name="l10n_pe_collection_promise_reminder_days" class="text-center" style="width: 10%; min-width: 3rem;"/>
+                                    días antes <span class="text-muted">(0: no recordar)</span>
                                 </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_promise_min_percent" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_promise_min_percent"/>
-                                </div>
-                            </div>
-                        </setting>
-                        <setting string="Proyección y avisos"
-                                 help="Historial con que se calcula el atraso promedio de cada cliente y resumen diario a los gestores.">
-                            <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_history_months" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_history_months"/>
-                                </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_digest" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_digest"/>
+                                <div>
+                                    Cumplido desde el <field name="l10n_pe_collection_promise_min_percent" class="text-center" style="width: 10%; min-width: 4rem;"/>
+                                    % del importe; por debajo, parcial
                                 </div>
                             </div>
                         </setting>
-                        <setting string="Niveles de seguimiento en español"
-                                 help="Agrega los niveles que falten: recordatorio 3 días antes, aviso al vencer y a los 15, 30 y 60 días.">
-                            <div class="mt8 d-flex flex-column">
+                        <setting id="collection_history" string="Historial de pago" company_dependent="1"
+                                 help="Facturas pagadas con que se calcula el atraso promedio de cada cliente: corre la fecha esperada en la proyección y pesa en la calificación."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#proyección-de-cobranza">
+                            <div class="mt16">
+                                Últimos <field name="l10n_pe_collection_history_months" class="text-center" style="width: 10%; min-width: 3rem;"/> meses
+                            </div>
+                        </setting>
+                        <setting id="collection_digest" company_dependent="1"
+                                 help="Correo diario a cada gestor con sus compromisos del día, gestiones pendientes, documentos por vencer y nuevos vencidos."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#notificaciones">
+                            <field name="l10n_pe_collection_digest"/>
+                        </setting>
+                        <setting id="collection_followup_levels" string="Niveles de seguimiento en español"
+                                 help="Agrega los niveles que falten: recordatorio 3 días antes del vencimiento y avisos al vencer y a los 15, 30 y 60 días. Los que ya existen no se tocan."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#configuración">
+                            <div class="mt8">
                                 <button name="action_l10n_pe_collection_load_followup_levels" type="object"
-                                        string="Cargar niveles" class="btn-link" icon="oi-arrow-right"/>
+                                        string="Cargar niveles" class="btn-link" icon="fa-download"/>
+                            </div>
+                            <div>
                                 <button name="%(account_followup.action_account_followup_line_definition_form)d"
-                                        type="action" string="Niveles de seguimiento" class="btn-link"
-                                        icon="oi-arrow-right"/>
+                                        type="action" string="Niveles de seguimiento" class="btn-link" icon="oi-arrow-right"/>
                             </div>
                         </setting>
                     </block>
 
                     <block title="Riesgo y protección al consumidor" name="pe_collection_risk_block">
-                        <setting string="Protección al consumidor"
-                                 help="Art. 62 de la Ley 29571: con clientes sin RUC, sin llamadas, visitas ni mensajes fuera del horario, en fines de semana o feriados, ni recordatorios antes del vencimiento sin su consentimiento.">
+                        <setting id="collection_consumer_guard" company_dependent="1"
+                                 title="Art. 62 del Código de Protección y Defensa del Consumidor (Ley 29571)."
+                                 help="Con clientes sin RUC: sin llamadas, visitas, WhatsApp ni SMS fuera del horario, en fines de semana o feriados, ni recordatorios antes del vencimiento sin su consentimiento."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#clientes-consumidores">
                             <field name="l10n_pe_collection_consumer_guard"/>
-                            <div class="content-group" invisible="not l10n_pe_collection_consumer_guard">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_hour_from" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_hour_from" widget="float_time"/>
-                                </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_hour_to" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_hour_to" widget="float_time"/>
-                                </div>
+                            <div class="content-group mt16" invisible="not l10n_pe_collection_consumer_guard">
+                                Contactar de <field name="l10n_pe_collection_hour_from" widget="float_time" class="text-center" style="width: 10%; min-width: 4rem;"/>
+                                a <field name="l10n_pe_collection_hour_to" widget="float_time" class="text-center" style="width: 10%; min-width: 4rem;"/>,
+                                en días hábiles
                             </div>
                         </setting>
-                        <setting string="Bloqueo de crédito por mora"
-                                 help="Se revisa cada día al calificar a los clientes; el bloqueo impide confirmar pedidos de venta. El administrador puede liberar a un cliente por unos días.">
-                            <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_hold_days" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_hold_days"/>
-                                </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_hold_rating_d" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_hold_rating_d"/>
-                                </div>
+                        <setting id="collection_hold_days" string="Bloqueo de crédito por mora" company_dependent="1"
+                                 help="Se revisa cada día al calificar a los clientes: un cliente bloqueado no puede confirmar pedidos de venta. El administrador puede liberarlo por unos días."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#bloqueo-de-crédito">
+                            <div class="mt16">
+                                Bloquear con más de <field name="l10n_pe_collection_hold_days" class="text-center" style="width: 10%; min-width: 3rem;"/>
+                                días de atraso <span class="text-muted">(0: sin bloqueo)</span>
                             </div>
                         </setting>
-                        <setting string="Centrales de riesgo"
-                                 help="Plazo entre el aviso previo al deudor y el reporte.">
-                            <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_bureau_wait_days" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_bureau_wait_days"/>
-                                </div>
+                        <setting id="collection_hold_rating_d" company_dependent="1"
+                                 help="Bloquea también a los clientes con calificación D (alto riesgo), aunque su atraso sea menor."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#bloqueo-de-crédito">
+                            <field name="l10n_pe_collection_hold_rating_d"/>
+                        </setting>
+                        <setting id="collection_bureau" string="Centrales de riesgo" company_dependent="1"
+                                 help="Plazo que se da al deudor desde el aviso previo antes de reportarlo (Ley 27489)."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#centrales-de-riesgo">
+                            <div class="mt16">
+                                Reportar <field name="l10n_pe_collection_bureau_wait_days" class="text-center" style="width: 10%; min-width: 3rem;"/>
+                                días después del aviso
                             </div>
                         </setting>
                     </block>
 
                     <block title="Intereses y cobranza dudosa" name="pe_collection_accounting_block">
-                        <setting string="Intereses moratorios"
-                                 help="Solo si se pactaron y sin superar el tope del BCRP. Se facturan con nota de débito motivo 01, inafecta al IGV.">
+                        <setting id="collection_interest" string="Intereses moratorios" company_dependent="1"
+                                 help="Solo si se pactaron y sin superar el tope del BCRP; el cliente puede tener su propia tasa. Se facturan con nota de débito motivo 01, inafecta al IGV."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#intereses-moratorios">
                             <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_interest_rate" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_interest_rate"/>
+                                <div class="mt16">
+                                    Tasa pactada <field name="l10n_pe_collection_interest_rate" class="text-center" style="width: 10%; min-width: 5rem;"/> % TEA
                                 </div>
                                 <div class="alert alert-warning mt8 mb-0" role="alert" invisible="not l10n_pe_collection_interest_warning">
                                     <field name="l10n_pe_collection_interest_warning" nolabel="1"/>
                                 </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_interest_account_id" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_interest_account_id" options="{'no_create': True}"/>
+                                <div class="row mt16">
+                                    <label for="l10n_pe_collection_interest_account_id" string="Cuenta de ingreso" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_pe_collection_interest_account_id" options="{'no_create': True}"
+                                           placeholder="7722 del plan contable"/>
                                 </div>
-                                <button name="%(action_collection_rate_cap)d" type="action" string="Tasas máximas del BCRP"
-                                        class="btn-link" icon="oi-arrow-right"/>
+                                <div class="mt8">
+                                    <button name="%(action_collection_rate_cap)d" type="action" string="Tasas máximas del BCRP"
+                                            class="btn-link" icon="oi-arrow-right"/>
+                                </div>
                             </div>
                         </setting>
-                        <setting string="Provisión y castigo de cobranza dudosa"
-                                 help="Art. 21 f) y g) del Reglamento de la LIR. Sin cuentas, se usan 68711 y 1911 del plan contable.">
+                        <setting id="collection_provision" string="Provisión de cobranza dudosa" company_dependent="1"
+                                 title="Art. 21 f) del Reglamento de la Ley del Impuesto a la Renta."
+                                 help="Qué deudas se proponen y con qué diario y cuentas se contabiliza la provisión. Una demanda presentada la sustenta sin esperar los meses."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#provisión-y-castigo-de-cobranza-dudosa">
                             <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_provision_months" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_provision_months"/>
+                                <div class="mt16">
+                                    Vencidas hace más de <field name="l10n_pe_collection_provision_months" class="text-center" style="width: 10%; min-width: 3rem;"/> meses
                                 </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_provision_min_actions" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_provision_min_actions"/>
+                                <div>
+                                    Con al menos <field name="l10n_pe_collection_provision_min_actions" class="text-center" style="width: 10%; min-width: 3rem;"/>
+                                    gestiones de cobro después del vencimiento
                                 </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_provision_journal_id" class="col-lg-6 o_light_label"/>
+                                <div class="row mt16">
+                                    <label for="l10n_pe_collection_provision_journal_id" string="Diario" class="col-lg-5 o_light_label"/>
                                     <field name="l10n_pe_collection_provision_journal_id" options="{'no_create': True}"/>
                                 </div>
                                 <div class="row">
-                                    <label for="l10n_pe_collection_provision_expense_account_id" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_provision_expense_account_id" options="{'no_create': True}"/>
+                                    <label for="l10n_pe_collection_provision_expense_account_id" string="Cuenta de gasto" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_expense_account_id" options="{'no_create': True}"
+                                           placeholder="68711 del plan contable"/>
                                 </div>
                                 <div class="row">
-                                    <label for="l10n_pe_collection_provision_account_id" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_provision_account_id" options="{'no_create': True}"/>
+                                    <label for="l10n_pe_collection_provision_account_id" string="Cuenta de estimación" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_pe_collection_provision_account_id" options="{'no_create': True}"
+                                           placeholder="1911 del plan contable"/>
                                 </div>
-                                <div class="row">
-                                    <label for="l10n_pe_collection_uit" class="col-lg-6 o_light_label"/>
-                                    <field name="l10n_pe_collection_uit"/>
-                                </div>
+                            </div>
+                        </setting>
+                        <setting id="collection_uit" string="Castigo de cobranza dudosa" company_dependent="1"
+                                 title="Art. 21 g) del Reglamento de la Ley del Impuesto a la Renta."
+                                 help="Sin acciones judiciales agotadas solo se castigan las deudas por deudor de hasta 3 UIT."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#provisión-y-castigo-de-cobranza-dudosa">
+                            <div class="mt16">
+                                UIT del ejercicio <field name="l10n_pe_collection_uit" class="text-center" style="width: 10%; min-width: 7rem;"/>
                             </div>
                         </setting>
                     </block>
 
                     <block title="Cobro, agencias y comisiones" name="pe_collection_payment_block">
-                        <setting string="Pago en línea"
-                                 help="«Pagar en línea» con el saldo del cliente en los avisos de cobranza y un QR en el estado de cuenta. Usa las pasarelas activas (Culqi, Niubiz, Izipay, PagoEfectivo…); el pago se aplica a las facturas más antiguas.">
+                        <setting id="collection_online_payment" company_dependent="1"
+                                 help="«Pagar en línea» con el saldo del cliente en los avisos de cobranza y un QR en el estado de cuenta, con las pasarelas activas (Culqi, Niubiz, Izipay, PagoEfectivo…). El pago se aplica a las facturas más antiguas."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#pago-en-línea">
                             <field name="l10n_pe_collection_online_payment"/>
                             <div class="mt8">
                                 <button name="%(payment.action_payment_provider)d" type="action"
                                         string="Proveedores de pago" class="btn-link" icon="oi-arrow-right"/>
                             </div>
                         </setting>
-                        <setting string="Comisiones de cobranza"
-                                 help="Plan que se propone en las liquidaciones de los gestores (cada agencia tiene el suyo) y servicio con el que se registra la factura de la agencia.">
+                        <setting id="collection_commissions" string="Comisiones" company_dependent="1"
+                                 help="Plan que se propone en las liquidaciones de los gestores (cada agencia tiene el suyo) y servicio con el que se registra la factura de la agencia (cuenta de gasto e IGV)."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#comisiones">
                             <div class="content-group">
-                                <div class="row mt8">
-                                    <label for="l10n_pe_collection_commission_plan_id" class="col-lg-6 o_light_label"/>
+                                <div class="row mt16">
+                                    <label for="l10n_pe_collection_commission_plan_id" string="Plan de los gestores" class="col-lg-5 o_light_label"/>
                                     <field name="l10n_pe_collection_commission_plan_id" options="{'no_create': True}"/>
                                 </div>
                                 <div class="row">
-                                    <label for="l10n_pe_collection_commission_product_id" class="col-lg-6 o_light_label"/>
+                                    <label for="l10n_pe_collection_commission_product_id" string="Servicio de agencias" class="col-lg-5 o_light_label"/>
                                     <field name="l10n_pe_collection_commission_product_id"/>
                                 </div>
-                                <div class="d-flex flex-column">
+                                <div class="mt8">
                                     <button name="%(action_collection_commission_plan)d" type="action"
                                             string="Planes de comisión" class="btn-link" icon="oi-arrow-right"/>
-                                    <button name="%(action_collection_agency)d" type="action"
-                                            string="Agencias externas" class="btn-link" icon="oi-arrow-right"/>
                                 </div>
+                            </div>
+                        </setting>
+                        <setting id="collection_agencies" string="Agencias externas"
+                                 help="Estudios o call centers a los que se entrega la cartera difícil: sus usuarios solo ven los clientes asignados."
+                                 documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#agencias-externas">
+                            <div class="mt8">
+                                <button name="%(action_collection_agency)d" type="action"
+                                        string="Agencias externas" class="btn-link" icon="oi-arrow-right"/>
                             </div>
                         </setting>
                     </block>

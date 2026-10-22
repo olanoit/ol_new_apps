@@ -159,6 +159,10 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 10.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Ajustes con el diseño de las apps de Odoo: casilla a la izquierda para lo que se activa, valores en línea con su unidad («Evaluar 2 días después…»), icono de valor por compañía, enlace a la guía en cada ajuste y el castigo (UIT) separado de la provisión."
   - version: 9.20261022
     fecha: 22/10/2026
     cambios:

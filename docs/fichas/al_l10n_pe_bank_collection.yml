@@ -68,6 +68,10 @@ pasos:
     imagen: screenshots/v3-response.png
 
 novedades:
+  - version: 7.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "El acceso a convenios y formatos en los Ajustes de Cobranza sigue el diseño de las apps de Odoo, con enlace a la guía."
   - version: 6.20261022
     fecha: 22/10/2026
     cambios:

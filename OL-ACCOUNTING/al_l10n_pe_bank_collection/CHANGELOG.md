@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_bank_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261022 — 22/10/2026
+
+- El acceso a convenios y formatos en los Ajustes de Cobranza sigue el diseño de las apps de Odoo, con enlace a la guía.
+
 ## 6.20261022 — 22/10/2026
 
 - Accesos a los convenios y formatos de recaudación en Cobranza ▸ Configuración ▸ Ajustes, bloque «Cobro, agencias y comisiones».
