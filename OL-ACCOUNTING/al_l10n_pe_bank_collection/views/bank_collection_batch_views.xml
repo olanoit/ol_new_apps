@@ -42,7 +42,9 @@
                     <field name="line_ids" readonly="state != 'draft'">
                         <list editable="bottom" create="0">
                             <field name="partner_id"/>
+                            <field name="payment_type_id" optional="hide"/>
                             <field name="depositor_code"/>
+                            <field name="per_partner" optional="hide"/>
                             <field name="move_id"/>
                             <field name="date_maturity"/>
                             <field name="currency_id" column_invisible="True"/>

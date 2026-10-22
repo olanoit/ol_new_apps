@@ -56,7 +56,10 @@ class L10nPeBankCollectionBatch(models.Model):
         if self.state != 'draft':
             raise UserError(_('Solo se cargan cuotas en un archivo en borrador.'))
         agreement = self.agreement_id
+        if agreement.validation == 'amounts':
+            return self._load_payment_types()
         commands, missing = [Command.clear()], set()
+        per_partner = {}
         for line in agreement._open_lines(self.date):
             partner = line.partner_id.commercial_partner_id
             if self.partner_ids and partner not in self.partner_ids.commercial_partner_id:
@@ -64,6 +67,17 @@ class L10nPeBankCollectionBatch(models.Model):
             code = agreement._depositor_code(partner)
             if not code:
                 missing.add(partner.name)
+                continue
+            if agreement.validation == 'partial':
+                # Una línea por cliente: el banco solo valida el código y el importe es libre.
+                if partner in per_partner:
+                    per_partner[partner][2]['amount'] += agreement._line_amount(line)
+                    continue
+                per_partner[partner] = Command.create({
+                    'move_line_id': line.id, 'partner_id': partner.id, 'depositor_code': code,
+                    'amount': agreement._line_amount(line), 'per_partner': True,
+                })
+                commands.append(per_partner[partner])
                 continue
             commands.append(Command.create({
                 'move_line_id': line.id,
@@ -78,16 +92,36 @@ class L10nPeBankCollectionBatch(models.Model):
         })
         return True
 
+    def _load_payment_types(self):
+        types = self.agreement_id.payment_type_ids.filtered('active')
+        if not types:
+            raise UserError(_('El convenio no tiene tipos de pago.'))
+        self.write({'warning': False, 'line_ids': [Command.clear()] + [Command.create({
+            'payment_type_id': payment_type.id, 'depositor_code': payment_type.code,
+            'amount': payment_type.amount,
+        }) for payment_type in types]})
+        return True
+
     def _detail_values(self, line):
         agreement = self.agreement_id
         move = line.move_id
+        if line.payment_type_id:
+            payment_type = line.payment_type_id
+            return {
+                'account_branch': agreement.account_branch, 'account_number': agreement.account_number,
+                'currency': agreement.currency_id, 'depositor_code': payment_type.code,
+                'depositor_name': payment_type.name, 'return_info': payment_type.return_info or '',
+                'amount': payment_type.amount, 'late_amount': payment_type.surcharge,
+                'line_total': payment_type.total, 'update_type': 'A',
+            }
         return {
             'account_branch': agreement.account_branch, 'account_number': agreement.account_number,
             'account_full': '%s%s' % (agreement.account_branch or '', agreement.account_number or ''),
             'currency': agreement.currency_id,
             'depositor_code': line.depositor_code,
             'depositor_name': line.partner_id.name,
-            'return_info': move.name,
+            # Parcial: una línea por cliente, sin documento (se aplica a lo más antiguo).
+            'return_info': '' if line.per_partner else move.name,
             'issue_date': move.invoice_date or move.date,
             'due_date': line.date_maturity,
             'block_date': fields.Date.add(max(line.date_maturity or self.date, self.date),
@@ -115,7 +149,7 @@ class L10nPeBankCollectionBatch(models.Model):
             'currency': agreement.currency_id, 'company_name': agreement.company_name or self.company_id.name,
             'company_vat': self.company_id.vat, 'file_date': self.date, 'record_count': len(self.line_ids),
             'total_amount': self.amount_total,
-            'total_min_amount': sum(values['min_amount'] for values in details),
+            'total_min_amount': sum(values.get('min_amount', 0.0) for values in details),
             'file_mode': layout.replace_code if self.mode == 'replace' else layout.update_code,
             'file_version': self.search_count([
                 ('agreement_id', '=', agreement.id), ('date', '=', self.date), ('state', '!=', 'draft'),
@@ -127,7 +161,8 @@ class L10nPeBankCollectionBatch(models.Model):
             'date': self.date.strftime('%Y%m%d'), 'currency': layout._currency_code(agreement.currency_id),
             'service': agreement.service_code or ''}
         self.write({'file': base64.b64encode(content), 'filename': filename, 'state': 'generated'})
-        self.line_ids.move_line_id.write({'l10n_pe_bank_collection_batch_id': self.id})
+        self.line_ids.move_line_id.filtered(lambda l: not l.reconciled).write(
+            {'l10n_pe_bank_collection_batch_id': self.id})
         return True
 
     def action_mark_sent(self):
@@ -152,10 +187,14 @@ class L10nPeBankCollectionBatchLine(models.Model):
     batch_id = fields.Many2one('l10n_pe.bank.collection.batch', required=True, ondelete='cascade', index=True)
     company_id = fields.Many2one(related='batch_id.company_id', store=True)
     currency_id = fields.Many2one(related='batch_id.currency_id')
-    move_line_id = fields.Many2one('account.move.line', string='Cuota', required=True, readonly=True)
+    move_line_id = fields.Many2one('account.move.line', string='Cuota', readonly=True,
+                                   help='En la validación parcial, la cuota más antigua del cliente.')
+    per_partner = fields.Boolean(string='Total del cliente', readonly=True,
+                                 help='Validación parcial: una línea con toda la deuda del cliente.')
+    payment_type_id = fields.Many2one('l10n_pe.bank.collection.payment.type', string='Tipo de pago', readonly=True)
     move_id = fields.Many2one(related='move_line_id.move_id', string='Documento')
     date_maturity = fields.Date(related='move_line_id.date_maturity', string='Vencimiento')
-    partner_id = fields.Many2one('res.partner', string='Cliente', required=True, readonly=True)
+    partner_id = fields.Many2one('res.partner', string='Cliente', readonly=True)
     depositor_code = fields.Char(string='Código del depositante', required=True)
     amount = fields.Monetary(string='Importe', required=True)
 

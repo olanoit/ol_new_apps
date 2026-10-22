@@ -354,3 +354,103 @@ class TestBankCollectionScotiabank(CollectionCommon):
         self.assertEqual((response.header_count, response.header_amount), (1, 250.5))
         response.action_process()
         self.assertIn(invoice.payment_state, ('paid', 'in_payment'))
+
+    # ------------------------------------------------------------------ validación parcial
+    def _partial_agreement(self):
+        self.agreement.write({
+            'validation': 'partial',
+            'debtors_layout_id': self.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_partial_debtors').id,
+            'response_layout_id': self.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_partial_response').id,
+        })
+
+    def test_partial_one_line_per_customer(self):
+        self._partial_agreement()
+        self._invoice(100, -20)
+        self._invoice(50, -5)
+        batch = self.env['l10n_pe.bank.collection.batch'].create({
+            'agreement_id': self.agreement.id, 'partner_ids': [Command.set(self.customer.ids)]})
+        batch.action_load()
+        self.assertEqual(len(batch.line_ids), 1)
+        self.assertAlmostEqual(batch.line_ids.amount, 150.0)
+        batch.action_generate()
+        header, detail = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        self.assertEqual((len(header), len(detail)), (200, 200))
+        self.assertEqual(header[13], 'P')
+        self.assertEqual(header[62:71], '000000001')
+        self.assertEqual(header[71:86], ' ' * 15, 'sin importe total')
+        self.assertEqual(header[86], 'R')
+        self.assertEqual(detail[13:27].rstrip(), '20100047218')
+        self.assertEqual(detail[67:97], ' ' * 30, 'sin documento: se aplica a lo más antiguo')
+        self.assertEqual(detail[97:152], ' ' * 55)
+        self.assertEqual(detail[152], 'A')
+
+    def test_partial_results_pay_oldest_first(self):
+        self._partial_agreement()
+        old = self._invoice(100, -20)
+        newer = self._invoice(50, -5)
+        today = self.today.strftime('%Y%m%d')
+        header = 'CC' + '000' + '0' + '7654321' + 'P' + today + '000000001' + '000000000012000'
+        detail = ('DD' + '000' + '0' + '7654321' + '20100047218'.ljust(14) + ' ' * 30 + today + ' ' * 8
+                  + '000000000012000' + ' ' * 30 + '193' + '000000777' + ' ' * 22 + 'T001'
+                  + 'BANCA INTERN' + '090000')
+        response = self.env['l10n_pe.bank.collection.response'].create({
+            'agreement_id': self.agreement.id, 'file': base64.b64encode((header + '\r\n' + detail).encode())})
+        response.action_import()
+        line = response.line_ids
+        self.assertEqual((line.state, line.partner_id), ('partner', self.customer))
+        self.assertAlmostEqual(line.amount, 120.0)
+        response.action_process()
+        self.assertIn(old.payment_state, ('paid', 'in_payment'))
+        self.assertAlmostEqual(newer.amount_residual, 30.0)
+
+    # ------------------------------------------------------------------ validación de importes
+    def _amounts_agreement(self):
+        self.agreement.write({
+            'validation': 'amounts',
+            'debtors_layout_id': self.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_amounts_debtors').id,
+            'response_layout_id': self.env.ref('al_l10n_pe_bank_collection.layout_scotiabank_amounts_response').id,
+            'payment_type_ids': [
+                Command.create({'code': 'TRAMITE01', 'name': 'Derecho de trámite', 'amount': 50.0, 'surcharge': 2.5}),
+                Command.create({'code': 'CONSTANCIA', 'name': 'Constancia', 'amount': 20.0}),
+            ],
+        })
+
+    def test_amounts_payment_types_file(self):
+        self._amounts_agreement()
+        batch = self.env['l10n_pe.bank.collection.batch'].create({'agreement_id': self.agreement.id})
+        batch.action_load()
+        self.assertEqual(len(batch.line_ids), 2)
+        batch.action_generate()
+        header, first, second = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        self.assertTrue(all(len(line) == 200 for line in (header, first, second)))
+        self.assertEqual(header[13], '7')
+        self.assertEqual(header[62:71], '000000002')
+        self.assertEqual(first[13:33].rstrip(), 'TRAMITE01')
+        self.assertEqual(first[33:73].rstrip(), 'Derecho de tramite')
+        self.assertEqual(first[103:112], '000005000')
+        self.assertEqual(first[112:121], '000000250')
+        self.assertEqual(first[121:130], '000005250')
+        self.assertEqual(second[121:130], '000002000')
+
+    def test_amounts_results_identify_payer(self):
+        self._amounts_agreement()
+        today = self.today.strftime('%Y%m%d')
+        header = 'CC' + '000' + '0' + '7654321' + '7' + today + '000000002' + '000000000007250'
+        payer = ('DD' + '000' + '0' + '7654321' + 'TRAMITE01'.ljust(20) + 'DERECHO DE TRAMITE'.ljust(40) + today
+                 + '20100047218'.ljust(40) + ' ' * 30 + '000005000' + '000000250' + '000005250' + '193'
+                 + '000000888' + ' ' * 22 + 'T001' + 'AGENTE'.ljust(12) + '101500')
+        unknown = payer.replace('20100047218', '99999999   ').replace('000000888', '000000889')
+        response = self.env['l10n_pe.bank.collection.response'].create({
+            'agreement_id': self.agreement.id,
+            'file': base64.b64encode((header + '\r\n' + payer + '\r\n' + unknown).encode())})
+        response.action_import()
+        known, other = response.line_ids.sorted('line_number')
+        self.assertEqual((known.state, known.partner_id), ('partner', self.customer))
+        self.assertEqual((known.payment_type, known.reference), ('TRAMITE01', 'DERECHO DE TRAMITE'))
+        self.assertAlmostEqual(known.amount, 52.5)
+        self.assertEqual(other.state, 'unmatched')
+        other.action_skip()
+        response.action_process()
+        self.assertEqual(known.payment_id.partner_id, self.customer)
+        self.assertAlmostEqual(known.payment_id.amount, 52.5)
+        self.assertEqual(response.state, 'done')

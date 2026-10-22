@@ -17,15 +17,17 @@ propio) y devuelve un archivo con lo cobrado:
   los pagos y los concilia con las facturas; no procesa dos veces la misma operación.
 * **Formatos configurables**: posición, longitud y tipo de cada campo, como datos.
   Incluye el CREP del BCP (validación completa), el formato oficial de BBVA (ficha
-  técnica E1891 V21) y el de Scotiabank (macro oficial de validación completa); se
-  ajusta a la ficha técnica de cada banco sin programar.
+  técnica E1891 V21) y los de Scotiabank (macro oficial: validación completa, parcial
+  e importes); se ajusta a la ficha técnica de cada banco sin programar.
+* **Modalidades**: completa (una línea por cuota), parcial (una línea por cliente,
+  importe libre) e importes (catálogo de tipos de pago con importe fijo).
 """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_bank_collection/static/description/icon.svg',
-    'version': '3.20261022',
+    'version': '4.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_collection'],

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_bank_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261022 — 22/10/2026
+
+- Scotiabank: validación parcial (una línea por cliente, importe libre) y validación de importes (catálogo de tipos de pago en el convenio), con sus archivos de resultados.
+- La respuesta guarda la referencia y el tipo de pago informados por el banco.
+
 ## 3.20261022 — 22/10/2026
 
 - Formato de Scotiabank (validación completa): archivo de cobranza de 200 posiciones y archivo de resultados, según la macro oficial del banco.

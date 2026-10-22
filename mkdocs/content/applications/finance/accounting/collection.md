@@ -271,12 +271,21 @@ código propio) y Odoo concilia lo cobrado.
     |---|---|---|
     | BCP | CREP: deudores de 250 posiciones y respuesta | Layout más difundido: compárelo con la ficha técnica del BCP |
     | BBVA | Entrada de datos de 360 bytes y envío de información de 152 bytes | Ficha técnica oficial E1891 V21 (marzo 2025), publicada por BBVA |
-    | Scotiabank | Validación completa: cobranza de 200 posiciones y resultados | Macro oficial publicada por Scotiabank |
+    | Scotiabank | Validación completa, parcial e importes: cobranza de 200 posiciones y resultados | Macro oficial publicada por Scotiabank |
     | Interbank | — | Cree el formato con la ficha que el banco entrega al afiliar (no es pública) |
 
     Puede ajustar posición, longitud, tipo y equivalencias de cualquier campo; los cambios se
     conservan al actualizar. En BBVA, ajuste la longitud del código de identificación al
     «tamaño campo código» de su ficha técnica (código y concepto suman 48).
+    La **validación** del convenio define qué se envía:
+
+    | Validación | Archivo | Al cobrar |
+    |---|---|---|
+    | Completa | Una línea por cuota con su importe | Se concilia con el documento |
+    | Parcial | Una línea por cliente; el importe es libre | Se aplica a sus cuotas más antiguas |
+    | Importes | Los **tipos de pago** del convenio (código, nombre, valor, recargo) | Quien paga se identifica con su documento; sin deuda, queda como anticipo |
+    | Sin validación | No se envía archivo | Igual que parcial |
+
 3. **Archivo de deudores** (**Cobranza ‣ Recaudación bancaria ‣ Archivos de deudores**):
    **Cargar cuotas** trae lo vencido y lo que vence en los próximos días (sin documentos en
    reclamo, anticipos ni detracciones), **Generar archivo** y **Descargar** para subirlo a

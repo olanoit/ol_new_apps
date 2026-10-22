@@ -81,4 +81,141 @@
                 Command.create({'record_type': 'detail', 'name': 'Cargo fijo pagado', 'start': 187, 'length': 15, 'kind': 'amount', 'key': 'ignore'}),
             ]"/>
     </record>
+
+    <record id="layout_scotiabank_partial_debtors" model="l10n_pe.bank.collection.layout">
+        <field name="name">Scotiabank · Validación parcial · Archivo de cobranza</field>
+        <field name="file_type">debtors</field>
+        <field name="record_length">200</field>
+        <field name="currency_map">PEN=0,USD=1</field>
+        <field name="replace_code">R</field>
+        <field name="update_code">A</field>
+        <field name="blank_chars">.,;:&quot;/-='%@&amp;#()</field>
+        <field name="filename">RECAUDAC.TXT</field>
+        <field name="note">Macro oficial de Scotiabank, hoja «val.parcial»: solo valida el código del depositante; el importe es libre. Una línea por cliente.</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'CC'}),
+                Command.create({'record_type': 'header', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'header', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de validación', 'start': 14, 'length': 1, 'kind': 'constant', 'value': 'P'}),
+                Command.create({'record_type': 'header', 'name': 'Nombre empresa', 'start': 15, 'length': 40, 'kind': 'text', 'key': 'company_name'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de transmisión', 'start': 55, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Total registros', 'start': 63, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'header', 'name': 'Relleno', 'start': 72, 'length': 15, 'kind': 'filler'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de archivo (R reemplazo, A actualización)', 'start': 87, 'length': 1, 'kind': 'text', 'key': 'file_mode'}),
+                Command.create({'record_type': 'header', 'name': 'Relleno', 'start': 88, 'length': 113, 'kind': 'filler'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'DD'}),
+                Command.create({'record_type': 'detail', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Código depositante', 'start': 14, 'length': 14, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Nombre depositante', 'start': 28, 'length': 40, 'kind': 'text', 'key': 'depositor_name'}),
+                Command.create({'record_type': 'detail', 'name': 'Información de retorno', 'start': 68, 'length': 30, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Relleno', 'start': 98, 'length': 55, 'kind': 'filler'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro (A, M, E)', 'start': 153, 'length': 1, 'kind': 'text', 'key': 'update_type'}),
+                Command.create({'record_type': 'detail', 'name': 'Relleno', 'start': 154, 'length': 47, 'kind': 'filler'}),
+            ]"/>
+    </record>
+
+    <record id="layout_scotiabank_partial_response" model="l10n_pe.bank.collection.layout">
+        <field name="name">Scotiabank · Validación parcial · Archivo de resultados</field>
+        <field name="file_type">response</field>
+        <field name="record_length">0</field>
+        <field name="currency_map">PEN=0,USD=1</field>
+        <field name="note">Macro oficial de Scotiabank, hoja «sal.parcial».</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'CC'}),
+                Command.create({'record_type': 'header', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'header', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de validación', 'start': 14, 'length': 1, 'kind': 'text', 'key': 'ignore'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de proceso', 'start': 15, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Cantidad de registros', 'start': 23, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'header', 'name': 'Monto total', 'start': 32, 'length': 15, 'kind': 'amount', 'key': 'total_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'DD'}),
+                Command.create({'record_type': 'detail', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Código de identificación', 'start': 14, 'length': 14, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Información de retorno', 'start': 28, 'length': 30, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de pago', 'start': 58, 'length': 8, 'kind': 'date', 'key': 'payment_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto pagado', 'start': 74, 'length': 15, 'kind': 'amount', 'key': 'paid_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Código de oficina', 'start': 119, 'length': 3, 'kind': 'text', 'key': 'branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de operación', 'start': 122, 'length': 9, 'kind': 'text', 'key': 'operation_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia', 'start': 131, 'length': 22, 'kind': 'text', 'key': 'reference'}),
+                Command.create({'record_type': 'detail', 'name': 'Terminal', 'start': 153, 'length': 4, 'kind': 'text', 'key': 'ignore'}),
+                Command.create({'record_type': 'detail', 'name': 'Medio de atención', 'start': 157, 'length': 12, 'kind': 'text', 'key': 'channel'}),
+                Command.create({'record_type': 'detail', 'name': 'Hora de atención', 'start': 169, 'length': 6, 'kind': 'time', 'key': 'payment_time'}),
+            ]"/>
+    </record>
+
+    <record id="layout_scotiabank_amounts_debtors" model="l10n_pe.bank.collection.layout">
+        <field name="name">Scotiabank · Validación de importes · Archivo de tipos de pago</field>
+        <field name="file_type">debtors</field>
+        <field name="record_length">200</field>
+        <field name="currency_map">PEN=0,USD=1</field>
+        <field name="replace_code">R</field>
+        <field name="update_code">A</field>
+        <field name="blank_chars">.,;:&quot;/-='%@&amp;#()</field>
+        <field name="filename">RECAUDAC.TXT</field>
+        <field name="note">Macro oficial de Scotiabank, hoja «val.importes»: catálogo de tipos de pago con importe fijo (valor, recargo y total con 7 enteros y 2 decimales). El tipo de validación de la cabecera es 7.</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'CC'}),
+                Command.create({'record_type': 'header', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'header', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de validación (importes)', 'start': 14, 'length': 1, 'kind': 'constant', 'value': '7'}),
+                Command.create({'record_type': 'header', 'name': 'Nombre empresa', 'start': 15, 'length': 40, 'kind': 'text', 'key': 'company_name'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de transmisión', 'start': 55, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Total registros', 'start': 63, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'header', 'name': 'Relleno', 'start': 72, 'length': 129, 'kind': 'filler'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'DD'}),
+                Command.create({'record_type': 'detail', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Código tipo de pago', 'start': 14, 'length': 20, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Nombre tipo de pago', 'start': 34, 'length': 40, 'kind': 'text', 'key': 'depositor_name'}),
+                Command.create({'record_type': 'detail', 'name': 'Información de retorno', 'start': 74, 'length': 30, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Valor tipo de pago', 'start': 104, 'length': 9, 'kind': 'amount', 'key': 'amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Recargo tipo de pago', 'start': 113, 'length': 9, 'kind': 'amount', 'key': 'late_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Importe total', 'start': 122, 'length': 9, 'kind': 'amount', 'key': 'line_total'}),
+                Command.create({'record_type': 'detail', 'name': 'Relleno', 'start': 131, 'length': 70, 'kind': 'filler'}),
+            ]"/>
+    </record>
+
+    <record id="layout_scotiabank_amounts_response" model="l10n_pe.bank.collection.layout">
+        <field name="name">Scotiabank · Validación de importes · Archivo de resultados</field>
+        <field name="file_type">response</field>
+        <field name="record_length">0</field>
+        <field name="currency_map">PEN=0,USD=1</field>
+        <field name="note">Macro oficial de Scotiabank, hoja «sal.importe»: tipo de pago, documento del pagador (40), pagado, recargo y total.</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'CC'}),
+                Command.create({'record_type': 'header', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'header', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de validación', 'start': 14, 'length': 1, 'kind': 'text', 'key': 'ignore'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de proceso', 'start': 15, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Cantidad de registros', 'start': 23, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'header', 'name': 'Monto total', 'start': 32, 'length': 15, 'kind': 'amount', 'key': 'total_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'DD'}),
+                Command.create({'record_type': 'detail', 'name': 'Código sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Código moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de cuenta empresa', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Código tipo de pago', 'start': 14, 'length': 20, 'kind': 'text', 'key': 'payment_type'}),
+                Command.create({'record_type': 'detail', 'name': 'Nombre tipo de pago', 'start': 34, 'length': 40, 'kind': 'text', 'key': 'reference'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de pago', 'start': 74, 'length': 8, 'kind': 'date', 'key': 'payment_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Código de identificación del pagador', 'start': 82, 'length': 40, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Información de retorno', 'start': 122, 'length': 30, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto pagado', 'start': 152, 'length': 9, 'kind': 'amount', 'key': 'paid_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Recargo', 'start': 161, 'length': 9, 'kind': 'amount', 'key': 'late_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto total', 'start': 170, 'length': 9, 'kind': 'amount', 'key': 'paid_total'}),
+                Command.create({'record_type': 'detail', 'name': 'Código de oficina', 'start': 179, 'length': 3, 'kind': 'text', 'key': 'branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de operación', 'start': 182, 'length': 9, 'kind': 'text', 'key': 'operation_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia', 'start': 191, 'length': 22, 'kind': 'text', 'key': 'ignore'}),
+                Command.create({'record_type': 'detail', 'name': 'Terminal', 'start': 213, 'length': 4, 'kind': 'text', 'key': 'ignore'}),
+                Command.create({'record_type': 'detail', 'name': 'Medio de atención', 'start': 217, 'length': 12, 'kind': 'text', 'key': 'channel'}),
+                Command.create({'record_type': 'detail', 'name': 'Hora de atención', 'start': 229, 'length': 6, 'kind': 'time', 'key': 'payment_time'}),
+            ]"/>
+    </record>
 </odoo>

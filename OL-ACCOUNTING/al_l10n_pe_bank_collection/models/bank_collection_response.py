@@ -110,6 +110,8 @@ class L10nPeBankCollectionResponse(models.Model):
             'operation_number': (values.get('operation_number') or '').strip(),
             'branch': (values.get('branch') or '').strip(),
             'channel': (values.get('channel') or '').strip(),
+            'reference': (values.get('reference') or '').strip(),
+            'payment_type': (values.get('payment_type') or '').strip(),
         }
 
     def action_rematch(self):
@@ -159,6 +161,8 @@ class L10nPeBankCollectionResponseLine(models.Model):
     operation_number = fields.Char(string='Operación', readonly=True)
     branch = fields.Char(string='Agencia', readonly=True)
     channel = fields.Char(string='Medio', readonly=True)
+    reference = fields.Char(string='Referencia', readonly=True)
+    payment_type = fields.Char(string='Forma o tipo de pago', readonly=True)
     partner_id = fields.Many2one('res.partner', string='Cliente',
                                  help='Se identifica por el código; si no, elíjalo y vuelva a identificar.')
     move_line_ids = fields.Many2many('account.move.line', string='Cuotas',

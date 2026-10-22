@@ -52,6 +52,8 @@
                             <field name="operation_number"/>
                             <field name="channel" optional="hide"/>
                             <field name="branch" optional="hide"/>
+                            <field name="reference" optional="hide"/>
+                            <field name="payment_type" optional="hide"/>
                             <field name="partner_id" readonly="state in ('done', 'duplicate')" options="{'no_create': True}"/>
                             <field name="move_line_ids" widget="many2many_tags" readonly="state in ('done', 'duplicate')"
                                    options="{'no_create': True}"/>

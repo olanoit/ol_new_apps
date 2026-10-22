@@ -40,10 +40,17 @@ class L10nPeBankCollectionAgreement(models.Model):
         string='Código del depositante', required=True, default='vat',
         help='Con qué código paga el cliente en ventanilla, agentes o banca por internet.')
     validation = fields.Selection(
-        [('full', 'Completa: el banco cobra lo enviado'), ('partial', 'Parcial: entre el mínimo y el total'),
+        [('full', 'Completa: cada cuota con su importe'),
+         ('partial', 'Parcial: solo el código del cliente, importe libre'),
+         ('amounts', 'Importes: tipos de pago con importe fijo'),
          ('none', 'Sin validación: cualquier importe')],
         string='Validación', required=True, default='full',
-        help='Modalidad contratada con el banco. Con «sin validación» no hace falta enviar deudores.')
+        help='Modalidad contratada con el banco. Completa: una línea por cuota. Parcial: una línea por '
+             'cliente y el pago se aplica a sus cuotas más antiguas. Importes: el archivo lleva el catálogo '
+             'de tipos de pago (derechos, servicios) y quien paga se identifica con su documento. Sin '
+             'validación: no hace falta enviar archivo.')
+    payment_type_ids = fields.One2many('l10n_pe.bank.collection.payment.type', 'agreement_id',
+                                       string='Tipos de pago', copy=True)
     days_ahead = fields.Integer(
         string='Enviar lo que vence en (días)', default=30,
         help='Además de lo vencido, las cuotas que vencen dentro de estos días; 0 solo lo vencido.')
@@ -128,3 +135,32 @@ class L10nPeBankCollectionAgreement(models.Model):
         """Saldo de la cuota en la moneda del convenio."""
         return line.amount_residual if self.currency_id == self.company_id.currency_id \
             else line.amount_residual_currency
+
+
+class L10nPeBankCollectionPaymentType(models.Model):
+    """Tipo de pago de la validación de importes: un concepto con importe fijo
+    (derecho de trámite, matrícula…) que cualquiera paga en el banco."""
+    _name = 'l10n_pe.bank.collection.payment.type'
+    _description = 'Tipo de pago de recaudación'
+    _order = 'agreement_id, sequence, code'
+
+    agreement_id = fields.Many2one('l10n_pe.bank.collection.agreement', required=True, ondelete='cascade',
+                                   index=True)
+    company_id = fields.Many2one(related='agreement_id.company_id', store=True)
+    currency_id = fields.Many2one(related='agreement_id.currency_id')
+    sequence = fields.Integer(default=10)
+    active = fields.Boolean(default=True)
+    code = fields.Char(string='Código', required=True, help='Código del tipo de pago (hasta 20 caracteres).')
+    name = fields.Char(string='Nombre', required=True)
+    return_info = fields.Char(string='Información de retorno')
+    amount = fields.Monetary(string='Valor', required=True)
+    surcharge = fields.Monetary(string='Recargo')
+    total = fields.Monetary(string='Importe total', compute='_compute_total')
+
+    _agreement_code_uniq = models.Constraint('unique(agreement_id, code)',
+                                             'El código del tipo de pago se repite en el convenio.')
+
+    @api.depends('amount', 'surcharge')
+    def _compute_total(self):
+        for payment_type in self:
+            payment_type.total = payment_type.amount + payment_type.surcharge

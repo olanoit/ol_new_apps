@@ -31,6 +31,23 @@
                             <field name="payment_memo"/>
                         </group>
                     </group>
+                    <notebook invisible="validation != 'amounts'">
+                        <page string="Tipos de pago" name="payment_types">
+                            <field name="payment_type_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="return_info" optional="show"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount"/>
+                                    <field name="surcharge"/>
+                                    <field name="total"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

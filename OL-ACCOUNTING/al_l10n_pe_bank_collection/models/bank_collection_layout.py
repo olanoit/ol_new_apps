@@ -42,6 +42,7 @@ KEYS = [
     ('amount', 'Importe a cobrar'),
     ('late_amount', 'Importe de mora'),
     ('min_amount', 'Importe mínimo'),
+    ('line_total', 'Importe total de la línea'),
     ('update_type', 'Tipo de actualización (A/M/E)'),
     ('document_number', 'Número de documento'),
     ('depositor_vat', 'Documento de identidad'),

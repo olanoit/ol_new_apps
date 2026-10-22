@@ -23,6 +23,7 @@ funcionalidades:
   - "Archivo de reemplazo o de actualización, opcionalmente solo para algunos clientes; excluye los documentos en reclamo, los anticipos y las detracciones."
   - "Texto en ASCII sin descuadrar las posiciones (á → a, ñ → n), caracteres que el banco no acepta cambiados por espacios e importes con decimales implícitos."
   - "BBVA: archivo de entrada de datos de 360 bytes (encabezado, detalle y totales, versión del envío del día, carga total o parcial, fecha de bloqueo) y respuesta de 152 bytes con oficina, movimiento, forma de pago y canal, según la ficha técnica E1891 V21 (marzo 2025)."
+  - "Modalidades: validación completa (una línea por cuota), parcial (una línea por cliente con importe libre, aplicada a sus cuotas más antiguas) e importes (catálogo de tipos de pago con valor, recargo y total; quien paga se identifica con su documento)."
   - "Scotiabank: validación completa con archivo de cobranza de 200 posiciones y archivo de resultados con oficina, operación, referencia, medio y hora de atención, tomados de la macro oficial que publica el banco."
   - "Respuesta: cobro identificado por documento (información de retorno) o, si no viene, aplicado a las cuotas más antiguas; sin cuotas abiertas queda como anticipo."
   - "Cobros sin identificar: se elige el cliente y se vuelve a identificar, o se descartan."
@@ -49,11 +50,15 @@ faq:
       entrega su formato al afiliar; no es público.
   - pregunta: "¿De dónde sale el formato de Scotiabank?"
     respuesta: >-
-      Del código de la macro oficial de validación completa que Scotiabank publica para generar el
-      archivo de cobranza y leer el de resultados. Las modalidades de validación parcial y de importes
-      tienen otros formatos: se crean igual si el convenio las usa.
+      Del código de la macro oficial que Scotiabank publica para generar el archivo de cobranza y leer
+      el de resultados, en sus tres modalidades: validación completa, parcial e importes.
 
 novedades:
+  - version: 4.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Scotiabank: validación parcial (una línea por cliente, importe libre) y validación de importes (catálogo de tipos de pago en el convenio), con sus archivos de resultados."
+      - "La respuesta guarda la referencia y el tipo de pago informados por el banco."
   - version: 3.20261022
     fecha: 22/10/2026
     cambios:

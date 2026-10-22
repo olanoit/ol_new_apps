@@ -26,5 +26,10 @@
             <field name="model_id" ref="model_l10n_pe_bank_collection_response_line"/>
             <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         </record>
+        <record id="bank_collection_payment_type_company_rule" model="ir.rule">
+            <field name="name">Tipo de pago de recaudación: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_bank_collection_payment_type"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
     </data>
 </odoo>
