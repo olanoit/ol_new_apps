@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_property_form_bank_collection" model="ir.ui.view">
+        <field name="name">res.partner.property.form.bank.collection</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="al_l10n_pe_collection.view_partner_property_form_collection"/>
+        <field name="arch" type="xml">
+            <field name="l10n_pe_collection_zone_id" position="after">
+                <field name="l10n_pe_bank_collection_code"/>
+            </field>
+        </field>
+    </record>
+</odoo>

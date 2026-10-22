@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Formato CREP del BCP (recaudación con validación completa), según el layout más
+         difundido; cada empresa recibe la ficha técnica al afiliarse: compárela y ajuste
+         posiciones o longitudes aquí mismo (los cambios se conservan al actualizar). -->
+    <record id="layout_bcp_crep_debtors" model="l10n_pe.bank.collection.layout">
+        <field name="name">BCP · CREP · Archivo de deudores</field>
+        <field name="file_type">debtors</field>
+        <field name="record_length">250</field>
+        <field name="filename">CREP_%(currency)s_%(date)s.txt</field>
+        <field name="note">Validación completa. Cabecera CC y detalle DD de 250 posiciones; importes con 2 decimales implícitos; moneda 0 = soles, 1 = dólares. Verificar con la ficha técnica del BCP antes del primer envío.</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'CC'}),
+                Command.create({'record_type': 'header', 'name': 'Sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'header', 'name': 'Moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Cuenta', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de validación', 'start': 14, 'length': 1, 'kind': 'constant', 'value': 'C'}),
+                Command.create({'record_type': 'header', 'name': 'Nombre de la empresa', 'start': 15, 'length': 40, 'kind': 'text', 'key': 'company_name'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de transmisión', 'start': 55, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Cantidad de registros', 'start': 63, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'header', 'name': 'Monto total', 'start': 72, 'length': 15, 'kind': 'amount', 'key': 'total_amount'}),
+                Command.create({'record_type': 'header', 'name': 'Tipo de archivo (R reemplazo, A actualización)', 'start': 87, 'length': 1, 'kind': 'text', 'key': 'file_mode'}),
+                Command.create({'record_type': 'header', 'name': 'Código de servicio', 'start': 88, 'length': 6, 'kind': 'number', 'key': 'service_code'}),
+                Command.create({'record_type': 'header', 'name': 'Relleno', 'start': 94, 'length': 157, 'kind': 'filler'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'DD'}),
+                Command.create({'record_type': 'detail', 'name': 'Sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'detail', 'name': 'Cuenta', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Código del depositante', 'start': 14, 'length': 14, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Nombre del depositante', 'start': 28, 'length': 40, 'kind': 'text', 'key': 'depositor_name'}),
+                Command.create({'record_type': 'detail', 'name': 'Información de retorno', 'start': 68, 'length': 30, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de emisión', 'start': 98, 'length': 8, 'kind': 'date', 'key': 'issue_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de vencimiento', 'start': 106, 'length': 8, 'kind': 'date', 'key': 'due_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto del cupón', 'start': 114, 'length': 15, 'kind': 'amount', 'key': 'amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto de mora', 'start': 129, 'length': 15, 'kind': 'amount', 'key': 'late_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto mínimo', 'start': 144, 'length': 9, 'kind': 'amount', 'key': 'min_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro de actualización', 'start': 153, 'length': 1, 'kind': 'text', 'key': 'update_type'}),
+                Command.create({'record_type': 'detail', 'name': 'Documento de pago', 'start': 154, 'length': 20, 'kind': 'text', 'key': 'document_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Documento de identidad', 'start': 174, 'length': 16, 'kind': 'text', 'key': 'depositor_vat'}),
+                Command.create({'record_type': 'detail', 'name': 'Relleno', 'start': 190, 'length': 61, 'kind': 'filler'}),
+            ]"/>
+    </record>
+
+    <record id="layout_bcp_crep_response" model="l10n_pe.bank.collection.layout">
+        <field name="name">BCP · CREP · Respuesta (abonos)</field>
+        <field name="file_type">response</field>
+        <field name="record_length">0</field>
+        <field name="note">Archivo de respuesta de Telecrédito con los pagos del día. Verificar las posiciones con la ficha técnica del BCP; un campo que no se use puede marcarse como «No se usa».</field>
+        <field name="field_ids" eval="[
+                Command.create({'record_type': 'header', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'CC'}),
+                Command.create({'record_type': 'header', 'name': 'Sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'header', 'name': 'Moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'header', 'name': 'Cuenta', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'header', 'name': 'Fecha de proceso', 'start': 14, 'length': 8, 'kind': 'date', 'key': 'file_date'}),
+                Command.create({'record_type': 'header', 'name': 'Cantidad de registros', 'start': 22, 'length': 9, 'kind': 'number', 'key': 'record_count'}),
+                Command.create({'record_type': 'header', 'name': 'Monto total', 'start': 31, 'length': 15, 'kind': 'amount', 'key': 'total_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Tipo de registro', 'start': 1, 'length': 2, 'kind': 'constant', 'value': 'DD'}),
+                Command.create({'record_type': 'detail', 'name': 'Sucursal', 'start': 3, 'length': 3, 'kind': 'number', 'key': 'account_branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Moneda', 'start': 6, 'length': 1, 'kind': 'currency', 'key': 'currency'}),
+                Command.create({'record_type': 'detail', 'name': 'Cuenta', 'start': 7, 'length': 7, 'kind': 'number', 'key': 'account_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Código del depositante', 'start': 14, 'length': 14, 'kind': 'text', 'key': 'depositor_code'}),
+                Command.create({'record_type': 'detail', 'name': 'Información de retorno', 'start': 28, 'length': 30, 'kind': 'text', 'key': 'return_info'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de pago', 'start': 58, 'length': 8, 'kind': 'date', 'key': 'payment_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Fecha de vencimiento', 'start': 66, 'length': 8, 'kind': 'date', 'key': 'due_date'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto pagado', 'start': 74, 'length': 15, 'kind': 'amount', 'key': 'paid_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto de mora', 'start': 89, 'length': 15, 'kind': 'amount', 'key': 'late_amount'}),
+                Command.create({'record_type': 'detail', 'name': 'Monto total pagado', 'start': 104, 'length': 15, 'kind': 'amount', 'key': 'paid_total'}),
+                Command.create({'record_type': 'detail', 'name': 'Agencia', 'start': 119, 'length': 6, 'kind': 'text', 'key': 'branch'}),
+                Command.create({'record_type': 'detail', 'name': 'Número de operación', 'start': 125, 'length': 6, 'kind': 'text', 'key': 'operation_number'}),
+                Command.create({'record_type': 'detail', 'name': 'Referencia', 'start': 131, 'length': 22, 'kind': 'text', 'key': 'reference'}),
+                Command.create({'record_type': 'detail', 'name': 'Terminal', 'start': 153, 'length': 4, 'kind': 'text', 'key': 'ignore'}),
+                Command.create({'record_type': 'detail', 'name': 'Medio de atención', 'start': 157, 'length': 12, 'kind': 'text', 'key': 'channel'}),
+                Command.create({'record_type': 'detail', 'name': 'Hora de atención', 'start': 169, 'length': 6, 'kind': 'time', 'key': 'payment_time'}),
+            ]"/>
+    </record>
+</odoo>

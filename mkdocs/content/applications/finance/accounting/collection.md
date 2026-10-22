@@ -1,5 +1,5 @@
 ---
-modulos: [al_l10n_pe_collection, al_l10n_pe_collection_sale]
+modulos: [al_l10n_pe_collection, al_l10n_pe_collection_sale, al_l10n_pe_bank_collection]
 ---
 
 # Cobranza
@@ -255,6 +255,41 @@ del Reglamento de la Ley del Impuesto a la Renta:
 No se pueden reportar documentos por vencer, en reclamo o vencidos hace más de 5 años.
 Las centrales no tienen una interfaz pública: **Excel** genera el archivo con los datos
 del deudor y de cada documento para cargarlo en la central.
+
+## Recaudación bancaria
+
+Con el módulo `al_l10n_pe_bank_collection`, el banco cobra a los clientes por ventanilla,
+agentes o banca por internet con su código de depositante (RUC o DNI, referencia o un
+código propio) y Odoo concilia lo cobrado.
+
+1. **Convenio** (**Cobranza ‣ Configuración ‣ Convenios de recaudación**): diario de la
+   cuenta recaudadora, moneda (un convenio por moneda), sucursal y número de cuenta, código
+   de servicio, modalidad de validación y con qué código paga el cliente.
+2. **Formato** (**Cobranza ‣ Configuración ‣ Formatos de recaudación**): viene el **CREP del
+   BCP** (archivo de deudores de 250 posiciones y archivo de respuesta). Compárelo con la
+   ficha técnica que el banco entrega al afiliar y ajuste posición, longitud o tipo de
+   cualquier campo; los cambios se conservan al actualizar. Para otro banco, cree su formato.
+3. **Archivo de deudores** (**Cobranza ‣ Recaudación bancaria ‣ Archivos de deudores**):
+   **Cargar cuotas** trae lo vencido y lo que vence en los próximos días (sin documentos en
+   reclamo, anticipos ni detracciones), **Generar archivo** y **Descargar** para subirlo a
+   Telecrédito. El de **reemplazo** sustituye todo lo enviado antes; el de **actualización**
+   solo agrega. Los clientes sin código quedan fuera con un aviso.
+4. **Respuesta del banco** (**Cobranza ‣ Recaudación bancaria ‣ Respuestas del banco**):
+   adjunte el archivo de abonos e **Importar**. Cada cobro se identifica:
+
+    | Estado | Qué significa |
+    |---|---|
+    | **Identificado** | Cliente y documento (por la información de retorno) |
+    | **Solo cliente** | Se aplicará a sus cuotas más antiguas; sin cuotas abiertas, queda como anticipo |
+    | **Sin identificar** | Elija el cliente en la línea y pulse identificar, o descártela |
+    | **Ya procesado** | La misma operación (fecha, número, depositante, importe) ya se pagó |
+
+5. **Crear pagos y conciliar**: un pago por cobro en el diario del convenio, conciliado con
+   las cuotas. Se compara también con la cantidad y el total que informa la cabecera.
+
+!!! warning "Ficha técnica del banco"
+    El layout del BCP precargado es el más difundido, pero cada empresa recibe la ficha
+    técnica al afiliarse: verifíquela antes del primer envío.
 
 ## Notificaciones
 

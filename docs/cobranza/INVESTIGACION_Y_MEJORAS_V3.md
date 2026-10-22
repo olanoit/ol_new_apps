@@ -41,7 +41,7 @@ HighRadius) y priorización de la cartera de trabajo.
 | M5 | **Intereses moratorios**: tasa efectiva anual de la compañía o pactada con el cliente; en el estado de cuenta y **nota de débito motivo 01** en borrador por documento | P1 | v3 |
 | M6 | **Provisión de cobranza dudosa y castigo** (RLIR 21 f/g): propone documentos con más de N meses vencidos, exige gestiones documentadas, asiento 68711/19x, castigo con marca ≤ 3 UIT y **expediente de cobranza en PDF** como sustento | P0 | v3 |
 | M7 | **Centrales de riesgo**: aviso previo por correo, plazo de espera, reporte (Excel para Equifax/Sentinel), baja al pagar; bloquea deudas en disputa o de más de 5 años | P1 | v3 |
-| M8 | Recaudación bancaria (BCP CREP, BBVA, Interbank, Scotiabank) | P0 | **Pendiente**: los layouts los entrega el banco al afiliar; no hay especificación pública |
+| M8 | Recaudación bancaria (BCP CREP, BBVA, Interbank, Scotiabank) | P0 | **Hecho** en `al_l10n_pe_bank_collection` con formatos configurables y el CREP del BCP precargado (layout más difundido; verificar con la ficha técnica). BBVA, Interbank y Scotiabank: crear su formato con la ficha de cada banco |
 | M9 | Links de pago / PagoEfectivo / Yape en recordatorios | P1 | Parcial: portal nativo + al_payment_culqi/niubiz/izipay; falta PagoEfectivo |
 | M10 | Comisiones de gestores, agencias externas, cobranza judicial | P2 | Pendiente |
 | M11 | Predicción de fecha de pago con IA, marcador de contact center | P2 | Pendiente |

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_bank_collection_root" name="Recaudación bancaria"
+              parent="al_l10n_pe_collection.menu_collection_root" sequence="25"
+              groups="al_l10n_pe_collection.group_collection_manager"/>
+    <menuitem id="menu_bank_collection_batch" name="Archivos de deudores" parent="menu_bank_collection_root"
+              action="action_bank_collection_batch" sequence="10"/>
+    <menuitem id="menu_bank_collection_response" name="Respuestas del banco" parent="menu_bank_collection_root"
+              action="action_bank_collection_response" sequence="20"/>
+
+    <menuitem id="menu_bank_collection_agreement" name="Convenios de recaudación"
+              parent="al_l10n_pe_collection.menu_collection_config_root"
+              action="action_bank_collection_agreement" sequence="50"/>
+    <menuitem id="menu_bank_collection_layout" name="Formatos de recaudación"
+              parent="al_l10n_pe_collection.menu_collection_config_root"
+              action="action_bank_collection_layout" sequence="55"/>
+</odoo>
