@@ -106,6 +106,7 @@ configuracion:
   - "Permisos Cobranza / Gestor o Administrador."
   - "Cobranza ▸ Configuración: zonas, tramos de antigüedad con su probabilidad y resultados de gestión."
   - "Ajustes ▸ Perú ▸ Cobranza: compromisos, historial, resumen diario y carga de niveles de seguimiento en español."
+  - "Pago en línea: activar una pasarela (Culqi, Niubiz, Izipay…) en Contabilidad ▸ Configuración ▸ Proveedores de pago; el enlace se desactiva en Ajustes ▸ Perú ▸ Cobranza."
   - "Ajustes ▸ Perú ▸ Cobranza: horario de contacto con consumidores, bloqueo por mora, tasa de interés moratorio, cuentas y diario de provisiones, UIT y plazo del aviso a centrales."
   - "Feriados: ausencias globales del horario laboral de la compañía (módulo Recursos)."
 
@@ -139,6 +140,10 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 5.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Pago en línea: «Pagar en línea» con el saldo del cliente en el estado de cuenta, el recordatorio de compromiso, los niveles de seguimiento y el aviso a centrales, y un QR en el estado de cuenta en PDF. Usa las pasarelas activas (Culqi, Niubiz, Izipay…) y el pago se aplica a las facturas más antiguas."
   - version: 4.20261022
     fecha: 22/10/2026
     cambios:

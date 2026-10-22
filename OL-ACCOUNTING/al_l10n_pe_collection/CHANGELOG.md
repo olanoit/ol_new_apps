@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261022 — 22/10/2026
+
+- Pago en línea: «Pagar en línea» con el saldo del cliente en el estado de cuenta, el recordatorio de compromiso, los niveles de seguimiento y el aviso a centrales, y un QR en el estado de cuenta en PDF. Usa las pasarelas activas (Culqi, Niubiz, Izipay…) y el pago se aplica a las facturas más antiguas.
+
 ## 4.20261022 — 22/10/2026
 
 - Prueba funcional: un cliente sin pagos previos y con deuda antigua se califica por lo vencido abierto (antes salía B); la cola de trabajo muestra a todos al administrador; títulos «Documento» y «Vencimiento» en las listas de documentos.

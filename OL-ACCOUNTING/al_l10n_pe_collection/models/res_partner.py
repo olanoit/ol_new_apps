@@ -2,8 +2,12 @@ from datetime import timedelta
 
 from dateutil.relativedelta import relativedelta
 
+from werkzeug.urls import url_encode
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+
+from odoo.addons.payment import utils as payment_utils
 
 RATINGS = [('A', 'A · Puntual'), ('B', 'B · Atraso leve'), ('C', 'C · Riesgo'), ('D', 'D · Alto riesgo')]
 HOLD_STATES = [('auto', 'Bloqueado por mora'), ('manual', 'Bloqueado manualmente'), ('released', 'Liberado')]
@@ -276,6 +280,58 @@ class ResPartner(models.Model):
         factor = (1 + rate / 100.0) ** (days / 360.0) - 1
         return (line.currency_id.round(line.amount_residual_currency * factor),
                 line.company_currency_id.round(line.amount_residual * factor), days)
+
+    # ------------------------------------------------------------------
+    # Pago en línea
+    # ------------------------------------------------------------------
+
+    #: Prefijo de las transacciones del enlace de pago del saldo: al confirmarse se
+    #: aplican a las facturas más antiguas del cliente.
+    _L10N_PE_COLLECTION_TX_PREFIX = 'COB'
+
+    def _l10n_pe_collection_payment_url(self, company=None):
+        """Enlace para pagar en línea el saldo del cliente, o '' si no corresponde
+        (desactivado, sin pasarela en línea activa o sin saldo)."""
+        self.ensure_one()
+        company = company or self.env.company
+        if not company.root_id.l10n_pe_collection_online_payment:
+            return ''
+        # sudo: los gestores no leen la configuración de las pasarelas.
+        providers_sudo = self.env['payment.provider'].sudo().search([
+            ('state', 'in', ('enabled', 'test')), ('code', '!=', 'custom'),
+            ('company_id', 'in', (company | company.root_id).ids)], limit=1)
+        if not providers_sudo:
+            return ''
+        partner = self.commercial_partner_id
+        amount = company.currency_id.round(partner._l10n_pe_collection_statement_values(company)['total'])
+        if amount <= 0:
+            return ''
+        currency = company.currency_id
+        params = {
+            'reference': self._L10N_PE_COLLECTION_TX_PREFIX,
+            'amount': amount,
+            'currency_id': currency.id,
+            'partner_id': partner.id,
+            'company_id': company.id,
+            'access_token': payment_utils.generate_access_token(partner.id, amount, currency.id, env=self.env),
+        }
+        return '%s/payment/pay?%s' % (company.get_base_url(), url_encode(params))
+
+    def _l10n_pe_collection_fifo_invoices(self, amount, company=None):
+        """Facturas abiertas más antiguas del cliente que cubren ``amount``."""
+        self.ensure_one()
+        company = company or self.env.company
+        invoices = self.env['account.move']
+        covered = 0.0
+        for line in self._l10n_pe_collection_open_lines(company).filtered(
+                lambda l: l.amount_residual > 0 and l.move_id.move_type == 'out_invoice'
+                and not l.l10n_pe_collection_in_dispute):
+            if company.currency_id.compare_amounts(covered, amount) >= 0:
+                break
+            if line.move_id not in invoices:
+                invoices |= line.move_id
+            covered += line.amount_residual
+        return invoices
 
     # ------------------------------------------------------------------
     # Accesos

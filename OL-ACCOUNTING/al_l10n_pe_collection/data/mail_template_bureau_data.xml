@@ -22,6 +22,10 @@
                         <b><t t-out="format_date(object.date_eligible) or ''"/></b>, la deuda será informada a la
                         central privada de información de riesgos, conforme a la Ley 27489.
                     </p>
+                    <t t-set="pay_url" t-value="object.partner_id._l10n_pe_collection_payment_url(object.company_id)"/>
+                    <p t-if="pay_url" style="margin: 16px 0;">
+                        <a t-att-href="pay_url" style="background-color: #875A7B; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold;">Pagar en línea</a>
+                    </p>
                     <p>
                         Si ya pagó o no reconoce la deuda, por favor responda este correo con la constancia o el
                         motivo para revisarlo antes de esa fecha.

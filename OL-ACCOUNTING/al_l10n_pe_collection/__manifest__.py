@@ -31,6 +31,9 @@ responsable es el **gestor de cobranza** del cliente:
 * **Provisión y castigo de cobranza dudosa** (art. 21 f y g del Reglamento de la LIR) con
   **expediente de cobranza** en PDF como sustento.
 * **Centrales de riesgo**: aviso previo, reporte, retiro al pagar y Excel.
+* **Pago en línea**: enlace y QR para pagar el saldo con las pasarelas activas (Culqi,
+  Niubiz, Izipay…) en los avisos y el estado de cuenta; el pago se aplica a las
+  facturas más antiguas.
 
 Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
 """,
@@ -39,10 +42,10 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_collection/static/description/icon.svg',
-    'version': '4.20261022',
+    'version': '5.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
-    'depends': ['account_followup', 'account_reports', 'al_account_base', 'al_report_base', 'mail',
+    'depends': ['account_followup', 'account_payment', 'account_reports', 'al_account_base', 'al_report_base', 'mail',
                 'spreadsheet_dashboard'],
     'data': [
         'security/collection_security.xml',

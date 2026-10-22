@@ -79,6 +79,11 @@ class ResCompany(models.Model):
         string='UIT', default=5500.0, currency_field='currency_id',
         help='Valor de la UIT del ejercicio: el castigo sin acciones judiciales exige una deuda por '
              'deudor que no supere 3 UIT.')
+    # Pago en línea
+    l10n_pe_collection_online_payment = fields.Boolean(
+        string='Enlace de pago en los avisos', default=True,
+        help='Agrega «Pagar en línea» (y un QR en el estado de cuenta) con el saldo del cliente, si la '
+             'compañía tiene alguna pasarela de pago en línea activa.')
     # Centrales de riesgo
     l10n_pe_collection_bureau_wait_days = fields.Integer(
         string='Días entre el aviso y el reporte', default=7,
@@ -95,7 +100,7 @@ class ResCompany(models.Model):
             'l10n_pe_collection_provision_months', 'l10n_pe_collection_provision_min_actions',
             'l10n_pe_collection_provision_journal_id', 'l10n_pe_collection_provision_expense_account_id',
             'l10n_pe_collection_provision_account_id', 'l10n_pe_collection_uit',
-            'l10n_pe_collection_bureau_wait_days']
+            'l10n_pe_collection_bureau_wait_days', 'l10n_pe_collection_online_payment']
 
     def _l10n_pe_collection_account(self, field):
         """Cuenta configurada o, si no hay, la del PCGE de l10n_pe."""
@@ -157,6 +162,8 @@ class ResConfigSettings(models.TransientModel):
     l10n_pe_collection_uit = fields.Monetary(related='company_id.l10n_pe_collection_uit', readonly=False)
     l10n_pe_collection_bureau_wait_days = fields.Integer(
         related='company_id.l10n_pe_collection_bureau_wait_days', readonly=False)
+    l10n_pe_collection_online_payment = fields.Boolean(
+        related='company_id.l10n_pe_collection_online_payment', readonly=False)
 
     def action_l10n_pe_collection_load_followup_levels(self):
         return self.env['account_followup.followup.line']._l10n_pe_load_levels(self.company_id)

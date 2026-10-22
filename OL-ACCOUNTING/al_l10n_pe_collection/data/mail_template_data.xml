@@ -20,6 +20,10 @@
                     <p t-if="object.line_ids">
                         Documentos: <t t-out="', '.join(object.line_ids.mapped('move_id.name'))"/>.
                     </p>
+                    <t t-set="pay_url" t-value="object.partner_id._l10n_pe_collection_payment_url(object.company_id)"/>
+                    <p t-if="pay_url" style="margin: 16px 0;">
+                        <a t-att-href="pay_url" style="background-color: #875A7B; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold;">Pagar en línea</a>
+                    </p>
                     <p>Si ya realizó el pago, le agradeceremos enviarnos la constancia y no considerar este mensaje.</p>
                     <p>Atentamente,<br/><t t-out="object.user_id.name or ''"/><br/><t t-out="object.company_id.name or ''"/></p>
                 </div>
@@ -40,6 +44,10 @@
                 <div style="margin: 0px; padding: 0px;">
                     <p>Estimado(a) <t t-out="object.name or ''"/>:</p>
                     <p>Le enviamos adjunto su estado de cuenta al día de hoy, con los documentos pendientes de pago.</p>
+                    <t t-set="pay_url" t-value="object._l10n_pe_collection_payment_url()"/>
+                    <p t-if="pay_url" style="margin: 16px 0;">
+                        <a t-att-href="pay_url" style="background-color: #875A7B; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold;">Pagar en línea</a>
+                    </p>
                     <p>Ante cualquier consulta o diferencia, por favor comuníquese con nosotros.</p>
                     <p>Atentamente,<br/><t t-out="(object.followup_responsible_id or user).name or ''"/><br/><t t-out="user.company_id.name or ''"/></p>
                 </div>
@@ -61,6 +69,10 @@
                     <p>Le recordamos que tiene documentos próximos a vencer por un total de
                         <b><t t-out="format_amount(object.total_due, object.currency_id) or ''"/></b>.</p>
                     <p>Si ya programó el pago, por favor no considere este mensaje.</p>
+                    <t t-set="pay_url" t-value="object._l10n_pe_collection_payment_url()"/>
+                    <p t-if="pay_url" style="margin: 16px 0;">
+                        <a t-att-href="pay_url" style="background-color: #875A7B; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold;">Pagar en línea</a>
+                    </p>
                     <p>Atentamente,<br/><t t-out="object._get_followup_responsible().name or ''"/></p>
                 </div>
             </field>
@@ -81,6 +93,10 @@
                         Le agradeceremos regularizarlo a la brevedad o comunicarse con nosotros para acordar
                         una fecha de pago.</p>
                     <p>Si ya realizó el pago, por favor envíenos la constancia y no considere este mensaje.</p>
+                    <t t-set="pay_url" t-value="object._l10n_pe_collection_payment_url()"/>
+                    <p t-if="pay_url" style="margin: 16px 0;">
+                        <a t-att-href="pay_url" style="background-color: #875A7B; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold;">Pagar en línea</a>
+                    </p>
                     <p>Atentamente,<br/><t t-out="object._get_followup_responsible().name or ''"/></p>
                 </div>
             </field>
@@ -100,6 +116,10 @@
                         <b><t t-out="format_amount(object.total_overdue_followup, object.currency_id) or ''"/></b>.</p>
                     <p>Le solicitamos regularizarlo en un plazo de 5 días hábiles. De no recibir su pago o una
                         propuesta de pago, nos veremos obligados a evaluar otras acciones de cobranza.</p>
+                    <t t-set="pay_url" t-value="object._l10n_pe_collection_payment_url()"/>
+                    <p t-if="pay_url" style="margin: 16px 0;">
+                        <a t-att-href="pay_url" style="background-color: #875A7B; color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold;">Pagar en línea</a>
+                    </p>
                     <p>Atentamente,<br/><t t-out="object._get_followup_responsible().name or ''"/></p>
                 </div>
             </field>

@@ -12,3 +12,4 @@ from . import collection_target
 from . import collection_dashboard
 from . import collection_provision
 from . import collection_bureau
+from . import payment_transaction

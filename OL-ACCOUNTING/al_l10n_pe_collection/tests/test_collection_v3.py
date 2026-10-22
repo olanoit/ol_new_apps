@@ -394,3 +394,66 @@ class TestCollectionV3(CollectionCommon):
         self.assertIn('search_default_mine', str(mine['context']), 'el gestor ve sus clientes')
         everyone = self.env['res.partner'].action_l10n_pe_collection_worklist()
         self.assertFalse(everyone['context'], 'el administrador ve a todos')
+
+    # ------------------------------------------------------------------ pago en línea
+    def _online_provider(self):
+        return self.env['payment.provider'].create({
+            'name': 'Pasarela de prueba', 'code': 'none', 'state': 'test', 'company_id': self.company.id})
+
+    def test_payment_url_needs_online_provider_and_balance(self):
+        from odoo.addons.payment import utils as payment_utils
+        self.env['payment.provider'].search([('code', '!=', 'custom'), ('state', '!=', 'disabled'),
+                                             ('company_id', '=', self.company.id)]).state = 'disabled'
+        self._invoice(300, -10)
+        self.assertFalse(self.customer._l10n_pe_collection_payment_url(self.company), 'sin pasarela en línea')
+        self._online_provider()
+        url = self.customer._l10n_pe_collection_payment_url(self.company)
+        self.assertIn('/payment/pay?', url)
+        self.assertIn('reference=COB', url)
+        params = dict(item.split('=', 1) for item in url.split('?', 1)[1].split('&'))
+        # El mismo token que valida la ruta /payment/pay (que lo calcula con su request.env).
+        self.assertEqual(params['access_token'], payment_utils.generate_access_token(
+            self.customer.id, 300.0, self.company.currency_id.id, env=self.env))
+        self.company.l10n_pe_collection_online_payment = False
+        self.assertFalse(self.customer._l10n_pe_collection_payment_url(self.company), 'desactivado')
+        self.company.l10n_pe_collection_online_payment = True
+        self.assertFalse(self.other_customer._l10n_pe_collection_payment_url(self.company), 'sin saldo')
+
+    def test_payment_link_in_statement_and_mail(self):
+        self._online_provider()
+        self._invoice(300, -10)
+        html = self.env['ir.actions.report']._render_qweb_html(
+            'al_l10n_pe_collection.report_statement', self.customer.ids)[0].decode()
+        self.assertIn('/report/barcode/?barcode_type=QR', html)
+        self.assertIn('Pague en línea', html)
+        body = self.env.ref('al_l10n_pe_collection.mail_template_followup_overdue')._render_field(
+            'body_html', self.customer.ids)[self.customer.id]
+        self.assertIn('Pagar en línea', body)
+        self.assertIn('/payment/pay?', body)
+
+    def test_balance_payment_goes_to_oldest_invoices(self):
+        old = self._invoice(300, -20)
+        newer = self._invoice(200, -5)
+        self.assertEqual(self.customer._l10n_pe_collection_fifo_invoices(250, self.company), old)
+        self.assertEqual(self.customer._l10n_pe_collection_fifo_invoices(350, self.company), old | newer)
+        provider = self._online_provider()
+        provider.journal_id = self.bank
+        # La pasarela de prueba no crea su método de pago en el diario: se crea como en account_payment.
+        Method = self.env['account.payment.method'].sudo()
+        method = Method.search([('code', '=', 'none'), ('payment_type', '=', 'inbound')], limit=1) or Method.create(
+            {'name': 'Pasarela de prueba', 'code': 'none', 'payment_type': 'inbound'})
+        if not self.bank.inbound_payment_method_line_ids.filtered(lambda l: l.payment_provider_id == provider):
+            self.bank.inbound_payment_method_line_ids = [Command.create({
+                'payment_method_id': method.id, 'payment_provider_id': provider.id,
+                'payment_account_id': self.bank.inbound_payment_method_line_ids[:1].payment_account_id.id})]
+        tx = self.env['payment.transaction'].create({
+            'provider_id': provider.id, 'payment_method_id': self.env.ref('payment.payment_method_unknown').id,
+            'amount': 300.0, 'currency_id': self.company.currency_id.id, 'partner_id': self.customer.id,
+            'reference': 'COB-%s' % self.customer.id, 'operation': 'online_redirect',
+        })
+        tx._set_done()
+        tx._post_process()
+        self.assertTrue(tx.payment_id)
+        self.assertEqual(tx.invoice_ids, old)
+        self.assertIn(old.payment_state, ('paid', 'in_payment'))
+        self.assertEqual(newer.payment_state, 'not_paid')

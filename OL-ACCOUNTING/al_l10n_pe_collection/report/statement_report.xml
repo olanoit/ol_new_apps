@@ -71,6 +71,19 @@
                     <td class="text-end"><strong t-out="data['total']" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
                 </tr>
             </table>
+            <t t-set="pay_url" t-value="o._l10n_pe_collection_payment_url(company)"/>
+            <table t-if="pay_url" class="pe-doc-table mb-3 pe-doc-keep">
+                <tr>
+                    <td style="width: 130px;">
+                        <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=240&amp;height=240' % quote_plus(pay_url)"
+                             style="width: 110px; height: 110px;" alt="QR de pago"/>
+                    </td>
+                    <td class="pe-doc-fs-11">
+                        <strong>Pague en línea</strong> con tarjeta u otros medios escaneando el código o en:<br/>
+                        <a t-att-href="pay_url" t-out="pay_url[:90] + ('…' if len(pay_url) > 90 else '')"/>
+                    </td>
+                </tr>
+            </table>
             <p class="pe-doc-fs-11">Saldos en <span t-out="cur.name"/> al tipo de cambio de registro de cada documento; los
                 documentos en moneda extranjera muestran su importe y saldo en su moneda. Si ya realizó algún pago,
                 por favor no lo considere.</p>

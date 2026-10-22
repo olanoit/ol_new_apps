@@ -107,6 +107,10 @@
                             </div>
                         </div>
                     </setting>
+                    <setting string="Pago en línea"
+                             help="«Pagar en línea» con el saldo del cliente en los avisos de cobranza y un QR en el estado de cuenta. Usa las pasarelas activas (Culqi, Niubiz, Izipay…); el pago se aplica a las facturas más antiguas.">
+                        <field name="l10n_pe_collection_online_payment"/>
+                    </setting>
                     <setting string="Centrales de riesgo"
                              help="Plazo entre el aviso previo al deudor y el reporte.">
                         <div class="content-group">

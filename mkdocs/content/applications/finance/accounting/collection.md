@@ -256,6 +256,22 @@ No se pueden reportar documentos por vencer, en reclamo o vencidos hace más de 
 Las centrales no tienen una interfaz pública: **Excel** genera el archivo con los datos
 del deudor y de cada documento para cargarlo en la central.
 
+## Pago en línea
+
+Si la compañía tiene activa alguna pasarela de pago en línea (Culqi, Niubiz, Izipay u otra;
+la transferencia bancaria no cuenta), los avisos llevan el botón **Pagar en línea** con el
+saldo del cliente:
+
+- estado de cuenta (correo y PDF, que además trae un **código QR**);
+- recordatorio del compromiso de pago;
+- niveles de seguimiento en español;
+- aviso previo de reporte a central de riesgo.
+
+El cliente paga desde la página de pago de Odoo sin iniciar sesión (el enlace lleva un
+código de acceso para ese cliente e importe). Al confirmarse, el pago se registra en el
+diario de la pasarela y se aplica a sus **facturas más antiguas**, sin las que estén en
+reclamo. Se desactiva en **Ajustes ‣ Perú ‣ Cobranza ‣ Pago en línea**.
+
 ## Recaudación bancaria
 
 Con el módulo `al_l10n_pe_bank_collection`, el banco cobra a los clientes por ventanilla,
