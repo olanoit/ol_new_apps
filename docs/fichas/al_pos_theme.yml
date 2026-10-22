@@ -234,6 +234,10 @@ faq:
       nombre, logo y colores.
 
 novedades:
+  - version: '6.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "El buscador enfocado muestra un solo halo (antes se veían dos anillos, uno dentro del otro); igual en el buscador del historial de tickets."
   - version: '5.20261022'
     fecha: 22/10/2026
     cambios:

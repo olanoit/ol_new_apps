@@ -196,6 +196,21 @@ html:not([data-alpt-scheme="dark"]) .pos {
     --btn-font-weight: #{$alpt-fw-medium};
 }
 
+// Campos compuestos (contenedor con borde + campo sin borde dentro, como el
+// buscador del PdV): el halo lo pinta solo el contenedor. Si el campo interno
+// también lo pinta se ven dos anillos, uno dentro del otro.
+.pos .input-container {
+    &:focus-within {
+        border-color: rgba(var(--alpt-primary-rgb), .45);
+        box-shadow: var(--alpt-focus-ring);
+    }
+
+    :is(input, .o_input, .form-control):focus {
+        outline: none;
+        box-shadow: none;
+    }
+}
+
 // Foco visible accesible para navegación con teclado (WCAG 2.4.7).
 .pos :is(button, .btn, [role="button"], a):focus-visible {
     outline: none;
