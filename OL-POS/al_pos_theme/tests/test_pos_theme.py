@@ -77,6 +77,12 @@ class TestPosThemeConfig(TransactionCase):
         self.assertEqual(data["al_theme_title"], f"{self.company.name} · Caja tema test")
         self.assertNotIn('"', data["al_theme_css_vars"])
 
+    def test_category_toggle_reaches_the_pos(self):
+        """El botón «Categorías» de la caja depende de este campo."""
+        self.config.al_theme_category_toggle = True
+        records = self.env["pos.config"]._load_pos_data_read(self.config, self.config)
+        self.assertTrue(records[0]["al_theme_category_toggle"])
+
     def test_theme_fields_not_in_pos_payload(self):
         records = self.env["pos.config"]._load_pos_data_read(self.config, self.config)
         for fname in AL_THEME_PAYLOAD_EXCLUDED:

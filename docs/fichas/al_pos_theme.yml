@@ -234,6 +234,10 @@ faq:
       nombre, logo y colores.
 
 novedades:
+  - version: '5.20261022'
+    fecha: 22/10/2026
+    cambios:
+      - "Las categorías se muestran u ocultan desde la caja con el botón «Categorías» de la barra superior; el ajuste de la caja (ahora «Mostrar u ocultar categorías») activa ese botón. Cada dispositivo recuerda la elección."
   - version: '4.20261022'
     fecha: 22/10/2026
     cambios:

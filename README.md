@@ -231,7 +231,7 @@ módulo | versión | licencia | resumen
 [al_pos_pe_partner_lookup](OL-POS/al_pos_pe_partner_lookup/) | 2.20261014 | OPL-1 | En la lista de clientes del TPV, un RUC o DNI que no está registrado se crea en un clic con los datos de SUNAT/RENIEC y queda elegido para la venta.
 [al_pos_pe_wallet_qr](OL-POS/al_pos_pe_wallet_qr/) | 1.20261014 | OPL-1 | El QR de cobro de Yape, Plin u otra billetera como método de pago QR del TPV: se muestra en la caja y en la pantalla del cliente, y el cajero confirma el pago.
 [al_pos_product_view](OL-POS/al_pos_product_view/) | 7.20261011 | OPL-1 | Chips de filtro por etiqueta de producto sobre el catálogo del TPV y conmutador cuadrícula/lista con filas compactas, popup de información enriquecido y preferencia por cajero.
-[al_pos_theme](OL-POS/al_pos_theme/) | 4.20261022 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
+[al_pos_theme](OL-POS/al_pos_theme/) | 5.20261022 | OPL-1 | Rediseño integral y marca blanca del TPV: tokens de diseño, logo, colores y nombre configurables por caja, sin rastros de Odoo.
 [al_pos_vendedor](OL-POS/al_pos_vendedor/) | 4.20261011 | OPL-1 | Vendedor por orden en el TPV: selector en la pantalla de pago, vendedor predeterminado por sesión, vendedor en el ticket y en el análisis de ventas.
 
 ### OL-INVENTORY

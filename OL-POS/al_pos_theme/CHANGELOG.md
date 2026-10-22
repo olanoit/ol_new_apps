@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_theme.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261022 — 22/10/2026
+
+- Las categorías se muestran u ocultan desde la caja con el botón «Categorías» de la barra superior; el ajuste de la caja (ahora «Mostrar u ocultar categorías») activa ese botón. Cada dispositivo recuerda la elección.
+
 ## 4.20261022 — 22/10/2026
 
 - Ajuste «Ocultar categorías de productos» por caja en Apariencia.

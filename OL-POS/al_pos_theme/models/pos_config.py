@@ -120,10 +120,10 @@ class PosConfig(models.Model):
     al_theme_color_background = fields.Char(
         string="Color de fondo", default=AL_THEME_DEFAULTS["al_theme_color_background"],
     )
-    al_theme_hide_categories = fields.Boolean(
-        string="Ocultar categorías de productos",
-        help="Quita la barra de categorías de la pantalla de productos: el cajero busca o filtra "
-             "y el catálogo gana espacio.",
+    al_theme_category_toggle = fields.Boolean(
+        string="Mostrar u ocultar categorías",
+        help="Agrega en la caja un botón para mostrar u ocultar la barra de categorías de "
+             "productos; cada dispositivo recuerda la última elección del cajero.",
     )
 
     @api.constrains(*AL_THEME_DEFAULTS)

@@ -39,6 +39,18 @@
                    debounceMillis="500"
                    getRef="(ref) => this.inputRef = ref"/>
         </xpath>
+        <!-- Botón «Categorías»: solo con «Mostrar u ocultar categorías» activo
+             en la caja y en la pantalla de productos. -->
+        <xpath expr="//div[hasclass('pos-leftheader')]" position="inside">
+            <button t-if="pos.config.al_theme_category_toggle and pos.showSearchButton()" type="button"
+                    t-attf-class="btn btn-light alpt-category-toggle d-flex align-items-center gap-2 flex-shrink-0 {{ pos.alptCategoriesHidden ? '' : 'active' }}"
+                    t-att-aria-pressed="pos.alptCategoriesHidden ? 'false' : 'true'"
+                    t-att-title="pos.alptCategoriesHidden ? 'Mostrar categorías' : 'Ocultar categorías'"
+                    t-on-click="() => pos.toggleAlptCategories()">
+                <i t-attf-class="fa fa-fw {{ pos.alptCategoriesHidden ? 'fa-eye' : 'fa-eye-slash' }}"/>
+                <span t-if="!ui.isSmall">Categorías</span>
+            </button>
+        </xpath>
         <xpath expr="//div[hasclass('pos-rightheader')]//Input" position="attributes">
             <attribute name="t-if" add="ui.isSmall" separator=" and "/>
         </xpath>

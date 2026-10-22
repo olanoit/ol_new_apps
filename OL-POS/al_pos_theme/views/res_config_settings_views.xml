@@ -29,9 +29,9 @@
                             </div>
                         </div>
                     </setting>
-                    <setting id="al_theme_hide_categories"
-                             help="Quita la barra de categorías de la pantalla de productos. Vuelva a abrir el TPV para aplicar el cambio.">
-                        <field name="pos_al_theme_hide_categories"/>
+                    <setting id="al_theme_category_toggle"
+                             help="Botón en la caja para mostrar u ocultar la barra de categorías de productos. Vuelva a abrir el TPV para aplicar el cambio.">
+                        <field name="pos_al_theme_category_toggle"/>
                     </setting>
                     <setting id="al_theme_colors" string="Colores"
                              help="El contraste del texto sobre los botones se ajusta solo. Vuelva a abrir el TPV para aplicar los cambios.">

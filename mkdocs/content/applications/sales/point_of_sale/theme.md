@@ -25,9 +25,12 @@ contenido fiscal del ticket lo pone
     - **Nombre**, **Logo** e **Icono de pestaña**, en buena resolución;
     - los colores **Primario**, **Secundario**, **Acento** y **Fondo**, en
       formato `#RRGGBB`. Un valor no válido se rechaza.
-3. Opcional: **Ocultar categorías de productos** quita la barra de categorías
-   de la pantalla de productos; el cajero busca o filtra (en farmacia, por
-   principio activo) y el catálogo gana espacio.
+3. Opcional: **Mostrar u ocultar categorías** agrega en la barra superior de la
+   caja el botón **Categorías**, junto al buscador. Con él, el cajero oculta la
+   barra de categorías cuando prefiere buscar o filtrar (en farmacia, por
+   principio activo), y el catálogo gana espacio; un segundo toque la vuelve a
+   mostrar. Cada dispositivo recuerda la última elección. Sin la opción, las
+   categorías se ven siempre.
 4. Cierre y vuelva a abrir el TPV para ver los cambios. No hace falta
    actualizar el módulo.
 

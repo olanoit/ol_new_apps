@@ -388,3 +388,19 @@
         overflow-y: auto;
     }
 }
+
+// --- Botón «Categorías» (js/category_toggle.js) ------------------------
+// Junto al buscador; resaltado mientras las categorías están visibles.
+.pos .alpt-category-toggle {
+    height: $alpt-control-sm;
+    border: 1px solid var(--alpt-border);
+    border-radius: var(--alpt-radius-md);
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.active {
+        border-color: var(--alpt-primary);
+        color: var(--alpt-primary);
+        background: var(--alpt-primary-subtle, #eef2ff);
+    }
+}

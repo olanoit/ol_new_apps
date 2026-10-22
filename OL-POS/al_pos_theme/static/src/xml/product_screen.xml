@@ -10,10 +10,11 @@
         <xpath expr="//div[hasclass('rightpane')]" position="attributes">
             <attribute name="class" remove="bg-secondary" add="alpt-catalog" separator=" "/>
         </xpath>
-        <!-- «Ocultar categorías de productos» (Ajustes del PdV ‣ Apariencia):
-             se conserva la condición nativa y se le agrega la opción. -->
+        <!-- «Mostrar u ocultar categorías» (Ajustes del PdV ‣ Apariencia): el
+             cajero las oculta con el botón de la barra superior; se conserva
+             la condición nativa. -->
         <xpath expr="//CategorySelector" position="attributes">
-            <attribute name="t-if">!pos.config.al_theme_hide_categories and pos.productsToDisplay.length > 0 and (!this.pos.isSmallProductScreen || !pos.scanning)</attribute>
+            <attribute name="t-if">!pos.alptCategoriesHidden and pos.productsToDisplay.length > 0 and (!this.pos.isSmallProductScreen || !pos.scanning)</attribute>
         </xpath>
     </t>
 
