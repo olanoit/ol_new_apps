@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 #: Cuentas de cobranza y su valor por defecto en el PCGE de l10n_pe.
 ACCOUNT_DEFAULTS = {
@@ -149,6 +149,14 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.l10n_pe_collection_interest_rate', readonly=False)
     l10n_pe_collection_interest_account_id = fields.Many2one(
         related='company_id.l10n_pe_collection_interest_account_id', readonly=False)
+    l10n_pe_collection_interest_warning = fields.Char(compute='_compute_l10n_pe_collection_interest_warning')
+
+    @api.depends('l10n_pe_collection_interest_rate')
+    def _compute_l10n_pe_collection_interest_warning(self):
+        caps = self.env['l10n_pe.collection.rate.cap']
+        for settings in self:
+            settings.l10n_pe_collection_interest_warning = caps._l10n_pe_rate_warning(
+                settings.l10n_pe_collection_interest_rate)
     l10n_pe_collection_provision_months = fields.Integer(
         related='company_id.l10n_pe_collection_provision_months', readonly=False)
     l10n_pe_collection_provision_min_actions = fields.Integer(

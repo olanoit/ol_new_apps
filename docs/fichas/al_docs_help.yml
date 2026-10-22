@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: 8.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Mapa de pantallas actualizado a 468: Cobranza (reclamos, centrales, provisión, tasas máximas del BCRP), recaudación bancaria, cierre de caja, flujo proyectado, cheques, farmacia y tablero de la app Perú."
   - version: 7.20261012
     fecha: 12/10/2026
     cambios:

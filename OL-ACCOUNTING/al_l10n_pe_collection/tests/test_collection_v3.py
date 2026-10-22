@@ -200,14 +200,14 @@ class TestCollectionV3(CollectionCommon):
 
     # ------------------------------------------------------------------ intereses
     def test_interest_statement_and_debit_note(self):
-        self.company.l10n_pe_collection_interest_rate = 20.0
+        self.company.l10n_pe_collection_interest_rate = 12.0
         invoice = self._invoice(1000, -36)
         line = self._receivable(invoice)
         amount, amount_company, days = self.customer._l10n_pe_collection_interest(line, self.today, self.company)
         self.assertEqual(days, 36)
-        self.assertAlmostEqual(amount, 18.40, places=2)  # 1000 × (1.2^(36/360) − 1)
+        self.assertAlmostEqual(amount, 11.40, places=2)  # 1000 × (1.12^(36/360) − 1)
         values = self.customer._l10n_pe_collection_statement_values(self.company)
-        self.assertAlmostEqual(values['interest'], 18.40, places=2)
+        self.assertAlmostEqual(values['interest'], 11.40, places=2)
         self.assertEqual(values['total'], 1000.0, 'el interés no facturado no suma al total')
         wizard = self.env['l10n_pe.collection.interest.wizard'].create({
             'partner_ids': [Command.set(self.customer.ids)], 'date': self.today})
@@ -216,7 +216,7 @@ class TestCollectionV3(CollectionCommon):
         note = self.env['account.move'].browse(action['res_id'])
         self.assertEqual(note.state, 'draft')
         self.assertEqual(note.debit_origin_id, invoice)
-        self.assertAlmostEqual(note.amount_untaxed, 18.40, places=2)
+        self.assertAlmostEqual(note.amount_untaxed, 11.40, places=2)
         if 'l10n_pe_edi_charge_reason' in note._fields:
             self.assertEqual(note.l10n_pe_edi_charge_reason, '01')
         line.invalidate_recordset(['l10n_pe_collection_interest_date'])
@@ -235,6 +235,81 @@ class TestCollectionV3(CollectionCommon):
         self.assertAlmostEqual(amount, 9.58, places=2)  # 1000 × (1.1^(0.1) − 1)
         self._dispute(invoice)
         self.assertEqual(self.customer._l10n_pe_collection_interest(line, self.today, self.company)[0], 0.0)
+
+    def _rate_caps(self, *periods):
+        """Reemplaza las tasas máximas del BCRP por las de la prueba: (desde, hasta, moratorio)."""
+        caps = self.env['l10n_pe.collection.rate.cap']
+        caps.search([]).unlink()
+        for date_from, date_to, moratory in periods:
+            for currency_type in ('pen', 'foreign'):
+                caps.create({'date_from': date_from, 'date_to': date_to, 'currency_type': currency_type,
+                             'compensatory_rate': moratory / 0.15, 'moratory_rate': moratory})
+
+    def test_rate_cap_moratory_is_15_percent_and_periods_do_not_overlap(self):
+        cap = self.env['l10n_pe.collection.rate.cap'].create({
+            'date_from': '2030-05-01', 'date_to': '2030-10-31', 'currency_type': 'pen', 'compensatory_rate': 114.13})
+        self.assertAlmostEqual(cap.moratory_rate, 17.12, places=2)
+        with self.assertRaises(ValidationError):
+            self.env['l10n_pe.collection.rate.cap'].create({
+                'date_from': '2030-10-01', 'date_to': '2031-03-31', 'currency_type': 'pen', 'compensatory_rate': 100})
+        self.env['l10n_pe.collection.rate.cap'].create({
+            'date_from': '2030-10-01', 'date_to': '2031-03-31', 'currency_type': 'foreign', 'compensatory_rate': 100})
+
+    def test_seeded_bcrp_caps(self):
+        cap = self.env.ref('al_l10n_pe_collection.rate_cap_2026_11_pen')
+        self.assertEqual((cap.compensatory_rate, cap.moratory_rate), (114.68, 17.2))
+        self.assertAlmostEqual(self.env.ref('al_l10n_pe_collection.rate_cap_2026_05_foreign').moratory_rate, 14.98)
+
+    def test_interest_is_capped_per_period(self):
+        """Tramo antiguo con tope 10 % y tramo actual con tope 30 %: la tasa pactada de 20 % se
+        recorta solo en el primero."""
+        self._rate_caps((self.today - timedelta(days=60), self.today - timedelta(days=21), 10.0),
+                        (self.today - timedelta(days=20), self.today + timedelta(days=100), 30.0))
+        self.company.l10n_pe_collection_interest_rate = 20.0
+        line = self._receivable(self._invoice(1000, -36))
+        detail = self.customer._l10n_pe_collection_interest_detail(line, self.today, self.company)
+        expected = 1000 * (1.1 ** (16 / 360) * 1.2 ** (20 / 360) - 1)
+        self.assertAlmostEqual(detail['amount'], round(expected, 2), places=2)
+        self.assertEqual((detail['days'], detail['capped'], detail['uncovered']), (36, True, 0))
+
+        wizard = self.env['l10n_pe.collection.interest.wizard'].create({
+            'partner_ids': [Command.set(self.customer.ids)], 'date': self.today})
+        self.assertTrue(wizard.line_ids.capped)
+        self.assertIn('tope', wizard.cap_warning)
+        note = self.env['account.move'].browse(wizard.action_create()['res_id'])
+        self.assertAlmostEqual(note.amount_untaxed, round(expected, 2), places=2)
+        self.assertIn('tope del BCRP', note.invoice_line_ids.name)
+
+    def test_interest_without_registered_cap_uses_agreed_rate(self):
+        self._rate_caps()
+        self.company.l10n_pe_collection_interest_rate = 20.0
+        line = self._receivable(self._invoice(1000, -36))
+        detail = self.customer._l10n_pe_collection_interest_detail(line, self.today, self.company)
+        self.assertAlmostEqual(detail['amount'], 18.40, places=2)  # 1000 × (1.2^(36/360) − 1)
+        self.assertEqual((detail['capped'], detail['uncovered']), (False, 36))
+        wizard = self.env['l10n_pe.collection.interest.wizard'].create({
+            'partner_ids': [Command.set(self.customer.ids)], 'date': self.today})
+        self.assertIn('sin tasa máxima', wizard.cap_warning)
+
+    def test_rate_warning_on_settings_and_partner(self):
+        caps = self.env['l10n_pe.collection.rate.cap']
+        caps.search([]).unlink()
+        start, end = self.today - timedelta(days=10), self.today + timedelta(days=100)
+        caps.create({'date_from': start, 'date_to': end, 'currency_type': 'pen', 'compensatory_rate': 114.13})
+        caps.create({'date_from': start, 'date_to': end, 'currency_type': 'foreign', 'compensatory_rate': 99.84})
+        settings = self.env['res.config.settings'].with_company(self.company).create({})
+        settings.l10n_pe_collection_interest_rate = 10.0
+        self.assertFalse(settings.l10n_pe_collection_interest_warning)
+        settings.l10n_pe_collection_interest_rate = 16.0
+        warning = settings.l10n_pe_collection_interest_warning
+        self.assertIn('14,98 % en moneda extranjera', warning)
+        self.assertNotIn('soles', warning)
+        partner = self.customer.with_company(self.company)
+        partner.l10n_pe_collection_interest_rate = 20.0
+        self.assertIn('17,12 % en soles', partner.l10n_pe_collection_interest_warning)
+        caps.search([]).unlink()
+        partner.invalidate_recordset(['l10n_pe_collection_interest_warning'])
+        self.assertIn('No hay tasas máximas', partner.l10n_pe_collection_interest_warning)
 
     # ------------------------------------------------------------------ provisión y castigo
     def _provision_journal(self):

@@ -12,9 +12,12 @@
                         <field name="company_id" invisible="1"/>
                     </group>
                 </group>
+                <div class="alert alert-warning" role="alert" invisible="not cap_warning">
+                    <field name="cap_warning" nolabel="1"/>
+                </div>
                 <p class="text-muted">
                     Tasa efectiva anual pactada (la del cliente o la de la compañía), año de 360 días, desde el
-                    vencimiento o desde la última nota de débito. Se crea una nota de débito en borrador por factura,
+                    vencimiento o desde la última nota de débito, sin superar el moratorio máximo del BCRP. Se crea una nota de débito en borrador por factura,
                     motivo 01 «Intereses por mora», inafecta al IGV. Revísela antes de publicarla.
                 </p>
                 <field name="line_ids">
@@ -24,6 +27,8 @@
                         <field name="move_id"/>
                         <field name="date_maturity"/>
                         <field name="days"/>
+                        <field name="capped" widget="boolean" optional="show"/>
+                        <field name="uncovered_days" column_invisible="True"/>
                         <field name="currency_id" column_invisible="True"/>
                         <field name="residual"/>
                         <field name="amount" sum="Total"/>

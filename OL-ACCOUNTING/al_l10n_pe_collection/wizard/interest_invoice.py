@@ -15,6 +15,19 @@ class L10nPeCollectionInterestWizard(models.TransientModel):
     date = fields.Date(string='Liquidar hasta', required=True, default=fields.Date.context_today)
     line_ids = fields.One2many('l10n_pe.collection.interest.wizard.line', 'wizard_id', string='Intereses',
                                compute='_compute_line_ids', store=True, readonly=False)
+    cap_warning = fields.Char(string='Aviso de tope', compute='_compute_cap_warning')
+
+    @api.depends('line_ids.capped', 'line_ids.uncovered_days')
+    def _compute_cap_warning(self):
+        for wizard in self:
+            messages = []
+            if any(wizard.line_ids.mapped('capped')):
+                messages.append(_('La tasa pactada supera el interés moratorio máximo del BCRP: las cuotas '
+                                  'marcadas se liquidan con el tope; el exceso no es exigible.'))
+            if any(wizard.line_ids.mapped('uncovered_days')):
+                messages.append(_('Hay días sin tasa máxima del BCRP registrada: se liquidan con la tasa '
+                                  'pactada. Revise Cobranza ‣ Configuración ‣ Tasas máximas del BCRP.'))
+            wizard.cap_warning = ' '.join(messages) or False
 
     @api.model
     def _default_partners(self):
@@ -30,11 +43,12 @@ class L10nPeCollectionInterestWizard(models.TransientModel):
                 for line in partner._l10n_pe_collection_open_lines(wizard.company_id):
                     if line.move_id.move_type != 'out_invoice':
                         continue
-                    amount, _amount_company, days = partner._l10n_pe_collection_interest(
-                        line, wizard.date, wizard.company_id)
-                    if amount > 0:
+                    detail = partner._l10n_pe_collection_interest_detail(line, wizard.date, wizard.company_id)
+                    if detail['amount'] > 0:
                         commands.append(Command.create({
-                            'move_line_id': line.id, 'days': days, 'amount': amount, 'selected': True}))
+                            'move_line_id': line.id, 'days': detail['days'], 'amount': detail['amount'],
+                            'capped': detail['capped'], 'uncovered_days': detail['uncovered'],
+                            'selected': True}))
             wizard.line_ids = commands
 
     def action_create(self):
@@ -62,9 +76,13 @@ class L10nPeCollectionInterestWizard(models.TransientModel):
                 'l10n_pe_collection_interest_line_id': line.id,
                 'l10n_pe_collection_interest_to': self.date,
                 'invoice_line_ids': [Command.create({
-                    'name': _('Intereses moratorios de %(doc)s: %(days)s días al %(rate)s %% TEA',
-                              doc=invoice.name, days=wiz_line.days,
-                              rate=invoice.partner_id._l10n_pe_collection_interest_rate_value(company)),
+                    'name': (_('Intereses moratorios de %(doc)s: %(days)s días al %(rate)s %% TEA, con el tope del BCRP',
+                               doc=invoice.name, days=wiz_line.days,
+                               rate=invoice.partner_id._l10n_pe_collection_interest_rate_value(company))
+                             if wiz_line.capped else
+                             _('Intereses moratorios de %(doc)s: %(days)s días al %(rate)s %% TEA',
+                               doc=invoice.name, days=wiz_line.days,
+                               rate=invoice.partner_id._l10n_pe_collection_interest_rate_value(company))),
                     'account_id': account.id,
                     'quantity': 1,
                     'price_unit': wiz_line.amount,
@@ -97,4 +115,7 @@ class L10nPeCollectionInterestWizardLine(models.TransientModel):
     currency_id = fields.Many2one(related='move_line_id.currency_id', string='Moneda')
     residual = fields.Monetary(related='move_line_id.amount_residual_currency', string='Saldo')
     days = fields.Integer(string='Días', readonly=True)
+    capped = fields.Boolean(string='Con tope BCRP', readonly=True,
+                            help='La tasa pactada superaba el moratorio máximo del BCRP: se liquidó con el tope.')
+    uncovered_days = fields.Integer(string='Días sin tope registrado', readonly=True)
     amount = fields.Monetary(string='Interés')

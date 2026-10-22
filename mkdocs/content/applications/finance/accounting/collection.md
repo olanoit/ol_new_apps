@@ -215,9 +215,35 @@ los intereses de las facturas vencidas y crea una **nota de débito en borrador*
 factura, motivo **01 Intereses por mora** (catálogo 10), inafecta al IGV. Revísela y
 publíquela como cualquier comprobante; si se anula, esos días vuelven a calcularse.
 
-!!! warning "Tope del BCRP"
-    El interés pactado no puede superar las tasas máximas que fija el BCRP cada semestre
-    (mayo y noviembre). La app no las valida: revise la tasa en cada cambio.
+### Tope del BCRP
+
+El BCRP fija cada semestre (1 de mayo y 1 de noviembre) la tasa máxima de interés
+convencional **compensatorio**. El **moratorio** máximo es el **15 %** de esa tasa (Circular
+0008-2021-BCRP). Las tasas están en **Cobranza ‣ Configuración ‣ Tasas máximas del BCRP**,
+por periodo y por moneda (nacional o extranjera):
+
+![Tasas máximas del BCRP](collection/rate-caps.png)
+
+| Periodo | Compensatorio S/ | Moratorio S/ | Compensatorio US$ | Moratorio US$ |
+|---|---|---|---|---|
+| 01/05/2026 – 31/10/2026 | 114,13 % | 17,12 % | 99,84 % | 14,98 % |
+| 01/11/2026 – 30/04/2027 | 114,68 % | 17,20 % | 103,14 % | 15,47 % |
+
+- Si la tasa pactada de la compañía o del cliente supera el moratorio vigente, **Ajustes** y
+  la ficha del cliente muestran un aviso.
+- Al liquidar, cada tramo de días se calcula con la tasa pactada **recortada al tope del
+  periodo** y de la moneda del documento. La línea de la nota de débito lo indica.
+- Si no hay tope registrado para alguno de los días, se usa la tasa pactada y el asistente
+  lo advierte.
+
+Ejemplo: tasa pactada de 20 % TEA, factura en soles de S/ 1 000 vencida hace 36 días, todos
+en el periodo de mayo a octubre de 2026. El interés se liquida al 17,12 %:
+1 000 × (1,1712^(36/360) − 1) = **S/ 15,93**, en lugar de S/ 18,40.
+
+!!! warning "Advertencia"
+    Registre las tasas de cada nuevo periodo cuando el BCRP las publique. Las de noviembre
+    de 2026 vienen precargadas según lo difundido el 14/10/2026: contrástelas con la nota
+    oficial del BCRP.
 
 ## Provisión y castigo de cobranza dudosa
 

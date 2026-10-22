@@ -72,6 +72,9 @@
                                 <label for="l10n_pe_collection_interest_rate" class="col-lg-6 o_light_label"/>
                                 <field name="l10n_pe_collection_interest_rate"/>
                             </div>
+                            <div class="alert alert-warning mt8 mb-0" role="alert" invisible="not l10n_pe_collection_interest_warning">
+                                <field name="l10n_pe_collection_interest_warning" nolabel="1"/>
+                            </div>
                             <div class="row">
                                 <label for="l10n_pe_collection_interest_account_id" class="col-lg-6 o_light_label"/>
                                 <field name="l10n_pe_collection_interest_account_id" options="{'no_create': True}"/>

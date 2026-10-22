@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_collection_rate_cap_list" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.rate.cap.list</field>
+        <field name="model">l10n_pe.collection.rate.cap</field>
+        <field name="arch" type="xml">
+            <list editable="top">
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="currency_type"/>
+                <field name="compensatory_rate" string="Compensatorio %"/>
+                <field name="moratory_rate" string="Moratorio %"/>
+                <field name="source" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_collection_rate_cap_search" model="ir.ui.view">
+        <field name="name">l10n_pe.collection.rate.cap.search</field>
+        <field name="model">l10n_pe.collection.rate.cap</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="date_from"/>
+                <filter name="pen" string="Moneda nacional" domain="[('currency_type', '=', 'pen')]"/>
+                <filter name="foreign" string="Moneda extranjera" domain="[('currency_type', '=', 'foreign')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_collection_rate_cap" model="ir.actions.act_window">
+        <field name="name">Tasas máximas del BCRP</field>
+        <field name="res_model">l10n_pe.collection.rate.cap</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las tasas máximas del BCRP</p>
+            <p>El BCRP las publica cada 1 de mayo y 1 de noviembre. El interés moratorio que se liquida
+                en Cobranza no supera el 15 % de la tasa compensatoria máxima del periodo.</p>
+        </field>
+    </record>
+</odoo>

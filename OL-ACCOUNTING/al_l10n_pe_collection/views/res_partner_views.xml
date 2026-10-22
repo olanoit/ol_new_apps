@@ -22,6 +22,10 @@
                 <field name="l10n_pe_collection_reminder_consent"
                        invisible="l10n_pe_collection_debtor_type == 'business'"/>
                 <field name="l10n_pe_collection_interest_rate"/>
+                <div colspan="2" class="alert alert-warning py-1 mb-1" role="alert"
+                     invisible="not l10n_pe_collection_interest_warning">
+                    <field name="l10n_pe_collection_interest_warning" nolabel="1"/>
+                </div>
                 <div colspan="2" class="d-flex flex-wrap gap-2 mt-2"
                      groups="al_l10n_pe_collection.group_collection_user">
                     <button name="action_l10n_pe_collection_new_action" type="object" string="Registrar gestión"

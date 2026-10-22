@@ -140,6 +140,10 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 6.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Tope del BCRP para el interés moratorio: tabla de tasas máximas por periodo y moneda (precargadas mayo 2026–abril 2027), aviso en Ajustes y en el cliente cuando la tasa pactada lo supera, y liquidación de intereses recortada al tope de cada periodo."
   - version: 5.20261022
     fecha: 22/10/2026
     cambios:

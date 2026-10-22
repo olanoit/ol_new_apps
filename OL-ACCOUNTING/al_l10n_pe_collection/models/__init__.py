@@ -4,6 +4,7 @@ from . import res_partner
 from . import account_followup
 from . import collection_dispute
 from . import collection_interest
+from . import collection_rate_cap
 from . import collection_promise
 from . import collection_action
 from . import collection_portfolio

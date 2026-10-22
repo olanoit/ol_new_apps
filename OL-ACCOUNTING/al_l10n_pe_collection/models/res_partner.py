@@ -51,6 +51,8 @@ class ResPartner(models.Model):
     l10n_pe_collection_interest_rate = fields.Float(
         string='Interés moratorio pactado (TEA %)', company_dependent=True, digits=(7, 4),
         help='Vacío: la tasa de la compañía.')
+    l10n_pe_collection_interest_warning = fields.Char(
+        string='Aviso de tope de interés', compute='_compute_l10n_pe_collection_interest_warning')
     l10n_pe_collection_action_count = fields.Integer(
         string='Gestiones', compute='_compute_l10n_pe_collection_counts')
     l10n_pe_collection_promise_count = fields.Integer(
@@ -252,6 +254,14 @@ class ResPartner(models.Model):
                                         partner.l10n_pe_collection_hold_until.strftime('%d/%m/%Y')))
         return True
 
+    @api.depends_context('company')
+    @api.depends('l10n_pe_collection_interest_rate')
+    def _compute_l10n_pe_collection_interest_warning(self):
+        caps = self.env['l10n_pe.collection.rate.cap']
+        for partner in self:
+            partner.l10n_pe_collection_interest_warning = caps._l10n_pe_rate_warning(
+                partner.l10n_pe_collection_interest_rate)
+
     def action_l10n_pe_collection_rate_now(self):
         self.commercial_partner_id._l10n_pe_collection_rate()
         return True
@@ -268,18 +278,34 @@ class ResPartner(models.Model):
 
     def _l10n_pe_collection_interest(self, line, today=None, company=None):
         """Interés moratorio de una cuota vencida: (saldo en su moneda, saldo en
-        moneda de la compañía, días). TEA con año de 360 días, desde el
-        vencimiento o desde el último interés facturado."""
+        moneda de la compañía, días). Ver ``_l10n_pe_collection_interest_detail``."""
+        detail = self._l10n_pe_collection_interest_detail(line, today, company)
+        return detail['amount'], detail['amount_company'], detail['days']
+
+    def _l10n_pe_collection_interest_detail(self, line, today=None, company=None):
+        """Interés moratorio de una cuota vencida con TEA y año de 360 días, desde el
+        vencimiento o desde el último interés facturado. En cada tramo, la tasa pactada
+        se recorta al moratorio máximo del BCRP vigente para la moneda de la cuota.
+
+        :return: dict con ``amount``, ``amount_company``, ``days``, ``capped`` (se aplicó
+            el tope) y ``uncovered`` (días sin tope registrado).
+        """
         self.ensure_one()
         today = today or fields.Date.context_today(self)
         rate = self._l10n_pe_collection_interest_rate_value(company)
         start = max(filter(None, [line.date_maturity or line.date, line.l10n_pe_collection_interest_date]))
         days = (today - start).days
+        detail = {'amount': 0.0, 'amount_company': 0.0, 'days': 0, 'capped': False, 'uncovered': 0}
         if rate <= 0 or days <= 0 or line.amount_residual <= 0 or line.l10n_pe_collection_in_dispute:
-            return 0.0, 0.0, 0
-        factor = (1 + rate / 100.0) ** (days / 360.0) - 1
-        return (line.currency_id.round(line.amount_residual_currency * factor),
-                line.company_currency_id.round(line.amount_residual * factor), days)
+            return detail
+        caps = self.env['l10n_pe.collection.rate.cap']
+        factor, capped, uncovered = caps._l10n_pe_interest_factor(
+            rate, start, today, caps._l10n_pe_currency_type(line.currency_id))
+        detail.update(
+            amount=line.currency_id.round(line.amount_residual_currency * factor),
+            amount_company=line.company_currency_id.round(line.amount_residual * factor),
+            days=days, capped=capped, uncovered=uncovered)
+        return detail
 
     # ------------------------------------------------------------------
     # Pago en línea

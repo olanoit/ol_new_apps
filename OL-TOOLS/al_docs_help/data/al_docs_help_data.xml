@@ -51,6 +51,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/ple/</field>
         <field name="section">Libros electrónicos (PLE)</field>
     </record>
+    <record id="help_action_spreadsheet_dashboard" model="al.docs.help">
+        <field name="key">action_spreadsheet_dashboard</field>
+        <field name="kind">tag</field>
+        <field name="name">Tablero</field>
+        <field name="module">al_l10n_pe_dashboard</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/dashboard/</field>
+        <field name="section">Tablero de la app Perú</field>
+    </record>
     <record id="help_al_docs_help" model="al.docs.help">
         <field name="key">al.docs.help</field>
         <field name="kind">model</field>
@@ -294,7 +302,7 @@
     <record id="help_construction_approval_refuse_wizard" model="al.docs.help">
         <field name="key">construction.approval.refuse.wizard</field>
         <field name="kind">model</field>
-        <field name="name">Rechazar una solicitud de obra</field>
+        <field name="name">Rechazar solicitudes de obra</field>
         <field name="module">al_construction_planner_approvals</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
         <field name="section">Aprobaciones del plan y del requerimiento</field>
@@ -794,6 +802,14 @@
         <field name="module">al_construction_planner_production</field>
         <field name="path">applications/services/project/construction/planning/production_order/#presupuestado-frente-a-real</field>
         <field name="section">Presupuestado frente a real</field>
+    </record>
+    <record id="help_construction_production_reason" model="al.docs.help">
+        <field name="key">construction.production.reason</field>
+        <field name="kind">model</field>
+        <field name="name">Motivo de fabricación</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/furniture/</field>
+        <field name="section">Mobiliario: módulos, productos y envíos</field>
     </record>
     <record id="help_construction_production_versus" model="al.docs.help">
         <field name="key">construction.production.versus</field>
@@ -1779,6 +1795,126 @@
         <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/</field>
         <field name="section">Consulta de RUC y DNI</field>
     </record>
+    <record id="help_l10n_pe_bank_collection_agreement" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.agreement</field>
+        <field name="kind">model</field>
+        <field name="name">Convenio de recaudación bancaria</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/#recaudación-bancaria</field>
+        <field name="section">Recaudación bancaria</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_batch" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.batch</field>
+        <field name="kind">model</field>
+        <field name="name">Archivo de deudores para el banco</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_batch_line" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.batch.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cuota del archivo de deudores</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_layout" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.layout</field>
+        <field name="kind">model</field>
+        <field name="name">Formato de recaudación bancaria</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/#recaudación-bancaria</field>
+        <field name="section">Recaudación bancaria</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_layout_field" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.layout.field</field>
+        <field name="kind">model</field>
+        <field name="name">Campo del formato de recaudación</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_payment_type" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.payment.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de pago de recaudación</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_response" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.response</field>
+        <field name="kind">model</field>
+        <field name="name">Respuesta de recaudación bancaria</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/#recaudación-bancaria</field>
+        <field name="section">Recaudación bancaria</field>
+    </record>
+    <record id="help_l10n_pe_bank_collection_response_line" model="al.docs.help">
+        <field name="key">l10n_pe.bank.collection.response.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cobro informado por el banco</field>
+        <field name="module">al_l10n_pe_bank_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_cash_closing" model="al.docs.help">
+        <field name="key">l10n_pe.cash.closing</field>
+        <field name="kind">model</field>
+        <field name="name">Cierre de caja</field>
+        <field name="module">al_l10n_pe_cash_closing</field>
+        <field name="path">applications/finance/accounting/cash_closing/</field>
+        <field name="section">Cierre de caja y arqueo</field>
+    </record>
+    <record id="help_l10n_pe_cash_closing_count" model="al.docs.help">
+        <field name="key">l10n_pe.cash.closing.count</field>
+        <field name="kind">model</field>
+        <field name="name">Arqueo por denominación</field>
+        <field name="module">al_l10n_pe_cash_closing</field>
+        <field name="path">applications/finance/accounting/cash_closing/</field>
+        <field name="section">Cierre de caja y arqueo</field>
+    </record>
+    <record id="help_l10n_pe_cash_closing_line" model="al.docs.help">
+        <field name="key">l10n_pe.cash.closing.line</field>
+        <field name="kind">model</field>
+        <field name="name">Movimiento del cierre de caja</field>
+        <field name="module">al_l10n_pe_cash_closing</field>
+        <field name="path">applications/finance/accounting/cash_closing/</field>
+        <field name="section">Cierre de caja y arqueo</field>
+    </record>
+    <record id="help_l10n_pe_cash_denomination" model="al.docs.help">
+        <field name="key">l10n_pe.cash.denomination</field>
+        <field name="kind">model</field>
+        <field name="name">Denominación de billete o moneda</field>
+        <field name="module">al_l10n_pe_cash_closing</field>
+        <field name="path">applications/finance/accounting/cash_closing/</field>
+        <field name="section">Cierre de caja y arqueo</field>
+    </record>
+    <record id="help_l10n_pe_cash_forecast" model="al.docs.help">
+        <field name="key">l10n_pe.cash.forecast</field>
+        <field name="kind">model</field>
+        <field name="name">Flujo de caja proyectado</field>
+        <field name="module">al_l10n_pe_cash_forecast</field>
+        <field name="path">applications/finance/accounting/cash_forecast/</field>
+        <field name="section">Flujo de caja proyectado</field>
+    </record>
+    <record id="help_l10n_pe_cash_forecast_line" model="al.docs.help">
+        <field name="key">l10n_pe.cash.forecast.line</field>
+        <field name="kind">model</field>
+        <field name="name">Partida del flujo de caja</field>
+        <field name="module">al_l10n_pe_cash_forecast</field>
+        <field name="path">applications/finance/accounting/cash_forecast/</field>
+        <field name="section">Flujo de caja proyectado</field>
+    </record>
+    <record id="help_l10n_pe_cash_forecast_period" model="al.docs.help">
+        <field name="key">l10n_pe.cash.forecast.period</field>
+        <field name="kind">model</field>
+        <field name="name">Periodo del flujo de caja</field>
+        <field name="module">al_l10n_pe_cash_forecast</field>
+        <field name="path">applications/finance/accounting/cash_forecast/</field>
+        <field name="section">Flujo de caja proyectado</field>
+    </record>
     <record id="help_l10n_pe_cash_fund" model="al.docs.help">
         <field name="key">l10n_pe.cash.fund</field>
         <field name="kind">model</field>
@@ -1827,6 +1963,182 @@
         <field name="path">applications/finance/accounting/factoring/</field>
         <field name="section">Factoring</field>
     </record>
+    <record id="help_l10n_pe_check_layout" model="al.docs.help">
+        <field name="key">l10n_pe.check.layout</field>
+        <field name="kind">model</field>
+        <field name="name">Formato de cheque</field>
+        <field name="module">al_l10n_pe_check_printing</field>
+        <field name="path">applications/finance/accounting/checks/#configurar-el-formato-de-la-chequera</field>
+        <field name="section">Configurar el formato de la chequera</field>
+    </record>
+    <record id="help_l10n_pe_collection_action" model="al.docs.help">
+        <field name="key">l10n_pe.collection.action</field>
+        <field name="kind">model</field>
+        <field name="name">Gestión de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_bucket" model="al.docs.help">
+        <field name="key">l10n_pe.collection.bucket</field>
+        <field name="kind">model</field>
+        <field name="name">Tramo de antigüedad</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#proyección-de-cobranza</field>
+        <field name="section">Proyección de cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_bureau" model="al.docs.help">
+        <field name="key">l10n_pe.collection.bureau</field>
+        <field name="kind">model</field>
+        <field name="name">Reporte a central de riesgo</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#centrales-de-riesgo</field>
+        <field name="section">Centrales de riesgo</field>
+    </record>
+    <record id="help_l10n_pe_collection_dashboard" model="al.docs.help">
+        <field name="key">l10n_pe.collection.dashboard</field>
+        <field name="kind">model</field>
+        <field name="name">Indicadores del gestor</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#metas-e-indicadores-del-gestor</field>
+        <field name="section">Metas e indicadores del gestor</field>
+    </record>
+    <record id="help_l10n_pe_collection_dispute" model="al.docs.help">
+        <field name="key">l10n_pe.collection.dispute</field>
+        <field name="kind">model</field>
+        <field name="name">Reclamo de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_dispute_reason" model="al.docs.help">
+        <field name="key">l10n_pe.collection.dispute.reason</field>
+        <field name="kind">model</field>
+        <field name="name">Motivo de reclamo</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_forecast" model="al.docs.help">
+        <field name="key">l10n_pe.collection.forecast</field>
+        <field name="kind">model</field>
+        <field name="name">Proyección de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#proyección-de-cobranza</field>
+        <field name="section">Proyección de cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_forecast_line" model="al.docs.help">
+        <field name="key">l10n_pe.collection.forecast.line</field>
+        <field name="kind">model</field>
+        <field name="name">Partida de la proyección de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#proyección-de-cobranza</field>
+        <field name="section">Proyección de cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_forecast_period" model="al.docs.help">
+        <field name="key">l10n_pe.collection.forecast.period</field>
+        <field name="kind">model</field>
+        <field name="name">Periodo de la proyección de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#proyección-de-cobranza</field>
+        <field name="section">Proyección de cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_interest_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.collection.interest.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidar intereses moratorios</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#intereses-moratorios</field>
+        <field name="section">Intereses moratorios</field>
+    </record>
+    <record id="help_l10n_pe_collection_interest_wizard_line" model="al.docs.help">
+        <field name="key">l10n_pe.collection.interest.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Interés moratorio de una cuota</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#intereses-moratorios</field>
+        <field name="section">Intereses moratorios</field>
+    </record>
+    <record id="help_l10n_pe_collection_portfolio" model="al.docs.help">
+        <field name="key">l10n_pe.collection.portfolio</field>
+        <field name="kind">model</field>
+        <field name="name">Cartera por cobrar</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_promise" model="al.docs.help">
+        <field name="key">l10n_pe.collection.promise</field>
+        <field name="kind">model</field>
+        <field name="name">Compromiso de pago</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#compromisos-de-pago</field>
+        <field name="section">Compromisos de pago</field>
+    </record>
+    <record id="help_l10n_pe_collection_provision" model="al.docs.help">
+        <field name="key">l10n_pe.collection.provision</field>
+        <field name="kind">model</field>
+        <field name="name">Provisión de cobranza dudosa</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#provisión-y-castigo-de-cobranza-dudosa</field>
+        <field name="section">Provisión y castigo de cobranza dudosa</field>
+    </record>
+    <record id="help_l10n_pe_collection_provision_line" model="al.docs.help">
+        <field name="key">l10n_pe.collection.provision.line</field>
+        <field name="kind">model</field>
+        <field name="name">Documento provisionado</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_rate_cap" model="al.docs.help">
+        <field name="key">l10n_pe.collection.rate.cap</field>
+        <field name="kind">model</field>
+        <field name="name">Tasa máxima de interés del BCRP</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_result" model="al.docs.help">
+        <field name="key">l10n_pe.collection.result</field>
+        <field name="kind">model</field>
+        <field name="name">Resultado de gestión</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#reclamos</field>
+        <field name="section">Reclamos</field>
+    </record>
+    <record id="help_l10n_pe_collection_statement_send" model="al.docs.help">
+        <field name="key">l10n_pe.collection.statement.send</field>
+        <field name="kind">model</field>
+        <field name="name">Enviar estado de cuenta</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#estado-de-cuenta</field>
+        <field name="section">Estado de cuenta</field>
+    </record>
+    <record id="help_l10n_pe_collection_target" model="al.docs.help">
+        <field name="key">l10n_pe.collection.target</field>
+        <field name="kind">model</field>
+        <field name="name">Meta de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_tools" model="al.docs.help">
+        <field name="key">l10n_pe.collection.tools</field>
+        <field name="kind">model</field>
+        <field name="name">Cálculos de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_zone" model="al.docs.help">
+        <field name="key">l10n_pe.collection.zone</field>
+        <field name="kind">model</field>
+        <field name="name">Zona de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
     <record id="help_l10n_pe_complaint" model="al.docs.help">
         <field name="key">l10n_pe.complaint</field>
         <field name="kind">model</field>
@@ -1866,6 +2178,22 @@
         <field name="module">al_account_payments</field>
         <field name="path">applications/finance/fiscal_localizations/peru/payment_methods/#comprar-y-vender-moneda</field>
         <field name="section">Comprar y vender moneda</field>
+    </record>
+    <record id="help_l10n_pe_dashboard_builder" model="al.docs.help">
+        <field name="key">l10n_pe.dashboard.builder</field>
+        <field name="kind">model</field>
+        <field name="name">Tablero Perú: armado de la hoja de cálculo</field>
+        <field name="module">al_l10n_pe_dashboard</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/dashboard/</field>
+        <field name="section">Tablero de la app Perú</field>
+    </record>
+    <record id="help_l10n_pe_dashboard_tax" model="al.docs.help">
+        <field name="key">l10n_pe.dashboard.tax</field>
+        <field name="kind">model</field>
+        <field name="name">Ventas, compras e IGV</field>
+        <field name="module">al_l10n_pe_dashboard</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/dashboard/#bloques</field>
+        <field name="section">Bloques</field>
     </record>
     <record id="help_l10n_pe_destination_period_wizard" model="al.docs.help">
         <field name="key">l10n_pe.destination.period.wizard</field>
@@ -2539,6 +2867,38 @@
         <field name="path">applications/finance/fiscal_localizations/peru/ruc_dni_lookup/#actividades-económicas</field>
         <field name="section">Actividades económicas</field>
     </record>
+    <record id="help_l10n_pe_payment_application" model="al.docs.help">
+        <field name="key">l10n_pe.payment.application</field>
+        <field name="kind">model</field>
+        <field name="name">Aplicación de documentos</field>
+        <field name="module">al_l10n_pe_payment_application</field>
+        <field name="path">applications/finance/accounting/advances/</field>
+        <field name="section">Anticipos y aplicación de documentos</field>
+    </record>
+    <record id="help_l10n_pe_payment_application_line" model="al.docs.help">
+        <field name="key">l10n_pe.payment.application.line</field>
+        <field name="kind">model</field>
+        <field name="name">Documento de la aplicación</field>
+        <field name="module">al_l10n_pe_payment_application</field>
+        <field name="path">applications/finance/accounting/advances/</field>
+        <field name="section">Anticipos y aplicación de documentos</field>
+    </record>
+    <record id="help_l10n_pe_payment_multi" model="al.docs.help">
+        <field name="key">l10n_pe.payment.multi</field>
+        <field name="kind">model</field>
+        <field name="name">Pago múltiple</field>
+        <field name="module">al_l10n_pe_payment_multi</field>
+        <field name="path">applications/finance/accounting/multiple_payments/</field>
+        <field name="section">Pago múltiple</field>
+    </record>
+    <record id="help_l10n_pe_payment_multi_line" model="al.docs.help">
+        <field name="key">l10n_pe.payment.multi.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de pago múltiple</field>
+        <field name="module">al_l10n_pe_payment_multi</field>
+        <field name="path">applications/finance/accounting/multiple_payments/</field>
+        <field name="section">Pago múltiple</field>
+    </record>
     <record id="help_l10n_pe_perception" model="al.docs.help">
         <field name="key">l10n_pe.perception</field>
         <field name="kind">model</field>
@@ -2747,6 +3107,14 @@
         <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
         <field name="section">Registros SIRE</field>
     </record>
+    <record id="help_l10n_pe_sire_api_log" model="al.docs.help">
+        <field name="key">l10n_pe.sire.api.log</field>
+        <field name="kind">model</field>
+        <field name="name">Llamada a la API SIRE</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
     <record id="help_l10n_pe_sire_compare_field" model="al.docs.help">
         <field name="key">l10n_pe.sire.compare.field</field>
         <field name="kind">model</field>
@@ -2799,6 +3167,14 @@
         <field name="key">l10n_pe.sire.rce.nd.line</field>
         <field name="kind">model</field>
         <field name="name">SIRE — Línea de no domiciliados</field>
+        <field name="module">al_l10n_pe_sire</field>
+        <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
+        <field name="section">Registros SIRE</field>
+    </record>
+    <record id="help_l10n_pe_sire_reopen_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.sire.reopen.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Reabrir periodo SIRE</field>
         <field name="module">al_l10n_pe_sire</field>
         <field name="path">applications/finance/fiscal_localizations/peru/sire/</field>
         <field name="section">Registros SIRE</field>
@@ -2995,6 +3371,30 @@
         <field name="path">applications/health/pharmacy/storage/#alertas-sanitarias-y-retiro</field>
         <field name="section">Alertas sanitarias y retiro</field>
     </record>
+    <record id="help_pharmacy_controlled_balance" model="al.docs.help">
+        <field name="key">pharmacy.controlled.balance</field>
+        <field name="kind">model</field>
+        <field name="name">Balance trimestral de controlados</field>
+        <field name="module">al_l10n_pe_pharmacy_controlled</field>
+        <field name="path">applications/health/pharmacy/controlled/#balances-trimestrales</field>
+        <field name="section">Balances trimestrales</field>
+    </record>
+    <record id="help_pharmacy_controlled_balance_line" model="al.docs.help">
+        <field name="key">pharmacy.controlled.balance.line</field>
+        <field name="kind">model</field>
+        <field name="name">Producto del balance trimestral</field>
+        <field name="module">al_l10n_pe_pharmacy_controlled</field>
+        <field name="path">applications/health/pharmacy/controlled/#balances-trimestrales</field>
+        <field name="section">Balances trimestrales</field>
+    </record>
+    <record id="help_pharmacy_controlled_book_register" model="al.docs.help">
+        <field name="key">pharmacy.controlled.book.register</field>
+        <field name="kind">model</field>
+        <field name="name">Libro oficial de controlados</field>
+        <field name="module">al_l10n_pe_pharmacy_controlled</field>
+        <field name="path">applications/health/pharmacy/controlled/#libros-oficiales</field>
+        <field name="section">Libros oficiales</field>
+    </record>
     <record id="help_pharmacy_controlled_report" model="al.docs.help">
         <field name="key">pharmacy.controlled.report</field>
         <field name="kind">model</field>
@@ -3059,6 +3459,14 @@
         <field name="path">applications/health/pharmacy/digemid/</field>
         <field name="section">DIGEMID, genéricos e IGV</field>
     </record>
+    <record id="help_pharmacy_expiry_discount" model="al.docs.help">
+        <field name="key">pharmacy.expiry.discount</field>
+        <field name="kind">model</field>
+        <field name="name">Escala de descuento por vencer</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/</field>
+        <field name="section">Almacenamiento</field>
+    </record>
     <record id="help_pharmacy_generic_compliance" model="al.docs.help">
         <field name="key">pharmacy.generic.compliance</field>
         <field name="kind">model</field>
@@ -3083,6 +3491,38 @@
         <field name="path">applications/health/pharmacy/products/#producto-farmacéutico</field>
         <field name="section">Producto farmacéutico</field>
     </record>
+    <record id="help_pharmacy_insurance_affiliate" model="al.docs.help">
+        <field name="key">pharmacy.insurance.affiliate</field>
+        <field name="kind">model</field>
+        <field name="name">Afiliado a un convenio</field>
+        <field name="module">al_pharmacy_insurance</field>
+        <field name="path">applications/health/pharmacy/insurance/</field>
+        <field name="section">Convenios con EPS y empresas</field>
+    </record>
+    <record id="help_pharmacy_insurance_agreement" model="al.docs.help">
+        <field name="key">pharmacy.insurance.agreement</field>
+        <field name="kind">model</field>
+        <field name="name">Convenio con aseguradora o empresa</field>
+        <field name="module">al_pharmacy_insurance</field>
+        <field name="path">applications/health/pharmacy/insurance/</field>
+        <field name="section">Convenios con EPS y empresas</field>
+    </record>
+    <record id="help_pharmacy_insurance_agreement_line" model="al.docs.help">
+        <field name="key">pharmacy.insurance.agreement.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cobertura del convenio por producto o categoría</field>
+        <field name="module">al_pharmacy_insurance</field>
+        <field name="path">applications/health/pharmacy/insurance/</field>
+        <field name="section">Convenios con EPS y empresas</field>
+    </record>
+    <record id="help_pharmacy_insurance_liquidation" model="al.docs.help">
+        <field name="key">pharmacy.insurance.liquidation</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidación de convenio</field>
+        <field name="module">al_pharmacy_insurance</field>
+        <field name="path">applications/health/pharmacy/insurance/</field>
+        <field name="section">Convenios con EPS y empresas</field>
+    </record>
     <record id="help_pharmacy_logbook_entry" model="al.docs.help">
         <field name="key">pharmacy.logbook.entry</field>
         <field name="kind">model</field>
@@ -3106,6 +3546,14 @@
         <field name="module">al_l10n_pe_pharmacy_digemid</field>
         <field name="path">applications/health/pharmacy/digemid/</field>
         <field name="section">DIGEMID, genéricos e IGV</field>
+    </record>
+    <record id="help_pharmacy_observatory_submission" model="al.docs.help">
+        <field name="key">pharmacy.observatory.submission</field>
+        <field name="kind">model</field>
+        <field name="name">Envío de precios al Observatorio</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/#observatorio-de-precios</field>
+        <field name="section">Observatorio de precios</field>
     </record>
     <record id="help_pharmacy_prescription" model="al.docs.help">
         <field name="key">pharmacy.prescription</field>
@@ -3139,6 +3587,22 @@
         <field name="path">applications/health/pharmacy/products/</field>
         <field name="section">Productos y presentaciones</field>
     </record>
+    <record id="help_pharmacy_replenishment_wizard" model="al.docs.help">
+        <field name="key">pharmacy.replenishment.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Sugerido de compra</field>
+        <field name="module">al_pharmacy_replenishment</field>
+        <field name="path">applications/health/pharmacy/replenishment/#sugerido-de-compra</field>
+        <field name="section">Sugerido de compra</field>
+    </record>
+    <record id="help_pharmacy_replenishment_wizard_line" model="al.docs.help">
+        <field name="key">pharmacy.replenishment.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea del sugerido de compra</field>
+        <field name="module">al_pharmacy_replenishment</field>
+        <field name="path">applications/health/pharmacy/replenishment/#sugerido-de-compra</field>
+        <field name="section">Sugerido de compra</field>
+    </record>
     <record id="help_pharmacy_route" model="al.docs.help">
         <field name="key">pharmacy.route</field>
         <field name="kind">model</field>
@@ -3155,6 +3619,54 @@
         <field name="path">applications/health/pharmacy/products/</field>
         <field name="section">Productos y presentaciones</field>
     </record>
+    <record id="help_pharmacy_shortage" model="al.docs.help">
+        <field name="key">pharmacy.shortage</field>
+        <field name="kind">model</field>
+        <field name="name">Faltante</field>
+        <field name="module">al_pharmacy_replenishment</field>
+        <field name="path">applications/health/pharmacy/replenishment/</field>
+        <field name="section">Faltantes y sugerido de compra</field>
+    </record>
+    <record id="help_pharmacy_supplier_return" model="al.docs.help">
+        <field name="key">pharmacy.supplier.return</field>
+        <field name="kind">model</field>
+        <field name="name">Canje con la droguería</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/#canje-con-la-droguería</field>
+        <field name="section">Canje con la droguería</field>
+    </record>
+    <record id="help_pharmacy_supplier_return_line" model="al.docs.help">
+        <field name="key">pharmacy.supplier.return.line</field>
+        <field name="kind">model</field>
+        <field name="name">Lote del canje con la droguería</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/#canje-con-la-droguería</field>
+        <field name="section">Canje con la droguería</field>
+    </record>
+    <record id="help_pharmacy_supplier_return_load" model="al.docs.help">
+        <field name="key">pharmacy.supplier.return.load</field>
+        <field name="kind">model</field>
+        <field name="name">Cargar lotes en el canje con la droguería</field>
+        <field name="module">al_pharmacy_stock</field>
+        <field name="path">applications/health/pharmacy/storage/</field>
+        <field name="section">Almacenamiento</field>
+    </record>
+    <record id="help_pharmacy_treatment" model="al.docs.help">
+        <field name="key">pharmacy.treatment</field>
+        <field name="kind">model</field>
+        <field name="name">Tratamiento crónico</field>
+        <field name="module">al_pharmacy_care</field>
+        <field name="path">applications/health/pharmacy/care/</field>
+        <field name="section">Tratamientos crónicos y recompra</field>
+    </record>
+    <record id="help_report_al_l10n_pe_check_printing_report_check" model="al.docs.help">
+        <field name="key">report.al_l10n_pe_check_printing.report_check</field>
+        <field name="kind">model</field>
+        <field name="name">Cheque impreso</field>
+        <field name="module">al_l10n_pe_check_printing</field>
+        <field name="path">applications/finance/accounting/checks/</field>
+        <field name="section">Cheques recibidos y girados</field>
+    </record>
     <record id="help_report_al_l10n_pe_fourth_category_report_certificate" model="al.docs.help">
         <field name="key">report.al_l10n_pe_fourth_category.report_certificate</field>
         <field name="kind">model</field>
@@ -3168,8 +3680,8 @@
         <field name="kind">model</field>
         <field name="name">Balance trimestral de controlados</field>
         <field name="module">al_l10n_pe_pharmacy_controlled</field>
-        <field name="path">applications/health/pharmacy/controlled/#libros-y-balance-trimestral</field>
-        <field name="section">Libros y balance trimestral</field>
+        <field name="path">applications/health/pharmacy/controlled/#balances-trimestrales</field>
+        <field name="section">Balances trimestrales</field>
     </record>
     <record id="help_report_al_l10n_pe_pharmacy_controlled_report_controlled_book" model="al.docs.help">
         <field name="key">report.al_l10n_pe_pharmacy_controlled.report_controlled_book</field>
@@ -3178,6 +3690,14 @@
         <field name="module">al_l10n_pe_pharmacy_controlled</field>
         <field name="path">applications/health/pharmacy/controlled/</field>
         <field name="section">Estupefacientes y psicotrópicos</field>
+    </record>
+    <record id="help_report_al_l10n_pe_pharmacy_digemid_report_linked_poster" model="al.docs.help">
+        <field name="key">report.al_l10n_pe_pharmacy_digemid.report_linked_poster</field>
+        <field name="kind">model</field>
+        <field name="name">Cartel de productos de empresas vinculadas</field>
+        <field name="module">al_l10n_pe_pharmacy_digemid</field>
+        <field name="path">applications/health/pharmacy/digemid/#cartel-de-empresas-vinculadas</field>
+        <field name="section">Cartel de empresas vinculadas</field>
     </record>
     <record id="help_report_al_l10n_pe_pharmacy_digemid_report_price_list" model="al.docs.help">
         <field name="key">report.al_l10n_pe_pharmacy_digemid.report_price_list</field>

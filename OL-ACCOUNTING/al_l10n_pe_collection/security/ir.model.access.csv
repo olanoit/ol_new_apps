@@ -27,3 +27,5 @@ access_bureau_user,l10n_pe.collection.bureau user,model_l10n_pe_collection_burea
 access_bureau_manager,l10n_pe.collection.bureau manager,model_l10n_pe_collection_bureau,group_collection_manager,1,1,1,1
 access_interest_wizard_user,l10n_pe.collection.interest.wizard user,model_l10n_pe_collection_interest_wizard,group_collection_user,1,1,1,1
 access_interest_wizard_line_user,l10n_pe.collection.interest.wizard.line user,model_l10n_pe_collection_interest_wizard_line,group_collection_user,1,1,1,1
+access_rate_cap_user,l10n_pe.collection.rate.cap user,model_l10n_pe_collection_rate_cap,group_collection_user,1,0,0,0
+access_rate_cap_manager,l10n_pe.collection.rate.cap manager,model_l10n_pe_collection_rate_cap,group_collection_manager,1,1,1,1

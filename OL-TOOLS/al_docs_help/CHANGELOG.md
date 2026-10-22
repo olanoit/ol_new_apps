@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261022 — 22/10/2026
+
+- Mapa de pantallas actualizado a 468: Cobranza (reclamos, centrales, provisión, tasas máximas del BCRP), recaudación bancaria, cierre de caja, flujo proyectado, cheques, farmacia y tablero de la app Perú.
+
 ## 7.20261012 — 12/10/2026
 
 - Mapa de pantallas con los módulos de pagos masivos, declaración mensual (621), validación de comprobantes y DUA de importación (302 pantallas).

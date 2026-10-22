@@ -53,4 +53,6 @@
               action="action_collection_dispute_reason" sequence="35"/>
     <menuitem id="menu_collection_followup_levels" name="Niveles de seguimiento" parent="menu_collection_config_root"
               action="account_followup.action_account_followup_line_definition_form" sequence="40"/>
+    <menuitem id="menu_collection_rate_caps" name="Tasas máximas del BCRP" parent="menu_collection_config_root"
+              action="action_collection_rate_cap" sequence="50"/>
 </odoo>

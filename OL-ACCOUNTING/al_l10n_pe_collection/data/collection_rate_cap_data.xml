@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Tasas máximas de interés convencional compensatorio del BCRP (Circular 0008-2021-BCRP).
+         El moratorio máximo es el 15 % del compensatorio. -->
+    <record id="rate_cap_2026_05_pen" model="l10n_pe.collection.rate.cap">
+        <field name="date_from">2026-05-01</field>
+        <field name="date_to">2026-10-31</field>
+        <field name="currency_type">pen</field>
+        <field name="compensatory_rate">114.13</field>
+        <field name="source">BCRP, nota informativa del 07/04/2026 (tasas máximas mayo–octubre 2026)</field>
+    </record>
+    <record id="rate_cap_2026_05_foreign" model="l10n_pe.collection.rate.cap">
+        <field name="date_from">2026-05-01</field>
+        <field name="date_to">2026-10-31</field>
+        <field name="currency_type">foreign</field>
+        <field name="compensatory_rate">99.84</field>
+        <field name="source">BCRP, nota informativa del 07/04/2026 (tasas máximas mayo–octubre 2026)</field>
+    </record>
+    <record id="rate_cap_2026_11_pen" model="l10n_pe.collection.rate.cap">
+        <field name="date_from">2026-11-01</field>
+        <field name="date_to">2027-04-30</field>
+        <field name="currency_type">pen</field>
+        <field name="compensatory_rate">114.68</field>
+        <field name="source">BCRP, tasas máximas noviembre 2026–abril 2027 (difundidas el 14/10/2026; verificar con la nota oficial)</field>
+    </record>
+    <record id="rate_cap_2026_11_foreign" model="l10n_pe.collection.rate.cap">
+        <field name="date_from">2026-11-01</field>
+        <field name="date_to">2027-04-30</field>
+        <field name="currency_type">foreign</field>
+        <field name="compensatory_rate">103.14</field>
+        <field name="source">BCRP, tasas máximas noviembre 2026–abril 2027 (difundidas el 14/10/2026; verificar con la nota oficial)</field>
+    </record>
+</odoo>
