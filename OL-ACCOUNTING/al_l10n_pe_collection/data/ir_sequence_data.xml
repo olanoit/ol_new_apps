@@ -35,4 +35,11 @@
         <field name="padding">4</field>
         <field name="company_id" eval="False"/>
     </record>
+    <record id="seq_collection_lawsuit" model="ir.sequence">
+        <field name="name">Proceso judicial de cobranza</field>
+        <field name="code">l10n_pe.collection.lawsuit</field>
+        <field name="prefix">PJ/%(year)s/</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
 </odoo>

@@ -316,6 +316,12 @@ class TestCollectionV3(CollectionCommon):
         # Código propio: la base puede tener ya un diario «PROV» de datos reales.
         return self.env['account.journal'].create({'name': 'Provisiones (prueba)', 'code': 'TPRV', 'type': 'general'})
 
+    def _load(self, provision):
+        """Propone y deja solo los clientes de la prueba: la base puede tener deudas
+        provisionables de otros datos (por ejemplo, en cobranza judicial)."""
+        provision.action_load()
+        provision.line_ids.filtered(lambda l: l.partner_id not in (self.customer | self.other_customer)).unlink()
+
     def test_provision_requires_actions_and_posts(self):
         old = self._invoice(1000, -400, invoice_date=self.today - timedelta(days=430))
         unsupported = self._invoice(500, -400, partner=self.other_customer,
@@ -325,7 +331,7 @@ class TestCollectionV3(CollectionCommon):
             'partner_id': self.customer.id, 'user_id': self.collector.id, 'channel': 'email',
             'result_id': self.result_no_answer.id})
         provision = self.env['l10n_pe.collection.provision'].create({'journal_id': self._provision_journal().id})
-        provision.action_load()
+        self._load(provision)
         by_move = {line.move_id: line for line in provision.line_ids}
         self.assertNotIn(recent, by_move)
         self.assertTrue(by_move[old].selected and by_move[old].supported)
@@ -349,7 +355,7 @@ class TestCollectionV3(CollectionCommon):
         self.assertNotIn(provision_account, portfolio.account_id)
         # Una segunda provisión no repite los documentos.
         again = self.env['l10n_pe.collection.provision'].create({'journal_id': provision.journal_id.id})
-        again.action_load()
+        self._load(again)
         self.assertFalse(again.line_ids.filtered(lambda l: l.move_id in (old | unsupported)))
 
     def test_provision_recovery_and_write_off(self):
@@ -358,7 +364,7 @@ class TestCollectionV3(CollectionCommon):
             'partner_id': self.customer.id, 'user_id': self.collector.id, 'channel': 'letter',
             'result_id': self.result_no_answer.id})
         provision = self.env['l10n_pe.collection.provision'].create({'journal_id': self._provision_journal().id})
-        provision.action_load()
+        self._load(provision)
         provision.action_post()
         self._pay(old, amount=300)
         line = provision.line_ids
@@ -380,7 +386,7 @@ class TestCollectionV3(CollectionCommon):
             'partner_id': self.customer.id, 'user_id': self.collector.id, 'channel': 'email',
             'result_id': self.result_no_answer.id})
         provision = self.env['l10n_pe.collection.provision'].create({'journal_id': self._provision_journal().id})
-        provision.action_load()
+        self._load(provision)
         provision.action_post()
         line = provision.line_ids
         self.assertFalse(line.write_off_allowed)

@@ -99,7 +99,9 @@ class L10nPeCollectionProvision(models.Model):
             ('reconciled', '=', False),
             ('amount_residual', '>', 0),
             ('partner_id', '!=', False),
-            ('date_maturity', '<', limit),
+            # Art. 21 f): la morosidad se acredita con más de 12 meses vencida o con
+            # el inicio de la cobranza judicial.
+            '|', ('date_maturity', '<', limit), ('l10n_pe_collection_lawsuit_ids.date_filed', '!=', False),
             ('l10n_pe_collection_in_dispute', '=', False),
         ]
         done = self._provisioned_line_ids()
@@ -113,13 +115,17 @@ class L10nPeCollectionProvision(models.Model):
                 ('partner_id', '=', partner.id), ('date', '>=', fields.Datetime.to_datetime(aml.date_maturity)),
                 ('company_id', 'child_of', company.root_id.id),
                 '|', ('line_ids', '=', False), ('line_ids', 'in', aml.ids)])
+            lawsuits = aml.l10n_pe_collection_lawsuit_ids
+            judicial = bool(lawsuits.filtered('date_filed'))
             commands.append(Command.create({
                 'move_line_id': aml.id,
                 'partner_id': partner.id,
                 'amount': aml.amount_residual,
                 'action_count': len(actions),
                 'days': (self.date - aml.date_maturity).days,
-                'selected': len(actions) >= self.min_actions,
+                'judicial': judicial,
+                'judicial_exhausted': bool(lawsuits.filtered(lambda l: l.result == 'uncollectible')),
+                'selected': judicial or len(actions) >= self.min_actions,
             }))
         self.line_ids = commands
         return True

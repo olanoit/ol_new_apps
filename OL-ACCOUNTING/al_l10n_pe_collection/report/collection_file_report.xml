@@ -150,8 +150,44 @@
                 </table>
             </t>
 
+            <t t-if="data['lawsuits']">
+                <p class="pe-doc-label mb-1"><strong>6. Cobranza judicial</strong></p>
+                <t t-foreach="data['lawsuits']" t-as="law">
+                    <table class="pe-doc-table mb-1">
+                        <tr>
+                            <td class="pe-doc-label" style="width: 15%;">Proceso</td>
+                            <td class="pe-doc-value" style="width: 35%;"><span t-out="law.name"/> · <span t-field="law.process_type"/></td>
+                            <td class="pe-doc-label" style="width: 15%;">Expediente</td>
+                            <td class="pe-doc-value"><span t-out="law.file_number or '—'"/> · <span t-out="law.court or ''"/></td>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Demanda</td>
+                            <td class="pe-doc-value"><span t-out="law.date_filed and law.date_filed.strftime('%d/%m/%Y') or 'No presentada'"/> · petitorio <span t-field="law.amount_claimed"/></td>
+                            <td class="pe-doc-label">Etapa</td>
+                            <td class="pe-doc-value"><span t-field="law.state"/><t t-if="law.result"> · <span t-field="law.result"/></t></td>
+                        </tr>
+                    </table>
+                    <table t-if="law.event_ids" class="pe-doc-table pe-doc-lines mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <td style="width: 14%;">Fecha</td>
+                                <td style="width: 22%;">Tipo</td>
+                                <td>Actuación</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="law.event_ids.sorted('date')" t-as="ev">
+                                <td><span t-out="ev.date.strftime('%d/%m/%Y')"/></td>
+                                <td><span t-field="ev.event_type"/></td>
+                                <td><span t-out="ev.name"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </t>
+
             <t t-if="data['emails']">
-                <p class="pe-doc-label mb-1"><strong>6. Comunicaciones y notas</strong></p>
+                <p class="pe-doc-label mb-1"><strong>7. Comunicaciones y notas</strong></p>
                 <table class="pe-doc-table pe-doc-lines mb-3">
                     <thead>
                         <tr class="pe-doc-thead">

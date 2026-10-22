@@ -195,6 +195,56 @@ gestor o para toda la cartera:
 | DSO | Cartera ÷ ventas de los últimos 90 días × 90 |
 | Cobrado en el mes y avance de la meta | Resultado del periodo |
 
+## Cobranza judicial
+
+**Cobranza ‣ Gestión ‣ Cobranza judicial** registra el proceso contra un deudor. Cada
+proceso guarda:
+
+- los documentos demandados;
+- la **vía**: proceso único de ejecución si hay título ejecutivo (letra, pagaré, factura
+  negociable conformada) y, si no, sumarísimo, abreviado o de conocimiento según la cuantía;
+- el juzgado, el número de expediente, el estudio y el abogado.
+
+![Proceso judicial](collection/lawsuit.png)
+
+El proceso avanza con los botones **Conciliación** (opcional), **Demanda presentada**,
+**Admitida**, **Sentencia**, **Ejecución forzada** y **Concluir**. Al concluirlo se elige el
+resultado:
+
+- cobrado;
+- transacción o acuerdo;
+- incobrable, con acciones agotadas;
+- desfavorable;
+- desistimiento.
+
+Para concluirlo como **incobrable** hay que describir el sustento, por ejemplo un embargo sin
+resultado.
+
+| Momento | Qué pasa |
+|---|---|
+| Demanda presentada | Se congela el **petitorio** con el saldo del día. Los documentos salen del seguimiento automático (los avisos los da el estudio). |
+| Provisión de cobranza dudosa | Los documentos demandados entran en **Proponer documentos** aunque no tengan 12 meses de vencidos. Quedan marcados como **proceso judicial** (art. 21 f del Reglamento de la LIR). |
+| Concluido incobrable | Las provisiones contabilizadas quedan con las **acciones judiciales agotadas**. Así se pueden castigar aunque el deudor deba más de 3 UIT (art. 21 g). |
+| Concluido de otra forma | El saldo que quede vuelve al seguimiento. |
+
+En las pestañas del proceso se registran:
+
+- **Actuaciones:** escritos, resoluciones, notificaciones, audiencias y embargos. Una
+  actuación con **plazo** se agenda como actividad al responsable. Los plazos vencidos se ven
+  en rojo y con el filtro **Plazos vencidos**.
+- **Gastos y costas:** tasas judiciales, cédulas, honorarios, etc., con su comprobante
+  opcional.
+
+El **expediente de cobranza** (PDF) incluye cada proceso con sus actuaciones.
+
+**Estudio externo.** Si el proceso lo lleva una agencia externa (el estudio), asigne antes
+al cliente a esa agencia. Sus usuarios ven el proceso y registran actuaciones, gastos y
+cambios de etapa. Solo el administrador reabre un proceso concluido.
+
+!!! note "Nota"
+    La vía la decide el abogado. Las cuantías del Código Procesal Civil están en URP
+    (10 % de la UIT): hasta 100 URP, sumarísimo; hasta 1000, abreviado; más, conocimiento.
+
 ## Agencias externas
 
 Para entregar la cartera difícil a un estudio o call center, regístrelo en **Cobranza ‣

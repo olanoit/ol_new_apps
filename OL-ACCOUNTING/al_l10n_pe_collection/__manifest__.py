@@ -1,6 +1,6 @@
 {
     'name': 'Cobranza (AL)',
-    'summary': 'Gestión de cobranza: cartera por gestor, gestiones, compromisos de pago, reclamos, '
+    'summary': 'Gestión de cobranza: cartera por gestor, gestiones, compromisos de pago, reclamos, cobranza judicial, '
                'calificación de riesgo, bloqueo de crédito, intereses, provisión de cobranza dudosa, '
                'centrales de riesgo, proyección, metas y estado de cuenta.',
     'description': """
@@ -35,6 +35,8 @@ responsable es el **gestor de cobranza** del cliente:
   la deuda, descuento de cobros revertidos y factura de proveedor de la agencia.
 * **Agencias externas**: cartera asignada por fechas; sus usuarios solo ven esos clientes
   y sus documentos, sin entrar a Contabilidad.
+* **Cobranza judicial**: proceso por deudor (vía, juzgado, expediente, actuaciones con
+  plazos y gastos) que sustenta la provisión y el castigo de la cobranza dudosa.
 * **Pago en línea**: enlace y QR para pagar el saldo con las pasarelas activas (Culqi,
   Niubiz, Izipay…) en los avisos y el estado de cuenta; el pago se aplica a las
   facturas más antiguas.
@@ -46,7 +48,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_collection/static/description/icon.svg',
-    'version': '7.20261022',
+    'version': '8.20261022',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account_followup', 'account_payment', 'account_reports', 'al_account_base', 'al_report_base', 'mail',
@@ -76,6 +78,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
         'views/collection_target_views.xml',
         'views/collection_commission_views.xml',
         'views/collection_agency_views.xml',
+        'views/collection_lawsuit_views.xml',
         'views/collection_dashboard_views.xml',
         'views/res_partner_views.xml',
         'views/res_config_settings_views.xml',

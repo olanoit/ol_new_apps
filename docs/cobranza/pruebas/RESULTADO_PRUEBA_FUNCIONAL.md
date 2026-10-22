@@ -83,3 +83,15 @@ Comercial Misti.
 Además: 89 pruebas automáticas en verde (cobranza 66, bloqueo de ventas, recaudación y PagoEfectivo).
 El menú de la agencia muestra solo Cartera (cola, cartera, antigüedad, cartera de agencias),
 Gestión (gestiones, compromisos) y Comisiones; el Tablero quedó solo para gestores.
+
+## Cobranza judicial (v8, 22/10/2026)
+
+`prueba_funcional_judicial.py` (después de la de comisiones): demanda ejecutiva a Ferretería
+Los Andes por S/ 18 000, llevada por el Estudio Jurídico Recupera.
+
+| Etapa | Qué se probó | Resultado |
+|---|---|---|
+| F12 Judicial | El estudio registra expediente, actuaciones y gastos y presenta la demanda; petitorio congelado; la factura sale del seguimiento; plazo agendado al responsable; el estudio no ve otros procesos; la provisión acepta la deuda de 4 meses por la demanda | 6/6 |
+| Interfaz | Proceso judicial como administrador y como el estudio, sin errores | 9/9 |
+
+96 pruebas automáticas en verde (7 nuevas de cobranza judicial).

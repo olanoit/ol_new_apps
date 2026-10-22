@@ -69,6 +69,10 @@ pasos:
     imagen: screenshots/03-lista.png
 
 novedades:
+  - version: 9.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Mapa de pantallas actualizado a 479: agencias externas, comisiones, planes de comisión y cobranza judicial de Cobranza."
   - version: 8.20261022
     fecha: 22/10/2026
     cambios:

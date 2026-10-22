@@ -62,6 +62,8 @@ class ResPartner(models.Model):
         string='Compromisos', compute='_compute_l10n_pe_collection_counts')
     l10n_pe_collection_dispute_count = fields.Integer(
         string='Reclamos', compute='_compute_l10n_pe_collection_counts')
+    l10n_pe_collection_lawsuit_count = fields.Integer(
+        string='Procesos judiciales', compute='_compute_l10n_pe_collection_lawsuit_count')
 
     @api.onchange('l10n_pe_collection_zone_id')
     def _onchange_l10n_pe_collection_zone_id(self):
@@ -79,6 +81,13 @@ class ResPartner(models.Model):
             partner.l10n_pe_collection_action_count = actions.get(partner, 0)
             partner.l10n_pe_collection_promise_count = promises.get(partner, 0)
             partner.l10n_pe_collection_dispute_count = disputes.get(partner, 0)
+
+    def _compute_l10n_pe_collection_lawsuit_count(self):
+        # Aparte: las agencias ven los procesos pero no los reclamos.
+        lawsuits = dict(self.env['l10n_pe.collection.lawsuit']._read_group(
+            [('partner_id', 'in', self.ids)], ['partner_id'], ['__count']))
+        for partner in self:
+            partner.l10n_pe_collection_lawsuit_count = lawsuits.get(partner, 0)
 
     # ------------------------------------------------------------------
     # Cartera del cliente
@@ -411,6 +420,12 @@ class ResPartner(models.Model):
         action.update(domain=[('partner_id', '=', self.id)], context={'default_partner_id': self.id})
         return action
 
+    def action_l10n_pe_collection_lawsuits(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window']._for_xml_id('al_l10n_pe_collection.action_collection_lawsuit')
+        action.update(domain=[('partner_id', '=', self.id)], context={'default_partner_id': self.id})
+        return action
+
     def action_l10n_pe_collection_new_dispute(self):
         self.ensure_one()
         return {
@@ -442,13 +457,15 @@ class ResPartner(models.Model):
             [('partner_id', '=', partner.id)] + root, order='date, id')
         bureaus_sudo = self.env['l10n_pe.collection.bureau'].sudo().search(
             [('partner_id', '=', partner.id)] + root, order='id')
+        lawsuits_sudo = self.env['l10n_pe.collection.lawsuit'].sudo().search(
+            [('partner_id', '=', partner.id)] + root, order='id')
         messages_sudo = self.env['mail.message'].sudo().search([
             ('model', '=', 'res.partner'), ('res_id', '=', partner.id), ('message_type', 'in', ('email', 'email_outgoing', 'comment'))],
             order='date')
         return {
             'statement': partner._l10n_pe_collection_statement_values(company),
             'actions': actions_sudo, 'promises': promises_sudo, 'disputes': disputes_sudo,
-            'bureaus': bureaus_sudo, 'emails': messages_sudo,
+            'bureaus': bureaus_sudo, 'lawsuits': lawsuits_sudo, 'emails': messages_sudo,
         }
 
     def action_l10n_pe_collection_statement(self):

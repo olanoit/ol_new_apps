@@ -1979,6 +1979,30 @@
         <field name="path">applications/finance/accounting/collection/</field>
         <field name="section">Cobranza</field>
     </record>
+    <record id="help_l10n_pe_collection_agency" model="al.docs.help">
+        <field name="key">l10n_pe.collection.agency</field>
+        <field name="kind">model</field>
+        <field name="name">Agencia de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_agency_assign" model="al.docs.help">
+        <field name="key">l10n_pe.collection.agency.assign</field>
+        <field name="kind">model</field>
+        <field name="name">Asignar clientes a una agencia</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_agency_assignment" model="al.docs.help">
+        <field name="key">l10n_pe.collection.agency.assignment</field>
+        <field name="kind">model</field>
+        <field name="name">Asignación a agencia de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
     <record id="help_l10n_pe_collection_bucket" model="al.docs.help">
         <field name="key">l10n_pe.collection.bucket</field>
         <field name="kind">model</field>
@@ -1994,6 +2018,38 @@
         <field name="module">al_l10n_pe_collection</field>
         <field name="path">applications/finance/accounting/collection/#centrales-de-riesgo</field>
         <field name="section">Centrales de riesgo</field>
+    </record>
+    <record id="help_l10n_pe_collection_commission" model="al.docs.help">
+        <field name="key">l10n_pe.collection.commission</field>
+        <field name="kind">model</field>
+        <field name="name">Liquidación de comisiones de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_commission_line" model="al.docs.help">
+        <field name="key">l10n_pe.collection.commission.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cobro de la liquidación de comisiones</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_commission_plan" model="al.docs.help">
+        <field name="key">l10n_pe.collection.commission.plan</field>
+        <field name="kind">model</field>
+        <field name="name">Plan de comisión de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_commission_plan_line" model="al.docs.help">
+        <field name="key">l10n_pe.collection.commission.plan.line</field>
+        <field name="kind">model</field>
+        <field name="name">Tramo del plan de comisión</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
     </record>
     <record id="help_l10n_pe_collection_dashboard" model="al.docs.help">
         <field name="key">l10n_pe.collection.dashboard</field>
@@ -2058,6 +2114,38 @@
         <field name="module">al_l10n_pe_collection</field>
         <field name="path">applications/finance/accounting/collection/#intereses-moratorios</field>
         <field name="section">Intereses moratorios</field>
+    </record>
+    <record id="help_l10n_pe_collection_lawsuit" model="al.docs.help">
+        <field name="key">l10n_pe.collection.lawsuit</field>
+        <field name="kind">model</field>
+        <field name="name">Proceso judicial de cobranza</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/#cobranza-judicial</field>
+        <field name="section">Cobranza judicial</field>
+    </record>
+    <record id="help_l10n_pe_collection_lawsuit_close" model="al.docs.help">
+        <field name="key">l10n_pe.collection.lawsuit.close</field>
+        <field name="kind">model</field>
+        <field name="name">Concluir proceso judicial</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_lawsuit_cost" model="al.docs.help">
+        <field name="key">l10n_pe.collection.lawsuit.cost</field>
+        <field name="kind">model</field>
+        <field name="name">Gasto judicial</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
+    </record>
+    <record id="help_l10n_pe_collection_lawsuit_event" model="al.docs.help">
+        <field name="key">l10n_pe.collection.lawsuit.event</field>
+        <field name="kind">model</field>
+        <field name="name">Actuación judicial</field>
+        <field name="module">al_l10n_pe_collection</field>
+        <field name="path">applications/finance/accounting/collection/</field>
+        <field name="section">Cobranza</field>
     </record>
     <record id="help_l10n_pe_collection_portfolio" model="al.docs.help">
         <field name="key">l10n_pe.collection.portfolio</field>

@@ -101,6 +101,12 @@ pasos:
       Aviso previo al deudor, plazo de espera, reporte y aviso al gestor para retirarlo cuando
       paga.
     imagen: screenshots/v3-bureaus.png
+  - titulo: Llevar la cobranza judicial
+    ruta: Cobranza ▸ Gestión ▸ Cobranza judicial
+    texto: >-
+      Demanda, expediente, actuaciones con plazos y gastos; sustenta la provisión y el castigo de
+      la cobranza dudosa ante SUNAT.
+    imagen: screenshots/v3-lawsuit.png
   - titulo: Entregar cartera a una agencia externa
     ruta: Cobranza ▸ Cartera ▸ Agencias externas
     texto: >-
@@ -153,6 +159,10 @@ faq:
       genera el Excel con los datos que se cargan en la central.
 
 novedades:
+  - version: 8.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Cobranza judicial: proceso por deudor con vía, juzgado, expediente, estudio, actuaciones con plazos agendados y gastos; la demanda saca los documentos del seguimiento y sustenta la provisión sin esperar 12 meses, y el cierre como incobrable deja las acciones agotadas para castigar deudas de más de 3 UIT. El expediente PDF incluye los procesos."
   - version: 7.20261022
     fecha: 22/10/2026
     cambios:

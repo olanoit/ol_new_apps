@@ -40,6 +40,9 @@
     <menuitem id="menu_collection_bureaus" name="Centrales de riesgo" parent="menu_collection_management_root"
               action="action_collection_bureau" sequence="40"
               groups="al_l10n_pe_collection.group_collection_user"/>
+    <menuitem id="menu_collection_lawsuits" name="Cobranza judicial" parent="menu_collection_management_root"
+              action="action_collection_lawsuit" sequence="45"
+              groups="al_l10n_pe_collection.group_collection_user,al_l10n_pe_collection.group_collection_agency"/>
     <menuitem id="menu_collection_interest" name="Liquidar intereses" parent="menu_collection_management_root"
               action="action_collection_interest_wizard" sequence="50"
               groups="al_l10n_pe_collection.group_collection_manager"/>

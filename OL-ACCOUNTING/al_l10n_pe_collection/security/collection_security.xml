@@ -264,5 +264,75 @@
             <field name="domain_force">[('debit_move_id.partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]</field>
             <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
         </record>
+        <!-- Cobranza judicial -->
+        <record id="collection_lawsuit_company_rule" model="ir.rule">
+            <field name="name">Proceso judicial: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_lawsuit_event_company_rule" model="ir.rule">
+            <field name="name">Actuación judicial: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_event"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_lawsuit_cost_company_rule" model="ir.rule">
+            <field name="name">Gasto judicial: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_cost"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="collection_lawsuit_user_rule" model="ir.rule">
+            <field name="name">Proceso judicial: solo los propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_lawsuit_manager_rule" model="ir.rule">
+            <field name="name">Proceso judicial: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_lawsuit_agency_rule" model="ir.rule">
+            <field name="name">Proceso judicial: los del estudio</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit"/>
+            <field name="domain_force">[('agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_lawsuit_event_user_rule" model="ir.rule">
+            <field name="name">Actuación judicial: procesos propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_event"/>
+            <field name="domain_force">[('lawsuit_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_lawsuit_event_manager_rule" model="ir.rule">
+            <field name="name">Actuación judicial: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_event"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_lawsuit_event_agency_rule" model="ir.rule">
+            <field name="name">Actuación judicial: procesos del estudio</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_event"/>
+            <field name="domain_force">[('lawsuit_id.agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
+        <record id="collection_lawsuit_cost_user_rule" model="ir.rule">
+            <field name="name">Gasto judicial: procesos propios</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_cost"/>
+            <field name="domain_force">[('lawsuit_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_user'))]"/>
+        </record>
+        <record id="collection_lawsuit_cost_manager_rule" model="ir.rule">
+            <field name="name">Gasto judicial: todos</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_cost"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_collection_manager'))]"/>
+        </record>
+        <record id="collection_lawsuit_cost_agency_rule" model="ir.rule">
+            <field name="name">Gasto judicial: procesos del estudio</field>
+            <field name="model_id" ref="model_l10n_pe_collection_lawsuit_cost"/>
+            <field name="domain_force">[('lawsuit_id.agency_id.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('group_collection_agency'))]"/>
+        </record>
     </data>
 </odoo>

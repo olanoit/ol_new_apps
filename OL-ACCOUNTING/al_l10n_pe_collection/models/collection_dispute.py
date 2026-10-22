@@ -161,11 +161,14 @@ class AccountMoveLine(models.Model):
                 d.state == 'open' for d in line.l10n_pe_collection_dispute_ids)
 
     def _l10n_pe_collection_sync_dispute(self):
-        """Saca del seguimiento las cuotas con un reclamo abierto y devuelve las
-        demás (solo las que la app sacó)."""
+        """Saca del seguimiento las cuotas con un reclamo abierto o en cobranza
+        judicial y devuelve las demás (solo las que la app sacó)."""
+        active_lawsuit = ('filed', 'admitted', 'judgment', 'enforcement')
         for line in self:
-            in_dispute = any(d.state == 'open' for d in line.l10n_pe_collection_dispute_ids)
-            if in_dispute and not line.no_followup:
+            out = any(d.state == 'open' for d in line.l10n_pe_collection_dispute_ids) \
+                or any(l.state in active_lawsuit for l in line.l10n_pe_collection_lawsuit_ids)
+            touched = line.l10n_pe_collection_dispute_ids or line.l10n_pe_collection_lawsuit_ids
+            if out and not line.no_followup:
                 line.no_followup = True
-            elif not in_dispute and line.no_followup and line.l10n_pe_collection_dispute_ids:
+            elif not out and line.no_followup and touched:
                 line.no_followup = False

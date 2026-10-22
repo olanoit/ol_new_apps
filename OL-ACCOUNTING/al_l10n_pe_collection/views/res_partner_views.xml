@@ -68,6 +68,11 @@
                         invisible="not l10n_pe_collection_dispute_count">
                     <field name="l10n_pe_collection_dispute_count" widget="statinfo" string="Reclamos"/>
                 </button>
+                <button name="action_l10n_pe_collection_lawsuits" type="object" class="oe_stat_button" icon="fa-gavel"
+                        groups="al_l10n_pe_collection.group_collection_user"
+                        invisible="not l10n_pe_collection_lawsuit_count">
+                    <field name="l10n_pe_collection_lawsuit_count" widget="statinfo" string="Judicial"/>
+                </button>
                 <button name="action_l10n_pe_collection_promises" type="object" class="oe_stat_button" icon="fa-handshake-o"
                         groups="al_l10n_pe_collection.group_collection_user"
                         invisible="not l10n_pe_collection_promise_count">

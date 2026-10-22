@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261022 — 22/10/2026
+
+- Cobranza judicial: proceso por deudor con vía, juzgado, expediente, estudio, actuaciones con plazos agendados y gastos; la demanda saca los documentos del seguimiento y sustenta la provisión sin esperar 12 meses, y el cierre como incobrable deja las acciones agotadas para castigar deudas de más de 3 UIT. El expediente PDF incluye los procesos.
+
 ## 7.20261022 — 22/10/2026
 
 - Agencias externas de cobranza: cartera asignada por fechas (asistente desde la lista de clientes, retiro y fin automático); sus usuarios solo ven los clientes asignados y sus documentos, sin entrar a Contabilidad.

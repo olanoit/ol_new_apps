@@ -32,6 +32,7 @@ PANTALLAS = [
     ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission', 'commission', True),
     ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission_line', None, False),
     ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission_plan', 'commission-plan', True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_lawsuit', 'lawsuit', True),
 ]
 
 #: Lo que ve el usuario de una agencia externa (FICHAS_USER=estudio_recupera).
@@ -42,9 +43,13 @@ PANTALLAS_AGENCIA = [
     ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_promise', None, False),
     ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_agency_assignment', None, True),
     ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_commission', None, True),
+    ('al_l10n_pe_collection', 'al_l10n_pe_collection.action_collection_lawsuit', 'agency-lawsuit', True),
 ]
 if os.environ.get('FICHAS_USER', 'admin') != 'admin':
     PANTALLAS = PANTALLAS_AGENCIA
+if os.environ.get('SOLO'):
+    # SOLO=lawsuit,commission: solo las acciones que contienen alguno de esos textos.
+    PANTALLAS = [p for p in PANTALLAS if any(t in p[1] for t in os.environ['SOLO'].split(','))]
 
 problemas = []
 for module, xmlid, foto, abrir in PANTALLAS:

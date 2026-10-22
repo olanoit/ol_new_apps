@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261022 — 22/10/2026
+
+- Mapa de pantallas actualizado a 479: agencias externas, comisiones, planes de comisión y cobranza judicial de Cobranza.
+
 ## 8.20261022 — 22/10/2026
 
 - Mapa de pantallas actualizado a 468: Cobranza (reclamos, centrales, provisión, tasas máximas del BCRP), recaudación bancaria, cierre de caja, flujo proyectado, cheques, farmacia y tablero de la app Perú.

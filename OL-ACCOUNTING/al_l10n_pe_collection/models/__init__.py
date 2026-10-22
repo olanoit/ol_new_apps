@@ -16,3 +16,4 @@ from . import collection_bureau
 from . import payment_transaction
 from . import collection_commission
 from . import collection_agency
+from . import collection_lawsuit

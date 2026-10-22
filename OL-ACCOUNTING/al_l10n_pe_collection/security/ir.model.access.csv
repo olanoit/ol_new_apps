@@ -59,3 +59,12 @@ access_account_move_agency,account.move agency,account.model_account_move,group_
 access_account_move_line_agency,account.move.line agency,account.model_account_move_line,group_collection_agency,1,0,0,0
 access_account_journal_agency,account.journal agency,account.model_account_journal,group_collection_agency,1,0,0,0
 access_account_partial_reconcile_agency,account.partial.reconcile agency,account.model_account_partial_reconcile,group_collection_agency,1,0,0,0
+access_lawsuit_user,l10n_pe.collection.lawsuit user,model_l10n_pe_collection_lawsuit,group_collection_user,1,1,1,0
+access_lawsuit_manager,l10n_pe.collection.lawsuit manager,model_l10n_pe_collection_lawsuit,group_collection_manager,1,1,1,1
+access_lawsuit_agency,l10n_pe.collection.lawsuit agency,model_l10n_pe_collection_lawsuit,group_collection_agency,1,1,0,0
+access_lawsuit_event_user,l10n_pe.collection.lawsuit.event user,model_l10n_pe_collection_lawsuit_event,group_collection_user,1,1,1,1
+access_lawsuit_event_agency,l10n_pe.collection.lawsuit.event agency,model_l10n_pe_collection_lawsuit_event,group_collection_agency,1,1,1,1
+access_lawsuit_cost_user,l10n_pe.collection.lawsuit.cost user,model_l10n_pe_collection_lawsuit_cost,group_collection_user,1,1,1,1
+access_lawsuit_cost_agency,l10n_pe.collection.lawsuit.cost agency,model_l10n_pe_collection_lawsuit_cost,group_collection_agency,1,1,1,1
+access_lawsuit_close_user,l10n_pe.collection.lawsuit.close user,model_l10n_pe_collection_lawsuit_close,group_collection_user,1,1,1,1
+access_lawsuit_close_agency,l10n_pe.collection.lawsuit.close agency,model_l10n_pe_collection_lawsuit_close,group_collection_agency,1,1,1,1
