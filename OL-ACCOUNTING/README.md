@@ -71,5 +71,6 @@ módulo | versión | licencia | resumen
 [al_payment_culqi](al_payment_culqi/) | 2.20261018 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
 [al_payment_izipay](al_payment_izipay/) | 2.20261018 | OPL-1 | Izipay como proveedor de pago de Odoo: formulario emergente de Izipay con tarjetas y cuotas, confirmación por IPN firmada, anulaciones y devoluciones.
 [al_payment_niubiz](al_payment_niubiz/) | 3.20261018 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
+[al_payment_pagoefectivo](al_payment_pagoefectivo/) | 1.20261022 | OPL-1 | PagoEfectivo como proveedor de pago de Odoo: código de pago (CIP) para pagar en efectivo en agentes y bodegas o desde la banca, confirmado por notificación firmada.
 [l10n_pe_vat_sunat](l10n_pe_vat_sunat/) | 22.20261012 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 [//]: # (end addons)

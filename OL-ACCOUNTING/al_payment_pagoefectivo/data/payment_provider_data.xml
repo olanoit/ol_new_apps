@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="payment_provider_pagoefectivo" model="payment.provider">
+        <field name="name">PagoEfectivo</field>
+        <field name="code">pagoefectivo</field>
+        <field name="image_128" type="base64" file="al_payment_pagoefectivo/static/description/icon.png"/>
+        <field name="module_id" ref="base.module_al_payment_pagoefectivo"/>
+        <field name="redirect_form_view_id" ref="redirect_form"/>
+        <field name="available_country_ids" eval="[Command.set([ref('base.pe')])]"/>
+        <field name="payment_method_ids" eval="[Command.set([ref('payment_method_pagoefectivo')])]"/>
+        <field name="pending_msg" type="html">
+            <p>Le enviamos el código de pago (CIP) a su correo. Páguelo en agentes y bodegas, o
+            desde la banca por internet o su billetera, antes de que venza. Recibirá la
+            confirmación cuando PagoEfectivo nos avise del pago.</p>
+        </field>
+    </record>
+
+</odoo>

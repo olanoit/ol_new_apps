@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">payment.provider.form.pagoefectivo</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'pagoefectivo'" name="pagoefectivo_credentials">
+                    <field name="pagoefectivo_service_id" required="code == 'pagoefectivo' and state != 'disabled'"/>
+                    <field name="pagoefectivo_access_key" required="code == 'pagoefectivo' and state != 'disabled'"
+                           password="True" groups="base.group_system"/>
+                    <field name="pagoefectivo_secret_key" required="code == 'pagoefectivo' and state != 'disabled'"
+                           password="True" groups="base.group_system"/>
+                    <field name="pagoefectivo_expiry_hours"/>
+                    <field name="pagoefectivo_webhook_url" widget="CopyClipboardChar"/>
+                    <div colspan="2" class="text-muted small">
+                        PagoEfectivo entrega el código de servicio y las claves al afiliar el
+                        comercio. En «Modo de prueba» se usa su entorno de preproducción; en
+                        «Activado», el de producción. Registre la URL de notificación en el panel
+                        de PagoEfectivo: sin ella, los pagos no se confirman en Odoo.
+                    </div>
+                </group>
+            </group>
+        </field>
+    </record>
+
+    <record id="payment_transaction_form" model="ir.ui.view">
+        <field name="name">payment.transaction.form.pagoefectivo</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <field name="provider_reference" position="after">
+                <field name="pagoefectivo_date_expiry" invisible="provider_code != 'pagoefectivo'"/>
+                <field name="pagoefectivo_cip_url" widget="url" invisible="provider_code != 'pagoefectivo'"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

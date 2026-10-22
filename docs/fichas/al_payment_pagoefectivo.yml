@@ -1,0 +1,154 @@
+titulo: Pagos con PagoEfectivo
+subtitulo: >-
+  PagoEfectivo como proveedor de pago de Odoo: un código de pago (CIP) para
+  pagar en efectivo en agentes y bodegas o desde la banca, confirmado por
+  notificación firmada.
+categoria: Pagos · Perú
+etiquetas: [PagoEfectivo, CIP, Efectivo, Banca por internet, Notificación firmada, Soles y dólares]
+portada: screenshots/02-pago.png
+
+destacados_intro: >-
+  Para cobrar a clientes sin tarjeta, desde la tienda, el portal, los enlaces
+  de pago y los avisos de cobranza.
+destacados:
+  - icono: "▤"
+    titulo: Código de pago (CIP)
+    texto: >-
+      Odoo genera el CIP por el importe exacto; el cliente lo ve en la página
+      de PagoEfectivo y lo recibe por correo.
+  - icono: "S/"
+    titulo: Efectivo o banca
+    texto: >-
+      Se paga en agentes y bodegas, o desde la banca por internet y las
+      billeteras.
+  - icono: "✓"
+    titulo: Notificación firmada
+    texto: >-
+      El pago se confirma cuando PagoEfectivo avisa; la firma HMAC-SHA256 se
+      verifica con la clave secreta.
+  - icono: "⏱"
+    titulo: Vencimiento
+    texto: >-
+      Vigencia configurable; vencido el CIP, la transacción se cancela sola.
+  - icono: "↺"
+    titulo: Facturas más antiguas
+    texto: >-
+      Desde los avisos de cobranza, el pago se aplica a las facturas más
+      antiguas del cliente.
+  - icono: "🔒"
+    titulo: Claves en el servidor
+    texto: Solo los administradores las ven y se borran al neutralizar la base.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Muchos clientes en el Perú pagan en efectivo o desde la banca, sin
+    tarjeta. PagoEfectivo es el medio más usado para eso, pero Odoo no lo
+    trae. Este módulo lo agrega como proveedor de pago.
+  nota: >-
+    **Requisito:** afiliación a PagoEfectivo, con el código de servicio, la
+    clave de acceso y la clave secreta. Para probar, las de preproducción.
+
+flujos_intro: >-
+  La generación del CIP y la confirmación del pago.
+flujos:
+  - id: cobro
+    titulo: Cobro con PagoEfectivo
+    texto: >-
+      Odoo se autoriza con la firma SHA-256, genera el CIP y lleva al cliente
+      a su página. Al pagarse, la notificación firmada confirma la
+      transacción; si vence, se cancela.
+    mermaid: |
+      flowchart TD
+        A[Cliente elige PagoEfectivo y pulsa Pagar] --> B[Odoo pide el token<br/>y genera el CIP]
+        B --> C[Página del CIP y correo]
+        C --> D{"¿Pagado a tiempo?"}
+        D -- Sí --> E[Notificación firmada<br/>cip.paid]
+        E --> F[Pago confirmado y conciliado]
+        D -- No --> G[Transacción cancelada]
+
+pasos_intro: >-
+  La configuración del proveedor y el pago desde un enlace de pago de un
+  aviso de cobranza.
+pasos:
+  - seccion: Configuración
+  - titulo: Claves de PagoEfectivo
+    ruta: Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ PagoEfectivo
+    texto: >-
+      Código de servicio, clave de acceso, clave secreta y vigencia del CIP.
+      En «Modo de prueba» se usa el entorno de preproducción de PagoEfectivo;
+      en «Activado», el de producción.
+    puntos:
+      - Las claves solo las ven los administradores.
+      - La URL de notificación se registra en el panel de PagoEfectivo.
+    imagen: screenshots/01-ajustes.png
+
+  - seccion: Pago
+  - titulo: PagoEfectivo en la página de pago
+    ruta: Tienda, portal, enlace de pago o aviso de cobranza ▸ Método de pago
+    texto: >-
+      PagoEfectivo aparece como método de pago para los clientes del Perú. Al
+      pulsar Pagar, Odoo genera el CIP y lleva al cliente a la página de
+      PagoEfectivo.
+    imagen: screenshots/02-pago.png
+
+campos_intro: >-
+  Los campos que el módulo añade al proveedor y a la transacción.
+campos:
+  - grupo: Proveedor PagoEfectivo
+    ruta: Proveedores de pago ▸ PagoEfectivo ▸ Credenciales
+    campos:
+      - [Código de servicio, idService que asigna PagoEfectivo., "—", Numérico]
+      - [Clave de acceso, Access key del servicio., "—", Solo administradores]
+      - [Clave secreta, Firma la autorización y verifica las notificaciones., "—", Solo administradores]
+      - [Vigencia del CIP (horas), Plazo para pagar el código., "48", "—"]
+      - [URL de notificación, Se registra en el panel de PagoEfectivo., Calculada, "—"]
+  - grupo: Transacción
+    ruta: Transacciones de pago ▸ Transacción
+    campos:
+      - [Vencimiento del CIP, Fecha límite de pago., "—", Solo lectura]
+      - [Página del CIP, Enlace a la página de PagoEfectivo., "—", Solo lectura]
+
+funcionalidades:
+  - grupo: Pago
+    items:
+      - Autorización con firma SHA-256 y token Bearer.
+      - CIP por el importe exacto, con los datos del cliente (DNI o pasaporte, teléfono).
+      - Redirección a la página del CIP y correo de PagoEfectivo.
+  - grupo: Después del pago
+    items:
+      - Confirmación por notificación cip.paid, con control de importe y moneda.
+      - Cancelación por cip.expired o por el cron de vencimiento.
+      - Pago confirmado aunque llegue después de cancelar por vencimiento.
+  - grupo: Seguridad
+    items:
+      - Notificación rechazada si la firma PE-Signature no coincide.
+      - Bloqueo de la transacción al procesar la notificación.
+      - Claves solo para administradores y borradas al neutralizar la base.
+
+configuracion:
+  - Instale el módulo desde Aplicaciones (categoría OL-ACCOUNTING).
+  - "Indique las claves en **Contabilidad ▸ Configuración ▸ Pagos en línea ▸ Proveedores de pago ▸ PagoEfectivo**."
+  - Registre la URL de notificación en PagoEfectivo y publique el proveedor.
+requisitos_nota: >-
+  Funciona en Community y Enterprise. PagoEfectivo no hace devoluciones por
+  la API. La generación de un CIP real queda por validar con las claves de
+  preproducción del comercio.
+
+faq:
+  - pregunta: "¿Por qué la transacción queda pendiente?"
+    respuesta: >-
+      Porque el cliente paga después, en un agente o por banca. Odoo la
+      confirma cuando PagoEfectivo envía la notificación de pago.
+  - pregunta: "¿Qué pasa si el CIP vence?"
+    respuesta: >-
+      La transacción se cancela dos horas después del vencimiento. Si llega
+      el aviso de un pago hecho al límite, Odoo lo confirma igual.
+
+novedades:
+  - version: 1.20261022
+    fecha: 22/10/2026
+    cambios:
+      - "Primera versión: CIP con la API REST v1, redirección a la página del CIP, confirmación por notificación firmada, vencimiento automático, soles y dólares."
+
+relacionados: [al_payment_culqi, al_payment_niubiz, al_payment_izipay, al_l10n_pe_collection]

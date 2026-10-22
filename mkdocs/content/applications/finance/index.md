@@ -47,3 +47,4 @@ en el Perú.
 | [Culqi](payment_providers/culqi.md) | Pagos con tarjeta y Yape |
 | [Izipay](payment_providers/izipay.md) | Pagos con tarjeta en el formulario de Izipay, con anulación y devoluciones |
 | [Niubiz](payment_providers/niubiz.md) | Pagos con tarjeta |
+| [PagoEfectivo](payment_providers/pagoefectivo.md) | Código de pago (CIP) para pagar en efectivo en agentes y bodegas o por banca |

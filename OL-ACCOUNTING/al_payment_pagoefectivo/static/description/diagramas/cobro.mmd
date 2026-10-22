@@ -1,0 +1,7 @@
+flowchart TD
+  A[Cliente elige PagoEfectivo y pulsa Pagar] --> B[Odoo pide el token<br/>y genera el CIP]
+  B --> C[Página del CIP y correo]
+  C --> D{"¿Pagado a tiempo?"}
+  D -- Sí --> E[Notificación firmada<br/>cip.paid]
+  E --> F[Pago confirmado y conciliado]
+  D -- No --> G[Transacción cancelada]

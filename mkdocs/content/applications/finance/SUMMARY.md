@@ -48,3 +48,4 @@
     * [Culqi](payment_providers/culqi.md)
     * [Izipay](payment_providers/izipay.md)
     * [Niubiz](payment_providers/niubiz.md)
+    * [PagoEfectivo](payment_providers/pagoefectivo.md)

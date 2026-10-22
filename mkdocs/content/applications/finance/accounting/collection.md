@@ -258,7 +258,7 @@ del deudor y de cada documento para cargarlo en la central.
 
 ## Pago en línea
 
-Si la compañía tiene activa alguna pasarela de pago en línea (Culqi, Niubiz, Izipay u otra;
+Si la compañía tiene activa alguna pasarela de pago en línea (Culqi, Niubiz, Izipay, [PagoEfectivo](../payment_providers/pagoefectivo.md) u otra;
 la transferencia bancaria no cuenta), los avisos llevan el botón **Pagar en línea** con el
 saldo del cliente:
 
