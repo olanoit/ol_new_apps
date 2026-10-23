@@ -57,7 +57,8 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
         warehouses = self.env['stock.warehouse'].search(
             [('company_id', '=', move.company_id.id)])
         locations = self.env['stock.location'].search([
-            ('usage', '=', 'internal'), ('company_id', 'in', [move.company_id.id, False]),
+            ('usage', 'in', ('internal', 'view')),
+            ('company_id', 'in', [move.company_id.id, False]),
             '|', ('construction_remnant_pool', '=', True),
             ('id', 'in', warehouses.construction_remnant_location_id.ids)])
         quants = self.env['stock.quant'].search([

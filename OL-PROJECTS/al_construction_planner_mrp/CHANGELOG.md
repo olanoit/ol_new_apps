@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261023 — 23/10/2026
+
+- La ubicación de retazos de la planta puede ser una vista con sububicaciones R25, R50, R75 y R99: cada retazo declarado entra a la de su banda, y el pool puede marcarse en la vista.
+
 ## 7.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-12 (fase B, retazos): producto retazo del tablero con una variante por banda (R25 a R99) y lote con largo, ancho, área, % de plancha, banda, orden y obra de origen; pool de retazos en las ubicaciones y ubicación de retazos por almacén.

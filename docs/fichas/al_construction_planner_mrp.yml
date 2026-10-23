@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '8.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "La ubicación de retazos de la planta puede ser una vista con sububicaciones R25, R50, R75 y R99: cada retazo declarado entra a la de su banda, y el pool puede marcarse en la vista."
 - version: '7.20261023'
   fecha: 23/10/2026
   cambios:

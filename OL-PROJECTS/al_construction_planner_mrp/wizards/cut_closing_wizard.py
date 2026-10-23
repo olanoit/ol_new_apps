@@ -233,7 +233,6 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
         if not board.construction_remnant_tmpl_id:
             board.product_tmpl_id.action_construction_create_remnant()
         warehouse = production.picking_type_id.warehouse_id
-        destination = warehouse.construction_remnant_location_id or production.location_dest_id
         unit_cost = board.with_company(production.company_id).standard_price
         project = production.project_id if 'project_id' in production._fields \
             else self.env['project.project']
@@ -251,6 +250,8 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
                 if self.sheet_area_m2 else 0.0
             vals = production._get_move_finished_values(
                 variant.id, qty, variant.uom_id.id)
+            destination = warehouse._construction_remnant_destination(band) \
+                or production.location_dest_id
             vals.update({
                 'location_dest_id': destination.id,
                 'construction_fixed_cost': cost,

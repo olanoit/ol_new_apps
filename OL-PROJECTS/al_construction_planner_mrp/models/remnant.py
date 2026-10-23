@@ -179,8 +179,27 @@ class StockWarehouse(models.Model):
 
     construction_remnant_location_id = fields.Many2one(
         'stock.location', string='Ubicación de retazos', check_company=True,
-        domain="[('usage', '=', 'internal'), ('company_id', 'in', [company_id, False])]",
-        help='Adonde entran los retazos que declara el corte de esta planta.')
+        domain="[('usage', 'in', ('internal', 'view')), ('company_id', 'in', [company_id, False])]",
+        help='Adonde entran los retazos que declara el corte de esta planta. Si tiene '
+             'sububicaciones R25, R50, R75 y R99, cada retazo entra a la de su banda.')
+
+    def _construction_remnant_destination(self, band):
+        """Ubicación del retazo de una banda: la sububicación con el nombre de
+        la banda (R25…) o la ubicación de retazos."""
+        self.ensure_one()
+        location = self.construction_remnant_location_id
+        if not location:
+            return location
+        child = self.env['stock.location'].search([
+            ('id', 'child_of', location.id), ('usage', '=', 'internal'),
+            ('name', '=ilike', band)], limit=1)
+        if child:
+            return child
+        if location.usage != 'internal':
+            raise UserError(self.env._(
+                'La ubicación de retazos %(location)s no tiene la sububicación %(band)s.',
+                location=location.complete_name, band=band.upper()))
+        return location
 
 
 class StockMove(models.Model):

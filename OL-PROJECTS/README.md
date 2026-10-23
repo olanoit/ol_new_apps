@@ -37,7 +37,7 @@ módulo | versión | licencia | resumen
 [al_construction_planner_budget](al_construction_planner_budget/) | 2.20261016 | LGPL-3 | Presupuesto analítico al aprobar el plan y control de la OC contra el presupuesto.
 [al_construction_planner_crew](al_construction_planner_crew/) | 3.20261016 | LGPL-3 | Asignar cuadrilla con turnos de Planificación, en horas o en días con costo diario por puesto, y horas de la hoja de horas como real.
 [al_construction_planner_furniture](al_construction_planner_furniture/) | 10.20261021 | LGPL-3 | Tipologías de mueble con módulos, piezas, método de unión y lista de materiales, productos por módulo, receta real y despacho a obra, e importación del maestro, del ETO y de la proyección de materiales.
-[al_construction_planner_mrp](al_construction_planner_mrp/) | 7.20261023 | LGPL-3 | Órdenes de fabricación desde el plan, etapa de consumo en la lista de materiales y espera del metrado.
+[al_construction_planner_mrp](al_construction_planner_mrp/) | 8.20261023 | LGPL-3 | Órdenes de fabricación desde el plan, etapa de consumo en la lista de materiales y espera del metrado.
 [al_construction_planner_production](al_construction_planner_production/) | 4.20261019 | LGPL-3 | Accesorios de armado pedidos desde la orden y presupuestado, requerido y consumido en la orden y en el planificador.
 [al_construction_planner_purchase](al_construction_planner_purchase/) | 9.20261023 | LGPL-3 | Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de compra, crear producto y material extra.
 [al_construction_planner_sale](al_construction_planner_sale/) | 3.20261016 | LGPL-3 | Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorización, cobranza y cronograma valorizado.

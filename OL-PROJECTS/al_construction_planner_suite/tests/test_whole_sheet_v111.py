@@ -339,6 +339,19 @@ class TestRemnantV111(TestWholeSheetV111):
         self.assertAlmostEqual(remnant_move.value, cost, places=1)
         self.assertAlmostEqual(main.value + remnant_move.value, consumed, places=1)
 
+    def test_remnant_destination_by_band(self):
+        """Pool con sububicaciones por banda (Retazos General/R25…)."""
+        general = self.env['stock.location'].create({
+            'name': 'Retazos General (test)', 'usage': 'view',
+            'location_id': self.warehouse.view_location_id.id})
+        r50 = self.env['stock.location'].create({
+            'name': 'R50', 'usage': 'internal', 'location_id': general.id,
+            'construction_remnant_pool': True})
+        self.warehouse.construction_remnant_location_id = general
+        self.assertEqual(self.warehouse._construction_remnant_destination('r50'), r50)
+        with self.assertRaisesRegex(UserError, 'R25'):
+            self.warehouse._construction_remnant_destination('r25')
+
     # 15
     def test_declare_more_than_delivered(self):
         production = self._production([(self.board, 7.2)])
