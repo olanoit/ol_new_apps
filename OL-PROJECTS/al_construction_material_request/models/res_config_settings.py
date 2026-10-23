@@ -15,6 +15,11 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_code_from_name', readonly=False)
     construction_pr_picking_type_id = fields.Many2one(
         related='company_id.construction_pr_picking_type_id', readonly=False)
+    construction_area_plan_id = fields.Many2one(
+        related='company_id.construction_area_plan_id', readonly=False)
 
     def action_al_construction_setup(self):
         self.company_id._al_construction_ensure_setup()
+        # Consumo interno en cada almacén de la compañía (M111-10).
+        self.env['stock.warehouse'].search(
+            [('company_id', '=', self.company_id.id)])._construction_ensure_internal_consumption()

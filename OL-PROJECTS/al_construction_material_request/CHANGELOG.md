@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261023 — 23/10/2026
+
+- Paquete 1.11, M111-08: menú Inventario ▸ Operaciones ▸ Traslados ▸ «Productos por despachar» para Inventario: Usuario: los productos de los despachos de requerimientos sin validar, agrupados por requerimiento y transferencia; la fila abre la transferencia y desde las filas marcadas se imprime el vale de despacho.
+- Paquete 1.11, M111-10: requerimiento interno de las áreas (Administración, Comercial…): sin obra, con «Área» del plan analítico de las áreas, sale a la ubicación «Consumo interno» del almacén con el tipo «Consumo interno» (CI); el gasto y la compra del faltante llevan la analítica del área. Regla de aprobación del jefe del departamento del solicitante y menú «Requerimientos internos».
+- Paquete 1.11, M111-11: la transferencia guarda «Validado por»; el vale de despacho firma con quien la validó o, si aún no se valida, con quien imprime.
+- Paquete 1.11, M111-12: los tableros indivisibles se reparten en planchas enteras: se despachan solo planchas enteras libres, se compra el resto del entero y la línea muestra el «Redondeo a plancha entera». La orden de compra manual de un tablero con fracción avisa con la cantidad sugerida.
+
 ## 22.20261021 — 21/10/2026
 
 - Paquete 1.11, M111-07: «Vale de despacho» para pegar en el bulto, desde la transferencia con requerimiento (Imprimir) o desde el requerimiento: todo el requerimiento con pedido, despachado antes, en este bulto, pendiente y situación (en compra, OC y fecha de llegada), sin precios ni stock interno.

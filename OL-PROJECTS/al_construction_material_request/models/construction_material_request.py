@@ -3,7 +3,7 @@ from lxml import etree
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 # Campos que Logística puede ajustar durante y después de la aprobación.
 LOGISTICS_EDITABLE_FIELDS = ['location_dest_id', 'date_required', 'priority']
@@ -15,6 +15,13 @@ EXTRA_REASONS = [
     ('measure_error', 'Error de medida'),
     ('client_change', 'Cambio del cliente'),
     ('replacement', 'Reposición'),
+]
+
+# Tipo de requerimiento (paquete 1.11, M111-10): de obra o interno de un
+# área (Administración, Comercial…) para material de oficina o de consumo.
+REQUEST_TYPES = [
+    ('site', 'Obra'),
+    ('internal', 'Interno'),
 ]
 
 STATES = [
@@ -53,10 +60,27 @@ class ConstructionMaterialRequest(models.Model):
         'res.company', string='Compañía', required=True, index=True,
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
+    request_type = fields.Selection(
+        REQUEST_TYPES, string='Tipo', default='site', required=True, tracking=True,
+        help='Obra: material para una obra. Interno: material de oficina o de consumo de '
+             'un área; sale a la ubicación de consumo interno del almacén.')
+    # Obligatoria en los de obra (_check_request_type): el interno no lleva obra.
     project_id = fields.Many2one(
-        'project.project', string='Obra', required=True, index=True,
+        'project.project', string='Obra', index=True,
         tracking=True, check_company=True,
         domain="[('is_construction_site', '=', True)]")
+    area_plan_id = fields.Many2one(
+        related='company_id.construction_area_plan_id', string='Plan de las áreas')
+    area_id = fields.Many2one(
+        'account.analytic.account', string='Área', index='btree_not_null',
+        tracking=True, check_company=True,
+        domain="[('plan_id', '=?', area_plan_id)]",
+        help='Área que pide el material interno: va a la analítica de cada línea y al gasto.')
+    # Revisor de la regla de aprobación de los internos: el jefe del
+    # departamento del solicitante (si Empleados está instalado).
+    construction_department_manager_id = fields.Many2one(
+        'res.users', string='Jefe del departamento',
+        compute='_compute_construction_department_manager_id')
     project_manager_id = fields.Many2one(
         related='project_id.user_id', string='Jefe de proyecto', store=True)
     task_id = fields.Many2one(
@@ -119,21 +143,59 @@ class ConstructionMaterialRequest(models.Model):
         for request in self:
             request.user_is_logistics = is_logistics
 
+    @api.depends('requested_by')
+    def _compute_construction_department_manager_id(self):
+        for request in self:
+            manager = self.env['res.users']
+            if 'employee_ids' in request.requested_by._fields:
+                # El solicitante no lee las fichas de empleado de otros: solo
+                # se busca el usuario del jefe de su departamento.
+                employee_sudo = request.requested_by.sudo().employee_ids.filtered(
+                    lambda e: e.company_id == request.company_id)[:1]
+                manager = employee_sudo.department_id.manager_id.user_id.sudo(False)
+                if manager == request.requested_by:
+                    manager = employee_sudo.parent_id.user_id.sudo(False)
+            request.construction_department_manager_id = manager
+
+    @api.constrains('request_type', 'project_id')
+    def _check_request_type(self):
+        for request in self:
+            if request.request_type == 'site' and not request.project_id:
+                raise ValidationError(_('Indique la obra del requerimiento %s.', request.name))
+            if request.request_type == 'internal' and request.project_id:
+                raise ValidationError(_(
+                    'El requerimiento interno %s no lleva obra.', request.name))
+
+    @api.onchange('request_type')
+    def _onchange_request_type(self):
+        if self.request_type == 'internal':
+            self.project_id = False
+            self.task_id = False
+        else:
+            self.area_id = False
+
     @api.depends('company_id')
     def _compute_location_src_id(self):
         for request in self:
             if not request.location_src_id:
                 request.location_src_id = request.company_id.construction_src_location_id
 
-    @api.depends('project_id')
+    @api.depends('project_id', 'request_type', 'location_src_id')
     def _compute_location_dest_id(self):
         for request in self:
-            request.location_dest_id = request.project_id.construction_location_id
+            if request.request_type == 'internal':
+                request.location_dest_id = (
+                    request.location_src_id.warehouse_id.construction_consumption_location_id)
+            else:
+                request.location_dest_id = request.project_id.construction_location_id
 
-    @api.depends('project_id')
+    @api.depends('project_id', 'request_type', 'area_id')
     def _compute_analytic_distribution(self):
         for request in self:
-            if request.project_id:
+            if request.request_type == 'internal':
+                request.analytic_distribution = (
+                    {str(request.area_id.id): 100} if request.area_id else False)
+            elif request.project_id:
                 request.analytic_distribution = (
                     request.project_id._get_analytic_distribution()
                     or request.analytic_distribution)
@@ -180,6 +242,18 @@ class ConstructionMaterialRequest(models.Model):
         for request in self:
             if not request.line_ids:
                 raise UserError(_('Agregue al menos un material a %s.', request.name))
+            if request.request_type == 'internal':
+                if not request.area_id:
+                    raise UserError(_('Indique el área que pide %s.', request.name))
+                if not request.location_dest_id:
+                    raise UserError(_(
+                        'El almacén %s no tiene ubicación de consumo interno: use «Completar '
+                        'configuración» en los ajustes de Requerimientos de obra.',
+                        request.location_src_id.warehouse_id.name or request.location_src_id.display_name))
+                # El proveedor no entrega en una ubicación de consumo: lo que
+                # falte se compra al almacén y sale de ahí.
+                request.line_ids.filtered(lambda l: l.supply_mode == 'direct').supply_mode = 'central'
+                continue
             if not request.location_dest_id:
                 raise UserError(_(
                     'La obra %s no tiene ubicación de obra.', request.project_id.name))
@@ -196,12 +270,24 @@ class ConstructionMaterialRequest(models.Model):
         """Pide las revisiones que apliquen. Si ninguna regla de aprobación
         aplica (p. ej. montos bajos sin regla), se aprueba directamente."""
         self._check_state(('draft',))
+        self.filtered(lambda r: r.request_type == 'internal')._construction_ensure_internal_setup()
         self._check_ready_to_submit()
         self.write({'state': 'to_approve'})
         for request in self:
             reviews = request.request_validation() if request.need_validation else False
             if not reviews:
                 request._write_approved()
+
+    def _construction_ensure_internal_setup(self):
+        """Ubicación de consumo interno y tipo «Consumo interno» del almacén
+        de origen, creados la primera vez."""
+        # Quien pide (un área) no configura almacenes: solo se completa lo que
+        # falte en el almacén de origen de su requerimiento.
+        warehouses_sudo = self.location_src_id.warehouse_id.sudo()
+        warehouses_sudo._construction_ensure_internal_consumption()
+        for request in self.filtered(lambda r: not r.location_dest_id):
+            request.location_dest_id = (
+                request.location_src_id.warehouse_id.construction_consumption_location_id)
 
     def _write_approved(self):
         # need_validation no tiene depends: su caché conserva el valor de

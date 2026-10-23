@@ -7,3 +7,5 @@ from . import construction_measurement
 from . import construction_stage
 from . import construction_production_reason
 from . import stock_rule
+from . import whole_sheet
+from . import res_config_settings

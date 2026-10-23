@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals` y `al_construction_planner_mrp`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Paquete 1.11, M111-12: «Presupuestado frente a requerido» compara la necesidad de los tableros y muestra aparte el «Redondeo a plancha entera», que no cuenta como exceso."
 - version: '3.20261021'
   fecha: 21/10/2026
   cambios:

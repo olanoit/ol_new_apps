@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import api, models
+from odoo.tools.misc import formatLang
 
 
 class PurchaseOrderLine(models.Model):
@@ -16,6 +17,28 @@ class PurchaseOrderLine(models.Model):
                 lambda l: l._get_site_location()):
             vals['location_dest_id'] = site.id
         return vals
+
+    @api.onchange('product_qty', 'product_uom_id', 'product_id')
+    def _onchange_construction_whole_sheet(self):
+        """Planchas enteras (paquete 1.11, M111-12): una compra manual de un
+        tablero indivisible con fracción avisa, sin impedirla."""
+        product = self.product_id
+        company = self.order_id.company_id or self.env.company
+        if not (product and self.product_uom_id and product._construction_is_whole(company)):
+            return None
+        qty = self.product_uom_id._compute_quantity(
+            self.product_qty, product.uom_id, round=False)
+        whole = product._construction_whole_qty(qty, company)
+        if product.uom_id.compare(qty, whole) == 0:
+            return None
+        return {'warning': {
+            'title': self.env._('Plancha entera'),
+            'message': self.env._(
+                '%(product)s se compra en planchas enteras: se sugiere %(whole)s en lugar de '
+                '%(qty)s.', product=product.display_name,
+                whole=formatLang(self.env, whole, digits=0),
+                qty=formatLang(self.env, qty, digits=2)),
+        }}
 
 
 class PurchaseOrder(models.Model):

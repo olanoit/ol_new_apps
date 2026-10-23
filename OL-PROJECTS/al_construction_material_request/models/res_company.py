@@ -25,6 +25,10 @@ class ResCompany(models.Model):
     construction_pr_picking_type_id = fields.Many2one(
         'stock.picking.type', string='Recepción de los requerimientos de compra',
         domain="[('code', '=', 'incoming'), ('company_id', '=', id)]")
+    construction_area_plan_id = fields.Many2one(
+        'account.analytic.plan', string='Plan analítico de las áreas',
+        help='Las cuentas de este plan son las áreas que piden material interno '
+             '(Administración, Comercial…).')
 
     def _al_construction_ensure_setup(self):
         """Completa, sin pisar lo configurado, la ubicación ``OBRAS``, el tipo
@@ -68,5 +72,12 @@ class ResCompany(models.Model):
                 }).id
             if not company.construction_pr_picking_type_id:
                 vals['construction_pr_picking_type_id'] = warehouse.in_type_id.id
+            if not company.construction_area_plan_id:
+                # Plan «Área» si ya existe (paquete 1.11, M111-10).
+                area_plan = self.env['account.analytic.plan'].search(
+                    [('name', '=ilike', 'área')], limit=1) or self.env['account.analytic.plan'].search(
+                    [('name', '=ilike', 'area')], limit=1)
+                if area_plan:
+                    vals['construction_area_plan_id'] = area_plan.id
             if vals:
                 company.write(vals)

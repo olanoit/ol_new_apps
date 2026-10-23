@@ -24,7 +24,79 @@
             </xpath>
             <xpath expr="//group[@name='l10n_pe_stock_construction']" position="inside">
                 <xpath expr="//field[@name='construction_request_id']" position="move"/>
+                <field name="construction_validated_by_id" invisible="not construction_validated_by_id"/>
             </xpath>
         </field>
     </record>
+
+    <!-- «Productos por despachar» (paquete 1.11, M111-08): los productos de
+         los despachos de requerimientos, para Inventario: Usuario (el menú
+         Reportes de Inventario es solo del administrador). -->
+    <record id="view_move_tree_construction_to_dispatch" model="ir.ui.view">
+        <field name="name">stock.move.list.construction.to.dispatch</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_tree"/>
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <!-- Solo lectura; la fila abre la transferencia para validarla. -->
+            <xpath expr="/list" position="attributes">
+                <attribute name="editable"/>
+                <attribute name="delete">0</attribute>
+                <attribute name="action">action_open_reference</attribute>
+                <attribute name="type">object</attribute>
+            </xpath>
+            <xpath expr="//field[@name='reference']" position="after">
+                <field name="construction_request_id" optional="hide"/>
+                <field name="construction_project_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_move_search_construction_to_dispatch" model="ir.ui.view">
+        <field name="name">stock.move.search.construction.to.dispatch</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_search"/>
+        <field name="mode">primary</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="construction_request_id"/>
+                <field name="construction_project_id"/>
+                <group name="construction_groupby">
+                    <filter string="Requerimiento de obra" name="groupby_construction_request"
+                            context="{'group_by': 'construction_request_id'}"/>
+                    <filter string="Transferencia" name="groupby_construction_picking"
+                            context="{'group_by': 'picking_id'}"/>
+                    <filter string="Por almacén" name="groupby_construction_warehouse"
+                            context="{'group_by': 'warehouse_id'}"/>
+                    <filter string="Obra" name="groupby_construction_project"
+                            context="{'group_by': 'construction_project_id'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_construction_moves_to_dispatch" model="ir.actions.act_window">
+        <field name="name">Productos por despachar</field>
+        <field name="res_model">stock.move</field>
+        <field name="path">productos-por-despachar</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_move_tree_construction_to_dispatch"/>
+        <field name="search_view_id" ref="view_move_search_construction_to_dispatch"/>
+        <field name="domain">[('construction_request_id', '!=', False),
+                              ('state', 'not in', ('draft', 'done', 'cancel'))]</field>
+        <field name="context">{'create': False,
+                               'search_default_groupby_construction_request': 1,
+                               'search_default_groupby_construction_picking': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay productos por despachar</p>
+            <p>Aquí salen los productos de los despachos de los requerimientos
+               que aún no se validan, agrupados por requerimiento y transferencia.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_moves_to_dispatch" name="Productos por despachar"
+              parent="stock.menu_stock_transfers" action="action_construction_moves_to_dispatch"
+              groups="stock.group_stock_user" sequence="40"/>
 </odoo>

@@ -13,7 +13,9 @@ class PurchaseRequest(models.Model):
         """Obra de la solicitud, para el origen de la orden de compra
         consolidada. El planificador agrega la obra de su plan."""
         self.ensure_one()
-        return self.construction_request_id.project_id.name or ''
+        request = self.construction_request_id
+        return (request.area_id.name if request.request_type == 'internal'
+                else request.project_id.name) or ''
 
 
 class PurchaseRequestLine(models.Model):

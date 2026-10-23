@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Planchas enteras (paquete 1.11, M111-12, fase A). -->
+
+    <!-- P1: Ajustes ▸ Fabricación ▸ «Planchas y retazos». -->
+    <record id="res_config_settings_view_form_whole_sheet" model="ir.ui.view">
+        <field name="name">res.config.settings.form.whole.sheet</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="mrp.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='mrp']" position="inside">
+                <block title="Planchas y retazos" name="construction_whole_sheet_block">
+                    <setting id="construction_whole_sheet" company_dependent="1"
+                             help="Los tableros con unidad «Plancha entera» se entregan, compran y despachan en planchas enteras. La fracción queda como necesidad y el exceso se mide con ella.">
+                        <field name="construction_whole_sheet"/>
+                        <div class="content-group mt-2" invisible="not construction_whole_sheet">
+                            <div class="row">
+                                <label for="construction_whole_sheet_tolerance" class="col-lg-5 o_light_label"/>
+                                <field name="construction_whole_sheet_tolerance" class="oe_inline"/>
+                                <span class="text-muted">plancha (0 = toda fracción sube)</span>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P4: necesidad, a consumir y redondeo en los componentes. -->
+    <record id="mrp_production_form_view_whole_sheet" model="ir.ui.view">
+        <field name="name">mrp.production.form.whole.sheet</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-info mb-0 text-center" role="status"
+                     invisible="not construction_sheet_need">
+                    Tableros en planchas enteras: necesidad
+                    <field name="construction_sheet_need" class="oe_inline fw-bold"/>
+                    → a entregar
+                    <field name="construction_sheet_to_deliver" class="oe_inline fw-bold"/>
+                    (redondeo <field name="construction_sheet_rounding" class="oe_inline"/>).
+                    El exceso se mide con la necesidad.
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/list/field[@name='product_id']" position="after">
+                <field name="construction_need_qty" string="Necesidad" optional="show"
+                       invisible="not construction_need_qty"/>
+                <field name="construction_rounding_qty" string="Redondeo" optional="show"
+                       invisible="not construction_need_qty"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

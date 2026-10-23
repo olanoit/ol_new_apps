@@ -57,6 +57,7 @@
                             <field name="qty_diff"/>
                             <field name="uom_id" groups="uom.group_uom"/>
                             <field name="diff_pct"/>
+                            <field name="qty_rounding" optional="show"/>
                             <field name="currency_id" column_invisible="1"/>
                             <field name="amount_budget" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
                             <field name="amount_required" sum="Total" groups="al_construction_planner.group_planner_amounts"/>

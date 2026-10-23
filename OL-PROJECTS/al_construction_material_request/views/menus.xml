@@ -10,6 +10,8 @@
               parent="menu_construction_root" sequence="10">
         <menuitem id="menu_construction_requests" name="Requerimientos"
                   action="action_construction_material_request" sequence="10"/>
+        <menuitem id="menu_construction_internal_requests" name="Requerimientos internos"
+                  action="action_construction_internal_request" sequence="15"/>
         <menuitem id="menu_construction_request_lines" name="Materiales pedidos"
                   action="action_construction_material_request_line"
                   groups="group_construction_logistics" sequence="20"/>

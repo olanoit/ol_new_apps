@@ -113,7 +113,11 @@ class MrpProduction(models.Model):
                 continue
             if self._construction_is_intermediate(move):
                 continue
-            result[move.product_id] += move.product_qty
+            # Planchas enteras (M111-12): se compara la necesidad, no el
+            # entero que se entrega.
+            result[move.product_id] += move.product_uom._compute_quantity(
+                move.construction_need_qty, move.product_id.uom_id, round=False) \
+                if move.construction_need_qty else move.product_qty
         return result
 
     def _construction_sync_allocations(self):
@@ -204,6 +208,10 @@ class MrpProduction(models.Model):
                     'reason': production.construction_exceed_reason,
                 })
                 return wizard._get_action()
+        # Planchas enteras (paquete 1.11, M111-12): después del control de
+        # exceso, que mide la necesidad, y antes de que nazca el despacho a
+        # producción. Todas las órdenes en borrador, con plan o sin él.
+        self.filtered(lambda p: p.state == 'draft')._construction_round_whole_sheets()
         res = super().action_confirm()
         # Mismo motivo: la OF solo pasa el plan a «En ejecución».
         plans_sudo = planned.construction_plan_id.sudo()

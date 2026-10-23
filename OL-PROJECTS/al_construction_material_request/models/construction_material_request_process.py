@@ -50,6 +50,9 @@ class ConstructionMaterialRequest(models.Model):
         for line in lines:
             product = line.product_id
             free = max(free_by_product.get(product.id, 0.0) - consumed[product.id], 0.0)
+            if product._construction_is_whole(self.company_id):
+                consumed[product.id] += line._construction_split_whole(free)
+                continue
             to_purchase = max(line.product_uom_qty - free, 0.0)
             qty_to_purchase = product.uom_id._compute_quantity(
                 to_purchase, line.product_uom_id, rounding_method='HALF-UP')
@@ -89,7 +92,7 @@ class ConstructionMaterialRequest(models.Model):
 
     def _prepare_picking_vals(self, location_dest=None):
         self.ensure_one()
-        picking_type = self.company_id.construction_dispatch_type_id
+        picking_type = self._get_dispatch_picking_type()
         vals = {
             'picking_type_id': picking_type.id,
             'location_id': self.location_src_id.id,
@@ -101,10 +104,22 @@ class ConstructionMaterialRequest(models.Model):
             'scheduled_date': self._date_required_datetime(),
         }
         # GRE nativa (l10n_pe_edi_stock): traslado entre establecimientos de la
-        # misma empresa. Sin dependencia dura.
-        if 'l10n_pe_edi_reason_for_transfer' in self.env['stock.picking']._fields:
+        # misma empresa. Sin dependencia dura. El consumo interno no sale del
+        # almacén: no lleva guía.
+        if self.request_type == 'site' \
+                and 'l10n_pe_edi_reason_for_transfer' in self.env['stock.picking']._fields:
             vals['l10n_pe_edi_reason_for_transfer'] = '04'
         return vals
+
+    def _get_dispatch_picking_type(self):
+        """Despacho a obra o, en un interno, el «Consumo interno» del almacén."""
+        self.ensure_one()
+        if self.request_type == 'internal':
+            warehouse = self.location_src_id.warehouse_id
+            if not warehouse.construction_internal_type_id:
+                warehouse.sudo()._construction_ensure_internal_consumption()
+            return warehouse.construction_internal_type_id
+        return self.company_id.construction_dispatch_type_id
 
     def _prepare_move_vals(self, line, qty, picking, procure_method='make_to_stock'):
         # Campos como purchase.order.line._prepare_stock_move_vals.
@@ -183,9 +198,11 @@ class ConstructionMaterialRequest(models.Model):
             'requested_by': self.env.user.id,
             'company_id': self.company_id.id,
             'picking_type_id': self.company_id.construction_pr_picking_type_id.id,
-            'description': _('Obra %(project)s — solicitado por %(user)s',
-                             project=self.project_id.display_name,
-                             user=self.requested_by.name),
+            'description': _('Área %(area)s — solicitado por %(user)s',
+                             area=self.area_id.display_name, user=self.requested_by.name)
+            if self.request_type == 'internal' else
+            _('Obra %(project)s — solicitado por %(user)s',
+              project=self.project_id.display_name, user=self.requested_by.name),
             'construction_request_id': self.id,
         }
 

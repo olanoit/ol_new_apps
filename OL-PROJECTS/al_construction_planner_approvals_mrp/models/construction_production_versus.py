@@ -26,6 +26,9 @@ class ConstructionProductionVersus(models.Model):
     qty_budget = fields.Float(string='Presupuestado', digits='Product Unit')
     qty_required = fields.Float(string='Requerido', digits='Product Unit')
     qty_diff = fields.Float(string='Diferencia', digits='Product Unit')
+    # Planchas enteras (paquete 1.11, M111-12): lo entregado de más por
+    # redondear a plancha entera. No es exceso: «Requerido» es la necesidad.
+    qty_rounding = fields.Float(string='Redondeo a plancha entera', digits='Product Unit')
     diff_pct = fields.Float(string='Diferencia (%)', digits=(16, 2))
     amount_budget = fields.Monetary(string='Presupuestado (monto)', currency_field='currency_id')
     amount_required = fields.Monetary(string='Requerido (monto)', currency_field='currency_id')

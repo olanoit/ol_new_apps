@@ -103,6 +103,7 @@ class MrpProduction(models.Model):
             budget[line.product_id][0] += line._qty_to_product_uom(line.qty_planned)
             budget[line.product_id][1] += line.amount_planned
         required = production_sudo._construction_component_qty()
+        rounding = production_sudo._construction_rounding_by_product()
         values = []
         for product in sorted(set(budget) | set(required), key=lambda p: p.display_name):
             qty_budget, amount_budget = budget.get(product, (0.0, 0.0))
@@ -129,8 +130,22 @@ class MrpProduction(models.Model):
                 'amount_budget': amount_budget,
                 'amount_required': qty_required * price,
                 'amount_diff': qty_required * price - amount_budget,
+                'qty_rounding': rounding.get(product, 0.0),
             })
         return values
+
+    def _construction_rounding_by_product(self):
+        """{producto: entregado − necesidad} de los tableros en planchas
+        enteras (M111-12), en la UdM del producto."""
+        self.ensure_one()
+        result = defaultdict(float)
+        for move in self.move_raw_ids.filtered('construction_need_qty'):
+            uom = move.product_id.uom_id
+            delivered = 0.0 if move.state == 'cancel' else move.product_uom_qty
+            result[move.product_id] += move.product_uom._compute_quantity(
+                delivered + move._construction_covered_qty() - move.construction_need_qty,
+                uom, round=False)
+        return result
 
     def _construction_refresh_versus(self):
         """Rehace la comparación y el estado del exceso. Un exceso aprobado

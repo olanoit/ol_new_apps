@@ -39,8 +39,14 @@
             <!-- Datos del requerimiento -->
             <table class="pe-doc-table mb-3">
                 <tr>
-                    <td class="pe-doc-label" style="width: 17%;">Obra</td>
-                    <td class="pe-doc-value" style="width: 38%;"><strong t-out="o.project_id.display_name"/></td>
+                    <t t-if="o.request_type == 'internal'">
+                        <td class="pe-doc-label" style="width: 17%;">Área</td>
+                        <td class="pe-doc-value" style="width: 38%;"><strong t-out="o.area_id.display_name"/></td>
+                    </t>
+                    <t t-else="">
+                        <td class="pe-doc-label" style="width: 17%;">Obra</td>
+                        <td class="pe-doc-value" style="width: 38%;"><strong t-out="o.project_id.display_name"/></td>
+                    </t>
                     <td class="pe-doc-label" style="width: 17%;">Solicitado por</td>
                     <td class="pe-doc-value" style="width: 28%;" t-out="o.requested_by.name"/>
                 </tr>

@@ -40,6 +40,11 @@ pasos:
     imagen: screenshots/02-logistica-pe.png
 
 novedades:
+  - version: '2.20261023'
+    fecha: 23/10/2026
+    cambios:
+      - "Paquete 1.11, M111-09: resumen de inventario compacto, con o sin el planificador de obra: tarjetas sin gráfico, más angostas, con botones pequeños y las etiquetas en español (Con demora, En espera, Órdenes parciales, Movimientos). Antes estaba en el puente de compras del planificador."
+      - "Paquete 1.11, M111-12: regla de las planchas enteras: casilla «Pedir tableros en planchas enteras» y tolerancia en la compañía, unidad marcada «Plancha entera» con su área en m², «Plancha indivisible» en el producto, necesidad y redondeo en los movimientos y en la impresión de la transferencia, reserva en planchas enteras y error al validar fracción."
   - version: 1.20261008
     fecha: 08/10/2026
     cambios:

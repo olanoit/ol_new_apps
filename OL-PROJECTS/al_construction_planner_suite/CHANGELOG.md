@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261023 — 23/10/2026
+
+- Pruebas de las planchas enteras (paquete 1.11, M111-12, fase A): redondeo al confirmar, varias líneas del mismo tablero, tolerancia, orden por abastecimiento, cambio de cantidad, reserva y validación en enteros, compra y comparación con la necesidad.
+
 ## 13.20261021 — 21/10/2026
 
 - Pruebas del despacho por unidad con material sin departamento y con productos de módulo.

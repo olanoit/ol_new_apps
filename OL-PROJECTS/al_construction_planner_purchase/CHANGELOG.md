@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261023 — 23/10/2026
+
+- Paquete 1.11, M111-09: el resumen de inventario compacto pasa a «PE - Base Inventario» (al_stock_base), para que se vea también sin el planificador; aquí ya no se modifica la vista.
+- Paquete 1.11, M111-12: la compra masiva y el tablero de abastecimiento redondean a planchas enteras los tableros indivisibles (la unidad «Plancha L×A m» tiene referencia m² y antes no se redondeaba).
+
 ## 8.20261021 — 21/10/2026
 
 - Resumen de inventario: botones pequeños y en una sola línea (en las tarjetas angostas se partían y se veían más grandes).

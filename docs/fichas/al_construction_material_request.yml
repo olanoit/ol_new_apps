@@ -429,6 +429,13 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '23.20261023'
+    fecha: 23/10/2026
+    cambios:
+      - "Paquete 1.11, M111-08: menú Inventario ▸ Operaciones ▸ Traslados ▸ «Productos por despachar» para Inventario: Usuario: los productos de los despachos de requerimientos sin validar, agrupados por requerimiento y transferencia; la fila abre la transferencia y desde las filas marcadas se imprime el vale de despacho."
+      - "Paquete 1.11, M111-10: requerimiento interno de las áreas (Administración, Comercial…): sin obra, con «Área» del plan analítico de las áreas, sale a la ubicación «Consumo interno» del almacén con el tipo «Consumo interno» (CI); el gasto y la compra del faltante llevan la analítica del área. Regla de aprobación del jefe del departamento del solicitante y menú «Requerimientos internos»."
+      - "Paquete 1.11, M111-11: la transferencia guarda «Validado por»; el vale de despacho firma con quien la validó o, si aún no se valida, con quien imprime."
+      - "Paquete 1.11, M111-12: los tableros indivisibles se reparten en planchas enteras: se despachan solo planchas enteras libres, se compra el resto del entero y la línea muestra el «Redondeo a plancha entera». La orden de compra manual de un tablero con fracción avisa con la cantidad sugerida."
   - version: '22.20261021'
     fecha: 21/10/2026
     cambios:

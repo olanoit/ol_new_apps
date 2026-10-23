@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Planchas enteras (paquete 1.11, M111-12). -->
+
+    <!-- P2: la unidad «Plancha L×A m» marcada «Plancha entera». -->
+    <record id="product_uom_form_view_whole_sheet" model="ir.ui.view">
+        <field name="name">uom.uom.form.whole.sheet</field>
+        <field name="model">uom.uom</field>
+        <field name="inherit_id" ref="uom.product_uom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='uom_details']" position="inside">
+                <field name="construction_whole_sheet" groups="stock.group_stock_manager"/>
+                <field name="construction_sheet_area_m2" invisible="not construction_whole_sheet"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_uom_tree_view_whole_sheet" model="ir.ui.view">
+        <field name="name">uom.uom.list.whole.sheet</field>
+        <field name="model">uom.uom</field>
+        <field name="inherit_id" ref="uom.product_uom_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='relative_uom_id']" position="after">
+                <field name="construction_whole_sheet" optional="show" widget="boolean_toggle"
+                       groups="stock.group_stock_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P3: en el producto, la regla y el área de la plancha. -->
+    <record id="product_template_form_view_whole_sheet" model="ir.ui.view">
+        <field name="name">product.template.form.whole.sheet</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_template_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='inventory']" position="inside">
+                <group name="construction_whole_sheet" string="Plancha">
+                    <group>
+                        <field name="construction_indivisible_mode"
+                               groups="stock.group_stock_manager"/>
+                        <field name="construction_is_indivisible"/>
+                        <field name="construction_sheet_area_m2"
+                               invisible="not construction_is_indivisible"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P6: necesidad y redondeo en las operaciones de la transferencia. -->
+    <record id="view_picking_form_whole_sheet" model="ir.ui.view">
+        <field name="name">stock.picking.form.whole.sheet</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids']/list/field[@name='product_id']" position="after">
+                <field name="construction_need_display" string="Necesidad" optional="show"
+                       invisible="not construction_need_display"/>
+                <field name="construction_rounding_qty" string="Redondeo" optional="hide"
+                       invisible="not construction_need_display"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P10: «Operaciones de recolección» con necesidad y redondeo. -->
+    <template id="report_picking_whole_sheet" inherit_id="stock.report_picking">
+        <xpath expr="//t[@t-set='to_col_exists']" position="after">
+            <t t-set="need_col_exists" t-value="any(o.move_ids.mapped('construction_need_display'))"/>
+        </xpath>
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th name="th_construction_need" class="text-end" t-if="need_col_exists">
+                <strong>Necesidad</strong>
+            </th>
+            <th name="th_construction_rounding" class="text-end" t-if="need_col_exists">
+                <strong>Redondeo</strong>
+            </th>
+        </xpath>
+        <xpath expr="//td[hasclass('o_td_quantity')]" position="after">
+            <td class="text-end" t-if="need_col_exists">
+                <span t-if="move.construction_need_display" t-out="format_number(move.construction_need_display)"/>
+            </td>
+            <td class="text-end" t-if="need_col_exists">
+                <span t-if="move.construction_need_display" t-out="format_number(move.construction_rounding_qty)"/>
+            </td>
+        </xpath>
+        <xpath expr="//t[@t-as='line']/tr/td[2]" position="after">
+            <td t-if="need_col_exists"/>
+            <td t-if="need_col_exists"/>
+        </xpath>
+    </template>
+</odoo>

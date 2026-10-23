@@ -83,6 +83,12 @@ class ConstructionMaterialRequestLine(models.Model):
     line_state = fields.Selection(
         LINE_STATES, string='Situación', compute='_compute_line_state', store=True)
     cancelled = fields.Boolean(string='Cancelada', readonly=True, copy=False)
+    # Planchas enteras (paquete 1.11, M111-12): lo que se despacha y compra
+    # de más por entregar planchas enteras de un tablero indivisible.
+    qty_rounding = fields.Float(
+        string='Redondeo a plancha entera', readonly=True, copy=False, digits='Product Unit')
+    is_indivisible = fields.Boolean(
+        related='product_id.construction_is_indivisible', string='Plancha indivisible')
 
     move_ids = fields.One2many(
         'stock.move', 'construction_request_line_id', string='Movimientos')
@@ -92,6 +98,29 @@ class ConstructionMaterialRequestLine(models.Model):
 
     _qty_positive = models.Constraint(
         'CHECK(product_qty > 0)', 'La cantidad pedida debe ser mayor que cero.')
+
+    def _construction_split_whole(self, free):
+        """Reparte un tablero indivisible en planchas enteras: se despachan
+        solo planchas enteras libres y se compra el resto del entero. ``free``
+        en la UdM del producto; devuelve lo despachado en esa unidad."""
+        self.ensure_one()
+        product = self.product_id
+        uom = product.uom_id
+        need = self.product_uom_qty
+        whole = product._construction_whole_qty(need, self.company_id)
+        dispatch = min(float(int(uom.round(free))), whole)
+        purchase = whole - dispatch
+
+        def to_line_uom(qty):
+            return uom._compute_quantity(qty, self.product_uom_id, rounding_method='HALF-UP')
+
+        self.write({
+            'qty_available_at_approval': to_line_uom(free),
+            'qty_to_dispatch': to_line_uom(dispatch),
+            'qty_to_purchase': to_line_uom(purchase),
+            'qty_rounding': to_line_uom(whole - need),
+        })
+        return dispatch
 
     def _get_report_analytic_label(self):
         """Cuentas analíticas de la línea para el vale («Estructuras ·
@@ -138,7 +167,8 @@ class ConstructionMaterialRequestLine(models.Model):
     @api.depends('request_id.analytic_distribution')
     def _compute_analytic_distribution(self):
         for line in self:
-            if not line.analytic_distribution:
+            # Interno: todas las líneas van al área del requerimiento.
+            if line.request_id.request_type == 'internal' or not line.analytic_distribution:
                 line.analytic_distribution = line.request_id.analytic_distribution
 
     @api.depends('product_id', 'product_uom_id', 'product_qty')

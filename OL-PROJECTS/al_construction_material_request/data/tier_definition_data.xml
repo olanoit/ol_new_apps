@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Requerimiento interno (paquete 1.11, M111-10): lo aprueba el jefe del
+         departamento del solicitante. Sobre un monto, se agrega la gerencia
+         con otra regla desde Configuración ▸ Reglas de aprobación. -->
+    <data noupdate="1">
+        <record id="tier_definition_internal_department_manager" model="tier.definition">
+            <field name="name">Requerimiento interno: jefe del departamento</field>
+            <field name="model_id" ref="model_construction_material_request"/>
+            <field name="review_type">field</field>
+            <field name="reviewer_field_id" ref="field_construction_material_request__construction_department_manager_id"/>
+            <field name="definition_domain">[('request_type', '=', 'internal'), ('construction_department_manager_id', '!=', False)]</field>
+            <field name="sequence">30</field>
+            <field name="approve_sequence" eval="True"/>
+        </record>
+    </data>
+</odoo>

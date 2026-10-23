@@ -121,7 +121,8 @@ class ConstructionSupplyBoard(models.AbstractModel):
             to_buy = max(horizon - stock[product] - on_order[product], 0.0)
             purchase_uom = self._get_purchase_uom(product, company)
             qty_to_buy = uom._compute_quantity(to_buy, purchase_uom, round=False)
-            if Mixin._is_whole_uom(purchase_uom):
+            # Planchas enteras (M111-12): «Plancha L×A m» tiene referencia m².
+            if Mixin._is_whole_uom(purchase_uom) or product._construction_is_whole(company):
                 qty_to_buy = float_round(qty_to_buy, precision_rounding=1.0,
                                          rounding_method='UP')
             else:

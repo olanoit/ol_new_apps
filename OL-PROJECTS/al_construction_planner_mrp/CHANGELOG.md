@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261023 — 23/10/2026
+
+- Paquete 1.11, M111-12 (fase A): la orden de fabricación guarda la necesidad de cada tablero indivisible y al confirmarla pide planchas enteras por producto en toda la orden (la diferencia va al componente con más necesidad); el despacho a producción nace en enteros. Vale también para las órdenes que crea el abastecimiento y se vuelve a redondear al cambiar la cantidad a producir. El control de exceso mide la necesidad.
+- Bloque «Planchas y retazos» en Ajustes ▸ Fabricación y aviso en la orden con necesidad, a entregar y redondeo.
+
 ## 5.20261021 — 21/10/2026
 
 - Paquete 1.11, M111-03: «Estación de la etapa» y «Minutos por unidad» por compañía en el catálogo de etapas, para la operación de las listas por etapa.

@@ -24,7 +24,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_material_request/static/description/icon.png',
-    'version': '22.20261021',
+    'version': '23.20261023',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [
@@ -44,6 +44,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
         'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'data/mail_templates.xml',
+        'data/tier_definition_data.xml',
         'report/construction_material_request_report.xml',
         'report/construction_dispatch_slip_report.xml',
         'views/construction_material_request_views.xml',

@@ -31,6 +31,11 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '9.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Paquete 1.11, M111-09: el resumen de inventario compacto pasa a «PE - Base Inventario» (al_stock_base), para que se vea también sin el planificador; aquí ya no se modifica la vista."
+  - "Paquete 1.11, M111-12: la compra masiva y el tablero de abastecimiento redondean a planchas enteras los tableros indivisibles (la unidad «Plancha L×A m» tiene referencia m² y antes no se redondeaba)."
 - version: '8.20261021'
   fecha: 21/10/2026
   cambios:

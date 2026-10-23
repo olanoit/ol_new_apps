@@ -153,7 +153,9 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 to_buy = need
             purchase_uom = self._get_purchase_uom(product)
             qty_to_buy = product.uom_id._compute_quantity(to_buy, purchase_uom, round=False)
-            if self._is_whole_uom(purchase_uom):
+            # Planchas enteras (M111-12): «Plancha L×A m» tiene referencia m².
+            if self._is_whole_uom(purchase_uom) or product._construction_is_whole(
+                    self.company_id):
                 qty_to_buy = float_round(qty_to_buy, precision_rounding=1.0, rounding_method='UP')
             result.append({
                 'product_id': product.id,

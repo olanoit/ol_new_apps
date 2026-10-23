@@ -27,6 +27,27 @@
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
 
+    <!-- Desde «Productos por despachar» (M111-08): un vale por transferencia
+         de los movimientos marcados. -->
+    <record id="action_report_construction_dispatch_slip_move" model="ir.actions.report">
+        <field name="name">Vale de despacho</field>
+        <field name="model">stock.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_material_request.report_dispatch_slip_move</field>
+        <field name="report_file">al_construction_material_request.report_dispatch_slip_move</field>
+        <field name="print_report_name">'Vale de despacho'</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
+        <field name="binding_model_id" ref="stock.model_stock_move"/>
+        <field name="binding_type">report</field>
+        <field name="domain">[('construction_request_id', '!=', False)]</field>
+    </record>
+
+    <template id="report_dispatch_slip_move">
+        <t t-call="al_construction_material_request.report_dispatch_slip_picking">
+            <t t-set="docs" t-value="docs.picking_id"/>
+        </t>
+    </template>
+
     <template id="report_dispatch_slip_picking">
         <t t-call="web.html_container">
             <t t-foreach="docs.filtered('construction_request_id')" t-as="picking">
@@ -59,13 +80,19 @@
             <!-- Datos del envío -->
             <table class="pe-doc-table mb-3">
                 <tr>
-                    <td class="pe-doc-label" style="width: 17%;">Obra</td>
-                    <td class="pe-doc-value" style="width: 38%;"><strong t-out="o.project_id.display_name"/></td>
+                    <t t-if="o.request_type == 'internal'">
+                        <td class="pe-doc-label" style="width: 17%;">Área</td>
+                        <td class="pe-doc-value" style="width: 38%;"><strong t-out="o.area_id.display_name"/></td>
+                    </t>
+                    <t t-else="">
+                        <td class="pe-doc-label" style="width: 17%;">Obra</td>
+                        <td class="pe-doc-value" style="width: 38%;"><strong t-out="o.project_id.display_name"/></td>
+                    </t>
                     <td class="pe-doc-label" style="width: 17%;">Solicitado por</td>
                     <td class="pe-doc-value" style="width: 28%;" t-out="o.requested_by.name"/>
                 </tr>
                 <tr>
-                    <td class="pe-doc-label">Ubicación de obra</td>
+                    <td class="pe-doc-label"><t t-if="o.request_type == 'internal'">Destino</t><t t-else="">Ubicación de obra</t></td>
                     <td class="pe-doc-value" t-out="(picking.location_dest_id if picking else o.location_dest_id).display_name"/>
                     <td class="pe-doc-label">Fecha del requerimiento</td>
                     <td class="pe-doc-value"><span t-field="o.date_request"/></td>
@@ -122,7 +149,7 @@
             <!-- Firmas -->
             <table class="pe-doc-plain pe-doc-signatures pe-doc-keep" style="table-layout: fixed;">
                 <tr>
-                    <td style="width: 50%; padding: 0 8px;"><div t-out="(picking.user_id.name if picking else '') or ''"/></td>
+                    <td style="width: 50%; padding: 0 8px;"><div t-out="picking._get_dispatch_slip_user().name if picking else ''"/></td>
                     <td style="width: 50%; padding: 0 8px;"><div>Fecha y hora: ____/____/______ ____:____</div></td>
                 </tr>
                 <tr>

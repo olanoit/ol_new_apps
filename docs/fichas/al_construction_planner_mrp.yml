@@ -27,6 +27,11 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Paquete 1.11, M111-12 (fase A): la orden de fabricación guarda la necesidad de cada tablero indivisible y al confirmarla pide planchas enteras por producto en toda la orden (la diferencia va al componente con más necesidad); el despacho a producción nace en enteros. Vale también para las órdenes que crea el abastecimiento y se vuelve a redondear al cambiar la cantidad a producir. El control de exceso mide la necesidad."
+  - "Bloque «Planchas y retazos» en Ajustes ▸ Fabricación y aviso en la orden con necesidad, a entregar y redondeo."
 - version: '5.20261021'
   fecha: 21/10/2026
   cambios:
