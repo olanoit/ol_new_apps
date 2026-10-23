@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 44.20261016 — 23/10/2026
+
+- Al actualizar desde la 42, los menús, acciones y reglas que en la base citaban al Planificador anterior o a la jefatura reciben los grupos nuevos, y las entradas a la ejecución quedan activas como en una instalación nueva.
+
 ## 43.20261016 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: grupos en dos ejes independientes, plan (consulta, planificador, aprueba) y ejecución (reporta avance, ejecuta, valida, aprueba), más los complementos Ve montos, Ingresos y Administrador. El Planificador anterior y la jefatura quedan como grupos de compatibilidad; la migración pasa a cada usuario a los grupos equivalentes sin perder permisos y las reglas de validación de la jefatura a los aprobadores de cada eje.

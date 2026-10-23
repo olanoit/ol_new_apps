@@ -142,6 +142,18 @@ class TestAxisGroups(TransactionCase):
             'mig_asistente': ['assistant'],
         }
         users = {login: self._user(login, groups) for login, groups in profiles.items()}
+        # Un menú que en la base solo cita al Planificador anterior (versiones
+        # viejas o hecho a mano) y las entradas a la ejecución sin activar.
+        legacy_menu = self.env['ir.ui.menu'].create({
+            'name': 'Menú anterior (test)',
+            'parent_id': self.env.ref('al_construction_planner.menu_planner_reports_plan').id,
+            'action': 'ir.actions.act_window,%s' % self.env.ref(
+                'al_construction_planner.action_construction_resource_plan_line_analysis').id,
+            'group_ids': [Command.set(self.env.ref(G + 'planner').ids)]})
+        internal = self.env.ref('base.group_user')
+        feature = self.env.ref(G + 'feature_exec_planner')
+        internal.implied_ids = [Command.unlink(feature.id)]
+        self.env.registry.clear_cache()
         before = {login: self._snapshot(user) for login, user in users.items()}
         tier = self.env['tier.definition'].create({
             'name': 'Plan (test)', 'model_id': self.env.ref(
@@ -154,6 +166,8 @@ class TestAxisGroups(TransactionCase):
             perms, menus = self._snapshot(user)
             self.assertLessEqual(before[login][0], perms, login)
             self.assertLessEqual(before[login][1], menus, login)
+        self.assertIn(self.env.ref(G + 'plan_planner'), legacy_menu.group_ids)
+        self.assertIn(feature, internal.implied_ids)
         planner = users['mig_planificador']
         self.assertNotIn(self.env.ref(G + 'planner'), planner.group_ids)
         self.assertIn(self.env.ref(G + 'plan_planner'), planner.group_ids)

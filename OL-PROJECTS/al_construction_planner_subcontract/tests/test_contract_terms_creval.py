@@ -120,6 +120,15 @@ class ContractTermsCommon(TransactionCase):
             ('construction_project_id', '=', self.project.id)], order='id desc', limit=1)
         return wizard, order
 
+    def _post(self, move, day):
+        """Publica una factura de proveedor; con documentos (localización
+        peruana) le pone su número."""
+        move.invoice_date = day
+        if 'l10n_latam_use_documents' in move._fields and move.l10n_latam_use_documents \
+                and not move.l10n_latam_document_number:
+            move.l10n_latam_document_number = 'F001-%06d' % move.id
+        move.action_post()
+
     def _report(self, task, activity, qty, day):
         progress = self.env['construction.task.progress'].create({
             'task_id': task.id, 'activity_id': activity.id, 'date': day, 'qty': qty,
@@ -144,8 +153,7 @@ class ContractTermsCommon(TransactionCase):
         order.button_confirm()
         action = order.action_construction_register_advance()
         advance = self.env['account.move'].browse(action['res_id'])
-        advance.invoice_date = date(2026, 11, 2)
-        advance.action_post()
+        self._post(advance, date(2026, 11, 2))
         self._report(self.partida, self.act_wall, 1000.0, date(2026, 11, 4))
         self._report(self.extra_task, self.act_seal, 100.0, date(2026, 11, 4))
         self._deduction(order, 650.0)
@@ -286,8 +294,7 @@ class TestContractTerms(ContractTermsCommon):
         self.assertEqual(-fund_line.amount_currency, 2368.85)
         self.assertEqual(-(terms - fund_line).amount_currency, 35532.75)
         self.assertEqual((terms - fund_line).date_maturity, settlement.payment_date)
-        invoice.invoice_date = date(2026, 11, 7)
-        invoice.action_post()
+        self._post(invoice, date(2026, 11, 7))
         fund = order.construction_guarantee_fund_ids
         self.assertEqual(fund.amount, 2368.85)
         self.assertEqual(fund.move_line_id, fund_line)
@@ -410,8 +417,7 @@ class TestContractLiquidation(ContractTermsCommon):
         settlement.action_submit()
         settlement.action_validate()
         self.assertEqual(settlement.state, 'approved')
-        settlement.invoice_id.invoice_date = day
-        settlement.invoice_id.action_post()
+        self._post(settlement.invoice_id, day)
         return settlement.invoice_id
 
     def test_liquidation_and_close(self):

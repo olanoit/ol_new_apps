@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '44.20261016'
+    fecha: 23/10/2026
+    cambios:
+      - "Al actualizar desde la 42, los menús, acciones y reglas que en la base citaban al Planificador anterior o a la jefatura reciben los grupos nuevos, y las entradas a la ejecución quedan activas como en una instalación nueva."
   - version: '43.20261016'
     fecha: 23/10/2026
     cambios:

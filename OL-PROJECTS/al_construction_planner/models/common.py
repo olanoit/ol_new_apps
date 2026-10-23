@@ -223,6 +223,28 @@ def migrate_axis_groups(env):
             gone = users - keep
             if gone:
                 old.user_ids = [Command.unlink(user.id) for user in gone]
+    # Menús, acciones y reglas que citan los grupos anteriores (también los
+    # que quedaron en la base de versiones viejas o hechos a mano): reciben
+    # los grupos nuevos equivalentes.
+    for old_xmlid, new_xmlids, _leave in AXIS_MIGRATION:
+        old = env.ref(ref + old_xmlid, raise_if_not_found=False)
+        if not old:
+            continue
+        news = [env.ref(ref + xmlid) for xmlid in new_xmlids]
+        for model, fname in (('ir.ui.menu', 'group_ids'), ('ir.actions.act_window', 'group_ids'),
+                             ('ir.actions.server', 'group_ids'),
+                             ('ir.actions.report', 'group_ids'), ('ir.rule', 'groups')):
+            records = env[model].with_context(active_test=False).search([(fname, 'in', old.ids)])
+            for group in news:
+                records.filtered(lambda r: group not in r[fname]).write(
+                    {fname: [Command.link(group.id)]})
+    # Las entradas a la ejecución (capítulo 4) quedan activas, como en una
+    # instalación nueva (el usuario interno está en un bloque noupdate).
+    internal = env.ref('base.group_user')
+    for xmlid in ('group_planner_feature_exec_planner', 'group_planner_feature_exec_project'):
+        feature = env.ref(ref + xmlid, raise_if_not_found=False)
+        if feature and feature not in internal.implied_ids:
+            internal.implied_ids = [Command.link(feature.id)]
     head = env.ref(ref + 'group_planner_project_head', raise_if_not_found=False)
     if head:
         definitions = env['tier.definition'].with_context(active_test=False).search(
