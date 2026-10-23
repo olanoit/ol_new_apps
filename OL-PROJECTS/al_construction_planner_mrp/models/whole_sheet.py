@@ -87,6 +87,26 @@ class MrpProduction(models.Model):
                     lambda m: m.state != 'draft' and m.product_uom.is_zero(m.product_uom_qty)
                 )._action_cancel()
 
+    def _get_consumption_issues(self):
+        """El aviso de consumo de Odoo compara con la lista de materiales: la
+        plancha entera (y lo que cambian los retazos o las planchas sin tocar)
+        no es un desvío si se consume lo que pide la orden."""
+        issues = []
+        for order, product, consumed, expected in super()._get_consumption_issues():
+            moves = order.move_raw_ids.filtered(
+                lambda m: m.product_id == product and m.state != 'cancel')
+            if moves and all(m.construction_covers_move_id for m in moves):
+                continue
+            whole = moves.filtered('construction_need_qty')
+            if whole and order.product_qty:
+                planned = sum(m.product_uom._compute_quantity(
+                    m.product_uom_qty, product.uom_id, round=False) for m in whole) \
+                    * order.qty_producing / order.product_qty
+                if product.uom_id.compare(consumed, planned) == 0:
+                    continue
+            issues.append((order, product, consumed, expected))
+        return issues
+
     def _update_raw_moves(self, factor):
         """«Cambiar cantidad a producir»: la necesidad se reescala en la misma
         proporción y se vuelve a redondear."""

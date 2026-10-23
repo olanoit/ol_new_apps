@@ -25,6 +25,12 @@ class StockMove(models.Model):
         compute='_compute_construction_need_display',
         help='A entregar (más lo cubierto con retazo) menos la necesidad.')
 
+    # Retazos (M111-12, fase B): la salida con costo fijo (área × costo de la
+    # plancha) se valoriza con él y queda fuera del reparto de las piezas.
+    construction_fixed_cost = fields.Float(
+        string='Costo fijo de la salida', digits='Product Price', copy=False,
+        help='Costo total del subproducto, fijado al declararlo (retazo).')
+
     @api.depends('construction_need_qty', 'product_uom_qty', 'product_uom',
                  'move_dest_ids.construction_need_qty', 'move_dest_ids.product_uom')
     def _compute_construction_need_display(self):

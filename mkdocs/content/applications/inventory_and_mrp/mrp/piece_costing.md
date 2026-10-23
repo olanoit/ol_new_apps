@@ -30,6 +30,7 @@ módulo trabaja sobre el reparto nativo de los subproductos.
 | Bolsa del tablero | Valor consumido de cada tablero; se reparte por área solo entre las piezas cortadas de él |
 | Bolsa general | Lo demás: mano de obra, costo extra, insumos y tableros sin pieza; se reparte por área entre todas las salidas |
 | Producto principal | Recibe el residuo: costo total menos lo asignado a las piezas |
+| Retazo | Sobrante recuperable declarado en el corte: sale a su costo fijo (área × costo de la plancha ÷ área de la plancha), que se descuenta de la bolsa de su tablero, y no entra al reparto ([planchas enteras y retazos](../../services/project/construction/planning/production_order.md#tableros-en-planchas-enteras)) |
 
 ## Importar el despiece
 

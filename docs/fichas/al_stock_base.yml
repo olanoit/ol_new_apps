@@ -40,6 +40,10 @@ pasos:
     imagen: screenshots/02-logistica-pe.png
 
 novedades:
+  - version: '3.20261023'
+    fecha: 23/10/2026
+    cambios:
+      - "Paquete 1.11, M111-12 (fase B): producto retazo del tablero («Producto retazo», «Es retazo», «Retazo de») y costo fijo de una salida de producción."
   - version: '2.20261023'
     fecha: 23/10/2026
     cambios:

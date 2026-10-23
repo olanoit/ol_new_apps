@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_docs_help.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261023 — 23/10/2026
+
+- Mapa de pantallas actualizado a 487: requerimiento interno, productos por despachar, planchas enteras y retazos (paquete 1.11).
+
 ## 10.20261022 — 22/10/2026
 
 - Mapa de pantallas actualizado a 481: predicción de pago de Cobranza.

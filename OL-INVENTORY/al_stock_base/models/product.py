@@ -25,6 +25,16 @@ class ProductTemplate(models.Model):
         help='Se entrega, compra y despacha en planchas enteras.')
     construction_sheet_area_m2 = fields.Float(
         related='uom_id.construction_sheet_area_m2', string='Área de la plancha (m²)')
+    # Retazos (paquete 1.11, M111-12, fase B): producto propio del tablero,
+    # con lote de medidas y una variante por banda.
+    construction_remnant_tmpl_id = fields.Many2one(
+        'product.template', string='Producto retazo', index='btree_not_null',
+        help='Plantilla de los retazos de este tablero, con una variante por banda.')
+    construction_is_remnant = fields.Boolean(
+        string='Es retazo', help='Sobrante recuperable de un tablero, con lote de medidas.')
+    construction_remnant_source_tmpl_id = fields.Many2one(
+        'product.template', string='Retazo de', index='btree_not_null',
+        help='El tablero del que sale este retazo.')
 
     @api.depends('construction_indivisible_mode', 'uom_id.construction_whole_sheet')
     def _compute_construction_is_indivisible(self):

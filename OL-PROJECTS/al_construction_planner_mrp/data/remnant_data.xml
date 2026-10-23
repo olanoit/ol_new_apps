@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Retazos (paquete 1.11, M111-12, fase B): una variante por banda (D5, D7). -->
+    <data noupdate="1">
+        <record id="product_attribute_remnant_band" model="product.attribute">
+            <field name="name">Banda de retazo</field>
+            <field name="create_variant">always</field>
+            <field name="display_type">radio</field>
+        </record>
+        <record id="product_attribute_value_r25" model="product.attribute.value">
+            <field name="name">R25</field>
+            <field name="attribute_id" ref="product_attribute_remnant_band"/>
+            <field name="sequence">10</field>
+        </record>
+        <record id="product_attribute_value_r50" model="product.attribute.value">
+            <field name="name">R50</field>
+            <field name="attribute_id" ref="product_attribute_remnant_band"/>
+            <field name="sequence">20</field>
+        </record>
+        <record id="product_attribute_value_r75" model="product.attribute.value">
+            <field name="name">R75</field>
+            <field name="attribute_id" ref="product_attribute_remnant_band"/>
+            <field name="sequence">30</field>
+        </record>
+        <record id="product_attribute_value_r99" model="product.attribute.value">
+            <field name="name">R99</field>
+            <field name="attribute_id" ref="product_attribute_remnant_band"/>
+            <field name="sequence">40</field>
+        </record>
+    </data>
+</odoo>

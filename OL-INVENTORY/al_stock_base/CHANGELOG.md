@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_stock_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261023 — 23/10/2026
+
+- Paquete 1.11, M111-12 (fase B): producto retazo del tablero («Producto retazo», «Es retazo», «Retazo de») y costo fijo de una salida de producción.
+
 ## 2.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-09: resumen de inventario compacto, con o sin el planificador de obra: tarjetas sin gráfico, más angostas, con botones pequeños y las etiquetas en español (Con demora, En espera, Órdenes parciales, Movimientos). Antes estaba en el puente de compras del planificador.

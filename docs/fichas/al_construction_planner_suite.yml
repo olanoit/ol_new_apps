@@ -23,6 +23,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise y los módulos OCA de requerimientos de compra y de aprobación
   por niveles. Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '15.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Pruebas de los retazos (paquete 1.11, M111-12, fase B): cubrir y quitar retazo, declarar sobrantes con devolución, lote y costo, exceso de lo declarado y exigencia antes de terminar; la orden redondeada se termina sin aviso de consumo."
 - version: '14.20261023'
   fecha: 23/10/2026
   cambios:

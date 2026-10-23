@@ -411,6 +411,38 @@
         <field name="path">applications/services/project/construction/planning/control/#cuadrillas-en-jornales</field>
         <field name="section">Cuadrillas en jornales</field>
     </record>
+    <record id="help_construction_cut_closing_line" model="al.docs.help">
+        <field name="key">construction.cut.closing.line</field>
+        <field name="kind">model</field>
+        <field name="name">Sobrantes declarados del corte</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#declarar-sobrantes</field>
+        <field name="section">Declarar sobrantes</field>
+    </record>
+    <record id="help_construction_cut_closing_remnant" model="al.docs.help">
+        <field name="key">construction.cut.closing.remnant</field>
+        <field name="kind">model</field>
+        <field name="name">Retazo declarado</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/</field>
+        <field name="section">Mobiliario: módulos, productos y envíos</field>
+    </record>
+    <record id="help_construction_cut_closing_wizard" model="al.docs.help">
+        <field name="key">construction.cut.closing.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Declarar sobrantes del corte</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#declarar-sobrantes</field>
+        <field name="section">Declarar sobrantes</field>
+    </record>
+    <record id="help_construction_cut_closing_wizard_line" model="al.docs.help">
+        <field name="key">construction.cut.closing.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Sobrantes por tablero</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/</field>
+        <field name="section">Mobiliario: módulos, productos y envíos</field>
+    </record>
     <record id="help_construction_dependency" model="al.docs.help">
         <field name="key">construction.dependency</field>
         <field name="kind">model</field>
@@ -930,6 +962,22 @@
         <field name="module">al_construction_planner_furniture</field>
         <field name="path">applications/services/project/construction/planning/measurement/</field>
         <field name="section">Catálogo y árbol de la obra</field>
+    </record>
+    <record id="help_construction_remnant_cover_wizard" model="al.docs.help">
+        <field name="key">construction.remnant.cover.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Cubrir con retazo</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#cubrir-con-retazo</field>
+        <field name="section">Cubrir con retazo</field>
+    </record>
+    <record id="help_construction_remnant_cover_wizard_line" model="al.docs.help">
+        <field name="key">construction.remnant.cover.wizard.line</field>
+        <field name="kind">model</field>
+        <field name="name">Retazo disponible</field>
+        <field name="module">al_construction_planner_mrp</field>
+        <field name="path">applications/services/project/construction/planning/production_order/</field>
+        <field name="section">Mobiliario: módulos, productos y envíos</field>
     </record>
     <record id="help_construction_resource_plan" model="al.docs.help">
         <field name="key">construction.resource.plan</field>

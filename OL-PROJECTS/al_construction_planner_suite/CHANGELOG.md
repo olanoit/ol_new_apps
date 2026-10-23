@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261023 — 23/10/2026
+
+- Pruebas de los retazos (paquete 1.11, M111-12, fase B): cubrir y quitar retazo, declarar sobrantes con devolución, lote y costo, exceso de lo declarado y exigencia antes de terminar; la orden redondeada se termina sin aviso de consumo.
+
 ## 14.20261023 — 23/10/2026
 
 - Pruebas de las planchas enteras (paquete 1.11, M111-12, fase A): redondeo al confirmar, varias líneas del mismo tablero, tolerancia, orden por abastecimiento, cambio de cantidad, reserva y validación en enteros, compra y comparación con la necesidad.

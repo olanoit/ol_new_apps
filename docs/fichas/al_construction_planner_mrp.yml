@@ -27,6 +27,13 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '7.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Paquete 1.11, M111-12 (fase B, retazos): producto retazo del tablero con una variante por banda (R25 a R99) y lote con largo, ancho, área, % de plancha, banda, orden y obra de origen; pool de retazos en las ubicaciones y ubicación de retazos por almacén."
+  - "«Cubrir con retazo» y «Quitar retazo» en el despacho a producción: el retazo elegido cubre la fracción de la plancha, que baja a su entero."
+  - "«Declarar sobrantes» en la orden de corte: retazos con lote y medidas como subproductos a su costo por área, devolución de las planchas sin tocar, cuadre con la merma y registro por tablero; opción para exigirlo antes de terminar."
+  - "El aviso de consumo al terminar ya no salta por el redondeo a plancha entera ni por los retazos."
 - version: '6.20261023'
   fecha: 23/10/2026
   cambios:

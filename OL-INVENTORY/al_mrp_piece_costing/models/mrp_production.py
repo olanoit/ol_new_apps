@@ -66,11 +66,22 @@ class MrpProduction(models.Model):
             'subcontractor_id' in self._fields and self.subcontractor_id)
 
     def _piece_output_moves(self):
-        """Salidas que entran al reparto, con el filtro del cálculo nativo."""
+        """Salidas que entran al reparto, con el filtro del cálculo nativo.
+        Las de costo fijo (retazos) van aparte."""
         self.ensure_one()
         return self.move_finished_ids.filtered(
             lambda m: m.state not in ('done', 'cancel')
-            and m.product_uom.compare(m.quantity, 0) > 0)
+            and m.product_uom.compare(m.quantity, 0) > 0
+            and not m.construction_fixed_cost)
+
+    def _piece_fixed_moves(self):
+        """Retazos declarados (paquete 1.11, M111-12): su costo es el área
+        por el costo de la plancha y se descuenta antes del reparto."""
+        self.ensure_one()
+        return self.move_finished_ids.filtered(
+            lambda m: m.state not in ('done', 'cancel')
+            and m.product_uom.compare(m.quantity, 0) > 0
+            and m.construction_fixed_cost)
 
     @staticmethod
     def _piece_product_qty(move):
@@ -109,7 +120,8 @@ class MrpProduction(models.Model):
         outputs = self._piece_output_moves()
         main = outputs.filtered(lambda m: m.product_id == self.product_id)
         byproducts = outputs - main
-        if not byproducts:
+        fixed = self._piece_fixed_moves()
+        if not byproducts and not fixed:
             return {}
 
         # Costo total con los sumandos del nativo (en Enterprise, _cal_cost de
@@ -141,6 +153,14 @@ class MrpProduction(models.Model):
             product = move.product_id
             if not product.piece_is_edge_banding and area_by_material.get(product):
                 material_pools[product] = material_pools.get(product, 0.0) + move.value
+        # Los retazos salen del valor de su tablero (o de la bolsa general si
+        # ninguna pieza se corta de él) y no entran al reparto.
+        fixed_costs = {move: move.construction_fixed_cost for move in fixed}
+        for move, cost in fixed_costs.items():
+            board = move.product_id.construction_remnant_source_tmpl_id.product_variant_id
+            if board in material_pools:
+                material_pools[board] -= cost
+        total_cost -= sum(fixed_costs.values())
         general_pool = total_cost - edge_pool - sum(material_pools.values())
 
         def cost_of(move):
@@ -154,13 +174,17 @@ class MrpProduction(models.Model):
             return cost
 
         costs = {}
+        full_cost = total_cost + sum(fixed_costs.values())
+        for move, cost in fixed_costs.items():
+            costs[move] = cost
+            move.cost_share = cost / full_cost * 100
         for move in byproducts:
             costs[move] = cost_of(move)
             # Dato de reporte: el valor lo fija _piece_set_unit_prices. Suma
             # menos de 100 porque el principal tiene área (se valida al
             # confirmar), así que _check_byproducts no se dispara.
-            move.cost_share = costs[move] / total_cost * 100
-        assigned = sum(costs.values())
+            move.cost_share = costs[move] / full_cost * 100
+        assigned = sum(cost for move, cost in costs.items() if move not in fixed_costs)
         for move in main:
             costs[move] = (total_cost - assigned) * self._piece_product_qty(move) / (main_qty or 1.0)
         return costs

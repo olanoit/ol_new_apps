@@ -223,10 +223,32 @@ lista todo el requerimiento, sin precios ni stock del almacén:
 
 Las filas que no van en el bulto salen en gris. Bajo la tabla, un resumen
 («En este bulto: 1 de 2 materiales. Pendientes: 1 (en compra).») y las firmas
-de quien despacha y de quien recibe en obra. Marcando varias transferencias
-sale un vale por cada una.
+de quien despacha y de quien recibe en obra. **Despachado por** es quien validó
+la transferencia (queda en **Logística PE ‣ Validado por**) o, si aún no se
+valida, quien imprime. Marcando varias transferencias sale un vale por cada
+una.
+
+#### Productos por despachar
+
+El almacenero trabaja por producto en **Inventario ‣ Operaciones ‣ Traslados
+‣ Productos por despachar** (basta **Inventario: Usuario**). La lista muestra
+los productos de los despachos de requerimientos que aún no se validan,
+agrupados por requerimiento y luego por transferencia, con demanda, cantidad y
+estado. Al hacer clic en una fila se abre su transferencia para validarla; al
+validarla, sale de la lista. En el buscador están **Por almacén** y **Obra**, y
+con las filas marcadas, **Imprimir ‣ Vale de despacho** saca un vale por
+transferencia.
 Un traslado interno entre el central y la obra no genera asiento contable: la
 analítica viaja en el movimiento solo como trazabilidad.
+
+### Tableros en planchas enteras
+
+Si la compañía tiene activo **Pedir tableros en planchas enteras** (Ajustes ‣
+Fabricación ‣ Planchas y retazos), los tableros cuya unidad es una «Plancha
+entera» se reparten en planchas enteras: la fracción sube (13.3 → 14), solo se
+despachan planchas enteras libres y el resto del entero va a compra. Con 10.6
+planchas libres se despachan 10 y se compran 4; la columna **Redondeo a plancha
+entera** muestra 0.7. Los demás materiales se reparten como siempre.
 
 ### Comprar y recibir
 
@@ -278,6 +300,31 @@ Solo Logística cancela un requerimiento en proceso: se anulan las
 transferencias pendientes y las líneas de compra que aún no están en una orden.
 Lo despachado se queda en la obra y lo ya pedido al proveedor no se toca; el
 chatter lo avisa.
+
+## Requerimiento interno
+
+Administración, Comercial y las demás áreas piden material de oficina o de
+consumo (papel, plumones, material de marketing) con el mismo documento:
+
+1. En **Requerimientos de obra ‣ Configuración ‣ Ajustes ‣ Requerimientos
+   internos**, elija el plan analítico de las **Áreas** (si existe un plan
+   «Área», se toma solo) y pulse **Completar configuración**: cada almacén
+   recibe la ubicación **Consumo interno** y el tipo de operación **Consumo
+   interno** (secuencia CI). Contabilidad pone la cuenta de gasto en la
+   **Cuenta de valoración** de esa ubicación.
+2. Dé a los usuarios de las áreas el grupo **Solicitante**.
+3. En **Requerimientos ‣ Requerimientos internos**, el usuario crea el pedido
+   con su **Área** (sin obra) y los materiales, y lo envía. Lo aprueba el jefe
+   de su departamento (regla «Requerimiento interno: jefe del departamento»);
+   la regla de gerencia por monto se agrega en **Reglas de aprobación**.
+4. Logística lo procesa igual que uno de obra: lo disponible sale por
+   **Consumo interno** y lo que falta va a un requerimiento de compra con la
+   analítica del área. El pedido aparece en **Productos por despachar** y su
+   vale muestra **Área** en lugar de **Obra**.
+
+Al validar la salida baja el stock y el costo va a la cuenta de gasto de la
+ubicación con la analítica del área. Los requerimientos internos no muestran
+los controles del planificador (plan, niveles, etapas ni exceso).
 
 ## Ejemplo
 
@@ -339,6 +386,9 @@ bolsas (S/ 11 800,00) pasaría además por gerencia.
 | **Disponible en central** en 0 aunque hay stock | El stock está reservado por otro documento o fuera del origen | Revisar reservas y sububicaciones del origen |
 | El residente no ve el requerimiento | Solo ve los suyos y los de obras que sigue o dirige | Hacerlo seguidor de la obra o asignarlo |
 | «Indique el motivo del material extra» | Es un extra sin motivo | Elegir el **Motivo del extra** |
+| «El almacén … no tiene ubicación de consumo interno» | Falta configurar el consumo interno | **Completar configuración** en los ajustes |
+| El interno no pidió aprobación | El solicitante no tiene departamento con jefe en Empleados | Completar su ficha o agregar otra regla |
+| «… se entrega en planchas enteras: 7.5 no es válido» | Se validó fracción de un tablero | Validar planchas enteras |
 
 Cada compañía tiene su configuración y sus reglas.
 

@@ -72,6 +72,69 @@ una orden se reparten entre sus niveles en proporción a lo presupuestado; un
 material que no está en el plan se reparte en partes iguales entre sus
 ambientes. Así el piso suma lo mismo que sus órdenes.
 
+## Tableros en planchas enteras
+
+El almacén entrega tableros solo en planchas enteras, aunque el sistema
+matriz pida fracción. La orden de corte guarda la **necesidad** en fracción
+(la de la optimización o la de la lista de materiales) y pide planchas
+enteras.
+
+### Configurar
+
+1. En **Ajustes ‣ Fabricación ‣ Planchas y retazos**, active **Pedir tableros
+   en planchas enteras** y, si se quiere, una **Tolerancia de redondeo** (con
+   0.1, una necesidad de 3.08 pide 3).
+2. En **Inventario ‣ Configuración ‣ Unidades de medida**, marque **Plancha
+   entera** en las unidades «Plancha L×A m»; su área sale del factor en m².
+   Un producto puede forzar la regla con **Plancha indivisible** (Sí o No) en
+   su pestaña de inventario.
+3. Para retazos: en cada tablero, **Crear producto retazo** (una variante por
+   banda R25, R50, R75 y R99, con lote); marque **Pool de retazos** en las
+   ubicaciones donde se guardan y elija la **Ubicación de retazos** de cada
+   planta (almacén). Con **Exigir «Declarar sobrantes»**, la orden no se
+   termina sin declararlos.
+
+### Confirmar la orden
+
+Al confirmar, cada tablero se redondea por producto en toda la orden: con
+7.2 de necesidad se piden 8, y si el mismo tablero está en dos líneas (3.14 y
+0.5) se suman (4) y la diferencia va a la línea con más necesidad. El
+despacho a producción nace en planchas enteras, reserva solo planchas enteras
+(con 7.6 libres reserva 7) y no se valida con fracción. Un aviso arriba de la
+orden resume necesidad, a entregar y redondeo; en los componentes se ven
+**Necesidad**, **Redondeo** y **Cubierto con retazo**.
+
+El control de exceso y **Presupuestado frente a real** comparan la necesidad:
+el redondeo va en su propia columna y no cuenta como exceso, ni para el aviso
+de consumo al terminar.
+
+### Cubrir con retazo
+
+En el despacho a producción, el almacenero pulsa **Cubrir con retazo** en la
+línea del tablero. El asistente muestra la fracción a cubrir (necesidad 7.2 →
+0.2 plancha, 1.04 m²) y los retazos libres del mismo tablero que alcanzan, del
+más chico al más grande. Al marcar uno y confirmar que las piezas entran
+(despiece), la plancha baja a 7 y el retazo se agrega reservado con su lote.
+**Quitar retazo** lo deshace mientras el despacho no esté hecho.
+
+### Declarar sobrantes
+
+Después del corte, producción pulsa **Declarar sobrantes**. Por tablero se ve
+lo entregado (planchas y retazos, en m²) y las piezas; se escriben las
+**Planchas sin tocar** y los retazos (largo, ancho y cantidad). Odoo calcula
+área, % de plancha y banda; hasta 10 % es merma y sobre 99 %, plancha sin
+tocar. La merma es lo que queda del cuadre y no puede ser negativa más allá
+del 0.5 % de lo entregado. Al confirmar:
+
+- las planchas sin tocar vuelven al stock con una devolución del despacho;
+- cada retazo entra con su lote (`3101508-R50-1830x1200-0001`) a la
+  ubicación de retazos, como subproducto de la orden;
+- el retazo vale área × costo de la plancha ÷ área de la plancha y no entra
+  al reparto de las piezas; con el [costeo de piezas por
+  medida](../../../../inventory_and_mrp/mrp/piece_costing.md), su costo se
+  descuenta del tablero del que sale;
+- la pestaña **Sobrantes del corte** guarda el cuadre por tablero.
+
 !!! info "Ver también"
     - [Aprobaciones del plan y del requerimiento](approvals.md)
     - [Metrado](measurement.md)

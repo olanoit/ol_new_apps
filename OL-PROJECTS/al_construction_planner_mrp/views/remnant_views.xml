@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Retazos del corte (paquete 1.11, M111-12, fase B). -->
+
+    <!-- P1: exigencia de «Declarar sobrantes» y bandas. -->
+    <record id="res_config_settings_view_form_remnant" model="ir.ui.view">
+        <field name="name">res.config.settings.form.remnant</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="res_config_settings_view_form_whole_sheet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='construction_whole_sheet']" position="after">
+                <setting id="construction_cut_closing" company_dependent="1"
+                         invisible="not construction_whole_sheet"
+                         help="La orden de corte no se termina sin declarar retazos, merma y planchas sin tocar.">
+                    <field name="construction_cut_closing_required"/>
+                    <div class="content-group mt-2">
+                        <div class="row">
+                            <label for="construction_remnant_band_limits" class="col-lg-5 o_light_label"/>
+                            <field name="construction_remnant_band_limits" class="oe_inline"/>
+                        </div>
+                        <div class="text-muted">Hasta el primero es merma; sobre el último, plancha sin tocar.</div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P3: producto retazo del tablero y datos del retazo. -->
+    <record id="product_template_form_view_remnant" model="ir.ui.view">
+        <field name="name">product.template.form.remnant</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="al_stock_base.product_template_form_view_whole_sheet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='construction_whole_sheet']" position="inside">
+                <group>
+                    <label for="construction_remnant_tmpl_id" invisible="not construction_is_indivisible"/>
+                    <div class="o_row" invisible="not construction_is_indivisible">
+                        <field name="construction_remnant_tmpl_id" groups="stock.group_stock_manager"/>
+                        <button name="action_construction_create_remnant" type="object"
+                                string="Crear producto retazo" class="btn-link"
+                                invisible="construction_remnant_tmpl_id"
+                                groups="stock.group_stock_manager"/>
+                    </div>
+                    <field name="construction_is_remnant" readonly="1" invisible="not construction_is_remnant"/>
+                    <field name="construction_remnant_source_tmpl_id" readonly="1"
+                           invisible="not construction_is_remnant"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Lote del retazo: medidas, banda y origen. -->
+    <record id="view_production_lot_form_remnant" model="ir.ui.view">
+        <field name="name">stock.lot.form.remnant</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main_group']" position="after">
+                <group string="Retazo" name="construction_remnant"
+                       invisible="not construction_length_mm and not construction_width_mm">
+                    <group>
+                        <field name="construction_length_mm"/>
+                        <field name="construction_width_mm"/>
+                        <field name="construction_area_m2"/>
+                    </group>
+                    <group>
+                        <field name="construction_sheet_pct"/>
+                        <field name="construction_band"/>
+                        <field name="construction_origin_production_id"/>
+                        <field name="construction_origin_project_id"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_production_lot_tree_remnant" model="ir.ui.view">
+        <field name="name">stock.lot.list.remnant</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="construction_length_mm" optional="hide"/>
+                <field name="construction_width_mm" optional="hide"/>
+                <field name="construction_band" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_location_form_remnant" model="ir.ui.view">
+        <field name="name">stock.location.form.remnant</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='usage']" position="after">
+                <field name="construction_remnant_pool" invisible="usage != 'internal'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_warehouse_form_remnant" model="ir.ui.view">
+        <field name="name">stock.warehouse.form.remnant</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="construction_remnant_location_id" options="{'no_create': True}"
+                       groups="stock.group_stock_multi_locations"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P6: cubrir y quitar retazo en el despacho a producción. -->
+    <record id="view_picking_form_remnant" model="ir.ui.view">
+        <field name="name">stock.picking.form.remnant</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="al_stock_base.view_picking_form_whole_sheet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids']/list/field[@name='construction_rounding_qty']" position="after">
+                <field name="construction_can_cover" column_invisible="1"/>
+                <field name="construction_covers_move_id" column_invisible="1"/>
+                <field name="construction_remnant_lot_id" string="Retazo" optional="show"
+                       invisible="not construction_remnant_lot_id"/>
+                <button name="action_construction_cover_remnant" type="object" string="Cubrir con retazo"
+                        icon="fa-puzzle-piece" invisible="not construction_can_cover"
+                        groups="stock.group_stock_user"/>
+                <button name="action_construction_remove_remnant" type="object" string="Quitar retazo"
+                        icon="fa-times" invisible="not construction_remnant_lot_id or state in ('done', 'cancel')"
+                        groups="stock.group_stock_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Orden de corte: «Declarar sobrantes», cubierto con retazo y cuadre. -->
+    <record id="mrp_production_form_view_remnant" model="ir.ui.view">
+        <field name="name">mrp.production.form.remnant</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp_production_form_view_whole_sheet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="construction_has_whole_sheets" invisible="1"/>
+                <field name="construction_cut_closed" invisible="1"/>
+                <button name="action_construction_cut_closing" type="object" string="Declarar sobrantes"
+                        invisible="not construction_has_whole_sheets or construction_cut_closed or state not in ('confirmed', 'progress', 'to_close')"
+                        groups="mrp.group_mrp_user"/>
+            </xpath>
+            <xpath expr="//field[@name='move_raw_ids']/list/field[@name='construction_rounding_qty']" position="after">
+                <field name="construction_covered_qty" string="Cubierto con retazo" optional="show"
+                       invisible="not construction_covered_qty"/>
+                <field name="construction_remnant_lot_id" string="Retazo" optional="hide"
+                       invisible="not construction_remnant_lot_id"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Sobrantes del corte" name="construction_cut_closing"
+                      invisible="not construction_cut_closing_ids">
+                    <field name="construction_cut_closing_ids" readonly="1">
+                        <list>
+                            <field name="product_id"/>
+                            <field name="delivered_area_m2" sum="Total"/>
+                            <field name="pieces_area_m2" sum="Total"/>
+                            <field name="remnant_area_m2" sum="Total"/>
+                            <field name="scrap_area_m2" sum="Total"/>
+                            <field name="scrap_pct"/>
+                            <field name="untouched_sheets" sum="Total"/>
+                            <field name="declared_by"/>
+                            <field name="declared_date"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- P7 -->
+    <record id="construction_remnant_cover_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.remnant.cover.wizard.form</field>
+        <field name="model">construction.remnant.cover.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cubrir con retazo">
+                <group>
+                    <group>
+                        <field name="product_id"/>
+                        <field name="production_id"/>
+                        <field name="move_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="need_qty" force_save="1"/>
+                        <field name="fraction_to_cover" force_save="1"/>
+                        <field name="area_to_cover_m2" force_save="1"/>
+                    </group>
+                </group>
+                <div class="alert alert-warning" role="status" invisible="line_ids">
+                    No hay retazos de este tablero que cubran el área. Se entrega la plancha entera.
+                </div>
+                <field name="line_ids" invisible="not line_ids">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="selected" widget="boolean_toggle"/>
+                        <field name="quant_id" column_invisible="1" force_save="1"/>
+                        <field name="product_id" column_invisible="1" force_save="1"/>
+                        <field name="lot_id" readonly="1" force_save="1"/>
+                        <field name="band" readonly="1" force_save="1"/>
+                        <field name="length_mm" readonly="1" force_save="1"/>
+                        <field name="width_mm" readonly="1" force_save="1"/>
+                        <field name="area_m2" readonly="1" force_save="1"/>
+                        <field name="sheet_pct" readonly="1" force_save="1"/>
+                        <field name="location_id" readonly="1" force_save="1"/>
+                        <field name="origin_project_id" readonly="1" force_save="1"/>
+                    </list>
+                </field>
+                <field name="fit_confirmed" invisible="not line_ids"/>
+                <label for="fit_confirmed" invisible="not line_ids"/>
+                <div invisible="not result_text" class="mt-2">
+                    <strong>Resultado: </strong><field name="result_text" class="oe_inline"/>
+                </div>
+                <footer>
+                    <button name="action_assign" type="object" string="Asignar" class="btn-primary"
+                            invisible="not line_ids" readonly="not fit_confirmed"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- P8 -->
+    <record id="construction_cut_closing_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.cut.closing.wizard.form</field>
+        <field name="model">construction.cut.closing.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Declarar sobrantes">
+                <group>
+                    <field name="production_id"/>
+                </group>
+                <field name="line_ids">
+                    <list create="0" delete="0" decoration-danger="not balance_ok">
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="sheet_area_m2" readonly="1" force_save="1" optional="hide"/>
+                        <field name="delivered_sheets" readonly="1" force_save="1"/>
+                        <field name="delivered_remnant_area_m2" readonly="1" force_save="1" optional="hide"/>
+                        <field name="delivered_area_m2"/>
+                        <field name="pieces_area_m2" readonly="1" force_save="1"/>
+                        <field name="untouched_sheets"/>
+                        <field name="remnant_area_m2"/>
+                        <field name="scrap_area_m2"/>
+                        <field name="scrap_pct"/>
+                        <field name="balance_ok" column_invisible="1"/>
+                    </list>
+                    <form string="Sobrantes del tablero">
+                        <group>
+                            <group>
+                                <field name="product_id" readonly="1" force_save="1"/>
+                                <field name="sheet_area_m2" readonly="1" force_save="1"/>
+                                <field name="delivered_sheets" readonly="1" force_save="1"/>
+                                <field name="delivered_remnant_area_m2" readonly="1" force_save="1"/>
+                                <field name="delivered_area_m2"/>
+                            </group>
+                            <group>
+                                <field name="pieces_area_m2" readonly="1" force_save="1"/>
+                                <field name="untouched_sheets"/>
+                                <field name="scrap_area_m2"/>
+                                <field name="scrap_pct"/>
+                                <field name="balance_ok" invisible="1"/>
+                            </group>
+                        </group>
+                        <field name="remnant_ids">
+                            <list editable="bottom">
+                                <field name="length_mm"/>
+                                <field name="width_mm"/>
+                                <field name="qty"/>
+                                <field name="area_m2"/>
+                                <field name="sheet_pct"/>
+                                <field name="band"/>
+                            </list>
+                        </field>
+                        <div class="mt-2" invisible="not balance_text">
+                            <strong>Cuadre: </strong>
+                            <field name="balance_text" class="oe_inline"/>
+                        </div>
+                    </form>
+                </field>
+                <footer>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

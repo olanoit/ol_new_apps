@@ -11,8 +11,15 @@ la página **Logística PE** de la transferencia, el único lugar donde la suite
 muestra lo peruano, agrupado por tema, como la página «Facturación PE» de la
 factura. La cabecera de la transferencia queda como en Odoo.
 
-El módulo no tiene lógica propia: los cálculos y los envíos los hacen los
-módulos de cada grupo.
+Los cálculos y los envíos los hacen los módulos de cada grupo. Además, el
+módulo deja compacto el **resumen de inventario** (**Inventario ‣ Información
+general**): las tarjetas de los tipos de operación salen sin gráfico, más
+angostas y con las etiquetas en español, para que quepan más en pantalla. Y
+guarda la regla de los **tableros en planchas enteras** (unidad «Plancha
+entera», **Plancha indivisible** en el producto, necesidad y redondeo de cada
+movimiento) que usan el [requerimiento de
+obra](../../services/project/construction/material_requests.md#tableros-en-planchas-enteras)
+y la [orden de corte](../../services/project/construction/planning/production_order.md#tableros-en-planchas-enteras).
 
 ## Configuración
 

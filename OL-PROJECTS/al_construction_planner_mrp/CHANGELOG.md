@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261023 — 23/10/2026
+
+- Paquete 1.11, M111-12 (fase B, retazos): producto retazo del tablero con una variante por banda (R25 a R99) y lote con largo, ancho, área, % de plancha, banda, orden y obra de origen; pool de retazos en las ubicaciones y ubicación de retazos por almacén.
+- «Cubrir con retazo» y «Quitar retazo» en el despacho a producción: el retazo elegido cubre la fracción de la plancha, que baja a su entero.
+- «Declarar sobrantes» en la orden de corte: retazos con lote y medidas como subproductos a su costo por área, devolución de las planchas sin tocar, cuadre con la merma y registro por tablero; opción para exigirlo antes de terminar.
+- El aviso de consumo al terminar ya no salta por el redondeo a plancha entera ni por los retazos.
+
 ## 6.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-12 (fase A): la orden de fabricación guarda la necesidad de cada tablero indivisible y al confirmarla pide planchas enteras por producto en toda la orden (la diferencia va al componente con más necesidad); el despacho a producción nace en enteros. Vale también para las órdenes que crea el abastecimiento y se vuelve a redondear al cambiar la cantidad a producir. El control de exceso mide la necesidad.

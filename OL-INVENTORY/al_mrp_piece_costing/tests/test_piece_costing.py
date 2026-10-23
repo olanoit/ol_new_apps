@@ -94,6 +94,32 @@ class TestPieceCosting(TransactionCase):
         door_move = production.move_finished_ids.filtered(lambda m: m.product_id == self.door)
         self.assertAlmostEqual(door_move.cost_share, 204.7037 / 313 * 100, places=2)
 
+    def test_remnant_fixed_cost(self):
+        """Retazo del tablero blanco declarado en el corte (paquete 1.11,
+        M111-12): sale a su costo fijo (S/ 20), que se descuenta del tablero
+        blanco; las piezas se reparten el resto y todo suma el costo de la
+        orden."""
+        remnant = self.env['product.product'].create({
+            'name': 'Retazo blanco (test)', 'is_storable': True, 'categ_id': self.category.id,
+            'construction_is_remnant': True,
+            'construction_remnant_source_tmpl_id': self.white.product_tmpl_id.id})
+        production = self._production()
+        production.action_confirm()
+        vals = production._get_move_finished_values(remnant.id, 1.0, remnant.uom_id.id)
+        vals['construction_fixed_cost'] = 20.0
+        production.write({'move_finished_ids': [Command.create(vals)]})
+        with Form(production) as form:
+            form.qty_producing = production.product_qty
+        production.move_raw_ids.picked = True
+        production.move_finished_ids.filtered(lambda m: m.product_id == remnant).quantity = 1.0
+        production.button_mark_done()
+        self.assertEqual(production.state, 'done')
+        self.assertAlmostEqual(self._value(production, remnant), 20.0, places=2)
+        # Lateral: 80 × 0.5 / 0.75 del blanco + 2 de tapacanto + 3.7037 general.
+        self.assertAlmostEqual(self._value(production, self.side), 59.04, places=2)
+        self.assertAlmostEqual(self._value(production, self.door), 204.70, places=2)
+        self.assertAlmostEqual(sum(production.move_finished_ids.mapped('value')), 313.0, places=1)
+
     def test_without_costing_follows_standard(self):
         production = self._produce(self._production(piece_costing=False))
         self.assertAlmostEqual(self._value(production, self.door), 0.0, places=2)

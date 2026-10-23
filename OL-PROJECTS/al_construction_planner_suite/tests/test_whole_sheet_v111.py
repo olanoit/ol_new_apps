@@ -44,6 +44,8 @@ class TestWholeSheetV111(TransactionCase):
         return self.env['mrp.bom'].create({
             'product_tmpl_id': (product or self.kitchen).product_tmpl_id.id,
             'product_qty': 1.0,
+            # Con aviso de consumo, como las listas de Allcenter.
+            'consumption': 'warning',
             'bom_line_ids': [Command.create({'product_id': p.id, 'product_qty': qty})
                              for p, qty in lines],
         })
@@ -88,6 +90,19 @@ class TestWholeSheetV111(TransactionCase):
             'stock.action_report_picking', dispatch.picking_id.ids)[0].decode()
         self.assertIn('Necesidad', html)
         self.assertIn('Redondeo', html)
+
+    def test_mark_done_without_consumption_warning(self):
+        """La plancha entera no es un desvío de la lista de materiales."""
+        production = self._production([(self.board, 7.2)])
+        picking = self._dispatch_qty(production)[1].picking_id
+        picking.action_assign()
+        picking.move_ids.picked = True
+        picking.button_validate()
+        with Form(production) as form:
+            form.qty_producing = 1.0
+        self.assertIs(production.button_mark_done(), True)
+        self.assertEqual(production.state, 'done')
+        self.assertEqual(self._board_moves(production).quantity, 8.0)
 
     # 2
     def test_switch_off_keeps_fraction(self):
@@ -191,6 +206,157 @@ class TestWholeSheetV111(TransactionCase):
 
 
 @tagged('post_install', '-at_install')
+class TestRemnantV111(TestWholeSheetV111):
+    """Fase B: cubrir con retazo, quitarlo y declarar sobrantes (casos 12 a
+    16 y criterios de la fase B)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        category = cls.env['product.category'].create({
+            'name': 'Tableros (test)', 'property_cost_method': 'average'})
+        (cls.board | cls.kitchen).categ_id = category
+        cls.board.default_code = '3101508'
+        cls.board.product_tmpl_id.action_construction_create_remnant()
+        cls.remnant_tmpl = cls.board.construction_remnant_tmpl_id
+        cls.pool = cls.env['stock.location'].create({
+            'name': 'Retazos (test)', 'usage': 'internal',
+            'location_id': cls.warehouse.lot_stock_id.id, 'construction_remnant_pool': True})
+        cls.warehouse.construction_remnant_location_id = cls.pool
+        cls.r25 = cls.board._construction_remnant_variant('r25')
+        cls.lot = cls.env['stock.lot'].create({
+            'name': '3101508-R25-1200x900-0001', 'product_id': cls.r25.id,
+            'company_id': cls.company.id,
+            'construction_length_mm': 1200, 'construction_width_mm': 900})
+        cls.env['stock.quant']._update_available_quantity(cls.r25, cls.pool, 1, lot_id=cls.lot)
+
+    def _cover(self, production):
+        dispatch = self._dispatch_qty(production)[1]
+        self.assertTrue(dispatch.construction_can_cover)
+        dispatch.action_construction_cover_remnant()
+        wizard = self.env['construction.remnant.cover.wizard'].with_context(
+            default_move_id=dispatch.id).create({})
+        self.assertAlmostEqual(wizard.fraction_to_cover, 0.2)
+        self.assertAlmostEqual(wizard.area_to_cover_m2, 1.04, places=2)
+        self.assertEqual(wizard.line_ids.lot_id, self.lot)
+        wizard.line_ids.selected = True
+        with self.assertRaises(UserError):
+            wizard.action_assign()
+        wizard.fit_confirmed = True
+        wizard.action_assign()
+        return dispatch
+
+    def test_remnant_variants(self):
+        self.assertTrue(self.remnant_tmpl.construction_is_remnant)
+        self.assertEqual(self.remnant_tmpl.tracking, 'lot')
+        self.assertEqual(sorted(self.remnant_tmpl.product_variant_ids.mapped(
+            'construction_remnant_band')), ['r25', 'r50', 'r75', 'r99'])
+        self.assertAlmostEqual(self.lot.construction_area_m2, 1.08)
+        self.assertAlmostEqual(self.lot.construction_sheet_pct, 20.7, places=1)
+        self.assertEqual(self.lot.construction_band, 'r25')
+
+    # 12 y criterio B1
+    def test_cover_with_remnant(self):
+        production = self._production([(self.board, 7.2)])
+        dispatch = self._cover(production)
+        board_move = self._board_moves(production)
+        self.assertEqual(board_move.product_uom_qty, 7.0)
+        self.assertAlmostEqual(board_move.construction_covered_qty, 0.21)
+        self.assertEqual(dispatch.product_uom_qty, 7.0)
+        remnant_pick = dispatch.picking_id.move_ids.filtered(lambda m: m.product_id == self.r25)
+        self.assertEqual(remnant_pick.move_line_ids.lot_id, self.lot)
+        self.assertEqual(remnant_pick.quantity, 1.0)
+        remnant_raw = production.move_raw_ids.filtered(lambda m: m.product_id == self.r25)
+        self.assertEqual(remnant_raw.construction_covers_move_id, board_move)
+        self.assertIn(self.lot.name, production.message_ids[0].body)
+        # 7 + 0.21 − 7.2 = 0.01 (ejemplo de la sección 7.4).
+        self.assertAlmostEqual(production.construction_sheet_rounding, 0.01)
+
+    # 13
+    def test_remove_remnant(self):
+        production = self._production([(self.board, 7.2)])
+        dispatch = self._cover(production)
+        remnant_pick = dispatch.picking_id.move_ids.filtered(lambda m: m.product_id == self.r25)
+        remnant_pick.action_construction_remove_remnant()
+        self.assertEqual(self._board_moves(production).product_uom_qty, 8.0)
+        self.assertEqual(self._dispatch_qty(production)[0], 8.0)
+        quant = self.env['stock.quant'].search([('lot_id', '=', self.lot.id),
+                                                ('location_id', '=', self.pool.id)])
+        self.assertEqual(quant.reserved_quantity, 0.0)
+
+    def _closing(self, production, untouched=0, remnants=()):
+        action = production.action_construction_cut_closing()
+        wizard = self.env['construction.cut.closing.wizard'].with_context(
+            action['context']).create({})
+        line = wizard.line_ids
+        line.untouched_sheets = untouched
+        line.remnant_ids = [Command.create({'length_mm': length, 'width_mm': width, 'qty': qty})
+                            for length, width, qty in remnants]
+        return wizard, line
+
+    # 14 y criterios B2 y B3
+    def test_declare_leftovers(self):
+        production = self._production([(self.board, 7.2)])
+        picking = self._dispatch_qty(production)[1].picking_id
+        picking.action_assign()
+        picking.move_ids.picked = True
+        picking.button_validate()
+        self.assertEqual(picking.state, 'done')
+        wizard, line = self._closing(production, untouched=1, remnants=[(1830, 1200, 1)])
+        self.assertEqual(line.delivered_sheets, 8.0)
+        self.assertAlmostEqual(line.pieces_area_m2, 7.2 * 5.2216, places=2)
+        self.assertEqual(line.remnant_ids.band, 'r50')
+        # Con las piezas de la necesidad no cabe una plancha sin tocar.
+        self.assertFalse(line.balance_ok)
+        # Área de piezas del despiece (ilustrativa, P8): 33.20 m².
+        line.pieces_area_m2 = 33.2
+        self.assertTrue(line.balance_ok)
+        self.assertAlmostEqual(line.scrap_area_m2, 8 * 5.2216 - 33.2 - 2.196 - 5.2216, places=1)
+        wizard.action_confirm()
+        self.assertTrue(production.construction_cut_closed)
+        self.assertEqual(self._board_moves(production).product_uom_qty, 7.0)
+        returned = self.env['stock.picking'].search([
+            ('return_id', '=', picking.id)])
+        self.assertEqual(returned.move_ids.product_uom_qty, 1.0)
+        r50 = self.board._construction_remnant_variant('r50')
+        remnant_move = production.move_finished_ids.filtered(lambda m: m.product_id == r50)
+        lot = remnant_move.move_line_ids.lot_id
+        self.assertRegex(lot.name, r'^3101508-R50-1830x1200-\d{4}$')
+        self.assertEqual(lot.construction_origin_production_id, production)
+        cost = 1.83 * 1.2 * 150.0 / 5.2216
+        self.assertAlmostEqual(remnant_move.construction_fixed_cost, cost, places=2)
+        closing = production.construction_cut_closing_ids
+        self.assertEqual(closing.untouched_sheets, 1)
+        self.assertAlmostEqual(closing.remnant_area_m2, 2.196, places=3)
+        # Terminar: el retazo sale a su costo y las piezas llevan el resto.
+        with Form(production) as form:
+            form.qty_producing = 1.0
+        production.button_mark_done()
+        self.assertEqual(production.state, 'done')
+        remnant_move = production.move_finished_ids.filtered(lambda m: m.product_id == r50)
+        main = production.move_finished_ids.filtered(lambda m: m.product_id == self.kitchen)
+        consumed = sum(production.move_raw_ids.filtered(lambda m: m.state == 'done').mapped('value'))
+        self.assertAlmostEqual(remnant_move.value, cost, places=1)
+        self.assertAlmostEqual(main.value + remnant_move.value, consumed, places=1)
+
+    # 15
+    def test_declare_more_than_delivered(self):
+        production = self._production([(self.board, 7.2)])
+        wizard, line = self._closing(production, untouched=0,
+                                     remnants=[(2440, 2140, 1), (2000, 1000, 1)])
+        self.assertFalse(line.balance_ok)
+        with self.assertRaisesRegex(UserError, 'supera lo entregado'):
+            wizard.action_confirm()
+
+    # 16
+    def test_closing_required_blocks_done(self):
+        self.company.construction_cut_closing_required = True
+        production = self._production([(self.board, 1.0)])
+        with self.assertRaisesRegex(UserError, 'Declare los sobrantes'):
+            production.button_mark_done()
+
+
+@tagged('post_install', '-at_install')
 class TestWholeSheetVersusV111(TestProductionExcess):
     """7: la comparación mide la necesidad; el redondeo va en su columna."""
 
@@ -210,6 +376,10 @@ class TestWholeSheetVersusV111(TestProductionExcess):
 
 
 # Las pruebas heredadas ya corren en su clase.
+for _name in dir(TestWholeSheetV111):
+    if _name.startswith('test_') and callable(getattr(TestWholeSheetV111, _name)) \
+            and _name not in vars(TestRemnantV111):
+        setattr(TestRemnantV111, _name, None)
 for _name in dir(TestProductionExcess):
     if _name.startswith('test_') and callable(getattr(TestProductionExcess, _name)) \
             and _name not in vars(TestWholeSheetVersusV111):

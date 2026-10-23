@@ -26,6 +26,10 @@ configuracion:
 - "Importe el despiece en **Fabricación ▸ Operaciones ▸ Importar despiece**."
 requisitos_nota: Requiere Fabricación con contabilidad (`mrp_account`); las piezas con costo promedio o FIFO.
 novedades:
+- version: '2.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Paquete 1.11, M111-12: los retazos declarados en el corte salen a su costo fijo, que se descuenta del valor de su tablero antes de repartir el resto entre las piezas."
 - version: '1.20261017'
   fecha: 17/10/2026
   cambios:

@@ -6,4 +6,10 @@
         <field name="model_id" ref="model_construction_production_reason"/>
         <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
+    <!-- Sobrantes declarados del corte (paquete 1.11, M111-12). -->
+    <record id="construction_cut_closing_line_company_rule" model="ir.rule">
+        <field name="name">Sobrantes del corte: multicompañía</field>
+        <field name="model_id" ref="model_construction_cut_closing_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
 </odoo>
