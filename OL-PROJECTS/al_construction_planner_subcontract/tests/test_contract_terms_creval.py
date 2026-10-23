@@ -10,6 +10,7 @@ from unittest.mock import patch
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import new_test_user, tagged
+from odoo.tools.misc import formatLang
 from odoo.tests.common import TransactionCase
 
 from odoo.addons.al_construction_planner_subcontract.models.construction_contract_condition import (
@@ -542,7 +543,8 @@ class TestContractReports(ContractTermsCommon):
         self.assertIn('pe-doc-sign-box', html)
         self.assertIn('Conformidad del contratista', html)
         self.assertIn('Adicionales', html)
-        self.assertIn('35,532.75', html)
+        # El monto con el formato del idioma del reporte («35,532.75» o «35.532,75»).
+        self.assertIn(formatLang(self.env, 35532.75), html)
         # Resumen de valorizaciones (con IGV).
         row = self.env['construction.contract.summary.report'].search(
             [('order_id', '=', order.id)])
