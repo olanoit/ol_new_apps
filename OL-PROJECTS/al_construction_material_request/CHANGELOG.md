@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261023 — 23/10/2026
+
+- Corrección: procesar un requerimiento en una compañía sin plan analítico «Área» daba error de acceso a Logística. El plan de las áreas se propone solo desde «Completar configuración» de Ajustes.
+
 ## 23.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-08: menú Inventario ▸ Operaciones ▸ Traslados ▸ «Productos por despachar» para Inventario: Usuario: los productos de los despachos de requerimientos sin validar, agrupados por requerimiento y transferencia; la fila abre la transferencia y desde las filas marcadas se imprime el vale de despacho.

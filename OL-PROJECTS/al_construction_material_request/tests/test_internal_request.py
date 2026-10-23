@@ -135,3 +135,15 @@ class TestInternalRequest(ConstructionRequestCommon):
                 'request_type': 'internal', 'project_id': self.site_a.id,
                 'line_ids': [(0, 0, {'product_id': self.paper.id, 'product_qty': 1})],
             })
+
+    def test_setup_without_area_plan_as_logistics(self):
+        """Procesar en una compañía sin plan de áreas no lee planes
+        analíticos: Logística no tiene acceso a ellos."""
+        self.company.construction_area_plan_id = False
+        self.company.with_user(self.logistics)._al_construction_ensure_setup()
+        self.assertFalse(self.company.construction_area_plan_id)
+        # «Completar configuración» (administrador) toma el plan «Área».
+        self.env['account.analytic.plan'].create({'name': 'Área'})
+        settings = self.env['res.config.settings'].create({})
+        settings.action_al_construction_setup()
+        self.assertEqual(self.company.construction_area_plan_id.name, 'Área')

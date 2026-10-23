@@ -30,6 +30,18 @@ class ResCompany(models.Model):
         help='Las cuentas de este plan son las áreas que piden material interno '
              '(Administración, Comercial…).')
 
+    def _al_construction_default_area_plan(self):
+        """Plan «Área» como plan de las áreas, si existe y no hay otro elegido
+        (paquete 1.11, M111-10). Lo llama «Completar configuración» de Ajustes;
+        no se hace al procesar, que lo corre Logística sin acceso a los planes
+        analíticos ni a la compañía."""
+        Plan = self.env['account.analytic.plan']
+        area_plan = Plan.search([('name', '=ilike', 'área')], limit=1) \
+            or Plan.search([('name', '=ilike', 'area')], limit=1)
+        if area_plan:
+            self.filtered(lambda c: not c.construction_area_plan_id).write(
+                {'construction_area_plan_id': area_plan.id})
+
     def _al_construction_ensure_setup(self):
         """Completa, sin pisar lo configurado, la ubicación ``OBRAS``, el tipo
         «Despacho a obra» y los valores por defecto a partir del primer
@@ -72,12 +84,5 @@ class ResCompany(models.Model):
                 }).id
             if not company.construction_pr_picking_type_id:
                 vals['construction_pr_picking_type_id'] = warehouse.in_type_id.id
-            if not company.construction_area_plan_id:
-                # Plan «Área» si ya existe (paquete 1.11, M111-10).
-                area_plan = self.env['account.analytic.plan'].search(
-                    [('name', '=ilike', 'área')], limit=1) or self.env['account.analytic.plan'].search(
-                    [('name', '=ilike', 'area')], limit=1)
-                if area_plan:
-                    vals['construction_area_plan_id'] = area_plan.id
             if vals:
                 company.write(vals)

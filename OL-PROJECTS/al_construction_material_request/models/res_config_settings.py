@@ -20,6 +20,7 @@ class ResConfigSettings(models.TransientModel):
 
     def action_al_construction_setup(self):
         self.company_id._al_construction_ensure_setup()
+        self.company_id._al_construction_default_area_plan()
         # Consumo interno en cada almacén de la compañía (M111-10).
         self.env['stock.warehouse'].search(
             [('company_id', '=', self.company_id.id)])._construction_ensure_internal_consumption()

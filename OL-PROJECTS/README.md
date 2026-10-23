@@ -30,7 +30,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_attendance](al_construction_attendance/) | 4.20261021 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
-[al_construction_material_request](al_construction_material_request/) | 23.20261023 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_construction_material_request](al_construction_material_request/) | 24.20261023 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
 [al_construction_planner](al_construction_planner/) | 42.20261016 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
 [al_construction_planner_approvals](al_construction_planner_approvals/) | 5.20261021 | LGPL-3 | Plan de recursos y requerimiento de obra aprobados en la aplicación Aprobaciones, con tabla de rutas por tramos y aprobadores por grupo.
 [al_construction_planner_approvals_mrp](al_construction_planner_approvals_mrp/) | 4.20261023 | LGPL-3 | Exceso de la orden de fabricación frente a lo presupuestado: el jefe de producción lo aprueba dentro de su margen y, por encima, va a Aprobaciones.

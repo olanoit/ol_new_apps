@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '24.20261023'
+    fecha: 23/10/2026
+    cambios:
+      - "Corrección: procesar un requerimiento en una compañía sin plan analítico «Área» daba error de acceso a Logística. El plan de las áreas se propone solo desde «Completar configuración» de Ajustes."
   - version: '23.20261023'
     fecha: 23/10/2026
     cambios:
