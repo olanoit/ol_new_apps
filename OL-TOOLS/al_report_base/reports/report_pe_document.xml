@@ -79,4 +79,28 @@
         </div>
         <t t-call="al_report_base.report_pe_document_footer"/>
     </template>
+
+    <!-- Casillas de firma: un rectángulo por paso del documento (elaboró,
+         cada nivel de aprobación, conformidad) con el rol, el nombre, el cargo
+         y la fecha y hora, y espacio para firmar. Un paso que aún no ocurre
+         deja la casilla con el rol y sin nombre. Parámetro: sign_boxes, lista
+         de diccionarios con role, name, job y date (texto). Cuatro casillas
+         por fila. -->
+    <template id="report_pe_sign_boxes">
+        <t t-set="box_rows" t-value="[sign_boxes[i:i + 4] for i in range(0, len(sign_boxes or []), 4)]"/>
+        <table class="pe-doc-plain pe-doc-sign-boxes pe-doc-keep" t-foreach="box_rows" t-as="box_row">
+            <tr>
+                <td t-foreach="box_row" t-as="box">
+                    <div class="pe-doc-sign-box">
+                        <div class="pe-doc-sign-role" t-out="box.get('role')"/>
+                        <div class="pe-doc-sign-space"/>
+                        <div class="pe-doc-sign-name"><t t-out="box.get('name') or ' '"/></div>
+                        <div class="pe-doc-sign-job" t-if="box.get('job')" t-out="box.get('job')"/>
+                        <div class="pe-doc-sign-date" t-if="box.get('date')" t-out="box.get('date')"/>
+                    </div>
+                </td>
+                <t t-foreach="range(4 - len(box_row))" t-as="_empty"><td/></t>
+            </tr>
+        </table>
+    </template>
 </odoo>

@@ -224,3 +224,48 @@
 .pe-doc-keep {
     page-break-inside: avoid;
 }
+
+/* Casillas de firma (report_pe_sign_boxes): rectángulos con el rol, espacio
+   para firmar, el nombre, el cargo y la fecha. */
+.pe-doc-sign-boxes {
+    margin-top: 24px;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.pe-doc-sign-boxes td {
+    padding: 0 6px;
+    vertical-align: top;
+    width: 25%;
+}
+
+.pe-doc-sign-box {
+    border: 1px solid #000;
+    border-radius: 6px;
+    min-height: 120px;
+    padding: 6px 8px;
+    text-align: center;
+}
+
+.pe-doc-sign-role {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.pe-doc-sign-space {
+    border-bottom: 1px solid #c9c9c9;
+    height: 56px;
+    margin-bottom: 4px;
+}
+
+.pe-doc-sign-name {
+    font-weight: bold;
+    min-height: 14px;
+}
+
+.pe-doc-sign-job,
+.pe-doc-sign-date {
+    color: #595959;
+    font-size: 0.9em;
+}
+

@@ -40,6 +40,10 @@ pasos:
     imagen: screenshots/01-factura-a4.png
 
 novedades:
+  - version: '2.20261011'
+    fecha: 23/10/2026
+    cambios:
+    - "Casillas de firma report_pe_sign_boxes: un rectángulo por paso (elaboró, cada nivel de aprobación, conformidad) con rol, nombre, cargo y fecha (requerimiento CREVAL v1.0, 3.12)."
   - version: 1.20261011
     fecha: 11/10/2026
     cambios:

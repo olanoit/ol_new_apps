@@ -39,3 +39,16 @@ class TestReportPePage(TransactionCase):
         landscape = self.env.ref('al_report_base.paperformat_pe_a4_landscape')
         self.assertEqual((portrait.format, portrait.orientation), ('A4', 'Portrait'))
         self.assertEqual((landscape.format, landscape.orientation), ('A4', 'Landscape'))
+
+    def test_sign_boxes(self):
+        boxes = [{'role': 'Elaboró', 'name': 'Ana Pérez', 'job': 'Residente', 'date': '23/10/2026 10:00'},
+                 {'role': 'Validó', 'name': '', 'job': '', 'date': ''},
+                 {'role': 'Aprobó'}, {'role': 'Gerencia'}, {'role': 'Conformidad del contratista',
+                                                            'name': 'Contratas SAC'}]
+        html = str(self.env['ir.qweb']._render('al_report_base.report_pe_sign_boxes',
+                                               {'sign_boxes': boxes}))
+        self.assertEqual(html.count('pe-doc-sign-box"'), 5)
+        self.assertEqual(html.count('pe-doc-sign-boxes'), 2)  # cuatro por fila
+        self.assertIn('Ana Pérez', html)
+        self.assertIn('Residente', html)
+
