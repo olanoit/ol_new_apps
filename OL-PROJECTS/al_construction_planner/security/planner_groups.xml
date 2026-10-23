@@ -2,76 +2,157 @@
 <odoo>
     <data noupdate="0">
 
+        <!-- Grupos en dos ejes (requerimiento CREVAL v1.0, capítulo 5): plan y
+             ejecución son independientes; un usuario tiene uno, otro o los dos,
+             en cualquier nivel. Los complementos (montos, ingresos y
+             administración) se suman a cualquier nivel. Cada eje y cada
+             complemento es una selección de la sección Servicios en Ajustes ›
+             Usuarios. -->
+        <record id="res_groups_privilege_construction_plan" model="res.groups.privilege">
+            <field name="name">Planificación de obra: plan</field>
+            <field name="sequence">44</field>
+            <field name="category_id" ref="base.module_category_services"/>
+            <field name="description">Recetas, tipologías, niveles, planes en borrador, costos, versiones y aprobación del plan.</field>
+        </record>
+
+        <!-- XMLID de siempre: era la escalera única del planificador. -->
         <record id="res_groups_privilege_construction_planner" model="res.groups.privilege">
-            <field name="name">Planificación de obra</field>
+            <field name="name">Planificación de obra: ejecución</field>
             <field name="sequence">45</field>
+            <field name="category_id" ref="base.module_category_services"/>
+            <field name="description">Avance, contratas, cuadrillas, material, cambios, deductivos y valorizaciones sobre el plan aprobado.</field>
+        </record>
+
+        <record id="res_groups_privilege_construction_amounts" model="res.groups.privilege">
+            <field name="name">Planificación de obra: montos</field>
+            <field name="sequence">46</field>
             <field name="category_id" ref="base.module_category_services"/>
         </record>
 
-        <!-- Montos (v1.8, M18-10): fuera del privilegio, se suma a cualquier
-             nivel. Sin él, la planificación muestra cantidades, fechas, avance
-             y estados, sin costos, precios, presupuestos ni saldos. Lo tienen
-             el administrador, la jefatura y los ingresos. -->
+        <record id="res_groups_privilege_construction_revenue" model="res.groups.privilege">
+            <field name="name">Planificación de obra: ingresos</field>
+            <field name="sequence">47</field>
+            <field name="category_id" ref="base.module_category_services"/>
+        </record>
+
+        <record id="res_groups_privilege_construction_admin" model="res.groups.privilege">
+            <field name="name">Planificación de obra: administración</field>
+            <field name="sequence">48</field>
+            <field name="category_id" ref="base.module_category_services"/>
+        </record>
+
+        <!-- Montos (v1.8, M18-10). Sin él, la planificación muestra cantidades,
+             fechas, avance y estados, sin costos, precios, presupuestos ni
+             saldos. -->
         <record id="group_planner_amounts" model="res.groups">
-            <field name="name">Planificación de obra: ve montos</field>
+            <field name="name">Ve montos</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_amounts"/>
             <field name="comment">Ve costos, precios, presupuestos, comprometido, real, saldos, márgenes y valorizaciones en el árbol, el cronograma, los paneles, la matriz insumo-producto, los análisis, los reportes y las exportaciones.</field>
         </record>
 
+        <!-- Eje plan -->
+        <record id="group_planner_plan_viewer" model="res.groups">
+            <field name="name">Consulta</field>
+            <field name="sequence">10</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_plan"/>
+            <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+            <field name="comment">Ve el plan, el árbol, el cronograma y el saldo de sus obras.</field>
+        </record>
+
+        <record id="group_planner_plan_planner" model="res.groups">
+            <field name="name">Planificador</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_plan"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_plan_viewer')), Command.link(ref('project.group_project_user')), Command.link(ref('al_project_gantt_base.group_gantt_user'))]"/>
+            <field name="comment">Recetas, tipologías, niveles, generar y editar planes en borrador, costos y nueva versión del plan.</field>
+        </record>
+
+        <record id="group_planner_plan_approver" model="res.groups">
+            <field name="name">Aprueba</field>
+            <field name="sequence">30</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_plan"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_plan_planner'))]"/>
+            <field name="comment">Aprueba y cierra planes.</field>
+        </record>
+
+        <!-- Eje ejecución: «Reporta avance» y «Ejecuta» conservan los XMLID de
+             «Reporte de avance» y «Usuario». -->
         <record id="group_planner_progress" model="res.groups">
-            <field name="name">Reporte de avance</field>
+            <field name="name">Reporta avance</field>
             <field name="sequence">10</field>
             <field name="privilege_id" ref="res_groups_privilege_construction_planner"/>
             <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
-            <field name="comment">Capataces de contrata y supervisores: ven el árbol de sus obras y registran avances.</field>
+            <field name="comment">Capataces de contrata y maestros de obra: ven el árbol de sus obras y registran avances.</field>
         </record>
 
         <record id="group_planner_user" model="res.groups">
-            <field name="name">Usuario</field>
+            <field name="name">Ejecuta</field>
             <field name="sequence">20</field>
             <field name="privilege_id" ref="res_groups_privilege_construction_planner"/>
-            <field name="implied_ids" eval="[Command.link(ref('group_planner_progress')), Command.link(ref('project.group_project_user')), Command.link(ref('al_project_gantt_base.group_gantt_user'))]"/>
-            <field name="comment">Proyectos, Logística y Producción: lanzan las acciones sobre planes aprobados.</field>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_progress')), Command.link(ref('group_planner_plan_viewer')), Command.link(ref('project.group_project_user')), Command.link(ref('al_project_gantt_base.group_gantt_user'))]"/>
+            <field name="comment">Asigna contrata y cuadrilla, pide material, registra cambios y deductivos, prepara y presenta valorizaciones sobre el plan aprobado.</field>
         </record>
 
-        <record id="group_planner_planner" model="res.groups">
-            <field name="name">Planificador</field>
+        <record id="group_planner_exec_validator" model="res.groups">
+            <field name="name">Valida</field>
             <field name="sequence">30</field>
             <field name="privilege_id" ref="res_groups_privilege_construction_planner"/>
             <field name="implied_ids" eval="[Command.link(ref('group_planner_user'))]"/>
-            <field name="comment">Oficina Técnica y supervisores de obra: cargan tipologías, generan y editan planes en borrador, aplican costos y validan avances y liquidaciones.</field>
+            <field name="comment">Valida o rechaza avances y valida valorizaciones.</field>
+        </record>
+
+        <record id="group_planner_exec_approver" model="res.groups">
+            <field name="name">Aprueba</field>
+            <field name="sequence">40</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_planner"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_exec_validator'))]"/>
+            <field name="comment">Aprueba valorizaciones, excesos, metrados con diferencia, material extra, cambios y liquidaciones de contrata.</field>
+        </record>
+
+        <!-- Ingresos (Administración y Finanzas). -->
+        <record id="group_planner_revenue" model="res.groups">
+            <field name="name">Ingresos</field>
+            <field name="privilege_id" ref="res_groups_privilege_construction_revenue"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_user')), Command.link(ref('group_planner_amounts'))]"/>
+            <field name="comment">Confirma valorizaciones al cliente, crea las facturas desde la valorización y ve el cronograma valorizado.</field>
+        </record>
+
+        <!-- Compatibilidad: el «Planificador» de la escalera anterior validaba la
+             ejecución y editaba planes. Sale de las selecciones y queda como la
+             suma de Plan: planificador y Ejecución: valida, con sus accesos, para
+             que las reglas y vistas que lo citan sigan funcionando. La migración
+             pasa a sus usuarios a los dos grupos nuevos. -->
+        <record id="group_planner_planner" model="res.groups">
+            <field name="name">Planificación de obra: planificador (anterior)</field>
+            <field name="sequence">30</field>
+            <field name="privilege_id" eval="False"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_user')), Command.link(ref('group_planner_plan_planner')), Command.link(ref('group_planner_exec_validator'))]"/>
+            <field name="comment">Grupo de compatibilidad: equivale a Plan: planificador más Ejecución: valida.</field>
         </record>
 
         <record id="group_planner_manager" model="res.groups">
             <field name="name">Administrador</field>
             <field name="sequence">40</field>
-            <field name="privilege_id" ref="res_groups_privilege_construction_planner"/>
-            <field name="implied_ids" eval="[Command.link(ref('group_planner_planner')), Command.link(ref('group_planner_amounts'))]"/>
+            <field name="privilege_id" ref="res_groups_privilege_construction_admin"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_planner')), Command.link(ref('group_planner_amounts')), Command.link(ref('group_planner_plan_approver')), Command.link(ref('group_planner_exec_approver')), Command.link(ref('group_planner_revenue'))]"/>
             <field name="user_ids" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
-            <field name="comment">Jefatura de Proyectos: configuración, políticas, aprobación de liquidaciones y cierre de planes.</field>
+            <field name="comment">Configuración y políticas del planificador; incluye Plan: aprueba, Ejecución: aprueba, Ve montos e Ingresos.</field>
         </record>
 
-        <!-- Jefatura y asistente de Proyectos (v1.6, M16-09 y M16-10): fuera
-             del privilegio, como ingresos. Las reglas de validación del
-             planificador las aprueba la jefatura, no el administrador, para
-             que funcionen con un reemplazo. -->
+        <!-- Jefatura y asistente de Proyectos (v1.6, M16-09 y M16-10): grupos de
+             rol fuera de las selecciones. La jefatura es la suma de Plan: aprueba
+             y Ejecución: aprueba con montos; las rutas de aprobación la siguen
+             citando. -->
         <record id="group_planner_project_head" model="res.groups">
             <field name="name">Planificación de obra: jefatura de proyectos</field>
-            <field name="implied_ids" eval="[Command.link(ref('group_planner_planner')), Command.link(ref('group_planner_amounts'))]"/>
-            <field name="comment">Aprueba el plan, los excesos sobre el plan, los metrados con diferencia, el material extra y su descuento a la contrata, las liquidaciones, los cambios, las entregas semanales y la anulación de valorizaciones.</field>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_planner')), Command.link(ref('group_planner_amounts')), Command.link(ref('group_planner_plan_approver')), Command.link(ref('group_planner_exec_approver'))]"/>
+            <field name="comment">Rol: aprueba el plan, los excesos, los metrados con diferencia, el material extra y su descuento a la contrata, las valorizaciones, los cambios, las entregas semanales y la anulación de valorizaciones.</field>
         </record>
 
         <record id="group_planner_assistant" model="res.groups">
             <field name="name">Planificación de obra: asistente de proyectos</field>
             <field name="implied_ids" eval="[Command.link(ref('group_planner_user'))]"/>
-            <field name="comment">Crea los requerimientos a obra en borrador y los envía a aprobación; no aprueba ni valida el despacho, que valida el almacén.</field>
-        </record>
-
-        <!-- Ingresos (Administración y Finanzas): fuera del privilegio porque no
-             es un escalón del planificador; se suma a cualquier nivel. -->
-        <record id="group_planner_revenue" model="res.groups">
-            <field name="name">Planificación de obra: ingresos</field>
-            <field name="implied_ids" eval="[Command.link(ref('group_planner_user')), Command.link(ref('group_planner_amounts'))]"/>
-            <field name="comment">Confirma valorizaciones, crea las facturas desde la valorización y ve el cronograma valorizado.</field>
+            <field name="comment">Rol: crea los requerimientos a obra en borrador y los envía a aprobación; no aprueba ni valida el despacho, que valida el almacén.</field>
         </record>
 
     </data>
@@ -94,8 +175,18 @@
             <field name="name">Planificación de obra: metrado activo</field>
             <field name="comment">Muestra los metrados, la carga de medidas y «Generar metrados».</field>
         </record>
+        <!-- Entradas a la ejecución (CREVAL v1.0, capítulo 4): en Planificación
+             de obra y desde Proyectos. Las dos activas al instalar. -->
+        <record id="group_planner_feature_exec_planner" model="res.groups">
+            <field name="name">Planificación de obra: ejecución en la vertical</field>
+            <field name="comment">Menús por momento, tablero de obra y tarea de obra con su menú Ejecutar.</field>
+        </record>
+        <record id="group_planner_feature_exec_project" model="res.groups">
+            <field name="name">Planificación de obra: ejecución desde Proyectos</field>
+            <field name="comment">Sección Obra en el tablero del proyecto y menú Ejecutar en la tarea de Proyectos.</field>
+        </record>
         <record id="base.group_user" model="res.groups">
-            <field name="implied_ids" eval="[Command.link(ref('group_planner_feature_control')), Command.link(ref('group_planner_feature_progress')), Command.link(ref('group_planner_feature_measurement'))]"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_planner_feature_control')), Command.link(ref('group_planner_feature_progress')), Command.link(ref('group_planner_feature_measurement')), Command.link(ref('group_planner_feature_exec_planner')), Command.link(ref('group_planner_feature_exec_project'))]"/>
         </record>
     </data>
 </odoo>

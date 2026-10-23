@@ -150,6 +150,42 @@ Configuración de Allcenter después de publicar (no la hace el código):
   «Órdenes de trabajo» activado en Ajustes de Fabricación;
 - volver a importar las obras de prueba para rehacer las listas con el redondeo del plan (M111-04).
 
+## Requerimiento CREVAL v1.0 (vertical Planificación de obra, Parte I)
+
+Criterios del «Requerimiento de desarrollo · Vertical Planificación de obra» v1.0
+(`docs/md/CREVAL_Requerimiento_Desarrollo_Vertical_v1.0.docx`, 23/10/2026; diseño en
+`DISENO_CREVAL_v1.0.md`). Corren en `test_pe_creval` (base nueva con la suite del planificador).
+Resultado del 23/10/2026: 473 pruebas en verde (núcleo, todos los puentes, la suite, la asistencia, el requerimiento de obra y `al_report_base`), con dos ajustes de la base nueva que no son del código de este requerimiento: la configuración inicial de la compañía (`_al_construction_ensure_setup`) y un plan analítico «Área» (sin él, el requerimiento de obra falla al buscarlo sin `sudo`, M111-10).
+
+| Req. | Criterio (resumen) | Test que lo cubre | Resultado |
+|---|---|---|---|
+| 3.4/3.5 | Con «Contrato de obra» y el ejemplo (38,200.00 + 1,800.00 de adicionales, 5 % y 3 %, deductivo 650.00): subtotal 40,150.00, IGV 7,227.00, total 47,377.00, adelanto 9,475.40, fondo 2,368.85, total a pagar 35,532.75 | `al_construction_planner_subcontract` `test_contract_terms_creval.TestContractTerms.test_cascade_example`, `test_valuation_invoice_and_fund` | **Verde** |
+| 3.6 | Factura del ejemplo: servicio 40,800.00, deductivo −650.00, regularización −8,030.00, base 32,120.00, IGV 5,781.60, total 37,901.60; solo se amortiza con el adelanto publicado | `test_valuation_invoice_and_fund`, `test_amortization_needs_posted_advance` | **Verde** |
+| 3.8 | Cuotas de la factura: neto 35,532.75 el día de pago y fondo 2,368.85 con su vencimiento; la fila del fondo se crea al publicar | `test_valuation_invoice_and_fund` | **Verde** |
+| 3.16 | Con adelanto 0 %, fondo 0 %, sin ajustes y semanal, la valorización da la misma factura y la misma recepción que la liquidación semanal | `test_zero_terms_match_weekly_settlement` | **Verde** |
+| 3.16 | Otras condiciones (otros porcentajes, fondo sobre el subtotal, otro orden) calculan sin cambiar código | `test_other_conditions_without_code` | **Verde** |
+| 3.4 | El asistente copia las condiciones a la orden (una línea por actividad y partida, sin la retención de la tarifa) y la orden confirmada solo la cambia el administrador | `test_assign_copies_terms` | **Verde** |
+| 3.5 | Una sola valorización abierta por orden; el deductivo solo entra a su orden | `test_one_open_valuation_per_order`, `test_deduction_needs_support` | **Verde** |
+| 3.7 | Deductivo con sustento obligatorio, monto mayor que cero, secuencia por obra y corrección con signo contrario | `test_deduction_needs_support`, `test_valuation_invoice_and_fund` | **Verde** |
+| 3.9 | El cambio aprobado con contratista se agrega a la orden como adicional; si pasa el monto aprobado, la diferencia espera aprobación | `al_construction_planner_subcontract_sale` `test_additional_creval` | **Verde** |
+| 3.10 | Periodos quincenal, mensual (fin de mes y día de corte), semanal con día de corte; el siguiente empieza el día después del anterior; al término no hay periódicas | `test_periods` | **Verde** |
+| 3.11 | Liquidación: cantidad final reducida con motivo, saldo del adelanto amortizado, documentos requeridos, «Cerrar orden» baja la orden a lo recibido, libera el plan y corre el fondo a la liquidación + plazo | `TestContractLiquidation.test_liquidation_and_close` | **Verde** |
+| 3.12 | Valorizado impreso con título, adicionales, resumen y casillas Elaboró, Validó, Aprobó y Conformidad del contratista | `TestContractReports.test_printed_valuation_and_summary`, `al_report_base` `test_sign_boxes` | **Verde** |
+| 3.13 | Resumen de valorizaciones con IGV (valorizado, deductivos, saldo por pagar, avance) e impreso; despacho semanal | `test_printed_valuation_and_summary` | **Verde** |
+| 3.14 | Carga inicial: orden confirmada con valorización de apertura sin factura; la siguiente parte del día después del corte | `TestContractOpening.test_opening_load` | **Verde** |
+| 4.2-4.7 | Ajustes activos al instalar; menú por momento con el ajuste y el de siempre sin él; tablero y tarea con Ejecutar; sección Obra solo en obras y solo con su ajuste | `al_construction_planner` `test_execution_creval` | **Verde** |
+| 4.10 | Un usuario con ejecución y sin plan no ve el menú Planificación | `test_executor_without_plan_axis_has_no_planning_menu` | **Verde** |
+| 5 | Ejes independientes, grupos de compatibilidad, controles por eje y migración sin pérdida de permisos ni de menús | `test_axis_groups_creval` | **Verde** |
+| 6.1 | Receta de demostración: mano de obra 6.46, herramientas 3 % = 0.19, costo unitario 43.78; cuadrilla ÷ rendimiento; el porcentaje del plan se recalcula y no se compra | `test_recipe_calc_creval` | **Verde** |
+| 6.3 | Rótulos de la plantilla de la obra en campos y filtros | `test_level_labels_from_project_template` | **Verde** |
+| 6.4 | Presupuesto con secciones: costo directo de la cotización igual al del archivo, duplicados avisados, tres niveles en la obra | `al_construction_planner_sale` `test_budget_import_creval` | **Verde** |
+| 6.5 | Línea en dólares → orden de compra en dólares desde la compra masiva; control en soles con la diferencia de cambio aparte | `al_construction_planner_purchase` `test_currency_creval`, `test_dollar_line` | **Verde** |
+
+Pendiente fuera del código (Parte II, base del cliente): condiciones de CREVAL, plazos y requisitos
+del fondo, reglas y montos de aprobación, puestos de los firmantes, cuentas de anticipos y fondos,
+perfiles de la matriz de usuarios, instalación de `al_project_gantt_website` y `al_project_gantt_ai`
+(capítulo 7) y la prueba integral v1.1.
+
 ## Qué falta para validarlos con MOMEN
 
 1. **Maestro de MOMEN** (`Maestro_Planificacion_MOMEN_v03.xlsx`): el

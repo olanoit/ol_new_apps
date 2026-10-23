@@ -70,3 +70,39 @@ class ConstructionContractSettlement(models.Model):
         # sudo: el supervisor puede no ver los requerimientos; vuelven a quedar
         # pendientes para la siguiente liquidación de la contrata.
         self.sudo().discount_request_ids.write({'construction_discount_settlement_id': False})
+
+    def _attach_deductions(self):
+        """Con condiciones (CREVAL v1.0, 3.7), el material extra descontado a
+        la contrata entra como deductivo de tipo «Material extra» de la orden."""
+        self.ensure_one()
+        # sudo: quien valoriza no siempre ve los requerimientos de obra; solo
+        # se toman los extras descontados a esta contrata en esta obra.
+        Request_sudo = self.env['construction.material.request'].sudo()
+        pending_sudo = Request_sudo.search([
+            ('construction_discount', '=', True),
+            ('construction_discount_partner_id', 'child_of',
+             self.partner_id.commercial_partner_id.id),
+            ('project_id', '=', self.project_id.id),
+            ('state', 'in', ('approved', 'in_progress', 'done')),
+            '|', ('construction_discount_settlement_id', '=', False),
+            ('construction_discount_settlement_id.state', '=', 'cancel'),
+        ])
+        kind = self.env.ref('al_construction_planner_subcontract.deduction_type_material_extra',
+                            raise_if_not_found=False)
+        Deduction_sudo = self.env['construction.contract.deduction'].sudo()
+        for request in pending_sudo:
+            reference = '%s,%s' % (request._name, request.id)
+            if Deduction_sudo.search_count([('reference', '=', reference),
+                                            ('state', '!=', 'cancel')]):
+                continue
+            Deduction_sudo.create({
+                'purchase_order_id': self.purchase_order_id.id,
+                'type_id': kind.id,
+                'description': self.env._('Material extra %s', request.name),
+                'amount': request.construction_discount_amount,
+                'date': self.period_start,
+                'reference': reference,
+            })
+            request.construction_discount_settlement_id = self
+        return super()._attach_deductions()
+

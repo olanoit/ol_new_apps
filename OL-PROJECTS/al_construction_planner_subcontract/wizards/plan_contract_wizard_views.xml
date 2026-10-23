@@ -73,7 +73,7 @@
         <field name="res_model">construction.plan.contract.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner'))]"/>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_user'))]"/>
     </record>
 
     </odoo>

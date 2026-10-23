@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 43.20261016 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulo 5: grupos en dos ejes independientes, plan (consulta, planificador, aprueba) y ejecución (reporta avance, ejecuta, valida, aprueba), más los complementos Ve montos, Ingresos y Administrador. El Planificador anterior y la jefatura quedan como grupos de compatibilidad; la migración pasa a cada usuario a los grupos equivalentes sin perder permisos y las reglas de validación de la jefatura a los aprobadores de cada eje.
+- Capítulo 4: dos ajustes de entrada a la ejecución (en Planificación de obra y desde Proyectos), menú por momento (Planificación, Ejecución con Personal propio y Abastecimiento), tablero de obra, tarea de obra con su menú Ejecutar, sección Obra en el tablero del proyecto y menú Ejecutar en la tarea de Proyectos.
+- Capítulo 6: forma de cálculo en la receta y el plan (cantidad, cuadrilla ÷ rendimiento, % de la mano de obra, % del costo directo de un grupo de partidas), fuente del análisis de precio unitario por obra, rótulos de la plantilla de la obra en campos, filtros y agrupaciones, equivalencias de unidades y partidas en otra moneda.
+- 3.12: casillas de firma de los documentos impresos (elaboró, cada nivel de aprobación y conformidad) desde las revisiones de la validación por niveles.
+
 ## 42.20261016 — 16/10/2026
 
 - Etapas con sub etapas (v1.8, M18-02 y M18-14): el catálogo de etapas es un árbol numerado («1.1 Armado»); el árbol de recursos, el cronograma y la matriz filtran por etapa padre o sub etapa, el resumen y el control del plan van en ese orden y el cronograma muestra una barra resumen por etapa padre.

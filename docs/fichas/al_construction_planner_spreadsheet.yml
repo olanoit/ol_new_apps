@@ -61,6 +61,10 @@ pasos:
     imagen: screenshots/04-importar.png
 
 novedades:
+  - version: '3.20261016'
+    fecha: 23/10/2026
+    cambios:
+    - "Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba)."
   - version: 2.20261016
     fecha: 16/10/2026
     cambios:

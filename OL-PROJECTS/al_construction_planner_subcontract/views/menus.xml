@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_planner_contract_assign" name="Asignar contrata" parent="al_construction_planner.menu_planner_contracts" action="action_plan_contract_wizard" sequence="10" groups="al_construction_planner.group_planner_planner"/>
+    <!-- Nombres de mercado (CREVAL v1.0, 3.2): «OC de servicio» pasa a «Órdenes de
+         contrata» y «Liquidaciones semanales» a «Valorizaciones de contrata»; los
+         XMLID no cambian. -->
+    <menuitem id="menu_planner_contract_assign" name="Asignar contrata" parent="al_construction_planner.menu_planner_contracts" action="action_plan_contract_wizard" sequence="10" groups="al_construction_planner.group_planner_user"/>
 
-    <menuitem id="menu_planner_service_orders" name="OC de servicio" parent="al_construction_planner.menu_planner_contracts" action="action_construction_service_orders" sequence="20" groups="purchase.group_purchase_user"/>
+    <menuitem id="menu_planner_service_orders" name="Órdenes de contrata" parent="al_construction_planner.menu_planner_contracts" action="action_construction_service_orders" sequence="20" groups="purchase.group_purchase_user,al_construction_planner.group_planner_user"/>
 
-    <menuitem id="menu_planner_settlements" name="Liquidaciones semanales" parent="al_construction_planner.menu_planner_contracts" action="action_construction_contract_settlement" sequence="30"/>
+    <menuitem id="menu_planner_settlements" name="Valorizaciones de contrata" parent="al_construction_planner.menu_planner_contracts" action="action_construction_contract_settlement" sequence="30"/>
+
+    <menuitem id="menu_planner_deductions" name="Deductivos" parent="al_construction_planner.menu_planner_contracts" action="action_construction_contract_deduction" sequence="40" groups="al_construction_planner.group_planner_user"/>
+
+    <!-- Informes › Contratas -->
+    <menuitem id="menu_planner_reports_contracts" name="Contratas" parent="al_construction_planner.menu_planner_reports" sequence="25" groups="al_construction_planner.group_planner_user,account.group_account_invoice">
+        <menuitem id="menu_planner_contract_summary" name="Resumen de valorizaciones" action="action_construction_contract_summary_report" sequence="10"/>
+        <menuitem id="menu_planner_settlement_analysis" name="Análisis de valorizaciones" action="action_construction_settlement_line_analysis" sequence="20"/>
+        <menuitem id="menu_planner_guarantee_funds" name="Fondos de garantía de contratas" action="action_construction_guarantee_fund" sequence="30"/>
+    </menuitem>
+
+    <!-- Configuración › Plan de obra -->
+    <menuitem id="menu_planner_contract_conditions" name="Condiciones de contrata" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_contract_condition" sequence="32" groups="al_construction_planner.group_planner_manager"/>
+    <menuitem id="menu_planner_deduction_types" name="Tipos de deductivo" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_contract_deduction_type" sequence="33" groups="al_construction_planner.group_planner_manager"/>
+    <menuitem id="menu_planner_contract_requirements" name="Requisitos de devolución del fondo" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_contract_requirement" sequence="34" groups="al_construction_planner.group_planner_manager"/>
+    <menuitem id="menu_planner_contract_documents" name="Documentos de la liquidación" parent="al_construction_planner.menu_planner_config_plan" action="action_construction_contract_document_type" sequence="35" groups="al_construction_planner.group_planner_manager"/>
 </odoo>

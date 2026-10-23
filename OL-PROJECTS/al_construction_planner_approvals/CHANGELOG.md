@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261021 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba). La oficina técnica sale de la selección y equivale a Plan: planificador más Ejecución: valida.
+
 ## 5.20261021 — 21/10/2026
 
 - La solicitud de una versión nueva del plan muestra 0 % de exceso: lo que sube frente a la versión vigente solo elige los tramos de la tabla de rutas.

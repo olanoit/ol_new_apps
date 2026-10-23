@@ -10,7 +10,7 @@
                         string="Asignar contrata"
                         invisible="state not in ('approved', 'in_progress')"
                         context="{'default_plan_id': id}"
-                        groups="al_construction_planner.group_planner_planner"/>
+                        groups="al_construction_planner.group_planner_user"/>
             </xpath>
         </field>
     </record>

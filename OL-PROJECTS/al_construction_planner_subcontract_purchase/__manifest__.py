@@ -17,7 +17,7 @@ Descuento a la contrata del material extra en su liquidación semanal.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '1.20261013',
+    'version': '2.20261013',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_subcontract', 'al_construction_planner_purchase'],

@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals_mrp`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '5.20261019'
+  fecha: 23/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba)."
 - version: '4.20261019'
   fecha: 19/10/2026
   cambios:

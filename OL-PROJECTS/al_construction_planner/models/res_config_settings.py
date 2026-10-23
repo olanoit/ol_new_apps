@@ -24,6 +24,18 @@ class ResConfigSettings(models.TransientModel):
         string='Metrado',
         implied_group='al_construction_planner.group_planner_feature_measurement',
         group='base.group_user', help='Metrado del nivel frente a lo planificado (mobiliario).')
+    # Entradas a la ejecución (CREVAL v1.0, capítulo 4): se construyen las
+    # dos y cada una se activa por separado; apagarla no borra datos.
+    group_construction_exec_planner = fields.Boolean(
+        string='Ejecución en Planificación de obra',
+        implied_group='al_construction_planner.group_planner_feature_exec_planner',
+        group='base.group_user',
+        help='Menús por momento, tablero de obra y tarea de obra con su menú Ejecutar.')
+    group_construction_exec_project = fields.Boolean(
+        string='Ejecución desde Proyectos',
+        implied_group='al_construction_planner.group_planner_feature_exec_project',
+        group='base.group_user',
+        help='Sección Obra en el tablero del proyecto y menú Ejecutar en la tarea de Proyectos.')
     module_al_construction_planner_mrp = fields.Boolean(
         string='Producción', help='Órdenes de fabricación desde el plan (instala Fabricación).')
     module_al_construction_planner_subcontract = fields.Boolean(
@@ -71,3 +83,9 @@ class ResConfigSettings(models.TransientModel):
             raise UserError(self.env._('Elija el perfil de vertical.'))
         self.execute()
         return profile.action_open_apply_wizard()
+
+    def set_values(self):
+        super().set_values()
+        # El menú por momento se arma al cargar el menú (ir.ui.menu.load_menus,
+        # en caché): un cambio del ajuste se ve en la siguiente carga.
+        self.env.registry.clear_cache()

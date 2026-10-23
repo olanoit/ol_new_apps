@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Sección «Obra» del tablero del proyecto (CREVAL v1.0, 4.6): los
+         botones de la obra llegan por _get_stat_buttons con
+         construction_section y se muestran aparte, bajo su título. -->
+    <t t-name="al_construction_planner.ProjectRightSidePanel" t-inherit="project.ProjectRightSidePanel" t-inherit-mode="extension">
+        <xpath expr="//ProjectRightSidePanelSection[@name=&quot;'stat_buttons'&quot;]//ViewButton" position="attributes">
+            <attribute name="t-if">button.show and !button.construction_section</attribute>
+        </xpath>
+        <xpath expr="//ProjectRightSidePanelSection[@name=&quot;'stat_buttons'&quot;]" position="after">
+            <t t-set="construction_buttons" t-value="(state.data.buttons || []).filter((b) => b.show and b.construction_section)"/>
+            <div t-if="construction_buttons.length" class="o_construction_panel_section border-top">
+                <h5 class="px-3 pt-3 mb-2">Obra</h5>
+                <div class="o_form_view">
+                    <div class="oe_button_box o-form-buttonbox d-print-none d-grid"
+                         t-attf-style="grid-template-columns: repeat({{ state.gridTemplateColumns }}, 1fr);">
+                        <t t-foreach="construction_buttons" t-as="button" t-key="button_index">
+                            <ViewButton
+                                defaultRank="'oe_stat_button'"
+                                className="'h-auto ms-0 border-0 border-bottom border-end rounded-0 py-2 px-3 bg-view'"
+                                icon="`fa-${button.icon}`"
+                                title="button.text"
+                                clickParams="_getStatButtonClickParams(button)"
+                                record="_getStatButtonRecordParams()"
+                            >
+                                <t t-set-slot="contents">
+                                    <div class="o_field_widget o_stat_info">
+                                        <span class="o_stat_value"><t t-esc="button.number"/></span>
+                                        <span class="o_stat_text text-break text-wrap"><t t-esc="button.text"/></span>
+                                    </div>
+                                </t>
+                            </ViewButton>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

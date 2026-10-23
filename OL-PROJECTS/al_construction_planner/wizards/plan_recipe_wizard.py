@@ -146,3 +146,36 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
             'etapas en el cronograma.', lines=len(lines), tasks=len(lines.task_id),
             stages=len(stages)))
         return plan.action_view_lines()
+
+
+class ConstructionPlanRecipeWizardCalc(models.TransientModel):
+    """Forma de cálculo, moneda y fuente del APU (CREVAL v1.0, 6.1, 6.2 y 6.5)."""
+    _inherit = 'construction.plan.recipe.wizard'
+
+    def _prepare_line_vals(self, task, recipe_line, prices):
+        vals = super()._prepare_line_vals(task, recipe_line, prices)
+        vals.update(calc_method=recipe_line.calc_method, calc_pct=recipe_line.calc_pct,
+                    calc_scope=recipe_line.calc_scope)
+        company = self.plan_id.company_id or self.env.company
+        if recipe_line.line_currency_id and recipe_line.line_currency_id != company.currency_id:
+            vals.update(price_currency_id=recipe_line.line_currency_id.id,
+                        price_unit_currency=recipe_line.price_unit)
+        return vals
+
+    def action_generate(self):
+        """Con la fuente «Work Items de la venta» (6.2), las recetas enlazadas a
+        un Work Item de la obra se toman de él antes de generar."""
+        self.ensure_one()
+        project = self.plan_id.project_id
+        if project.construction_apu_source == 'work_item' and 'x_work_item' in self.env:
+            recipes = self._get_tasks().construction_execution_template_id.filtered(
+                'work_item_id')
+            items = recipes._work_item_read(recipes.mapped('work_item_id'))
+            recipes._check_work_item_sync(items)
+            # Solo lo que cambió en la cotización; un cambio hecho en la receta
+            # se resuelve antes con «Sincronizar con el Work Item».
+            for recipe in recipes.filtered(lambda r: r.sync_state == 'work_item'):
+                item = items[recipe.work_item_id]
+                recipe._apply_work_item_to_template(item)
+                recipe._mark_synced(item)
+        return super().action_generate()

@@ -1,0 +1,29 @@
+titulo: 'Planificación de obra: adicionales de la contrata'
+subtitulo: Lleva el cambio de obra aprobado a la orden de contrata del contratista que lo
+  ejecuta.
+categoria: Construcción · Proyectos
+etiquetas:
+- Adicionales
+- Orden de contrata
+- Cambio de obra
+destacados:
+- icono: ➕
+  titulo: Agregar a la orden de contrata
+  texto: Con el cambio aprobado y su contratista, sus líneas de contrata entran a la orden
+    marcadas como adicional y con referencia al cambio.
+- icono: ✅
+  titulo: Ampliación por aprobar
+  texto: Si la orden pasa su monto aprobado, la diferencia espera la aprobación de Ejecución
+    aprueba y el adicional no se valoriza hasta entonces.
+configuracion:
+- Se instala solo cuando están las contratas y la valorización e ingresos del planificador.
+requisitos_nota: Se instala automáticamente con `al_construction_planner_subcontract` y `al_construction_planner_sale`.
+  Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Puente nuevo (requerimiento CREVAL v1.0, 3.9): «Agregar a la orden de contrata» desde el cambio de obra aprobado, con la ampliación por aprobar cuando la orden pasa su monto aprobado."
+relacionados:
+- al_construction_planner_subcontract
+- al_construction_planner_sale

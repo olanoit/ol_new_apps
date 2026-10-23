@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Requisitos de devolución del fondo de garantía (CREVAL v1.0, 3.4):
+             catálogo que cada empresa amplía. -->
+        <record id="contract_requirement_term" model="construction.contract.requirement">
+            <field name="name">Vencimiento del plazo</field>
+            <field name="code">term</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="contract_requirement_reception_act" model="construction.contract.requirement">
+            <field name="name">Acta de recepción</field>
+            <field name="code">reception_act</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="contract_requirement_no_debt" model="construction.contract.requirement">
+            <field name="name">Carta de no deuda</field>
+            <field name="code">no_debt_letter</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="contract_requirement_no_after_sales" model="construction.contract.requirement">
+            <field name="name">Ninguna observación de postventa abierta</field>
+            <field name="code">no_after_sales</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <!-- Documentos requeridos para la liquidación (3.11). -->
+        <record id="contract_document_no_debt" model="construction.contract.document.type">
+            <field name="name">Carta de no deuda</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="contract_document_delivery_act" model="construction.contract.document.type">
+            <field name="name">Acta de entrega</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <!-- Tipos de deductivo (3.7). -->
+        <record id="deduction_type_unfinished" model="construction.contract.deduction.type">
+            <field name="name">Remate incumplido</field>
+            <field name="code">unfinished</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="deduction_type_damage" model="construction.contract.deduction.type">
+            <field name="name">Reposición o daño</field>
+            <field name="code">damage</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="deduction_type_consumption" model="construction.contract.deduction.type">
+            <field name="name">Consumo a cargo del contratista</field>
+            <field name="code">consumption</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="deduction_type_material_extra" model="construction.contract.deduction.type">
+            <field name="name">Material extra</field>
+            <field name="code">material_extra</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="deduction_type_other" model="construction.contract.deduction.type">
+            <field name="name">Otro</field>
+            <field name="code">other</field>
+            <field name="sequence">90</field>
+        </record>
+
+        <!-- Condiciones de ejemplo del producto (3.4): datos ficticios que cada
+             empresa ajusta o reemplaza. -->
+        <record id="contract_condition_construction" model="construction.contract.condition">
+            <field name="name">Contrato de obra</field>
+            <field name="advance_pct">20</field>
+            <field name="advance_method">total</field>
+            <field name="guarantee_pct">5</field>
+            <field name="guarantee_base">total</field>
+            <field name="guarantee_days">365</field>
+            <field name="guarantee_from">settlement</field>
+            <field name="frequency">weekly</field>
+            <field name="line_detail">task</field>
+            <field name="requirement_ids" eval="[Command.set([ref('contract_requirement_term'), ref('contract_requirement_no_debt')])]"/>
+            <field name="document_type_ids" eval="[Command.set([ref('contract_document_no_debt')])]"/>
+            <field name="scheme_line_ids" eval="[
+                Command.create({'sequence': 10, 'name': 'Gastos generales y utilidades', 'kind': 'price_adjustment', 'base': 'direct_additional', 'percent': 5.0, 'sign': 'add', 'invoice_mode': 'service_line'}),
+                Command.create({'sequence': 20, 'name': 'Descuento', 'kind': 'price_adjustment', 'base': 'direct_additional', 'percent': 3.0, 'sign': 'subtract', 'invoice_mode': 'service_line'}),
+                Command.create({'sequence': 30, 'name': 'Deductivos', 'kind': 'deduction', 'base': 'own', 'sign': 'subtract', 'invoice_mode': 'own_line'}),
+                Command.create({'sequence': 40, 'name': 'IGV', 'kind': 'tax', 'base': 'subtotal', 'percent': 18.0, 'sign': 'add', 'invoice_mode': 'tax'}),
+                Command.create({'sequence': 50, 'name': 'Adelanto', 'kind': 'advance', 'base': 'total', 'sign': 'subtract', 'invoice_mode': 'regularization'}),
+                Command.create({'sequence': 60, 'name': 'Fondo de garantía', 'kind': 'retention', 'base': 'total', 'sign': 'subtract', 'invoice_mode': 'installment'}),
+            ]"/>
+        </record>
+
+    </data>
+</odoo>

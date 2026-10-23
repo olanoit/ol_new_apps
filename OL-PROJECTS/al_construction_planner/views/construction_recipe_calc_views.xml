@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Receta y plan (CREVAL v1.0, capítulo 6) -->
+    <record id="construction_execution_template_view_form_calc" model="ir.ui.view">
+        <field name="name">construction.execution.template.form.calc</field>
+        <field name="model">construction.execution.template</field>
+        <field name="inherit_id" ref="construction_execution_template_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_ids']/list/field[@name='qty']" position="before">
+                <field name="calc_method" optional="show"/>
+                <field name="calc_pct" optional="show" invisible="calc_method not in ('pct_labor', 'pct_group')"/>
+                <field name="calc_scope" optional="hide" invisible="calc_method != 'pct_group'"/>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='qty']" position="attributes">
+                <attribute name="readonly">calc_method != 'qty'</attribute>
+                <attribute name="force_save">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='price_unit']" position="after">
+                <field name="line_currency_id" optional="hide" options="{'no_create': True}"
+                       groups="base.group_multi_currency"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_line_view_list_calc" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.list.calc</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="construction_resource_plan_line_view_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_unit_planned']" position="before">
+                <field name="calc_method" optional="hide"/>
+                <field name="calc_pct" optional="hide"/>
+                <field name="price_currency_id" optional="hide" groups="base.group_multi_currency"/>
+                <field name="price_unit_currency" optional="hide" groups="base.group_multi_currency"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_line_view_form_calc" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.form.calc</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="construction_resource_plan_line_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_unit_planned']" position="before">
+                <field name="calc_method"/>
+                <field name="calc_pct" invisible="calc_method not in ('pct_labor', 'pct_group')"/>
+                <field name="calc_scope" invisible="calc_method != 'pct_group'"/>
+                <field name="price_currency_id" groups="base.group_multi_currency" options="{'no_create': True}"/>
+                <field name="price_unit_currency" groups="base.group_multi_currency"
+                       invisible="not is_foreign_currency"/>
+                <field name="is_foreign_currency" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_project_view_form_construction_apu" model="ir.ui.view">
+        <field name="name">project.project.form.construction.apu</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='construction_supervision']" position="before">
+                <group string="Análisis de precio unitario" name="construction_apu" invisible="not is_construction_site"
+                       groups="al_construction_planner.group_planner_plan_planner">
+                    <group>
+                        <field name="construction_apu_source"/>
+                    </group>
+                    <group>
+                        <div class="text-muted small" colspan="2">
+                            «Importar recetas y niveles» y «Generar desde la receta» leen esta fuente.
+                            Con Work Items, un cambio en la cotización llega al plan con una nueva
+                            versión del plan.
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Equivalencias de unidades (6.4) -->
+    <record id="construction_uom_alias_view_list" model="ir.ui.view">
+        <field name="name">construction.uom.alias.list</field>
+        <field name="model">construction.uom.alias</field>
+        <field name="arch" type="xml">
+            <list string="Equivalencias de unidades" editable="bottom">
+                <field name="name"/>
+                <field name="uom_id" options="{'no_create': True}"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_uom_alias" model="ir.actions.act_window">
+        <field name="name">Equivalencias de unidades</field>
+        <field name="res_model">construction.uom.alias</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cómo escriben sus presupuestos cada unidad</p>
+            <p>«UND», «Und», «und»; «GLB», «glb»; «M» y «ML»: cada forma de escribirla, con la unidad
+               del maestro. Las importaciones de recetas y presupuestos las usan.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_planner_uom_aliases" name="Equivalencias de unidades" parent="menu_planner_config_plan"
+              action="action_construction_uom_alias" sequence="46" groups="group_planner_plan_planner"/>
+</odoo>

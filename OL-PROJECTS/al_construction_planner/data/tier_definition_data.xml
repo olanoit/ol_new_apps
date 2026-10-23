@@ -10,7 +10,7 @@
             <field name="name">Metrado con diferencia: jefatura de proyectos</field>
             <field name="model_id" ref="model_construction_measurement"/>
             <field name="review_type">group</field>
-            <field name="reviewer_group_id" ref="group_planner_project_head"/>
+            <field name="reviewer_group_id" ref="group_planner_exec_approver"/>
             <field name="definition_domain">[('has_difference', '=', True)]</field>
             <field name="sequence">10</field>
             <field name="approve_sequence" eval="True"/>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Valorizado y Liquidación de contrata (CREVAL v1.0, 3.12): A4 horizontal
+         con el formato común de la suite (al_report_base). -->
+    <record id="action_report_contract_valuation" model="ir.actions.report">
+        <field name="name">Valorizado</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_planner_subcontract.report_contract_valuation</field>
+        <field name="report_file">al_construction_planner_subcontract.report_contract_valuation</field>
+        <field name="print_report_name">(object.title or object.name).replace('/', '-')</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
+        <field name="binding_model_id" ref="model_construction_contract_settlement"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_contract_valuation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="al_construction_planner_subcontract.report_contract_valuation_document"
+                   t-lang="o.partner_id.lang or o.env.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Bloque de líneas: ítem, descripción, unidad, cantidad, precio y parcial
+         presupuestados; acumulado anterior, valorización actual, acumulado
+         actual y saldo en %, metrado e importe. Parámetros: groups, cur. -->
+    <template id="report_contract_valuation_lines">
+        <table class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3">
+            <thead>
+                <tr class="pe-doc-thead">
+                    <td rowspan="2">Ítem</td>
+                    <td rowspan="2">Descripción</td>
+                    <td rowspan="2">Und</td>
+                    <td colspan="3" class="text-center">Presupuesto</td>
+                    <td colspan="3" class="text-center">Acumulado anterior</td>
+                    <td colspan="3" class="text-center">Valorización actual</td>
+                    <td colspan="3" class="text-center">Acumulado actual</td>
+                    <td colspan="3" class="text-center">Saldo</td>
+                </tr>
+                <tr class="pe-doc-thead">
+                    <td class="text-end">Metrado</td><td class="text-end">Precio</td><td class="text-end">Parcial</td>
+                    <t t-foreach="range(4)" t-as="_block">
+                        <td class="text-end">%</td><td class="text-end">Metrado</td><td class="text-end">Importe</td>
+                    </t>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="groups" t-as="group">
+                    <tr class="pe-doc-subheader" t-if="group[0]">
+                        <td colspan="18"><strong t-out="group[0].display_name"/></td>
+                    </tr>
+                    <tr t-foreach="group[1]" t-as="line">
+                        <t t-set="contracted" t-value="line.qty_contracted or 0.0"/>
+                        <t t-set="current" t-value="0.0 if line.is_rework else line.qty_settle"/>
+                        <td t-out="(line.task_id.name or '').split(' ')[0]"/>
+                        <td><t t-out="line.task_id.name or line.activity_id.name"/><t t-if="line.is_rework"> (re-trabajo)</t></td>
+                        <td t-out="line.uom_id.name"/>
+                        <td class="text-end" t-out="'%.2f' % contracted"/>
+                        <td class="text-end"><t t-out="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end"><t t-out="line.amount_contracted" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end" t-out="'%.2f' % (line.qty_previous / contracted * 100 if contracted else 0)"/>
+                        <td class="text-end" t-out="'%.2f' % line.qty_previous"/>
+                        <td class="text-end"><t t-out="line.amount_previous" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end" t-out="'%.2f' % (current / contracted * 100 if contracted else 0)"/>
+                        <td class="text-end" t-out="'%.2f' % line.qty_settle"/>
+                        <td class="text-end"><t t-out="line.amount" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end" t-out="'%.2f' % (line.pct_accumulated * 100)"/>
+                        <td class="text-end" t-out="'%.2f' % line.qty_accumulated"/>
+                        <td class="text-end"><t t-out="line.amount_accumulated" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                        <td class="text-end" t-out="'%.2f' % (line.qty_balance / contracted * 100 if contracted else 0)"/>
+                        <td class="text-end" t-out="'%.2f' % line.qty_balance"/>
+                        <td class="text-end"><t t-out="line.amount_balance" t-options="{'widget': 'monetary', 'display_currency': cur}"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </template>
+
+    <template id="report_contract_valuation_document">
+        <t t-set="company" t-value="o.company_id"/>
+        <t t-set="cur" t-value="o.currency_id"/>
+        <t t-set="order" t-value="o.purchase_order_id"/>
+        <t t-set="project" t-value="o.project_id"/>
+        <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
+        <t t-set="money" t-value="{'widget': 'monetary', 'display_currency': cur}"/>
+        <t t-call="al_report_base.report_pe_page">
+            <t t-set="doc_title" t-value="o.title or o.name"/>
+            <t t-set="doc_number" t-value="o.name"/>
+            <t t-set="doc_extra" t-value="order.name"/>
+
+            <!-- Datos de la obra, del contratista y del periodo -->
+            <t t-set="site" t-value="project.partner_id"/>
+            <table class="pe-doc-table mb-3">
+                <tr>
+                    <td class="pe-doc-label" style="width: 12%;">Obra</td>
+                    <td class="pe-doc-value" style="width: 38%;" t-out="project.display_name"/>
+                    <td class="pe-doc-label" style="width: 12%;">Contratista</td>
+                    <td class="pe-doc-value" style="width: 38%;"><t t-out="o.partner_id.commercial_partner_id.name"/><t t-if="o.partner_id.commercial_partner_id.vat"> · RUC <t t-out="o.partner_id.commercial_partner_id.vat"/></t></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Ubicación</td>
+                    <td class="pe-doc-value" t-out="o._report_site_address()"/>
+                    <td class="pe-doc-label">Periodo</td>
+                    <td class="pe-doc-value"><span t-out="o.period_start" t-options="date_fmt"/> al <span t-out="o.period_end" t-options="date_fmt"/></td>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Cliente</td>
+                    <td class="pe-doc-value" t-out="site.commercial_partner_id.name or ''"/>
+                    <td class="pe-doc-label">Moneda</td>
+                    <td class="pe-doc-value" t-out="cur.name"/>
+                </tr>
+                <tr>
+                    <td class="pe-doc-label">Condiciones</td>
+                    <td class="pe-doc-value" colspan="3">
+                        <t t-out="o.terms_id.name"/>:
+                        adelanto <t t-out="'%.2f' % o.terms_id.advance_pct"/> %,
+                        fondo de garantía <t t-out="'%.2f' % o.terms_id.guarantee_pct"/> %,
+                        <t t-out="dict(o.terms_id._fields['frequency']._description_selection(o.env)).get(o.terms_id.frequency, '').lower()"/>
+                    </td>
+                </tr>
+            </table>
+
+            <t t-call="al_construction_planner_subcontract.report_contract_valuation_lines">
+                <t t-set="groups" t-value="o._report_groups()"/>
+            </t>
+
+            <t t-set="additional_groups" t-value="o._report_groups(additional=True)"/>
+            <t t-if="additional_groups">
+                <div class="pe-doc-section">Adicionales</div>
+                <t t-call="al_construction_planner_subcontract.report_contract_valuation_lines">
+                    <t t-set="groups" t-value="additional_groups"/>
+                </t>
+            </t>
+
+            <!-- Resumen del periodo con el esquema de cálculo -->
+            <table class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3 pe-doc-keep">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Resumen</td>
+                        <td class="text-end">Contractual</td>
+                        <td class="text-end">Anterior</td>
+                        <td class="text-end">Actual</td>
+                        <td class="text-end">Acumulado</td>
+                        <td class="text-end">Saldo</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="o.summary_ids.sorted('sequence')" t-as="row"
+                        t-att-class="'pe-doc-total' if row.row_type == 'to_pay' else ('pe-doc-subtotal' if row.is_total else '')">
+                        <td><t t-out="row.name"/><t t-if="row.percent"> (<t t-out="'%g' % row.percent"/> %)</t></td>
+                        <td class="text-end"><t t-out="row.amount_contract" t-options="money"/></td>
+                        <td class="text-end"><t t-out="row.amount_previous" t-options="money"/></td>
+                        <td class="text-end"><t t-out="row.amount_current" t-options="money"/></td>
+                        <td class="text-end"><t t-out="row.amount_accumulated" t-options="money"/></td>
+                        <td class="text-end"><t t-out="row.amount_balance" t-options="money"/></td>
+                    </tr>
+                    <t t-set="direct_row" t-value="o.summary_ids.filtered(lambda r: r.key == 'direct')"/>
+                    <tr t-if="direct_row and direct_row.amount_contract">
+                        <td>% de avance</td>
+                        <td/>
+                        <td class="text-end"><t t-out="'%.2f' % (direct_row.amount_previous / direct_row.amount_contract * 100)"/> %</td>
+                        <td class="text-end"><t t-out="'%.2f' % (direct_row.amount_current / direct_row.amount_contract * 100)"/> %</td>
+                        <td class="text-end"><t t-out="'%.2f' % (direct_row.amount_accumulated / direct_row.amount_contract * 100)"/> %</td>
+                        <td class="text-end"><t t-out="'%.2f' % (direct_row.amount_balance / direct_row.amount_contract * 100)"/> %</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagos de la orden -->
+            <t t-set="payments" t-value="o._report_payments()"/>
+            <table t-if="payments" class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3 pe-doc-keep">
+                <thead>
+                    <tr class="pe-doc-thead">
+                        <td>Pagos de la orden</td>
+                        <td class="text-end">Monto</td>
+                        <td class="text-end">% de la orden</td>
+                        <td>Factura</td>
+                        <td>Estado</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="payments" t-as="payment">
+                        <td t-out="payment['name']"/>
+                        <td class="text-end"><t t-out="payment['amount']" t-options="money"/></td>
+                        <td class="text-end"><t t-out="'%.2f' % (payment['pct'] * 100)"/> %</td>
+                        <td t-out="payment['invoice']"/>
+                        <td t-out="payment['state']"/>
+                    </tr>
+                </tbody>
+            </table>
+
+            <t t-call="al_report_base.report_pe_sign_boxes">
+                <t t-set="sign_boxes" t-value="o._construction_sign_boxes()"/>
+            </t>
+        </t>
+    </template>
+
+    <!-- Envío del valorizado al contratista -->
+    <record id="mail_template_contract_valuation" model="mail.template">
+        <field name="name">Planificación de obra: valorizado de contrata</field>
+        <field name="model_id" ref="model_construction_contract_settlement"/>
+        <field name="subject">{{ object.title or object.name }} · {{ object.project_id.display_name }}</field>
+        <field name="partner_to">{{ object.partner_id.id }}</field>
+        <field name="report_template_ids" eval="[Command.link(ref('action_report_contract_valuation'))]"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Estimados,</p>
+                <p>Les enviamos el <t t-out="object.title or object.name"/> de la orden
+                   <t t-out="object.purchase_order_id.name"/> en la obra
+                   <t t-out="object.project_id.display_name"/>, del
+                   <t t-out="format_date(object.period_start)"/> al
+                   <t t-out="format_date(object.period_end)"/>.</p>
+                <p>Saludos.</p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>

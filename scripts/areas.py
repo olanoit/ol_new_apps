@@ -33,6 +33,7 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner_purchase': 'LGPL-3',
     'al_construction_planner_subcontract': 'LGPL-3',
     'al_construction_planner_subcontract_purchase': 'LGPL-3',
+    'al_construction_planner_subcontract_sale': 'LGPL-3',
     'al_construction_planner_crew': 'LGPL-3',
     'al_construction_planner_budget': 'LGPL-3',
     'al_construction_planner_sale': 'LGPL-3',

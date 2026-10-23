@@ -9,6 +9,8 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner.models.common import stage_selection
 
+from ..models.construction_contract_condition import compute_cascade
+
 
 class ConstructionPlanContractWizard(models.TransientModel):
     _name = 'construction.plan.contract.wizard'
@@ -51,10 +53,78 @@ class ConstructionPlanContractWizard(models.TransientModel):
     note = fields.Text(string='Avisos', compute='_compute_line_ids', store=True)
     # Alcance adicional sobre el saldo de la actividad (v1.8, M18-05): sigue la
     # política de contratas del plan.
+    # Condiciones de contrata (CREVAL v1.0, 3.4): se proponen las del
+    # contratista o las de Ajustes y se copian a la orden.
+    condition_id = fields.Many2one(
+        'construction.contract.condition', string='Condiciones de contrata',
+        compute='_compute_condition_id', store=True, readonly=False,
+        domain="[('order_id', '=', False), '|', ('company_id', '=', False), "
+               "('company_id', '=', company_id)]",
+        help='Vacío: la orden se comporta como hasta ahora (retención de la tarifa y '
+             'liquidación semanal).')
+    advance_pct = fields.Float(string='Adelanto (%)', digits=(16, 6),
+                               compute='_compute_condition_values', store=True, readonly=False)
+    guarantee_pct = fields.Float(string='Fondo de garantía (%)', digits=(16, 6),
+                                 compute='_compute_condition_values', store=True, readonly=False)
+    order_mode = fields.Selection(
+        [('open', 'Sumar a la orden abierta'), ('new', 'Orden nueva')], string='Orden',
+        compute='_compute_order_mode', store=True, readonly=False, required=True,
+        default='open',
+        help='Orden nueva: una orden de contrata aparte (por ejemplo, otra especialidad).')
+    specialty = fields.Char(string='Especialidad', compute='_compute_specialty', store=True,
+                            readonly=False)
+    terms_total = fields.Monetary(string='Total contractual con IGV',
+                                  compute='_compute_terms_totals', currency_field='currency_id')
+    terms_advance = fields.Monetary(string='Adelanto', compute='_compute_terms_totals',
+                                    currency_field='currency_id')
+    terms_guarantee = fields.Monetary(string='Fondo de garantía', compute='_compute_terms_totals',
+                                      currency_field='currency_id')
     exceed_reason = fields.Text(
         string='Motivo del alcance adicional',
         help='Obligatorio si se asigna más de lo que queda de la actividad en la selección y '
              'la política de contratas pide aprobación (la da la jefatura de proyectos).')
+
+    @api.depends('partner_id', 'company_id')
+    def _compute_condition_id(self):
+        for wizard in self:
+            partner = wizard.partner_id.commercial_partner_id.with_company(wizard.company_id)
+            wizard.condition_id = partner.construction_condition_id \
+                or wizard.company_id.construction_default_condition_id
+
+    @api.depends('condition_id')
+    def _compute_condition_values(self):
+        for wizard in self:
+            wizard.advance_pct = wizard.condition_id.advance_pct
+            wizard.guarantee_pct = wizard.condition_id.guarantee_pct
+
+    @api.depends('purchase_order_id', 'condition_id')
+    def _compute_order_mode(self):
+        for wizard in self:
+            order = wizard.purchase_order_id
+            same = order and (order.construction_terms_id.template_id == wizard.condition_id
+                              or (not order.construction_terms_id and not wizard.condition_id))
+            wizard.order_mode = 'open' if same else 'new'
+
+    @api.depends('line_ids.plan_line_ids')
+    def _compute_specialty(self):
+        for wizard in self:
+            levels = wizard.line_ids.plan_line_ids.level_1_id
+            wizard.specialty = levels[0].name if len(levels) == 1 else False
+
+    @api.depends('line_ids.amount', 'condition_id', 'advance_pct', 'guarantee_pct')
+    def _compute_terms_totals(self):
+        for wizard in self:
+            condition = wizard.condition_id
+            if not condition:
+                wizard.terms_total = wizard.terms_advance = wizard.terms_guarantee = 0.0
+                continue
+            direct = sum(wizard.line_ids.mapped('amount'))
+            _rows, totals = compute_cascade(condition, wizard.currency_id, direct, 0.0, 0.0,
+                                            advance_pct=wizard.advance_pct,
+                                            guarantee_pct=wizard.guarantee_pct)
+            wizard.terms_total = totals['total']
+            wizard.terms_advance = totals['advance']
+            wizard.terms_guarantee = totals['retention']
 
     @api.model
     def default_get(self, fields_list):
@@ -84,7 +154,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 if wizard.plan_id else False
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'stage', 'activity_ids', 'partner_id',
-                 'date_start')
+                 'date_start', 'condition_id')
     def _compute_line_ids(self):
         for wizard in self:
             commands = [Command.clear()]
@@ -107,22 +177,29 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 '%(count)s líneas ya tienen otra contrata (%(partners)s) y no se reasignan.',
                 count=len(others), partners=', '.join(others.partner_id.mapped('display_name'))))
             lines -= others
+        # Con condiciones «por partida», una línea por actividad y partida
+        # (CREVAL v1.0, 3.4: toda línea de la orden lleva su partida).
+        by_task = self.condition_id.line_detail == 'task'
         groups = defaultdict(lambda: self.env['construction.resource.plan.line'])
         for line in lines:
-            groups[line.activity_id] |= line
+            groups[(line.activity_id, line.task_id if by_task else self.env['project.task'])] |= line
         rows = []
         project = self.plan_id.project_id
-        for activity, plan_lines in sorted(
-                groups.items(), key=lambda kv: (kv[0].sequence, kv[0].code, kv[0].id)):
+        for (activity, task), plan_lines in sorted(
+                groups.items(), key=lambda kv: (kv[0][0].sequence, kv[0][0].code, kv[0][0].id,
+                                                kv[0][1].construction_path or '', kv[0][1].id)):
             price, retention_pct, rate = activity._get_rate(
                 project, self.partner_id or None, self.date_start)
             qty = sum(l.qty_planned - l.qty_requested for l in plan_lines)
             rows.append({
                 'activity_id': activity.id,
+                'task_id': task.id,
                 'uom_id': activity.uom_id.id,
                 'qty': qty,
                 'price_unit': price,
-                'retention_pct': retention_pct,
+                # El fondo de garantía de las condiciones reemplaza a la
+                # retención de la tarifa.
+                'retention_pct': 0.0 if self.condition_id else retention_pct,
                 'rate_id': rate.id,
                 'plan_line_ids': [Command.set(plan_lines.ids)],
             })
@@ -171,6 +248,15 @@ class ConstructionPlanContractWizard(models.TransientModel):
         })
         activity.sudo().product_id = product_sudo
         return product_sudo.sudo(False)
+
+    def _get_service_taxes(self, product):
+        """Impuestos del servicio; con condiciones que cobran IGV y un servicio
+        sin impuestos, el impuesto de compra por defecto de la compañía."""
+        company = self.plan_id.company_id
+        taxes = product.supplier_taxes_id.filtered(lambda t: t.company_id == company)
+        if not taxes and self.condition_id.scheme_line_ids.filtered(lambda l: l.kind == 'tax'):
+            taxes = company.account_purchase_tax_id
+        return taxes
 
     def _get_analytic_distribution(self, plan_lines):
         distributions = {tuple(sorted((line.analytic_distribution or {}).items()))
@@ -237,7 +323,12 @@ class ConstructionPlanContractWizard(models.TransientModel):
         # para que Compras la confirme; quien asigna (Proyectos) no necesita
         # permisos de compras.
         orders_sudo = self.env['purchase.order'].sudo()
-        order_sudo = orders_sudo._construction_open_service_order(self.partner_id, project)
+        order_sudo = orders_sudo._construction_open_service_order(self.partner_id, project) \
+            if self.order_mode == 'open' else orders_sudo
+        if order_sudo and order_sudo.state != 'draft' and self.condition_id:
+            # Con condiciones, una orden confirmada solo crece por una
+            # ampliación (adicional aprobado): el alcance nuevo va en otra.
+            order_sudo = orders_sudo
         if not order_sudo:
             order_sudo = orders_sudo.create({
                 'partner_id': self.partner_id.id,
@@ -245,16 +336,21 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 'construction_is_service_order': True,
                 'construction_project_id': project.id,
                 'construction_plan_id': plan.id,
+                'construction_specialty': self.specialty,
                 'origin': '%s · %s' % (project.display_name, plan.display_name),
             })
         elif order_sudo.construction_plan_id != plan:
             order_sudo.construction_plan_id = plan
+        if self.condition_id:
+            order_sudo._construction_apply_terms(self.condition_id, {
+                'advance_pct': self.advance_pct, 'guarantee_pct': self.guarantee_pct})
         allocation_values = []
         for row in rows:
             product = self._get_service_product(row.activity_id)
             po_line_sudo = order_sudo.order_line.filtered(
                 lambda l: l.construction_activity_id == row.activity_id
-                and l.product_id == product
+                and l.product_id == product and l.construction_task_id == row.task_id
+                and not l.construction_is_additional
                 and l.currency_id.compare_amounts(l.price_unit, row.price_unit) == 0)[:1]
             if po_line_sudo:
                 po_line_sudo.product_qty += row.qty
@@ -262,14 +358,15 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 po_line_sudo = self.env['purchase.order.line'].sudo().create({
                     'order_id': order_sudo.id,
                     'product_id': product.id,
-                    'name': row.activity_id.display_name,
                     'product_qty': row.qty,
                     'product_uom_id': row.uom_id.id,
                     'price_unit': row.price_unit,
-                    'tax_ids': [Command.set(product.supplier_taxes_id.filtered(
-                        lambda t: t.company_id == plan.company_id).ids)],
+                    'tax_ids': [Command.set(self._get_service_taxes(product).ids)],
                     'date_planned': self.date_start,
+                    'name': '%s · %s' % (row.task_id.display_name, row.activity_id.display_name)
+                    if row.task_id else row.activity_id.display_name,
                     'construction_activity_id': row.activity_id.id,
+                    'construction_task_id': row.task_id.id,
                     'construction_retention_pct': row.retention_pct,
                     'analytic_distribution': self._get_analytic_distribution(row.plan_line_ids),
                 })
@@ -324,6 +421,7 @@ class ConstructionPlanContractWizardLine(models.TransientModel):
     retention_amount = fields.Monetary(
         string='Retención', compute='_compute_amount', currency_field='currency_id')
     rate_id = fields.Many2one('construction.labor.rate', string='Tarifa aplicada')
+    task_id = fields.Many2one('project.task', string='Partida')
     plan_line_ids = fields.Many2many(
         'construction.resource.plan.line', 'construction_plan_contract_wiz_line_rel',
         'wizard_line_id', 'plan_line_id', string='Líneas del plan')

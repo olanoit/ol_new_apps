@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261023 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, 6.5: la compra masiva de una línea del plan en otra moneda lleva su moneda y costo al requerimiento de compra; la orden se crea en esa moneda y el control lleva el tipo de cambio de la orden, con la diferencia de cambio aparte del desvío de precio.
+- Capítulos 4 y 5: «Pedir material» y los requerimientos de obra en el tablero de obra, en el menú Ejecutar y en la sección Obra del proyecto; grupos en dos ejes.
+
 ## 9.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-09: el resumen de inventario compacto pasa a «PE - Base Inventario» (al_stock_base), para que se vea también sin el planificador; aquí ya no se modifica la vista.

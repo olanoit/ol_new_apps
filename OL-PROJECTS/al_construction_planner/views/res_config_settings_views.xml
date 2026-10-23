@@ -26,6 +26,15 @@
                         </setting>
                     </block>
                     <!-- Funciones (v1.7, M17-06): cada puente se instala al activarlo. -->
+                    <block title="Entradas a la ejecución" name="construction_planner_execution_entries"
+                           help="Las dos entradas llaman a los mismos asistentes; cada empresa deja activa la que le sirva, o las dos. Apagar una no borra datos.">
+                        <setting id="construction_exec_planner" help="Menús ordenados por momento (planificar, ejecutar, controlar y cobrar), tablero de obra y tarea de obra con su menú Ejecutar.">
+                            <field name="group_construction_exec_planner"/>
+                        </setting>
+                        <setting id="construction_exec_project" help="Sección Obra en el tablero del proyecto y menú Ejecutar en la tarea de Proyectos.">
+                            <field name="group_construction_exec_project"/>
+                        </setting>
+                    </block>
                     <block title="Funciones" name="construction_planner_features"
                            help="Siempre activos: Proyectos, la planificación (árbol, plan de recursos y línea base) y el cronograma. Lo que no se activa no se instala.">
                         <setting id="construction_feature_control" help="Comprometido, real, saldo y desvío por nivel, etapa y tipo de recurso.">

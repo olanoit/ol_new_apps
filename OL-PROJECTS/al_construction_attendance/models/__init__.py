@@ -8,3 +8,4 @@ from . import res_company
 from . import labor_cost_allocation
 from . import construction_crew_attendance
 from . import construction_amounts
+from . import ir_ui_menu

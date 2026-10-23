@@ -6,6 +6,7 @@ la línea del plan y entra a la liquidación semanal (fase 6)."""
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
+from .common import EXEC_VALIDATOR_GROUP
 from .construction_resource_plan import OPEN_STATES
 
 PROGRESS_STATES = [
@@ -335,9 +336,10 @@ class ConstructionTaskProgress(models.Model):
     # Acciones
     # ------------------------------------------------------------------
     def _check_validator(self):
-        if not self.env.user.has_group('al_construction_planner.group_planner_planner'):
+        if not self.env.user.has_group(EXEC_VALIDATOR_GROUP):
             raise UserError(self.env._(
-                'Valida, rechaza o revierte avances el supervisor de obra (grupo Planificador).'))
+                'Valida, rechaza o revierte avances quien valida la ejecución (grupo Ejecución: '
+                'valida).'))
 
     def action_validate(self):
         self._check_validator()

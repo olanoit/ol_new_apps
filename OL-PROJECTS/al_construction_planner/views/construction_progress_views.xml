@@ -11,9 +11,9 @@
                 <header>
                     <button name="action_validate" type="object" string="Validar"
                             class="btn-primary"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <button name="action_open_reject_wizard" type="object" string="Rechazar"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                 </header>
                 <field name="name"/>
                 <field name="project_id" optional="hide"/>
@@ -53,13 +53,13 @@
                 <header>
                     <button name="action_validate" type="object" string="Validar" class="btn-primary"
                             invisible="state != 'draft' or not id"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <button name="action_open_reject_wizard" type="object" string="Rechazar"
                             invisible="state != 'draft' or not id"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <button name="action_reset" type="object" string="Volver a reportado"
                             invisible="state == 'draft' or settled"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,validated"/>
                 </header>
                 <sheet>
@@ -112,7 +112,7 @@
                             <field name="validation_date" invisible="not validation_date"/>
                             <field name="supervisor_evaluation"
                                    readonly="settled"
-                                   groups="al_construction_planner.group_planner_planner"/>
+                                   groups="al_construction_planner.group_planner_exec_validator"/>
                         </group>
                         <group string="Liquidación">
                             <field name="settlement_date_planned"/>
@@ -125,7 +125,7 @@
                            readonly="state != 'draft'"/>
                     <field name="evaluation_note" readonly="settled"
                            placeholder="Observaciones del supervisor y propuestas: corregir, completar, re-trabajo…"
-                           groups="al_construction_planner.group_planner_planner"/>
+                           groups="al_construction_planner.group_planner_exec_validator"/>
                 </sheet>
                 <chatter/>
             </form>

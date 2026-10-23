@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_production.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261019 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
+
 ## 4.20261019 — 19/10/2026
 
 - Paquete 1.10, M110-04: «Pedir accesorios» y su aviso salen de las etapas marcadas «Accesorios a pedido desde la orden» (ya no del código de armado) y el informe compara solo las etapas de la orden. M110-08: cifras de la solicitud del pedido de accesorios.

@@ -6,7 +6,7 @@
         <field name="name">construction.contract.settlement.list</field>
         <field name="model">construction.contract.settlement</field>
         <field name="arch" type="xml">
-            <list string="Liquidaciones" sample="1" decoration-muted="state == 'cancel'"
+            <list string="Valorizaciones" sample="1" decoration-muted="state == 'cancel'"
                   decoration-info="state == 'draft'">
                 <field name="name"/>
                 <field name="project_id"/>
@@ -34,29 +34,29 @@
         <field name="name">construction.contract.settlement.form</field>
         <field name="model">construction.contract.settlement</field>
         <field name="arch" type="xml">
-            <form string="Liquidación semanal de contrata">
+            <form string="Valorización de contrata">
                 <header>
                     <button name="action_refresh" type="object" string="Actualizar avances"
                             invisible="state != 'draft' or not id"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_user"/>
                     <button name="action_submit" type="object" string="Presentar" class="btn-primary"
                             invisible="state != 'draft' or not id"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_user"/>
                     <button name="action_validate" type="object" string="Validar" class="btn-primary"
                             invisible="state != 'submitted'"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <button name="action_head_authorize" type="object" string="Autorizar (jefatura)"
                             class="btn-primary" invisible="not needs_head_authorization or state not in ('draft', 'submitted')"
-                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
+                            groups="al_construction_planner.group_planner_exec_approver,al_construction_planner.group_planner_manager"/>
                     <button name="action_open_return_wizard" type="object" string="Devolver a la contrata"
                             invisible="state != 'submitted'"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <button name="action_cancel" type="object" string="Anular"
                             invisible="state not in ('draft', 'submitted', 'validated') or not id"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state != 'cancel'"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_exec_validator"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submitted,validated,approved,paid"/>
                 </header>
@@ -190,15 +190,15 @@
     </record>
 
     <record id="action_construction_contract_settlement" model="ir.actions.act_window">
-        <field name="name">Liquidaciones semanales</field>
+        <field name="name">Valorizaciones de contrata</field>
         <field name="res_model">construction.contract.settlement</field>
         <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="construction_contract_settlement_view_search"/>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Aún no hay liquidaciones de contratas</p>
-            <p>Cada día de liquidación de la obra (jueves por defecto) se crean en borrador las
-               liquidaciones de las contratas con avances validados de la semana. Se presentan,
-               se validan, las aprueba la jefatura y se pagan el día de pago.</p>
+            <p class="o_view_nocontent_smiling_face">Aún no hay valorizaciones de contratas</p>
+            <p>En el corte de cada orden (o el día de liquidación de la obra, sin condiciones) se
+               crean en borrador las valorizaciones con los avances validados. Se presentan, se
+               validan, se aprueban por niveles y se pagan el día de pago.</p>
         </field>
     </record>
 
@@ -213,11 +213,11 @@
                         class="oe_stat_button" icon="fa-calendar-check-o"
                         invisible="not construction_settlement_count"
                         groups="al_construction_planner.group_planner_progress">
-                    <field name="construction_settlement_count" widget="statinfo" string="Liquidaciones"/>
+                    <field name="construction_settlement_count" widget="statinfo" string="Valorizaciones"/>
                 </button>
             </xpath>
             <xpath expr="//field[@name='partner_ref']" position="after">
-                <field name="construction_is_service_order" invisible="not construction_is_service_order"/>
+                <field name="construction_is_service_order" string="Orden de contrata" invisible="not construction_is_service_order"/>
                 <field name="construction_project_id" invisible="not construction_project_id"/>
                 <field name="construction_plan_id" invisible="not construction_plan_id"/>
             </xpath>
@@ -225,14 +225,14 @@
     </record>
 
     <record id="action_construction_service_orders" model="ir.actions.act_window">
-        <field name="name">OC de servicio</field>
+        <field name="name">Órdenes de contrata</field>
         <field name="res_model">purchase.order</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('construction_is_service_order', '=', True)]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">Aún no hay OC de servicio de contratas</p>
-            <p>«Asignar contrata» crea una OC de servicio por contrata y obra y le suma el alcance
+            <p class="o_view_nocontent_smiling_face">Aún no hay órdenes de contrata</p>
+            <p>«Asignar contrata» crea la orden de contrata con sus condiciones y le suma el alcance
                de cada asignación.</p>
         </field>
     </record>

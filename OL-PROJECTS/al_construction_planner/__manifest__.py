@@ -266,7 +266,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '42.20261016',
+    'version': '43.20261016',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -312,6 +312,8 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/construction_measurement_views.xml',
         'views/construction_exceed_views.xml',
         'views/menus.xml',
+        'views/construction_board_views.xml',
+        'views/construction_recipe_calc_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -320,6 +322,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
             'al_construction_planner/static/src/plan_tree/*',
             'al_construction_planner/static/src/schedule/*',
             'al_construction_planner/static/src/home/*',
+            'al_construction_planner/static/src/project_panel/*',
             ('remove', 'al_construction_planner/static/src/**/*.dark.scss'),
         ],
         # Modo oscuro: se compila con las variables oscuras de Odoo.

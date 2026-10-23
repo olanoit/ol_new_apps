@@ -4,7 +4,10 @@
          cantidad del requerimiento de obra y, más adelante, los de accesorios. -->
     <record id="group_planner_technical_office" model="res.groups">
         <field name="name">Planificación de obra: oficina técnica</field>
-        <field name="privilege_id" ref="al_construction_planner.res_groups_privilege_construction_planner"/>
-        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner')), Command.link(ref('al_construction_planner.group_planner_amounts')), Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
+        <!-- Rol fuera de las selecciones de los dos ejes (CREVAL v1.0): Plan:
+             planificador y Ejecución: valida, más montos y la aprobación de
+             requerimientos. -->
+        <field name="privilege_id" eval="False"/>
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_planner')), Command.link(ref('al_construction_planner.group_planner_plan_planner')), Command.link(ref('al_construction_planner.group_planner_exec_validator')), Command.link(ref('al_construction_planner.group_planner_amounts')), Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
     </record>
 </odoo>

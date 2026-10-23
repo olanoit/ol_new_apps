@@ -27,7 +27,7 @@ por niveles termina con ese flujo.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '5.20261021',
+    'version': '6.20261021',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_purchase', 'approvals'],

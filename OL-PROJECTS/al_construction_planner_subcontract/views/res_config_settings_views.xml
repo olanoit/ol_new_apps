@@ -14,6 +14,23 @@
                                  help="Material extra descontado a una contrata: la factura de su siguiente liquidación lleva el descuento como línea negativa a esta cuenta.">
                             <field name="construction_discount_account_id" options="{'no_create': True}"/>
                         </setting>
+                        <setting company_dependent="1" id="construction_default_condition" string="Condiciones de contrata"
+                                 help="Las que propone «Asignar contrata» si el contratista no tiene las suyas (pestaña Compras del contacto). Vacías: la orden se comporta como siempre.">
+                            <field name="construction_default_condition_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_advance_product" string="Anticipo a contratistas"
+                                 help="Servicio con la cuenta de anticipos otorgados: la factura de adelanto y la regularización de cada valorizado.">
+                            <field name="construction_advance_product_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_deduction_account" string="Deductivos a contratas"
+                                 help="Cuenta de la línea del deductivo en la factura (vacía: la del servicio) y diario del asiento cuando se descuenta al pago.">
+                            <field name="construction_deduction_account_id" options="{'no_create': True}"/>
+                            <field name="construction_deduction_journal_id" options="{'no_create': True}"/>
+                        </setting>
+                        <setting id="construction_purchase_tier" string="Aprobación por niveles de la orden de contrata"
+                                 help="Reglas por monto, aprobadores y secuencia para la orden (purchase_tier_validation de OCA). Sin reglas, rige la aprobación nativa de Compras.">
+                            <field name="module_purchase_tier_validation"/>
+                        </setting>
             </block>
         </field>
     </record>

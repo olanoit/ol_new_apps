@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Condiciones de contrata (CREVAL v1.0, 3.4) -->
+    <record id="construction_contract_condition_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.condition.list</field>
+        <field name="model">construction.contract.condition</field>
+        <field name="arch" type="xml">
+            <list string="Condiciones de contrata">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="advance_pct"/>
+                <field name="advance_method" optional="show"/>
+                <field name="guarantee_pct"/>
+                <field name="guarantee_base" optional="show"/>
+                <field name="guarantee_days" optional="show"/>
+                <field name="frequency"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_contract_condition_view_form" model="ir.ui.view">
+        <field name="name">construction.contract.condition.form</field>
+        <field name="model">construction.contract.condition</field>
+        <field name="arch" type="xml">
+            <form string="Condiciones de contrata">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="p. ej. Contrato de obra"/></h1>
+                    </div>
+                    <group>
+                        <group string="Adelanto">
+                            <field name="advance_pct"/>
+                            <field name="advance_method"/>
+                            <field name="advance_fixed_amount" invisible="advance_method != 'fixed'"/>
+                        </group>
+                        <group string="Fondo de garantía">
+                            <field name="guarantee_pct"/>
+                            <field name="guarantee_base"/>
+                            <field name="guarantee_days"/>
+                            <field name="guarantee_from"/>
+                            <field name="requirement_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Valorización">
+                            <field name="frequency"/>
+                            <field name="cutoff_weekday" invisible="frequency != 'weekly'" placeholder="El cierre de la semana de la obra"/>
+                            <field name="monthly_cutoff" invisible="frequency != 'monthly'"/>
+                            <field name="cutoff_day" invisible="frequency != 'monthly' or monthly_cutoff != 'day'"/>
+                            <field name="progress_tolerance_pct"/>
+                            <field name="line_detail"/>
+                        </group>
+                        <group string="Liquidación">
+                            <field name="document_type_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                            <field name="order_id" invisible="not order_id"/>
+                            <field name="template_id" invisible="not template_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Esquema de cálculo" name="scheme">
+                            <field name="scheme_line_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="kind"/>
+                                    <field name="base" readonly="kind in ('deduction', 'advance', 'retention')"/>
+                                    <field name="percent" readonly="kind in ('deduction', 'advance', 'retention')"/>
+                                    <field name="effective_percent" optional="show"/>
+                                    <field name="sign"/>
+                                    <field name="invoice_mode"/>
+                                    <field name="account_id" optional="hide" options="{'no_create': True}"/>
+                                </list>
+                            </field>
+                            <p class="text-muted small">
+                                Subtotal = costo directo + adicionales + ajustes de precio − deductivos;
+                                el impuesto se calcula sobre el subtotal; el adelanto y el fondo de
+                                garantía, sobre el total o el subtotal según los porcentajes de arriba.
+                                Total a pagar = total − adelanto − fondo de garantía.
+                            </p>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="note" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_contract_condition_view_search" model="ir.ui.view">
+        <field name="name">construction.contract.condition.search</field>
+        <field name="model">construction.contract.condition</field>
+        <field name="arch" type="xml">
+            <search string="Condiciones de contrata">
+                <field name="name"/>
+                <filter string="Archivadas" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_condition" model="ir.actions.act_window">
+        <field name="name">Condiciones de contrata</field>
+        <field name="res_model">construction.contract.condition</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('order_id', '=', False)]</field>
+        <field name="search_view_id" ref="construction_contract_condition_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cree las condiciones de sus contratas</p>
+            <p>Adelanto, fondo de garantía, ajustes de precio, periodicidad y documentos de la
+               liquidación. «Asignar contrata» las copia a cada orden, donde se ajustan los
+               porcentajes pactados con el contratista.</p>
+        </field>
+    </record>
+
+    <!-- Catálogos -->
+    <record id="construction_contract_deduction_type_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.deduction.type.list</field>
+        <field name="model">construction.contract.deduction.type</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de deductivo" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code" optional="hide"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_deduction_type" model="ir.actions.act_window">
+        <field name="name">Tipos de deductivo</field>
+        <field name="res_model">construction.contract.deduction.type</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <record id="construction_contract_requirement_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.requirement.list</field>
+        <field name="model">construction.contract.requirement</field>
+        <field name="arch" type="xml">
+            <list string="Requisitos de devolución del fondo" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_requirement" model="ir.actions.act_window">
+        <field name="name">Requisitos de devolución del fondo</field>
+        <field name="res_model">construction.contract.requirement</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <record id="construction_contract_document_type_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.document.type.list</field>
+        <field name="model">construction.contract.document.type</field>
+        <field name="arch" type="xml">
+            <list string="Documentos de la liquidación" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_document_type" model="ir.actions.act_window">
+        <field name="name">Documentos de la liquidación</field>
+        <field name="res_model">construction.contract.document.type</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'active_test': False}</field>
+    </record>
+
+    <!-- Condiciones por defecto en la ficha del contratista (pestaña Compras) -->
+    <record id="res_partner_view_form_construction_condition" model="ir.ui.view">
+        <field name="name">res.partner.form.construction.condition</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="purchase.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='purchase']" position="inside">
+                <field name="construction_condition_id" options="{'no_create': True}"
+                       groups="al_construction_planner.group_planner_user,purchase.group_purchase_user"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

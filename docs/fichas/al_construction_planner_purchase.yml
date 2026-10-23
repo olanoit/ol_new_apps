@@ -31,6 +31,11 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '10.20261023'
+  fecha: 23/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, 6.5: la compra masiva de una línea del plan en otra moneda lleva su moneda y costo al requerimiento de compra; la orden se crea en esa moneda y el control lleva el tipo de cambio de la orden, con la diferencia de cambio aparte del desvío de precio."
+  - "Capítulos 4 y 5: «Pedir material» y los requerimientos de obra en el tablero de obra, en el menú Ejecutar y en la sección Obra del proyecto; grupos en dos ejes."
 - version: '9.20261023'
   fecha: 23/10/2026
   cambios:

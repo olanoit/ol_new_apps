@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise (`project_forecast`) y Hojas de horas. Licencia LGPL-3
   porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261016'
+  fecha: 23/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, capítulos 4 y 5: «Asignar cuadrilla» en el tablero de obra, en el menú Ejecutar y en la sección Personal propio del menú por momento; grupos en dos ejes."
 - version: '3.20261016'
   fecha: 16/10/2026
   cambios:

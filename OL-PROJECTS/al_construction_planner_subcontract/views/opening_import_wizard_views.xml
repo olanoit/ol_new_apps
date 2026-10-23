@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Carga inicial de órdenes de contrata abiertas (CREVAL v1.0, 3.14) -->
+    <record id="construction_contract_opening_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.contract.opening.wizard.form</field>
+        <field name="model">construction.contract.opening.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Carga inicial de órdenes de contrata">
+                <group invisible="log">
+                    <field name="file" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <div invisible="log" class="text-muted small">
+                    <p>Hojas ORDENES (una fila por orden con sus condiciones, lo valorizado,
+                       facturado y pagado, el adelanto otorgado y amortizado y la fecha de corte),
+                       LINEAS (partida, actividad, cantidad contratada, precio y cantidad
+                       valorizada) y FONDOS (cuotas de fondo retenido con su vencimiento).</p>
+                    <p>Cada orden se crea confirmada, con una valorización de apertura sin efecto
+                       contable; la siguiente valorización parte del día siguiente al corte.</p>
+                </div>
+                <field name="log" invisible="not log" nolabel="1"/>
+                <footer>
+                    <button name="action_import" type="object" string="Cargar" class="btn-primary"
+                            invisible="log" data-hotkey="q"/>
+                    <button name="action_download_template" type="object" string="Descargar plantilla"
+                            invisible="log"/>
+                    <button string="Cerrar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_opening_wizard" model="ir.actions.act_window">
+        <field name="name">Carga inicial de órdenes de contrata</field>
+        <field name="res_model">construction.contract.opening.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_manager'))]"/>
+    </record>
+
+    <menuitem id="menu_planner_contract_opening" name="Carga inicial de órdenes de contrata"
+              parent="al_construction_planner.menu_planner_config_plan"
+              action="action_construction_contract_opening_wizard" sequence="36"
+              groups="al_construction_planner.group_planner_manager"/>
+</odoo>

@@ -65,6 +65,10 @@ pasos:
       personal propio; al publicarlo crea los apuntes analíticos.
 
 novedades:
+  - version: '5.20261021'
+    fecha: 23/10/2026
+    cambios:
+    - "Requerimiento CREVAL v1.0, 4.3: la asistencia pasa a la sección Personal propio de Ejecución en el menú por momento."
   - version: '4.20261021'
     fecha: 21/10/2026
     cambios:

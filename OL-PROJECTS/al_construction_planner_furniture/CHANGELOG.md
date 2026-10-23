@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261021 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
+
 ## 10.20261021 — 21/10/2026
 
 - El despacho a obra por unidad solo exige departamento si lleva productos de módulo: el material de un requerimiento se valida sin él, aunque sea de varios departamentos o de todo el piso.

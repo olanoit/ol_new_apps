@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261016 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulo 3: condiciones de contrata con su esquema de cálculo, copiadas a la orden de contrata; valorización por orden con periodicidad semanal, quincenal, mensual o al término, resumen del periodo (contractual, anterior, actual, acumulado y saldo), adelanto y su regularización, deductivos, fondo de garantía en una cuota propia de la factura y su reporte, liquidación y cierre de la orden, carga inicial con valorización de apertura, valorizado impreso con casillas de firma, resumen y análisis de valorizaciones y despacho semanal.
+- Sin condiciones, la orden se comporta como antes. «OC de servicio» pasa a «Órdenes de contrata» y «Liquidaciones semanales» a «Valorizaciones de contrata»; los XMLID no cambian.
+- Capítulos 4 y 5: contratas en el tablero de obra, en el menú Ejecutar y en la sección Obra del proyecto; preparar y presentar la valorización es de Ejecución: ejecuta y validarla, de Ejecución: valida.
+
 ## 2.20261016 — 16/10/2026
 
 - Liquidaciones con re-trabajo y repeticiones (v1.8, M18-21): las de más del plan esperan la autorización de la jefatura; porcentaje manual con motivo por línea y alcance adicional del contrato con justificación.

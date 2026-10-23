@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Deductivos de contrata (CREVAL v1.0, 3.7) -->
+    <record id="construction_contract_deduction_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.deduction.list</field>
+        <field name="model">construction.contract.deduction</field>
+        <field name="arch" type="xml">
+            <list string="Deductivos" decoration-muted="state == 'cancel'"
+                  decoration-info="state == 'pending'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="purchase_order_id" optional="show"/>
+                <field name="type_id"/>
+                <field name="description" optional="show"/>
+                <field name="task_id" optional="hide"/>
+                <field name="signed_amount" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="settlement_id" optional="show"/>
+                <field name="state" widget="badge" decoration-info="state == 'pending'"
+                       decoration-warning="state == 'in_valuation'" decoration-success="state == 'applied'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_contract_deduction_view_form" model="ir.ui.view">
+        <field name="name">construction.contract.deduction.form</field>
+        <field name="model">construction.contract.deduction</field>
+        <field name="arch" type="xml">
+            <form string="Deductivo de contrata">
+                <header>
+                    <button name="action_reverse" type="object" string="Corregir con otro de signo contrario"
+                            invisible="state != 'applied'" groups="al_construction_planner.group_planner_exec_approver"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state not in ('pending', 'in_valuation')"/>
+                    <button name="action_draft" type="object" string="Volver a pendiente"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,in_valuation,applied"/>
+                </header>
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="project_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="purchase_order_id" options="{'no_create': True}"
+                                   readonly="state != 'pending'"/>
+                            <field name="partner_id"/>
+                            <field name="type_id" options="{'no_create': True}" readonly="state != 'pending'"/>
+                            <field name="task_id" options="{'no_create': True}" readonly="state != 'pending'"/>
+                            <field name="reference" readonly="state != 'pending'"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'pending'"/>
+                            <field name="amount" readonly="state != 'pending'"/>
+                            <field name="is_reversal" invisible="not is_reversal"/>
+                            <field name="reversed_id" invisible="not reversed_id"/>
+                            <field name="settlement_id" invisible="not settlement_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Qué se descuenta y por qué" readonly="state != 'pending'"/>
+                    <field name="attachment_ids" widget="many2many_binary" string="Sustento"
+                           readonly="state != 'pending'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_contract_deduction_view_search" model="ir.ui.view">
+        <field name="name">construction.contract.deduction.search</field>
+        <field name="model">construction.contract.deduction</field>
+        <field name="arch" type="xml">
+            <search string="Deductivos">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <field name="purchase_order_id"/>
+                <filter string="Pendientes" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="En valorización" name="in_valuation" domain="[('state', '=', 'in_valuation')]"/>
+                <filter string="Aplicados" name="applied" domain="[('state', '=', 'applied')]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Tipo" name="group_type" context="{'group_by': 'type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="construction_contract_deduction_view_pivot" model="ir.ui.view">
+        <field name="name">construction.contract.deduction.pivot</field>
+        <field name="model">construction.contract.deduction</field>
+        <field name="arch" type="xml">
+            <pivot string="Deductivos">
+                <field name="partner_id" type="row"/>
+                <field name="type_id" type="col"/>
+                <field name="signed_amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_deduction" model="ir.actions.act_window">
+        <field name="name">Deductivos</field>
+        <field name="res_model">construction.contract.deduction</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="search_view_id" ref="construction_contract_deduction_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay deductivos de contratas</p>
+            <p>Un remate que terminó el personal propio, una reposición, un consumo a cargo del
+               contratista o material entregado sobre lo planificado. Entran a la siguiente
+               valorización de su orden.</p>
+        </field>
+    </record>
+
+    <!-- Fondos de garantía de contratas (3.8) -->
+    <record id="construction_guarantee_fund_view_list" model="ir.ui.view">
+        <field name="name">construction.guarantee.fund.list</field>
+        <field name="model">construction.guarantee.fund</field>
+        <field name="arch" type="xml">
+            <list string="Fondos de garantía" create="0" editable="bottom"
+                  decoration-success="state == 'ready'" decoration-danger="state == 'retained'"
+                  decoration-muted="state == 'paid'">
+                <field name="partner_id" readonly="1"/>
+                <field name="project_id" readonly="1"/>
+                <field name="purchase_order_id" readonly="1"/>
+                <field name="settlement_id" optional="show" readonly="1"/>
+                <field name="move_id" optional="show" readonly="1"/>
+                <field name="date_maturity" readonly="1"/>
+                <field name="amount" sum="Total" readonly="1"/>
+                <field name="amount_residual" sum="Total" readonly="1"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="requirement_summary" optional="show"/>
+                <field name="hold" groups="account.group_account_invoice,al_construction_planner.group_planner_exec_approver"/>
+                <field name="hold_reason" optional="show" required="hold"
+                       groups="account.group_account_invoice,al_construction_planner.group_planner_exec_approver"/>
+                <field name="hold_reference" optional="show"
+                       groups="account.group_account_invoice,al_construction_planner.group_planner_exec_approver"/>
+                <field name="state" widget="badge" decoration-success="state == 'ready'"
+                       decoration-danger="state == 'retained'" decoration-info="state == 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_guarantee_fund_view_search" model="ir.ui.view">
+        <field name="name">construction.guarantee.fund.search</field>
+        <field name="model">construction.guarantee.fund</field>
+        <field name="arch" type="xml">
+            <search string="Fondos de garantía">
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <field name="purchase_order_id"/>
+                <filter string="Por devolver" name="open" domain="[('amount_residual', '>', 0)]"/>
+                <filter string="Retenidas" name="hold" domain="[('hold', '=', True)]"/>
+                <separator/>
+                <filter string="Vencimiento" name="date_maturity" date="date_maturity"/>
+                <group>
+                    <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Vencimiento" name="group_maturity" context="{'group_by': 'date_maturity:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="construction_guarantee_fund_view_pivot" model="ir.ui.view">
+        <field name="name">construction.guarantee.fund.pivot</field>
+        <field name="model">construction.guarantee.fund</field>
+        <field name="arch" type="xml">
+            <pivot string="Fondos de garantía">
+                <field name="partner_id" type="row"/>
+                <field name="date_maturity" interval="month" type="col"/>
+                <field name="amount_residual" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_construction_guarantee_fund" model="ir.actions.act_window">
+        <field name="name">Fondos de garantía de contratas</field>
+        <field name="res_model">construction.guarantee.fund</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="search_view_id" ref="construction_guarantee_fund_view_search"/>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Aún no hay fondos de garantía</p>
+            <p>Cada factura de valorizado con fondo de garantía deja aquí su cuota, con su
+               vencimiento y el estado de los requisitos de devolución de la orden.</p>
+        </field>
+    </record>
+
+</odoo>

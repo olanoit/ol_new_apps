@@ -32,7 +32,7 @@
                             invisible="state != 'draft'"/>
                     <button name="action_authorize" type="object" string="Autorizar (jefatura)"
                             class="btn-primary" invisible="not needs_authorization"
-                            groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager"/>
+                            groups="al_construction_planner.group_planner_exec_approver,al_construction_planner.group_planner_manager"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state != 'confirmed'"/>
                     <field name="state" widget="statusbar"/>

@@ -315,22 +315,22 @@
                 <header>
                     <button name="action_open_recipe_wizard" type="object"
                             string="Generar desde la receta" invisible="state != 'draft'"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_apply_analytic_rules" type="object"
                             string="Aplicar reglas analíticas" invisible="state != 'draft'"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_request_approval" type="object"
                             string="Solicitar aprobación" class="btn-primary"
                             invisible="state != 'draft' or not line_count"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_open_replan_wizard" type="object" string="Nueva versión"
                             invisible="state not in ('approved', 'in_progress')"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="%(action_plan_reschedule_wizard)d" type="action"
                             string="Cambiar fechas"
                             invisible="state not in ('approved', 'in_progress')"
                             context="{'default_plan_id': id}"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner,al_construction_planner.group_planner_user"/>
                     <button name="%(action_plan_progress_wizard)d" type="action"
                             string="Registrar avance"
                             invisible="state not in ('approved', 'in_progress')"
@@ -339,17 +339,17 @@
                     <button name="action_sync_space_stages" type="object"
                             string="Crear etapas del cronograma"
                             invisible="not line_count or state in ('closed', 'replaced', 'cancel')"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_close" type="object" string="Cerrar"
                             invisible="state not in ('approved', 'in_progress')"
                             groups="al_construction_planner.group_planner_manager"
                             confirm="El plan cerrado queda de solo lectura y su presupuesto pasa a «Hecho». ¿Continuar?"/>
                     <button name="action_cancel" type="object" string="Cancelar"
                             invisible="state not in ('draft', 'to_approve')"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state not in ('to_approve', 'cancel')"
-                            groups="al_construction_planner.group_planner_planner"/>
+                            groups="al_construction_planner.group_planner_plan_planner"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,to_approve,approved,in_progress,closed"/>
                 </header>

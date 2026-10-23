@@ -25,6 +25,12 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 23/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, capítulo 3: condiciones de contrata con su esquema de cálculo, copiadas a la orden de contrata; valorización por orden con periodicidad semanal, quincenal, mensual o al término, resumen del periodo (contractual, anterior, actual, acumulado y saldo), adelanto y su regularización, deductivos, fondo de garantía en una cuota propia de la factura y su reporte, liquidación y cierre de la orden, carga inicial con valorización de apertura, valorizado impreso con casillas de firma, resumen y análisis de valorizaciones y despacho semanal."
+  - "Sin condiciones, la orden se comporta como antes. «OC de servicio» pasa a «Órdenes de contrata» y «Liquidaciones semanales» a «Valorizaciones de contrata»; los XMLID no cambian."
+  - "Capítulos 4 y 5: contratas en el tablero de obra, en el menú Ejecutar y en la sección Obra del proyecto; preparar y presentar la valorización es de Ejecución: ejecuta y validarla, de Ejecución: valida."
 - version: '2.20261016'
   fecha: 16/10/2026
   cambios:

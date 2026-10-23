@@ -250,23 +250,24 @@ módulo | versión | licencia | resumen
 
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_construction_attendance](OL-PROJECTS/al_construction_attendance/) | 4.20261021 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
+[al_construction_attendance](OL-PROJECTS/al_construction_attendance/) | 5.20261021 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
 [al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 24.20261023 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 42.20261016 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
-[al_construction_planner_approvals](OL-PROJECTS/al_construction_planner_approvals/) | 5.20261021 | LGPL-3 | Plan de recursos y requerimiento de obra aprobados en la aplicación Aprobaciones, con tabla de rutas por tramos y aprobadores por grupo.
-[al_construction_planner_approvals_mrp](OL-PROJECTS/al_construction_planner_approvals_mrp/) | 4.20261023 | LGPL-3 | Exceso de la orden de fabricación frente a lo presupuestado: el jefe de producción lo aprueba dentro de su margen y, por encima, va a Aprobaciones.
+[al_construction_planner](OL-PROJECTS/al_construction_planner/) | 43.20261016 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
+[al_construction_planner_approvals](OL-PROJECTS/al_construction_planner_approvals/) | 6.20261021 | LGPL-3 | Plan de recursos y requerimiento de obra aprobados en la aplicación Aprobaciones, con tabla de rutas por tramos y aprobadores por grupo.
+[al_construction_planner_approvals_mrp](OL-PROJECTS/al_construction_planner_approvals_mrp/) | 5.20261023 | LGPL-3 | Exceso de la orden de fabricación frente a lo presupuestado: el jefe de producción lo aprueba dentro de su margen y, por encima, va a Aprobaciones.
 [al_construction_planner_budget](OL-PROJECTS/al_construction_planner_budget/) | 2.20261016 | LGPL-3 | Presupuesto analítico al aprobar el plan y control de la OC contra el presupuesto.
-[al_construction_planner_crew](OL-PROJECTS/al_construction_planner_crew/) | 3.20261016 | LGPL-3 | Asignar cuadrilla con turnos de Planificación, en horas o en días con costo diario por puesto, y horas de la hoja de horas como real.
-[al_construction_planner_furniture](OL-PROJECTS/al_construction_planner_furniture/) | 10.20261021 | LGPL-3 | Tipologías de mueble con módulos, piezas, método de unión y lista de materiales, productos por módulo, receta real y despacho a obra, e importación del maestro, del ETO y de la proyección de materiales.
-[al_construction_planner_mrp](OL-PROJECTS/al_construction_planner_mrp/) | 8.20261023 | LGPL-3 | Órdenes de fabricación desde el plan, etapa de consumo en la lista de materiales y espera del metrado.
-[al_construction_planner_production](OL-PROJECTS/al_construction_planner_production/) | 4.20261019 | LGPL-3 | Accesorios de armado pedidos desde la orden y presupuestado, requerido y consumido en la orden y en el planificador.
-[al_construction_planner_purchase](OL-PROJECTS/al_construction_planner_purchase/) | 9.20261023 | LGPL-3 | Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de compra, crear producto y material extra.
-[al_construction_planner_sale](OL-PROJECTS/al_construction_planner_sale/) | 3.20261016 | LGPL-3 | Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorización, cobranza y cronograma valorizado.
+[al_construction_planner_crew](OL-PROJECTS/al_construction_planner_crew/) | 4.20261016 | LGPL-3 | Asignar cuadrilla con turnos de Planificación, en horas o en días con costo diario por puesto, y horas de la hoja de horas como real.
+[al_construction_planner_furniture](OL-PROJECTS/al_construction_planner_furniture/) | 11.20261021 | LGPL-3 | Tipologías de mueble con módulos, piezas, método de unión y lista de materiales, productos por módulo, receta real y despacho a obra, e importación del maestro, del ETO y de la proyección de materiales.
+[al_construction_planner_mrp](OL-PROJECTS/al_construction_planner_mrp/) | 9.20261023 | LGPL-3 | Órdenes de fabricación desde el plan, etapa de consumo en la lista de materiales y espera del metrado.
+[al_construction_planner_production](OL-PROJECTS/al_construction_planner_production/) | 5.20261019 | LGPL-3 | Accesorios de armado pedidos desde la orden y presupuestado, requerido y consumido en la orden y en el planificador.
+[al_construction_planner_purchase](OL-PROJECTS/al_construction_planner_purchase/) | 10.20261023 | LGPL-3 | Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de compra, crear producto y material extra.
+[al_construction_planner_sale](OL-PROJECTS/al_construction_planner_sale/) | 4.20261016 | LGPL-3 | Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorización, cobranza y cronograma valorizado.
 [al_construction_planner_sale_furniture](OL-PROJECTS/al_construction_planner_sale_furniture/) | 1.20261013 | LGPL-3 | Partidas del contrato por familia de la tipología (cocinas, closets…).
-[al_construction_planner_spreadsheet](OL-PROJECTS/al_construction_planner_spreadsheet/) | 2.20261016 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».
-[al_construction_planner_subcontract](OL-PROJECTS/al_construction_planner_subcontract/) | 2.20261016 | LGPL-3 | Asignar contrata con su OC de servicio, avance por driver, liquidación semanal y portal de la contrata.
-[al_construction_planner_subcontract_purchase](OL-PROJECTS/al_construction_planner_subcontract_purchase/) | 1.20261013 | LGPL-3 | Descuento a la contrata del material extra en su liquidación semanal.
-[al_construction_planner_suite](OL-PROJECTS/al_construction_planner_suite/) | 15.20261023 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
+[al_construction_planner_spreadsheet](OL-PROJECTS/al_construction_planner_spreadsheet/) | 3.20261016 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».
+[al_construction_planner_subcontract](OL-PROJECTS/al_construction_planner_subcontract/) | 3.20261016 | LGPL-3 | Asignar contrata con su OC de servicio, avance por driver, liquidación semanal y portal de la contrata.
+[al_construction_planner_subcontract_purchase](OL-PROJECTS/al_construction_planner_subcontract_purchase/) | 2.20261013 | LGPL-3 | Descuento a la contrata del material extra en su liquidación semanal.
+[al_construction_planner_subcontract_sale](OL-PROJECTS/al_construction_planner_subcontract_sale/) | 1.20261023 | LGPL-3 | Adicionales de la contrata desde el cambio de obra y margen de compra por partida.
+[al_construction_planner_suite](OL-PROJECTS/al_construction_planner_suite/) | 16.20261023 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
 [al_project_gantt_ai](OL-PROJECTS/al_project_gantt_ai/) | 8.20261013 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](OL-PROJECTS/al_project_gantt_backend/) | 17.20261013 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](OL-PROJECTS/al_project_gantt_base/) | 18.20261011 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
@@ -307,9 +308,9 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_base_module_info](OL-TOOLS/al_base_module_info/) | 2.20261008 | OPL-1 | En Aplicaciones, el botón «Más información» de los módulos con ficha propia abre la ficha completa del módulo.
-[al_docs_help](OL-TOOLS/al_docs_help/) | 11.20261023 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
+[al_docs_help](OL-TOOLS/al_docs_help/) | 12.20261023 | OPL-1 | Botón «?» en cada pantalla y asistente de la suite que abre la página que la explica en el sitio de documentación.
 [al_mcp_server](OL-TOOLS/al_mcp_server/) | 9.20261013 | OPL-1 | Servidor MCP, Integración con IA, Claude, ChatGPT, Gemini, Grok, Cursor, n8n, LangChain, OAuth 2.0, PKCE, Token Bearer, Token de Acceso Personal, API REST, HTTP Streamable, SSE, Trabajos Asíncronos, Cola en Segundo Plano, Reportes BI, Tabla Dinámica, Series de Tiempo, Análisis de Cohortes, Embudo, Top N, Exportar CSV, Exportar XLSX, Páginas de Portal, Tablero Público, Tarjetas KPI, Generador de Módulos, Generación de Código con IA, LLM, Automatización, Registro de Auditoría, Límite de Tasa, Redis, Caché de Esquema, Tokens con Alcance, Lista de Campos Permitidos, Lista de IP Permitidas, API de Odoo, Conector de Odoo, Asistente de IA, Chatbot, Lenguaje Natural, Actualización Masiva, Creación Masiva, Eliminación Masiva
-[al_report_base](OL-TOOLS/al_report_base/) | 1.20261011 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
+[al_report_base](OL-TOOLS/al_report_base/) | 2.20261011 | OPL-1 | El formato del comprobante A4 para todos los documentos impresos de la suite: encabezado, pie, estilos y papel.
 [ol_licencia_perpetua](OL-TOOLS/ol_licencia_perpetua/) | 1.20260717 | OPL-1 | Override enterprise subscription for testing purposes
 
 ### OL-THIRD-PARTY
@@ -320,6 +321,7 @@ módulo | versión | licencia | resumen
 [base_tier_validation](OL-THIRD-PARTY/base_tier_validation/) | 19.0.1.3.1 | AGPL-3 | Implement a validation process based on tiers.
 [prt_report_attachment_preview](OL-THIRD-PARTY/prt_report_attachment_preview/) | 19.0.1.0.1 | LGPL-3 | Preview reports and pdf attachments in browser instead of downloading them. Open Report or PDF Attachment in new tab instead of downloading.
 [purchase_request](OL-THIRD-PARTY/purchase_request/) | 19.0.1.0.2 | LGPL-3 | Use this module to have notification of requirements of materials and/or external services and keep track of such requirements.
+[purchase_tier_validation](OL-THIRD-PARTY/purchase_tier_validation/) | 19.0.1.0.0 | AGPL-3 | Extends the functionality of Purchase Orders to support a tier validation process.
 [queue_job](OL-THIRD-PARTY/queue_job/) | 19.0.2.1.0 | LGPL-3 | Job Queue
 [//]: # (end addons-all)
 

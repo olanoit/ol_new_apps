@@ -10,7 +10,10 @@ from odoo.exceptions import UserError, ValidationError
 from odoo.tools import split_every
 from odoo.tools.misc import formatLang
 
-from .common import DRIVER_TYPES, RESOURCE_TYPES, stage_group_selection, stage_selection
+from .common import (
+    DRIVER_TYPES, PLAN_APPROVER_GROUPS, PLAN_PLANNER_GROUP, RESOURCE_TYPES, stage_group_selection,
+    stage_selection,
+)
 
 PLAN_STATES = [
     ('draft', 'Borrador'),
@@ -441,7 +444,26 @@ class ConstructionResourcePlan(models.Model):
                     vals['date_start']) + timedelta(days=90))
         return super().create(vals_list)
 
+    # Lo que escribe en el plan quien ejecuta sin planificar (CREVAL v1.0,
+    # capítulo 5): el paso a «En ejecución» al lanzar un documento.
+    _EXEC_WRITABLE = {'state'}
+
+    def _check_plan_planner(self, vals=None):
+        """Editar un plan en borrador, o los datos de un plan aprobado, es de
+        Plan: planificador; Ejecución solo lo pasa a «En ejecución»."""
+        if self.env.su or self.env.context.get('construction_plan_force') \
+                or self.env.user.has_group(PLAN_PLANNER_GROUP):
+            return
+        # Sin permiso de escritura, el error de acceso de siempre.
+        self.check_access('write')
+        if vals is not None and set(vals) <= self._EXEC_WRITABLE \
+                and all(plan.state != 'draft' for plan in self):
+            return
+        raise UserError(self.env._(
+            'Edita el plan de recursos quien planifica (grupo Plan: planificador).'))
+
     def write(self, vals):
+        self._check_plan_planner(vals)
         res = super().write(vals)
         # El estado de las líneas sigue al plan (cancelada) y la tolerancia
         # decide cuándo una línea está excedida.
@@ -658,8 +680,8 @@ class ConstructionResourcePlan(models.Model):
         analítico pasa a «Hecho». No se cierra con documentos abiertos
         (asignaciones de compras, requerimientos, OF u OC de servicio sin
         terminar) ni con liquidaciones de contrata pendientes."""
-        if not self.env.user.has_group('al_construction_planner.group_planner_manager'):
-            raise UserError(self.env._('Solo el administrador del planificador cierra un plan.'))
+        if not self.env.user.has_groups(PLAN_APPROVER_GROUPS):
+            raise UserError(self.env._('Cierra un plan quien aprueba planes (grupo Plan: aprueba).'))
         self._check_state(OPEN_STATES)
         for plan in self:
             open_allocations = plan.allocation_ids.filtered(lambda a: a.state == 'open')
@@ -1416,6 +1438,13 @@ class ConstructionResourcePlanLine(models.Model):
             return
         if vals is not None and set(vals) <= self._LOCKED_ALLOWED:
             return
+        # Las líneas de un plan en borrador las edita quien planifica (CREVAL
+        # v1.0, capítulo 5); Ejecución solo escribe con el contexto de sus
+        # asistentes sobre planes aprobados.
+        if not self.env.su and not self.env.user.has_group(PLAN_PLANNER_GROUP):
+            self.check_access('write')
+            raise UserError(self.env._(
+                'Edita las líneas del plan quien planifica (grupo Plan: planificador).'))
         locked = self.plan_id.filtered(lambda p: p.state != 'draft')
         if locked:
             raise UserError(self.env._(

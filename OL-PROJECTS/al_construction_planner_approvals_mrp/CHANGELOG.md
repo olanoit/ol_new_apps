@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261023 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
+
 ## 4.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-12: «Presupuestado frente a requerido» compara la necesidad de los tableros y muestra aparte el «Redondeo a plancha entera», que no cuenta como exceso.

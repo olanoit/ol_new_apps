@@ -88,7 +88,7 @@
                         string="Asignar cuadrilla"
                         invisible="state not in ('approved', 'in_progress')"
                         context="{'default_plan_id': id}"
-                        groups="al_construction_planner.group_planner_planner"/>
+                        groups="al_construction_planner.group_planner_user"/>
             </xpath>
         </field>
     </record>
@@ -96,5 +96,5 @@
     <menuitem id="menu_planner_crew_assign" name="Asignar cuadrilla"
               parent="al_construction_planner.menu_planner_contracts"
               action="action_plan_crew_wizard" sequence="15"
-              groups="al_construction_planner.group_planner_planner"/>
+              groups="al_construction_planner.group_planner_user"/>
 </odoo>

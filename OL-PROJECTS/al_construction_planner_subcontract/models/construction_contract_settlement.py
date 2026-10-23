@@ -14,7 +14,9 @@ from markupsafe import Markup
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from odoo.addons.al_construction_planner.models.common import DRIVER_TYPES, PROJECT_HEAD_GROUPS
+from odoo.addons.al_construction_planner.models.common import (
+    DRIVER_TYPES, EXEC_USER_GROUP, EXEC_VALIDATOR_GROUP, PROJECT_HEAD_GROUPS,
+)
 from odoo.addons.al_construction_planner.models.construction_exceed import REWORK_REASONS
 from odoo.addons.al_construction_planner.models.construction_resource_plan import OPEN_STATES
 
@@ -117,9 +119,12 @@ class ConstructionContractSettlement(models.Model):
                                          copy=False, tracking=True)
     head_authorized_on = fields.Datetime(string='Autorizada el', readonly=True, copy=False)
 
-    _period_unique = models.UniqueIndex(
-        '(partner_id, project_id, period_start) WHERE state != \'cancel\'',
-        'Ya hay una liquidación de esta contrata en la obra para esa semana.')
+    # Una por contrata, obra y semana; con condiciones, una por orden y
+    # periodo (CREVAL v1.0, 3.5).
+    _period_order_unique = models.UniqueIndex(
+        '(partner_id, project_id, period_start, COALESCE(purchase_order_id, 0)) '
+        'WHERE state != \'cancel\' AND settlement_type = \'periodic\'',
+        'Ya hay una valorización de esta orden (o de esta contrata en la obra) para ese periodo.')
 
     @api.depends('project_id')
     def _compute_company_id(self):
@@ -255,6 +260,10 @@ class ConstructionContractSettlement(models.Model):
             orphans = Progress.sudo()
             for progress in progresses_sudo:
                 po_line = self._get_service_line(progress)
+                # Los avances de una orden con condiciones van a la
+                # valorización de esa orden (CREVAL v1.0, 3.5).
+                if po_line.order_id.construction_uses_terms:
+                    continue
                 if po_line:
                     key = (po_line, progress.is_rework, progress.rework_reason or False)
                     by_po_line[key] |= progress
@@ -445,13 +454,18 @@ class ConstructionContractSettlement(models.Model):
                     name=settlement.display_name, state=labels[settlement.state].lower()))
 
     def _check_supervisor(self):
-        if not self.env.user.has_group('al_construction_planner.group_planner_planner'):
+        if not self.env.user.has_group(EXEC_VALIDATOR_GROUP):
             raise UserError(self.env._(
-                'Presenta, valida o devuelve la liquidación el supervisor de obra (grupo '
-                'Planificador).'))
+                'Valida, devuelve o anula la valorización quien valida la ejecución (grupo '
+                'Ejecución: valida).'))
+
+    def _check_preparer(self):
+        if not self.env.user.has_group(EXEC_USER_GROUP):
+            raise UserError(self.env._(
+                'Prepara y presenta la valorización quien ejecuta (grupo Ejecución: ejecuta).'))
 
     def action_submit(self):
-        self._check_supervisor()
+        self._check_preparer()
         self._check_state(('draft',))
         for settlement in self:
             if not settlement.line_ids:
@@ -463,7 +477,7 @@ class ConstructionContractSettlement(models.Model):
 
     def _notify_heads(self):
         """Actividad para la jefatura de proyectos: hay algo que autorizar."""
-        group = self.env.ref('al_construction_planner.group_planner_project_head',
+        group = self.env.ref('al_construction_planner.group_planner_exec_approver',
                              raise_if_not_found=False)
         activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
         for settlement in self:

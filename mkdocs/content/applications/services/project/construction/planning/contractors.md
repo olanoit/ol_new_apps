@@ -13,6 +13,12 @@ factura con vencimiento el sábado.
 
 ![Liquidación semanal de una contrata con el bruto, la retención y el neto](contractors/weekly-settlement.png)
 
+!!! note "Órdenes y valorizaciones de contrata"
+    Los menús se llaman **Órdenes de contrata** y **Valorizaciones de contrata**.
+    Esta página describe la orden **sin condiciones**; con condiciones de contrata
+    (adelanto, fondo de garantía, ajustes de precio, periodicidad), ver
+    [Condiciones y valorización de contratas](contract_terms.md).
+
 ## Configuración
 
 1. En **Ajustes ‣ Planificación de obra**, defina la **semana de las

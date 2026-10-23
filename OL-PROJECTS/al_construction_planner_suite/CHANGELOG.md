@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261023 — 23/10/2026
+
+- Requerimiento CREVAL v1.0: las pruebas de aprobadores siguen a los grupos en dos ejes (la regla cita Ejecución: aprueba, que la jefatura y el administrador incluyen).
+
 ## 15.20261023 — 23/10/2026
 
 - Pruebas de los retazos (paquete 1.11, M111-12, fase B): cubrir y quitar retazo, declarar sobrantes con devolución, lote y costo, exceso de lo declarado y exigencia antes de terminar; la orden redondeada se termina sin aviso de consumo.

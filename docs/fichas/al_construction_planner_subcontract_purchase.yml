@@ -19,6 +19,10 @@ configuracion:
 requisitos_nota: Se instala automáticamente con `al_construction_planner_subcontract` y `al_construction_planner_purchase`.
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '2.20261013'
+  fecha: 23/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, 3.7: con condiciones de contrata, el material extra descontado entra como deductivo de tipo «Material extra» de la orden."
 - version: '1.20261013'
   fecha: 15/10/2026
   cambios:

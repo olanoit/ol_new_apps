@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Agregar a la orden de contrata (CREVAL v1.0, 3.9) -->
+    <record id="view_construction_change_order_form_contract" model="ir.ui.view">
+        <field name="name">construction.change.order.form.contract</field>
+        <field name="model">construction.change.order</field>
+        <field name="inherit_id" ref="al_construction_planner_sale.view_construction_change_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@name='state']" position="before">
+                <field name="construction_can_add_to_order" invisible="1"/>
+                <button name="action_add_to_contract_order" type="object" string="Agregar a la orden de contrata"
+                        class="btn-primary" invisible="not construction_can_add_to_order"
+                        groups="al_construction_planner.group_planner_user"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_purchase_order" type="object" class="oe_stat_button"
+                        icon="fa-file-text-o" string="Orden de contrata"
+                        invisible="not construction_purchase_order_id"
+                        groups="purchase.group_purchase_user,al_construction_planner.group_planner_user"/>
+            </xpath>
+            <xpath expr="//field[@name='contract_id']" position="after">
+                <field name="construction_contractor_id" options="{'no_create': True}"
+                       required="construction_can_add_to_order"/>
+                <field name="construction_purchase_order_id" invisible="not construction_purchase_order_id"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="En orden de contrata" name="contract_order" invisible="not construction_purchase_order_id">
+                    <field name="construction_purchase_line_ids" nolabel="1">
+                        <list create="0" delete="0">
+                            <field name="order_id"/>
+                            <field name="name"/>
+                            <field name="product_qty"/>
+                            <field name="price_unit"/>
+                            <field name="price_subtotal" sum="Total"/>
+                            <field name="construction_additional_pending"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

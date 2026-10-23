@@ -273,7 +273,7 @@
         <field name="name">Tramo de pago de la actividad</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_amounts_mixin" model="al.docs.help">
         <field name="key">construction.amounts.mixin</field>
@@ -281,7 +281,7 @@
         <field name="name">Montos del planificador visibles solo con su grupo</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_analytic_rule" model="al.docs.help">
         <field name="key">construction.analytic.rule</field>
@@ -289,7 +289,7 @@
         <field name="name">Regla analítica del plan de obra</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_approval_mixin" model="al.docs.help">
         <field name="key">construction.approval.mixin</field>
@@ -323,6 +323,14 @@
         <field name="path">applications/services/project/construction/planning/approvals/#aprobar-o-rechazar</field>
         <field name="section">Aprobar o rechazar</field>
     </record>
+    <record id="help_construction_budget_import_wizard" model="al.docs.help">
+        <field name="key">construction.budget.import.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar el presupuesto de la obra a la cotización</field>
+        <field name="module">al_construction_planner_sale</field>
+        <field name="path">applications/services/project/construction/planning/recipe_calc/</field>
+        <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
     <record id="help_construction_change_order" model="al.docs.help">
         <field name="key">construction.change.order</field>
         <field name="kind">model</field>
@@ -347,6 +355,30 @@
         <field name="path">applications/services/project/construction/planning/client_contracts/#contrato-de-obra</field>
         <field name="section">Contrato de obra</field>
     </record>
+    <record id="help_construction_contract_condition" model="al.docs.help">
+        <field name="key">construction.contract.condition</field>
+        <field name="kind">model</field>
+        <field name="name">Condiciones de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_deduction" model="al.docs.help">
+        <field name="key">construction.contract.deduction</field>
+        <field name="kind">model</field>
+        <field name="name">Deductivo de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_deduction_type" model="al.docs.help">
+        <field name="key">construction.contract.deduction.type</field>
+        <field name="kind">model</field>
+        <field name="name">Tipo de deductivo de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
     <record id="help_construction_contract_document" model="al.docs.help">
         <field name="key">construction.contract.document</field>
         <field name="kind">model</field>
@@ -355,6 +387,38 @@
         <field name="path">applications/services/project/construction/planning/client_contracts/</field>
         <field name="section">Adicionales, deductivos y dependencias</field>
     </record>
+    <record id="help_construction_contract_document_type" model="al.docs.help">
+        <field name="key">construction.contract.document.type</field>
+        <field name="kind">model</field>
+        <field name="name">Documento requerido para la liquidación de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contractors/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_opening_wizard" model="al.docs.help">
+        <field name="key">construction.contract.opening.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Carga inicial de órdenes de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/#carga-inicial</field>
+        <field name="section">Carga inicial</field>
+    </record>
+    <record id="help_construction_contract_order_document" model="al.docs.help">
+        <field name="key">construction.contract.order.document</field>
+        <field name="kind">model</field>
+        <field name="name">Documento requerido de la orden de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_order_requirement" model="al.docs.help">
+        <field name="key">construction.contract.order.requirement</field>
+        <field name="kind">model</field>
+        <field name="name">Requisito de devolución del fondo en la orden de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
     <record id="help_construction_contract_price" model="al.docs.help">
         <field name="key">construction.contract.price</field>
         <field name="kind">model</field>
@@ -362,6 +426,22 @@
         <field name="module">al_construction_planner_sale</field>
         <field name="path">applications/services/project/construction/planning/changes/</field>
         <field name="section">Adicionales, deductivos y dependencias</field>
+    </record>
+    <record id="help_construction_contract_requirement" model="al.docs.help">
+        <field name="key">construction.contract.requirement</field>
+        <field name="kind">model</field>
+        <field name="name">Requisito de devolución del fondo de garantía</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_scheme_line" model="al.docs.help">
+        <field name="key">construction.contract.scheme.line</field>
+        <field name="kind">model</field>
+        <field name="name">Concepto del esquema de cálculo de la contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
     </record>
     <record id="help_construction_contract_settlement" model="al.docs.help">
         <field name="key">construction.contract.settlement</field>
@@ -378,6 +458,22 @@
         <field name="module">al_construction_planner_subcontract</field>
         <field name="path">applications/services/project/construction/planning/contractors/</field>
         <field name="section">Contratas y liquidación semanal</field>
+    </record>
+    <record id="help_construction_contract_settlement_summary" model="al.docs.help">
+        <field name="key">construction.contract.settlement.summary</field>
+        <field name="kind">model</field>
+        <field name="name">Fila del resumen del valorizado</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_contract_summary_report" model="al.docs.help">
+        <field name="key">construction.contract.summary.report</field>
+        <field name="kind">model</field>
+        <field name="name">Resumen de valorizaciones de contratas</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
     </record>
     <record id="help_construction_contract_unit_wizard" model="al.docs.help">
         <field name="key">construction.contract.unit.wizard</field>
@@ -457,7 +553,7 @@
         <field name="name">Exceso autorizado sobre el plan</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/supply/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_excess_approve_wizard" model="al.docs.help">
         <field name="key">construction.excess.approve.wizard</field>
@@ -473,7 +569,7 @@
         <field name="name">Plantilla de ejecución (receta del nivel)</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/levels_typologies/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_execution_template_line" model="al.docs.help">
         <field name="key">construction.execution.template.line</field>
@@ -481,7 +577,15 @@
         <field name="name">Recurso de la plantilla de ejecución</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
+    <record id="help_construction_guarantee_fund" model="al.docs.help">
+        <field name="key">construction.guarantee.fund</field>
+        <field name="kind">model</field>
+        <field name="name">Fondo de garantía de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/#fondos-de-garantía-y-reportes</field>
+        <field name="section">Fondos de garantía y reportes</field>
     </record>
     <record id="help_construction_join_rule" model="al.docs.help">
         <field name="key">construction.join.rule</field>
@@ -497,7 +601,7 @@
         <field name="name">Actividad de obra (driver de pago)</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_labor_cost_allocation" model="al.docs.help">
         <field name="key">construction.labor.cost.allocation</field>
@@ -521,7 +625,7 @@
         <field name="name">Tarifa de contrata</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/catalog/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_level_labels_mixin" model="al.docs.help">
         <field name="key">construction.level.labels.mixin</field>
@@ -529,7 +633,7 @@
         <field name="name">Nombres de los niveles según la plantilla de la compañía</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/levels_typologies/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_level_template" model="al.docs.help">
         <field name="key">construction.level.template</field>
@@ -577,7 +681,7 @@
         <field name="name">Metrado del nivel</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/levels_typologies/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_measurement_generate_wizard" model="al.docs.help">
         <field name="key">construction.measurement.generate.wizard</field>
@@ -593,7 +697,7 @@
         <field name="name">Medida del metrado</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/measurement/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_milestone_template" model="al.docs.help">
         <field name="key">construction.milestone.template</field>
@@ -633,7 +737,7 @@
         <field name="name">Asignar contrata desde el plan</field>
         <field name="module">al_construction_planner_subcontract</field>
         <field name="path">applications/services/project/construction/planning/contractors/</field>
-        <field name="section">Contratas y liquidación semanal</field>
+        <field name="section">Condiciones y valorización de contratas</field>
     </record>
     <record id="help_construction_plan_contract_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.contract.wizard.line</field>
@@ -681,7 +785,7 @@
         <field name="name">Material que excede el plan</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_plan_generate_wizard" model="al.docs.help">
         <field name="key">construction.plan.generate.wizard</field>
@@ -721,7 +825,7 @@
         <field name="name">Registrar avance desde el plan</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/contractors/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_plan_progress_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.progress.wizard.line</field>
@@ -753,7 +857,7 @@
         <field name="name">Generar plan desde la receta</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/generate_plan/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_plan_replan_wizard" model="al.docs.help">
         <field name="key">construction.plan.replan.wizard</field>
@@ -761,7 +865,7 @@
         <field name="name">Nueva versión del plan de recursos</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_plan_request_wizard" model="al.docs.help">
         <field name="key">construction.plan.request.wizard</field>
@@ -785,7 +889,7 @@
         <field name="name">Cambiar fechas desde el plan</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/control/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_plan_reschedule_wizard_line" model="al.docs.help">
         <field name="key">construction.plan.reschedule.wizard.line</field>
@@ -801,15 +905,15 @@
         <field name="name">Selección del plan para los asistentes de abastecimiento</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_planner_home" model="al.docs.help">
         <field name="key">construction.planner.home</field>
         <field name="kind">model</field>
         <field name="name">Inicio de la planificación de obra</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/planning_worksheet/#pestaña-planificación-de-la-obra</field>
-        <field name="section">Pestaña Planificación de la obra</field>
+        <field name="path">applications/services/project/construction/planning/execution/#ejecución-en-planificación-de-obra</field>
+        <field name="section">Ejecución en Planificación de obra</field>
     </record>
     <record id="help_construction_product_create_wizard" model="al.docs.help">
         <field name="key">construction.product.create.wizard</field>
@@ -945,15 +1049,15 @@
         <field name="name">Motivo del rechazo o la devolución</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_recipe_import_wizard" model="al.docs.help">
         <field name="key">construction.recipe.import.wizard</field>
         <field name="kind">model</field>
         <field name="name">Importar recetas y niveles</field>
         <field name="module">al_construction_planner</field>
-        <field name="path">applications/services/project/construction/planning/vertical_configuration/#recetas</field>
-        <field name="section">Recetas</field>
+        <field name="path">applications/services/project/construction/planning/recipe_calc/#forma-de-cálculo-de-la-receta</field>
+        <field name="section">Forma de cálculo de la receta</field>
     </record>
     <record id="help_construction_recipe_versus" model="al.docs.help">
         <field name="key">construction.recipe.versus</field>
@@ -1017,7 +1121,7 @@
         <field name="name">Tipo de recurso del catálogo</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/approvals/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_schedule_report" model="al.docs.help">
         <field name="key">construction.schedule.report</field>
@@ -1026,6 +1130,22 @@
         <field name="module">al_construction_planner_sale</field>
         <field name="path">applications/services/project/construction/planning/valued_schedule/#cronograma-valorizado</field>
         <field name="section">Cronograma valorizado</field>
+    </record>
+    <record id="help_construction_settlement_prepare_wizard" model="al.docs.help">
+        <field name="key">construction.settlement.prepare.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Preparar valorizaciones de contrata</field>
+        <field name="module">al_construction_planner_subcontract</field>
+        <field name="path">applications/services/project/construction/planning/contract_terms/</field>
+        <field name="section">Condiciones y valorización de contratas</field>
+    </record>
+    <record id="help_construction_sign_mixin" model="al.docs.help">
+        <field name="key">construction.sign.mixin</field>
+        <field name="kind">model</field>
+        <field name="name">Casillas de firma de los documentos de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_space_measured_wizard" model="al.docs.help">
         <field name="key">construction.space.measured.wizard</field>
@@ -1041,7 +1161,7 @@
         <field name="name">Etapa del ambiente</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_stage" model="al.docs.help">
         <field name="key">construction.stage</field>
@@ -1049,7 +1169,7 @@
         <field name="name">Etapa de ejecución</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_supply_board" model="al.docs.help">
         <field name="key">construction.supply.board</field>
@@ -1059,13 +1179,21 @@
         <field name="path">applications/services/project/construction/planning/prices_supply/#abastecimiento-de-la-obra</field>
         <field name="section">Abastecimiento de la obra</field>
     </record>
+    <record id="help_construction_task_execute_wizard" model="al.docs.help">
+        <field name="key">construction.task.execute.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Ejecutar desde la tarea de obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/execution/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
     <record id="help_construction_task_progress" model="al.docs.help">
         <field name="key">construction.task.progress</field>
         <field name="kind">model</field>
         <field name="name">Avance reportado</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/changes/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_typology" model="al.docs.help">
         <field name="key">construction.typology</field>
@@ -1081,7 +1209,7 @@
         <field name="name">Actividad por ambiente de la tipología</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_typology_alias" model="al.docs.help">
         <field name="key">construction.typology.alias</field>
@@ -1089,7 +1217,7 @@
         <field name="name">Otro nombre de la tipología</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/catalog/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_typology_furniture" model="al.docs.help">
         <field name="key">construction.typology.furniture</field>
@@ -1139,6 +1267,14 @@
         <field name="path">applications/services/project/construction/planning/levels_typologies/#variantes-por-unidad</field>
         <field name="section">Variantes por unidad</field>
     </record>
+    <record id="help_construction_uom_alias" model="al.docs.help">
+        <field name="key">construction.uom.alias</field>
+        <field name="kind">model</field>
+        <field name="name">Equivalencia de unidad en las importaciones</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/client_contracts/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
+    </record>
     <record id="help_construction_valuation" model="al.docs.help">
         <field name="key">construction.valuation</field>
         <field name="kind">model</field>
@@ -1160,7 +1296,7 @@
         <field name="kind">model</field>
         <field name="name">Monto confirmado por partida</field>
         <field name="module">al_construction_planner_sale</field>
-        <field name="path">applications/services/project/construction/planning/changes/</field>
+        <field name="path">applications/services/project/construction/planning/recipe_calc/</field>
         <field name="section">Adicionales, deductivos y dependencias</field>
     </record>
     <record id="help_construction_valuation_cutoff" model="al.docs.help">
@@ -1241,7 +1377,7 @@
         <field name="name">Sincronizar receta y Work Item</field>
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/vertical_configuration/</field>
-        <field name="section">Tramos, analítica y presupuesto</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_edi_invoice_series" model="al.docs.help">
         <field name="key">edi.invoice.series</field>

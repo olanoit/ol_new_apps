@@ -232,6 +232,8 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
                 'analytic_distribution': (self._get_analytic_distribution(line.plan_line_ids)
                                           if self.mode == 'project' else False),
                 'construction_plan_mode': self.mode,
+                # Partidas en otra moneda (CREVAL v1.0, 6.5).
+                **self._construction_currency_values(line.plan_line_ids),
             })
             qty = line.purchase_uom_id._compute_quantity(line.qty_to_buy, line.product_id.uom_id)
             balance = {plan_line: self._get_need(plan_line) for plan_line in line.plan_line_ids}
@@ -253,6 +255,17 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
             'res_id': request.id,
             'view_mode': 'form',
         }
+
+
+    def _construction_currency_values(self, plan_lines):
+        """Moneda y costo de las líneas del plan si todas tienen la misma
+        moneda extranjera."""
+        currencies = plan_lines.filtered('is_foreign_currency').price_currency_id
+        if len(currencies) != 1 or plan_lines.filtered(lambda l: not l.is_foreign_currency):
+            return {}
+        prices = set(plan_lines.mapped('price_unit_currency'))
+        return {'construction_currency_id': currencies.id,
+                'construction_price_unit_currency': prices.pop() if len(prices) == 1 else 0.0}
 
 
 class ConstructionPlanPurchaseWizardLine(models.TransientModel):

@@ -5,8 +5,16 @@ from . import tier_definition
 from . import construction_resource_plan_allocation
 from . import purchase_order
 from . import construction_task_progress
+from . import construction_contract_condition
 from . import construction_contract_settlement
+from . import construction_contract_deduction
+from . import construction_guarantee_fund
+from . import purchase_order_terms
+from . import construction_contract_valuation
+from . import construction_contract_liquidation
+from . import construction_contract_report
 from . import account_move
 from . import project_project
 from . import construction_planner_home
 from . import construction_amounts
+from . import construction_board

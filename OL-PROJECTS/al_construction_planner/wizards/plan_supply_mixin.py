@@ -72,8 +72,11 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
         PlanLine = self.env['construction.resource.plan.line']
         if not self.plan_id:
             return PlanLine
+        # Las herramientas y gastos por porcentaje (CREVAL v1.0, 6.1) no se
+        # piden, no se compran ni se asignan.
         domain = [('plan_id', '=', self.plan_id.id),
-                  ('stage', 'in', self._get_stages())] + (domain or [])
+                  ('stage', 'in', self._get_stages()),
+                  ('calc_method', 'not in', ('pct_labor', 'pct_group'))] + (domain or [])
         tasks = self._get_selected_tasks()
         if tasks is not None:
             domain.append(('task_id', 'in', tasks.ids))

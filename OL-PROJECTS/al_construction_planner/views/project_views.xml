@@ -29,9 +29,9 @@
                         <group string="Estructura de la obra">
                             <field name="construction_level_template_id"
                                    options="{'no_create': True}"
-                                   groups="al_construction_planner.group_planner_planner"/>
+                                   groups="al_construction_planner.group_planner_plan_planner"/>
                             <field name="construction_purchase_destination"
-                                   groups="al_construction_planner.group_planner_planner"/>
+                                   groups="al_construction_planner.group_planner_plan_planner"/>
                         </group>
                     </group>
                 </page>
@@ -121,7 +121,7 @@
                         </group>
                     </group>
                                     <separator string="Variantes de la unidad" invisible="construction_level not in ('apartment', 'space')"/>
-                    <field name="construction_override_ids" invisible="construction_level not in ('apartment', 'space')" groups="al_construction_planner.group_planner_planner">
+                    <field name="construction_override_ids" invisible="construction_level not in ('apartment', 'space')" groups="al_construction_planner.group_planner_plan_planner">
                         <list editable="bottom">
                             <field name="kind"/>
                             <field name="product_id" options="{'no_create': True}"/>
@@ -142,7 +142,7 @@
                 </page>
             </xpath>
             <xpath expr="//field[@name='tag_ids']" position="after">
-                <field name="construction_level" invisible="not project_id" groups="al_construction_planner.group_planner_planner"/>
+                <field name="construction_level" invisible="not project_id" groups="al_construction_planner.group_planner_plan_planner"/>
             </xpath>
         </field>
     </record>

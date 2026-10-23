@@ -28,7 +28,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_approve" type="object" string="Aprobar y llevar al plan" class="btn-primary" invisible="state != 'draft'" groups="al_construction_planner.group_planner_project_head,al_construction_planner.group_planner_manager" confirm="Las líneas entran al plan vigente y a su presupuesto. ¿Continuar?"/>
+                    <button name="action_approve" type="object" string="Aprobar y llevar al plan" class="btn-primary" invisible="state != 'draft'" groups="al_construction_planner.group_planner_exec_approver,al_construction_planner.group_planner_manager" confirm="Las líneas entran al plan vigente y a su presupuesto. ¿Continuar?"/>
                     <button name="action_cancel" type="object" string="Anular" invisible="state != 'draft'"/>
                     <button name="action_draft" type="object" string="Volver a borrador" invisible="state != 'cancel'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,approved"/>

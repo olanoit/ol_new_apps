@@ -31,6 +31,11 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261016'
+  fecha: 23/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, 6.4: importación del presupuesto a la cotización con secciones y subsecciones, equivalencias de unidades y aviso de duplicados, y «Crear niveles de la obra» desde la cotización."
+  - "Capítulos 4 y 5: cambios de obra y cobro al cliente en el tablero de obra, «Registrar cambio» en el menú Ejecutar; grupos en dos ejes."
 - version: '3.20261016'
   fecha: 16/10/2026
   cambios:

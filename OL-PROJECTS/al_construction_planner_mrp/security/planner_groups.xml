@@ -4,4 +4,12 @@
     <record id="al_construction_planner.group_planner_planner" model="res.groups">
         <field name="implied_ids" eval="[Command.link(ref('mrp.group_mrp_user'))]"/>
     </record>
+    <!-- Dos ejes (CREVAL v1.0): lo mismo para quien planifica y para quien
+         valida la ejecución. -->
+    <record id="al_construction_planner.group_planner_plan_planner" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('mrp.group_mrp_user'))]"/>
+    </record>
+    <record id="al_construction_planner.group_planner_exec_validator" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('mrp.group_mrp_user'))]"/>
+    </record>
 </odoo>

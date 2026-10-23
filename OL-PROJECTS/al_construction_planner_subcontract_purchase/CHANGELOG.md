@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261013 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, 3.7: con condiciones de contrata, el material extra descontado entra como deductivo de tipo «Material extra» de la orden.
+
 ## 1.20261013 — 15/10/2026
 
 - Puente nuevo (v1.7, M17-07): el descuento del material extra (M16-08) une las contratas y las compras.

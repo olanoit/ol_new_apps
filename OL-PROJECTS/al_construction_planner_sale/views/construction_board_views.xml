@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cambios y cobro en el tablero de obra y en el menú Ejecutar (CREVAL v1.0, 4.4 y 4.5) -->
+    <record id="project_project_view_form_construction_board_sale" model="ir.ui.view">
+        <field name="name">project.project.form.construction.board.sale</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_board"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='board_execute']" position="inside">
+                <button name="action_construction_view_changes" type="object" class="oe_stat_button"
+                        icon="fa-exchange" groups="al_construction_planner.group_planner_progress">
+                    <field name="construction_change_draft_count" widget="statinfo" string="Cambios de obra"/>
+                </button>
+            </xpath>
+            <xpath expr="//separator[@name='board_collect_title']" position="attributes">
+                <attribute name="invisible">0</attribute>
+                <attribute name="groups">al_construction_planner.group_planner_revenue</attribute>
+            </xpath>
+            <xpath expr="//div[@name='board_collect']" position="inside">
+                <button name="action_construction_view_contracts" type="object" class="oe_stat_button"
+                        icon="fa-file-o" string="Contrato de obra"
+                        groups="al_construction_planner.group_planner_revenue"/>
+                <button name="action_construction_prepare_valuation" type="object" class="oe_stat_button"
+                        icon="fa-calculator" string="Preparar valorización"
+                        groups="al_construction_planner.group_planner_revenue"/>
+                <button name="action_view_construction_valuations" type="object" class="oe_stat_button"
+                        icon="fa-handshake-o" groups="al_construction_planner.group_planner_revenue">
+                    <field name="construction_valuation_count" widget="statinfo" string="Valorizaciones al cliente"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_task_execute_wizard_view_form_sale" model="ir.ui.view">
+        <field name="name">construction.task.execute.wizard.form.sale</field>
+        <field name="model">construction.task.execute.wizard</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_task_execute_wizard_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='execute_actions']" position="inside">
+                <button name="action_register_change" type="object" string="Registrar cambio"
+                        class="btn btn-secondary" icon="fa-exchange"
+                        groups="al_construction_planner.group_planner_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

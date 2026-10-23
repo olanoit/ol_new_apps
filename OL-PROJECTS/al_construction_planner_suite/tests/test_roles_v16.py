@@ -2,8 +2,9 @@
 """Aprobadores, permisos y portal de armado (v1.6, M16-09 a M16-11).
 
 - Las reglas de validación del planificador las aprueba el grupo de jefatura
-  de proyectos: cualquiera de sus miembros (un reemplazo también), y no el
-  administrador por serlo.
+  de proyectos: cualquiera de sus miembros (un reemplazo también). Desde los
+  dos ejes (CREVAL v1.0, capítulo 5) la regla cita Ejecución: aprueba, que la
+  jefatura y el administrador incluyen.
 - El asistente de proyectos crea el requerimiento a obra y lo envía, pero no
   lo aprueba ni valida su despacho.
 - La contrata de armado reporta por el portal los módulos armados, como la de
@@ -46,11 +47,13 @@ class TestRoles(PlannerCommon):
 
     def test_module_rules_point_to_project_head(self):
         head = self.env.ref(f'{GRP}project_head')
+        approver = self.env.ref(f'{GRP}exec_approver')
         for xmlid in ('al_construction_planner_purchase.tier_material_request_exceed',
                       'al_construction_planner_subcontract.tier_contract_settlement_manager',
                       'al_construction_planner.tier_measurement_difference',
                       'al_construction_planner_purchase.tier_material_request_extra'):
-            self.assertEqual(self.env.ref(xmlid).reviewer_group_id, head, xmlid)
+            self.assertEqual(self.env.ref(xmlid).reviewer_group_id, approver, xmlid)
+        self.assertIn(approver, head.all_implied_ids)
         self.assertNotIn(self.env.ref(f'{GRP}manager'), head.all_implied_ids)
         self.assertNotIn(head, self.env.ref(f'{GRP}manager').all_implied_ids)
 
@@ -67,9 +70,11 @@ class TestRoles(PlannerCommon):
         extra = self._extra()
         extra.action_request_approval()
         review = extra.review_ids
-        self.assertEqual(review.reviewer_ids, self.env.ref(f'{GRP}project_head').user_ids)
+        self.assertIn(self.head, review.reviewer_ids)
         self.assertIn(self.replacement, review.reviewer_ids)
-        self.assertNotIn(self.admin_only, review.reviewer_ids)
+        # El administrador incluye Ejecución: aprueba (CREVAL v1.0, 5.2).
+        self.assertIn(self.admin_only, review.reviewer_ids)
+        self.assertNotIn(self.assistant, review.reviewer_ids)
         extra.with_user(self.replacement).validate_tier()
         self.assertEqual(extra.state, 'approved')
 

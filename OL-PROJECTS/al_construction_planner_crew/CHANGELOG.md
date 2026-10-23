@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_crew.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261016 — 23/10/2026
+
+- Requerimiento CREVAL v1.0, capítulos 4 y 5: «Asignar cuadrilla» en el tablero de obra, en el menú Ejecutar y en la sección Personal propio del menú por momento; grupos en dos ejes.
+
 ## 3.20261016 — 16/10/2026
 
 - Cuadrillas por día (v1.8): unidad de tiempo de la cuadrilla en la compañía y la obra, costo diario por puesto y por rol, y días de cuadrilla con su costo.

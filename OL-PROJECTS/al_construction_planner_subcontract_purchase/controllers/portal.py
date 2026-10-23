@@ -116,7 +116,7 @@ class ConstructionPortalExtra(ConstructionPortal):
         extra_sudo.message_post(body=_(
             'Material extra pedido desde el portal por %s.', request.env.user.name))
         reviewer = project.user_id or request.env.ref(
-            'al_construction_planner.group_planner_project_head').sudo().user_ids[:1]
+            'al_construction_planner.group_planner_exec_approver').sudo().user_ids[:1]
         if reviewer:
             extra_sudo.activity_schedule(
                 'mail.mail_activity_data_todo', user_id=reviewer.id,

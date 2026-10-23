@@ -177,10 +177,59 @@ GUARANTEE_RELEASES = [
     ('date', 'En una fecha fija'),
 ]
 
-# Quien aprueba en nombre de la jefatura de proyectos (v1.6, M16-09): su
-# grupo o el administrador del planificador.
-PROJECT_HEAD_GROUPS = ('al_construction_planner.group_planner_project_head,'
+# Grupos en dos ejes (CREVAL v1.0, capítulo 5). La jefatura de proyectos y el
+# Planificador anterior incluyen a los grupos nuevos, así que basta con
+# preguntar por estos.
+PLAN_VIEWER_GROUP = 'al_construction_planner.group_planner_plan_viewer'
+PLAN_PLANNER_GROUP = 'al_construction_planner.group_planner_plan_planner'
+PLAN_APPROVER_GROUPS = ('al_construction_planner.group_planner_plan_approver,'
+                        'al_construction_planner.group_planner_manager')
+EXEC_USER_GROUP = 'al_construction_planner.group_planner_user'
+EXEC_VALIDATOR_GROUP = 'al_construction_planner.group_planner_exec_validator'
+# Quien aprueba en la ejecución (antes «la jefatura de proyectos», v1.6,
+# M16-09): Ejecución: aprueba o el administrador del planificador.
+PROJECT_HEAD_GROUPS = ('al_construction_planner.group_planner_exec_approver,'
                        'al_construction_planner.group_planner_manager')
+EXEC_APPROVER_GROUPS = PROJECT_HEAD_GROUPS
+
+# Migración de la escalera anterior a los dos ejes (tabla 5.3): grupo de
+# compatibilidad → grupos nuevos y si el usuario deja el de compatibilidad.
+AXIS_MIGRATION = [
+    ('group_planner_planner', ('group_planner_plan_planner', 'group_planner_exec_validator'), True),
+    ('group_planner_project_head', ('group_planner_plan_approver', 'group_planner_exec_approver'),
+     False),
+]
+
+
+def migrate_axis_groups(env):
+    """Pasa a los usuarios de los grupos anteriores a los nuevos (CREVAL v1.0,
+    5.3) sin que pierdan permisos, y las reglas de validación por niveles que
+    revisaba la jefatura a los aprobadores de cada eje."""
+    from odoo import Command
+    ref = 'al_construction_planner.'
+    for old_xmlid, new_xmlids, leave in AXIS_MIGRATION:
+        old = env.ref(ref + old_xmlid, raise_if_not_found=False)
+        if not old:
+            continue
+        news = [env.ref(ref + xmlid) for xmlid in new_xmlids]
+        users = old.with_context(active_test=False).user_ids
+        for group in news:
+            missing = users - group.user_ids
+            if missing:
+                group.user_ids = [Command.link(user.id) for user in missing]
+        if leave:
+            # El administrador y el superusuario lo reciben del Administrador.
+            keep = env.ref('base.user_root') | env.ref('base.user_admin')
+            gone = users - keep
+            if gone:
+                old.user_ids = [Command.unlink(user.id) for user in gone]
+    head = env.ref(ref + 'group_planner_project_head', raise_if_not_found=False)
+    if head:
+        definitions = env['tier.definition'].with_context(active_test=False).search(
+            [('reviewer_group_id', '=', head.id)])
+        plan = definitions.filtered(lambda d: d.model == 'construction.resource.plan')
+        plan.reviewer_group_id = env.ref(ref + 'group_planner_plan_approver')
+        (definitions - plan).reviewer_group_id = env.ref(ref + 'group_planner_exec_approver')
 
 
 # Visibilidad de montos (v1.8, M18-10): ver construction_amounts.py.

@@ -11,7 +11,7 @@
                     <button name="action_submit" type="object" string="Enviar" class="btn-primary"
                             invisible="state != 'draft'"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
-                            invisible="state == 'draft'" groups="al_construction_planner.group_planner_planner"/>
+                            invisible="state == 'draft'" groups="al_construction_planner.group_planner_exec_validator"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,approved"/>
                 </header>
                 <sheet>

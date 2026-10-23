@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Orden de contrata con condiciones (CREVAL v1.0, 3.4 y 3.6) -->
+    <record id="purchase_order_view_form_construction_terms" model="ir.ui.view">
+        <field name="name">purchase.order.form.construction.terms</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="construction_can_register_advance" invisible="1"/>
+                <field name="construction_needs_reapproval" invisible="1"/>
+                <button name="action_construction_approve_extension" type="object" string="Aprobar ampliación"
+                        class="btn-primary" invisible="not construction_needs_reapproval"
+                        groups="al_construction_planner.group_planner_exec_approver"/>
+                <button name="action_construction_liquidate" type="object" string="Liquidar orden"
+                        invisible="not construction_uses_terms or state != 'purchase' or construction_closed"
+                        groups="al_construction_planner.group_planner_user"/>
+                <button name="action_construction_register_advance" type="object"
+                        string="Registrar adelanto" invisible="not construction_can_register_advance"
+                        groups="account.group_account_invoice,al_construction_planner.group_planner_exec_approver"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="construction_uses_terms" invisible="1"/>
+                <button name="action_view_construction_advances" type="object" class="oe_stat_button"
+                        icon="fa-money" invisible="not construction_advance_count">
+                    <field name="construction_advance_count" widget="statinfo" string="Adelantos"/>
+                </button>
+                <button name="action_view_construction_deductions" type="object" class="oe_stat_button"
+                        icon="fa-minus-circle" invisible="not construction_uses_terms">
+                    <field name="construction_deduction_count" widget="statinfo" string="Deductivos"/>
+                </button>
+                <button name="action_view_construction_payments" type="object" class="oe_stat_button"
+                        icon="fa-list-alt" string="Pagos de la orden" invisible="not construction_uses_terms"
+                        groups="account.group_account_invoice"/>
+            </xpath>
+            <xpath expr="//field[@name='construction_project_id']" position="after">
+                <field name="construction_specialty" invisible="not construction_is_service_order"/>
+                <field name="construction_representative_id" invisible="not construction_is_service_order"
+                       domain="[('parent_id', '=', partner_id)]" options="{'no_create': True}"/>
+                <field name="construction_closed" invisible="not construction_closed"/>
+                <field name="construction_needs_reapproval" invisible="not construction_needs_reapproval"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Condiciones de contrata" name="construction_terms"
+                      invisible="not construction_uses_terms">
+                    <group>
+                        <group string="Adelanto">
+                            <field name="construction_terms_id" readonly="1"/>
+                            <field name="construction_advance_pct"/>
+                            <field name="construction_advance_method"/>
+                            <field name="construction_advance_fixed_amount"
+                                   invisible="construction_advance_method != 'fixed'"/>
+                            <field name="construction_advance_granted"/>
+                            <field name="construction_advance_amortized"/>
+                            <field name="construction_advance_to_amortize"/>
+                        </group>
+                        <group string="Fondo de garantía">
+                            <field name="construction_guarantee_pct"/>
+                            <field name="construction_guarantee_base"/>
+                            <field name="construction_guarantee_days"/>
+                            <field name="construction_guarantee_from"/>
+                            <field name="construction_guarantee_retained"/>
+                            <field name="construction_guarantee_returned"/>
+                        </group>
+                        <group string="Valorización">
+                            <field name="construction_frequency"/>
+                            <field name="construction_cutoff_weekday" invisible="construction_frequency != 'weekly'"/>
+                            <field name="construction_monthly_cutoff" invisible="construction_frequency != 'monthly'"/>
+                            <field name="construction_cutoff_day"
+                                   invisible="construction_frequency != 'monthly' or construction_monthly_cutoff != 'day'"/>
+                            <field name="construction_next_cutoff"/>
+                            <field name="construction_progress_tolerance_pct"/>
+                        </group>
+                        <group string="Saldo de la orden (con IGV)">
+                            <field name="amount_total" string="Contractual"/>
+                            <field name="construction_amount_valued"/>
+                            <field name="construction_amount_invoiced"/>
+                            <field name="construction_amount_paid"/>
+                            <field name="construction_amount_balance"/>
+                            <field name="construction_progress_pct" widget="percentage"/>
+                            <field name="construction_amount_approved" invisible="not construction_amount_approved"/>
+                        </group>
+                    </group>
+                    <separator string="Esquema de cálculo"/>
+                    <field name="construction_scheme_line_ids" nolabel="1">
+                        <list editable="bottom" create="0" delete="0">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="kind" readonly="1"/>
+                            <field name="base" readonly="kind in ('deduction', 'advance', 'retention')"/>
+                            <field name="percent" readonly="kind in ('deduction', 'advance', 'retention')"/>
+                            <field name="effective_percent"/>
+                            <field name="sign" readonly="1"/>
+                            <field name="invoice_mode"/>
+                        </list>
+                    </field>
+                    <group>
+                        <group string="Requisitos de devolución del fondo">
+                            <field name="construction_requirement_ids" nolabel="1" colspan="2">
+                                <list editable="bottom" create="0">
+                                    <field name="requirement_id" readonly="1"/>
+                                    <field name="done"/>
+                                    <field name="date"/>
+                                    <field name="note"/>
+                                </list>
+                            </field>
+                        </group>
+                        <group string="Documentos requeridos para la liquidación">
+                            <field name="construction_document_ids" nolabel="1" colspan="2">
+                                <list editable="bottom" create="0">
+                                    <field name="document_type_id" readonly="1"/>
+                                    <field name="attachment_ids" widget="many2many_binary"/>
+                                    <field name="is_attached"/>
+                                </list>
+                            </field>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+                <field name="construction_task_id" optional="hide" readonly="1"
+                       column_invisible="not parent.construction_is_service_order"/>
+                <field name="construction_is_additional" optional="show" readonly="1"
+                       column_invisible="not parent.construction_is_service_order"/>
+                <field name="construction_plan_balance" optional="hide"
+                       column_invisible="not parent.construction_is_service_order"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

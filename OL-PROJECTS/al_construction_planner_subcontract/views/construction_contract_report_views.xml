@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Resumen de valorizaciones de contratas (CREVAL v1.0, 3.13) -->
+    <record id="construction_contract_summary_report_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.summary.report.list</field>
+        <field name="model">construction.contract.summary.report</field>
+        <field name="arch" type="xml">
+            <list string="Resumen de valorizaciones" create="0" delete="0"
+                  action="action_open_order" type="object">
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="order_id"/>
+                <field name="specialty" optional="show"/>
+                <field name="amount_contract" sum="Total"/>
+                <field name="amount_valued" sum="Total"/>
+                <field name="valued_pct" widget="percentage"/>
+                <field name="amount_paid" sum="Total"/>
+                <field name="advance_to_amortize" sum="Total"/>
+                <field name="guarantee_amount" sum="Total"/>
+                <field name="amount_deductions" sum="Total"/>
+                <field name="amount_to_pay" sum="Total"/>
+                <field name="next_payment_date" optional="show"/>
+                <field name="progress_pct" widget="percentage" optional="hide"/>
+                <field name="time_pct" widget="percentage" optional="hide"/>
+                <field name="deductions_pct" widget="percentage" optional="hide"/>
+                <field name="approval_days" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_contract_summary_report_view_search" model="ir.ui.view">
+        <field name="name">construction.contract.summary.report.search</field>
+        <field name="model">construction.contract.summary.report</field>
+        <field name="arch" type="xml">
+            <search string="Resumen de valorizaciones">
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="order_id"/>
+                <filter string="Despacho semanal" name="weekly_dispatch"
+                        domain="[('payment_this_week', '=', True)]"/>
+                <filter string="Con saldo por pagar" name="to_pay" domain="[('amount_to_pay', '>', 0)]"/>
+                <filter string="Con adelanto por amortizar" name="advance" domain="[('advance_to_amortize', '>', 0)]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Especialidad" name="group_specialty" context="{'group_by': 'specialty'}"/>
+                    <filter string="Mes del próximo pago" name="group_month" context="{'group_by': 'next_payment_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="construction_contract_summary_report_view_pivot" model="ir.ui.view">
+        <field name="name">construction.contract.summary.report.pivot</field>
+        <field name="model">construction.contract.summary.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Indicadores de contratas">
+                <field name="project_id" type="row"/>
+                <field name="amount_valued" type="measure"/>
+                <field name="progress_pct" type="measure"/>
+                <field name="time_pct" type="measure"/>
+                <field name="deductions_pct" type="measure"/>
+                <field name="approval_days" type="measure"/>
+                <field name="advance_to_amortize" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_summary_report" model="ir.actions.act_window">
+        <field name="name">Resumen de valorizaciones</field>
+        <field name="res_model">construction.contract.summary.report</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="search_view_id" ref="construction_contract_summary_report_view_search"/>
+        <field name="context">{'search_default_group_project': 1}</field>
+    </record>
+
+    <!-- Análisis de valorizaciones: líneas por obra, contratista, partida,
+         especialidad, mes y estado. -->
+    <record id="construction_settlement_line_view_pivot" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.line.pivot</field>
+        <field name="model">construction.contract.settlement.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de valorizaciones">
+                <field name="project_id" type="row"/>
+                <field name="partner_id" type="row"/>
+                <field name="period_end" interval="month" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="construction_settlement_line_view_graph" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.line.graph</field>
+        <field name="model">construction.contract.settlement.line</field>
+        <field name="arch" type="xml">
+            <graph string="Análisis de valorizaciones" type="bar" stacked="1">
+                <field name="period_end" interval="month"/>
+                <field name="partner_id"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="construction_settlement_line_view_search" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.line.search</field>
+        <field name="model">construction.contract.settlement.line</field>
+        <field name="arch" type="xml">
+            <search string="Análisis de valorizaciones">
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="task_id"/>
+                <field name="activity_id"/>
+                <filter string="Aprobadas o pagadas" name="valued" domain="[('state', 'in', ('approved', 'paid'))]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Partida" name="group_task" context="{'group_by': 'task_id'}"/>
+                    <filter string="Especialidad" name="group_specialty" context="{'group_by': 'specialty'}"/>
+                    <filter string="Mes" name="group_month" context="{'group_by': 'period_end:month'}"/>
+                    <filter string="Estado" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_settlement_line_analysis" model="ir.actions.act_window">
+        <field name="name">Análisis de valorizaciones</field>
+        <field name="res_model">construction.contract.settlement.line</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="search_view_id" ref="construction_settlement_line_view_search"/>
+        <field name="context">{'search_default_valued': 1}</field>
+    </record>
+
+    <!-- Despacho semanal en la lista de valorizaciones -->
+    <record id="construction_contract_settlement_view_search_terms" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.search.terms</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="inherit_id" ref="construction_contract_settlement_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='approved']" position="after">
+                <filter string="Despacho semanal" name="weekly_dispatch"
+                        domain="[('payment_this_week', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Impreso del resumen de valorizaciones (3.12), por obra -->
+    <record id="action_report_contract_summary" model="ir.actions.report">
+        <field name="name">Resumen de valorizaciones</field>
+        <field name="model">construction.contract.summary.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">al_construction_planner_subcontract.report_contract_summary</field>
+        <field name="report_file">al_construction_planner_subcontract.report_contract_summary</field>
+        <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
+        <field name="binding_model_id" ref="model_construction_contract_summary_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_contract_summary">
+        <t t-call="web.html_container">
+            <t t-foreach="docs.project_id" t-as="project">
+                <t t-set="rows" t-value="docs.filtered(lambda r: r.project_id == project)"/>
+                <t t-set="o" t-value="rows[:1]"/>
+                <t t-set="company" t-value="o.company_id"/>
+                <t t-set="cur" t-value="o.currency_id"/>
+                <t t-set="money" t-value="{'widget': 'monetary', 'display_currency': cur}"/>
+                <t t-call="al_report_base.report_pe_page">
+                    <t t-set="doc_title" t-value="'Resumen de valorizaciones de contratas'"/>
+                    <t t-set="doc_number" t-value="project.display_name"/>
+                    <t t-set="rate" t-value="o._report_usd_rate()"/>
+                    <table class="pe-doc-table mb-3">
+                        <tr>
+                            <td class="pe-doc-label" style="width: 12%;">Obra</td>
+                            <td class="pe-doc-value" style="width: 38%;" t-out="project.display_name"/>
+                            <td class="pe-doc-label" style="width: 12%;">Cliente</td>
+                            <td class="pe-doc-value" style="width: 38%;" t-out="project.partner_id.commercial_partner_id.name or ''"/>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Presupuesto</td>
+                            <td class="pe-doc-value" t-out="o._report_sale_order_name(project)"/>
+                            <td class="pe-doc-label">Residente</td>
+                            <td class="pe-doc-value" t-out="project.user_id.name or ''"/>
+                        </tr>
+                        <tr>
+                            <td class="pe-doc-label">Fecha</td>
+                            <td class="pe-doc-value" t-out="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                            <td class="pe-doc-label">Tipo de cambio</td>
+                            <td class="pe-doc-value" t-out="rate and ('%.3f' % rate) or '—'"/>
+                        </tr>
+                    </table>
+                    <table class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3">
+                        <thead>
+                            <tr class="pe-doc-thead">
+                                <td>Contratista</td>
+                                <td>Orden</td>
+                                <td class="text-end">Contractual</td>
+                                <td class="text-end">Valorizado</td>
+                                <td class="text-end">%</td>
+                                <td class="text-end">Pagado</td>
+                                <td class="text-end">Adelanto por amortizar</td>
+                                <td class="text-end">Fondo de garantía</td>
+                                <td class="text-end">Deductivos</td>
+                                <td class="text-end">Saldo por pagar</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="row">
+                                <td t-out="row.partner_id.name"/>
+                                <td><t t-out="row.order_id.name"/><t t-if="row.specialty"> · <t t-out="row.specialty"/></t></td>
+                                <td class="text-end"><t t-out="row.amount_contract" t-options="money"/></td>
+                                <td class="text-end"><t t-out="row.amount_valued" t-options="money"/></td>
+                                <td class="text-end"><t t-out="'%.2f' % (row.valued_pct * 100)"/> %</td>
+                                <td class="text-end"><t t-out="row.amount_paid" t-options="money"/></td>
+                                <td class="text-end"><t t-out="row.advance_to_amortize" t-options="money"/></td>
+                                <td class="text-end"><t t-out="row.guarantee_amount" t-options="money"/></td>
+                                <td class="text-end"><t t-out="row.amount_deductions" t-options="money"/></td>
+                                <td class="text-end"><t t-out="row.amount_to_pay" t-options="money"/></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="pe-doc-total">
+                                <td colspan="2">Total</td>
+                                <td class="text-end"><t t-out="sum(rows.mapped('amount_contract'))" t-options="money"/></td>
+                                <td class="text-end"><t t-out="sum(rows.mapped('amount_valued'))" t-options="money"/></td>
+                                <td/>
+                                <td class="text-end"><t t-out="sum(rows.mapped('amount_paid'))" t-options="money"/></td>
+                                <td class="text-end"><t t-out="sum(rows.mapped('advance_to_amortize'))" t-options="money"/></td>
+                                <td class="text-end"><t t-out="sum(rows.mapped('guarantee_amount'))" t-options="money"/></td>
+                                <td class="text-end"><t t-out="sum(rows.mapped('amount_deductions'))" t-options="money"/></td>
+                                <td class="text-end"><t t-out="sum(rows.mapped('amount_to_pay'))" t-options="money"/></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <t t-set="dispatch" t-value="o._report_weekly_dispatch(project)"/>
+                    <t t-if="dispatch">
+                        <div class="pe-doc-section">Despacho semanal</div>
+                        <table class="pe-doc-table pe-doc-lines pe-doc-fs-11 mb-3 pe-doc-keep">
+                            <thead>
+                                <tr class="pe-doc-thead">
+                                    <td>Contratista</td>
+                                    <td>Valorización</td>
+                                    <td>Fecha de pago</td>
+                                    <td class="text-end">Monto</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="dispatch" t-as="settlement">
+                                    <td t-out="settlement.partner_id.name"/>
+                                    <td t-out="settlement.title or settlement.name"/>
+                                    <td t-out="settlement.payment_date.strftime('%d/%m/%Y')"/>
+                                    <td class="text-end"><t t-out="settlement.amount_net" t-options="money"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </t>
+                    <t t-call="al_report_base.report_pe_sign_boxes">
+                        <t t-set="sign_boxes" t-value="o._report_sign_boxes()"/>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

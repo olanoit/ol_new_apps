@@ -5,6 +5,9 @@
     <record id="al_construction_planner.group_planner_project_head" model="res.groups">
         <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
     </record>
+    <record id="al_construction_planner.group_planner_exec_approver" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_approver'))]"/>
+    </record>
     <record id="al_construction_planner.group_planner_assistant" model="res.groups">
         <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_requester'))]"/>
     </record>

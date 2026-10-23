@@ -21,7 +21,7 @@ from io import BytesIO
 
 from markupsafe import Markup
 
-from odoo import Command, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
 from ..models.common import norm
@@ -41,7 +41,22 @@ RECIPE_COLUMNS = [
     ('stage', 'Etapa', False),
     ('productivity', 'Rendimiento', False),
     ('crew_size', 'Personas', False),
+    # CREVAL v1.0, 6.1 y 6.5: forma de cálculo, porcentaje y moneda del costo.
+    ('calc_method', 'Forma de cálculo', False),
+    ('calc_pct', 'Porcentaje', False),
+    ('currency', 'Moneda', False),
 ]
+# Forma de cálculo escrita en el libro → código.
+CALC_ALIASES = {
+    'cantidad': 'qty', 'cantidad por unidad': 'qty', 'cuadrilla': 'crew',
+    'cuadrilla / rendimiento': 'crew', 'cuadrilla ÷ rendimiento': 'crew',
+    'rendimiento': 'crew', '%mo': 'pct_labor', '% mo': 'pct_labor',
+    '% de la mano de obra': 'pct_labor', 'porcentaje de la mano de obra': 'pct_labor',
+    '% costo directo': 'pct_group', '% del costo directo': 'pct_group',
+    '% del costo directo de un grupo de partidas': 'pct_group',
+}
+# Unidad que en el APU marca un porcentaje de la mano de obra.
+PCT_LABOR_UNITS = ('%mo', '% mo', '%m.o.', '% m.o.')
 LEVEL_EXTRA_COLUMNS = [
     ('recipe', 'Receta'),
     ('qty', 'Cantidad'),
@@ -98,6 +113,15 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         string='Work Items', default='templates', required=True)
     work_item_available = fields.Boolean(compute='_compute_work_item_available')
     result_html = fields.Html(string='Resultado', readonly=True, sanitize=False)
+
+    @api.onchange('project_id')
+    def _onchange_project_apu_source(self):
+        """La fuente del APU de la obra (CREVAL v1.0, 6.2)."""
+        if self.project_id.construction_apu_source == 'excel':
+            self.source = 'excel'
+        elif self.project_id.construction_apu_source == 'work_item' and self.work_item_available:
+            self.source = 'work_item'
+            self.work_item_scope = 'project'
 
     def _compute_work_item_available(self):
         for wizard in self:
@@ -165,6 +189,10 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         text = _text(text)
         if not text:
             return self.env['uom.uom']
+        # Tabla de equivalencias de la empresa (CREVAL v1.0, 6.4).
+        alias_uom = self.env['construction.uom.alias']._find(text, self.company_id)
+        if alias_uom:
+            return alias_uom
         aliases = {'und': 'uom.product_uom_unit', 'm2': 'uom.product_uom_square_meter',
                    'm²': 'uom.product_uom_square_meter', 'ml': 'uom.product_uom_meter',
                    'm': 'uom.product_uom_meter', 'kg': 'uom.product_uom_kgm',
@@ -259,8 +287,30 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                     'productivity': _number(row.get('productivity')) or 0.0,
                     'crew_size': _number(row.get('crew_size')) or 1.0,
                     'note': _text(row.get('name')) or False}
-            uom = self._uom(row.get('uom'))
-            if rtype.behavior in ('contract', 'labor'):
+            uom_text = norm(_text(row.get('uom')))
+            method = CALC_ALIASES.get(norm(_text(row.get('calc_method'))), False)
+            if not method and uom_text in PCT_LABOR_UNITS:
+                # «%MO»: la cantidad del APU es el porcentaje.
+                method = 'pct_labor'
+                vals['calc_pct'] = qty
+            if method:
+                vals['calc_method'] = method
+                pct = _number(row.get('calc_pct'))
+                if pct is not None:
+                    vals['calc_pct'] = pct
+            currency_text = _text(row.get('currency'))
+            if currency_text:
+                currency = self.env['res.currency'].with_context(active_test=False).search(
+                    [('name', '=ilike', currency_text)], limit=1)
+                if currency:
+                    vals['line_currency_id'] = currency.id
+            uom = self._uom(row.get('uom')) if uom_text not in PCT_LABOR_UNITS else \
+                self.env['uom.uom']
+            if method in ('pct_labor', 'pct_group') and rtype.behavior in ('contract', 'labor'):
+                # Las herramientas por porcentaje no se pagan ni se compran.
+                vals.update(resource_type='equipment', resource_type_id=self.env[
+                    'construction.resource.type']._default_for('equipment').id)
+            if vals['resource_type'] in ('contract', 'labor'):
                 activity = Activity.search([('code', '=', resource_code), (
                     'company_id', 'in', (self.company_id.id, False))], limit=1)
                 if not activity:
@@ -269,6 +319,12 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                         row=row['_row'], code=resource_code))
                     continue
                 vals.update(activity_id=activity.id, product_uom_id=(uom or activity.uom_id).id)
+            elif method in ('pct_labor', 'pct_group'):
+                # Herramientas y gastos por porcentaje: sin producto comprable.
+                product = Product.search([('default_code', '=', resource_code)], limit=1) \
+                    if resource_code else Product
+                vals.update(product_id=product.id or False,
+                            product_uom_id=(uom or self.env.ref('uom.product_uom_unit')).id)
             else:
                 product = Product.search([('default_code', '=', resource_code)], limit=1)
                 if not product:
@@ -376,6 +432,13 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                 vals = {'resource_type_id': rtype.id, 'resource_type': behavior,
                         'qty': data['qty'], 'price_unit': data.get('cost') or 0.0,
                         'stage': stage, 'product_uom_id': data['uom'].id}
+                # La forma de cálculo «%MO» del APU se conserva (CREVAL v1.0,
+                # 6.2): el porcentaje de la mano de obra de la receta.
+                if norm(data['uom'].name) in PCT_LABOR_UNITS:
+                    vals.update(calc_method='pct_labor', calc_pct=data['qty'],
+                                resource_type='equipment',
+                                resource_type_id=Type._default_for('equipment').id)
+                    behavior = 'equipment'
                 if behavior in ('contract', 'labor'):
                     activity = self._activity_for(data['product'], data['uom'], stage)
                     vals['activity_id'] = activity.id

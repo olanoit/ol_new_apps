@@ -8,7 +8,7 @@
             <xpath expr="//button[@name='action_open_recipe_wizard']" position="before">
                 <button name="action_open_generate_wizard" type="object" string="Generar plan"
                         class="btn-primary" invisible="state != 'draft'"
-                        groups="al_construction_planner.group_planner_planner"/>
+                        groups="al_construction_planner.group_planner_plan_planner"/>
             </xpath>
             <xpath expr="//header" position="inside">
                 <button name="%(action_construction_module_dispatch_wizard)d" type="action"

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tablero de obra (CREVAL v1.0, 4.4): un formulario propio de la vertical
+         sobre el proyecto; la ficha nativa de Proyectos no cambia. Cada puente
+         agrega sus botones en Ejecutar, Controlar y Cobrar. -->
+    <record id="project_project_view_form_construction_board" model="ir.ui.view">
+        <field name="name">project.project.form.construction.board</field>
+        <field name="model">project.project</field>
+        <field name="mode">primary</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Tablero de obra" create="0" delete="0" duplicate="0">
+                <header>
+                    <button name="action_construction_open_in_projects" type="object" string="Abrir en Proyectos"
+                            groups="project.group_project_user"/>
+                </header>
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="is_construction_site" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id" string="Cliente" readonly="1"/>
+                            <field name="user_id" string="Residente" readonly="1"/>
+                            <field name="stage_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="construction_board_plan_id"/>
+                            <field name="construction_board_plan_version"/>
+                            <label for="date_start" string="Fechas"/>
+                            <div class="o_row">
+                                <field name="date_start" readonly="1"/>
+                                <span>—</span>
+                                <field name="date" readonly="1"/>
+                            </div>
+                            <field name="construction_board_progress" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <group string="Indicadores" name="board_indicators" groups="al_construction_planner.group_planner_amounts">
+                        <group>
+                            <field name="construction_board_planned"/>
+                            <field name="construction_board_committed"/>
+                        </group>
+                        <group>
+                            <field name="construction_board_actual"/>
+                            <field name="construction_board_remaining"/>
+                        </group>
+                    </group>
+                    <separator string="Ejecutar"/>
+                    <div class="oe_button_box d-flex flex-wrap justify-content-start" name="board_execute">
+                        <button name="action_construction_view_progress_to_validate" type="object"
+                                class="oe_stat_button" icon="fa-check-square-o"
+                                groups="al_construction_planner.group_planner_exec_validator">
+                            <field name="construction_progress_to_validate_count" widget="statinfo" string="Avances por validar"/>
+                        </button>
+                    </div>
+                    <separator string="Controlar"/>
+                    <div class="oe_button_box d-flex flex-wrap justify-content-start" name="board_control">
+                        <button name="action_construction_view_current_plan" type="object"
+                                class="oe_stat_button" icon="fa-sitemap"
+                                groups="al_construction_planner.group_planner_plan_viewer">
+                            <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
+                        </button>
+                        <button name="action_construction_view_control" type="object"
+                                class="oe_stat_button" icon="fa-balance-scale" string="Control de saldo"
+                                groups="al_construction_planner.group_planner_feature_control"/>
+                        <button name="action_construction_view_exceeds" type="object"
+                                class="oe_stat_button" icon="fa-exclamation-triangle"
+                                groups="al_construction_planner.group_planner_feature_control">
+                            <field name="construction_exceed_count" widget="statinfo" string="Excesos autorizados"/>
+                        </button>
+                    </div>
+                    <separator string="Cobrar" name="board_collect_title" invisible="1"/>
+                    <div class="oe_button_box d-flex flex-wrap justify-content-start" name="board_collect"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_site_board" model="ir.actions.act_window">
+        <field name="name">Obras</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_construction_site', '=', True)]</field>
+        <field name="context">{'default_is_construction_site': True}</field>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('project.view_project')}),
+            Command.create({'view_mode': 'kanban', 'view_id': ref('project.view_project_kanban')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('project_project_view_form_construction_board')})]"/>
+    </record>
+
+    <!-- Tarea de obra (4.5): niveles con los rótulos de la plantilla, recursos
+         y avance, y el menú Ejecutar. -->
+    <record id="project_task_view_form_construction_site" model="ir.ui.view">
+        <field name="name">project.task.form.construction.site</field>
+        <field name="model">project.task</field>
+        <field name="mode">primary</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Tarea de obra" create="0" duplicate="0">
+                <header>
+                    <field name="construction_show_execute" invisible="1"/>
+                    <button name="action_construction_execute" type="object" string="Ejecutar" class="btn-primary"
+                            invisible="not construction_show_execute"
+                            groups="al_construction_planner.group_planner_progress"/>
+                    <button name="action_construction_register_progress" type="object" string="Registrar avance"
+                            invisible="construction_level not in ('floor', 'apartment', 'space', 'module')"
+                            groups="al_construction_planner.group_planner_feature_progress"/>
+                </header>
+                <sheet>
+                    <field name="construction_currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" readonly="1"/>
+                            <field name="parent_id" readonly="1"/>
+                            <field name="construction_level" readonly="1"/>
+                            <field name="construction_floor_task_id" invisible="not construction_floor_task_id"/>
+                            <field name="construction_apartment_task_id" invisible="not construction_apartment_task_id"/>
+                            <field name="construction_space_task_id" invisible="not construction_space_task_id"/>
+                        </group>
+                        <group>
+                            <field name="construction_execution_template_id" readonly="1"/>
+                            <field name="construction_qty" readonly="1"/>
+                            <field name="construction_plan_amount" groups="al_construction_planner.group_planner_amounts"/>
+                            <field name="construction_progress_pct" widget="percentage"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Recursos y avance" name="resources">
+                            <field name="construction_current_line_ids" readonly="1"
+                                   context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list_progress'}"/>
+                        </page>
+                        <page string="Avances" name="progress">
+                            <field name="construction_progress_ids" readonly="1"
+                                   context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_site_tasks" model="ir.actions.act_window">
+        <field name="name">Tareas de la obra</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('construction_level', '!=', False)]</field>
+        <field name="context">{'search_default_spaces': 1, 'search_default_group_project': 1, 'search_default_group_floor': 1}</field>
+        <field name="search_view_id" ref="project_task_view_search_construction_tree"/>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'list', 'view_id': ref('project_task_view_list_construction_tree')}),
+            Command.create({'view_mode': 'form', 'view_id': ref('project_task_view_form_construction_site')})]"/>
+    </record>
+
+    <!-- Menú Ejecutar en la tarea de Proyectos (4.7) -->
+    <record id="project_task_view_form_construction_execute" model="ir.ui.view">
+        <field name="name">project.task.form.construction.execute</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="construction_show_execute" invisible="1"/>
+                <button name="action_construction_execute" type="object" string="Ejecutar"
+                        invisible="not construction_show_execute"
+                        groups="al_construction_planner.group_planner_feature_exec_project"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ejecutar: acciones de la tarea; cada puente agrega las suyas. -->
+    <record id="construction_task_execute_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.task.execute.wizard.form</field>
+        <field name="model">construction.task.execute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Ejecutar">
+                <group>
+                    <field name="task_id"/>
+                    <field name="project_id"/>
+                    <field name="plan_id"/>
+                </group>
+                <div class="d-grid gap-2" name="execute_actions">
+                    <button name="action_register_progress" type="object" string="Registrar avance"
+                            class="btn btn-secondary" icon="fa-camera"
+                            groups="al_construction_planner.group_planner_feature_progress"/>
+                </div>
+                <footer>
+                    <button string="Cerrar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Carpetas del menú por momento (4.3): se llenan al cargar el menú. -->
+    <menuitem id="menu_planner_planning" name="Planificación" parent="menu_planner_root" sequence="15"
+              groups="group_planner_plan_viewer"/>
+    <menuitem id="menu_planner_exec_staff" name="Personal propio" parent="menu_planner_execution" sequence="15"
+              groups="group_planner_user"/>
+
+</odoo>
