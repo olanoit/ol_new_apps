@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Jefe de producción (paquete 1.9): aprueba en la orden el exceso dentro
-         de su margen. -->
+         de su margen. En el planificador solo consulta (Plan: consulta). -->
     <record id="group_planner_production_head" model="res.groups">
         <field name="name">Planificación de obra: jefe de producción</field>
         <field name="privilege_id" ref="al_construction_planner.res_groups_privilege_construction_planner"/>
-        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_user')), Command.link(ref('mrp.group_mrp_user'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_planner.group_planner_plan_viewer')), Command.link(ref('mrp.group_mrp_user'))]"/>
     </record>
 </odoo>

@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals` y `al_construction_planner_mrp`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261024'
+  fecha: 24/10/2026
+  cambios:
+  - "El jefe de producción solo consulta el planificador (Plan: consulta): ya no edita planes, dependencias, cambios ni liquidaciones. Sigue aprobando el exceso de la orden dentro de su margen."
 - version: '5.20261023'
   fecha: 23/10/2026
   cambios:

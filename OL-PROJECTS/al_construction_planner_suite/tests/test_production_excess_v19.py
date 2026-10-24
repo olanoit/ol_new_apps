@@ -6,7 +6,7 @@ unidad de material. El jefe de producción aprueba hasta el 5 % del costo de
 la orden; por encima, la orden pide la aprobación a Gerencia por la tabla de
 rutas. Con el exceso pendiente la orden no empieza."""
 from odoo import Command
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 from odoo.tests import Form, new_test_user, tagged
 
 from .common import PlannerCommon
@@ -155,3 +155,14 @@ class TestProductionExcess(PlannerCommon):
             lambda r: r.product_id == self.p_hinge)
         self.assertAlmostEqual(hinge.qty_diff, -4)
         self.assertAlmostEqual(hinge.amount_diff, -40.0)
+
+    def test_production_head_only_consults_planner(self):
+        """El jefe de producción ve el plan pero no lo edita (Plan: consulta)."""
+        self.assertTrue(self.head.has_group('al_construction_planner.group_planner_plan_viewer'))
+        self.assertFalse(self.head.has_group('al_construction_planner.group_planner_user'))
+        plan = self.plan.with_user(self.head)
+        self.assertTrue(plan.name)
+        with self.assertRaises(AccessError):
+            plan.check_access('write')
+        with self.assertRaises(AccessError):
+            self.env['construction.dependency'].with_user(self.head).check_access('create')

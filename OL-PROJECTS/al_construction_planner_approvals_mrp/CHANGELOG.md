@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261024 — 24/10/2026
+
+- El jefe de producción solo consulta el planificador (Plan: consulta): ya no edita planes, dependencias, cambios ni liquidaciones. Sigue aprobando el exceso de la orden dentro de su margen.
+
 ## 5.20261023 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
