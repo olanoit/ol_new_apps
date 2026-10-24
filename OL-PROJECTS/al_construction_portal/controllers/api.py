@@ -31,8 +31,12 @@ def _body():
         return {}
 
 
-def portal_api(func):
-    """Autentica con el token del portal y traduce los errores a JSON."""
+def portal_api(func=None, raw=False):
+    """Autentica con el token del portal y traduce los errores a JSON. Con
+    ``raw``, la respuesta del servicio se devuelve tal cual (un PDF)."""
+    if func is None:
+        return lambda f: portal_api(f, raw=raw)
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         header = request.httprequest.headers.get('Authorization', '')
@@ -42,7 +46,8 @@ def portal_api(func):
             return _json({'error': 'Sesión vencida o no válida: vuelva a ingresar.'}, 401)
         request.update_env(user=user.id)
         try:
-            return _json(func(self, *args, **kwargs))
+            result = func(self, *args, **kwargs)
+            return result if raw else _json(result)
         except AccessError as error:
             request.env.cr.rollback()
             return _json({'error': error.args[0] if error.args else str(error)}, 403)
@@ -200,3 +205,13 @@ class ConstructionPortalApi(http.Controller):
     @portal_api
     def valuation(self, project_id, settlement_id, **kw):
         return self._service().valuation(project_id, settlement_id)
+
+    @http.route(PREFIX + '/valuation/<int:project_id>/<int:settlement_id>/<string:document>.pdf',
+                type='http', auth='public', methods=['GET'], csrf=False, save_session=False)
+    @portal_api(raw=True)
+    def valuation_pdf(self, project_id, settlement_id, document, **kw):
+        """PDF del valorizado (``valuation``) o de su factura (``invoice``)."""
+        pdf, filename = self._service().valuation_pdf(project_id, settlement_id, document)
+        return request.make_response(pdf, headers=[
+            ('Content-Type', 'application/pdf'), ('Content-Length', len(pdf)),
+            ('Content-Disposition', 'inline; filename="%s"' % filename)])

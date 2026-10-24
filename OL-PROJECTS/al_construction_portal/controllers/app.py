@@ -9,6 +9,8 @@ from odoo import http
 from odoo.http import request
 from odoo.tools.misc import file_path
 
+from odoo.addons.al_construction_portal.models.portal_service import _initials
+
 STATIC = '/al_construction_portal/static/app/'
 
 
@@ -23,7 +25,8 @@ class ConstructionPortalApp(http.Controller):
     def app(self, **kw):
         company = self._company()
         return request.render('al_construction_portal.portal_app', {
-            'company_name': company.name, 'color': company.primary_color or '#714B67',
+            'company_name': company.name, 'initials': _initials(company.name),
+            'color': company.primary_color or '#714B67',
             'static': STATIC})
 
     @http.route('/obra/app/manifest.webmanifest', type='http', auth='public', methods=['GET'],

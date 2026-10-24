@@ -11,6 +11,7 @@ primero que la persona esté en el portal de la obra (y, la contrata, que sea
 su partida u orden) y después lee o escribe con sudo solo eso. Al
 sincronizar, Odoo vuelve a validar las reglas (saldo, fechas, permisos)."""
 import base64
+import re
 from collections import defaultdict
 from datetime import datetime, time, timedelta
 
@@ -25,6 +26,13 @@ from .daily_report import WEATHER
 
 MAX_PHOTO_BYTES = 8 * 1024 * 1024
 API_VERSION = 1
+#: Palabras que no cuentan para las iniciales del logo («Creamos Valor S.A.C.» → CV).
+LEGAL_WORDS = {'SA', 'SAC', 'SAA', 'SRL', 'EIRL', 'DE', 'DEL', 'LA', 'LOS', 'Y'}
+
+
+def _initials(name):
+    words = [w for w in re.split(r'[^\w]+', name or '') if w and w.upper() not in LEGAL_WORDS]
+    return ''.join(w[0] for w in words[:2]).upper() or 'OB'
 
 
 class ConstructionPortalService(models.AbstractModel):
@@ -135,8 +143,9 @@ class ConstructionPortalService(models.AbstractModel):
         company = user.company_id
         return {
             'api': API_VERSION,
-            'user': {'id': user.id, 'name': user.name},
-            'company': {'name': company.name, 'color': company.primary_color or '#714B67'},
+            'user': {'id': user.id, 'name': user.name, 'initials': _initials(user.name)},
+            'company': {'name': company.name, 'initials': _initials(company.name),
+                        'color': company.primary_color or '#714B67'},
             'projects': [{'id': project.id, 'name': project.display_name,
                           'roles': sorted(roles)} for project, roles in projects.items()],
             'params': {'progress_days': company.construction_portal_progress_days,
@@ -150,14 +159,23 @@ class ConstructionPortalService(models.AbstractModel):
         roles = self._roles(members)
         site = project._construction_site() if hasattr(project, '_construction_site') else False
         lines = self._lines(project, members)
+        today = fields.Date.context_today(self)
+        week_start, week_end = project._construction_period(today)
+        last_validation = self._last_validation(lines)
         data = {
             'project': {'id': project.id, 'name': project.display_name,
+                        'week_start': fields.Date.to_string(week_start),
+                        'week_end': fields.Date.to_string(week_end),
+                        'location': project.construction_location_id.complete_name or '',
                         'latitude': site.latitude if site else 0.0,
                         'longitude': site.longitude if site else 0.0,
                         'radius_m': site.radius_m if site else 0},
             'roles': sorted(roles),
-            'partidas': [self._line_data(line) for line in lines.sorted(
-                lambda l: (l.task_id.construction_path or '', l.id))],
+            'members': [{'role': member.role, 'name': member.name,
+                         'partner': member.partner_id.commercial_partner_id.name or ''}
+                        for member in members],
+            'partidas': [self._line_data(line, last_validation.get(line.id)) for line in
+                         lines.sorted(lambda l: (l.task_id.construction_path or '', l.id))],
             'rework_reasons': [[code, label] for code, label in self.env[
                 'construction.task.progress']._fields['rework_reason']._description_selection(
                 self.env)],
@@ -165,16 +183,21 @@ class ConstructionPortalService(models.AbstractModel):
             'synced_at': fields.Datetime.to_string(fields.Datetime.now()),
         }
         if roles & {'foreman', 'office'}:
-            data['catalog'] = self._catalog(project, lines)
+            data['catalog'] = self._catalog(project, lines, roles)
             data['deliveries'] = self._deliveries(project)
             data['returnables'] = self._returnables(project)
+            data['daily'] = self._daily_data(project, site, today)
         if 'foreman' in roles:
             data['crew'] = self._crew(project, members)
         if 'contractor' in roles:
-            data['valuations'] = self.valuations(project.id)['valuations']
+            contract = self.valuations(project.id)
+            data['valuations'] = contract['valuations']
+            data['orders'] = contract['orders']
+            data['contract_partner'] = contract['partner']
+        data['counters'] = self._counters(project, members, lines, data, today)
         return data
 
-    def _line_data(self, line):
+    def _line_data(self, line, last_validation=None):
         validated = line.qty_executed
         pending = line._get_reported_qty()
         return {
@@ -183,8 +206,78 @@ class ConstructionPortalService(models.AbstractModel):
             'activity': line.activity_id.display_name, 'uom': line.activity_id.uom_id.name,
             'kind': line.resource_type, 'planned': line.qty_planned, 'validated': validated,
             'pending': pending, 'balance': line.qty_planned - validated - pending,
+            # Lo que admite el plan sobre lo presupuestado (tolerancia).
+            'tolerance': line._get_tolerance_qty(),
+            'last_validated': fields.Date.to_string(last_validation) if last_validation else '',
             'partner': line.partner_id.name or '',
         }
+
+    def _last_validation(self, lines):
+        """Fecha de la última validación de cada partida."""
+        if not lines:
+            return {}
+        # sudo: el avance de las partidas de la persona (comprobadas al leerlas).
+        groups = self.env['construction.task.progress'].sudo()._read_group(
+            [('plan_line_id', 'in', lines.ids), ('state', '=', 'validated')],
+            ['plan_line_id'], ['validation_date:max'])
+        return {line.id: fields.Datetime.context_timestamp(self, last).date()
+                for line, last in groups if last}
+
+    def _counters(self, project, members, lines, data, today):
+        """Los tres números del inicio: avances por validar, pedidos en
+        aprobación y entregas por recibir hoy."""
+        Progress = self.env['construction.task.progress'].sudo()
+        to_validate = Progress.search_count([
+            ('plan_line_id', 'in', lines.ids), ('state', '=', 'draft')]) if lines else 0
+        requests = 0
+        if self._roles(members) & {'foreman', 'office'}:
+            domain = [('project_id', '=', project.id), ('state', '=', 'to_approve')]
+            if 'office' not in self._roles(members):
+                domain.append(('requested_by', '=', self.env.uid))
+            # sudo: solo se cuentan los requerimientos de la obra (o los suyos).
+            requests = self.env['construction.material.request'].sudo().search_count(domain)
+        today_str = fields.Date.to_string(today)
+        deliveries = [row for row in data.get('deliveries') or []
+                      if (row.get('date_local') or '')[:10] <= today_str]
+        return {'progress_to_validate': to_validate, 'requests_to_approve': requests,
+                'deliveries_today': len(deliveries)}
+
+    def _daily_data(self, project, site, today):
+        """Lo que el parte diario trae ya llenado: el personal propio que
+        marcó hoy en la sede, cada contrata de la obra y los avances del día."""
+        own = 0
+        if site:
+            tz = site._tz()
+            start = tz.localize(datetime.combine(today, time.min)).astimezone(pytz.utc)
+            # sudo: solo se cuentan las marcaciones de hoy en la sede de la obra.
+            own = len(self.env['hr.attendance'].sudo().search([
+                ('l10n_pe_construction_site_id', '=', site.id),
+                ('check_in', '>=', start.replace(tzinfo=None)),
+                ('check_in', '<', (start + timedelta(days=1)).replace(tzinfo=None))
+            ]).employee_id)
+        plan = project._construction_current_plan()
+        contractors = []
+        if plan:
+            # sudo: las contratas de la obra y lo que hacen (sin montos).
+            contract_lines = self.env['construction.resource.plan.line'].sudo().search([
+                ('plan_id', '=', plan.id), ('resource_type', '=', 'contract'),
+                ('partner_id', '!=', False), ('line_state', '!=', 'cancel')])
+            scopes = defaultdict(list)
+            for line in contract_lines:
+                partner = line.partner_id.commercial_partner_id
+                name = line.activity_id.name
+                if name and name not in scopes[partner]:
+                    scopes[partner].append(name)
+            contractors = [{'name': partner.name, 'scope': ', '.join(names[:2])}
+                           for partner, names in sorted(scopes.items(), key=lambda kv: kv[0].name)]
+        # sudo: los avances de hoy en la obra, para «Trabajos del día».
+        progress = self.env['construction.task.progress'].sudo().search([
+            ('task_id.project_id', '=', project.id), ('date', '=', today),
+            ('state', '!=', 'rejected')], order='id')
+        work = [{'item': p.task_id.construction_path or '', 'name': p.task_id.name,
+                 'partner': p.partner_id.commercial_partner_id.name or '',
+                 'qty': p.qty, 'uom': p.activity_id.uom_id.name or ''} for p in progress]
+        return {'own_today': own, 'contractors': contractors, 'work': work}
 
     # ------------------------------------------------------------------
     # Avance (pantalla 4)
@@ -377,22 +470,28 @@ class ConstructionPortalService(models.AbstractModel):
     # ------------------------------------------------------------------
     # Requerimientos (pantallas 8 y 9)
     # ------------------------------------------------------------------
-    def _catalog(self, project, lines):
+    def _catalog(self, project, lines, roles=None):
         """Materiales de las partidas con el saldo del plan; EPP y útiles y
-        aseo con sus kits."""
+        aseo con sus kits. El capataz ve los materiales de las recetas de su
+        cuadrilla (las partidas que ejecuta); la oficina técnica, todos."""
         plan = project._construction_current_plan()
         Product = self.env['product.product'].sudo()
         material_lines = self.env['construction.resource.plan.line'].sudo()
         if plan:
-            material_lines = material_lines.search([
-                ('plan_id', '=', plan.id), ('resource_type', '=', 'material'),
-                ('product_id', '!=', False), ('is_client_supply', '=', False),
-                ('line_state', '!=', 'cancel')])
+            domain = [('plan_id', '=', plan.id), ('resource_type', '=', 'material'),
+                      ('product_id', '!=', False), ('is_client_supply', '=', False),
+                      ('line_state', '!=', 'cancel')]
+            # Sin partidas propias (capataz sin cuadrilla asignada), el catálogo
+            # de toda la obra.
+            if roles is not None and 'office' not in roles and lines:
+                domain.append(('task_id', 'in', lines.task_id.ids))
+            material_lines = material_lines.search(domain)
         partida = []
         for line in material_lines:
             partida.append({
                 'product_id': line.product_id.id, 'name': line.product_id.display_name,
                 'uom': line.product_uom_id.name, 'task_id': line.task_id.id,
+                'item': line.task_id.construction_path or '',
                 'task': line.task_id.display_name,
                 'balance': line.qty_planned - line.qty_requested})
         company = project.company_id or self.env.company
@@ -405,10 +504,12 @@ class ConstructionPortalService(models.AbstractModel):
                 ('catalog', '=', catalog), ('company_id', 'in', (company.id, False))])
             result[catalog] = {
                 'products': [{'product_id': p.id, 'name': p.display_name,
-                              'uom': p.uom_id.name} for p in products],
+                              'uom': p.uom_id.name,
+                              'note': p.description_picking or ''} for p in products],
                 'kits': [{'id': kit.id, 'name': kit.name, 'lines': [
                     {'product_id': kl.product_id.id, 'name': kl.product_id.display_name,
-                     'qty': kl.qty} for kl in kit.line_ids]} for kit in kits],
+                     'uom': kl.product_id.uom_id.name, 'qty': kl.qty}
+                    for kl in kit.line_ids]} for kit in kits],
             }
         return result
 
@@ -424,7 +525,7 @@ class ConstructionPortalService(models.AbstractModel):
         if not self._roles(members) & {'foreman', 'office'}:
             raise AccessError(self.env._('Los requerimientos los piden el capataz y la oficina '
                                          'técnica.'))
-        catalog = self._catalog(project, self._lines(project, members))
+        catalog = self._catalog(project, self._lines(project, members), self._roles(members))
         allowed = {
             'partida': {(row['product_id'], row['task_id']) for row in catalog['partida']},
             'epp': {row['product_id'] for row in catalog['epp']['products']} |
@@ -504,6 +605,11 @@ class ConstructionPortalService(models.AbstractModel):
             lambda p: not p.location_id._child_of(location))
         return [{'id': picking.id, 'name': picking.name, 'origin': picking.origin or '',
                  'date': fields.Datetime.to_string(picking.scheduled_date),
+                 'date_local': fields.Date.to_string(fields.Datetime.context_timestamp(
+                     self, picking.scheduled_date).date()) if picking.scheduled_date else '',
+                 # Compra directa a obra o despacho del almacén, con su proveedor.
+                 'kind': 'purchase' if picking.picking_type_id.code == 'incoming' else 'dispatch',
+                 'partner': picking.partner_id.commercial_partner_id.name or '',
                  'lines': [{'move_id': move.id, 'name': move.product_id.display_name,
                             'uom': move.product_uom.name, 'sent': move.product_uom_qty}
                            for move in picking.move_ids.filtered(
@@ -627,12 +733,16 @@ class ConstructionPortalService(models.AbstractModel):
     # ------------------------------------------------------------------
     # Valorizaciones de la contrata (pantallas 12 y 13)
     # ------------------------------------------------------------------
-    @api.model
-    def valuations(self, project_id):
+    def _contract_scope(self, project_id):
         project, members = self._project(project_id)
         partners = self._partners(members)
         if not partners:
             raise AccessError(self.env._('Las valorizaciones las ve la contrata.'))
+        return project, partners
+
+    @api.model
+    def valuations(self, project_id):
+        project, partners = self._contract_scope(project_id)
         # sudo: solo las órdenes y valorizaciones de la empresa de la persona.
         orders = self.env['purchase.order'].sudo().search([
             ('construction_project_id', '=', project.id),
@@ -642,60 +752,139 @@ class ConstructionPortalService(models.AbstractModel):
             ('project_id', '=', project.id), ('partner_id', 'child_of', partners.ids),
             ('state', '!=', 'cancel')], order='period_end desc, id desc')
         states = dict(settlements._fields['state']._description_selection(self.env))
-        return {'orders': [{
-            'id': order.id, 'name': order.name, 'amount_untaxed': order.amount_untaxed,
-            'valued': sum(order._construction_valued_settlements().mapped('amount_direct'))
-            if hasattr(order, '_construction_valued_settlements') else 0.0,
-            'guarantee': getattr(order, 'construction_guarantee_retained', 0.0),
-            'frequency': getattr(order, 'construction_frequency', False) or '',
-        } for order in orders], 'valuations': [{
-            'id': settlement.id, 'name': settlement.display_name,
-            'period_start': fields.Date.to_string(settlement.period_start),
-            'period_end': fields.Date.to_string(settlement.period_end),
-            'state': settlement.state, 'state_label': states.get(settlement.state),
-            'amount': settlement.amount_net if 'amount_net' in settlement._fields else 0.0,
-            'invoice': settlement.invoice_id.name or '',
-        } for settlement in settlements]}
+        Order = self.env['purchase.order']
+        frequencies = dict(Order._fields['construction_frequency']._description_selection(
+            self.env)) if 'construction_frequency' in Order._fields else {}
+        weekdays = dict(Order._fields['construction_cutoff_weekday']._description_selection(
+            self.env)) if 'construction_cutoff_weekday' in Order._fields else {}
+        Deduction = self.env['construction.contract.deduction'].sudo() \
+            if 'construction.contract.deduction' in self.env else None
+        Progress = self.env['construction.task.progress'].sudo()
+
+        def order_data(order):
+            valued = sum(order._construction_valued_settlements().mapped('amount_direct')) \
+                if hasattr(order, '_construction_valued_settlements') else 0.0
+            deductions = sum(Deduction.search([
+                ('purchase_order_id', '=', order.id), ('state', '=', 'applied')]).mapped(
+                'signed_amount')) if Deduction is not None else 0.0
+            frequency = getattr(order, 'construction_frequency', False) or ''
+            weekday = getattr(order, 'construction_cutoff_weekday', False) or ''
+            return {
+                'id': order.id, 'name': order.name, 'amount_untaxed': order.amount_untaxed,
+                'valued': valued,
+                'valued_pct': round(100.0 * valued / order.amount_untaxed)
+                if order.amount_untaxed else 0,
+                'guarantee': getattr(order, 'construction_guarantee_retained', 0.0),
+                'deductions': deductions,
+                'frequency': frequency, 'frequency_label': frequencies.get(frequency, ''),
+                'cutoff_label': weekdays.get(weekday, '') if frequency == 'weekly' else '',
+            }
+
+        def settlement_data(settlement):
+            pending = 0
+            if settlement.state == 'draft':
+                # Avances de la contrata aún por validar hasta el corte.
+                pending = Progress.search_count([
+                    ('task_id.project_id', '=', project.id),
+                    ('partner_id', 'child_of', partners.ids), ('state', '=', 'draft'),
+                    ('date', '<=', settlement.period_end)])
+            return {
+                'id': settlement.id, 'name': settlement.display_name,
+                'title': settlement.title if 'title' in settlement._fields else '',
+                'period_start': fields.Date.to_string(settlement.period_start),
+                'period_end': fields.Date.to_string(settlement.period_end),
+                'state': settlement.state, 'state_label': states.get(settlement.state),
+                'amount': settlement.amount_net if 'amount_net' in settlement._fields else 0.0,
+                'amount_total': settlement.amount_total
+                if 'amount_total' in settlement._fields else 0.0,
+                'invoice': settlement.invoice_id.name or '',
+                'pending_progress': pending,
+            }
+
+        return {'partner': partners[:1].name or '',
+                'orders': [order_data(order) for order in orders],
+                'valuations': [settlement_data(settlement) for settlement in settlements]}
+
+    def _settlement(self, project_id, settlement_id):
+        project, partners = self._contract_scope(project_id)
+        settlement = self.env['construction.contract.settlement'].sudo().search([
+            ('id', '=', int(settlement_id or 0)), ('project_id', '=', project.id),
+            ('partner_id', 'child_of', partners.ids)], limit=1)
+        if not settlement:
+            raise AccessError(self.env._('Esa valorización no es suya.'))
+        return settlement
 
     @api.model
     def valuation(self, project_id, settlement_id):
-        project, members = self._project(project_id)
-        partners = self._partners(members)
-        settlement = self.env['construction.contract.settlement'].sudo().search([
-            ('id', '=', int(settlement_id or 0)), ('project_id', '=', project.id),
-            ('partner_id', 'child_of', partners.ids or [0])], limit=1)
-        if not settlement:
-            raise AccessError(self.env._('Esa valorización no es suya.'))
+        settlement = self._settlement(project_id, settlement_id)
         invoice = settlement.invoice_id
-        detraction = 0.0
+        detraction = detraction_pct = 0.0
         if invoice and 'l10n_pe_detraction_amount' in invoice._fields:
             detraction = invoice.l10n_pe_detraction_amount
+            if 'l10n_pe_detraction_type_id' in invoice._fields:
+                detraction_pct = invoice.l10n_pe_detraction_type_id.percentage or 0.0
         payment_labels = dict(invoice._fields['payment_state']._description_selection(
             self.env)) if invoice else {}
-        lines = [{'name': line.task_id.display_name if 'task_id' in line._fields and line.task_id
-                  else line.activity_id.display_name, 'qty': line.qty_settle,
+        reasons = dict(settlement.line_ids._fields['rework_reason']._description_selection(
+            self.env)) if 'rework_reason' in settlement.line_ids._fields else {}
+        lines = [{'name': line.purchase_line_id.name or line.activity_id.display_name,
+                  'qty': line.qty_settle, 'uom': line.uom_id.name or '',
                   'amount': line.amount, 'rework': line.is_rework,
+                  'rework_reason': reasons.get(line.rework_reason, '') if line.is_rework else '',
                   'paid_rework': getattr(line, 'rework_paid', False)}
                  for line in settlement.line_ids]
         deductions = [{'name': d.description or d.name, 'amount': -d.amount}
                       for d in settlement.deduction_ids] \
             if 'deduction_ids' in settlement._fields else []
-        total = invoice.amount_total if invoice else 0.0
-        guarantee = settlement.amount_retention if 'amount_retention' in settlement._fields \
-            else 0.0
+        amount = lambda name: settlement[name] if name in settlement._fields else 0.0
+        subtotal = amount('amount_subtotal') or sum(line['amount'] for line in lines)
+        tax = amount('amount_tax')
+        total = invoice.amount_total if invoice else amount('amount_total')
+        guarantee = amount('amount_retention')
+        advance = amount('amount_advance')
+        # El neto ya descuenta la amortización del adelanto y el fondo; con
+        # factura, también la detracción que va al Banco de la Nación.
+        to_pay = amount('amount_to_pay') or (total - guarantee - advance)
+        payments = []
+        if invoice:
+            for payment in invoice.sudo()._get_reconciled_payments():
+                payments.append({'date': fields.Date.to_string(payment.date),
+                                 'amount': payment.amount, 'name': payment.name})
         return {
             'id': settlement.id, 'name': settlement.display_name,
+            'title': settlement.title if 'title' in settlement._fields else '',
             'period_start': fields.Date.to_string(settlement.period_start),
             'period_end': fields.Date.to_string(settlement.period_end),
             'lines': lines, 'deductions': deductions,
-            'subtotal': settlement.amount_subtotal if 'amount_subtotal' in settlement._fields
-            else sum(line['amount'] for line in lines),
-            'tax': settlement.amount_tax if 'amount_tax' in settlement._fields else 0.0,
-            'total': total or (settlement.amount_total if 'amount_total' in settlement._fields
-                               else 0.0),
-            'guarantee': guarantee, 'detraction': detraction,
-            'net': (total - guarantee - detraction) if invoice else
-            (settlement.amount_to_pay if 'amount_to_pay' in settlement._fields else 0.0),
+            'progress_total': amount('amount_direct') + amount('amount_additional')
+            + amount('amount_adjustments') or sum(
+                line['amount'] for line in lines if not line['rework'] or line['paid_rework']),
+            'subtotal': subtotal, 'tax': tax,
+            'tax_pct': round(100.0 * tax / subtotal) if subtotal else 0,
+            'total': total, 'guarantee': guarantee,
+            'guarantee_pct': round(100.0 * guarantee / total, 1) if total else 0,
+            'advance': advance, 'detraction': detraction, 'detraction_pct': detraction_pct,
+            'net': to_pay - detraction,
             'invoice': invoice.name or '',
             'payment_state': payment_labels.get(invoice.payment_state, '') if invoice else '',
+            'payment_code': invoice.payment_state if invoice else '',
+            'amount_paid': (invoice.amount_total - invoice.amount_residual) if invoice else 0.0,
+            'payments': payments,
+            'has_invoice_pdf': bool(invoice),
         }
+
+    def valuation_pdf(self, project_id, settlement_id, document):
+        """PDF del valorizado o de su factura, si son de la contrata."""
+        settlement = self._settlement(project_id, settlement_id)
+        if document == 'invoice':
+            record, report = settlement.invoice_id, 'account.account_invoices'
+            if not record:
+                raise UserError(self.env._('La valorización aún no tiene factura.'))
+        else:
+            record = settlement
+            report = 'al_construction_planner_subcontract.action_report_contract_valuation'
+        # sudo: la contrata solo descarga su valorización o su factura
+        # (comprobadas arriba).
+        pdf, _type = self.env['ir.actions.report'].sudo()._render_qweb_pdf(report, record.ids)
+        filename = '%s.pdf' % (record.name or record.display_name).replace('/', '-')
+        return pdf, filename

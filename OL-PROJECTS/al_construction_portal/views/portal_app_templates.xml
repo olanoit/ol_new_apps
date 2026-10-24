@@ -17,7 +17,7 @@
                 <style t-esc="':root { --brand: %s; }' % color"/>
             </head>
             <body>
-                <div id="app"><p style="padding: 16px">Cargando el portal de obra…</p></div>
+                <div id="app" t-att-data-company="company_name" t-att-data-initials="initials"><p style="padding: 16px">Cargando el portal de obra…</p></div>
                 <noscript>El portal de obra necesita JavaScript.</noscript>
                 <script t-att-src="static + 'app.js'"/>
             </body>

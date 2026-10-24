@@ -9,6 +9,7 @@ from odoo import Command, fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import new_test_user, tagged
 
+from odoo.addons.al_construction_portal.models.portal_service import _initials
 from odoo.addons.al_construction_planner_subcontract.tests.test_contract_terms_creval import (
     PHOTO, ContractTermsCommon,
 )
@@ -42,6 +43,11 @@ class TestPortalService(ContractTermsCommon):
     def _service(self, user):
         return self.env['construction.portal.service'].with_user(user)
 
+    def _today(self):
+        # «Hoy» del usuario del portal (el que usa el servicio), no el del
+        # administrador del test: cerca de medianoche pueden ser días distintos.
+        return fields.Date.context_today(self._service(self.contractor_user))
+
     def _wall_line(self):
         return self.plan.line_ids.filtered(lambda l: l.activity_id == self.act_wall)
 
@@ -53,7 +59,7 @@ class TestPortalService(ContractTermsCommon):
         self.assertEqual(wall['planned'], 2000.0)
         payload = {'uuid': 'test-uuid-1', 'project_id': self.project.id,
                    'plan_line_id': self._wall_line().id, 'date': fields.Date.to_string(
-                       fields.Date.context_today(self.env.user)), 'qty': 25.0,
+                       self._today()), 'qty': 25.0,
                    'photos': PHOTOS, 'latitude': -12.1, 'longitude': -77.0}
         result = service.progress(payload)
         progress = self.env['construction.task.progress'].browse(int(result['ids']))
@@ -222,7 +228,7 @@ class TestPortalService(ContractTermsCommon):
         service = self._service(self.foreman_user)
         crew = service.sync(self.project.id)['crew']
         self.assertEqual([w['id'] for w in crew], self.employee.ids)
-        day = fields.Date.context_today(self.env.user)
+        day = self._today()
         result = service.crew_day({
             'uuid': 'tareo-1', 'project_id': self.project.id, 'date': fields.Date.to_string(day),
             'attendance': [{'employee_id': self.employee.id, 'present': True, 'time': '07:30'}],
@@ -250,3 +256,60 @@ class TestPortalService(ContractTermsCommon):
         self.assertTrue(detail['lines'])
         with self.assertRaises(AccessError):
             self._service(self.foreman_user).valuations(self.project.id)
+        # Pantalla 13: la tarjeta de la orden y el total con IGV.
+        order = data['orders'][0]
+        self.assertEqual(order['amount_untaxed'], self.order.amount_untaxed)
+        self.assertTrue(order['frequency_label'])
+        self.assertEqual(order['valued_pct'], round(100.0 * order['valued'] / order['amount_untaxed']))
+        self.assertEqual(data['partner'], self.contractor.name)
+        self.assertEqual(data['valuations'][0]['amount_total'], settlement.amount_total)
+        sync = service.sync(self.project.id)
+        self.assertEqual(sync['orders'][0]['id'], self.order.id)
+        self.assertEqual(sync['contract_partner'], self.contractor.name)
+        # Pantalla 14: el neto descuenta el adelanto y el fondo (y la detracción
+        # con factura), como el total a pagar de la valorización.
+        self.assertEqual(detail['net'], settlement.amount_to_pay - detail['detraction'])
+        self.assertEqual(detail['advance'], settlement.amount_advance)
+        self.assertEqual(detail['tax_pct'], 18)
+        self.assertFalse(detail['has_invoice_pdf'])
+        pdf, filename = service.valuation_pdf(self.project.id, settlement.id, 'valuation')
+        self.assertTrue(pdf)
+        self.assertTrue(filename.endswith('.pdf'))
+        with self.assertRaisesRegex(UserError, 'factura'):
+            service.valuation_pdf(self.project.id, settlement.id, 'invoice')
+        with self.assertRaises(AccessError):
+            self._service(self.foreman_user).valuation_pdf(
+                self.project.id, settlement.id, 'valuation')
+
+    def test_sync_for_the_screens(self):
+        """Lo que piden las pantallas del prototipo: la semana de la obra, los
+        tres contadores del inicio, la tolerancia y la última validación de la
+        partida, y el parte diario ya llenado con las contratas y el avance
+        del día."""
+        today = self._today()
+        self._report(self.partida, self.act_wall, 40.0, today)
+        contractor = self._service(self.contractor_user)
+        contractor.progress({
+            'uuid': 'sync-1', 'project_id': self.project.id, 'plan_line_id': self._wall_line().id,
+            'date': fields.Date.to_string(today), 'qty': 10.0, 'photos': PHOTOS})
+        data = contractor.sync(self.project.id)
+        week_start, week_end = self.project._construction_period(today)
+        self.assertEqual(data['project']['week_start'], fields.Date.to_string(week_start))
+        self.assertEqual(data['project']['week_end'], fields.Date.to_string(week_end))
+        wall = next(p for p in data['partidas'] if p['id'] == self._wall_line().id)
+        self.assertEqual(wall['last_validated'], fields.Date.to_string(today))
+        self.assertEqual(wall['tolerance'], self._wall_line()._get_tolerance_qty())
+        self.assertEqual(data['counters']['progress_to_validate'], 1)
+        self.assertEqual(data['members'][0]['partner'], self.contractor.name)
+        foreman = self._service(self.foreman_user).sync(self.project.id)
+        self.assertEqual(foreman['counters']['requests_to_approve'], 0)
+        self.assertEqual(foreman['counters']['deliveries_today'], 0)
+        self.assertIn(self.contractor.name, [c['name'] for c in foreman['daily']['contractors']])
+        self.assertEqual(sorted(w['qty'] for w in foreman['daily']['work']), [10.0, 40.0])
+        self.assertEqual(foreman['daily']['own_today'], 0)
+        self.assertNotIn('orders', foreman)
+
+    def test_initials(self):
+        self.assertEqual(_initials('Creamos Valor S.A.C.'), 'CV')
+        self.assertEqual(_initials('Juan Carlos Oyola'), 'JC')
+        self.assertEqual(_initials(''), 'OB')

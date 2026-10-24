@@ -57,6 +57,8 @@ class TestPortalHttp(HttpCase):
         page = self.url_open('/obra/app/')
         self.assertEqual(page.status_code, 200)
         self.assertIn('manifest.webmanifest', page.text)
+        # Pantalla 1: el nombre y las iniciales de la empresa antes de ingresar.
+        self.assertIn('data-initials=', page.text)
         manifest = self.url_open('/obra/app/manifest.webmanifest').json()
         self.assertEqual(manifest['display'], 'standalone')
         worker = self.url_open('/obra/app/sw.js')
