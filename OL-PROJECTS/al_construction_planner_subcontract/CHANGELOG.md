@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261016 — 24/10/2026
+
+- Con detracciones instaladas, la factura de adelanto lleva el código de detracción del servicio de la orden (requerimiento CREVAL v1.0, 3.6); antes tomaba el del producto de anticipo, que no tiene código, y el adelanto salía sin detracción.
+
 ## 4.20261016 — 24/10/2026
 
 - Valorización con condiciones: aprobar la revisión por niveles de la liquidación ya no falla al recalcular el resumen; antes el control de la revisión abierta bloqueaba la escritura de los totales.

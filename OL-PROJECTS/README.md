@@ -43,7 +43,7 @@ módulo | versión | licencia | resumen
 [al_construction_planner_sale](al_construction_planner_sale/) | 4.20261016 | LGPL-3 | Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorización, cobranza y cronograma valorizado.
 [al_construction_planner_sale_furniture](al_construction_planner_sale_furniture/) | 1.20261013 | LGPL-3 | Partidas del contrato por familia de la tipología (cocinas, closets…).
 [al_construction_planner_spreadsheet](al_construction_planner_spreadsheet/) | 3.20261016 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».
-[al_construction_planner_subcontract](al_construction_planner_subcontract/) | 4.20261016 | LGPL-3 | Asignar contrata con su OC de servicio, avance por driver, liquidación semanal y portal de la contrata.
+[al_construction_planner_subcontract](al_construction_planner_subcontract/) | 5.20261016 | LGPL-3 | Asignar contrata con su OC de servicio, avance por driver, liquidación semanal y portal de la contrata.
 [al_construction_planner_subcontract_purchase](al_construction_planner_subcontract_purchase/) | 2.20261013 | LGPL-3 | Descuento a la contrata del material extra en su liquidación semanal.
 [al_construction_planner_subcontract_sale](al_construction_planner_subcontract_sale/) | 1.20261023 | LGPL-3 | Adicionales de la contrata desde el cambio de obra y margen de compra por partida.
 [al_construction_planner_suite](al_construction_planner_suite/) | 16.20261023 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.

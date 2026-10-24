@@ -323,6 +323,21 @@ class TestContractTerms(ContractTermsCommon):
         self.assertEqual(settlement.amount_advance, 0.0)
         self.assertEqual(settlement.amount_direct, 3820.0)
 
+    def test_advance_takes_service_detraction(self):
+        """Con detracciones, el adelanto lleva el código del servicio de la
+        orden y no el del producto de anticipo (3.6)."""
+        if 'l10n_pe_detraction_type_id' not in self.env['account.move']._fields:
+            self.skipTest('Sin al_l10n_pe_detraction.')
+        dtype = self.env['l10n_pe.detraction.type'].search([('percentage', '=', 12.0)], limit=1)
+        if not dtype:
+            self.skipTest('Sin el catálogo de detracciones.')
+        self.act_wall.product_id.product_tmpl_id.l10n_pe_detraction_type_id = dtype
+        _wizard, order = self._assign()
+        order.button_confirm()
+        advance = self.env['account.move'].browse(
+            order.action_construction_register_advance()['res_id'])
+        self.assertEqual(advance.l10n_pe_detraction_type_id, dtype)
+
     def test_approval_with_tier_review(self):
         """Con la regla de niveles de la liquidación activa, aprobar la
         revisión recalcula el resumen y factura (antes lo impedía el control

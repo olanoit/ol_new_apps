@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '5.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Con detracciones instaladas, la factura de adelanto lleva el código de detracción del servicio de la orden (requerimiento CREVAL v1.0, 3.6); antes tomaba el del producto de anticipo, que no tiene código, y el adelanto salía sin detracción."
 - version: '4.20261016'
   fecha: 24/10/2026
   cambios:

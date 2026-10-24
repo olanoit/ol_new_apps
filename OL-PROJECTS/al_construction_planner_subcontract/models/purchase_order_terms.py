@@ -277,9 +277,22 @@ class PurchaseOrder(models.Model):
                 'analytic_distribution': {str(account.id): 100.0} if account else False,
             })],
         })
+        self._construction_set_advance_detraction(move)
         self.message_post(body=self.env._('Adelanto registrado en borrador: %s.', move.display_name))
         return {'type': 'ir.actions.act_window', 'res_model': 'account.move', 'res_id': move.id,
                 'view_mode': 'form'}
+
+    def _construction_set_advance_detraction(self, move):
+        """Con detracciones (al_l10n_pe_detraction), el adelanto lleva el
+        código del servicio de la orden (3.6): el producto de anticipo es el
+        mismo para todos los servicios y no tiene código propio."""
+        if 'l10n_pe_detraction_type_id' not in move._fields or move.l10n_pe_detraction_type_id:
+            return
+        types = self.env['l10n_pe.detraction.type']
+        for template in self.order_line.product_id.product_tmpl_id:
+            types |= template._l10n_pe_detraction_type()
+        if types:
+            move.l10n_pe_detraction_type_id = max(types, key=lambda t: t.percentage)
 
     def action_view_construction_advances(self):
         self.ensure_one()
