@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Página de la aplicación instalable del portal de obra (CREVAL v1.0, 4.11). -->
+    <template id="portal_app" name="Portal de obra">&lt;!DOCTYPE html&gt;
+        <html lang="es">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+                <meta name="theme-color" t-att-content="color"/>
+                <meta name="apple-mobile-web-app-capable" content="yes"/>
+                <meta name="mobile-web-app-capable" content="yes"/>
+                <meta name="apple-mobile-web-app-title" content="Obra"/>
+                <title t-esc="'%s · Portal de obra' % company_name"/>
+                <link rel="manifest" href="/obra/app/manifest.webmanifest"/>
+                <link rel="apple-touch-icon" t-att-href="static + 'icon-192.png'"/>
+                <link rel="stylesheet" t-att-href="static + 'app.css'"/>
+                <style t-esc="':root { --brand: %s; }' % color"/>
+            </head>
+            <body>
+                <div id="app"><p style="padding: 16px">Cargando el portal de obra…</p></div>
+                <noscript>El portal de obra necesita JavaScript.</noscript>
+                <script t-att-src="static + 'app.js'"/>
+            </body>
+        </html>
+    </template>
+</odoo>

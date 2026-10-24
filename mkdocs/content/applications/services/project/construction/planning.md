@@ -209,6 +209,7 @@ flowchart TD
 | P-26 | Parte diario de cuadrilla | **Mi cuenta ‣ Mis obras** (portal) | [Portal de obra, sedes y marcación](planning/site_portal.md) |
 | P-27 | Quiosco de la sede | Enlace del quiosco en la sede de obra | [Portal de obra, sedes y marcación](planning/site_portal.md) |
 | P-28 | Asistencia diaria de la obra | **Ejecución ‣ Asistencia** | [Portal de obra, sedes y marcación](planning/site_portal.md) |
+| 4.11 | Aplicación de obra: avance, parte diario, tareo, pedidos, recepción, devolución y valorizaciones sin señal | `/obra/app/` (celular o tablet) | [Aplicación de obra en el celular](planning/field_app.md) |
 | P-29 | Costo de personal por sede | Boleta ‣ distribución analítica | [Portal de obra, sedes y marcación](planning/site_portal.md) |
 | P-30 | Contrato de obra e hitos por unidad | **Ingresos ‣ Contratos de obra / Hitos por unidad** | [Contratos de obra e hitos de cobro](planning/client_contracts.md) |
 | P-31 | Plantilla de niveles | **Configuración ‣ Plan de obra ‣ Plantillas de niveles** | [Niveles de la obra y tipologías](planning/levels_typologies.md) |

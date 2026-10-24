@@ -28,6 +28,7 @@ LICENSE_EXCEPTIONS = {
     # Extienden el planificador y, con él, base_tier_validation (AGPL-3).
     'al_construction_attendance': 'LGPL-3',
     'al_construction_planner_spreadsheet': 'LGPL-3',
+    'al_construction_planner_spreadsheet_furniture': 'LGPL-3',
     # Puentes del planificador (paquete 1.7, M17-07): extienden el núcleo.
     'al_construction_planner_mrp': 'LGPL-3',
     'al_construction_planner_purchase': 'LGPL-3',
@@ -44,6 +45,8 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner_approvals': 'LGPL-3',
     'al_construction_planner_approvals_mrp': 'LGPL-3',
     'al_construction_planner_production': 'LGPL-3',
+    # Aplicación de obra (CREVAL v1.0, 4.11): extiende el planificador.
+    'al_construction_portal': 'LGPL-3',
     # Paquetes de industria que instalan el planificador (LGPL-3 por él).
     'al_industry_construction': 'LGPL-3',
     'al_industry_furniture': 'LGPL-3',

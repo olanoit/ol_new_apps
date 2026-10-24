@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal de obra en la ficha de la obra (CREVAL v1.0, 4.11) -->
+    <record id="project_project_view_form_construction_portal" model="ir.ui.view">
+        <field name="name">project.project.form.construction.portal</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='construction_planning']" position="after">
+                <page string="Portal de obra" name="construction_portal" invisible="not is_construction_site"
+                      groups="al_construction_planner.group_planner_user">
+                    <group>
+                        <group string="Ingreso">
+                            <field name="construction_portal_password_login"/>
+                            <field name="construction_portal_qr_login"/>
+                            <field name="construction_portal_url" widget="url" invisible="not construction_portal_qr_login"/>
+                            <field name="construction_portal_qr_html" nolabel="1" colspan="2"
+                                   invisible="not construction_portal_qr_login or not construction_portal_code"/>
+                            <field name="construction_portal_code" invisible="1"/>
+                            <button name="action_construction_portal_new_code" type="object" string="Nuevo código del QR"
+                                    class="btn-secondary" invisible="not construction_portal_qr_login"
+                                    confirm="El QR del cartel actual dejará de servir. ¿Continuar?"/>
+                        </group>
+                        <group string="Requerimientos del portal">
+                            <field name="construction_portal_overhead_area_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="construction_portal_member_ids" context="{'default_project_id': id}">
+                        <list editable="bottom">
+                            <field name="user_id" options="{'no_create': True}"/>
+                            <field name="role"/>
+                            <field name="partner_id" required="role == 'contractor'" options="{'no_create': True}"/>
+                            <field name="employee_id" options="{'no_create': True}" optional="show"/>
+                            <field name="has_pin" optional="show"/>
+                            <field name="pin_locked" optional="show"/>
+                            <button name="action_open_pin_wizard" type="object" string="PIN" icon="fa-key"/>
+                            <button name="action_unlock" type="object" string="Desbloquear" icon="fa-unlock"
+                                    invisible="not pin_locked"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_portal_pin_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.portal.pin.wizard.form</field>
+        <field name="model">construction.portal.pin.wizard</field>
+        <field name="arch" type="xml">
+            <form string="PIN del portal">
+                <group>
+                    <field name="member_id" readonly="1"/>
+                    <field name="pin" password="True" placeholder="4 dígitos"/>
+                </group>
+                <footer>
+                    <button name="action_apply" type="object" string="Asignar PIN" class="btn-primary"/>
+                    <button string="Descartar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Parte diario de obra -->
+    <record id="construction_daily_report_view_list" model="ir.ui.view">
+        <field name="name">construction.daily.report.list</field>
+        <field name="model">construction.daily.report</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="user_id"/>
+                <field name="weather"/>
+                <field name="staff_total" sum="Personal"/>
+                <field name="restriction_material" optional="show"/>
+                <field name="restriction_front" optional="show"/>
+                <field name="restriction_weather" optional="show"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_daily_report_view_form" model="ir.ui.view">
+        <field name="name">construction.daily.report.form</field>
+        <field name="model">construction.daily.report</field>
+        <field name="arch" type="xml">
+            <form string="Parte diario de obra">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="project_id" options="{'no_create': True}"/>
+                            <field name="date"/>
+                            <field name="user_id" options="{'no_create': True}"/>
+                            <field name="weather"/>
+                        </group>
+                        <group string="Restricciones del día">
+                            <field name="restriction_material"/>
+                            <field name="restriction_front"/>
+                            <field name="restriction_weather"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Personal" name="staff">
+                            <field name="staff_line_ids">
+                                <list editable="bottom">
+                                    <field name="name"/>
+                                    <field name="source"/>
+                                    <field name="count" sum="Personal"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Trabajos del día" name="works">
+                            <field name="work_html" nolabel="1"/>
+                        </page>
+                        <page string="Ocurrencias y fotos" name="occurrences">
+                            <field name="occurrences" placeholder="Ocurrencias y visitas"/>
+                            <field name="attachment_ids" widget="many2many_binary"/>
+                            <field name="signature" widget="image" options="{'size': [240, 100]}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_daily_report_view_search" model="ir.ui.view">
+        <field name="name">construction.daily.report.search</field>
+        <field name="model">construction.daily.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id"/>
+                <field name="user_id"/>
+                <filter name="restrictions" string="Con restricciones"
+                        domain="['|', '|', ('restriction_material', '=', True), ('restriction_front', '=', True), ('restriction_weather', '=', True)]"/>
+                <group>
+                    <filter name="group_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_daily_report" model="ir.actions.act_window">
+        <field name="name">Partes diarios</field>
+        <field name="res_model">construction.daily.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin partes diarios</p>
+            <p>El maestro de obra los envía desde el portal de obra, uno por obra y día.</p>
+        </field>
+    </record>
+
+    <!-- Tareo de la cuadrilla -->
+    <record id="construction_portal_tareo_view_list" model="ir.ui.view">
+        <field name="name">construction.portal.tareo.list</field>
+        <field name="model">construction.portal.tareo</field>
+        <field name="arch" type="xml">
+            <list create="0">
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="employee_id"/>
+                <field name="plan_line_id"/>
+                <field name="hours" sum="Horas"/>
+                <field name="user_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_portal_tareo" model="ir.actions.act_window">
+        <field name="name">Tareo de cuadrillas</field>
+        <field name="res_model">construction.portal.tareo</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Kits y catálogo -->
+    <record id="construction_portal_kit_view_list" model="ir.ui.view">
+        <field name="name">construction.portal.kit.list</field>
+        <field name="model">construction.portal.kit</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="catalog"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_portal_kit_view_form" model="ir.ui.view">
+        <field name="name">construction.portal.kit.form</field>
+        <field name="model">construction.portal.kit</field>
+        <field name="arch" type="xml">
+            <form string="Kit del portal">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="catalog"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="product_id" options="{'no_create': True}"/>
+                            <field name="qty"/>
+                        </list>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_construction_portal_kit" model="ir.actions.act_window">
+        <field name="name">Kits del portal</field>
+        <field name="res_model">construction.portal.kit</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="product_category_form_view_construction_portal" model="ir.ui.view">
+        <field name="name">product.category.form.construction.portal</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="construction_portal_catalog"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ajustes -->
+    <record id="res_config_settings_view_form_construction_portal" model="ir.ui.view">
+        <field name="name">res.config.settings.form.construction.portal</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_construction_planner']" position="inside">
+                <block title="Portal de obra" name="construction_portal">
+                    <setting company_dependent="1" string="Sesión del portal"
+                             help="Días que dura el ingreso en el celular sin volver a escribir la clave.">
+                        <field name="construction_portal_session_days" class="oe_inline"/> días
+                    </setting>
+                    <setting company_dependent="1" string="Fecha del avance"
+                             help="El avance no puede tener fecha futura ni más antigua que estos días.">
+                        <field name="construction_portal_progress_days" class="oe_inline"/> días
+                    </setting>
+                    <setting company_dependent="1" string="Fotos"
+                             help="El celular comprime las fotos a este lado mayor antes de guardarlas.">
+                        <field name="construction_portal_photo_max_px" class="oe_inline"/> px
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_daily_reports" name="Partes diarios"
+              parent="al_construction_planner.menu_planner_execution" sequence="40"
+              action="action_construction_daily_report" groups="al_construction_planner.group_planner_user"/>
+    <menuitem id="menu_construction_portal_tareo" name="Tareo de cuadrillas"
+              parent="al_construction_planner.menu_planner_execution" sequence="41"
+              action="action_construction_portal_tareo" groups="al_construction_planner.group_planner_user"/>
+    <menuitem id="menu_construction_portal_kits" name="Kits del portal"
+              parent="al_construction_planner.menu_planner_config_plan" sequence="90"
+              action="action_construction_portal_kit" groups="al_construction_planner.group_planner_manager"/>
+</odoo>

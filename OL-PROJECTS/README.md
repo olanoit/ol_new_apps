@@ -48,6 +48,7 @@ módulo | versión | licencia | resumen
 [al_construction_planner_subcontract_purchase](al_construction_planner_subcontract_purchase/) | 2.20261013 | LGPL-3 | Descuento a la contrata del material extra en su liquidación semanal.
 [al_construction_planner_subcontract_sale](al_construction_planner_subcontract_sale/) | 1.20261023 | LGPL-3 | Adicionales de la contrata desde el cambio de obra y margen de compra por partida.
 [al_construction_planner_suite](al_construction_planner_suite/) | 20.20261023 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
+[al_construction_portal](al_construction_portal/) | 1.20261024 | LGPL-3 | Portal instalable y sin señal para capataces, contratas y oficina técnica: avance con fotos, parte diario, cuadrilla y tareo, requerimientos, recepción, devolución y valorizaciones, sobre servicios JSON versionados.
 [al_project_gantt_ai](al_project_gantt_ai/) | 8.20261013 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](al_project_gantt_backend/) | 17.20261013 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](al_project_gantt_base/) | 18.20261011 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).

@@ -1,0 +1,81 @@
+titulo: "Aplicación de obra"
+subtitulo: >-
+  El trabajo de campo en el celular y la tablet, con o sin señal: avance con
+  fotos, parte diario, tareo, pedidos, recepción, devolución y valorizaciones.
+categoria: Construcción · Proyectos
+portada: screenshots/01-inicio.png
+etiquetas: [Aplicación instalable, Sin señal, Avance con fotos, Parte diario, Tareo, Requerimientos]
+
+destacados_intro: >-
+  Una aplicación instalable desde el navegador para el capataz, la contrata y
+  la oficina técnica (requerimiento CREVAL v1.0, 4.11).
+destacados:
+  - icono: "⇅"
+    titulo: Funciona sin señal
+    texto: >-
+      Lo registrado queda en el celular y se envía solo al volver la
+      conexión, sin duplicados.
+  - icono: "▣"
+    titulo: QR y PIN
+    texto: >-
+      El cartel de la obra lleva un QR; cada persona entra con su PIN de 4
+      dígitos, o con usuario y clave.
+  - icono: "≡"
+    titulo: Tareo por partida
+    texto: >-
+      Las horas de la cuadrilla por partida reparten el jornal: el costo de
+      personal propio llega a cada partida.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    En la obra no siempre hay señal; los avances, partes y pedidos se
+    anotaban en papel o en mensajes y se pasaban a Odoo días después.
+
+pasos_intro: >-
+  Se instala desde el navegador en /obra/app/; no necesita la tienda de
+  aplicaciones.
+pasos:
+  - titulo: Inicio
+    ruta: /obra/app/
+    texto: >-
+      Elige la obra y muestra las partidas por validar, lo pendiente de enviar
+      y las entregas por recibir.
+    imagen: screenshots/01-inicio.png
+  - titulo: Registrar avance
+    ruta: Avance ▸ partida
+    texto: >-
+      Cantidad o porcentaje, al menos una foto, la ubicación del celular y el
+      motivo si es re-trabajo. Entra «Por validar».
+    imagen: screenshots/02-avance.png
+  - titulo: Sin señal
+    ruta: Por enviar
+    texto: >-
+      La cola de lo registrado sin conexión; se envía sola al volver la señal.
+    imagen: screenshots/03-sin-senal.png
+  - titulo: Cuadrilla y tareo
+    ruta: Cuadrilla y tareo
+    texto: >-
+      Asistencia con la hora de entrada y las horas de cada persona por
+      partida, en la tablet de la obra.
+    imagen: screenshots/04-cuadrilla.png
+  - titulo: Requerimientos
+    ruta: Requerimientos
+    texto: >-
+      Materiales de la partida con su saldo, EPP y útiles de oficina con kits
+      armados.
+    imagen: screenshots/05-pedidos.png
+  - titulo: Valorizaciones de la contrata
+    ruta: Valorizaciones y pagos
+    texto: >-
+      Detalle con deductivos, fondo de garantía, detracción y el neto a su
+      cuenta.
+    imagen: screenshots/06-valorizacion.png
+
+novedades:
+  - version: '1.20261024'
+    fecha: 24/10/2026
+    cambios:
+    - "Primera versión: aplicación de obra instalable y sin señal con servicios JSON, ingreso por QR y PIN, parte diario, tareo por partida, catálogos con kits, recepción y devolución (requerimiento CREVAL v1.0, 4.11)."
+
+relacionados: [al_construction_planner_subcontract, al_construction_material_request, al_construction_attendance, al_construction_planner_crew]

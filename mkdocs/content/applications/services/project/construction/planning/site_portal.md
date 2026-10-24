@@ -8,6 +8,10 @@ Las contratas reportan su avance desde el celular, el personal marca su
 ingreso en la tablet de la obra y el costo de la planilla llega a la obra, a
 la etapa y a la partida que le corresponden.
 
+!!! tip "Aplicación de obra"
+    Para trabajar sin señal desde el celular o la tablet, vea la
+    [Aplicación de obra en el celular](field_app.md).
+
 ## Portal de la contrata
 
 El usuario de portal de una contrata (un contacto de la empresa de la

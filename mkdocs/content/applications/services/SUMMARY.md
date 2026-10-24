@@ -26,6 +26,7 @@
             * [Receta, rótulos, presupuesto y moneda](project/construction/planning/recipe_calc.md)
             * [Material extra y descuento a la contrata](project/construction/planning/extra_material.md)
             * [Portal de obra, sedes y marcación](project/construction/planning/site_portal.md)
+            * [Aplicación de obra en el celular](project/construction/planning/field_app.md)
             * [Adicionales, deductivos y dependencias](project/construction/planning/changes.md)
             * [Control y personal propio](project/construction/planning/control.md)
             * [Tramos, analítica y presupuesto](project/construction/planning/analytic_budget.md)

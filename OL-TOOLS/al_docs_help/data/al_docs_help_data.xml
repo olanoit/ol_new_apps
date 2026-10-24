@@ -547,6 +547,22 @@
         <field name="path">applications/services/project/construction/planning/production_order/</field>
         <field name="section">Mobiliario: módulos, productos y envíos</field>
     </record>
+    <record id="help_construction_daily_report" model="al.docs.help">
+        <field name="key">construction.daily.report</field>
+        <field name="kind">model</field>
+        <field name="name">Parte diario de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_daily_report_staff" model="al.docs.help">
+        <field name="key">construction.daily.report.staff</field>
+        <field name="kind">model</field>
+        <field name="name">Personal del parte diario</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
     <record id="help_construction_dependency" model="al.docs.help">
         <field name="key">construction.dependency</field>
         <field name="kind">model</field>
@@ -930,6 +946,70 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/execution/#ejecución-en-planificación-de-obra</field>
         <field name="section">Ejecución en Planificación de obra</field>
+    </record>
+    <record id="help_construction_portal_kit" model="al.docs.help">
+        <field name="key">construction.portal.kit</field>
+        <field name="kind">model</field>
+        <field name="name">Kit del portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_portal_kit_line" model="al.docs.help">
+        <field name="key">construction.portal.kit.line</field>
+        <field name="kind">model</field>
+        <field name="name">Producto del kit del portal</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_portal_member" model="al.docs.help">
+        <field name="key">construction.portal.member</field>
+        <field name="kind">model</field>
+        <field name="name">Personal del portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_portal_pin_wizard" model="al.docs.help">
+        <field name="key">construction.portal.pin.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">PIN del portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_portal_service" model="al.docs.help">
+        <field name="key">construction.portal.service</field>
+        <field name="kind">model</field>
+        <field name="name">Servicios del portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_portal_submission" model="al.docs.help">
+        <field name="key">construction.portal.submission</field>
+        <field name="kind">model</field>
+        <field name="name">Envío del portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
+    </record>
+    <record id="help_construction_portal_tareo" model="al.docs.help">
+        <field name="key">construction.portal.tareo</field>
+        <field name="kind">model</field>
+        <field name="name">Tareo de la cuadrilla</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/#quién-entra-y-cómo</field>
+        <field name="section">Quién entra y cómo</field>
+    </record>
+    <record id="help_construction_portal_token" model="al.docs.help">
+        <field name="key">construction.portal.token</field>
+        <field name="kind">model</field>
+        <field name="name">Sesión del portal de obra</field>
+        <field name="module">al_construction_portal</field>
+        <field name="path">applications/services/project/construction/planning/field_app/</field>
+        <field name="section">Aplicación de obra en el celular</field>
     </record>
     <record id="help_construction_product_create_wizard" model="al.docs.help">
         <field name="key">construction.product.create.wizard</field>
