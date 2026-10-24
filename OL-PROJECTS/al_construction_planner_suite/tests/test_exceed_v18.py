@@ -112,8 +112,9 @@ class TestRepeatAndRework(TestContracts):
         self._approve(second)
 
     def test_rework_paid_apart(self):
-        """Criterio: un re-trabajo con motivo «mal armado» se liquida sin bloqueo
-        y queda separado en el análisis de control."""
+        """Criterio: un re-trabajo con motivo «mal armado» entra con 0 a liquidar
+        (CREVAL v1.0, CR-08); si el validador decide pagarlo, se liquida sin
+        bloqueo y queda separado en el análisis de control."""
         self._assign_installation()
         self._confirm_order()
         line = self._line('Dpto 501', 'INB')
@@ -129,6 +130,9 @@ class TestRepeatAndRework(TestContracts):
         settlement = self._settle(date(2026, 11, 5))
         rework_line = settlement.line_ids.filtered('is_rework')
         self.assertEqual(rework_line.rework_reason, 'bad_assembly')
+        self.assertAlmostEqual(rework_line.qty_settle, 0.0)
+        rework_line.with_user(self.planner).write({
+            'rework_paid': True, 'rework_pay_reason': 'Cambio del cliente después del armado'})
         self.assertAlmostEqual(rework_line.qty_settle, 1.0)
         self.assertFalse(settlement.needs_head_authorization)
         self._approve(settlement)

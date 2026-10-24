@@ -49,8 +49,8 @@ class ConstructionPlanPriceWizard(models.TransientModel):
     price_current = fields.Monetary(
         string='Costo actual', compute='_compute_suggestions', currency_field='currency_id',
         help='Costo que tienen hoy las líneas destino (el primero si difieren).')
-    price_unit = fields.Monetary(
-        string='Costo que se aplica', required=True, currency_field='currency_id',
+    price_unit = fields.Float(
+        string='Costo que se aplica', required=True, digits='Product Price',
         compute='_compute_price_unit', store=True, readonly=False, precompute=True,
         help='Lo escribe el planificador; la base solo lo sugiere.')
     line_ids = fields.Many2many(

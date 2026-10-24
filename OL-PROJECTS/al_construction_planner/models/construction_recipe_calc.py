@@ -140,7 +140,7 @@ class ConstructionExecutionTemplateLine(models.Model):
             return True
         return super().write(vals)
 
-    amount_unit = fields.Monetary(recursive=True)
+    amount_unit = fields.Float(recursive=True)
 
     @api.depends('qty', 'price_unit', 'product_id.standard_price', 'calc_method', 'calc_pct',
                  'line_currency_id', 'template_id.line_ids.amount_unit')

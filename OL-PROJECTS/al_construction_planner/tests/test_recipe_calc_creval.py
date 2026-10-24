@@ -17,6 +17,8 @@ class TestRecipeCalc(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         env = cls.env
+        # Cuatro decimales en «Precio del producto», como CREVAL (CR-03).
+        env.ref('product.decimal_price').digits = 4
         env['tier.definition'].search([('model', '=', 'construction.resource.plan')]).active = False
         cls.m2 = env.ref('uom.product_uom_square_meter')
         cls.hour = env.ref('uom.product_uom_hour')
@@ -47,8 +49,8 @@ class TestRecipeCalc(TransactionCase):
         labor, brick, tools = self.recipe.line_ids.sorted('id')
         self.assertAlmostEqual(labor.amount_unit, 6.46)
         self.assertAlmostEqual(tools.qty, 0.03)
-        # 3 % × 6.46 = 0.1938, que el monto redondea a 0.19.
-        self.assertEqual(tools.amount_unit, 0.19)
+        # 3 % × 6.46 = 0.1938: la línea no redondea; la receta, una sola vez.
+        self.assertAlmostEqual(tools.amount_unit, 0.1938)
         self.assertEqual(self.env.company.currency_id.round(self.recipe.amount_unit), 43.78)
         with self.assertRaises(ValidationError):
             tools.calc_pct = 0.0
@@ -142,3 +144,29 @@ class TestRecipeCalc(TransactionCase):
         self.assertTrue(line.is_foreign_currency)
         self.assertAlmostEqual(line.price_unit_planned, 630.0)
         self.assertAlmostEqual(line.amount_planned, 6300.0)
+
+    # CR-03: el costo unitario conserva los decimales del precio y la receta
+    # redondea una sola vez (el ladrillo a 0.9661 no pasa a 0.97).
+    def test_unit_cost_precision(self):
+        recipe = self.env['construction.execution.template'].create({
+            'code': 'CALC-R02', 'name': 'Muro de ladrillo KK (test)', 'uom_id': self.m2.id,
+            'line_ids': [
+                Command.create({'resource_type': 'material', 'product_id': self.brick.id,
+                                'stage': 'calc_test_stage', 'product_uom_id': self.m2.id,
+                                'qty': 54.0, 'price_unit': 0.9661}),
+                Command.create({'resource_type': 'material', 'product_id': self.tools.id,
+                                'stage': 'calc_test_stage', 'product_uom_id': self.unit.id,
+                                'qty': 0.333333, 'price_unit': 0.66}),
+            ]})
+        brick, other = recipe.line_ids.sorted('id')
+        self.assertEqual(brick.price_unit, 0.9661)
+        self.assertAlmostEqual(brick.amount_unit, 52.1694)
+        # 52.1694 + 0.2200 = 52.3894 → 52.39 (por línea saldría 52.38 + 0.22).
+        self.assertEqual(recipe.amount_unit, 52.39)
+        project, partida = self._project()
+        partida.construction_execution_template_id = recipe
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        line = plan.line_ids.filtered(lambda l: l.product_id == self.brick)
+        self.assertEqual(line.price_unit_planned, 0.9661)
+        self.assertAlmostEqual(line.amount_planned, round(5400.0 * 0.9661, 2))

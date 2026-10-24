@@ -23,6 +23,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise y los módulos OCA de requerimientos de compra y de aprobación
   por niveles. Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '17.20261023'
+  fecha: 24/10/2026
+  cambios:
+  - "Corrección CR-08 de la prueba CREVAL: la prueba del re-trabajo marca el pago con su motivo antes de liquidarlo."
 - version: '16.20261023'
   fecha: 23/10/2026
   cambios:

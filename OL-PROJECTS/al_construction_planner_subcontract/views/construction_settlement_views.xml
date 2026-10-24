@@ -126,6 +126,12 @@
                                            readonly="is_rework"/>
                                     <field name="manual_reason" optional="show"
                                            required="pct_manual" readonly="is_rework"/>
+                                    <field name="rework_paid" optional="show"
+                                           readonly="not is_rework"
+                                           groups="al_construction_planner.group_planner_exec_validator"/>
+                                    <field name="rework_pay_reason" optional="show"
+                                           required="rework_paid" readonly="not is_rework"
+                                           groups="al_construction_planner.group_planner_exec_validator"/>
                                     <field name="is_manual" optional="hide" readonly="1"/>
                                     <field name="manual_over" column_invisible="True"/>
                                     <field name="qty_settle" readonly="1"/>

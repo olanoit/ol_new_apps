@@ -25,6 +25,11 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '7.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Corrección CR-08 de la prueba CREVAL del 24-oct: el avance de re-trabajo entra a la valorización con 0 a liquidar y queda en la revisión; solo se paga si quien valida la ejecución marca «Pagar el re-trabajo» con su motivo. Sin pagar, no va en la factura."
+  - "Corrección CR-09: «Actualizar» la valorización conserva los deductivos que ya estaban en ella y recalcula los montos; antes los soltaba y volvían a Pendiente."
 - version: '6.20261016'
   fecha: 24/10/2026
   cambios:

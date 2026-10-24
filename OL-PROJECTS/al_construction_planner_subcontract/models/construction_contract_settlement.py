@@ -586,7 +586,7 @@ class ConstructionContractSettlement(models.Model):
                 'kind': 'rework', 'plan_id': self.plan_id.id, 'project_id': self.project_id.id,
                 'company_id': self.company_id.id, 'plan_line_id': plan_line.id,
                 'task_id': plan_line.task_id.id, 'activity_id': line.activity_id.id,
-                'partner_id': self.partner_id.id, 'qty': line.qty_settle,
+                'partner_id': self.partner_id.id, 'qty': line.qty_period,
                 'uom_id': line.uom_id.id, 'amount': line.amount,
                 'rework_reason': line.rework_reason,
                 'reason': dict(REWORK_REASONS).get(line.rework_reason),
@@ -638,7 +638,7 @@ class ConstructionContractSettlement(models.Model):
         invoice = self.env['account.move'].with_company(self.company_id).with_context(
             default_move_type='in_invoice').create(vals)
         line_vals = []
-        for line in self.line_ids:
+        for line in self.line_ids.filtered(lambda l: not l.is_rework or l.rework_paid):
             values = line.purchase_line_id._prepare_account_move_line(invoice)
             values['quantity'] = line.qty_settle
             if line.is_rework:
@@ -765,6 +765,14 @@ class ConstructionContractSettlementLine(models.Model):
         help='Parte del driver que repite lo ya liquidado de la misma actividad, módulo y '
              'unidad: espera la autorización de la jefatura.')
     is_repeat = fields.Boolean(string='Pago repetido', compute='_compute_is_repeat', store=True)
+    # El re-trabajo entra con 0 a liquidar y queda en la revisión; solo se
+    # paga si el validador lo decide con motivo (CREVAL v1.0, CR-08).
+    rework_paid = fields.Boolean(
+        string='Pagar el re-trabajo',
+        help='Lo marca quien valida la ejecución, con su motivo. Sin marcar, el re-trabajo no se '
+             'paga.')
+    rework_pay_reason = fields.Text(string='Motivo del pago del re-trabajo')
+    rework_paid_by = fields.Many2one('res.users', string='Pago decidido por', readonly=True)
     # Porcentaje manual (v1.8, M18-09): la línea propone el avance validado y
     # admite otro porcentaje con motivo, marcado como manual.
     pct_validated = fields.Float(
@@ -800,11 +808,12 @@ class ConstructionContractSettlementLine(models.Model):
             line.is_repeat = bool(line.uom_id) and line.uom_id.compare(line.qty_repeat, 0.0) > 0 \
                 if line.uom_id else line.qty_repeat > 0
 
-    @api.depends('qty_period', 'pct_manual', 'qty_settled_before', 'is_rework')
+    @api.depends('qty_period', 'pct_manual', 'qty_settled_before', 'is_rework', 'rework_paid')
     def _compute_qty_settle(self):
         for line in self:
             if line.is_rework or not line.pct_manual:
-                line.qty_settle = line.qty_period
+                line.qty_settle = line.qty_period \
+                    if not line.is_rework or line.rework_paid else 0.0
                 line.is_manual = False
                 line.manual_over = False
                 continue
@@ -814,6 +823,21 @@ class ConstructionContractSettlementLine(models.Model):
             line.is_manual = True
             uom = line.uom_id
             line.manual_over = bool(uom) and uom.compare(line.qty_settle, line.qty_period) > 0
+
+    def _check_rework_payment(self, vals):
+        """Pagar un re-trabajo lo decide quien valida la ejecución, con
+        motivo y con la liquidación abierta (CR-08)."""
+        if any(not line.is_rework for line in self):
+            raise UserError(self.env._('Solo las líneas de re-trabajo se marcan para pagar.'))
+        if any(line.settlement_id.state not in ('draft', 'submitted') for line in self):
+            raise UserError(self.env._(
+                'El pago del re-trabajo se decide con la liquidación en borrador o presentada.'))
+        if not self.env.user.has_groups(EXEC_VALIDATOR_GROUP):
+            raise UserError(self.env._('Pagar un re-trabajo lo decide quien valida la ejecución.'))
+        if vals['rework_paid'] and not (vals.get('rework_pay_reason') or all(
+                line.rework_pay_reason for line in self)):
+            raise UserError(self.env._('Pagar un re-trabajo pide su motivo.'))
+        return dict(vals, rework_paid_by=self.env.user.id if vals['rework_paid'] else False)
 
     def _qty_to_receive(self):
         """Lo que se recibe en la OC: lo liquidado menos lo repetido."""
@@ -857,6 +881,8 @@ class ConstructionContractSettlementLine(models.Model):
                         manual_date=fields.Datetime.now() if vals.get('pct_manual') else False)
             self.settlement_id.filtered('head_authorized_by').write(
                 {'head_authorized_by': False, 'head_authorized_on': False})
+        if 'rework_paid' in vals:
+            vals = self._check_rework_payment(vals)
         res = super().write(vals)
         if 'pct_manual' in vals:
             for line in self:

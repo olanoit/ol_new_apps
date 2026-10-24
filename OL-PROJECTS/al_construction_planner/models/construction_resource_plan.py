@@ -874,8 +874,9 @@ class ConstructionResourcePlanLine(models.Model):
         'construction.typology', string='Tipología', check_company=True)
     product_uom_id = fields.Many2one('uom.uom', string='Unidad', required=True)
     qty_planned = fields.Float(string='Cantidad', digits='Product Unit', required=True)
-    price_unit_planned = fields.Monetary(
-        string='Costo unitario', currency_field='currency_id',
+    # Precisión de «Precio del producto»; el monto se redondea una vez (CR-03).
+    price_unit_planned = fields.Float(
+        string='Costo unitario', digits='Product Price',
         help='Lo escribe el planificador después de revisar los precios de compra; en '
              'contratas, la tarifa vigente es la referencia.')
     amount_planned = fields.Monetary(

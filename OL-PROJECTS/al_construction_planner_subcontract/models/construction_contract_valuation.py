@@ -324,14 +324,19 @@ class ConstructionContractSettlement(models.Model):
         """Deductivos pendientes de la orden hasta el corte."""
         self.ensure_one()
         Deduction = self.env['construction.contract.deduction'].sudo()
-        pending = Deduction.search([
-            ('purchase_order_id', '=', self.purchase_order_id.id), ('state', '=', 'pending'),
-            ('date', '<=', self.period_end)])
-        released = (self.sudo().deduction_ids - pending).filtered(
+        # Los que ya están en esta valorización se quedan: «Actualizar» los
+        # soltaba y volvían a Pendiente (CREVAL v1.0, CR-09).
+        current = Deduction.search([
+            ('purchase_order_id', '=', self.purchase_order_id.id),
+            ('date', '<=', self.period_end),
+            '|', ('state', '=', 'pending'),
+            '&', ('state', '=', 'in_valuation'), ('settlement_id', '=', self.id)])
+        released = (self.sudo().deduction_ids - current).filtered(
             lambda d: d.state == 'in_valuation')
         released.with_context(construction_deduction_sync=True).write(
             {'state': 'pending', 'settlement_id': False})
-        pending.with_context(construction_deduction_sync=True).write(
+        current.filtered(lambda d: d.state == 'pending').with_context(
+            construction_deduction_sync=True).write(
             {'state': 'in_valuation', 'settlement_id': self.id})
 
     # ------------------------------------------------------------------
@@ -670,7 +675,8 @@ class ConstructionContractSettlement(models.Model):
         invoice = self.env['account.move'].with_company(company).with_context(
             default_move_type='in_invoice').create(vals)
         service_vals = []
-        for line in self.line_ids:
+        # El re-trabajo sin pagar no entra (CR-08).
+        for line in self.line_ids.filtered(lambda l: not l.is_rework or l.rework_paid):
             values = line.purchase_line_id._prepare_account_move_line(invoice)
             values['quantity'] = line.qty_settle
             service_vals.append(values)
@@ -973,7 +979,7 @@ class ConstructionContractSettlementLine(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if 'pct_manual' in vals:
+        if {'pct_manual', 'rework_paid'} & set(vals):
             self.settlement_id._terms_recompute()
         return res
 

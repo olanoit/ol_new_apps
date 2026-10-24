@@ -110,8 +110,9 @@ para cargar muchos niveles a la vez.
 ### Re-trabajo
 
 Un avance marcado **Re-trabajo**, con su **Motivo del re-trabajo**
-(**Cambio**, **Faltante** o **Mal armado**), se paga en una línea propia de la
-liquidación, sin bloqueo. No suma al ejecutado de la línea del plan ni a su
+(**Cambio**, **Faltante** o **Mal armado**), entra en una línea propia de la
+liquidación con 0 en **A liquidar**. Solo se paga si quien valida la ejecución
+marca **Pagar el re-trabajo** con su motivo; queda quién lo decidió. No suma al ejecutado de la línea del plan ni a su
 saldo, y queda separado en **Excesos autorizados**. El filtro **Re-trabajos**
 de la lista de avances los reúne.
 

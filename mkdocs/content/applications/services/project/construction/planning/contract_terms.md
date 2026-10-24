@@ -60,8 +60,11 @@ en la lista lo hace para todas las órdenes de una obra. La pestaña **Resumen d
 periodo** muestra cada concepto del esquema con su contractual, anterior,
 actual, acumulado y saldo; la franja **Revisar antes de aprobar** avisa de
 metrados escritos a mano, re-trabajos, líneas sobre lo contratado y avances sin
-fotos. Se presenta (Ejecución: ejecuta), se valida (Ejecución: valida) y se
-aprueba por niveles; al aprobar se recibe en la orden y se crea la factura:
+fotos. Un re-trabajo entra con 0 en **A liquidar**: solo se paga si quien
+valida la ejecución marca **Pagar el re-trabajo** con su motivo. **Actualizar**
+rehace las líneas y conserva los deductivos que ya estaban en la valorización.
+Se presenta (Ejecución: ejecuta), se valida (Ejecución: valida) y se aprueba por
+niveles; al aprobar se recibe en la orden y se crea la factura:
 
 - las líneas del servicio y los ajustes de precio;
 - una línea negativa por **deductivo** (o un asiento si se descuenta al pago);

@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261016 — 24/10/2026
+
+- Corrección CR-08 de la prueba CREVAL del 24-oct: el avance de re-trabajo entra a la valorización con 0 a liquidar y queda en la revisión; solo se paga si quien valida la ejecución marca «Pagar el re-trabajo» con su motivo. Sin pagar, no va en la factura.
+- Corrección CR-09: «Actualizar» la valorización conserva los deductivos que ya estaban en ella y recalcula los montos; antes los soltaba y volvían a Pendiente.
+
 ## 6.20261016 — 24/10/2026
 
 - Deductivos: los creados a la vez ya no repiten número, y borrar uno pendiente no hace que el siguiente repita el del último; el número sigue al mayor de la obra.

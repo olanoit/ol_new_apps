@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '12.20261024'
+  fecha: 24/10/2026
+  cambios:
+    - "Corrección CR-03 de la prueba CREVAL: el costo que aplica «Revisar costos del plan» guarda los decimales de «Precio del producto»."
 - version: '11.20261024'
   fecha: 24/10/2026
   cambios:

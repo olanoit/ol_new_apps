@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 46.20261016 — 24/10/2026
+
+- Corrección CR-03 de la prueba CREVAL del 24-oct: el costo unitario de la línea de receta y de la línea del plan guarda los decimales de «Precio del producto» (el ladrillo a 0.9661 ya no pasa a 0.97) y la receta redondea su costo por unidad una sola vez. Las recetas importadas antes conservan el costo ya redondeado: vuelva a importarlas.
+
 ## 45.20261016 — 24/10/2026
 
 - Quien solo tiene «Plan: consulta» ya ve la aplicación Planificación de obra (antes el menú raíz pedía «Reporta avance»).

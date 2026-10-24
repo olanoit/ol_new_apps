@@ -101,8 +101,10 @@ class ConstructionExecutionTemplateLine(models.Model):
                        default=1.0)
     product_uom_id = fields.Many2one('uom.uom', string='Unidad', required=True,
                                      default=lambda self: self.env.ref('uom.product_uom_unit'))
-    price_unit = fields.Monetary(
-        string='Costo unitario', currency_field='currency_id',
+    # Con la precisión de «Precio del producto»: el APU trae costos como
+    # 0.9661 por ladrillo (CREVAL v1.0, CR-03).
+    price_unit = fields.Float(
+        string='Costo unitario', digits='Product Price',
         help='Vacío: el costo del producto o la tarifa de la actividad al generar.')
     productivity = fields.Float(
         string='Rendimiento', digits=(16, 4),
@@ -110,8 +112,9 @@ class ConstructionExecutionTemplateLine(models.Model):
     crew_size = fields.Float(
         string='Personas', default=1.0,
         help='Cuántos de este rol tiene la cuadrilla (1 operario, 1 oficial, 0.5 peón).')
-    amount_unit = fields.Monetary(
-        string='Costo por unidad', compute='_compute_amount_unit', currency_field='currency_id')
+    # Sin redondear a la moneda: la receta redondea una sola vez la suma (CR-03).
+    amount_unit = fields.Float(
+        string='Costo por unidad', compute='_compute_amount_unit', digits='Product Price')
     note = fields.Char(string='Nota')
 
     @api.depends('qty', 'price_unit', 'product_id.standard_price')

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261024 — 24/10/2026
+
+- Corrección CR-03 de la prueba CREVAL: el costo que aplica «Revisar costos del plan» guarda los decimales de «Precio del producto».
+
 ## 11.20261024 — 24/10/2026
 
 - Paquete 1.11, M111-20 E: «¿Para qué es el material?» empieza por las etapas, muestra la planta debajo y solo los niveles que llevan la etapa elegida; «Tarea del Gantt» pasa a ser una sola, con su nota y aviso. Con niveles, «Tarea» se oculta en la cabecera.

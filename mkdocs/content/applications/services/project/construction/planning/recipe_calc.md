@@ -17,7 +17,12 @@ Cada línea de la receta (y del plan) tiene su **Forma de cálculo**:
   nivel superior, del mismo nivel 1 o de toda la obra.
 
 Las líneas por porcentaje se recalculan al cambiar su base y no se piden ni se
-compran. En **Importar recetas y niveles**, las columnas **Forma de cálculo**,
+compran.
+
+El **Costo unitario** de la línea de la receta y del plan guarda los decimales de
+**Precio del producto** (Inventario ‣ Configuración ‣ Precisión decimal): un
+ladrillo a 0.9661 no pasa a 0.97. El costo por unidad de la receta y el monto de
+cada línea del plan se redondean una sola vez, a la moneda. En **Importar recetas y niveles**, las columnas **Forma de cálculo**,
 **Porcentaje** y **Moneda**; la unidad «%MO» se lee como porcentaje de la mano de
 obra.
 

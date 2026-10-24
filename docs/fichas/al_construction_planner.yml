@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '46.20261016'
+    fecha: 24/10/2026
+    cambios:
+      - "Corrección CR-03 de la prueba CREVAL del 24-oct: el costo unitario de la línea de receta y de la línea del plan guarda los decimales de «Precio del producto» (el ladrillo a 0.9661 ya no pasa a 0.97) y la receta redondea su costo por unidad una sola vez. Las recetas importadas antes conservan el costo ya redondeado: vuelva a importarlas."
   - version: '45.20261016'
     fecha: 24/10/2026
     cambios:
