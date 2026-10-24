@@ -15,7 +15,7 @@
                     <button name="action_process" type="object" string="Procesar" class="oe_highlight"
                             invisible="state != 'approved'" data-hotkey="v"
                             groups="al_construction_material_request.group_construction_logistics"
-                            confirm="Se reservará lo disponible en el almacén central y el faltante pasará a compras. ¿Continuar?"/>
+                            confirm="Se reservará lo disponible en el almacén de origen de cada línea y el faltante pasará a compras. ¿Continuar?"/>
                     <button name="%(al_construction_material_request.action_report_construction_request)d"
                             type="action" string="Imprimir vale" data-hotkey="k"/>
                     <button name="%(al_construction_material_request.action_report_construction_request_dispatch_slip)d"
@@ -181,7 +181,7 @@
                                                     <field name="product_uom_id" groups="uom.group_uom" class="small"/>
                                                 </span>
                                                 <span class="ms-auto">
-                                                    En central: <field name="qty_available_now"/>
+                                                    En origen: <field name="qty_available_now"/>
                                                 </span>
                                             </div>
                                             <div class="text-muted" t-if="record.qty_received_on_site.raw_value">
@@ -377,7 +377,7 @@
             <p class="o_view_nocontent_smiling_face">Pida materiales para su obra</p>
             <p>
                 Indique la obra, los materiales y la fecha requerida. Una vez aprobado,
-                logística despacha lo que hay en el almacén central y el resto pasa a compras.
+                logística despacha lo que hay en el almacén de origen y el resto pasa a compras.
             </p>
         </field>
     </record>

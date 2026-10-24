@@ -27,7 +27,7 @@ class TestReport(ConstructionRequestCommon):
         html = self._render(request, user=self.requester)
         self.assertIn('Vale de requerimiento de obra', html)
         self.assertIn(request.name, html)
-        self.assertIn('Disponible en central', html)
+        self.assertIn('Disponible en origen', html)
         self.assertIn('02.01 Concreto (test)', html)
         self.assertIn('Sin aprobaciones registradas', html)
         self.assertIn('Recibido en obra', html)  # firma

@@ -90,7 +90,7 @@
                             <td class="text-end" style="width: 10%;">Recibido en obra</td>
                         </t>
                         <t t-else="">
-                            <td class="text-end" style="width: 13%;">Disponible en central</td>
+                            <td class="text-end" style="width: 13%;">Disponible en origen</td>
                         </t>
                     </tr>
                 </thead>

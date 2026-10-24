@@ -109,7 +109,8 @@ class TestPackage111Options(TestDispatchSlip):
         self.assertNotIn(root.id, self.env['ir.ui.menu'].with_user(user)._visible_menu_ids())
 
     # M111-20 C
-    def test_source_by_route(self):
+    def _north_warehouse(self):
+        """Almacén «Planta norte» con su ruta a obras para los fierros."""
         Warehouse = self.env['stock.warehouse']
         other = Warehouse.create({'name': 'Planta norte (test)', 'code': 'PNT',
                                   'company_id': self.company.id})
@@ -130,6 +131,10 @@ class TestPackage111Options(TestDispatchSlip):
         category = self.env['product.category'].create({
             'name': 'Fierros (test)', 'route_ids': [(6, 0, route.ids)]})
         self.steel.categ_id = category
+        return other, other_type
+
+    def test_source_by_route(self):
+        other, other_type = self._north_warehouse()
         self._set_stock(self.cement, self.stock, 150)
         self._set_stock(self.steel, other.lot_stock_id, 80)
         request = self._approved_request(lines=[(self.cement, 100), (self.steel, 50)])
@@ -149,6 +154,36 @@ class TestPackage111Options(TestDispatchSlip):
         self.assertFalse(request.purchase_request_ids)
         self._validate(north)
         self.assertEqual(steel_line.qty_dispatched, 50.0)
+
+    def test_shortage_received_at_line_source(self):
+        """El faltante de una línea con otro origen se compra con la recepción
+        de ese almacén: lo recibido reserva la salida a obra en espera."""
+        other, other_type = self._north_warehouse()
+        self._set_stock(self.steel, other.lot_stock_id, 30)
+        request = self._approved_request(lines=[(self.cement, 10), (self.steel, 50)])
+        steel_line = request.line_ids.filtered(lambda l: l.product_id == self.steel)
+        self._process(request)
+        self.assertEqual(steel_line.qty_to_purchase, 20.0)
+        self.assertEqual(len(request.purchase_request_ids), 2)
+        north_request = request.purchase_request_ids.filtered(
+            lambda r: r.picking_type_id == other.in_type_id)
+        self.assertEqual(north_request.line_ids.product_id, self.steel)
+        central_request = request.purchase_request_ids - north_request
+        self.assertEqual(central_request.picking_type_id,
+                         self.company.construction_pr_picking_type_id)
+        pending = request.picking_ids.filtered(
+            lambda p: p.location_id == other.lot_stock_id and p.state == 'waiting')
+        self.assertEqual(pending.move_ids.product_uom_qty, 20.0)
+        body = request.message_ids.filtered(
+            lambda m: 'Requerimiento procesado' in (m.body or ''))[:1].body
+        self.assertIn(north_request.name, body)
+        self.assertIn(central_request.name, body)
+        order = self._buy(north_request)
+        receipt = order.picking_ids
+        self.assertEqual(receipt.location_dest_id, other.lot_stock_id)
+        self._validate(receipt)
+        self.assertEqual(pending.state, 'assigned')
+        self.assertEqual(pending.move_ids.quantity, 20.0)
 
     def test_source_without_routes_is_default(self):
         request = self._approved_request(lines=[(self.cement, 10)])

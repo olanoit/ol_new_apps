@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 26.20261024 — 24/10/2026
+
+- Paquete 1.11, M111-20 C: el faltante de una línea que sale de otro almacén se compra con la recepción de ese almacén (un requerimiento de compra por almacén), para que lo recibido reserve la salida a obra en espera.
+- Paquete 1.11, M111-20 C: los textos «En central» y «Disponible en central» pasan a «En origen» y «Disponible en origen».
+- Paquete 1.11, M111-20 A: el «Solicitante interno» lee, escribe y crea requerimientos, pero no los borra.
+
 ## 25.20261024 — 24/10/2026
 
 - Paquete 1.11, M111-19 B: el vale de despacho tiene firmas configurables (obra e interno), «Despachado por» en blanco antes de validar si se elige, y la columna «Despachado antes» opcional.

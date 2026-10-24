@@ -247,10 +247,16 @@ class ConstructionMaterialRequest(models.Model):
             raise UserError(_(
                 'Configure la recepción de los requerimientos de compra en '
                 'Inventario ▸ Ajustes ▸ Requerimientos de obra.'))
-        vals = self._prepare_purchase_request_vals()
-        vals['line_ids'] = [
-            (0, 0, self._prepare_purchase_request_line_vals(line)) for line in lines]
-        purchase_request = self.env['purchase.request'].create(vals)
+        # Un requerimiento de compra por almacén de origen: la compra se recibe
+        # donde espera la salida a obra, si no la cadena no reserva (M111-20 C).
+        vals_list = []
+        for picking_type, group in self._group_by_receipt_type(lines):
+            vals = self._prepare_purchase_request_vals()
+            vals['picking_type_id'] = picking_type.id
+            vals['line_ids'] = [
+                (0, 0, self._prepare_purchase_request_line_vals(line)) for line in group]
+            vals_list.append(vals)
+        purchase_request = self.env['purchase.request'].create(vals_list)
         # Ya se aprobó el requerimiento de obra: no se vuelve a aprobar
         # (plan §F1.3, punto 6).
         purchase_request.button_approved()
@@ -260,6 +266,20 @@ class ConstructionMaterialRequest(models.Model):
             pending_picking = self._create_pending_purchase_picking(
                 central_lines, purchase_request)
         return purchase_request, pending_picking
+
+    def _group_by_receipt_type(self, lines):
+        """[(tipo de recepción, líneas)]: la recepción de la compañía para su
+        almacén y la del almacén de origen de la línea para los demás."""
+        self.ensure_one()
+        default_type = self.company_id.construction_pr_picking_type_id
+        groups = {}
+        for line in lines:
+            warehouse = line._get_source_location().warehouse_id
+            picking_type = default_type
+            if warehouse and warehouse.in_type_id and warehouse != default_type.warehouse_id:
+                picking_type = warehouse.in_type_id
+            groups[picking_type] = groups.get(picking_type, line.browse()) | line
+        return sorted(groups.items(), key=lambda item: item[0] != default_type)
 
     def _create_pending_purchase_picking(self, lines, purchase_request):
         """Vía almacén central: movimiento central → obra que espera la compra.

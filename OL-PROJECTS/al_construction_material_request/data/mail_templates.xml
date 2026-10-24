@@ -30,9 +30,9 @@
                 En espera de la compra (<t t-out="one_pending.location_dest_id.display_name"/>):
                 <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="one_pending.id" t-out="one_pending.name"/>
             </div>
-            <div t-if="purchase_request">
-                Requerimiento de compra:
-                <a href="#" data-oe-model="purchase.request" t-att-data-oe-id="purchase_request.id" t-out="purchase_request.name"/>
+            <div t-foreach="purchase_request" t-as="one_request">
+                Requerimiento de compra<t t-if="len(purchase_request) &gt; 1"> (<t t-out="one_request.picking_type_id.warehouse_id.name"/>)</t>:
+                <a href="#" data-oe-model="purchase.request" t-att-data-oe-id="one_request.id" t-out="one_request.name"/>
             </div>
             <div t-if="shortages" class="mt-2 text-warning">
                 <i class="fa fa-exclamation-triangle"/>
