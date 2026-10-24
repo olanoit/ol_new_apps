@@ -124,6 +124,24 @@ FOOTER_LINES = (
 )
 
 
+def _date(value):
+    """Fecha de una celda (fecha, número de serie de la hoja o texto)."""
+    from datetime import date, datetime, timedelta
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, (int, float)) and value > 0:
+        return date(1899, 12, 30) + timedelta(days=int(value))
+    text = _text(value)
+    for pattern in ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y'):
+        try:
+            return datetime.strptime(text, pattern).date()
+        except ValueError:
+            continue
+    return False
+
+
 class ConstructionBudgetBookWizard(models.TransientModel):
     _name = 'construction.budget.book.wizard'
     _description = 'Importar el libro de APU y presupuesto'
@@ -342,6 +360,31 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if count > 1:
                 warnings.append(self.env._('El ítem %(item)s aparece %(count)s veces.',
                                            item=item, count=count))
+        # PLAN (hoja de trabajo, 6.7): modalidad final y fechas por partida.
+        book['plan'] = {}
+        plan_rows = sheets.get('PLAN', [])
+        if plan_rows:
+            names = [norm(_text(cell)) for cell in plan_rows[0]]
+            index = {key: names.index(norm(header)) for key, header in (
+                ('item', 'Ítem'), ('mode', 'Modalidad final'), ('start', 'Inicio'),
+                ('end', 'Fin')) if norm(header) in names}
+            for number, row in enumerate(plan_rows[1:], start=2):
+                item = _text(row[index['item']]) if 'item' in index and \
+                    index['item'] < len(row) else ''
+                if not item:
+                    continue
+                mode_text = norm(_text(row[index['mode']])) if 'mode' in index and \
+                    index['mode'] < len(row) else ''
+                if mode_text and mode_text not in MODES:
+                    errors.append(('PLAN', number, 'mode', self.env._(
+                        'La modalidad «%s» no es válida.', _text(row[index['mode']]))))
+                book['plan'][item] = {
+                    'mode': MODES.get(mode_text),
+                    'start': _date(row[index['start']]) if 'start' in index and
+                    index['start'] < len(row) else False,
+                    'end': _date(row[index['end']]) if 'end' in index and
+                    index['end'] < len(row) else False,
+                }
         unnumbered = [p for p in book['partidas'] if not p['item']]
         if unnumbered:
             warnings.append(self.env._('%s partidas sin número de ítem.', len(unnumbered)))
@@ -727,6 +770,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             else:
                 plan = Plan.create({'project_id': project.id})
         blocked = []
+        task_dates = {}
         tasks = Task
         for line, task in by_line.items():
             partida = partida_by_line.get(line)
@@ -743,7 +787,16 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if recipe:
                 values['construction_execution_template_id'] = recipe.id
             task.with_context(construction_plan_force=True).write(values)
-            mode = (partida or {}).get('mode') or (recipe.execution_mode if recipe else False)
+            planned = book.get('plan', {}).get(line.construction_budget_item) or {}
+            mode = planned.get('mode') or (partida or {}).get('mode') or (
+                recipe.execution_mode if recipe else False)
+            dates = {}
+            if planned.get('end'):
+                dates['date_deadline'] = planned['end']
+            if planned.get('start') and 'planned_date_begin' in task._fields:
+                dates['planned_date_begin'] = planned['start']
+            if dates:
+                task_dates[task] = dates
             if mode:
                 task.with_context(construction_plan_force=True).construction_execution_mode = mode
             if recipe:
@@ -754,6 +807,10 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             self.env['construction.plan.recipe.wizard'].create({
                 'plan_id': plan.id, 'task_ids': [Command.set(tasks.ids)],
                 'mode': 'add'}).action_generate()
+        # Las fechas de la pestaña PLAN, después de generar (el plan propone
+        # las suyas).
+        for task, dates in task_dates.items():
+            task.with_context(construction_plan_force=True).write(dates)
         messages.append(self.env._(
             'Plan %(plan)s: %(tasks)s partidas con su receta.', plan=plan.display_name,
             tasks=len(tasks)))

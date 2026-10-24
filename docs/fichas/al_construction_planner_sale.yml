@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '7.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, 6.7: el libro de APU y presupuesto lee también la pestaña PLAN de la hoja de trabajo (modalidad final y fechas de cada partida) en el destino plan."
 - version: '6.20261016'
   fecha: 24/10/2026
   cambios:

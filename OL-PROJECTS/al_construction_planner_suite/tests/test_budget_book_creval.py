@@ -69,6 +69,11 @@ class TestBudgetBook(TransactionCase):
                       100, 10])
         sheet.append(['01.02', 'Arquitectura', 'Muros', 'Muro del eje B', 'BK-R01', 'm2', None,
                       qty_second, None])
+        sheet = book.create_sheet('PLAN')
+        sheet.append(['Ítem', 'Partida', 'Modalidad final', 'Contratista sugerido', 'Inicio',
+                      'Fin'])
+        sheet.append(['01.02', 'Muro del eje B', 'Personal propio', None, '2026-11-02',
+                      '2026-11-20'])
         sheet = book.create_sheet('LISTAS')
         sheet.append(['Tipo de insumo', None, 'Modalidad', None, 'Escrito como', 'Unidad'])
         sheet.append(['Material', None, 'Personal propio', None, 'hh', 'Hours'])
@@ -112,6 +117,8 @@ class TestBudgetBook(TransactionCase):
         tasks = plan.line_ids.task_id
         self.assertEqual(len(tasks), 2)
         self.assertEqual(set(tasks.mapped('construction_qty')), {100.0, 50.0})
+        second = tasks.filtered(lambda t: t.construction_qty == 50.0)
+        self.assertEqual(str(second.date_deadline)[:10], '2026-11-20')
         self.assertEqual(set(plan.line_ids.mapped('resource_type')),
                          {'labor', 'material', 'equipment'})
         # Volver a enviar no duplica.

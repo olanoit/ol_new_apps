@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner, al_construction_planner_spreadsheet, al_construction_planner_furniture]
+modulos: [al_construction_planner, al_construction_planner_spreadsheet, al_construction_planner_spreadsheet_furniture, al_construction_planner_furniture]
 ---
 
 # Pestaña Planificación y hoja de trabajo
@@ -18,11 +18,39 @@ tres márgenes, cada uno con su ingreso, su costo, su margen y su porcentaje:
 
 Un margen negativo se muestra en rojo.
 
-## Hoja de trabajo del maestro
+## Hoja de trabajo de presupuesto y plan (construcción)
 
 Con **Documentos** y **Hoja de cálculo** (Odoo Enterprise) se instala solo
 **Hoja de trabajo del planificador de obra**
-(`al_construction_planner_spreadsheet`). En mobiliario, la Oficina Técnica
+(`al_construction_planner_spreadsheet`). En construcción, el presupuestador y la
+oficina técnica trabajan el presupuesto, los APU y el plan en una hoja con las
+mismas hojas y columnas del [libro de APU y presupuesto](recipe_calc.md#libro-de-apu-y-presupuesto):
+
+- El botón **Hoja de trabajo** de la cotización crea la hoja en **Presupuestos ‣
+  <cotización>** de Documentos con lo que ya tiene la cotización; desde la obra
+  (pestaña Planificación) se abre la de su cotización o una propia.
+- Pestañas: INSTRUCCIONES, OBRA, INSUMOS, APU, APU_DETALLE, PRESUPUESTO, PLAN
+  (modalidad final y fechas de cada partida), LISTAS, REFERENCIAS (listas vivas
+  de actividades, unidades, contratistas y productos) y ERRORES. Encabezados
+  amarillos: datos; grises: fórmulas (cantidad y precio del recurso, parcial,
+  costo unitario del APU, costo del APU y costo real de la partida).
+- Menú **Planificación de obra** de la hoja:
+    - **Validar plantilla**: los errores en ERRORES con su hoja, fila y columna.
+    - **Enviar al planificador: presupuesto** o **presupuesto y plan**: abre la
+      revisión del asistente del libro; los errores impiden enviar y los avisos
+      se aceptan. Con el plan aprobado, pide el motivo de la nueva versión.
+    - **Actualizar insumos**: el costo vigente del maestro en INSUMOS.
+    - **Traer de Odoo**: los datos de la cotización y de las recetas de la obra.
+    - **Nueva versión**: guarda una copia numerada en la misma carpeta, con el
+      enlace en el historial de la cotización y del plan. Cada envío guarda
+      también su copia.
+- **Archivo ‣ Descargar** da el libro en Excel, que se puede volver a importar.
+
+## Hoja de trabajo del maestro (mobiliario)
+
+En las obras de mobiliario la hoja es el maestro de planificación, con el puente
+`al_construction_planner_spreadsheet_furniture`, que se instala solo con el
+planificador de mobiliario. En mobiliario, la Oficina Técnica
 arma en ella todo el presupuesto y la carga de la obra, sin Excel: registra
 datos crudos medidos sobre el plano y, aprobado el presupuesto por el cliente,
 los envía al planificador.
@@ -32,9 +60,8 @@ la hoja de la obra en Documentos y la abre. Las demás veces abre la misma
 hoja. La hoja se trabaja entre varios a la vez y guarda su historial.
 
 !!! note "Nota"
-    La hoja de trabajo es de la vertical Mobiliario. En una obra del perfil
-    **Construcción por partidas**, el botón avisa que la receta sigue en los
-    Work Items y en las recetas del planificador.
+    En una obra del perfil **Construcción por partidas** el botón abre la hoja
+    de presupuesto y plan.
 
 ### Pestañas
 

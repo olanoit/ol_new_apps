@@ -1,0 +1,69 @@
+titulo: "Hoja de trabajo del planificador: mobiliario"
+subtitulo: >-
+  El maestro de planificación de la obra como hoja de cálculo de Odoo, con
+  listas vivas de referencia y el menú «Enviar al planificador».
+categoria: Construcción · Proyectos
+portada: screenshots/01-hoja-de-trabajo.png
+etiquetas: [Hoja de cálculo, Documentos, Maestro de planificación, Importar maestro y ETO]
+
+destacados_intro: >-
+  El maestro se llena en Odoo, entre varios y con historial, en lugar de un
+  Excel suelto (v1.5, fase 21).
+destacados:
+  - icono: "▦"
+    titulo: Una hoja por obra
+    texto: >-
+      Una pestaña por hoja del maestro con sus encabezados, creada desde la
+      pestaña Planificación de la obra.
+  - icono: "↻"
+    titulo: Listas de Odoo
+    texto: >-
+      La pestaña REFERENCIAS trae las actividades de obra y las tipologías de
+      la obra, siempre al día.
+  - icono: "→"
+    titulo: Enviar al planificador
+    texto: >-
+      Archivo ▸ Enviar al planificador abre el asistente de importación con
+      lo que se creará, las advertencias y los errores por fila.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    El maestro de planificación se armaba en Excel, se copiaba de una versión
+    a otra y se subía a mano; los códigos de actividades y tipologías se
+    tipeaban de memoria.
+
+pasos_intro: >-
+  Requiere Documentos y Hoja de cálculo (Odoo Enterprise); se instala solo.
+pasos:
+  - titulo: Abrir la hoja de la obra
+    ruta: Obra ▸ pestaña Planificación ▸ Hoja de trabajo
+    texto: >-
+      La primera vez crea la hoja en Documentos; luego abre la misma.
+    imagen: screenshots/01-hoja-de-trabajo.png
+  - titulo: Las referencias de Odoo
+    ruta: Hoja ▸ pestaña REFERENCIAS
+    texto: >-
+      Actividades de obra y tipologías de la obra en listas de Odoo que se
+      actualizan solas.
+    imagen: screenshots/02-referencias.png
+  - titulo: Enviar al planificador
+    ruta: Hoja ▸ Archivo ▸ Enviar al planificador
+    texto: >-
+      Lleva las pestañas del maestro al asistente «Importar maestro y ETO»,
+      que muestra la vista previa antes de escribir.
+    imagen: screenshots/03-menu-enviar.png
+  - titulo: El asistente de importación
+    ruta: Importar maestro y ETO
+    texto: >-
+      Conteos por hoja, advertencias y errores con su hoja y su fila; Importar
+      lo aplica.
+    imagen: screenshots/04-importar.png
+
+novedades:
+  - version: '1.20261024'
+    fecha: 24/10/2026
+    cambios:
+    - "Primera versión: el maestro de mobiliario de la hoja de trabajo (v1.5, M15-15 y v1.8, M18-22), separado del módulo genérico (requerimiento CREVAL v1.0, 6.7)."
+
+relacionados: [al_construction_planner_spreadsheet, al_construction_planner_furniture]

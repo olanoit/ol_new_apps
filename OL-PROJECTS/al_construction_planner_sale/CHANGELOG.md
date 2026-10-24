@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261016 — 24/10/2026
+
+- Requerimiento CREVAL v1.0, 6.7: el libro de APU y presupuesto lee también la pestaña PLAN de la hoja de trabajo (modalidad final y fechas de cada partida) en el destino plan.
+
 ## 6.20261016 — 24/10/2026
 
 - Requerimiento CREVAL v1.0, 6.5: la línea de la cotización lleva el metrado real, las holguras de metrado y de costo y el margen (en % o monto); la cantidad, el precio y el costo para el margen de ventas salen de esas capas. La cotización tiene tipo de contrato (suma alzada o precios unitarios) y formato de impresión, y muestra el costo real y la reserva por holguras, que también se ve en el plan.

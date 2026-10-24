@@ -9,7 +9,6 @@ contrato con sus hitos y el producto nuevo creado con su código. Un segundo
 envío no duplica nada."""
 import json
 
-from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from odoo.addons.al_construction_planner_suite.tests.common import PlannerCommon
@@ -116,13 +115,17 @@ class TestWorksheetV18(PlannerCommon):
             [('type', '=', 'consu'), ('company_id', 'in', (self.site.company_id.id, False))])
         self.assertIn('=ODOO.LIST(3,%s,"display_name")' % products,
                       sheets['REFERENCIAS']['cells'].values())
-        # Solo mobiliario.
+        # En construcción la hoja es la del presupuesto y el plan (CREVAL v1.0, 6.7).
         works = self.env['project.project'].create({
             'name': 'Obra por partidas (test hoja)', 'is_construction_site': True,
             'construction_profile_id': self.env.ref(
                 'al_construction_planner.profile_construction').id})
-        with self.assertRaises(UserError):
-            works.action_construction_open_spreadsheet()
+        works.action_construction_open_spreadsheet()
+        document = self.env['documents.document'].search(
+            [('construction_project_id', '=', works.id)])
+        self.assertEqual(document.construction_sheet_kind, 'budget')
+        names = [sheet['name'] for sheet in json.loads(document.spreadsheet_data)['sheets']]
+        self.assertIn('PRESUPUESTO', names)
 
     def test_kitchen_from_the_worksheet(self):
         self._send()

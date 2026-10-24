@@ -1,36 +1,41 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Hoja de trabajo del planificador de obra (AL)',
-    'summary': 'Maestro de planificación de la obra como hoja de cálculo de Documentos, con '
-               'listas de Odoo de referencia y el menú «Enviar al planificador».',
+    'summary': 'Presupuesto, APU y plan de la obra en una hoja de cálculo de Documentos, con '
+               'las hojas del libro de carga, validación, «Enviar al planificador» y versiones.',
     'description': """
 Hoja de trabajo del planificador de obra
 ========================================
-v1.5, fase 21 (M15-15). El maestro de planificación (árbol, tipologías,
-muebles, módulos, actividades, BOM, ETO y variantes) se llena en una hoja de
-cálculo de Odoo en lugar de un Excel suelto:
+Requerimiento CREVAL v1.0, 6.7. El presupuestador y la oficina técnica trabajan
+el presupuesto, los APU y el plan en una hoja de cálculo de Odoo (Documentos)
+con las mismas hojas y columnas del libro de carga (6.6):
 
-* **Hoja de trabajo de la obra**: el botón de la pestaña «Planificación» crea
-  (o abre) la hoja de la obra en Documentos, con una pestaña por hoja del
-  maestro y sus encabezados, y una pestaña REFERENCIAS con listas de Odoo
-  vivas de las actividades y de las tipologías de la obra.
-* **Enviar al planificador**: menú Archivo de la hoja; lleva las pestañas del
-  maestro al asistente «Importar maestro y ETO», que muestra lo que se creará,
-  las advertencias y los errores con su hoja y su fila, antes de escribir.
+* **Hoja de trabajo**: desde la cotización (carpeta Presupuestos › cotización)
+  o desde la obra; la obra que viene de una cotización con hoja usa la misma.
+  Nace con las pestañas OBRA, INSUMOS, APU, APU_DETALLE, PRESUPUESTO, PLAN,
+  LISTAS, REFERENCIAS (listas vivas de Odoo) y ERRORES, y con lo que ya tiene
+  la cotización.
+* **Menú Planificación de obra**: Validar plantilla (los errores en ERRORES con
+  su hoja, fila y columna), Enviar al planificador (destino presupuesto o
+  presupuesto y plan, con la revisión del asistente del libro), Actualizar
+  insumos (costo vigente del maestro), Traer de Odoo y Nueva versión (copia
+  numerada en la misma carpeta, con el enlace en el historial).
 
-Requiere Documentos y Hoja de cálculo (Odoo Enterprise); se instala solo
-cuando están el planificador y Documentos.
+Las obras de mobiliario llenan su maestro con el puente
+al_construction_planner_spreadsheet_furniture. Requiere Documentos y Hoja de
+cálculo (Odoo Enterprise); se instala solo con el puente de ventas del
+planificador y Documentos.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '3.20261016',
+    'version': '4.20261016',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],
-    'depends': ['al_construction_planner_furniture', 'documents_spreadsheet'],
+    'depends': ['al_construction_planner_sale', 'documents_spreadsheet'],
     'data': [
         'views/project_views.xml',
     ],

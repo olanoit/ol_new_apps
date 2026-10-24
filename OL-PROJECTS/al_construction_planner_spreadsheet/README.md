@@ -2,15 +2,17 @@
 
 Documentación funcional: [Pestaña Planificación y hoja de trabajo](../../mkdocs/content/applications/services/project/construction/planning/planning_worksheet.md)
 
-Fase 21 del paquete de mejoras v1.5 del planificador de obra. Depende de
-`documents_spreadsheet` (Odoo Enterprise) y se instala solo con el
-planificador.
+Requerimiento CREVAL v1.0, 6.7: presupuesto, APU y plan de la obra en una hoja de
+cálculo de Documentos (Odoo Enterprise) con las hojas del libro de carga (6.6,
+asistente `construction.budget.book.wizard` de `al_construction_planner_sale`).
+Se instala solo con el puente de ventas del planificador y `documents_spreadsheet`.
+El maestro de mobiliario vive en `al_construction_planner_spreadsheet_furniture`.
 
 ## Piezas
 
 | Pieza | Qué hace |
 |---|---|
-| `project.project._construction_spreadsheet_data()` | Datos o-spreadsheet (versión 18.5): una pestaña por hoja de `master_import_layout.SHEETS` con sus encabezados y REFERENCIAS con dos listas de Odoo (`ODOO.LIST`) |
-| `project.project.action_construction_open_spreadsheet()` | Crea o abre la hoja (`documents.document` con `construction_project_id`) |
-| `documents.document.action_construction_send_to_planner(sheets)` | Arma un .xlsx con las pestañas del maestro y abre `construction.master.import.wizard` con su análisis |
-| `static/src/send_to_planner.js` | Parche de `SpreadsheetAction` y menú Archivo ▸ Enviar al planificador (`topbarMenuRegistry`), visible solo en hojas de obra |
+| `documents.document` | Vínculo con la obra y la cotización, tipo de hoja, versión; servicios de la hoja: enviar, validar, costos vigentes, traer de Odoo, nueva versión |
+| `project.project`, `sale.order` | Plantilla de presupuesto y plan, botón «Hoja de trabajo» y carpeta Presupuestos › cotización |
+| `static/src/send_to_planner.js` | Menú «Planificación de obra» de la hoja (y «Archivo › Enviar al planificador» del maestro de mobiliario) |
+| `migrations/4.20261016` | Las hojas existentes pasan a ser maestros de mobiliario |

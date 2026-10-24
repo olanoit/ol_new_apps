@@ -1,3 +1,2 @@
 # -*- coding: utf-8 -*-
-from . import test_spreadsheet
-from . import test_worksheet_v18
+from . import test_budget_worksheet

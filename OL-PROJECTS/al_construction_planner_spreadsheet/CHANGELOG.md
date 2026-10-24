@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261016 — 24/10/2026
+
+- Requerimiento CREVAL v1.0, 6.7: la hoja de trabajo es genérica, sin dependencia de mobiliario: presupuesto, APU y plan con las hojas del libro de carga (6.6), menú Planificación de obra (validar, enviar con destino presupuesto o plan, actualizar insumos, traer de Odoo, nueva versión) y copias numeradas. El maestro de mobiliario pasa al puente al_construction_planner_spreadsheet_furniture.
+
 ## 3.20261016 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).
