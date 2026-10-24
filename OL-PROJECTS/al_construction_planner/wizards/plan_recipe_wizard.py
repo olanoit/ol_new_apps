@@ -173,7 +173,10 @@ class ConstructionPlanRecipeWizardCalc(models.TransientModel):
     def _prepare_line_vals(self, task, recipe_line, prices):
         vals = super()._prepare_line_vals(task, recipe_line, prices)
         vals.update(calc_method=recipe_line.calc_method, calc_pct=recipe_line.calc_pct,
-                    calc_scope=recipe_line.calc_scope)
+                    calc_scope=recipe_line.calc_scope, calc_task_id=recipe_line.calc_task_id.id,
+                    is_client_supply=recipe_line.is_client_supply)
+        if recipe_line.is_client_supply:
+            vals['price_unit_planned'] = 0.0
         company = self.plan_id.company_id or self.env.company
         if recipe_line.line_currency_id and recipe_line.line_currency_id != company.currency_id:
             vals.update(price_currency_id=recipe_line.line_currency_id.id,

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261023 — 24/10/2026
+
+- Prueba de la valorización al cliente por avance de la partida con gastos generales, utilidad y descuento en proporción (correcciones CR-01 y CR-12).
+
 ## 17.20261023 — 24/10/2026
 
 - Corrección CR-08 de la prueba CREVAL: la prueba del re-trabajo marca el pago con su motivo antes de liquidarlo.

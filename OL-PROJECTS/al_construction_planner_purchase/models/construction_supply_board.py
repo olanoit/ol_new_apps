@@ -70,7 +70,8 @@ class ConstructionSupplyBoard(models.AbstractModel):
             return result
         company = plan.company_id
         domain = [('plan_id', '=', plan.id), ('resource_type', '=', 'material'),
-                  ('product_id', '!=', False), ('product_id.type', '=', 'consu')]
+                  ('product_id', '!=', False), ('product_id.type', '=', 'consu'),
+                  ('is_client_supply', '=', False)]
         if stages:
             stage_domain = [('stage', 'in', [s for s in stages if s != 'none'])]
             if 'none' in stages:

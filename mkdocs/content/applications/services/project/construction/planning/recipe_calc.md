@@ -14,10 +14,16 @@ Cada línea de la receta (y del plan) tiene su **Forma de cálculo**:
 - **% de la mano de obra**: el porcentaje del costo de la mano de obra de la
   partida (las herramientas manuales «%MO» del análisis de precio unitario).
 - **% del costo directo de un grupo de partidas**: de las partidas del mismo
-  nivel superior, del mismo nivel 1 o de toda la obra.
+  nivel superior, del mismo nivel 1, de un **Nivel elegido** (la especialidad o
+  sub-especialidad del campo **Nivel del porcentaje**) o de toda la obra.
 
 Las líneas por porcentaje se recalculan al cambiar su base y no se piden ni se
 compran.
+
+Una línea marcada **Suministro del cliente** (por ejemplo, un equipo que entrega
+el cliente) va a costo 0 sin bloquear la aprobación del plan, no entra a la
+compra masiva ni a los requerimientos y su ejecutado es lo **Recibido del
+cliente** en obra.
 
 El **Costo unitario** de la línea de la receta y del plan guarda los decimales de
 **Precio del producto** (Inventario ‣ Configuración ‣ Precisión decimal): un

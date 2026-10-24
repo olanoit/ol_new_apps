@@ -6,6 +6,7 @@ from collections import defaultdict
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 from odoo.addons.al_construction_planner.models.common import stage_selection
 
@@ -79,10 +80,25 @@ class ConstructionPlanContractWizard(models.TransientModel):
                                     currency_field='currency_id')
     terms_guarantee = fields.Monetary(string='Fondo de garantía', compute='_compute_terms_totals',
                                       currency_field='currency_id')
+    # Precio por partida (CREVAL v1.0, CR-07): el del plan (lo presupuestado
+    # de cada línea de contrata) o la tarifa vigente de la actividad.
+    price_source = fields.Selection(
+        [('plan', 'Costo del plan'), ('rate', 'Tarifa de la actividad')],
+        string='Precio de las líneas', compute='_compute_price_source', store=True,
+        readonly=False,
+        help='Costo del plan: el costo unitario de las líneas de contrata de cada partida (con '
+             'una actividad por contratista, cada partida conserva su precio). Tarifa de la '
+             'actividad: la tarifa vigente (obra y contrata, obra, contrata o base). En las '
+             'dos, el precio se puede corregir en cada línea.')
     exceed_reason = fields.Text(
         string='Motivo del alcance adicional',
         help='Obligatorio si se asigna más de lo que queda de la actividad en la selección y '
              'la política de contratas pide aprobación (la da la jefatura de proyectos).')
+
+    @api.depends('condition_id')
+    def _compute_price_source(self):
+        for wizard in self:
+            wizard.price_source = 'plan' if wizard.condition_id else 'rate'
 
     @api.depends('partner_id', 'company_id')
     def _compute_condition_id(self):
@@ -154,7 +170,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 if wizard.plan_id else False
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'stage', 'activity_ids', 'partner_id',
-                 'date_start', 'condition_id')
+                 'date_start', 'condition_id', 'price_source')
     def _compute_line_ids(self):
         for wizard in self:
             commands = [Command.clear()]
@@ -191,6 +207,10 @@ class ConstructionPlanContractWizard(models.TransientModel):
             price, retention_pct, rate = activity._get_rate(
                 project, self.partner_id or None, self.date_start)
             qty = sum(l.qty_planned - l.qty_requested for l in plan_lines)
+            plan_price = sum((l.qty_planned - l.qty_requested) * l.price_unit_planned
+                             for l in plan_lines) / qty if qty else 0.0
+            if self.price_source == 'plan' and plan_price:
+                price, rate = plan_price, self.env['construction.labor.rate']
             rows.append({
                 'activity_id': activity.id,
                 'task_id': task.id,
@@ -345,13 +365,14 @@ class ConstructionPlanContractWizard(models.TransientModel):
             order_sudo._construction_apply_terms(self.condition_id, {
                 'advance_pct': self.advance_pct, 'guarantee_pct': self.guarantee_pct})
         allocation_values = []
+        digits = self.env['decimal.precision'].precision_get('Product Price')
         for row in rows:
             product = self._get_service_product(row.activity_id)
             po_line_sudo = order_sudo.order_line.filtered(
                 lambda l: l.construction_activity_id == row.activity_id
                 and l.product_id == product and l.construction_task_id == row.task_id
                 and not l.construction_is_additional
-                and l.currency_id.compare_amounts(l.price_unit, row.price_unit) == 0)[:1]
+                and not float_compare(l.price_unit, row.price_unit, precision_digits=digits))[:1]
             if po_line_sudo:
                 po_line_sudo.product_qty += row.qty
             else:
@@ -414,7 +435,9 @@ class ConstructionPlanContractWizardLine(models.TransientModel):
     activity_id = fields.Many2one('construction.labor.activity', string='Actividad', required=True)
     uom_id = fields.Many2one('uom.uom', string='Unidad')
     qty = fields.Float(string='Driver presupuestado', digits='Product Unit')
-    price_unit = fields.Monetary(string='Tarifa', currency_field='currency_id')
+    # Con los decimales de «Precio del producto», como la línea de la orden
+    # (CR-11).
+    price_unit = fields.Float(string='Precio', digits='Product Price')
     amount = fields.Monetary(
         string='Monto', compute='_compute_amount', currency_field='currency_id')
     retention_pct = fields.Float(string='Retención (%)', digits=(5, 2))

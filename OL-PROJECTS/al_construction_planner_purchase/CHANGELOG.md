@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261024 — 24/10/2026
+
+- Corrección CR-06 de la prueba CREVAL: las líneas de suministro del cliente no entran a la compra masiva, al requerimiento ni al tablero de abastecimiento.
+
 ## 12.20261024 — 24/10/2026
 
 - Corrección CR-03 de la prueba CREVAL: el costo que aplica «Revisar costos del plan» guarda los decimales de «Precio del producto».

@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '13.20261024'
+  fecha: 24/10/2026
+  cambios:
+    - "Corrección CR-06 de la prueba CREVAL: las líneas de suministro del cliente no entran a la compra masiva, al requerimiento ni al tablero de abastecimiento."
 - version: '12.20261024'
   fecha: 24/10/2026
   cambios:

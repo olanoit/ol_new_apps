@@ -31,6 +31,12 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '5.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Corrección CR-01 de la prueba CREVAL: la obra puede valorizar al cliente por el «Avance validado de la partida» (una línea por partida de la venta, con el % escrito con motivo de siempre), sin entregas, tipologías ni hitos; la factura sale de la valorización confirmada."
+  - "Corrección CR-12: las líneas de la venta de gastos generales, imprevistos, utilidad y descuento (se proponen por su nombre, campo «Rol en la obra») no se crean como niveles ni entran al plan, y se valorizan en la proporción del costo directo valorizado; el descuento va como línea negativa."
+  - "Corrección CR-13: el anticipo del cliente de una obra (y su deducción) va sin analítica; el ingreso entra con cada valorización."
 - version: '4.20261016'
   fecha: 23/10/2026
   cambios:

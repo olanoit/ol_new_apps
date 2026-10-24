@@ -76,7 +76,9 @@ class ConstructionPlanSupplyMixin(models.AbstractModel):
         # piden, no se compran ni se asignan.
         domain = [('plan_id', '=', self.plan_id.id),
                   ('stage', 'in', self._get_stages()),
-                  ('calc_method', 'not in', ('pct_labor', 'pct_group'))] + (domain or [])
+                  ('calc_method', 'not in', ('pct_labor', 'pct_group')),
+                  # Lo que entrega el cliente no se compra ni se pide (CR-06).
+                  ('is_client_supply', '=', False)] + (domain or [])
         tasks = self._get_selected_tasks()
         if tasks is not None:
             domain.append(('task_id', 'in', tasks.ids))

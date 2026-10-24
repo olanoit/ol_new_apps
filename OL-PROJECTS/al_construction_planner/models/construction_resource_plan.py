@@ -176,7 +176,8 @@ class ConstructionResourcePlan(models.Model):
         # «= False» en un número da «IN (0) OR IS NULL»; «= 0» (solo o con
         # «|») deja fuera los costos vacíos de las líneas manuales.
         unpriced = dict(Line._read_group(
-            [('plan_id', 'in', self.ids), ('price_unit_planned', '=', False)], ['plan_id'],
+            [('plan_id', 'in', self.ids), ('price_unit_planned', '=', False),
+             ('is_client_supply', '=', False)], ['plan_id'],
             ['__count']))
         for plan in self:
             plan.unstaged_line_count = unstaged.get(plan, 0)
@@ -518,7 +519,8 @@ class ConstructionResourcePlan(models.Model):
             issues.append(self.env._('El plan no tiene líneas.'))
         checks = [
             (lines.filtered(lambda l: not l.stage), self.env._('Líneas sin etapa')),
-            (lines.filtered(lambda l: l.qty_planned and not l.price_unit_planned),
+            (lines.filtered(lambda l: l.qty_planned and not l.price_unit_planned
+                            and not l.is_client_supply),
              self.env._('Líneas sin costo (aplique el costo con «Aplicar costo»)')),
             (lines.filtered(lambda l: l.resource_type in ('contract', 'labor')
                             and not l.activity_id),
@@ -1108,7 +1110,8 @@ class ConstructionResourcePlanLine(models.Model):
         return self.activity_id or self.product_id
 
     @api.depends('qty_planned', 'resource_type', 'qty_consumed', 'progress_ids.state',
-                 'progress_ids.qty_weighted', 'progress_ids.settled', 'progress_ids.is_rework')
+                 'progress_ids.qty_weighted', 'progress_ids.settled', 'progress_ids.is_rework',
+                 'is_client_supply', 'qty_client_received')
     def _compute_progress_qty(self):
         Progress = self.env['construction.task.progress']
         executed = defaultdict(float)
@@ -1124,7 +1127,10 @@ class ConstructionResourcePlanLine(models.Model):
                 if is_settled:
                     settled[line.id] += qty or 0.0
         for line in self:
-            if line.resource_type not in DRIVER_TYPES:
+            if line.is_client_supply:
+                # Lo entrega el cliente: su ejecutado es lo recibido en obra.
+                qty = line.qty_client_received
+            elif line.resource_type not in DRIVER_TYPES:
                 qty = line.qty_consumed
             elif line.id and line._is_hour_based():
                 qty = line._get_timesheet_hours()

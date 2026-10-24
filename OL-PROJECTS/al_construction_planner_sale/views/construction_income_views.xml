@@ -253,13 +253,15 @@
                             <field name="line_ids" nolabel="1" readonly="state != 'draft'">
                                 <list create="0" delete="0" editable="bottom" decoration-warning="is_manual">
                                     <field name="sale_line_id" readonly="1"/>
+                                    <field name="line_role" optional="hide"/>
                                     <field name="price" readonly="1"/>
                                     <field name="progress_prev" widget="percentage"/>
                                     <field name="progress_period" widget="percentage"/>
                                     <field name="progress_cumulative" widget="percentage"/>
                                     <field name="pct_rule" optional="show"/>
-                                    <field name="pct_manual" optional="show"/>
-                                    <field name="manual_reason" optional="show" required="pct_manual"/>
+                                    <field name="pct_manual" optional="show" readonly="line_role != 'partida'"/>
+                                    <field name="manual_reason" optional="show" required="pct_manual"
+                                           readonly="line_role != 'partida'"/>
                                     <field name="is_manual" optional="show" readonly="1"/>
                                     <field name="manual_user_id" optional="hide" readonly="1"/>
                                     <field name="manual_date" optional="hide" readonly="1"/>
@@ -399,6 +401,7 @@
                                 <span>semanas</span>
                             </div>
                             <field name="construction_valuation_unit"/>
+                            <field name="construction_valuation_basis"/>
                         </group>
                         <group string="Plazos (días)">
                             <field name="construction_valuation_submit_days"/>

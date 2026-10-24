@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Gasto pagado con un fondo: su comprobante (CREVAL v1.0, CR-14). -->
+    <record id="hr_expense_view_form_cash_fund" model="ir.ui.view">
+        <field name="name">hr.expense.view.form.inherit.al.cash.fund</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='payment_mode']" position="after">
+                <field name="l10n_pe_cash_fund_id" options="{'no_create': True}"
+                       invisible="payment_mode != 'own_account'" readonly="state != 'draft'"
+                       placeholder="Gasto del empleado, sin fondo"/>
+            </xpath>
+            <xpath expr="//field[@name='vendor_id']" position="attributes">
+                <attribute name="invisible">payment_mode != 'company_account' and not l10n_pe_cash_fund_id</attribute>
+                <attribute name="required">l10n_pe_cash_fund_id</attribute>
+            </xpath>
+            <xpath expr="//field[@name='vendor_id']" position="after">
+                <field name="l10n_latam_document_type_id" options="{'no_create': True}"
+                       invisible="not l10n_pe_cash_fund_id" required="l10n_pe_cash_fund_id"/>
+                <field name="l10n_pe_document_number" placeholder="F001-00001234"
+                       invisible="not l10n_pe_cash_fund_id" required="l10n_pe_cash_fund_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

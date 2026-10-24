@@ -1,0 +1,29 @@
+titulo: "Gastos de empleados con caja chica"
+subtitulo: "Un gasto pagado con la caja chica o una entrega a rendir queda como la factura de su proveedor, con su tipo y número de comprobante, y la rendición del fondo la paga."
+categoria: "Localización Perú · Contabilidad"
+etiquetas: [Gastos, Caja chica, Entregas a rendir, Registro de compras, SIRE]
+
+destacados:
+  - icono: "🧾"
+    titulo: "Un comprobante por gasto"
+    texto: "Proveedor, tipo y número del comprobante en la factura, como pide el registro de compras."
+  - icono: "⇄"
+    titulo: "Pagado con el fondo"
+    texto: "La rendición del fondo paga las facturas y abona su cuenta; el gasto queda pagado."
+  - icono: "⚙"
+    titulo: "Automático"
+    texto: "Se instala solo con Gastos y Entregas a rendir y caja chica."
+
+funcionalidades:
+  - "En el gasto pagado por el empleado, el campo «Pagado con el fondo» elige la caja chica o la entrega a rendir abierta."
+  - "Con fondo, el proveedor, el tipo y el número de comprobante son obligatorios."
+  - "Las facturas van al diario de comprobantes de gastos (Ajustes ▸ Perú ▸ Entregas a rendir y caja chica), con la numeración de cada documento."
+  - "Los gastos sin fondo siguen como en Odoo."
+
+novedades:
+  - version: 1.20261024
+    fecha: 24/10/2026
+    cambios:
+      - "Primera versión (requerimiento CREVAL v1.0, corrección CR-14 de la prueba del 24-oct)."
+
+relacionados: [al_l10n_pe_cash_fund]

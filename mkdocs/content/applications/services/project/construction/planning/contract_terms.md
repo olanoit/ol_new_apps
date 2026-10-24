@@ -44,13 +44,20 @@ semanal](contractors.md).
 
 **Asignar contrata** propone las condiciones, muestra el total contractual con
 IGV, el adelanto y el fondo según el esquema, y crea la orden con una línea por
-actividad y partida. En la pestaña **Condiciones de contrata** de la orden se
+actividad y partida. El **Precio de las líneas** es el **Costo del plan** de cada
+partida (por defecto con condiciones) o la **Tarifa de la actividad**; en las dos
+se corrige en cada línea y el total se actualiza. La orden, la valorización y la
+factura usan el precio con los decimales de **Precio del producto** y redondean
+cada línea una sola vez. En la pestaña **Condiciones de contrata** de la orden se
 ajustan los porcentajes pactados y se ven sus saldos: contractual, valorizado,
 facturado, pagado y saldo; adelanto otorgado, amortizado y por amortizar; fondo
 retenido y devuelto. Con la orden confirmada, las condiciones solo las cambia el
 administrador (queda en el historial).
 
-**Registrar adelanto** crea la factura de anticipo en borrador: adelanto (%) ×
+**Registrar adelanto** crea la factura de anticipo en borrador, sin analítica
+(el costo de la obra entra con cada valorización), con la cuenta de activo del
+producto de anticipo (una cuenta por pagar o por cobrar se rechaza con un aviso):
+adelanto (%) ×
 subtotal contractual sin IGV, con la analítica de la obra. Solo se amortiza con
 esa factura publicada.
 

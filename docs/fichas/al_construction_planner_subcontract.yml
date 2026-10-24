@@ -25,6 +25,13 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '9.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Corrección CR-07 de la prueba CREVAL: «Asignar contrata» toma el precio de cada partida del costo del plan (o la tarifa de la actividad, a elección), editable en cada línea con el total a la vista."
+  - "Corrección CR-11: la tarifa de la valorización guarda los decimales de «Precio del producto», como la orden; cada línea se redondea una sola vez y la factura da lo mismo que la valorización."
+  - "Corrección CR-13: la factura de adelanto y su regularización ya no llevan la analítica de la obra; el costo entra con las líneas del servicio de cada valorización."
+  - "Corrección CR-02 (parcial): si la cuenta del producto de anticipo es por pagar o por cobrar, «Registrar adelanto» lo dice antes y pide una cuenta de activo; la vía contable definitiva espera la decisión de contabilidad."
 - version: '8.20261016'
   fecha: 24/10/2026
   cambios:

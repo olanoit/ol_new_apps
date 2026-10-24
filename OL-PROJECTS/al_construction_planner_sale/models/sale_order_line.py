@@ -19,6 +19,15 @@ class SaleOrderLine(models.Model):
             self.price_subtotal, company.currency_id, company,
             day or fields.Date.context_today(self))
 
+    def _prepare_invoice_line(self, **optional_values):
+        """El anticipo del cliente de una obra (y su deducción en la factura
+        final) va sin analítica: no es ingreso de la obra; el ingreso entra
+        con cada valorización (CREVAL v1.0, CR-13)."""
+        values = super()._prepare_invoice_line(**optional_values)
+        if self.is_downpayment and self.order_id._construction_is_site_order():
+            values['analytic_distribution'] = False
+        return values
+
     def _timesheet_create_project_prepare_values(self):
         """Servicio que crea una obra: el proyecto nace marcado como obra y
         con esta venta como orden de venta del contrato."""

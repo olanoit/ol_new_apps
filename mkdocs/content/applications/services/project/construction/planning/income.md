@@ -94,10 +94,21 @@ el costo S/ 25,338.96 y el margen −S/ 1,711.31.
 
 ## Valorización con el cliente
 
-1. Al pasar el corte se prepara la valorización en borrador con las entregas
-   confirmadas hasta esa fecha (o **Ingresos ‣ Preparar valorización**). Entrega
-   el avance de la última entrega menos lo ya confirmado, con el fondo de
-   garantía y la amortización del adelanto.
+1. Al pasar el corte se prepara la valorización en borrador (o **Ingresos ‣
+   Preparar valorización**) según la **Base de la valorización** de la obra
+   (pestaña **Calendario e ingresos**):
+    - **Entregas semanales**: las entregas confirmadas hasta el corte; entrega el
+      avance de la última entrega menos lo ya confirmado.
+    - **Avance validado de la partida**: una línea por partida de la venta con su
+      avance validado al corte (lo ejecutado al costo del plan ÷ lo planificado
+      de la partida), sin entregas, tipologías ni hitos.
+
+    En las dos van el fondo de garantía y la amortización del adelanto. Las
+    líneas de la venta de **gastos generales**, **imprevistos**, **utilidad** y
+    **descuento** (campo **Rol en la obra** de la línea, que se propone por su
+    nombre) no son partidas: no se crean como niveles de la obra ni entran al
+    plan, y se valorizan en la proporción del costo directo valorizado; el
+    descuento va como línea negativa.
 2. Si hace falta, valorice una partida a otro porcentaje (ver [Porcentaje
    escrito a mano](#porcentaje-escrito-a-mano)).
 3. Haga clic en **Enviar al cliente**: el PDF queda en el historial. Además de

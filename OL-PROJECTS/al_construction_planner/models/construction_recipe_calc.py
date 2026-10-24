@@ -26,6 +26,7 @@ PCT_METHODS = ('pct_labor', 'pct_group')
 CALC_SCOPES = [
     ('parent', 'Partidas del mismo nivel superior'),
     ('level_1', 'Partidas del mismo nivel 1'),
+    ('task', 'Nivel elegido'),
     ('project', 'Toda la obra'),
 ]
 APU_SOURCES = [
@@ -99,6 +100,15 @@ class ConstructionExecutionTemplateLine(models.Model):
         'res.currency', string='Moneda del costo',
         help='Vacía: la de la compañía. Un costo en dólares se convierte al tipo de cambio de la '
              'fecha del plan.')
+    # CREVAL v1.0, CR-05 y CR-06.
+    calc_task_id = fields.Many2one(
+        'project.task', string='Nivel del porcentaje', check_company=True,
+        help='Con «Nivel elegido»: la especialidad o sub-especialidad cuyo costo directo es la '
+             'base del porcentaje.')
+    is_client_supply = fields.Boolean(
+        string='Suministro del cliente',
+        help='Lo entrega el cliente: costo 0 permitido, sin compra ni requerimiento al almacén; '
+             'se controla lo recibido en obra.')
 
     def _construction_calc_qty(self, vals):
         """Cantidad por unidad según la forma de cálculo (cuadrilla ÷
@@ -171,9 +181,14 @@ class ConstructionExecutionTemplateLine(models.Model):
         return sum(l.qty * l._construction_to_company(
             l.price_unit or l.product_id.standard_price) for l in labor)
 
-    @api.constrains('calc_method', 'calc_pct', 'productivity')
+    @api.constrains('calc_method', 'calc_pct', 'productivity', 'calc_scope', 'calc_task_id')
     def _check_calc(self):
         for line in self:
+            if line.calc_method == 'pct_group' and line.calc_scope == 'task' \
+                    and not line.calc_task_id:
+                raise ValidationError(self.env._(
+                    '«Nivel elegido» en la receta %s necesita el nivel del porcentaje.',
+                    line.template_id.display_name))
             if line.calc_method in PCT_METHODS and line.calc_pct <= 0:
                 raise ValidationError(self.env._(
                     'La línea por porcentaje de la receta %s necesita su porcentaje.',
@@ -191,6 +206,17 @@ class ConstructionResourcePlanLine(models.Model):
                                    copy=True)
     calc_pct = fields.Float(string='Porcentaje', digits=(16, 4), copy=True)
     calc_scope = fields.Selection(CALC_SCOPES, string='Grupo de partidas', copy=True)
+    calc_task_id = fields.Many2one(
+        'project.task', string='Nivel del porcentaje', copy=True, check_company=True,
+        help='Con «Nivel elegido»: la especialidad o sub-especialidad cuyo costo directo es la '
+             'base del porcentaje (CR-05).')
+    is_client_supply = fields.Boolean(
+        string='Suministro del cliente', copy=True,
+        help='Lo entrega el cliente: costo 0 permitido, sin compra ni requerimiento al almacén '
+             '(CR-06).')
+    qty_client_received = fields.Float(
+        string='Recibido del cliente', digits='Product Unit', copy=False,
+        help='Lo que el cliente entregó en obra.')
     price_currency_id = fields.Many2one(
         'res.currency', string='Moneda del costo', copy=True,
         help='Vacía: la de la obra. El control se lleva en la moneda de la obra.')
@@ -266,6 +292,9 @@ class ConstructionResourcePlanLine(models.Model):
                 base_domain += [('task_id.parent_id', '=', task.parent_id.id)]
             elif line.calc_scope == 'level_1':
                 base_domain += [('level_1_id', '=', line.level_1_id.id)]
+            elif line.calc_scope == 'task':
+                base_domain += [('task_id', 'child_of', line.calc_task_id.id)
+                                if line.calc_task_id else ('id', '=', 0)]
             # Cantidad = el porcentaje como fracción; costo = la base: el monto
             # es exactamente el porcentaje de la base («%MO» del APU).
             base = sum(Line.search(base_domain).mapped('amount_planned'))

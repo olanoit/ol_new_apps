@@ -414,12 +414,19 @@ class ConstructionValuation(models.Model):
         if not self.env.user.has_groups(group):
             raise UserError(label)
 
+    def _construction_valued_by_progress(self):
+        """Valorización por avance de la partida (CR-01): no lleva entregas
+        ni hitos."""
+        self.ensure_one()
+        return False
+
     def action_send(self):
         """Enviar al cliente (o reenviar con la observación levantada): fecha
         de envío y el PDF de la valorización en el historial."""
         self._check_state(('draft', 'observed'))
         for valuation in self:
-            if not valuation.delivery_ids and not valuation.milestone_line_ids:
+            if not valuation.delivery_ids and not valuation.milestone_line_ids \
+                    and not valuation._construction_valued_by_progress():
                 raise UserError(self.env._(
                     'La valorización %s no tiene entregas confirmadas.', valuation.display_name))
             missing = valuation.contract_id._missing_documents() if valuation.contract_id else []
@@ -520,7 +527,11 @@ class ConstructionValuation(models.Model):
                     invoiced += sign * move.currency_id._convert(
                         move_line.price_subtotal, company.currency_id, company,
                         move.invoice_date or move.date or fields.Date.context_today(self))
-                if valuation.currency_id.compare_amounts(invoiced, line.amount_confirmed) > 0:
+                # Con signo: el descuento valorizado es negativo (CR-12) y no
+                # puede facturarse por más de lo confirmado en valor absoluto.
+                sign = -1 if line.amount_confirmed < 0 else 1
+                if valuation.currency_id.compare_amounts(
+                        sign * invoiced, sign * line.amount_confirmed) > 0:
                     errors.append(self.env._(
                         '%(partida)s: facturado %(invoiced)s, confirmado %(confirmed)s',
                         partida=line.sale_line_id.name.splitlines()[0],
@@ -551,7 +562,8 @@ class ConstructionValuation(models.Model):
         company = self.company_id
         vals_list = []
         delivered = {}
-        for line in self.line_ids.filtered(lambda l: l.amount_confirmed > 0):
+        # Con signo: el descuento valorizado en proporción es negativo (CR-12).
+        for line in self.line_ids.filtered(lambda l: not l.currency_id.is_zero(l.amount_confirmed)):
             sale_line = line.sale_line_id
             uom = sale_line.product_uom_id
             cumulative = uom.round(sale_line.product_uom_qty * line.progress_confirmed)

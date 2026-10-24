@@ -51,6 +51,9 @@
             <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="before">
                 <field name="construction_budget_item" optional="hide"/>
             </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+                <field name="construction_line_role" optional="hide"/>
+            </xpath>
         </field>
     </record>
 </odoo>

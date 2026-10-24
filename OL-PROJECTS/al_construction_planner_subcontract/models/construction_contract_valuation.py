@@ -753,7 +753,8 @@ class ConstructionContractSettlement(models.Model):
 
     def _invoice_regularization_values(self):
         """Regularización del adelanto: línea negativa del producto de
-        anticipo por la amortización sin IGV."""
+        anticipo por la amortización sin IGV. Sin analítica, como el adelanto:
+        el costo de la obra lo dan las líneas del servicio (CR-13)."""
         self.ensure_one()
         amount = self.amount_advance
         if self.currency_id.is_zero(amount):
@@ -767,7 +768,6 @@ class ConstructionContractSettlement(models.Model):
             lambda t: t.company_id in self.company_id.parent_ids | self.company_id)
         rate = sum(t.amount for t in taxes if t.amount_type == 'percent'
                    and not t.price_include) / 100.0
-        account = self.project_id.account_id
         return [{
             'display_type': 'product',
             'product_id': product.id,
@@ -775,7 +775,7 @@ class ConstructionContractSettlement(models.Model):
             'quantity': 1.0,
             'price_unit': -self.currency_id.round(amount / (1.0 + rate)),
             'tax_ids': [Command.set(taxes.ids)],
-            'analytic_distribution': {str(account.id): 100.0} if account else False,
+            'analytic_distribution': False,
         }]
 
     def _guarantee_date(self):

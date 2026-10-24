@@ -254,3 +254,51 @@ class TestRecipeCalc(TransactionCase):
         self.assertIn('CALC-R10, línea 2 (OPERARIO)', wizard.preview_html)
         with self.assertRaisesRegex(UserError, r'CALC-R10, línea 2 \(OPERARIO\)'):
             wizard.action_generate()
+
+    # CR-05: porcentaje del costo directo de un nivel elegido.
+    def test_percentage_of_chosen_level(self):
+        project, partida = self._project()
+        other_group = self.env['project.task'].create({
+            'name': 'Arquitectura (test)', 'project_id': project.id,
+            'construction_level_line_id':
+                partida.parent_id.parent_id.construction_level_line_id.id})
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        structures = partida.parent_id.parent_id
+        Line = self.env['construction.resource.plan.line']
+        pct = Line.create({
+            'plan_id': plan.id, 'task_id': other_group.id, 'resource_type': 'equipment',
+            'product_id': self.tools.id, 'product_uom_id': self.unit.id, 'stage': 'calc_test_stage',
+            'calc_method': 'pct_group', 'calc_pct': 2.0, 'calc_scope': 'task',
+            'calc_task_id': structures.id, 'qty_planned': 0.02, 'price_unit_planned': 0.0})
+        direct = sum(plan.line_ids.filtered(
+            lambda l: l.calc_method not in ('pct_labor', 'pct_group')).mapped('amount_planned'))
+        self.assertAlmostEqual(pct.amount_planned, round(direct * 0.02, 2))
+        with self.assertRaises(ValidationError):
+            self.recipe.line_ids[:1].write({'calc_method': 'pct_group', 'calc_pct': 2.0,
+                                            'calc_scope': 'task'})
+
+    # CR-06: lo que entrega el cliente.
+    def test_client_supply(self):
+        tv = self.env['product.product'].create({'name': 'Televisor del cliente (test)'})
+        recipe = self.env['construction.execution.template'].create({
+            'code': 'CALC-R08', 'name': 'Sala de reuniones (test)', 'uom_id': self.unit.id,
+            'line_ids': [Command.create({
+                'resource_type': 'material', 'product_id': tv.id, 'stage': 'calc_test_stage',
+                'product_uom_id': self.unit.id, 'qty': 1.0, 'is_client_supply': True})]})
+        project, partida = self._project()
+        partida.construction_execution_template_id = recipe
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        line = plan.line_ids
+        self.assertTrue(line.is_client_supply)
+        self.assertEqual(line.price_unit_planned, 0.0)
+        self.assertFalse(plan._get_approval_issues())
+        self.assertEqual(plan.unpriced_line_count, 0)
+        plan.action_request_approval()
+        self.assertEqual(plan.state, 'approved')
+        mixin = self.env['construction.plan.reschedule.wizard'].with_context(
+            default_plan_id=plan.id, construction_selection_project=True).new({})
+        self.assertNotIn(line, mixin._get_selected_lines())
+        line.with_context(construction_plan_force=True).qty_client_received = 100.0
+        self.assertEqual(line.qty_executed, 100.0)

@@ -126,3 +126,70 @@ class TestCorrectionsCreval(ContractTermsCommon):
         # Con valorizaciones, otro corte no mueve la semana.
         with self.assertRaisesRegex(UserError, 'semanas distintas'):
             order.construction_terms_id.sudo().cutoff_weekday = '0'
+
+    # CR-07 y CR-11
+    def test_price_from_plan_and_rounding(self):
+        self.act_wall.default_price = 0.0
+        wizard = self.env['construction.plan.contract.wizard'].with_context(
+            default_plan_id=self.plan.id, construction_selection_project=True,
+        ).create({'stage': 'creval_tab', 'partner_id': self.contractor.id,
+                  'condition_id': self.condition.id, 'date_start': date(2026, 11, 2)})
+        self.assertEqual(wizard.price_source, 'plan')
+        wall = wizard.line_ids.filtered(lambda r: r.activity_id == self.act_wall)
+        self.assertEqual(wall.price_unit, 38.20)
+        wizard.price_source = 'rate'
+        wall = wizard.line_ids.filtered(lambda r: r.activity_id == self.act_wall)
+        self.assertEqual(wall.price_unit, 0.0)
+        wizard.price_source = 'plan'
+        wall = wizard.line_ids.filtered(lambda r: r.activity_id == self.act_wall)
+        # El precio se corrige en la línea, con cuatro decimales.
+        self.env.ref('product.decimal_price').digits = 4
+        wall.price_unit = 12.3456
+        self.assertEqual(wall.amount, 24691.20)
+        self.assertEqual(wizard.amount_total, 24691.20 + 1800.0)
+        wizard.action_assign()
+        order = self.env['purchase.order'].search([
+            ('partner_id', '=', self.contractor.id),
+            ('construction_project_id', '=', self.project.id)], order='id desc', limit=1)
+        po_wall = order.order_line.filtered(lambda l: l.construction_activity_id == self.act_wall)
+        self.assertEqual(po_wall.price_unit, 12.3456)
+        order.button_confirm()
+        action = order.action_construction_register_advance()
+        self._post(self.env['account.move'].browse(action['res_id']), date(2026, 11, 2))
+        self._report(self.partida, self.act_wall, 333.33, date(2026, 11, 4))
+        settlement = self._prepare()
+        line = settlement.line_ids.filtered(lambda l: l.activity_id == self.act_wall)
+        self.assertEqual(line.price_unit, 12.3456)
+        # 333.33 × 12.3456 = 4,115.1585: se redondea una vez.
+        self.assertEqual(line.amount, 4115.16)
+        settlement.action_submit()
+        settlement.action_validate()
+        invoice_line = settlement.invoice_id.invoice_line_ids.filtered(
+            lambda l: l.purchase_line_id == po_wall)
+        self.assertEqual(invoice_line.price_subtotal, line.amount)
+
+    # CR-13
+    def test_advance_without_analytic(self):
+        order, advance, settlement = self._scenario()
+        self.assertTrue(self.project.account_id)
+        self.assertFalse(advance.invoice_line_ids.analytic_distribution)
+        settlement.action_submit()
+        settlement.action_validate()
+        invoice = settlement.invoice_id
+        regularization = invoice.invoice_line_ids.filtered(
+            lambda l: l.product_id == self.advance_product)
+        self.assertTrue(regularization)
+        self.assertFalse(regularization.analytic_distribution)
+        services = invoice.invoice_line_ids.filtered('purchase_line_id')
+        self.assertTrue(all(services.mapped('analytic_distribution')))
+
+    # CR-02: una cuenta por pagar en el producto de anticipo se avisa antes.
+    def test_advance_account_payable(self):
+        _wizard, order = self._assign()
+        order.button_confirm()
+        payable = self.env['account.account'].create({
+            'name': 'Anticipos otorgados por pagar (test)', 'code': '422199',
+            'account_type': 'liability_payable', 'reconcile': True})
+        self.advance_product.property_account_expense_id = payable
+        with self.assertRaisesRegex(UserError, 'necesita una cuenta de activo'):
+            order.action_construction_register_advance()

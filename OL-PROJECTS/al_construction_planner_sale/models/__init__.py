@@ -9,6 +9,7 @@ from . import construction_contract
 from . import construction_change
 from . import construction_weekly_delivery
 from . import construction_valuation
+from . import construction_valuation_progress
 from . import construction_schedule_report
 from . import project_planning
 from . import account_move

@@ -297,7 +297,7 @@ class ConstructionMaterialRequest(models.Model):
         # las líneas del plan vigente de su obra para traer su saldo.
         plan_sudo = self.construction_plan_id.sudo()
         domain = [('plan_id', '=', plan_sudo.id), ('resource_type', '=', 'material'),
-                  ('product_id', '!=', False),
+                  ('product_id', '!=', False), ('is_client_supply', '=', False),
                   ('stage', 'in', self._construction_scope_stage_codes())]
         tasks = self._construction_scope_tasks()
         if tasks is not None:

@@ -242,8 +242,9 @@ class PurchaseOrder(models.Model):
     # ------------------------------------------------------------------
     def action_construction_register_advance(self):
         """Factura de adelanto en borrador: el producto de anticipo, base =
-        adelanto (%) × subtotal sin IGV de la orden y la analítica de la
-        obra."""
+        adelanto (%) × subtotal sin IGV de la orden. Sin analítica: el
+        adelanto no es costo de la obra; el costo entra con cada valorización
+        (CREVAL v1.0, CR-13)."""
         self.ensure_one()
         if not self.construction_can_register_advance:
             raise UserError(self.env._(
@@ -254,11 +255,11 @@ class PurchaseOrder(models.Model):
             raise UserError(self.env._(
                 'Configure el producto de anticipo a contratistas en Ajustes › Planificación de '
                 'obra.'))
+        self._construction_check_advance_account(product)
         # El subtotal contractual sin IGV: costo directo y adicionales con sus
         # ajustes de precio, según el esquema de la orden.
         _rows, totals = self.construction_contract_cascade()
         amount = self.currency_id.round(totals['subtotal'] * self.construction_advance_pct / 100.0)
-        account = self.construction_project_id.account_id
         move = self.env['account.move'].with_company(self.company_id).create({
             'move_type': 'in_invoice',
             'partner_id': self.partner_id.id,
@@ -274,13 +275,31 @@ class PurchaseOrder(models.Model):
                 'price_unit': amount,
                 'tax_ids': [Command.set(product.supplier_taxes_id.filtered(
                     lambda t: t.company_id in self.company_id.parent_ids | self.company_id).ids)],
-                'analytic_distribution': {str(account.id): 100.0} if account else False,
+                'analytic_distribution': False,
             })],
         })
         self._construction_set_advance_detraction(move)
         self.message_post(body=self.env._('Adelanto registrado en borrador: %s.', move.display_name))
         return {'type': 'ir.actions.act_window', 'res_model': 'account.move', 'res_id': move.id,
                 'view_mode': 'form'}
+
+    def _construction_check_advance_account(self, product):
+        """La factura de adelanto lleva la cuenta del producto de anticipo:
+        una cuenta por pagar o por cobrar no sirve como línea de la factura
+        (Odoo pide fecha de vencimiento a todo apunte en esas cuentas). Se
+        avisa antes, con qué configurar (CREVAL v1.0, CR-02)."""
+        accounts = product.product_tmpl_id.with_company(self.company_id)._get_product_accounts()
+        account = self.fiscal_position_id.map_account(accounts['expense']) \
+            if accounts.get('expense') else accounts.get('expense')
+        if account and account.account_type in ('liability_payable', 'asset_receivable'):
+            raise UserError(self.env._(
+                'El producto de anticipo «%(product)s» usa la cuenta %(account)s, que es %(type)s: '
+                'una factura de adelanto necesita una cuenta de activo para el anticipo (por '
+                'ejemplo, una subcuenta de anticipos otorgados de tipo «Activos corrientes»). '
+                'Cámbiela en la pestaña Contabilidad del producto.',
+                product=product.display_name, account=account.display_name,
+                type=dict(account._fields['account_type']._description_selection(
+                    self.env))[account.account_type].lower()))
 
     def _construction_set_advance_detraction(self, move):
         """Con detracciones (al_l10n_pe_detraction), el adelanto lleva el

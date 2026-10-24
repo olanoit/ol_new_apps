@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 48.20261016 — 24/10/2026
+
+- Corrección CR-05 de la prueba CREVAL: «% del costo directo de un grupo de partidas» admite el alcance «Nivel elegido», con la especialidad o sub-especialidad sobre la que aplica el porcentaje (por ejemplo, el 2 % del costo directo de Arquitectura en una partida de otra especialidad).
+- Corrección CR-06: «Suministro del cliente» en la línea de la receta y del plan: costo 0 permitido (no bloquea la aprobación), sin compra ni requerimiento, y su ejecutado es lo «Recibido del cliente» en obra.
+
 ## 47.20261016 — 24/10/2026
 
 - Corrección CR-04 de la prueba CREVAL: «Importar recetas y niveles» busca el código del recurso en las actividades (por su código o el de su producto) y en los productos, y la línea de contrata o de personal propio lleva los dos; un producto de servicio sin actividad crea su actividad. Personal propio en cualquier unidad (por ejemplo glb) se importa y genera.

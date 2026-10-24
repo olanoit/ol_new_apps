@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261016 — 24/10/2026
+
+- Corrección CR-01 de la prueba CREVAL: la obra puede valorizar al cliente por el «Avance validado de la partida» (una línea por partida de la venta, con el % escrito con motivo de siempre), sin entregas, tipologías ni hitos; la factura sale de la valorización confirmada.
+- Corrección CR-12: las líneas de la venta de gastos generales, imprevistos, utilidad y descuento (se proponen por su nombre, campo «Rol en la obra») no se crean como niveles ni entran al plan, y se valorizan en la proporción del costo directo valorizado; el descuento va como línea negativa.
+- Corrección CR-13: el anticipo del cliente de una obra (y su deducción) va sin analítica; el ingreso entra con cada valorización.
+
 ## 4.20261016 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, 6.4: importación del presupuesto a la cotización con secciones y subsecciones, equivalencias de unidades y aviso de duplicados, y «Crear niveles de la obra» desde la cotización.

@@ -249,7 +249,7 @@ class ConstructionMaterialRequestLine(models.Model):
         if not plan or not self.product_id:
             return PlanLine
         domain = [('plan_id', '=', plan.id), ('product_id', '=', self.product_id.id),
-                  ('resource_type', 'in', SUPPLY_TYPES)]
+                  ('resource_type', 'in', SUPPLY_TYPES), ('is_client_supply', '=', False)]
         task = self.task_id or self.request_id.task_id
         if task:
             domain.append(('task_id', 'child_of', task.id))

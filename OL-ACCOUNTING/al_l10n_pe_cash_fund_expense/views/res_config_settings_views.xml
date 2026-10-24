@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_cash_fund_expense" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.cash.fund.expense</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_l10n_pe_cash_fund.res_config_settings_view_form_cash_fund"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='pe_cash_fund_block']" position="inside">
+                <setting company_dependent="1" string="Gastos pagados con un fondo"
+                         help="Diario de compras con documentos donde un gasto pagado con una caja chica o una entrega a rendir queda como la factura de su proveedor, con su tipo y número de comprobante.">
+                    <field name="l10n_pe_expense_journal_id" options="{'no_create': True}"
+                           placeholder="El primer diario de compras con documentos"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>

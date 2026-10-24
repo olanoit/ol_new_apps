@@ -1,5 +1,5 @@
 ---
-modulos: [al_l10n_pe_cash_fund]
+modulos: [al_l10n_pe_cash_fund, al_l10n_pe_cash_fund_expense]
 ---
 
 # Entregas a rendir y caja chica
@@ -129,6 +129,22 @@ saldo para la firma del responsable.
 La caja chica es un fondo fijo: se entrega una vez y, tras cada rendición,
 **Reponer** prepara el pago por lo gastado para devolverla a su monto. Para
 cerrarla, se devuelve el saldo y se pulsa **Cerrar**.
+
+## Gastos de la app Gastos pagados con un fondo
+
+Con la app **Gastos** instalada, el gasto que paga el empleado tiene el campo
+**Pagado con el fondo**: la caja chica o la entrega a rendir abierta con la que
+pagó. Con fondo, el **Proveedor**, el **Tipo de comprobante** y el **Número de
+comprobante** (serie y número) son obligatorios. Al contabilizar el gasto:
+
+- cada gasto es la factura de su proveedor, con su tipo y número de comprobante,
+  en el **Diario de comprobantes de gastos** (Ajustes ‣ Perú ‣ Entregas a rendir
+  y caja chica; vacío, el primer diario de compras con documentos), lista para el
+  registro de compras y el SIRE;
+- una rendición del fondo paga esas facturas y abona la cuenta del fondo; el
+  gasto queda pagado.
+
+Los gastos sin fondo siguen como en Odoo: un recibo a nombre del empleado.
 
 ## Casos especiales
 

@@ -10,6 +10,11 @@
                 <field name="calc_method" optional="show"/>
                 <field name="calc_pct" optional="show" invisible="calc_method not in ('pct_labor', 'pct_group')"/>
                 <field name="calc_scope" optional="hide" invisible="calc_method != 'pct_group'"/>
+                <field name="calc_task_id" optional="hide" options="{'no_create': True}"
+                       invisible="calc_method != 'pct_group' or calc_scope != 'task'"
+                       required="calc_method == 'pct_group' and calc_scope == 'task'"
+                       domain="[('project_id', '=', parent.project_id)]"/>
+                <field name="is_client_supply" optional="hide"/>
             </xpath>
             <xpath expr="//field[@name='line_ids']/list/field[@name='qty']" position="attributes">
                 <attribute name="readonly">calc_method != 'qty'</attribute>
@@ -30,6 +35,8 @@
             <xpath expr="//field[@name='price_unit_planned']" position="before">
                 <field name="calc_method" optional="hide"/>
                 <field name="calc_pct" optional="hide"/>
+                <field name="is_client_supply" optional="hide"/>
+                <field name="qty_client_received" optional="hide" invisible="not is_client_supply"/>
                 <field name="price_currency_id" optional="hide" groups="base.group_multi_currency"/>
                 <field name="price_unit_currency" optional="hide" groups="base.group_multi_currency"/>
             </xpath>
@@ -45,6 +52,12 @@
                 <field name="calc_method"/>
                 <field name="calc_pct" invisible="calc_method not in ('pct_labor', 'pct_group')"/>
                 <field name="calc_scope" invisible="calc_method != 'pct_group'"/>
+                <field name="calc_task_id" options="{'no_create': True}"
+                       invisible="calc_method != 'pct_group' or calc_scope != 'task'"
+                       required="calc_method == 'pct_group' and calc_scope == 'task'"
+                       domain="[('project_id', '=', project_id)]"/>
+                <field name="is_client_supply"/>
+                <field name="qty_client_received" invisible="not is_client_supply"/>
                 <field name="price_currency_id" groups="base.group_multi_currency" options="{'no_create': True}"/>
                 <field name="price_unit_currency" groups="base.group_multi_currency"
                        invisible="not is_foreign_currency"/>

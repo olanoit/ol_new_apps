@@ -2,3 +2,4 @@
 from . import valuation_wizard
 from . import contract_unit_wizard
 from . import budget_import_wizard
+from . import valuation_progress_wizard

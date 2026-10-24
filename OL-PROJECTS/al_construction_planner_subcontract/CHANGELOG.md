@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261016 — 24/10/2026
+
+- Corrección CR-07 de la prueba CREVAL: «Asignar contrata» toma el precio de cada partida del costo del plan (o la tarifa de la actividad, a elección), editable en cada línea con el total a la vista.
+- Corrección CR-11: la tarifa de la valorización guarda los decimales de «Precio del producto», como la orden; cada línea se redondea una sola vez y la factura da lo mismo que la valorización.
+- Corrección CR-13: la factura de adelanto y su regularización ya no llevan la analítica de la obra; el costo entra con las líneas del servicio de cada valorización.
+- Corrección CR-02 (parcial): si la cuenta del producto de anticipo es por pagar o por cobrar, «Registrar adelanto» lo dice antes y pide una cuenta de activo; la vía contable definitiva espera la decisión de contabilidad.
+
 ## 8.20261016 — 24/10/2026
 
 - Corrección CR-10 de la prueba CREVAL: la valorización semanal usa la semana de la obra, la misma del avance. El corte semanal de la orden fija el cierre de esa semana al asignar la contrata (con un mensaje en la obra); si la obra ya tiene valorizaciones con otra semana, pide corregir el corte. La migración alinea las obras con órdenes de corte semanal.

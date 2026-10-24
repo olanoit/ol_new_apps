@@ -754,7 +754,9 @@ class ConstructionContractSettlementLine(models.Model):
     purchase_line_id = fields.Many2one(
         'purchase.order.line', string='Línea de la OC', required=True, check_company=True)
     qty_period = fields.Float(string='Driver de la semana', digits='Product Unit')
-    price_unit = fields.Monetary(string='Tarifa', currency_field='currency_id')
+    # El precio de la orden con sus decimales; el monto se redondea una vez y
+    # la factura da lo mismo (CREVAL v1.0, CR-11).
+    price_unit = fields.Float(string='Tarifa', digits='Product Price')
     amount = fields.Monetary(
         string='Monto', compute='_compute_amount', store=True, currency_field='currency_id')
     # Re-trabajo y pago repetido (v1.8, M18-21).

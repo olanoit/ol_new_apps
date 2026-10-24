@@ -29,6 +29,7 @@
                         </div>
                         <field name="purchase_order_id" placeholder="Se creará una en borrador"/>
                         <field name="plan_line_count"/>
+                        <field name="price_source" widget="radio"/>
                     </group>
                 </group>
                 <field name="line_ids" nolabel="1">
@@ -36,7 +37,7 @@
                         <field name="activity_id" readonly="1" force_save="1"/>
                         <field name="uom_id" readonly="1" force_save="1" groups="uom.group_uom"/>
                         <field name="qty" readonly="1" force_save="1"/>
-                        <field name="price_unit" readonly="1" force_save="1"/>
+                        <field name="price_unit"/>
                         <field name="amount" sum="Total"/>
                         <field name="retention_pct" readonly="1" force_save="1" optional="show"/>
                         <field name="retention_amount" sum="Total"/>
@@ -55,8 +56,9 @@
                 </div>
                 <field name="exceed_reason" placeholder="Motivo si asigna más de lo que queda en el plan (alcance adicional)"/>
                 <p class="text-muted small">
-                    Tarifa vigente de la actividad con su prioridad: obra y contrata, solo obra, solo
-                    contrata y tarifa base. La contrata queda en las líneas del plan y su alcance se
+                    El precio de cada línea es el costo del plan de la partida o la tarifa vigente
+                    de la actividad (obra y contrata, solo obra, solo contrata y tarifa base), y se
+                    puede corregir en la línea; el total se actualiza. La contrata queda en las líneas del plan y su alcance se
                     suma a la OC de servicio abierta de la contrata en la obra (una por contrata y
                     obra; si no existe, se crea en borrador).
                 </p>
