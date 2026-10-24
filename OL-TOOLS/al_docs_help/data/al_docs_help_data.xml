@@ -323,6 +323,14 @@
         <field name="path">applications/services/project/construction/planning/approvals/#aprobar-o-rechazar</field>
         <field name="section">Aprobar o rechazar</field>
     </record>
+    <record id="help_construction_budget_book_wizard" model="al.docs.help">
+        <field name="key">construction.budget.book.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Importar el libro de APU y presupuesto</field>
+        <field name="module">al_construction_planner_sale</field>
+        <field name="path">applications/services/project/construction/planning/recipe_calc/#libro-de-apu-y-presupuesto</field>
+        <field name="section">Libro de APU y presupuesto</field>
+    </record>
     <record id="help_construction_budget_import_wizard" model="al.docs.help">
         <field name="key">construction.budget.import.wizard</field>
         <field name="kind">model</field>
@@ -546,6 +554,14 @@
         <field name="module">al_construction_planner</field>
         <field name="path">applications/services/project/construction/planning/changes/#dependencias-de-terceros</field>
         <field name="section">Dependencias de terceros</field>
+    </record>
+    <record id="help_construction_equipment_usage" model="al.docs.help">
+        <field name="key">construction.equipment.usage</field>
+        <field name="kind">model</field>
+        <field name="name">Uso de equipo propio en la obra</field>
+        <field name="module">al_construction_planner</field>
+        <field name="path">applications/services/project/construction/planning/analytic_budget/</field>
+        <field name="section">Grupos de acceso en dos ejes</field>
     </record>
     <record id="help_construction_exceed_log" model="al.docs.help">
         <field name="key">construction.exceed.log</field>

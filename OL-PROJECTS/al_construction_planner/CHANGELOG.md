@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 49.20261016 — 24/10/2026
+
+- Requerimiento CREVAL v1.0, 6.4: modalidad de ejecución por partida (personal propio, contrata solo de mano de obra o contrata a todo costo). La receta trae la modalidad por defecto y su actividad de contrata; la partida la cambia antes de aprobar el plan (después, con una nueva versión). Con contrata de mano de obra, la mano de obra y las herramientas van en una línea de contrata; a todo costo, una sola línea por el costo de la receta con el detalle del APU como referencia.
+- 6.1: equipo propio con tarifa interna por hora (depreciación sobre el valor de reposición, interés, seguro y almacén, mantenimiento y combustible), que es su costo en la receta y en el plan; el uso en obra se registra en la línea del plan y se carga a la cuenta analítica de la obra.
+- 6.2: «Importar recetas y niveles» pide la modalidad de las recetas en lugar de «Mano de obra como»; la sincronización receta ↔ Work Item (v1.8) conserva la forma de cálculo y la modalidad.
+
 ## 48.20261016 — 24/10/2026
 
 - Corrección CR-05 de la prueba CREVAL: «% del costo directo de un grupo de partidas» admite el alcance «Nivel elegido», con la especialidad o sub-especialidad sobre la que aplica el porcentaje (por ejemplo, el 2 % del costo directo de Arquitectura en una partida de otra especialidad).

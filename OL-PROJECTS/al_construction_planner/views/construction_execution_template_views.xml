@@ -207,7 +207,10 @@
                         <field name="file" filename="filename" invisible="source != 'excel'"/>
                         <field name="filename" invisible="1"/>
                         <field name="work_item_scope" invisible="source != 'work_item'"/>
-                        <field name="labor_behavior"/>
+                        <field name="labor_behavior" invisible="1"/>
+                        <field name="execution_mode"/>
+                        <field name="contract_activity_id" options="{'no_create': True}"
+                               invisible="execution_mode == 'own'"/>
                         <field name="default_stage_id" options="{'no_create': True}"/>
                     </group>
                 </group>

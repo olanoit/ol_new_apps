@@ -115,4 +115,92 @@
 
     <menuitem id="menu_planner_uom_aliases" name="Equivalencias de unidades" parent="menu_planner_config_plan"
               action="action_construction_uom_alias" sequence="46" groups="group_planner_plan_planner"/>
+    <!-- Modalidad de ejecución por partida (CREVAL v1.0, 6.4) -->
+    <record id="construction_execution_template_view_form_mode" model="ir.ui.view">
+        <field name="name">construction.execution.template.form.mode</field>
+        <field name="model">construction.execution.template</field>
+        <field name="inherit_id" ref="construction_execution_template_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_id']" position="after">
+                <field name="execution_mode"/>
+                <field name="contract_activity_id" options="{'no_create': True}"
+                       invisible="execution_mode == 'own'"
+                       placeholder="La de la línea de contrata de la receta"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="project_task_view_form_execution_mode" model="ir.ui.view">
+        <field name="name">project.task.form.construction.execution.mode</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project_task_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='construction_execution_template_id']" position="after">
+                <field name="construction_execution_mode"
+                       invisible="not construction_execution_template_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_line_view_form_mode" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.form.mode</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="construction_resource_plan_line_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='source_ref']" position="after">
+                <field name="construction_apu_detail" invisible="not construction_apu_detail"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Equipo propio con tarifa interna (CREVAL v1.0, 6.1) -->
+    <record id="product_template_form_view_construction_equipment" model="ir.ui.view">
+        <field name="name">product.template.form.construction.equipment</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Equipo de obra" name="construction_equipment"
+                      groups="al_construction_planner.group_planner_user">
+                    <group>
+                        <group>
+                            <field name="construction_equipment_owned"/>
+                            <field name="construction_replacement_value" invisible="not construction_equipment_owned"/>
+                            <field name="construction_life_years" invisible="not construction_equipment_owned"/>
+                            <field name="construction_hours_year" invisible="not construction_equipment_owned"/>
+                        </group>
+                        <group invisible="not construction_equipment_owned">
+                            <field name="construction_interest_pct"/>
+                            <field name="construction_maintenance_pct"/>
+                            <field name="construction_fuel_hour"/>
+                            <field name="construction_internal_rate" class="fw-bold"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_line_view_form_equipment" model="ir.ui.view">
+        <field name="name">construction.resource.plan.line.form.equipment</field>
+        <field name="model">construction.resource.plan.line</field>
+        <field name="inherit_id" ref="construction_resource_plan_line_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <field name="is_owned_equipment" invisible="1"/>
+                <separator string="Uso del equipo" invisible="not is_owned_equipment"/>
+                <field name="equipment_usage_ids" invisible="not is_owned_equipment"
+                       context="{'default_plan_line_id': id}">
+                    <list editable="bottom">
+                        <field name="date"/>
+                        <field name="qty"/>
+                        <field name="rate"/>
+                        <field name="amount" sum="Cargo"/>
+                        <field name="note"/>
+                        <field name="currency_id" column_invisible="1"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
 </odoo>

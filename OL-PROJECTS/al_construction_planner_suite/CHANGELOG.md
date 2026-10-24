@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261023 — 24/10/2026
+
+- Pruebas de la bolsa de herramientas, las capas de la cotización y el libro de APU y presupuesto (requerimiento CREVAL v1.0, 6.1, 6.5 y 6.6).
+
 ## 18.20261023 — 24/10/2026
 
 - Prueba de la valorización al cliente por avance de la partida con gastos generales, utilidad y descuento en proporción (correcciones CR-01 y CR-12).

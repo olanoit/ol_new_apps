@@ -56,3 +56,6 @@ from . import test_v111
 from . import test_whole_sheet_v111
 from . import test_package_111_observations
 from . import test_valuation_progress_creval
+from . import test_quotation_layers_creval
+from . import test_tool_bag_creval
+from . import test_budget_book_creval

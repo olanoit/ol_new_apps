@@ -31,6 +31,11 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Requerimiento CREVAL v1.0, 6.5: la línea de la cotización lleva el metrado real, las holguras de metrado y de costo y el margen (en % o monto); la cantidad, el precio y el costo para el margen de ventas salen de esas capas. La cotización tiene tipo de contrato (suma alzada o precios unitarios) y formato de impresión, y muestra el costo real y la reserva por holguras, que también se ve en el plan."
+  - "6.6 y 6.8: «Importar libro de APU y presupuesto», con las hojas OBRA, INSUMOS, APU, APU_DETALLE, PRESUPUESTO, LISTAS e INSTRUCCIONES y su plantilla descargable: crea o actualiza insumos, recetas y la cotización y, con destino plan, los niveles, la modalidad, el metrado real y el plan (con el plan aprobado, una nueva versión con su motivo). Valida códigos, insumos y APU, unidades con la tabla de LISTAS y fórmulas con error; volver a importar no duplica."
 - version: '5.20261016'
   fecha: 24/10/2026
   cambios:

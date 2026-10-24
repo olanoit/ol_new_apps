@@ -303,7 +303,10 @@ class SaleOrder(models.Model):
             recipe = recipes.search([('code', '=', line.construction_budget_item),
                                      ('project_id', 'in', (project.id, False))], limit=1) \
                 if line.construction_budget_item else recipes
-            values = {'construction_qty': line.product_uom_qty, 'sale_line_id': line.id}
+            # El plan va con el metrado real; la cantidad de la cotización es
+            # el ofertado, con su holgura (CREVAL v1.0, 6.5).
+            values = {'construction_qty': line.construction_qty_real or line.product_uom_qty,
+                      'sale_line_id': line.id}
             if recipe:
                 values['construction_execution_template_id'] = recipe.id
             partida.write(values)

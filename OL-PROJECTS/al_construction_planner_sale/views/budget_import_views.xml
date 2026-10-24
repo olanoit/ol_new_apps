@@ -54,6 +54,43 @@
             <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
                 <field name="construction_line_role" optional="hide"/>
             </xpath>
+            <!-- Costo real, holguras y precio (CREVAL v1.0, 6.5): columnas internas. -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="construction_qty_real" optional="hide"/>
+                <field name="construction_qty_slack_pct" optional="hide"/>
+                <field name="construction_qty_slack" optional="hide"/>
+                <field name="construction_cost_apu" optional="hide"/>
+                <field name="construction_cost_slack_pct" optional="hide"/>
+                <field name="construction_cost_slack" optional="hide"/>
+                <field name="construction_cost_offered" optional="hide"/>
+                <field name="construction_margin_pct" optional="hide"/>
+                <field name="construction_margin_amount" optional="hide"/>
+                <field name="construction_amount_reserve" optional="hide" sum="Reserva"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="construction_contract_type" invisible="not project_id"/>
+                <field name="construction_print_format" invisible="not project_id"/>
+            </xpath>
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0" role="alert" invisible="not construction_layers_warning">
+                    <field name="construction_layers_warning" nolabel="1"/>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='tax_totals']" position="after">
+                <field name="construction_amount_real" invisible="not construction_amount_real"/>
+                <field name="construction_amount_reserve" invisible="not construction_amount_real"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="construction_resource_plan_view_form_reserve" model="ir.ui.view">
+        <field name="name">construction.resource.plan.form.reserve</field>
+        <field name="model">construction.resource.plan</field>
+        <field name="inherit_id" ref="al_construction_planner.construction_resource_plan_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="construction_reserve_amount" invisible="not construction_reserve_amount"/>
+            </xpath>
         </field>
     </record>
 </odoo>

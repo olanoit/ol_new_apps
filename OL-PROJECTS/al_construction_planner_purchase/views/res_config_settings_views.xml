@@ -11,6 +11,10 @@
                                  help="El abastecimiento de la obra y las alertas marcan el producto cuyo último precio de compra supera el costo del plan en este porcentaje o más.">
                             <field name="construction_price_alert_pct" class="oe_inline"/> %
                         </setting>
+                        <setting company_dependent="1" id="construction_hand_tools" string="Herramientas manuales"
+                                 help="Las compras de esta categoría cargadas a una obra consumen su bolsa de herramientas (líneas del plan en % de la mano de obra).">
+                            <field name="construction_hand_tools_categ_id" options="{'no_create': True}"/>
+                        </setting>
                     </block>
             </xpath>
         </field>

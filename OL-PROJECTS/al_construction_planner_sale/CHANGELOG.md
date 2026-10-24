@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261016 — 24/10/2026
+
+- Requerimiento CREVAL v1.0, 6.5: la línea de la cotización lleva el metrado real, las holguras de metrado y de costo y el margen (en % o monto); la cantidad, el precio y el costo para el margen de ventas salen de esas capas. La cotización tiene tipo de contrato (suma alzada o precios unitarios) y formato de impresión, y muestra el costo real y la reserva por holguras, que también se ve en el plan.
+- 6.6 y 6.8: «Importar libro de APU y presupuesto», con las hojas OBRA, INSUMOS, APU, APU_DETALLE, PRESUPUESTO, LISTAS e INSTRUCCIONES y su plantilla descargable: crea o actualiza insumos, recetas y la cotización y, con destino plan, los niveles, la modalidad, el metrado real y el plan (con el plan aprobado, una nueva versión con su motivo). Valida códigos, insumos y APU, unidades con la tabla de LISTAS y fórmulas con error; volver a importar no duplica.
+
 ## 5.20261016 — 24/10/2026
 
 - Corrección CR-01 de la prueba CREVAL: la obra puede valorizar al cliente por el «Avance validado de la partida» (una línea por partida de la venta, con el % escrito con motivo de siempre), sin entregas, tipologías ni hitos; la factura sale de la valorización confirmada.

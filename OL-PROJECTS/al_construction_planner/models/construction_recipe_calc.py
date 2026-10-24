@@ -152,12 +152,13 @@ class ConstructionExecutionTemplateLine(models.Model):
 
     amount_unit = fields.Float(recursive=True)
 
-    @api.depends('qty', 'price_unit', 'product_id.standard_price', 'calc_method', 'calc_pct',
+    @api.depends('qty', 'price_unit', 'product_id.standard_price',
+                 'product_id.construction_internal_rate', 'calc_method', 'calc_pct',
                  'line_currency_id', 'template_id.line_ids.amount_unit')
     def _compute_amount_unit(self):
         pct_lines = self.filtered(lambda l: l.calc_method == 'pct_labor')
         for line in self - pct_lines:
-            price = line.price_unit or line.product_id.standard_price
+            price = line.price_unit or line._construction_default_cost()
             line.amount_unit = line.qty * line._construction_to_company(price)
         for line in pct_lines:
             line.amount_unit = line.calc_pct / 100.0 * line._construction_labor_base()
@@ -179,7 +180,16 @@ class ConstructionExecutionTemplateLine(models.Model):
         labor = self.template_id.line_ids.filtered(
             lambda l: l.resource_type in DRIVER_TYPES and l.calc_method not in PCT_METHODS)
         return sum(l.qty * l._construction_to_company(
-            l.price_unit or l.product_id.standard_price) for l in labor)
+            l.price_unit or l._construction_default_cost()) for l in labor)
+
+    def _construction_default_cost(self):
+        """Costo sin precio escrito: la tarifa interna del equipo propio
+        (6.1) o el costo del producto."""
+        self.ensure_one()
+        product = self.product_id
+        if product.construction_equipment_owned and product.construction_internal_rate:
+            return product.construction_internal_rate
+        return product.standard_price
 
     @api.constrains('calc_method', 'calc_pct', 'productivity', 'calc_scope', 'calc_task_id')
     def _check_calc(self):

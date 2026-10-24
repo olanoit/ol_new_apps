@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261024 — 24/10/2026
+
+- Requerimiento CREVAL v1.0, 6.1: bolsa de herramientas manuales. Con la categoría de herramientas manuales en Ajustes, las compras de esa categoría con la analítica de la obra son el comprometido y el real de sus líneas en % de la mano de obra.
+
 ## 13.20261024 — 24/10/2026
 
 - Corrección CR-06 de la prueba CREVAL: las líneas de suministro del cliente no entran a la compra masiva, al requerimiento ni al tablero de abastecimiento.

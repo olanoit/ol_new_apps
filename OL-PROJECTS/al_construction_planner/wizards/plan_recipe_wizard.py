@@ -64,7 +64,7 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
             if key not in prices:
                 prices[key] = recipe_line.activity_id._get_rate(self.plan_id.project_id)[0]
             return prices[key]
-        return recipe_line.product_id.standard_price
+        return recipe_line._construction_default_cost()
 
     def _collect(self):
         """Valores de las líneas por crear y avisos (tareas sin metrado)."""
@@ -76,22 +76,32 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
         prices = {}
         vals_list, warnings = [], defaultdict(list)
         for task in self._get_tasks():
-            recipe = task.construction_execution_template_id
             if not task.construction_qty:
                 warnings['no_qty'].append(task.display_name)
                 continue
-            for recipe_line in recipe.line_ids:
-                if recipe_line.stage and recipe_line.stage not in codes:
-                    continue
-                if recipe_line.resource_type in ('contract', 'labor') \
-                        and not recipe_line.activity_id:
-                    # Se dice qué receta y qué línea (CREVAL v1.0, CR-04).
-                    warnings['no_activity'].append(recipe_line._construction_line_label())
-                    continue
-                vals = self._prepare_line_vals(task, recipe_line, prices)
+            for vals in self._task_line_values(task, codes, prices, warnings):
                 vals['analytic_distribution'] = analytic
                 vals_list.append(vals)
         return vals_list, warnings
+
+    def _task_recipe_lines(self, task, codes, warnings):
+        """Líneas de la receta de ``task`` que generan: las de las etapas
+        elegidas, con su actividad si son de contrata o personal propio."""
+        lines = self.env['construction.execution.template.line']
+        for recipe_line in task.construction_execution_template_id.line_ids:
+            if recipe_line.stage and recipe_line.stage not in codes:
+                continue
+            if recipe_line.resource_type in ('contract', 'labor') and not recipe_line.activity_id:
+                # Se dice qué receta y qué línea (CREVAL v1.0, CR-04).
+                warnings['no_activity'].append(recipe_line._construction_line_label())
+                continue
+            lines |= recipe_line
+        return lines
+
+    def _task_line_values(self, task, codes, prices, warnings):
+        """Valores de las líneas del plan de ``task``."""
+        return [self._prepare_line_vals(task, recipe_line, prices)
+                for recipe_line in self._task_recipe_lines(task, codes, warnings)]
 
     def _prepare_line_vals(self, task, recipe_line, prices):
         """Línea del plan de un recurso de la receta en ``task``."""
@@ -200,3 +210,80 @@ class ConstructionPlanRecipeWizardCalc(models.TransientModel):
                 recipe._apply_work_item_to_template(item)
                 recipe._mark_synced(item)
         return super().action_generate()
+
+
+class ConstructionPlanRecipeWizardMode(models.TransientModel):
+    """Modalidad de ejecución por partida (CREVAL v1.0, 6.4): en las
+    modalidades de contrata, la mano de obra (y las herramientas) o la receta
+    entera van en una sola línea de contrata."""
+    _inherit = 'construction.plan.recipe.wizard'
+
+    def _task_line_values(self, task, codes, prices, warnings):
+        mode = task.construction_execution_mode or 'own'
+        if mode == 'own':
+            return super()._task_line_values(task, codes, prices, warnings)
+        recipe = task.construction_execution_template_id
+        lines = self._task_recipe_lines(task, codes, warnings)
+        if mode == 'labor_contract':
+            # La mano de obra propia y las herramientas por % de la mano de
+            # obra pasan a la contrata; materiales, equipos y contratas de la
+            # receta siguen en su línea.
+            into_contract = lines.filtered(
+                lambda l: l.resource_type == 'labor' or l.calc_method == 'pct_labor')
+        else:
+            # El % del costo directo de un grupo depende de otras partidas:
+            # sigue en su línea.
+            into_contract = lines.filtered(lambda l: l.calc_method != 'pct_group')
+        activity = recipe.contract_activity_id or lines.filtered(
+            lambda l: l.resource_type == 'contract')[:1].activity_id
+        if not activity:
+            warnings['no_activity'].append(self.env._(
+                '%(recipe)s (modalidad «%(mode)s»: falta la actividad de la contrata)',
+                recipe=recipe.code or recipe.name,
+                mode=dict(task._fields['construction_execution_mode']._description_selection(
+                    self.env))[mode]))
+            return []
+        if mode == 'labor_contract':
+            # La línea de contrata de la receta es la misma contrata.
+            into_contract |= lines.filtered(
+                lambda l: l.resource_type == 'contract' and l.activity_id == activity)
+        rest = lines - into_contract
+        values = [self._prepare_line_vals(task, line, prices) for line in rest]
+        labor_base = sum(line.qty * self._price(line, prices) for line in into_contract
+                         if line.resource_type in ('labor', 'contract')
+                         and line.calc_method not in ('pct_labor', 'pct_group'))
+        unit_cost, detail = 0.0, []
+        for line in into_contract:
+            if line.calc_method == 'pct_labor':
+                cost = line.calc_pct / 100.0 * labor_base
+            else:
+                cost = line.qty * self._price(line, prices)
+            unit_cost += cost
+            detail.append('%s: %s × %s = %s' % (
+                line._construction_line_label(), round(line.qty, 6),
+                round(self._price(line, prices), 4), round(cost, 4)))
+        if not into_contract:
+            return values
+        qty = recipe.uom_id._compute_quantity(task.construction_qty, activity.uom_id) \
+            if recipe.uom_id and activity.uom_id and recipe.uom_id != activity.uom_id \
+            and recipe.uom_id._has_common_reference(activity.uom_id) else task.construction_qty
+        # El costo es por unidad de la receta; en otra unidad, el mismo total.
+        if qty and qty != task.construction_qty:
+            unit_cost = unit_cost * task.construction_qty / qty
+        values.append({
+            'plan_id': self.plan_id.id,
+            'task_id': task.id,
+            'resource_type': 'contract',
+            'resource_type_id': self.env['construction.resource.type']._default_for(
+                'contract').id,
+            'stage': activity.stage or into_contract[:1].stage or False,
+            'product_id': activity.product_id.id,
+            'activity_id': activity.id,
+            'product_uom_id': activity.uom_id.id or recipe.uom_id.id,
+            'qty_planned': qty,
+            'price_unit_planned': unit_cost,
+            'source': 'recipe',
+            'source_ref': recipe.code,
+            'construction_apu_detail': '\n'.join(detail) if mode == 'full_contract' else False,
+        })
+        return values

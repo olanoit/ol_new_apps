@@ -302,3 +302,72 @@ class TestRecipeCalc(TransactionCase):
         self.assertNotIn(line, mixin._get_selected_lines())
         line.with_context(construction_plan_force=True).qty_client_received = 100.0
         self.assertEqual(line.qty_executed, 100.0)
+
+    # 6.4: modalidad de ejecución por partida.
+    def _generate_with_mode(self, mode, activity=None):
+        self.recipe.contract_activity_id = activity
+        project, partida = self._project()
+        partida.construction_execution_mode = mode
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        return plan, partida
+
+    def test_execution_modes(self):
+        contract = self.env['construction.labor.activity'].create({
+            'code': 'CALC-CTR', 'name': 'Muro por contrata (test)', 'stage': 'calc_test_stage',
+            'uom_id': self.m2.id})
+        self.assertEqual(self.recipe.execution_mode, 'own')
+        own, partida = self._generate_with_mode('own')
+        self.assertEqual(set(own.line_ids.mapped('resource_type')), {'labor', 'material', 'equipment'})
+        # Solo mano de obra: la mano de obra y las herramientas van a la
+        # contrata (6.46 + 3 % = 6.6538 por m²); el ladrillo sigue aparte.
+        labor, _partida = self._generate_with_mode('labor_contract', contract)
+        line = labor.line_ids.filtered(lambda l: l.resource_type == 'contract')
+        self.assertEqual(line.activity_id, contract)
+        self.assertAlmostEqual(line.price_unit_planned, 6.6538, places=4)
+        self.assertAlmostEqual(line.qty_planned, 100.0)
+        self.assertEqual(set(labor.line_ids.mapped('resource_type')), {'contract', 'material'})
+        # A todo costo: una sola línea con el costo de la receta y su detalle.
+        full, _partida = self._generate_with_mode('full_contract', contract)
+        self.assertEqual(len(full.line_ids), 1)
+        self.assertAlmostEqual(full.line_ids.price_unit_planned, 43.7838, places=4)
+        self.assertIn('CALC-R01', full.line_ids.construction_apu_detail)
+        with self.assertRaisesRegex(UserError, 'falta la actividad de la contrata'):
+            self._generate_with_mode('full_contract')
+
+    def test_execution_mode_locked_by_approved_plan(self):
+        plan, partida = self._generate_with_mode('own')
+        plan.action_request_approval()
+        self.assertEqual(plan.state, 'approved')
+        with self.assertRaisesRegex(UserError, 'nueva versión del plan'):
+            partida.construction_execution_mode = 'full_contract'
+
+    # 6.1: equipo propio con tarifa interna y su uso en obra.
+    def test_owned_equipment(self):
+        mixer = self.env['product.product'].create({
+            'name': 'Mezcladora 9 p³ (test)', 'construction_equipment_owned': True,
+            'construction_replacement_value': 10000.0, 'construction_life_years': 5.0,
+            'construction_hours_year': 2000.0, 'construction_interest_pct': 10.0,
+            'construction_maintenance_pct': 10.0, 'construction_fuel_hour': 2.5})
+        # (10,000 ÷ 5 + 10,000 × 20 %) ÷ 2,000 + 2.50 = 4.50 por hora.
+        self.assertAlmostEqual(mixer.construction_internal_rate, 4.5)
+        recipe = self.env['construction.execution.template'].create({
+            'code': 'CALC-R03', 'name': 'Concreto con mezcladora (test)', 'uom_id': self.m2.id,
+            'line_ids': [Command.create({
+                'resource_type': 'equipment', 'product_id': mixer.id, 'stage': 'calc_test_stage',
+                'product_uom_id': self.hour.id, 'qty': 0.5})]})
+        self.assertAlmostEqual(recipe.amount_unit, 2.25)
+        project, partida = self._project()
+        partida.construction_execution_template_id = recipe
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        line = plan.line_ids
+        self.assertEqual(line.price_unit_planned, 4.5)
+        plan.action_request_approval()
+        usage = self.env['construction.equipment.usage'].create({
+            'plan_line_id': line.id, 'date': date(2026, 11, 3), 'qty': 8.0})
+        self.assertEqual(usage.amount, 36.0)
+        self.assertEqual(usage.analytic_line_id.account_id, project.account_id)
+        self.assertEqual(usage.analytic_line_id.amount, -36.0)
+        self.assertEqual(line.qty_executed, 8.0)
+        self.assertEqual(line._get_line_execution()[line][1], 36.0)

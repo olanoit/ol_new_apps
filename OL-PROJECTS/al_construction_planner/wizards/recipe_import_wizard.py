@@ -105,6 +105,17 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         [('labor', 'Personal propio (cuadrilla)'), ('contract', 'Contrata')],
         string='Mano de obra como', default='labor', required=True,
         help='La mano de obra del APU entra como horas de cuadrilla propia o como contrata.')
+    # CREVAL v1.0, 6.4: la modalidad reemplaza a «Mano de obra como»; la
+    # mano de obra entra como personal propio y la modalidad decide al
+    # generar el plan si va a una contrata.
+    execution_mode = fields.Selection(
+        [('own', 'Personal propio'), ('labor_contract', 'Contrata solo de mano de obra'),
+         ('full_contract', 'Contrata a todo costo')],
+        string='Modalidad de las recetas', default='own', required=True,
+        help='Modalidad por defecto de las recetas importadas; se cambia por partida.')
+    contract_activity_id = fields.Many2one(
+        'construction.labor.activity', string='Actividad de la contrata',
+        help='La que paga a la contrata en las modalidades de contrata.')
     default_stage_id = fields.Many2one(
         'construction.stage', string='Etapa por defecto',
         help='La de los recursos sin etapa en el origen.')
@@ -263,6 +274,8 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                       ('project_id', '=', self.project_id.id or False)]
             template = Template.with_context(active_test=False).search(domain, limit=1)
             vals = {'name': data.get('name') or code, 'source': source,
+                    'execution_mode': self.execution_mode,
+                    'contract_activity_id': self.contract_activity_id.id,
                     'source_ref': (source_refs or {}).get(code, False),
                     'line_ids': [Command.clear()] + [Command.create(line)
                                                      for line in data['lines']]}

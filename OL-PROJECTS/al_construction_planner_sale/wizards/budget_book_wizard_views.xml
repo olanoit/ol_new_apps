@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Excel de carga de APU y presupuesto (CREVAL v1.0, 6.6) -->
+    <record id="construction_budget_book_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.budget.book.wizard.form</field>
+        <field name="model">construction.budget.book.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Importar libro de APU y presupuesto">
+                <field name="state" invisible="1"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="has_warnings" invisible="1"/>
+                <group invisible="state == 'done'">
+                    <group>
+                        <field name="sale_order_id"/>
+                        <field name="target" widget="radio" readonly="state != 'upload'"/>
+                        <field name="project_id" options="{'no_create': True}"
+                               required="target == 'plan'" readonly="state != 'upload'"/>
+                    </group>
+                    <group>
+                        <field name="file" filename="filename" readonly="state != 'upload'"/>
+                        <field name="filename" invisible="1"/>
+                        <field name="default_stage_id" options="{'no_create': True}"/>
+                        <field name="replan_reason" invisible="target != 'plan'"
+                               placeholder="Con el plan aprobado: el motivo de la nueva versión"/>
+                    </group>
+                </group>
+                <div invisible="state != 'upload'" class="text-muted small">
+                    Hojas OBRA, INSUMOS, APU, APU_DETALLE, PRESUPUESTO, LISTAS e INSTRUCCIONES, con
+                    las columnas de la plantilla. Volver a importar actualiza sin duplicar.
+                </div>
+                <field name="preview_html" nolabel="1" invisible="state == 'upload'"/>
+                <field name="accept_warnings" invisible="state != 'preview' or not has_warnings"/>
+                <footer>
+                    <button name="action_preview" type="object" string="Revisar" class="btn-primary"
+                            invisible="state != 'upload'" data-hotkey="q"/>
+                    <button name="action_import" type="object" string="Enviar"
+                            class="btn-primary" invisible="state != 'preview'"/>
+                    <button name="action_download_template" type="object" string="Descargar plantilla"
+                            invisible="state != 'upload'"/>
+                    <button string="Cerrar" special="cancel" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="sale_order_view_form_construction_book" model="ir.ui.view">
+        <field name="name">sale.order.form.construction.book</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_construction_import_book" type="object"
+                        string="Importar libro de APU y presupuesto"
+                        invisible="state == 'cancel' or locked"
+                        groups="al_construction_planner.group_planner_plan_planner"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

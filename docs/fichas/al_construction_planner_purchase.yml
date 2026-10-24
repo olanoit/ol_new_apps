@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '14.20261024'
+  fecha: 24/10/2026
+  cambios:
+    - "Requerimiento CREVAL v1.0, 6.1: bolsa de herramientas manuales. Con la categoría de herramientas manuales en Ajustes, las compras de esa categoría con la analítica de la obra son el comprometido y el real de sus líneas en % de la mano de obra."
 - version: '13.20261024'
   fecha: 24/10/2026
   cambios:

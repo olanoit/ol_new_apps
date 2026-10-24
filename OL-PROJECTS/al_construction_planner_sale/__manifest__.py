@@ -17,7 +17,7 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '5.20261016',
+    'version': '6.20261016',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'sale_project', 'al_report_base'],
@@ -40,6 +40,7 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
         'views/menus.xml',
         'views/construction_board_views.xml',
         'views/budget_import_views.xml',
+        'wizards/budget_book_wizard_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
