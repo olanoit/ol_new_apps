@@ -323,6 +323,26 @@ class TestContractTerms(ContractTermsCommon):
         self.assertEqual(settlement.amount_advance, 0.0)
         self.assertEqual(settlement.amount_direct, 3820.0)
 
+    def test_approval_with_tier_review(self):
+        """Con la regla de niveles de la liquidación activa, aprobar la
+        revisión recalcula el resumen y factura (antes lo impedía el control
+        de escritura de la revisión abierta)."""
+        tier = self.env.ref(
+            'al_construction_planner_subcontract.tier_contract_settlement_manager')
+        tier.active = True
+        reviewer = new_test_user(
+            self.env, login='creval_reviewer', name='Jefatura de proyectos (test)',
+            groups='base.group_user,al_construction_planner.group_planner_exec_approver')
+        _order, _advance, settlement = self._scenario()
+        settlement.action_submit()
+        settlement.action_validate()
+        self.assertEqual(settlement.state, 'validated')
+        self.assertIn(reviewer, settlement.review_ids.reviewer_ids)
+        settlement.with_user(reviewer).validate_tier()
+        self.assertEqual(settlement.state, 'approved')
+        self.assertEqual(settlement.amount_to_pay, 35532.75)
+        self.assertEqual(settlement.invoice_id.amount_total, 37901.60)
+
     def test_one_open_valuation_per_order(self):
         order, _advance, settlement = self._scenario()
         with self.assertRaises(ValidationError):

@@ -406,7 +406,9 @@ class ConstructionContractSettlement(models.Model):
                     and settlement.settlement_type != 'opening':
                 continue
             rows, totals = settlement._terms_amounts()
-            settlement.sudo().write({
+            # Los totales los calcula el sistema: también se escriben con la
+            # revisión por niveles abierta (al aprobarla).
+            settlement.sudo().with_context(skip_validation_check=True).write({
                 'amount_direct': totals['direct'], 'amount_additional': totals['additional'],
                 'amount_adjustments': totals['adjustments'],
                 'amount_deductions': totals['deductions'], 'amount_subtotal': totals['subtotal'],
@@ -634,7 +636,10 @@ class ConstructionContractSettlement(models.Model):
     def _action_approve(self):
         terms = self.filtered('uses_terms')
         for settlement in terms:
-            settlement._terms_recompute()
+            # sudo: la jefatura que aprueba no suele leer compras ni
+            # contabilidad, y el resumen suma los adelantos publicados.
+            settlement_sudo = settlement.sudo()
+            settlement_sudo._terms_recompute()
         res = super()._action_approve()
         terms.deduction_ids.with_context(construction_deduction_sync=True).write(
             {'state': 'applied'})

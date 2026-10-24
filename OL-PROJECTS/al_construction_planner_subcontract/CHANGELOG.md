@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261016 — 24/10/2026
+
+- Valorización con condiciones: aprobar la revisión por niveles de la liquidación ya no falla al recalcular el resumen; antes el control de la revisión abierta bloqueaba la escritura de los totales.
+
 ## 3.20261016 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 3: condiciones de contrata con su esquema de cálculo, copiadas a la orden de contrata; valorización por orden con periodicidad semanal, quincenal, mensual o al término, resumen del periodo (contractual, anterior, actual, acumulado y saldo), adelanto y su regularización, deductivos, fondo de garantía en una cuota propia de la factura y su reporte, liquidación y cierre de la orden, carga inicial con valorización de apertura, valorizado impreso con casillas de firma, resumen y análisis de valorizaciones y despacho semanal.

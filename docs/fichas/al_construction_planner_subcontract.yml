@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Valorización con condiciones: aprobar la revisión por niveles de la liquidación ya no falla al recalcular el resumen; antes el control de la revisión abierta bloqueaba la escritura de los totales."
 - version: '3.20261016'
   fecha: 23/10/2026
   cambios:
