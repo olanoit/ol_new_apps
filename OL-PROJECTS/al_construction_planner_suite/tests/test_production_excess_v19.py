@@ -160,6 +160,7 @@ class TestProductionExcess(PlannerCommon):
         """El jefe de producción ve el plan pero no lo edita (Plan: consulta)."""
         self.assertTrue(self.head.has_group('al_construction_planner.group_planner_plan_viewer'))
         self.assertFalse(self.head.has_group('al_construction_planner.group_planner_user'))
+        self.assertTrue(self.head.has_group('al_project_gantt_base.group_gantt_user'))
         plan = self.plan.with_user(self.head)
         self.assertTrue(plan.name)
         with self.assertRaises(AccessError):

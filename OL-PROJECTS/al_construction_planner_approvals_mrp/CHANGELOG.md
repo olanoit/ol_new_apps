@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261024 — 24/10/2026
+
+- El jefe de producción ve el Gantt de proyectos (grupo Gantt: usuario, que incluye Proyecto: usuario); el plan de recursos sigue en solo lectura.
+
 ## 6.20261024 — 24/10/2026
 
 - El jefe de producción solo consulta el planificador (Plan: consulta): ya no edita planes, dependencias, cambios ni liquidaciones. Sigue aprobando el exceso de la orden dentro de su margen.
