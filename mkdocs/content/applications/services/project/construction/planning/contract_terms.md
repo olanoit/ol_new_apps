@@ -20,9 +20,12 @@ semanal](contractors.md).
       devolución en días, desde cada factura o desde la liquidación, y los
       **requisitos de devolución** (vencimiento del plazo, acta de recepción,
       carta de no deuda, ninguna observación de postventa u otros).
-    - **Periodicidad**: semanal (con el día de corte o la semana de la obra),
-      quincenal (1-15 y 16-fin), mensual (fin de mes o día de corte) o al
-      término. **Tolerancia de avance** y **Líneas de la orden** (por partida o
+    - **Periodicidad**: semanal, quincenal (1-15 y 16-fin), mensual (fin de mes
+      o día de corte) o al término. La semanal usa la semana de la obra, la
+      misma del avance: el **Día de corte semanal** de la orden fija el cierre
+      de esa semana al asignar la contrata (la obra lo registra en su
+      historial). Si la obra ya tiene valorizaciones con otra semana, el corte
+      no se cambia. **Tolerancia de avance** y **Líneas de la orden** (por partida o
       por actividad).
     - **Documentos requeridos** para la liquidación.
     - **Esquema de cálculo**: una fila por concepto, con su tipo (ajuste de
@@ -56,7 +59,8 @@ esa factura publicada.
 En el corte de cada orden se crea la valorización en borrador («Valorizado 01 -
 especialidad») con los avances validados del periodo, los rezagados, los
 deductivos pendientes y los adicionales aprobados; **Preparar valorizaciones**
-en la lista lo hace para todas las órdenes de una obra. La pestaña **Resumen del
+en la lista lo hace para todas las órdenes de una obra; una semana sin avances no
+la detiene: pasa al periodo del primer avance o deductivo pendiente. La pestaña **Resumen del
 periodo** muestra cada concepto del esquema con su contractual, anterior,
 actual, acumulado y saldo; la franja **Revisar antes de aprobar** avisa de
 metrados escritos a mano, re-trabajos, líneas sobre lo contratado y avances sin

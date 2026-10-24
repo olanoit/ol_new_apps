@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 47.20261016 — 24/10/2026
+
+- Corrección CR-04 de la prueba CREVAL: «Importar recetas y niveles» busca el código del recurso en las actividades (por su código o el de su producto) y en los productos, y la línea de contrata o de personal propio lleva los dos; un producto de servicio sin actividad crea su actividad. Personal propio en cualquier unidad (por ejemplo glb) se importa y genera.
+- Generar el plan dice qué receta y qué línea no tienen actividad («R01, línea 3 (Operario)») en la vista previa y al generar, en lugar del mensaje genérico.
+
 ## 46.20261016 — 24/10/2026
 
 - Corrección CR-03 de la prueba CREVAL del 24-oct: el costo unitario de la línea de receta y de la línea del plan guarda los decimales de «Precio del producto» (el ladrillo a 0.9661 ya no pasa a 0.97) y la receta redondea su costo por unidad una sola vez. Las recetas importadas antes conservan el costo ya redondeado: vuelva a importarlas.

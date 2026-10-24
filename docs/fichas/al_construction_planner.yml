@@ -1220,6 +1220,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '47.20261016'
+    fecha: 24/10/2026
+    cambios:
+      - "Corrección CR-04 de la prueba CREVAL: «Importar recetas y niveles» busca el código del recurso en las actividades (por su código o el de su producto) y en los productos, y la línea de contrata o de personal propio lleva los dos; un producto de servicio sin actividad crea su actividad. Personal propio en cualquier unidad (por ejemplo glb) se importa y genera."
+      - "Generar el plan dice qué receta y qué línea no tienen actividad («R01, línea 3 (Operario)») en la vista previa y al generar, en lugar del mensaje genérico."
   - version: '46.20261016'
     fecha: 24/10/2026
     cambios:

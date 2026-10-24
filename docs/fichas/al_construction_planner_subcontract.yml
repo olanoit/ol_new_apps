@@ -25,6 +25,11 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '8.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Corrección CR-10 de la prueba CREVAL: la valorización semanal usa la semana de la obra, la misma del avance. El corte semanal de la orden fija el cierre de esa semana al asignar la contrata (con un mensaje en la obra); si la obra ya tiene valorizaciones con otra semana, pide corregir el corte. La migración alinea las obras con órdenes de corte semanal."
+  - "«Preparar valorizaciones» ya no se detiene en una semana sin avances: salta al periodo del primer avance o deductivo pendiente, incluidos los adicionales aprobados."
 - version: '7.20261016'
   fecha: 24/10/2026
   cambios:

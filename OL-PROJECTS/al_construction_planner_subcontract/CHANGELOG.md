@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261016 — 24/10/2026
+
+- Corrección CR-10 de la prueba CREVAL: la valorización semanal usa la semana de la obra, la misma del avance. El corte semanal de la orden fija el cierre de esa semana al asignar la contrata (con un mensaje en la obra); si la obra ya tiene valorizaciones con otra semana, pide corregir el corte. La migración alinea las obras con órdenes de corte semanal.
+- «Preparar valorizaciones» ya no se detiene en una semana sin avances: salta al periodo del primer avance o deductivo pendiente, incluidos los adicionales aprobados.
+
 ## 7.20261016 — 24/10/2026
 
 - Corrección CR-08 de la prueba CREVAL del 24-oct: el avance de re-trabajo entra a la valorización con 0 a liquidar y queda en la revisión; solo se paga si quien valida la ejecución marca «Pagar el re-trabajo» con su motivo. Sin pagar, no va en la factura.

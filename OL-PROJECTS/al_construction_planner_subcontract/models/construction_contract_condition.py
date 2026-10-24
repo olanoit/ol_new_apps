@@ -157,7 +157,8 @@ class ConstructionContractCondition(models.Model):
         [('0', 'Lunes'), ('1', 'Martes'), ('2', 'Miércoles'), ('3', 'Jueves'),
          ('4', 'Viernes'), ('5', 'Sábado'), ('6', 'Domingo')],
         string='Día de corte semanal',
-        help='Vacío: el cierre de la semana de liquidación de la obra.')
+        help='Vacío: el cierre de la semana de la obra. En una orden, fija el cierre de la '
+             'semana de la obra, que usan el avance y la valorización.')
     monthly_cutoff = fields.Selection(
         MONTHLY_CUTOFFS, string='Corte mensual', default='month_end')
     cutoff_day = fields.Integer(string='Día de corte del mes', default=25)
@@ -216,12 +217,47 @@ class ConstructionContractCondition(models.Model):
         values.update(overrides or {})
         # sudo: la copia nace de la asignación de la contrata, que puede hacer
         # quien no administra la configuración; queda ligada a la orden.
-        return self.sudo().copy(values).sudo(False)
+        terms = self.sudo().copy(values).sudo(False)
+        terms._construction_align_project_week()
+        return terms
 
     def write(self, vals):
         self._check_order_locked(vals)
         res = super().write(vals)
+        if {'frequency', 'cutoff_weekday'} & set(vals):
+            self._construction_align_project_week()
         return res
+
+    def _construction_align_project_week(self):
+        """Una sola semana para el avance y la valorización (CREVAL v1.0,
+        CR-10): el corte semanal de la orden fija el cierre de la semana de la
+        obra. Si la obra ya tiene valorizaciones con otra semana, no se cambia
+        y se pide corregir el corte."""
+        Settlement = self.env['construction.contract.settlement'].sudo()
+        weekdays = dict(self._fields['cutoff_weekday']._description_selection(self.env))
+        for terms in self.filtered(lambda c: c.order_id and c.frequency == 'weekly'
+                                   and c.cutoff_weekday):
+            project = terms.order_id.construction_project_id
+            start_day = str((int(terms.cutoff_weekday) + 1) % 7)
+            if not project or project.construction_week_start_day == start_day:
+                continue
+            if Settlement.search_count([('project_id', '=', project.id),
+                                        ('state', '!=', 'cancel')]):
+                current = str((int(project.construction_week_start_day or '3') - 1) % 7)
+                raise UserError(self.env._(
+                    'La semana de la obra %(project)s cierra el %(current)s y ya tiene '
+                    'valorizaciones: el corte del %(cutoff)s haría que el avance y la '
+                    'valorización usen semanas distintas. Deje el corte del %(current)s o '
+                    'cambie la semana en los ajustes de la obra.',
+                    project=project.display_name, current=weekdays[current].lower(),
+                    cutoff=weekdays[terms.cutoff_weekday].lower()))
+            # sudo: quien asigna la contrata no siempre edita los ajustes de
+            # la obra; solo se mueve el día de inicio de su semana.
+            project.sudo().construction_week_start_day = start_day
+            project.message_post(body=self.env._(
+                'La semana de la obra cierra el %(day)s, el corte de la orden %(order)s: el '
+                'avance y la valorización usan la misma semana.',
+                day=weekdays[terms.cutoff_weekday].lower(), order=terms.order_id.name))
 
     def _check_order_locked(self, vals):
         """Con la orden confirmada, las condiciones solo las cambia el

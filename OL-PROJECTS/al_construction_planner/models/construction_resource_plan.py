@@ -1421,7 +1421,11 @@ class ConstructionResourcePlanLine(models.Model):
         for line in self:
             if line.resource_type in ('contract', 'labor') and not line.activity_id:
                 raise ValidationError(self.env._(
-                    'Las líneas de contrata y de personal propio necesitan su actividad (driver).'))
+                    'Las líneas de contrata y de personal propio necesitan su actividad (driver): '
+                    '%(task)s, %(resource)s%(recipe)s.', task=line.task_id.display_name or '-',
+                    resource=line.product_id.display_name or line.resource_type,
+                    recipe=self.env._(', receta %s', line.source_ref) if line.source_ref
+                    else ''))
 
     @api.constrains('task_id', 'plan_id')
     def _check_task_project(self):

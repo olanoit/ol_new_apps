@@ -83,6 +83,11 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
             for recipe_line in recipe.line_ids:
                 if recipe_line.stage and recipe_line.stage not in codes:
                     continue
+                if recipe_line.resource_type in ('contract', 'labor') \
+                        and not recipe_line.activity_id:
+                    # Se dice qué receta y qué línea (CREVAL v1.0, CR-04).
+                    warnings['no_activity'].append(recipe_line._construction_line_label())
+                    continue
                 vals = self._prepare_line_vals(task, recipe_line, prices)
                 vals['analytic_distribution'] = analytic
                 vals_list.append(vals)
@@ -122,7 +127,18 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
                 body += Markup('<p class="text-warning">%s</p>') % self.env._(
                     'Sin cantidad presupuestada (no generan): %s',
                     ', '.join(warnings['no_qty'][:10]))
+            if warnings['no_activity']:
+                body += Markup('<p class="text-danger">%s</p>') % \
+                    wizard._no_activity_message(warnings['no_activity'])
             wizard.preview_html = body
+
+    def _no_activity_message(self, labels):
+        labels = list(dict.fromkeys(labels))
+        return self.env._(
+            'Las líneas de contrata y de personal propio necesitan su actividad (driver). Falta '
+            'en: %(lines)s%(more)s. Complete la actividad en la receta.',
+            lines='; '.join(labels[:10]),
+            more=self.env._(' y %s más', len(labels) - 10) if len(labels) > 10 else '')
 
     def action_generate(self):
         self.ensure_one()
@@ -136,7 +152,9 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
         if self.mode == 'replace':
             plan.line_ids.filtered(
                 lambda l: l.source == 'recipe' and l.task_id in tasks).unlink()
-        vals_list, _warnings = self._collect()
+        vals_list, warnings = self._collect()
+        if warnings['no_activity']:
+            raise UserError(self._no_activity_message(warnings['no_activity']))
         lines = self.env['construction.resource.plan.line'].with_context(
             construction_plan_generating=True).create(vals_list)
         lines._apply_analytic_rules()

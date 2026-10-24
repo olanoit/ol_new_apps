@@ -123,6 +123,19 @@ class ConstructionExecutionTemplateLine(models.Model):
             price = line.price_unit or line.product_id.standard_price
             line.amount_unit = line.qty * price
 
+    def _construction_line_label(self):
+        """«R01, línea 3 (Operario)»: para los mensajes que señalan una
+        línea de la receta."""
+        self.ensure_one()
+        position = self.template_id.line_ids.ids.index(self.id) + 1 \
+            if self.id in self.template_id.line_ids.ids else 0
+        name = self.note or (self.activity_id or self.product_id).display_name \
+            or dict(self._fields['resource_type']._description_selection(self.env)).get(
+                self.resource_type)
+        return self.env._('%(recipe)s, línea %(line)s (%(name)s)',
+                          recipe=self.template_id.code or self.template_id.name,
+                          line=position, name=name)
+
     @api.onchange('product_id')
     def _onchange_product_id(self):
         if self.product_id:

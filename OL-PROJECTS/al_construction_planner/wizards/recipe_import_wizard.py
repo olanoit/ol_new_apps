@@ -237,6 +237,21 @@ class ConstructionRecipeImportWizard(models.TransientModel):
             })
         return activity
 
+    def _resolve_code(self, code):
+        """(actividad, producto) del código de un recurso del libro: se busca
+        en las actividades (por su código o el de su producto) y en los
+        productos (CREVAL v1.0, CR-04)."""
+        Activity = self.env['construction.labor.activity']
+        if not code:
+            return Activity, self.env['product.product']
+        company_domain = [('company_id', 'in', (self.company_id.id, False))]
+        activity = Activity.search([('code', '=', code)] + company_domain, limit=1) \
+            or Activity.search([('product_id.default_code', '=', code)] + company_domain,
+                               limit=1)
+        product = self.env['product.product'].search([('default_code', '=', code)], limit=1) \
+            or activity.product_id
+        return activity, product
+
     def _upsert_recipes(self, recipes, source, source_refs=None):
         """Crea o actualiza las recetas ``{código: {'name', 'uom', 'product',
         'lines': [vals de línea]}}``: las líneas quedan como en el origen."""
@@ -267,7 +282,6 @@ class ConstructionRecipeImportWizard(models.TransientModel):
 
     def _recipes_from_rows(self, rows):
         Product = self.env['product.product']
-        Activity = self.env['construction.labor.activity']
         recipes, errors = {}, []
         for row in rows:
             code = _text(row.get('recipe_code'))
@@ -310,23 +324,26 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                 # Las herramientas por porcentaje no se pagan ni se compran.
                 vals.update(resource_type='equipment', resource_type_id=self.env[
                     'construction.resource.type']._default_for('equipment').id)
+            activity, product = self._resolve_code(resource_code)
             if vals['resource_type'] in ('contract', 'labor'):
-                activity = Activity.search([('code', '=', resource_code), (
-                    'company_id', 'in', (self.company_id.id, False))], limit=1)
+                # El código puede ser el de la actividad o el de su producto;
+                # la línea lleva los dos (CR-04).
+                if not activity and product:
+                    activity = self._activity_for(product, uom or product.uom_id, stage)
                 if not activity:
                     errors.append(self.env._(
-                        'RECETAS fila %(row)s: la actividad %(code)s no existe.',
-                        row=row['_row'], code=resource_code))
+                        'RECETAS fila %(row)s: el código %(code)s no es una actividad ni un '
+                        'producto.', row=row['_row'], code=resource_code))
                     continue
-                vals.update(activity_id=activity.id, product_uom_id=(uom or activity.uom_id).id)
+                vals.update(activity_id=activity.id,
+                            product_id=(activity.product_id or product).id or False,
+                            product_uom_id=(uom or activity.uom_id).id)
             elif method in ('pct_labor', 'pct_group'):
                 # Herramientas y gastos por porcentaje: sin producto comprable.
-                product = Product.search([('default_code', '=', resource_code)], limit=1) \
-                    if resource_code else Product
+                product = product or Product
                 vals.update(product_id=product.id or False,
                             product_uom_id=(uom or self.env.ref('uom.product_uom_unit')).id)
             else:
-                product = Product.search([('default_code', '=', resource_code)], limit=1)
                 if not product:
                     errors.append(self.env._(
                         'RECETAS fila %(row)s: el producto %(code)s no existe.',

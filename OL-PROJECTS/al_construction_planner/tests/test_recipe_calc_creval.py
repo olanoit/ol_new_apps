@@ -2,10 +2,12 @@
 """Receta y plan (requerimiento CREVAL v1.0, 6.1, 6.2, 6.3 y 6.5) con la
 receta de demostración de la figura 20: mano de obra S/ 6.46 por m²,
 herramientas 3 % = S/ 0.19 por m² y costo unitario S/ 43.78 por m²."""
+import base64
 from datetime import date
+from io import BytesIO
 
 from odoo import Command
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -170,3 +172,85 @@ class TestRecipeCalc(TransactionCase):
         line = plan.line_ids.filtered(lambda l: l.product_id == self.brick)
         self.assertEqual(line.price_unit_planned, 0.9661)
         self.assertAlmostEqual(line.amount_planned, round(5400.0 * 0.9661, 2))
+
+    # CR-04: el código del recurso se busca en las actividades y en los
+    # productos, y la línea lleva los dos.
+    def _recipe_book(self, rows):
+        from openpyxl import Workbook
+        book = Workbook()
+        sheet = book.active
+        sheet.title = 'RECETAS'
+        sheet.append(['Código de la receta', 'Nombre de la receta', 'Unidad de la receta',
+                      'Tipo de recurso', 'Código del recurso', 'Cantidad por unidad', 'Etapa',
+                      'Costo unitario', 'Unidad'])
+        for row in rows:
+            sheet.append(row)
+        output = BytesIO()
+        book.save(output)
+        return base64.b64encode(output.getvalue())
+
+    def test_import_resolves_activity_and_product(self):
+        Product = self.env['product.product']
+        operator = Product.create({'name': 'Operario (servicio, test)', 'type': 'service',
+                                   'default_code': 'MO-OPE-T'})
+        drywall = Product.create({'name': 'Tabiquería (servicio, test)', 'type': 'service',
+                                  'default_code': 'CTR-DRY-T'})
+        Activity = self.env['construction.labor.activity']
+        contract = Activity.create({
+            'code': 'TC-DRY-T', 'name': 'Tabique drywall (test)', 'stage': 'calc_test_stage',
+            'uom_id': self.m2.id, 'product_id': drywall.id})
+        overtime = Activity.create({
+            'code': 'MO-HEX-T', 'name': 'Recargo por horario extendido (test)',
+            'stage': 'calc_test_stage', 'uom_id': self.unit.id, 'default_price': 50.0})
+        self.env['construction.uom.alias'].create({'name': 'glb', 'uom_id': self.unit.id})
+        project, partida = self._project()
+        file = self._recipe_book([
+            ('CALC-R09', 'Tabique con recargo (test)', 'm2', 'labor', 'MO-OPE-T', 0.25,
+             'calc_test_stage', 23.36, 'h'),
+            ('CALC-R09', None, None, 'labor', 'CALC-OP', 0.1, 'calc_test_stage', None, 'h'),
+            ('CALC-R09', None, None, 'contract', 'CTR-DRY-T', 1.0, 'calc_test_stage', 12.5,
+             'm2'),
+            ('CALC-R09', None, None, 'labor', 'MO-HEX-T', 0.01, 'calc_test_stage', None, 'glb'),
+            ('CALC-R09', None, None, 'labor', 'NO-EXISTE', 1.0, 'calc_test_stage', None, 'h'),
+        ])
+        wizard = self.env['construction.recipe.import.wizard'].create({
+            'source': 'excel', 'project_id': project.id, 'file': file,
+            'filename': 'recetas.xlsx'})
+        wizard.action_import()
+        self.assertIn('NO-EXISTE no es una actividad ni un producto', wizard.result_html)
+        recipe = self.env['construction.execution.template'].search([('code', '=', 'CALC-R09')])
+        by_code = {line.activity_id.code: line for line in recipe.line_ids}
+        self.assertEqual(set(by_code), {'MO-OPE-T', 'CALC-OP', 'TC-DRY-T', 'MO-HEX-T'})
+        # Producto sin actividad: se crea la actividad con ese producto.
+        self.assertEqual(by_code['MO-OPE-T'].product_id, operator)
+        self.assertEqual(by_code['MO-OPE-T'].activity_id.product_id, operator)
+        # El código del producto de una actividad lleva a esa actividad.
+        self.assertEqual(by_code['TC-DRY-T'].activity_id, contract)
+        self.assertEqual(by_code['TC-DRY-T'].product_id, drywall)
+        self.assertEqual(by_code['MO-HEX-T'].activity_id, overtime)
+        self.assertEqual(by_code['MO-HEX-T'].product_uom_id, self.unit)
+        # Personal propio en una unidad que no es la hora también genera.
+        partida.construction_execution_template_id = recipe
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        self.assertEqual(len(plan.line_ids), 4)
+        self.assertTrue(plan.line_ids.filtered(lambda l: l.activity_id == overtime))
+
+    def test_plan_names_line_without_activity(self):
+        recipe = self.env['construction.execution.template'].create({
+            'code': 'CALC-R10', 'name': 'Receta incompleta (test)', 'uom_id': self.m2.id,
+            'line_ids': [
+                Command.create({'resource_type': 'material', 'product_id': self.brick.id,
+                                'stage': 'calc_test_stage', 'product_uom_id': self.m2.id,
+                                'qty': 1.0}),
+                Command.create({'resource_type': 'labor', 'stage': 'calc_test_stage',
+                                'product_uom_id': self.hour.id, 'qty': 0.5,
+                                'note': 'OPERARIO'}),
+            ]})
+        project, partida = self._project()
+        partida.construction_execution_template_id = recipe
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        wizard = self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id})
+        self.assertIn('CALC-R10, línea 2 (OPERARIO)', wizard.preview_html)
+        with self.assertRaisesRegex(UserError, r'CALC-R10, línea 2 \(OPERARIO\)'):
+            wizard.action_generate()

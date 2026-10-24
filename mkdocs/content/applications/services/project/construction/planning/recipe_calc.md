@@ -26,6 +26,14 @@ cada línea del plan se redondean una sola vez, a la moneda. En **Importar recet
 **Porcentaje** y **Moneda**; la unidad «%MO» se lee como porcentaje de la mano de
 obra.
 
+En la hoja RECETAS, el **Código del recurso** de una línea de contrata o de
+personal propio puede ser el de la actividad o el de su producto: la línea queda
+con los dos. Un producto de servicio sin actividad crea su actividad (con la
+etapa de la fila). Personal propio en cualquier unidad (horas, glb) se importa y
+genera. Si una línea de contrata o de personal propio queda sin actividad,
+**Generar desde la receta** dice cuál («R01, línea 3 (Operario)») y no genera
+hasta completarla.
+
 ## Fuente del análisis de precio unitario
 
 En la obra (**Ajustes** del proyecto), la **Fuente del análisis de precio

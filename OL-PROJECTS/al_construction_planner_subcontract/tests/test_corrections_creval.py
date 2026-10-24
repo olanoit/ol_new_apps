@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Correcciones de la prueba del 24-oct-2026 (requerimiento CREVAL v1.0,
-capítulo 12): re-trabajo en la valorización (CR-08) y deductivos al
-actualizar (CR-09). Datos ficticios."""
+capítulo 12): re-trabajo en la valorización (CR-08), deductivos al
+actualizar (CR-09) y una sola semana para el avance y la valorización
+(CR-10). Datos ficticios."""
 from datetime import date
 
 from odoo import Command
@@ -90,3 +91,38 @@ class TestCorrectionsCreval(ContractTermsCommon):
             ('res_id', '=', settlement.id), ('kind', '=', 'rework')])
         self.assertEqual(log.qty, 6.0)
         self.assertEqual(log.amount, 0.0)
+
+    # CR-10
+    def test_one_week_for_progress_and_valuation(self):
+        weekly = self.condition.copy({'name': 'Contrato de obra semanal (test)',
+                                      'cutoff_weekday': '3'})  # jueves
+        self.assertEqual(self.project.construction_week_start_day, '3')
+        _wizard, order = self._assign(weekly)
+        # El corte del jueves fija la semana de la obra: de viernes a jueves.
+        self.assertEqual(self.project.construction_week_start_day, '4')
+        self.assertIn('cierra el jueves', self.project.message_ids[0].body)
+        order.order_line.filtered(
+            lambda l: l.construction_activity_id == self.act_seal).construction_is_additional = True
+        order.button_confirm()
+        action = order.action_construction_register_advance()
+        self._post(self.env['account.move'].browse(action['res_id']), date(2026, 11, 2))
+        first_progress = self._report(self.partida, self.act_wall, 100.0, date(2026, 11, 4))
+        self.assertEqual(first_progress.period_start, date(2026, 10, 30))
+        Settlement = self.env['construction.contract.settlement']
+        first = Settlement._prepare_terms_settlements(today=date(2026, 11, 6))
+        self.assertEqual((first.period_start, first.period_end),
+                         (date(2026, 10, 30), date(2026, 11, 5)))
+        first.action_submit()
+        first.action_validate()
+        # Una semana sin avances (6 al 12) no corta la serie: el adicional
+        # del miércoles 18 entra en la del 13 al 19.
+        extra = self._report(self.extra_task, self.act_seal, 10.0, date(2026, 11, 18))
+        self.assertEqual(extra.period_start, date(2026, 11, 13))
+        second = Settlement._prepare_terms_settlements(today=date(2026, 11, 20))
+        self.assertEqual((second.period_start, second.period_end),
+                         (date(2026, 11, 13), date(2026, 11, 19)))
+        self.assertEqual(second.progress_ids, extra)
+        self.assertEqual(second.amount_additional, 180.0)
+        # Con valorizaciones, otro corte no mueve la semana.
+        with self.assertRaisesRegex(UserError, 'semanas distintas'):
+            order.construction_terms_id.sudo().cutoff_weekday = '0'

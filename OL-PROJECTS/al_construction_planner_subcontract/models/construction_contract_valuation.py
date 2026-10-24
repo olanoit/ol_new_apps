@@ -140,7 +140,7 @@ class ConstructionContractSettlement(models.Model):
 
     @api.depends('date_cutoff', 'settlement_type', 'uses_terms',
                  'purchase_order_id.construction_terms_id.frequency',
-                 'purchase_order_id.construction_terms_id.cutoff_weekday',
+                 'project_id.construction_week_start_day',
                  'purchase_order_id.construction_terms_id.monthly_cutoff',
                  'purchase_order_id.construction_terms_id.cutoff_day')
     def _compute_dates(self):
@@ -212,8 +212,8 @@ class ConstructionContractSettlement(models.Model):
         terms = order.construction_terms_id
         frequency = terms.frequency
         if frequency == 'weekly':
-            if terms.cutoff_weekday:
-                return start + timedelta(days=(int(terms.cutoff_weekday) - start.weekday()) % 7)
+            # La semana de la obra, la misma del avance (CR-10); el corte de
+            # la orden la fija al asignar la contrata.
             return order.construction_project_id._construction_period(start)[1]
         if frequency == 'biweekly':
             return start.replace(day=15) if start.day <= 15 else _last_day(start)
@@ -234,9 +234,6 @@ class ConstructionContractSettlement(models.Model):
         terms = order.construction_terms_id
         frequency = terms.frequency
         if frequency == 'weekly':
-            if terms.cutoff_weekday:
-                end = day + timedelta(days=(int(terms.cutoff_weekday) - day.weekday()) % 7)
-                return end - timedelta(days=6)
             return order.construction_project_id._construction_period(day)[0]
         if frequency == 'biweekly':
             return day.replace(day=1) if day.day <= 15 else day.replace(day=16)
@@ -856,6 +853,12 @@ class ConstructionContractSettlement(models.Model):
             if not start:
                 continue
             end = self._terms_period_end(order, start)
+            # Un periodo sin avances no corta la serie: se pasa al del primer
+            # avance o deductivo pendiente (CR-10).
+            first = self._terms_first_pending_date(order)
+            if first and end and first > end:
+                start = self._terms_period_start(order, first)
+                end = self._terms_period_end(order, start)
             if not end or end > today:
                 continue
             settlement = self.create({'purchase_order_id': order.id, 'period_start': start})
@@ -866,6 +869,20 @@ class ConstructionContractSettlement(models.Model):
             created |= settlement
             settlement._schedule_prepare_activity()
         return created
+
+    @api.model
+    def _terms_first_pending_date(self, order):
+        """Fecha del primer avance validado sin valorizar o deductivo
+        pendiente de ``order``."""
+        progress = self.env['construction.task.progress'].sudo().search(
+            order._construction_progress_domain() + [
+                '|', ('settlement_id', '=', False), ('settlement_id.state', '=', 'cancel')],
+            order='date', limit=1)
+        deduction = self.env['construction.contract.deduction'].sudo().search([
+            ('purchase_order_id', '=', order.id), ('state', '=', 'pending')],
+            order='date', limit=1)
+        dates = [d for d in (progress.date, deduction.date) if d]
+        return min(dates) if dates else False
 
     def _schedule_prepare_activity(self):
         """El día de corte: «Preparar valorizado» al responsable de la obra."""
