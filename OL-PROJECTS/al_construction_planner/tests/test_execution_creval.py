@@ -125,3 +125,13 @@ class TestExecutionEntries(TransactionCase):
         self.assertNotIn(self.env.ref('al_construction_planner.menu_planner_planning').id, menus)
         # Ejecuta incluye Plan: consulta.
         self.assertTrue(executor.has_group(G + 'plan_viewer'))
+
+    def test_plan_viewer_opens_the_app(self):
+        """Plan: consulta, sin el eje de ejecución, entra a la aplicación."""
+        viewer = new_test_user(self.env, 'solo_consulta', groups=G + 'plan_viewer')
+        self.assertFalse(viewer.has_group(G + 'progress'))
+        menus = self.env['ir.ui.menu'].with_user(viewer).load_menus(False)
+        root = self.env.ref('al_construction_planner.menu_planner_root').id
+        self.assertIn(root, menus)
+        self.assertIn('al_construction_planner.menu_planner_planning',
+                      self._menu_children(menus, 'al_construction_planner.menu_planner_root'))

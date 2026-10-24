@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- La acción por defecto es el inicio (P-01): obras y pendientes de hoy. -->
-    <menuitem id="menu_planner_root" name="Planificación de obra" web_icon="al_construction_planner,static/description/icon.png" action="action_construction_planner_home" groups="group_planner_progress" sequence="46"/>
+    <menuitem id="menu_planner_root" name="Planificación de obra" web_icon="al_construction_planner,static/description/icon.png" action="action_construction_planner_home" groups="group_planner_plan_viewer,group_planner_progress" sequence="46"/>
 
     <!-- Organización como la app Contabilidad: pocos menús principales,
          secciones (encabezados del desplegable) y acciones; sin cuarto

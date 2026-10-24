@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 45.20261016 — 24/10/2026
+
+- Quien solo tiene «Plan: consulta» ya ve la aplicación Planificación de obra (antes el menú raíz pedía «Reporta avance»).
+
 ## 44.20261016 — 23/10/2026
 
 - Al actualizar desde la 42, los menús, acciones y reglas que en la base citaban al Planificador anterior o a la jefatura reciben los grupos nuevos, y las entradas a la ejecución quedan activas como en una instalación nueva.

@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '45.20261016'
+    fecha: 24/10/2026
+    cambios:
+      - "Quien solo tiene «Plan: consulta» ya ve la aplicación Planificación de obra (antes el menú raíz pedía «Reporta avance»)."
   - version: '44.20261016'
     fecha: 23/10/2026
     cambios:
