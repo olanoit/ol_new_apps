@@ -113,10 +113,13 @@ class ConstructionContractDeduction(models.Model):
     def create(self, vals_list):
         orders = self.env['purchase.order'].browse(
             [vals['purchase_order_id'] for vals in vals_list if vals.get('purchase_order_id')])
+        taken = {}
         for vals in vals_list:
             if vals.get('name', '/') == '/':
                 order = orders.filtered(lambda o: o.id == vals.get('purchase_order_id'))
-                vals['name'] = self._next_name(order.construction_project_id)
+                project = order.construction_project_id
+                vals['name'] = self._next_name(project, taken.get(project.id, 0))
+                taken[project.id] = taken.get(project.id, 0) + 1
         deductions = super().create(vals_list)
         # El sustento queda también en el historial del deductivo.
         for deduction in deductions:
@@ -124,14 +127,22 @@ class ConstructionContractDeduction(models.Model):
                 {'res_model': deduction._name, 'res_id': deduction.id})
         return deductions
 
-    def _next_name(self, project):
-        """Secuencia por obra: «<código de la obra>-DED-0001»."""
+    def _next_name(self, project, taken=0):
+        """Secuencia por obra: «<código de la obra>-DED-0001», después del
+        mayor número de la obra (no del conteo, que repite números al borrar
+        uno). ``taken``: los números ya dados en la misma creación."""
         code = project and (project._fields.get('construction_code') and project.construction_code
                             or (project.name or '').split(' ')[0])
         prefix = (code or 'DED') + '-DED-'
-        count = self.sudo().with_context(active_test=False).search_count(
-            [('project_id', '=', project.id)]) if project else 0
-        return '%s%04d' % (prefix, count + 1)
+        last = 0
+        if project:
+            # sudo: el número sigue a los deductivos de toda la obra, también
+            # los de órdenes que el usuario no ve.
+            names = self.sudo().with_context(active_test=False).search(
+                [('project_id', '=', project.id), ('name', '=like', prefix + '%')]).mapped('name')
+            last = max((int(name[len(prefix):]) for name in names
+                        if name[len(prefix):].isdigit()), default=0)
+        return '%s%04d' % (prefix, last + taken + 1)
 
     def write(self, vals):
         protected = set(vals) - {'state', 'settlement_id', 'message_main_attachment_id'}

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261016 — 24/10/2026
+
+- Deductivos: los creados a la vez ya no repiten número, y borrar uno pendiente no hace que el siguiente repita el del último; el número sigue al mayor de la obra.
+
 ## 5.20261016 — 24/10/2026
 
 - Con detracciones instaladas, la factura de adelanto lleva el código de detracción del servicio de la orden (requerimiento CREVAL v1.0, 3.6); antes tomaba el del producto de anticipo, que no tiene código, y el adelanto salía sin detracción.

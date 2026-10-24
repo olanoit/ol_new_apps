@@ -377,6 +377,17 @@ class TestContractTerms(ContractTermsCommon):
             self._deduction(order, 0.0)
         deduction = self._deduction(order, 80.0)
         self.assertTrue(deduction.name.endswith('-DED-0001'))
+        # Varios a la vez: cada uno con su número; borrar uno intermedio no
+        # repite el número del último.
+        Deduction = self.env['construction.contract.deduction']
+        pair = Deduction.create([{
+            'purchase_order_id': order.id, 'type_id': self.deduction_type.id,
+            'description': 'Deductivo %s' % amount, 'amount': amount,
+            'attachment_ids': [Command.create({'name': 'acta.pdf', 'datas': PHOTO})]}
+            for amount in (10.0, 20.0)])
+        self.assertEqual([name[-4:] for name in pair.mapped('name')], ['0002', '0003'])
+        pair[0].unlink()
+        self.assertTrue(self._deduction(order, 30.0).name.endswith('-DED-0004'))
 
     # ------------------------------------------------------------------
     # 3.16 · Sin condiciones ni porcentajes, igual que la liquidación de hoy

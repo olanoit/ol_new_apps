@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Deductivos: los creados a la vez ya no repiten número, y borrar uno pendiente no hace que el siguiente repita el del último; el número sigue al mayor de la obra."
 - version: '5.20261016'
   fecha: 24/10/2026
   cambios:
