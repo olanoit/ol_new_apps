@@ -32,6 +32,9 @@ class TestStockOverview(TransactionCase):
         root = etree.fromstring(self._kanban('en_US'))
         self.assertIn('o_al_overview_compact', root.get('class'))
         self.assertIn('o_al_overview_w_medium', root.get('class'))
+        company.al_stock_overview_width = 'narrow'
+        root = etree.fromstring(self._kanban('en_US'))
+        self.assertIn('o_al_overview_w_narrow', root.get('class'))
         company.al_stock_overview_graph = True
         company.al_stock_overview_width = 'wide'
         root = etree.fromstring(self._kanban('en_US'))
