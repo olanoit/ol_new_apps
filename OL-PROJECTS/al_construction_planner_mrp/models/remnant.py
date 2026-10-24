@@ -8,6 +8,7 @@ corte, producción declara lo que salió: retazos, merma y planchas sin tocar
 («Declarar sobrantes»). El retazo se valoriza por área con el costo de la
 plancha y queda fuera del reparto de las piezas."""
 import math
+import re
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
@@ -23,6 +24,10 @@ REMNANT_BANDS = [
 # Bandas que se guardan como retazo (D5): R10 es merma; sobre R99, plancha.
 VARIANT_BANDS = ('r25', 'r50', 'r75', 'r99')
 DEFAULT_BAND_LIMITS = '10,25,50,75,99'
+# Formato del lote del retazo (M111-19 D), como el lote del módulo (M110-09).
+DEFAULT_REMNANT_LOT_PATTERN = '{codigo}-{banda}-{largo}x{ancho}-{numero}'
+REMNANT_LOT_KEYS = ('codigo', 'banda', 'largo', 'ancho', 'numero', 'obra', 'orden')
+REMNANT_LOT_KEY_RE = re.compile(r'\{([^{}]*)\}')
 
 
 class ResCompany(models.Model):
@@ -34,6 +39,47 @@ class ResCompany(models.Model):
         string='Límites de las bandas de retazo (%)', default=DEFAULT_BAND_LIMITS,
         help='Cota inferior abierta y superior cerrada. Hasta el primero es merma y sobre el '
              'último, plancha sin tocar.')
+    # Opciones del paquete (M111-19 D).
+    construction_cut_closing_tolerance = fields.Float(
+        string='Tolerancia del cuadre al declarar sobrantes (%)', digits=(16, 2), default=0.5,
+        help='Lo declarado puede pasar a lo entregado hasta en este porcentaje (medidas).')
+    construction_cut_closing_edit_pieces = fields.Boolean(
+        string='Permitir corregir «Piezas (m²)» al declarar', default=True,
+        help='Mientras no exista la carga del despiece, la planta corrige el área de las '
+             'piezas; el historial de la orden registra el cambio.')
+    construction_remnant_lot_pattern = fields.Char(
+        string='Formato del lote del retazo', default=DEFAULT_REMNANT_LOT_PATTERN,
+        help='Claves: {codigo}, {banda}, {largo}, {ancho}, {numero}, {obra} y {orden}.')
+    construction_remnant_fit_required = fields.Boolean(
+        string='Exigir «Las piezas entran en los retazos elegidos»', default=True)
+
+    @api.constrains('construction_cut_closing_tolerance')
+    def _check_construction_cut_closing_tolerance(self):
+        for company in self:
+            if not 0.0 <= company.construction_cut_closing_tolerance <= 10.0:
+                raise ValidationError(self.env._(
+                    'La tolerancia del cuadre va de 0 a 10 %.'))
+
+    @api.constrains('construction_remnant_lot_pattern')
+    def _check_construction_remnant_lot_pattern(self):
+        for company in self:
+            keys = REMNANT_LOT_KEY_RE.findall(company.construction_remnant_lot_pattern or '')
+            unknown = sorted(set(keys) - set(REMNANT_LOT_KEYS))
+            if unknown:
+                raise ValidationError(self.env._(
+                    'Claves desconocidas en el formato del lote del retazo: %(unknown)s. Las '
+                    'válidas son %(valid)s.', unknown=', '.join('{%s}' % key for key in unknown),
+                    valid=', '.join('{%s}' % key for key in REMNANT_LOT_KEYS)))
+            if keys and 'numero' not in keys:
+                raise ValidationError(self.env._(
+                    'El formato del lote del retazo lleva {numero}: cada retazo tiene su lote.'))
+
+    def _construction_remnant_lot_name(self, values):
+        """Nombre del lote del retazo con el formato de la compañía."""
+        self.ensure_one()
+        pattern = self.construction_remnant_lot_pattern or DEFAULT_REMNANT_LOT_PATTERN
+        name = REMNANT_LOT_KEY_RE.sub(lambda match: str(values.get(match.group(1), '')), pattern)
+        return ' '.join(name.split())
 
     @api.constrains('construction_remnant_band_limits')
     def _check_construction_remnant_band_limits(self):
@@ -70,6 +116,14 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_cut_closing_required', readonly=False)
     construction_remnant_band_limits = fields.Char(
         related='company_id.construction_remnant_band_limits', readonly=False)
+    construction_cut_closing_tolerance = fields.Float(
+        related='company_id.construction_cut_closing_tolerance', readonly=False)
+    construction_cut_closing_edit_pieces = fields.Boolean(
+        related='company_id.construction_cut_closing_edit_pieces', readonly=False)
+    construction_remnant_lot_pattern = fields.Char(
+        related='company_id.construction_remnant_lot_pattern', readonly=False)
+    construction_remnant_fit_required = fields.Boolean(
+        related='company_id.construction_remnant_fit_required', readonly=False)
 
 
 class ProductTemplate(models.Model):
@@ -349,6 +403,23 @@ class MrpProduction(models.Model):
                    for m in origins if m.state == 'done')
         open_moves = origins.filtered(lambda m: m.state not in ('done', 'cancel'))
         if not open_moves:
+            # Se vuelve a pedir lo que falta (por ejemplo, al quitar el retazo
+            # que cubría todo el tablero, M111-16): nuevo despacho como el
+            # anterior.
+            missing = uom.round(total - done)
+            template = origins.sorted('id')[-1:] if origins else origins
+            if template and uom.compare(missing, 0.0) > 0:
+                dests = raw_moves.filtered(lambda m: m.state not in ('done', 'cancel'))
+                new_move = template.copy({
+                    'product_uom_qty': uom._compute_quantity(missing, template.product_uom,
+                                                             round=False),
+                    'picking_id': False,
+                    'move_orig_ids': [Command.clear()],
+                    'move_dest_ids': [Command.set(dests.ids)],
+                    'construction_need_qty': 0.0,
+                })
+                new_move._action_confirm(merge=False)
+                new_move._action_assign()
             return
         target = open_moves[0]
         others = sum(m.product_uom._compute_quantity(m.product_uom_qty, uom, round=False)
@@ -359,6 +430,11 @@ class MrpProduction(models.Model):
             return
         target._do_unreserve()
         if target.product_uom.is_zero(new_qty):
+            # Si un retazo cubre todo el tablero, el movimiento queda en 0 (su
+            # retazo va en el mismo despacho).
+            if raw_moves.filtered(lambda m: m.state != 'cancel' and m._construction_covered_qty()):
+                target.product_uom_qty = 0.0
+                return
             target._action_cancel()
             return
         target.product_uom_qty = new_qty
@@ -419,6 +495,13 @@ class MrpProduction(models.Model):
     # ------------------------------------------------------------------
     # Declarar sobrantes (P8)
     # ------------------------------------------------------------------
+    def _construction_cut_boards(self):
+        """Tableros de la orden que se declaran al cerrar el corte."""
+        self.ensure_one()
+        return self.move_raw_ids.filtered(
+            lambda m: m.construction_need_qty and m.state != 'cancel'
+            and not m._construction_is_remnant()).product_id
+
     def action_construction_cut_closing(self):
         self.ensure_one()
         if not self.construction_has_whole_sheets or self.state not in ('confirmed', 'progress',
@@ -428,6 +511,12 @@ class MrpProduction(models.Model):
                 'en planchas enteras.'))
         if self.construction_cut_closed:
             raise UserError(self.env._('Los sobrantes de %s ya se declararon.', self.name))
+        no_area = self._construction_cut_boards().filtered(
+            lambda p: not p.construction_sheet_area_m2)
+        if no_area:
+            raise UserError(self.env._(
+                'La unidad de %s no tiene área; asigne una unidad "Plancha L×A m".',
+                ', '.join(no_area.mapped('display_name'))))
         return {
             'type': 'ir.actions.act_window',
             'name': self.env._('Declarar sobrantes'),
@@ -438,10 +527,13 @@ class MrpProduction(models.Model):
         }
 
     def button_mark_done(self):
+        Wizard = self.env['construction.cut.closing.wizard']
         for production in self:
             if production.company_id.construction_cut_closing_required \
                     and production.construction_has_whole_sheets \
-                    and not production.construction_cut_closed:
+                    and not production.construction_cut_closed \
+                    and any(not line['undelivered'] for line in Wizard._board_lines(production)):
+                # Solo los tableros entregados se exigen (M111-17).
                 raise UserError(self.env._(
                     'Declare los sobrantes del corte (retazos, merma y planchas sin tocar) '
                     'antes de terminar la orden.'))

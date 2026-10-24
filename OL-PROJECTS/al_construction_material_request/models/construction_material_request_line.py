@@ -57,6 +57,15 @@ class ConstructionMaterialRequestLine(models.Model):
         compute='_compute_location_dest_id', store=True, readonly=False, precompute=True,
         domain="[('usage', '=', 'internal')]",
         help='Adónde se despacha la línea. Vacío: la ubicación de obra del requerimiento.')
+    # Origen por línea (paquete 1.11, M111-20 C): el almacén que abastece el
+    # destino según las rutas nativas (producto, categoría y almacén). Sin
+    # regla, el almacén por defecto del requerimiento.
+    location_src_id = fields.Many2one(
+        'stock.location', string='Pedir al almacén', check_company=True,
+        compute='_compute_location_src_id', store=True, readonly=False, precompute=True,
+        domain="[('usage', '=', 'internal')]",
+        help='De dónde sale la línea: la regla de la ruta que abastece su destino o, sin '
+             'regla, el almacén por defecto del requerimiento.')
     supply_mode = fields.Selection(
         [('central', 'Vía almacén central'), ('direct', 'Directo a obra')],
         string='Si hay que comprar', default='central', required=True,
@@ -65,7 +74,7 @@ class ConstructionMaterialRequestLine(models.Model):
              'entrega en la ubicación de la obra.')
 
     qty_available_now = fields.Float(
-        string='Disponible en central', compute='_compute_qty_available_now',
+        string='Disponible en origen', compute='_compute_qty_available_now',
         digits='Product Unit',
         help='Cantidad libre (no reservada) hoy en el origen y sus sububicaciones.')
     qty_available_at_approval = fields.Float(
@@ -159,6 +168,34 @@ class ConstructionMaterialRequestLine(models.Model):
         self.ensure_one()
         return self.request_id.location_dest_id
 
+    @api.depends('product_id', 'location_dest_id', 'request_id.location_src_id',
+                 'request_id.location_dest_id')
+    def _compute_location_src_id(self):
+        for line in self:
+            line.location_src_id = line._get_route_source() or line.request_id.location_src_id
+
+    def _get_route_source(self):
+        """Origen que da la regla nativa que abastece el destino de la línea
+        (stock.rule._get_rule, como un abastecimiento): solo una regla de
+        «tomar de» con origen; una de compra o fabricación no cuenta."""
+        self.ensure_one()
+        destination = self.location_dest_id or self.request_id.location_dest_id
+        if not (self.product_id and destination):
+            return self.env['stock.location']
+        # Quien pide puede no leer las rutas ni las reglas: solo se consulta
+        # el origen que dan.
+        rule_sudo = self.env['stock.rule'].sudo()._get_rule(
+            self.product_id, destination, {'company_id': self.company_id or self.env.company})
+        if rule_sudo.action in ('pull', 'pull_push') and rule_sudo.location_src_id \
+                and rule_sudo.location_src_id.usage == 'internal':
+            return rule_sudo.location_src_id.sudo(False)
+        return self.env['stock.location']
+
+    def _get_source_location(self):
+        """Origen de la línea (el almacén por defecto si no tiene)."""
+        self.ensure_one()
+        return self.location_src_id or self.request_id.location_src_id
+
     def _get_site_location(self):
         """Ubicación que cuenta como «recibido» de la línea."""
         self.ensure_one()
@@ -191,10 +228,10 @@ class ConstructionMaterialRequestLine(models.Model):
                     'La unidad %(uom)s no es compatible con la del material %(product)s.',
                     uom=line.product_uom_id.name, product=line.product_id.display_name))
 
-    @api.depends('product_id', 'product_uom_id', 'request_id.location_src_id')
+    @api.depends('product_id', 'product_uom_id', 'location_src_id', 'request_id.location_src_id')
     def _compute_qty_available_now(self):
         for line in self:
-            location = line.request_id.location_src_id
+            location = line._get_source_location()
             if not (line.product_id and location):
                 line.qty_available_now = 0.0
                 continue
@@ -211,11 +248,11 @@ class ConstructionMaterialRequestLine(models.Model):
                  'purchase_request_line_ids.purchased_qty',
                  'purchase_request_line_ids.qty_done',
                  'location_dest_id', 'request_id.location_dest_id',
-                 'request_id.location_src_id')
+                 'location_src_id', 'request_id.location_src_id')
     def _compute_qties(self):
         for line in self:
             site = line._get_site_location()
-            source = line.request_id.location_src_id
+            source = line._get_source_location()
             dispatched = received = 0.0
             # Como purchase_stock (_prepare_qty_received): movimientos hechos
             # convertidos a la UdM de la línea con HALF-UP; lo que sale de la

@@ -9,11 +9,29 @@
             <field name="category_id" ref="base.module_category_services"/>
         </record>
 
+        <!-- Paquete 1.11, M111-20 E: el valor estimado solo lo ve este grupo
+             (el Administrador lo incluye). Las reglas de aprobación por monto lo leen
+             en el servidor. -->
+        <record id="group_construction_amounts" model="res.groups">
+            <field name="name">Requerimientos de obra: ve montos</field>
+            <field name="comment">Ve el valor estimado del requerimiento en pantalla y en el vale.</field>
+        </record>
+
+        <!-- Paquete 1.11, M111-20 A: cualquiera pide material de oficina o de
+             consumo para su área (lo suyo, solo internos). Fuera del
+             privilegio: el ajuste «Todos los usuarios pueden hacer
+             requerimientos internos» lo da a todos los usuarios internos. -->
+        <record id="group_construction_internal_requester" model="res.groups">
+            <field name="name">Requerimientos de obra: solicitante interno</field>
+            <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+            <field name="comment">Pide material de oficina o de consumo para su área. Ve solo sus requerimientos internos.</field>
+        </record>
+
         <record id="group_construction_requester" model="res.groups">
             <field name="name">Solicitante</field>
             <field name="sequence">10</field>
             <field name="privilege_id" ref="res_groups_privilege_construction_request"/>
-            <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+            <field name="implied_ids" eval="[Command.link(ref('base.group_user')), Command.link(ref('group_construction_internal_requester'))]"/>
             <field name="comment">Residente, maestro de obra o almacenero de obra: pide materiales para las obras que sigue o dirige.</field>
         </record>
 
@@ -38,7 +56,7 @@
             <field name="name">Administrador</field>
             <field name="sequence">40</field>
             <field name="privilege_id" ref="res_groups_privilege_construction_request"/>
-            <field name="implied_ids" eval="[Command.link(ref('group_construction_logistics'))]"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_construction_logistics')), Command.link(ref('group_construction_amounts'))]"/>
             <field name="user_ids" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
             <field name="comment">Además, configura el módulo.</field>
         </record>
@@ -47,7 +65,7 @@
              privilegio: se suma a cualquier nivel del usuario. -->
         <record id="group_construction_operations_manager" model="res.groups">
             <field name="name">Requerimientos de obra: gerencia de operaciones</field>
-            <field name="implied_ids" eval="[Command.link(ref('group_construction_approver'))]"/>
+            <field name="implied_ids" eval="[Command.link(ref('group_construction_approver')), Command.link(ref('group_construction_amounts'))]"/>
             <field name="comment">Aprueba los requerimientos que superan el umbral de la regla de aprobación por monto.</field>
         </record>
 

@@ -13,6 +13,13 @@ class StockWarehouse(models.Model):
         domain="[('usage', '=', 'inventory'), ('company_id', 'in', [company_id, False])]",
         help='Adonde salen los requerimientos internos de las áreas. Su cuenta de '
              'valoración es la del gasto.')
+    # Despacho a obra del almacén (M111-20 C): las líneas que salen de este
+    # almacén usan este tipo; vacío, el de la compañía.
+    construction_dispatch_type_id = fields.Many2one(
+        'stock.picking.type', string='Tipo de despacho a obra', check_company=True,
+        domain="[('code', '=', 'internal'), ('warehouse_id', '=', id)]",
+        help='Tipo de operación del despacho a obra que sale de este almacén. Vacío: el de '
+             'la compañía.')
     construction_internal_type_id = fields.Many2one(
         'stock.picking.type', string='Tipo de operación de consumo interno',
         check_company=True,

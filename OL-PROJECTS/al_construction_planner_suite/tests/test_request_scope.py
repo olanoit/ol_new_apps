@@ -157,7 +157,7 @@ class TestRequestScope(PlannerCommon):
         with self.assertRaises(UserError):
             request.action_construction_fetch_plan()
         with Form(request.with_user(self.requester)) as form:
-            form.construction_gantt_task_ids.add(gantt_task)
+            form.construction_gantt_task_id = gantt_task
             with form.line_ids.new() as line:
                 line.product_id = self.p_screw
                 line.product_qty = 50

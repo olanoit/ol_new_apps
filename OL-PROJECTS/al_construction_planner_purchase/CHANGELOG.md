@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261024 — 24/10/2026
+
+- Paquete 1.11, M111-20 E: «¿Para qué es el material?» empieza por las etapas, muestra la planta debajo y solo los niveles que llevan la etapa elegida; «Tarea del Gantt» pasa a ser una sola, con su nota y aviso. Con niveles, «Tarea» se oculta en la cabecera.
+- Paquete 1.11, M111-18 y M111-19 D: la compra masiva y el tablero de abastecimiento redondean el tablero en planchas y respetan «Aplicar en compras».
+- Paquete 1.11, M111-20 E: quien ve montos en el planificador ve el valor estimado del requerimiento.
+
 ## 10.20261023 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, 6.5: la compra masiva de una línea del plan en otra moneda lleva su moneda y costo al requerimiento de compra; la orden se crea en esa moneda y el control lleva el tipo de cambio de la orden, con la diferencia de cambio aparte del desvío de precio.

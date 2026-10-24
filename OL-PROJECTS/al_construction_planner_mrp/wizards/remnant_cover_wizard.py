@@ -25,6 +25,7 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
                                string='Retazos disponibles')
     fit_confirmed = fields.Boolean(
         string='Las piezas entran en los retazos elegidos (verificado con el despiece)')
+    fit_required = fields.Boolean(string='Exige la verificación del despiece', readonly=True)
     result_text = fields.Char(string='Resultado', compute='_compute_result_text')
 
     @api.model
@@ -42,6 +43,7 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
             'need_qty': sum(m.product_uom._compute_quantity(m.construction_need_qty, uom,
                                                             round=False) for m in raw_moves),
             'fraction_to_cover': fraction,
+            'fit_required': move.company_id.construction_remnant_fit_required,
             'area_to_cover_m2': area,
             'line_ids': [Command.create(vals) for vals in self._remnant_lines(move, area)],
         })
@@ -107,7 +109,7 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
         chosen = self.line_ids.filtered('selected')
         if not chosen:
             raise UserError(self.env._('Marque al menos un retazo.'))
-        if not self.fit_confirmed:
+        if self.fit_required and not self.fit_confirmed:
             raise UserError(self.env._(
                 'Confirme que las piezas entran en los retazos elegidos (despiece).'))
         quants = chosen.quant_id

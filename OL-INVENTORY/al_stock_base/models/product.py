@@ -47,13 +47,28 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    def _construction_is_whole(self, company=None):
+    def _construction_is_whole(self, company=None, scope=None):
         """El producto se entrega en planchas enteras en ``company`` (la
         casilla de la compañía activa y el producto indivisible). Única regla
-        para la orden, la reserva, el requerimiento y las compras."""
+        para la orden, la reserva, el requerimiento y las compras. Con
+        ``scope`` (production, request o purchase), además su casilla de
+        alcance (M111-19 D)."""
         self.ensure_one()
         company = company or self.env.company
-        return bool(company.construction_whole_sheet and self.construction_is_indivisible)
+        enabled = company._construction_whole_sheet_in(scope) if scope \
+            else company.construction_whole_sheet
+        return bool(enabled and self.construction_is_indivisible)
+
+    def _construction_purchase_qty(self, need, purchase_uom, company=None):
+        """Cantidad a comprar en ``purchase_uom`` para una necesidad en la UdM
+        del producto. Un tablero indivisible se redondea en planchas y luego
+        se convierte (M111-18): redondear en la unidad de compra daría otra
+        cifra."""
+        self.ensure_one()
+        company = company or self.env.company
+        if self._construction_is_whole(company, 'purchase'):
+            need = self._construction_whole_qty(need, company)
+        return self.uom_id._compute_quantity(need, purchase_uom, round=False)
 
     def _construction_whole_qty(self, need, company=None):
         """Planchas enteras a entregar para una necesidad (UdM del producto):

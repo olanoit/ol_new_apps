@@ -27,6 +27,15 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '10.20261024'
+  fecha: 24/10/2026
+  cambios:
+    - "Paquete 1.11, M111-14: el jefe de producción («Fabricación: Usuario») declara sobrantes sin error de acceso, también si el producto retazo del tablero aún no existe."
+    - "Paquete 1.11, M111-15: el retazo usado no cuenta como material sin presupuesto en «Presupuestado frente a requerido»."
+    - "Paquete 1.11, M111-16: un retazo que cubre todo un tablero deja la plancha en 0 sin cancelarla; «Quitar retazo» la vuelve a pedir y «Declarar sobrantes» la muestra."
+    - "Paquete 1.11, M111-17: «Declarar sobrantes» marca los tableros sin entregar y deja declararlos cuando lleguen; terminar la orden exige solo los entregados."
+    - "Paquete 1.11, M111-18: aviso de tablero sin área al declarar; cambiar la cantidad de la orden no multiplica el retazo."
+    - "Paquete 1.11, M111-19 D: Ajustes › Fabricación › «Planchas y retazos» con alcance del redondeo, tolerancia del cuadre, «Piezas (m²)» editable con registro en el historial, formato del lote del retazo y verificación del despiece opcional."
 - version: '9.20261023'
   fecha: 23/10/2026
   cambios:

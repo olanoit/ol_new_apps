@@ -118,12 +118,14 @@ class ConstructionMaterialRequest(models.Model):
     construction_allowed_stage_ids = fields.Many2many(
         'construction.stage', string='Etapas permitidas',
         compute='_compute_construction_allowed_stage_ids')
-    construction_gantt_task_ids = fields.Many2many(
-        'project.task', 'construction_mat_request_gantt_task_rel', 'request_id', 'task_id',
-        string='Tareas del Gantt', copy=False, check_company=True,
+    # Una sola tarea (paquete 1.11, M111-20 E): con varias, las líneas
+    # agregadas a mano quedaban sin tarea.
+    construction_gantt_task_id = fields.Many2one(
+        'project.task', string='Tarea del Gantt', copy=False, check_company=True,
         domain="[('project_id', '=', project_id), ('construction_level', '=', False)]",
-        help='Tareas de la obra que no son niveles del planificador: no tienen líneas en el '
-             'plan, el material se agrega a mano y cada línea queda con su tarea.')
+        help='Tarea de la obra que no es nivel del planificador (una movilización, un trabajo '
+             'adicional): no tiene líneas en el plan y los materiales agregados a mano quedan '
+             'cargados a ella.')
     construction_production_location_id = fields.Many2one(
         'stock.location', string='Planta', check_company=True, tracking=True,
         domain="[('construction_preproduction', '=', True), ('usage', '=', 'internal')]",
@@ -155,6 +157,11 @@ class ConstructionMaterialRequest(models.Model):
         if template:
             levels = template.line_ids.sorted(lambda l: (l.sequence, l.id)).filtered(
                 lambda l: l.role != 'module')
+            # Solo los niveles que llevan la etapa elegida (M111-20 E): la
+            # línea de la plantilla sin etapas las lleva todas.
+            stages = self.construction_stage_ids._origin
+            if stages:
+                levels = levels.filtered(lambda l: not l.stage_ids or l.stage_ids & stages)
             slots = [(line.name, [
                 '|', ('construction_level_line_id', '=', line.id),
                 '&', ('construction_level_line_id', '=', False),
@@ -182,7 +189,7 @@ class ConstructionMaterialRequest(models.Model):
                 break
         return Task.search(domain)
 
-    @api.depends('project_id', *SCOPE_FIELDS)
+    @api.depends('project_id', 'construction_stage_ids', *SCOPE_FIELDS)
     def _compute_construction_scope(self):
         for request in self:
             slots = request._construction_scope_slots()
@@ -195,8 +202,19 @@ class ConstructionMaterialRequest(models.Model):
 
     @api.onchange('project_id')
     def _onchange_construction_scope_project(self):
-        for name in SCOPE_FIELDS + ['construction_gantt_task_ids']:
+        for name in SCOPE_FIELDS + ['construction_gantt_task_id']:
             self[name] = self.env['project.task']
+
+    @api.onchange('construction_gantt_task_id', *SCOPE_FIELDS)
+    def _onchange_construction_gantt_task(self):
+        if self.construction_gantt_task_id and self._construction_scope_tasks() is not None:
+            return {'warning': {
+                'title': self.env._('Niveles y tarea del Gantt'),
+                'message': self.env._(
+                    'Elegiste niveles y una tarea del Gantt: los materiales del plan van a los '
+                    'niveles; los que agregues a mano, a la tarea.'),
+            }}
+        return None
 
     @api.onchange(*SCOPE_FIELDS)
     def _onchange_construction_scope(self):
@@ -235,16 +253,16 @@ class ConstructionMaterialRequest(models.Model):
             or self.construction_allowed_stage_ids
         return stages.mapped('code')
 
-    @api.depends('construction_stage_ids', 'construction_gantt_task_ids', *SCOPE_FIELDS)
+    @api.depends('construction_stage_ids', 'construction_gantt_task_id', *SCOPE_FIELDS)
     def _compute_construction_line_defaults(self):
         """Nivel y etapa de las líneas agregadas a mano: los del recuadro
-        cuando hay uno solo elegido (H-25). Una sola tarea del Gantt manda
-        sobre el nivel."""
+        cuando hay uno solo elegido (H-25). La tarea del Gantt manda sobre el
+        nivel."""
         for request in self:
             stages = request.construction_stage_ids
             request.construction_default_stage = stages.code if len(stages) == 1 else False
-            tasks = request.construction_gantt_task_ids
-            if len(tasks) != 1:
+            tasks = request.construction_gantt_task_id
+            if not tasks:
                 tasks = request._construction_scope_tasks() or self.env['project.task']
             # En el onchange las tareas llegan como registros nuevos.
             request.construction_default_task_id = tasks._origin if len(tasks) == 1 else False

@@ -19,6 +19,29 @@
                             <field name="construction_remnant_band_limits" class="oe_inline"/>
                         </div>
                         <div class="text-muted">Hasta el primero es merma; sobre el último, plancha sin tocar.</div>
+                        <div class="row mt-2">
+                            <label for="construction_cut_closing_tolerance" class="col-lg-5 o_light_label"/>
+                            <field name="construction_cut_closing_tolerance" class="oe_inline"/>
+                        </div>
+                        <div>
+                            <field name="construction_cut_closing_edit_pieces"/>
+                            <label for="construction_cut_closing_edit_pieces" class="o_light_label"/>
+                        </div>
+                    </div>
+                </setting>
+                <setting id="construction_remnant_lot" company_dependent="1"
+                         invisible="not construction_whole_sheet"
+                         help="Nombre del lote de cada retazo declarado y verificación del despiece al cubrir con retazo.">
+                    <div class="content-group">
+                        <div class="row">
+                            <label for="construction_remnant_lot_pattern" class="col-lg-5 o_light_label"/>
+                            <field name="construction_remnant_lot_pattern" class="oe_inline"/>
+                        </div>
+                        <div class="text-muted">Claves: {codigo}, {banda}, {largo}, {ancho}, {numero}, {obra} y {orden}.</div>
+                        <div class="mt-2">
+                            <field name="construction_remnant_fit_required"/>
+                            <label for="construction_remnant_fit_required" class="o_light_label"/>
+                        </div>
                     </div>
                 </setting>
             </xpath>
@@ -207,14 +230,15 @@
                         <field name="origin_project_id" readonly="1" force_save="1"/>
                     </list>
                 </field>
-                <field name="fit_confirmed" invisible="not line_ids"/>
-                <label for="fit_confirmed" invisible="not line_ids"/>
+                <field name="fit_required" invisible="1" force_save="1"/>
+                <field name="fit_confirmed" invisible="not line_ids or not fit_required"/>
+                <label for="fit_confirmed" invisible="not line_ids or not fit_required"/>
                 <div invisible="not result_text" class="mt-2">
                     <strong>Resultado: </strong><field name="result_text" class="oe_inline"/>
                 </div>
                 <footer>
                     <button name="action_assign" type="object" string="Asignar" class="btn-primary"
-                            invisible="not line_ids" readonly="not fit_confirmed"/>
+                            invisible="not line_ids" readonly="fit_required and not fit_confirmed"/>
                     <button string="Cancelar" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
@@ -229,19 +253,25 @@
             <form string="Declarar sobrantes">
                 <group>
                     <field name="production_id"/>
+                    <field name="edit_pieces" invisible="1" force_save="1"/>
+                    <field name="tolerance_pct" invisible="1" force_save="1"/>
                 </group>
                 <field name="line_ids">
-                    <list create="0" delete="0" decoration-danger="not balance_ok">
+                    <list create="0" delete="0" decoration-danger="not balance_ok"
+                          decoration-muted="undelivered">
                         <field name="product_id" readonly="1" force_save="1"/>
                         <field name="sheet_area_m2" readonly="1" force_save="1" optional="hide"/>
                         <field name="delivered_sheets" readonly="1" force_save="1"/>
                         <field name="delivered_remnant_area_m2" readonly="1" force_save="1" optional="hide"/>
                         <field name="delivered_area_m2"/>
-                        <field name="pieces_area_m2" readonly="1" force_save="1"/>
-                        <field name="untouched_sheets"/>
+                        <field name="pieces_area_m2" readonly="not parent.edit_pieces or undelivered"
+                               force_save="1"/>
+                        <field name="pieces_area_computed_m2" column_invisible="1" force_save="1"/>
+                        <field name="untouched_sheets" readonly="undelivered"/>
                         <field name="remnant_area_m2"/>
                         <field name="scrap_area_m2"/>
                         <field name="scrap_pct"/>
+                        <field name="undelivered" optional="show" force_save="1"/>
                         <field name="balance_ok" column_invisible="1"/>
                     </list>
                     <form string="Sobrantes del tablero">
@@ -254,14 +284,17 @@
                                 <field name="delivered_area_m2"/>
                             </group>
                             <group>
-                                <field name="pieces_area_m2" readonly="1" force_save="1"/>
-                                <field name="untouched_sheets"/>
+                                <field name="pieces_area_m2"
+                                       readonly="not parent.edit_pieces or undelivered" force_save="1"/>
+                                <field name="pieces_area_computed_m2" invisible="1" force_save="1"/>
+                                <field name="undelivered" invisible="not undelivered" force_save="1"/>
+                                <field name="untouched_sheets" readonly="undelivered"/>
                                 <field name="scrap_area_m2"/>
                                 <field name="scrap_pct"/>
                                 <field name="balance_ok" invisible="1"/>
                             </group>
                         </group>
-                        <field name="remnant_ids">
+                        <field name="remnant_ids" readonly="undelivered">
                             <list editable="bottom">
                                 <field name="length_mm"/>
                                 <field name="width_mm"/>

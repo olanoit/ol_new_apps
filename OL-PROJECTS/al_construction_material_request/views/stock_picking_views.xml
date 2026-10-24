@@ -99,4 +99,26 @@
     <menuitem id="menu_construction_moves_to_dispatch" name="Productos por despachar"
               parent="stock.menu_stock_transfers" action="action_construction_moves_to_dispatch"
               groups="stock.group_stock_user" sequence="40"/>
+    <!-- Requerimientos de obra en el almacén (M111-10 y M111-20 C): consumo
+         interno y despacho a obra propios del almacén. -->
+    <record id="view_warehouse_form_construction" model="ir.ui.view">
+        <field name="name">stock.warehouse.form.construction</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='warehouse_config']" position="after">
+                <page string="Requerimientos de obra" name="construction_request"
+                      groups="al_construction_material_request.group_construction_manager">
+                    <group>
+                        <group>
+                            <field name="construction_dispatch_type_id" options="{'no_create': True}"/>
+                            <field name="construction_consumption_location_id" options="{'no_create': True}"/>
+                            <field name="construction_internal_type_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

@@ -30,7 +30,8 @@ class StockMove(models.Model):
 
     def _construction_whole_scope(self):
         # Planchas enteras (M111-12): el despacho del requerimiento de obra.
-        return super()._construction_whole_scope() or bool(self.construction_request_line_id)
+        return super()._construction_whole_scope() or (
+            'request' if self.construction_request_line_id else False)
 
     def _get_account_move_line_vals(self):
         """Consumo interno (M111-10): el gasto lleva la analítica del área."""

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 
 
 class ResCompany(models.Model):
@@ -29,6 +29,74 @@ class ResCompany(models.Model):
         'account.analytic.plan', string='Plan analítico de las áreas',
         help='Las cuentas de este plan son las áreas que piden material interno '
              '(Administración, Comercial…).')
+    # Vale de despacho (paquete 1.11, M111-19 B).
+    construction_slip_dispatch_label = fields.Char(
+        string='Firma de quien despacha', translate=True,
+        default=lambda self: _('Despachado por (almacén)'))
+    construction_slip_receive_site_label = fields.Char(
+        string='Firma de quien recibe (obra)', translate=True,
+        default=lambda self: _('Recibido por (capataz)'))
+    construction_slip_receive_internal_label = fields.Char(
+        string='Firma de quien recibe (interno)', translate=True,
+        default=lambda self: _('Recibido por (área)'))
+    construction_slip_unvalidated_signer = fields.Selection(
+        [('printer', 'Quien imprime'), ('blank', 'En blanco')],
+        string='Si el despacho no está validado, «Despachado por»', default='printer')
+    construction_slip_show_previous = fields.Boolean(
+        string='Mostrar la columna «Despachado antes»', default=True)
+    # Aprobador del requerimiento interno si quien pide no tiene jefe
+    # (M111-19 C y M111-18): vacío, se aprueba al solicitarlo.
+    construction_internal_fallback_group_id = fields.Many2one(
+        'res.groups', string='Aprueba el requerimiento interno si quien pide no tiene jefe',
+        default=lambda self: self.env.ref(
+            'al_construction_material_request.group_construction_logistics',
+            raise_if_not_found=False))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        companies = super().create(vals_list)
+        companies._construction_sync_internal_fallback_rule()
+        return companies
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'construction_internal_fallback_group_id' in vals:
+            self._construction_sync_internal_fallback_rule()
+        return res
+
+    def _construction_sync_internal_fallback_rule(self):
+        """Regla de aprobación «interno y sin jefe» de cada compañía, con el
+        grupo de la opción; sin grupo, la regla queda archivada."""
+        # La regla es configuración técnica: la mantiene la compañía aunque
+        # quien guarda los Ajustes no administre las reglas de aprobación.
+        Definition_sudo = self.env['tier.definition'].sudo().with_context(active_test=False)
+        model = self.env['ir.model']._get('construction.material.request')
+        for company in self:
+            rule = Definition_sudo.search([
+                ('construction_internal_fallback', '=', True),
+                ('company_id', '=', company.id)], limit=1)
+            group = company.construction_internal_fallback_group_id
+            if not group:
+                rule.active = False
+                continue
+            vals = {
+                'name': _('Requerimiento interno sin jefe: %s', group.name),
+                'model_id': model.id,
+                'review_type': 'group',
+                'reviewer_group_id': group.id,
+                'definition_domain': repr([
+                    ('request_type', '=', 'internal'),
+                    ('construction_department_manager_id', '=', False),
+                    ('company_id', '=', company.id)]),
+                'company_id': company.id,
+                'sequence': 31,
+                'approve_sequence': True,
+                'active': True,
+            }
+            if rule:
+                rule.write(vals)
+            else:
+                Definition_sudo.create(dict(vals, construction_internal_fallback=True))
 
     def _al_construction_default_area_plan(self):
         """Plan «Área» como plan de las áreas, si existe y no hay otro elegido

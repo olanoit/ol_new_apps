@@ -11,4 +11,9 @@
     <record id="al_construction_planner.group_planner_assistant" model="res.groups">
         <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_requester'))]"/>
     </record>
+    <!-- Paquete 1.11, M111-20 E: quien ve montos en el planificador ve el
+         valor estimado del requerimiento. -->
+    <record id="al_construction_planner.group_planner_amounts" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('al_construction_material_request.group_construction_amounts'))]"/>
+    </record>
 </odoo>

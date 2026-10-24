@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261024 — 24/10/2026
+
+- Paquete 1.11, M111-14: el jefe de producción («Fabricación: Usuario») declara sobrantes sin error de acceso, también si el producto retazo del tablero aún no existe.
+- Paquete 1.11, M111-15: el retazo usado no cuenta como material sin presupuesto en «Presupuestado frente a requerido».
+- Paquete 1.11, M111-16: un retazo que cubre todo un tablero deja la plancha en 0 sin cancelarla; «Quitar retazo» la vuelve a pedir y «Declarar sobrantes» la muestra.
+- Paquete 1.11, M111-17: «Declarar sobrantes» marca los tableros sin entregar y deja declararlos cuando lleguen; terminar la orden exige solo los entregados.
+- Paquete 1.11, M111-18: aviso de tablero sin área al declarar; cambiar la cantidad de la orden no multiplica el retazo.
+- Paquete 1.11, M111-19 D: Ajustes › Fabricación › «Planchas y retazos» con alcance del redondeo, tolerancia del cuadre, «Piezas (m²)» editable con registro en el historial, formato del lote del retazo y verificación del despiece opcional.
+
 ## 9.20261023 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).

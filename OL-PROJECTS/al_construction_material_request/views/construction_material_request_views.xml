@@ -55,11 +55,12 @@
                         </h1>
                     </div>
                     <field name="user_is_logistics" invisible="1"/>
+                    <field name="user_is_site_requester" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
                     <group>
                         <group name="site">
                             <field name="request_type" widget="radio" options="{'horizontal': true}"
-                                   readonly="state != 'draft'"/>
+                                   readonly="state != 'draft' or not user_is_site_requester"/>
                             <field name="area_plan_id" invisible="1"/>
                             <field name="project_id" readonly="state != 'draft'"
                                    invisible="request_type == 'internal'"
@@ -69,12 +70,9 @@
                                    invisible="request_type != 'internal'"
                                    required="request_type == 'internal'"
                                    options="{'no_create': True}" placeholder="¿Qué área lo pide?"/>
+                            <field name="construction_source_summary" invisible="not construction_source_summary"/>
                             <field name="task_id" readonly="state != 'draft'"
                                    options="{'no_create': True}" invisible="not project_id"/>
-                            <field name="is_extra" readonly="state != 'draft'"
-                                   invisible="request_type == 'internal'"/>
-                            <field name="extra_reason" readonly="state != 'draft'"
-                                   invisible="not is_extra" required="is_extra"/>
                             <field name="location_dest_id"
                                    readonly="request_type == 'internal' or not user_is_logistics or state in ('done', 'cancel')"
                                    options="{'no_create': True}"/>
@@ -85,7 +83,13 @@
                             <field name="date_request" readonly="state != 'draft'"/>
                             <field name="date_required"
                                    readonly="state != 'draft' and (not user_is_logistics or state in ('done', 'cancel'))"/>
-                            <field name="amount_estimated" widget="monetary"/>
+                            <field name="amount_estimated" widget="monetary"
+                                   groups="al_construction_material_request.group_construction_amounts"/>
+                            <!-- M111-20 E: el material extra, a la derecha. -->
+                            <field name="is_extra" readonly="state != 'draft'"
+                                   invisible="request_type == 'internal'"/>
+                            <field name="extra_reason" readonly="state != 'draft'"
+                                   invisible="not is_extra" required="is_extra"/>
                         </group>
                     </group>
                     <notebook>
@@ -105,6 +109,9 @@
                                     <field name="analytic_distribution" widget="analytic_distribution"
                                            optional="show" groups="analytic.group_analytic_accounting"
                                            options="{'product_field': 'product_id'}"/>
+                                    <field name="location_src_id" optional="show" options="{'no_create': True}"
+                                           readonly="not parent.user_is_logistics"
+                                           groups="stock.group_stock_multi_locations"/>
                                     <field name="supply_mode" optional="hide"
                                            column_invisible="parent.request_type == 'internal'"/>
                                     <field name="qty_available_now" optional="show"
@@ -228,7 +235,7 @@
                        invisible="state in ('done', 'cancel')"/>
                 <field name="activity_ids" widget="list_activity" optional="show"/>
                 <field name="company_id" readonly="1" groups="base.group_multi_company" optional="hide"/>
-                <field name="amount_estimated" sum="Total" widget="monetary" optional="show"/>
+                <field name="amount_estimated" sum="Total" widget="monetary" optional="show" groups="al_construction_material_request.group_construction_amounts"/>
                 <field name="extra_reason" optional="show" string="Extra"/>
                 <field name="currency_id" column_invisible="1"/>
                 <field name="state" widget="badge"
@@ -254,7 +261,7 @@
                         <div class="d-flex align-items-baseline">
                             <field name="priority" widget="priority" class="mt-1 me-1"/>
                             <field name="project_id" class="fw-bolder fs-5 me-2"/>
-                            <field name="amount_estimated" widget="monetary" class="fw-bolder ms-auto flex-shrink-0"/>
+                            <field name="amount_estimated" widget="monetary" class="fw-bolder ms-auto flex-shrink-0" groups="al_construction_material_request.group_construction_amounts"/>
                         </div>
                         <footer class="align-items-end">
                             <div class="d-flex flex-wrap gap-1 text-nowrap">
@@ -283,7 +290,7 @@
                 <field name="currency_id" invisible="1"/>
                 <field name="project_id" filters="1"/>
                 <field name="requested_by"/>
-                <field name="amount_estimated" widget="monetary"/>
+                <field name="amount_estimated" widget="monetary" groups="al_construction_material_request.group_construction_amounts"/>
                 <field name="state"/>
             </calendar>
         </field>
@@ -300,7 +307,7 @@
                         <div class="d-flex justify-content-between">
                             <field name="name" display="full" class="o_text_block o_text_bold"/>
                             <div class="m-1"/>
-                            <field name="amount_estimated" widget="monetary"/>
+                            <field name="amount_estimated" widget="monetary" groups="al_construction_material_request.group_construction_amounts"/>
                         </div>
                         <div class="d-flex justify-content-between">
                             <field name="project_id" muted="1" display="full" class="o_text_block"/>

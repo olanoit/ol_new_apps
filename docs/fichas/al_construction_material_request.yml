@@ -429,6 +429,15 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '25.20261024'
+    fecha: 24/10/2026
+    cambios:
+      - "Paquete 1.11, M111-19 B: el vale de despacho tiene firmas configurables (obra e interno), «Despachado por» en blanco antes de validar si se elige, y la columna «Despachado antes» opcional."
+      - "Paquete 1.11, M111-19 C y M111-18: el requerimiento interno de quien no tiene jefe lo aprueba un grupo configurable (por defecto, Logística); vacío, se aprueba al solicitarlo."
+      - "Paquete 1.11, M111-20 A: grupo «Solicitante interno» (por defecto, todos los usuarios internos): pide solo requerimientos internos y ve solo los suyos."
+      - "Paquete 1.11, M111-20 C: cada línea toma su almacén de origen de la ruta nativa que abastece su destino; se despacha una transferencia por almacén con el tipo de despacho del almacén. La cabecera resume «Pedir al almacén» y el origen de siempre pasa a ser «Almacén por defecto»."
+      - "Paquete 1.11, M111-20 E: el valor estimado solo lo ve el grupo «Ve montos» (Administrador y gerencia de operaciones); el material extra pasa a la columna derecha."
+      - "Paquete 1.11, M111-20 F: el historial dice «Reservado para despacho desde …» al procesar y agrega una nota al validar cada despacho con lo que salió y lo pendiente."
   - version: '24.20261023'
     fecha: 23/10/2026
     cambios:

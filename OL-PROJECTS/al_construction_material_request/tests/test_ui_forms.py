@@ -40,8 +40,9 @@ class TestUiForms(ConstructionRequestCommon):
                 line.product_qty = 0
                 self.assertEqual(line.line_state, 'pending')
                 line.product_qty = 10
-            self.assertEqual(form.amount_estimated, 3 * 12 * 30.0 + 10 * 45.0)
         request = form.record
+        # El valor estimado no está en la vista del residente (M111-20 E).
+        self.assertEqual(request.amount_estimated, 3 * 12 * 30.0 + 10 * 45.0)
         self.assertEqual(len(request.line_ids), 2)
         self.assertEqual(request.line_ids[0].product_uom_id, uom_dozen)
 

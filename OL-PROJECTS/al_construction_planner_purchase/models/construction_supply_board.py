@@ -120,9 +120,12 @@ class ConstructionSupplyBoard(models.AbstractModel):
             horizon = sum(need_weeks[product].values())
             to_buy = max(horizon - stock[product] - on_order[product], 0.0)
             purchase_uom = self._get_purchase_uom(product, company)
-            qty_to_buy = uom._compute_quantity(to_buy, purchase_uom, round=False)
-            # Planchas enteras (M111-12): «Plancha L×A m» tiene referencia m².
-            if Mixin._is_whole_uom(purchase_uom) or product._construction_is_whole(company):
+            # Planchas enteras (M111-12): el tablero se redondea en planchas
+            # y luego pasa a la unidad de compra (M111-18).
+            qty_to_buy = product._construction_purchase_qty(to_buy, purchase_uom, company)
+            if product._construction_is_whole(company, 'purchase'):
+                qty_to_buy = purchase_uom.round(qty_to_buy)
+            elif Mixin._is_whole_uom(purchase_uom):
                 qty_to_buy = float_round(qty_to_buy, precision_rounding=1.0,
                                          rounding_method='UP')
             else:

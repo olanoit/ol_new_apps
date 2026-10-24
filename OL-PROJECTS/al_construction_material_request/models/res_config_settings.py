@@ -17,6 +17,22 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_pr_picking_type_id', readonly=False)
     construction_area_plan_id = fields.Many2one(
         related='company_id.construction_area_plan_id', readonly=False)
+    # Paquete 1.11, M111-19 B y C, M111-20 A.
+    construction_slip_dispatch_label = fields.Char(
+        related='company_id.construction_slip_dispatch_label', readonly=False)
+    construction_slip_receive_site_label = fields.Char(
+        related='company_id.construction_slip_receive_site_label', readonly=False)
+    construction_slip_receive_internal_label = fields.Char(
+        related='company_id.construction_slip_receive_internal_label', readonly=False)
+    construction_slip_unvalidated_signer = fields.Selection(
+        related='company_id.construction_slip_unvalidated_signer', readonly=False)
+    construction_slip_show_previous = fields.Boolean(
+        related='company_id.construction_slip_show_previous', readonly=False)
+    construction_internal_fallback_group_id = fields.Many2one(
+        related='company_id.construction_internal_fallback_group_id', readonly=False)
+    group_construction_internal_request_all = fields.Boolean(
+        string='Todos los usuarios pueden hacer requerimientos internos',
+        implied_group='al_construction_material_request.group_construction_internal_requester')
 
     def action_al_construction_setup(self):
         self.company_id._al_construction_ensure_setup()

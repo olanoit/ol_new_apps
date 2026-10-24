@@ -3,13 +3,14 @@
 
     <menuitem id="menu_construction_root" name="Requerimientos de obra"
               web_icon="al_construction_material_request,static/description/icon.png"
-              groups="group_construction_requester" sequence="46"/>
+              groups="group_construction_requester,group_construction_internal_requester" sequence="46"/>
 
     <!-- Como Compras ▸ Pedidos: un menú principal con sus acciones. -->
     <menuitem id="menu_construction_requests_root" name="Requerimientos"
               parent="menu_construction_root" sequence="10">
         <menuitem id="menu_construction_requests" name="Requerimientos"
-                  action="action_construction_material_request" sequence="10"/>
+                  action="action_construction_material_request" sequence="10"
+                  groups="group_construction_requester"/>
         <menuitem id="menu_construction_internal_requests" name="Requerimientos internos"
                   action="action_construction_internal_request" sequence="15"/>
         <menuitem id="menu_construction_request_lines" name="Materiales pedidos"

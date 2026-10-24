@@ -10,9 +10,6 @@ from odoo.tools.misc import formatLang
 
 from ..models.remnant import REMNANT_BANDS, VARIANT_BANDS
 
-# Lo declarado puede pasar a lo entregado hasta en un 0.5 % (medidas).
-OVER_TOLERANCE = 0.005
-
 
 class ConstructionCutClosingWizard(models.TransientModel):
     _name = 'construction.cut.closing.wizard'
@@ -22,22 +19,31 @@ class ConstructionCutClosingWizard(models.TransientModel):
                                     readonly=True)
     line_ids = fields.One2many('construction.cut.closing.wizard.line', 'wizard_id',
                                string='Tableros')
+    # Opciones de la compañía (M111-19 D).
+    edit_pieces = fields.Boolean(string='Piezas editables', readonly=True)
+    tolerance_pct = fields.Float(string='Tolerancia del cuadre (%)', digits=(16, 2),
+                                 readonly=True)
 
     @api.model
     def default_get(self, fields_list):
         values = super().default_get(fields_list)
         production = self.env['mrp.production'].browse(values.get('production_id'))
         if production:
-            values['line_ids'] = [Command.create(vals)
-                                  for vals in self._board_lines(production)]
+            company = production.company_id
+            values.update({
+                'edit_pieces': company.construction_cut_closing_edit_pieces,
+                'tolerance_pct': company.construction_cut_closing_tolerance,
+                'line_ids': [Command.create(vals) for vals in self._board_lines(production)],
+            })
         return values
 
     @api.model
     def _board_lines(self, production):
+        """Tableros de la orden aún sin declarar, con lo entregado. Un tablero
+        sin entregar va marcado: se declara cuando llegue (M111-17)."""
         lines = []
-        boards = production.move_raw_ids.filtered(
-            lambda m: m.construction_need_qty and m.state != 'cancel').product_id
-        for board in boards:
+        declared = production.construction_cut_closing_ids.product_id
+        for board in production._construction_cut_boards() - declared:
             uom = board.uom_id
             area = board.construction_sheet_area_m2
             raw = production.move_raw_ids.filtered(
@@ -54,14 +60,16 @@ class ConstructionCutClosingWizard(models.TransientModel):
                              for m in raw)
             remnants = production.move_raw_ids.filtered(
                 lambda m: m.construction_covers_move_id in raw and m.state != 'cancel')
+            remnant_area = sum(remnants.construction_remnant_lot_id.mapped('construction_area_m2'))
             lines.append({
                 'product_id': board.id,
                 'sheet_area_m2': area,
                 'delivered_sheets': sheets,
-                'delivered_remnant_area_m2': sum(
-                    remnants.construction_remnant_lot_id.mapped('construction_area_m2')),
+                'delivered_remnant_area_m2': remnant_area,
+                'undelivered': uom.is_zero(sheets) and not remnant_area,
                 # Sin despiece cargado (M19-01), las piezas son la necesidad.
                 'pieces_area_m2': need * area,
+                'pieces_area_computed_m2': need * area,
             })
         return lines
 
@@ -70,12 +78,24 @@ class ConstructionCutClosingWizard(models.TransientModel):
         production = self.production_id
         if production.construction_cut_closed:
             raise UserError(self.env._('Los sobrantes de %s ya se declararon.', production.name))
-        for line in self.line_ids:
+        lines = self.line_ids.filtered(lambda l: not l.undelivered)
+        if not lines:
+            raise UserError(self.env._(
+                'Ningún tablero de %s se entregó todavía: los sobrantes se declaran cuando '
+                'llegue.', production.name))
+        for line in lines:
             line._check_balance()
         notes = []
-        for line in self.line_ids:
+        for line in lines:
+            notes += line._pieces_note()
             notes += line._apply(production)
-        production.construction_cut_closed = True
+        pending = production._construction_cut_boards() - production.construction_cut_closing_ids.product_id
+        if not pending:
+            production.construction_cut_closed = True
+        else:
+            notes.append(self.env._(
+                'Sin entregar, se declaran cuando lleguen: %s.',
+                ', '.join(pending.mapped(lambda p: p.default_code or p.name))))
         body = self.env._('Sobrantes del corte declarados por %s.', self.env.user.name)
         if notes:
             body += ' ' + ' '.join(notes)
@@ -96,6 +116,8 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
     delivered_area_m2 = fields.Float(
         string='Entregado (m²)', digits=(16, 2), compute='_compute_balance')
     pieces_area_m2 = fields.Float(string='Piezas (m²)', digits=(16, 2))
+    pieces_area_computed_m2 = fields.Float(string='Piezas calculadas (m²)', digits=(16, 2))
+    undelivered = fields.Boolean(string='Sin entregar', readonly=True)
     untouched_sheets = fields.Integer(string='Planchas sin tocar')
     remnant_ids = fields.One2many('construction.cut.closing.remnant', 'line_id',
                                   string='Retazos')
@@ -108,9 +130,17 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
 
     @api.depends('delivered_sheets', 'delivered_remnant_area_m2', 'sheet_area_m2',
                  'pieces_area_m2', 'untouched_sheets', 'remnant_ids.area_m2',
-                 'remnant_ids.qty', 'remnant_ids.band')
+                 'remnant_ids.qty', 'remnant_ids.band', 'undelivered',
+                 'wizard_id.tolerance_pct')
     def _compute_balance(self):
         for line in self:
+            if line.undelivered:
+                line.update({
+                    'delivered_area_m2': 0.0, 'remnant_area_m2': 0.0, 'scrap_area_m2': 0.0,
+                    'scrap_pct': 0.0, 'balance_ok': True,
+                    'balance_text': self.env._('Sin entregar: se declara cuando llegue'),
+                })
+                continue
             delivered = line.delivered_sheets * line.sheet_area_m2 + line.delivered_remnant_area_m2
             kept = line.remnant_ids.filtered(lambda r: r.band in VARIANT_BANDS)
             remnant = sum(r._exact_area() * r.qty for r in kept)
@@ -121,7 +151,8 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
             line.remnant_area_m2 = remnant
             line.scrap_area_m2 = scrap
             line.scrap_pct = scrap / delivered * 100 if delivered else 0.0
-            line.balance_ok = scrap >= -OVER_TOLERANCE * delivered
+            tolerance = line.wizard_id.tolerance_pct / 100
+            line.balance_ok = scrap >= -tolerance * delivered
             if line.balance_ok:
                 line.balance_text = self.env._(
                     '%(pieces)s + %(remnant)s + %(untouched)s + %(scrap)s = %(delivered)s ✓',
@@ -149,6 +180,18 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
                     area=formatLang(self.env, -line.scrap_area_m2, digits=2),
                     product=line.product_id.display_name))
 
+    def _pieces_note(self):
+        """Historial de la orden: quien corrigió el área de las piezas."""
+        self.ensure_one()
+        if not self.wizard_id.edit_pieces or abs(
+                self.pieces_area_m2 - self.pieces_area_computed_m2) < 0.005:
+            return []
+        return [self.env._(
+            '%(user)s corrigió las piezas de [%(code)s]: de %(old)s a %(new)s m².',
+            user=self.env.user.name, code=self.product_id.default_code or self.product_id.name,
+            old=formatLang(self.env, self.pieces_area_computed_m2, digits=2),
+            new=formatLang(self.env, self.pieces_area_m2, digits=2))]
+
     def _apply(self, production):
         """Consumo, devolución de planchas sin tocar, retazos como
         subproductos y registro del cuadre. Devuelve avisos para el
@@ -170,7 +213,10 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
         kept = self.remnant_ids.filtered(lambda r: r.band in VARIANT_BANDS)
         if kept:
             self._create_remnants(production, kept)
-        self.env['construction.cut.closing.line'].create({
+        # El jefe de producción («Fabricación: Usuario») solo lee el registro
+        # del cierre (M111-14): lo escribe el asistente, como las demás
+        # operaciones del cierre.
+        self.env['construction.cut.closing.line'].sudo().create({
             'production_id': production.id,
             'product_id': board.id,
             'delivered_area_m2': self.delivered_area_m2,
@@ -231,13 +277,18 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
         banda, con un lote por unidad y su costo por área."""
         board = self.product_id
         if not board.construction_remnant_tmpl_id:
-            board.product_tmpl_id.action_construction_create_remnant()
+            # Producción no crea productos (M111-14): el retazo del tablero es
+            # una plantilla técnica que el asistente crea la primera vez.
+            board.product_tmpl_id.sudo().action_construction_create_remnant()
         warehouse = production.picking_type_id.warehouse_id
         unit_cost = board.with_company(production.company_id).standard_price
         project = production.project_id if 'project_id' in production._fields \
             else self.env['project.project']
         Lot = self.env['stock.lot']
+        company = production.company_id
         code = board.default_code or str(board.id)
+        site = (getattr(project, 'construction_code', False) or project.name or '') \
+            if project else ''
         sequence = Lot.search_count([
             ('product_id', 'in', board.construction_remnant_tmpl_id.product_variant_ids.ids)])
         for band in VARIANT_BANDS:
@@ -267,8 +318,11 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
                 for _unit in range(remnant.qty):
                     sequence += 1
                     lot = Lot.create({
-                        'name': '%s-R%s-%sx%s-%04d' % (
-                            code, band[1:], remnant.length_mm, remnant.width_mm, sequence),
+                        'name': company._construction_remnant_lot_name({
+                            'codigo': code, 'banda': band.upper(),
+                            'largo': remnant.length_mm, 'ancho': remnant.width_mm,
+                            'numero': '%04d' % sequence, 'obra': site,
+                            'orden': production.name}),
                         'product_id': variant.id,
                         'company_id': production.company_id.id,
                         'construction_length_mm': remnant.length_mm,

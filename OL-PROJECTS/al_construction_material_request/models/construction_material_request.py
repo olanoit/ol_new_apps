@@ -24,6 +24,9 @@ REQUEST_TYPES = [
     ('internal', 'Interno'),
 ]
 
+# Pide para obras (M111-20 A); «Solicitante interno» solo hace internos.
+SITE_REQUESTER_GROUP = 'al_construction_material_request.group_construction_requester'
+
 STATES = [
     ('draft', 'Borrador'),
     ('to_approve', 'En aprobación'),
@@ -61,7 +64,8 @@ class ConstructionMaterialRequest(models.Model):
         default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda')
     request_type = fields.Selection(
-        REQUEST_TYPES, string='Tipo', default='site', required=True, tracking=True,
+        REQUEST_TYPES, string='Tipo', default=lambda self: self._default_request_type(),
+        required=True, tracking=True,
         help='Obra: material para una obra. Interno: material de oficina o de consumo de '
              'un área; sale a la ubicación de consumo interno del almacén.')
     # Obligatoria en los de obra (_check_request_type): el interno no lleva obra.
@@ -87,9 +91,13 @@ class ConstructionMaterialRequest(models.Model):
         'project.task', string='Tarea', check_company=True,
         domain="[('project_id', '=', project_id)]")
     location_src_id = fields.Many2one(
-        'stock.location', string='Origen', required=True, check_company=True,
+        'stock.location', string='Almacén por defecto', required=True, check_company=True,
         compute='_compute_location_src_id', store=True, readonly=False,
-        precompute=True, domain="[('usage', '=', 'internal')]")
+        precompute=True, domain="[('usage', '=', 'internal')]",
+        help='Origen de las líneas que ninguna ruta abastece (M111-20 C).')
+    construction_source_summary = fields.Char(
+        string='Pedir al almacén', compute='_compute_construction_source_summary',
+        help='Almacenes de donde salen las líneas, con su número de materiales.')
     location_dest_id = fields.Many2one(
         'stock.location', string='Ubicación de obra', check_company=True,
         compute='_compute_location_dest_id', store=True, readonly=False,
@@ -135,13 +143,48 @@ class ConstructionMaterialRequest(models.Model):
         string='Nº de órdenes de compra', compute='_compute_purchase_order_ids')
     user_is_logistics = fields.Boolean(
         string='Usuario de logística', compute='_compute_user_is_logistics')
+    # Solicitante interno (M111-20 A): sin el grupo «Solicitante», el usuario
+    # solo hace requerimientos internos.
+    user_is_site_requester = fields.Boolean(
+        string='Pide para obras', compute='_compute_user_is_logistics')
+
+    @api.model
+    def _default_request_type(self):
+        # Solo quien no pide para obras empieza en «Interno»; los procesos
+        # internos (portal, asistentes con sudo) siguen creando de obra.
+        if self.env.su or self.env.user.has_group(SITE_REQUESTER_GROUP):
+            return 'site'
+        return 'internal'
 
     @api.depends_context('uid')
     def _compute_user_is_logistics(self):
         is_logistics = self.env.user.has_group(
             'al_construction_material_request.group_construction_logistics')
+        is_site = self.env.user.has_group(SITE_REQUESTER_GROUP)
         for request in self:
             request.user_is_logistics = is_logistics
+            request.user_is_site_requester = is_site
+
+    @api.depends('line_ids.location_src_id', 'location_src_id')
+    def _compute_construction_source_summary(self):
+        for request in self:
+            counts = {}
+            for line in request.line_ids.filtered(lambda l: not l.cancelled):
+                source = line._get_source_location()
+                name = source.warehouse_id.name or source.display_name
+                counts[name] = counts.get(name, 0) + 1
+            request.construction_source_summary = ' · '.join(
+                '%s · %s' % (name, count) for name, count in counts.items()) or False
+
+    @api.constrains('request_type', 'requested_by')
+    def _check_site_requester(self):
+        if self.env.su:
+            return
+        for request in self.filtered(lambda r: r.request_type == 'site'):
+            if not self.env.user.has_group(SITE_REQUESTER_GROUP):
+                raise ValidationError(_(
+                    'Solo el grupo «Solicitante» pide material para obras: %s es un '
+                    'requerimiento interno.', request.name))
 
     @api.depends('requested_by')
     def _compute_construction_department_manager_id(self):

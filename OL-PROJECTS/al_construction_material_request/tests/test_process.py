@@ -233,7 +233,7 @@ class TestProcess(ConstructionRequestCommon):
         request = self._approved_request()
         Request = type(self.env['construction.material.request'])
         with patch.object(Request, '_get_free_qty_by_product',
-                          lambda self, products: {p.id: 100.0 for p in products}):
+                          lambda self, products, location=None: {p.id: 100.0 for p in products}):
             self._process(request)
         line = request.line_ids
         self.assertEqual((line.qty_to_dispatch, line.qty_to_purchase), (60, 40))
@@ -246,7 +246,7 @@ class TestProcess(ConstructionRequestCommon):
         request = self._approved_request()
         Request = type(self.env['construction.material.request'])
         with patch.object(Request, '_get_free_qty_by_product',
-                          lambda self, products: {p.id: 100.0 for p in products}):
+                          lambda self, products, location=None: {p.id: 100.0 for p in products}):
             self._process(request)
         self.assertEqual(self._dispatch_picking(request).move_ids.state, 'cancel')
         self.assertEqual(request.purchase_request_ids.line_ids.product_qty, 100)

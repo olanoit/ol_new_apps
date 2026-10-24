@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tarjetas del resumen de Inventario (paquete 1.11, M111-19 A). -->
+    <record id="res_config_settings_view_form_stock_overview" model="ir.ui.view">
+        <field name="name">res.config.settings.form.stock.overview</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='operations_setting_container']" position="before">
+                <block title="Resumen de inventario" name="al_stock_overview_block">
+                    <setting id="al_stock_overview" company_dependent="1"
+                             help="Cómo se ven las tarjetas de Inventario › Resumen. Cada usuario puede elegir otro estilo en sus preferencias.">
+                        <div class="content-group">
+                            <div class="row">
+                                <label for="al_stock_overview_style" class="col-lg-5 o_light_label"/>
+                                <field name="al_stock_overview_style"/>
+                            </div>
+                            <div class="row" invisible="al_stock_overview_style != 'compact'">
+                                <label for="al_stock_overview_width" class="col-lg-5 o_light_label"/>
+                                <field name="al_stock_overview_width"/>
+                            </div>
+                            <div invisible="al_stock_overview_style != 'compact'">
+                                <field name="al_stock_overview_graph"/>
+                                <label for="al_stock_overview_graph" class="o_light_label"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_form_simple_modif_stock_overview" model="ir.ui.view">
+        <field name="name">res.users.preferences.form.stock.overview</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='other_preferences']" position="inside">
+                <field name="al_stock_overview_style" readonly="0" groups="stock.group_stock_user"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_form_stock_overview" model="ir.ui.view">
+        <field name="name">res.users.form.stock.overview</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='preferences']//group[@name='other_preferences']" position="inside">
+                <field name="al_stock_overview_style"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

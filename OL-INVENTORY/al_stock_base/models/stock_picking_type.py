@@ -27,8 +27,15 @@ class StockPickingType(models.Model):
     _inherit = 'stock.picking.type'
 
     @api.model
+    def _get_view_cache_key(self, view_id=None, view_type='form', **options):
+        # La vista depende del estilo del usuario y de la compañía (M111-19 A).
+        key = super()._get_view_cache_key(view_id, view_type, **options)
+        return key + (self.env.user._al_stock_overview_options(),)
+
+    @api.model
     def _get_view(self, view_id=None, view_type='form', **options):
-        """Resumen de inventario compacto: sin gráficos y en español.
+        """Resumen de inventario en español y, en el estilo «Compacta», sin
+        gráficos (salvo que la compañía los muestre) y con el ancho elegido.
 
         Se hace aquí y no con xpath porque stock, mrp y repair ponen cada uno
         su gráfico en la tarjeta (un xpath solo alcanza el primero) y porque
@@ -37,12 +44,17 @@ class StockPickingType(models.Model):
         arch, view = super()._get_view(view_id, view_type, **options)
         if view_type != 'kanban' or arch.get('js_class') != 'stock_dashboard_kanban':
             return arch, view
-        for node in arch.xpath("//templates//field[@name='kanban_dashboard_graph']"):
-            node.getparent().remove(node)
-        # El renderer de stock (stock_dashboard_kanban) lee el campo de cada
-        # registro: se carga, pero fuera de la tarjeta y sin widget.
-        if not arch.xpath("./field[@name='kanban_dashboard_graph']"):
-            arch.insert(0, arch.makeelement('field', {'name': 'kanban_dashboard_graph'}))
+        style, graph, width = self.env.user._al_stock_overview_options()
+        if style == 'compact':
+            arch.set('class', ' '.join(filter(None, [
+                arch.get('class'), 'o_al_overview_compact', 'o_al_overview_w_%s' % width])))
+            if not graph:
+                for node in arch.xpath("//templates//field[@name='kanban_dashboard_graph']"):
+                    node.getparent().remove(node)
+                # El renderer de stock (stock_dashboard_kanban) lee el campo de
+                # cada registro: se carga, pero fuera de la tarjeta y sin widget.
+                if not arch.xpath("./field[@name='kanban_dashboard_graph']"):
+                    arch.insert(0, arch.makeelement('field', {'name': 'kanban_dashboard_graph'}))
         if (self.env.lang or '').startswith('es'):
             for node in arch.iter():
                 for attr in ('text', 'tail'):

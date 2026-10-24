@@ -30,11 +30,12 @@ class ConstructionMaterialRequest(models.Model):
         self.write({'state': 'in_progress'})
         return True
 
-    def _get_free_qty_by_product(self, products):
-        """Cantidad libre (UdM de cada producto) en el origen y sus
-        sububicaciones, leída en lote como stock.move._prepare_procurement_qty."""
+    def _get_free_qty_by_product(self, products, location=None):
+        """Cantidad libre (UdM de cada producto) en ``location`` (por defecto,
+        el almacén por defecto) y sus sububicaciones, leída en lote como
+        stock.move._prepare_procurement_qty."""
         self.ensure_one()
-        products = products.with_context(location=self.location_src_id.id)
+        products = products.with_context(location=(location or self.location_src_id).id)
         return {product.id: product.free_qty for product in products}
 
     def _process_split(self):
@@ -45,13 +46,19 @@ class ConstructionMaterialRequest(models.Model):
         la cantidad a comprar se convierte a la UdM de la línea (HALF-UP)."""
         self.ensure_one()
         lines = self.line_ids.filtered(lambda l: not l.cancelled)
-        free_by_product = self._get_free_qty_by_product(lines.product_id)
-        consumed = defaultdict(float)  # por producto, en su UdM
+        # Lo libre se lee en el origen de cada línea (M111-20 C).
+        free_by_source = {}
+        for source in lines.mapped(lambda l: l._get_source_location()):
+            free_by_source[source] = self._get_free_qty_by_product(
+                lines.filtered(lambda l: l._get_source_location() == source).product_id, source)
+        consumed = defaultdict(float)  # por (producto, origen), en su UdM
         for line in lines:
             product = line.product_id
-            free = max(free_by_product.get(product.id, 0.0) - consumed[product.id], 0.0)
-            if product._construction_is_whole(self.company_id):
-                consumed[product.id] += line._construction_split_whole(free)
+            source = line._get_source_location()
+            key = (product.id, source.id)
+            free = max(free_by_source[source].get(product.id, 0.0) - consumed[key], 0.0)
+            if product._construction_is_whole(self.company_id, 'request'):
+                consumed[key] += line._construction_split_whole(free)
                 continue
             to_purchase = max(line.product_uom_qty - free, 0.0)
             qty_to_purchase = product.uom_id._compute_quantity(
@@ -62,7 +69,7 @@ class ConstructionMaterialRequest(models.Model):
                 'qty_to_purchase': qty_to_purchase,
                 'qty_to_dispatch': line.product_qty - qty_to_purchase,
             })
-            consumed[product.id] += min(line.product_uom_qty, free)
+            consumed[key] += min(line.product_uom_qty, free)
 
         picking = self._create_dispatch_picking(
             lines.filtered(lambda l: not l.product_uom_id.is_zero(l.qty_to_dispatch)))
@@ -90,12 +97,13 @@ class ConstructionMaterialRequest(models.Model):
             self.stock_reference_id = self.env['stock.reference'].create({'name': self.name})
         return self.stock_reference_id
 
-    def _prepare_picking_vals(self, location_dest=None):
+    def _prepare_picking_vals(self, location_dest=None, location_src=None):
         self.ensure_one()
-        picking_type = self._get_dispatch_picking_type()
+        source = location_src or self.location_src_id
+        picking_type = self._get_dispatch_picking_type(source.warehouse_id)
         vals = {
             'picking_type_id': picking_type.id,
-            'location_id': self.location_src_id.id,
+            'location_id': source.id,
             'location_dest_id': (location_dest or self.location_dest_id).id,
             'origin': self.name,
             'construction_request_id': self.id,
@@ -111,15 +119,26 @@ class ConstructionMaterialRequest(models.Model):
             vals['l10n_pe_edi_reason_for_transfer'] = '04'
         return vals
 
-    def _get_dispatch_picking_type(self):
-        """Despacho a obra o, en un interno, el «Consumo interno» del almacén."""
+    def _get_dispatch_picking_type(self, warehouse=None):
+        """Despacho a obra del almacén de origen (o el de la compañía) o, en un
+        interno, el «Consumo interno» del almacén."""
         self.ensure_one()
+        warehouse = warehouse or self.location_src_id.warehouse_id
         if self.request_type == 'internal':
-            warehouse = self.location_src_id.warehouse_id
             if not warehouse.construction_internal_type_id:
                 warehouse.sudo()._construction_ensure_internal_consumption()
             return warehouse.construction_internal_type_id
-        return self.company_id.construction_dispatch_type_id
+        return warehouse.construction_dispatch_type_id or self.company_id.construction_dispatch_type_id
+
+    def _get_dispatch_picking_types(self):
+        """Todos los tipos de despacho que puede usar el requerimiento (uno
+        por almacén de origen de sus líneas)."""
+        self.ensure_one()
+        sources = self.location_src_id | self.line_ids.location_src_id
+        types = self.env['stock.picking.type']
+        for warehouse in sources.warehouse_id or self.location_src_id.warehouse_id:
+            types |= self._get_dispatch_picking_type(warehouse)
+        return types
 
     def _prepare_move_vals(self, line, qty, picking, procure_method='make_to_stock'):
         # Campos como purchase.order.line._prepare_stock_move_vals.
@@ -145,20 +164,23 @@ class ConstructionMaterialRequest(models.Model):
         }
 
     def _group_by_destination(self, lines):
-        """[(destino, líneas)]: una transferencia por destino, la obra primero."""
+        """[((origen, destino), líneas)]: una transferencia por origen y destino
+        (M111-20 C), el almacén por defecto y la obra primero."""
         self.ensure_one()
         groups = {}
         for line in lines:
-            location = line._get_site_location()
-            groups[location] = groups.get(location, line.browse()) | line
-        return sorted(groups.items(), key=lambda item: item[0] != self.location_dest_id)
+            key = (line._get_source_location(), line._get_site_location())
+            groups[key] = groups.get(key, line.browse()) | line
+        return sorted(groups.items(), key=lambda item: (
+            item[0][0] != self.location_src_id, item[0][1] != self.location_dest_id))
 
     def _create_dispatch_picking(self, lines):
         """Transferencias de lo disponible: una por destino de las líneas."""
         self.ensure_one()
         pickings = self.env['stock.picking']
-        for location, group in self._group_by_destination(lines):
-            picking = self.env['stock.picking'].create(self._prepare_picking_vals(location))
+        for (source, location), group in self._group_by_destination(lines):
+            picking = self.env['stock.picking'].create(
+                self._prepare_picking_vals(location, source))
             self.env['stock.move'].create([
                 self._prepare_move_vals(line, line.qty_to_dispatch, picking) for line in group
             ])
@@ -249,8 +271,9 @@ class ConstructionMaterialRequest(models.Model):
         }
         pickings = self.env['stock.picking']
         move_vals = []
-        for location, group in self._group_by_destination(lines):
-            picking = self.env['stock.picking'].create(self._prepare_picking_vals(location))
+        for (source, location), group in self._group_by_destination(lines):
+            picking = self.env['stock.picking'].create(
+                self._prepare_picking_vals(location, source))
             pickings |= picking
             for line in group:
                 vals = self._prepare_move_vals(
@@ -268,8 +291,19 @@ class ConstructionMaterialRequest(models.Model):
     def _post_split_message(self, lines, picking, purchase_request, pending_picking, shortages):
         modes = dict(self.env['construction.material.request.line']._fields['supply_mode']
                      ._description_selection(self.env))
+        def picking_of(line):
+            moves = picking.move_ids.filtered(
+                lambda m: m.construction_request_line_id == line and m.state != 'cancel')
+            return ', '.join(moves.picking_id.mapped('name'))
+
+        def source_of(line):
+            source = line._get_source_location()
+            return source.warehouse_id.name or source.display_name
+
         rows = [{
             'product': line.product_id.display_name,
+            'source': source_of(line),
+            'picking': picking_of(line),
             'ordered': self._format_qty(line.product_qty, line.product_uom_id),
             'available': self._format_qty(line.qty_available_at_approval, line.product_uom_id),
             'dispatch': not line.product_uom_id.is_zero(line.qty_to_dispatch),

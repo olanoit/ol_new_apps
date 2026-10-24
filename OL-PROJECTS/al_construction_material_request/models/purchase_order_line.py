@@ -24,7 +24,7 @@ class PurchaseOrderLine(models.Model):
         tablero indivisible con fracción avisa, sin impedirla."""
         product = self.product_id
         company = self.order_id.company_id or self.env.company
-        if not (product and self.product_uom_id and product._construction_is_whole(company)):
+        if not (product and self.product_uom_id and product._construction_is_whole(company, 'purchase')):
             return None
         qty = self.product_uom_id._compute_quantity(
             self.product_qty, product.uom_id, round=False)

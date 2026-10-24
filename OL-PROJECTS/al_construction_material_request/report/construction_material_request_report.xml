@@ -26,6 +26,7 @@
 
     <template id="report_construction_request_document">
         <t t-set="company" t-value="o.company_id"/>
+        <t t-set="see_amounts" t-value="o.env.user.has_group('al_construction_material_request.group_construction_amounts')"/>
         <t t-set="processed" t-value="o.state in ('in_progress', 'done', 'cancel')"/>
         <t t-set="lines" t-value="o.line_ids"/>
         <t t-set="review_states" t-value="{'approved': 'Aprobado', 'pending': 'Pendiente', 'waiting': 'En espera', 'rejected': 'Rechazado', 'cancel': 'Cancelado'}"/>
@@ -65,9 +66,12 @@
                 <tr>
                     <td class="pe-doc-label">Tarea</td>
                     <td class="pe-doc-value" t-out="o.task_id.name or '—'"/>
-                    <td class="pe-doc-label">Valor estimado</td>
-                    <td class="pe-doc-value"><span t-field="o.amount_estimated"
-                        t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    <t t-if="see_amounts">
+                        <td class="pe-doc-label">Valor estimado</td>
+                        <td class="pe-doc-value"><span t-field="o.amount_estimated"
+                            t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                    </t>
+                    <t t-else=""><td class="pe-doc-label"/><td class="pe-doc-value"/></t>
                 </tr>
             </table>
 
@@ -116,7 +120,7 @@
                         </t>
                     </tr>
                 </tbody>
-                <tfoot>
+                <tfoot t-if="see_amounts">
                     <tr class="pe-doc-total">
                         <td t-att-colspan="7 if processed else 4" class="text-end">Valor estimado</td>
                         <td class="text-end"><span t-field="o.amount_estimated"

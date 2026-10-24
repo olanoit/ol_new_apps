@@ -19,6 +19,18 @@
                                 <field name="construction_whole_sheet_tolerance" class="oe_inline"/>
                                 <span class="text-muted">plancha (0 = toda fracción sube)</span>
                             </div>
+                            <div class="mt-2">
+                                <field name="construction_whole_sheet_production"/>
+                                <label for="construction_whole_sheet_production" class="o_light_label"/>
+                            </div>
+                            <div>
+                                <field name="construction_whole_sheet_request"/>
+                                <label for="construction_whole_sheet_request" class="o_light_label"/>
+                            </div>
+                            <div>
+                                <field name="construction_whole_sheet_purchase"/>
+                                <label for="construction_whole_sheet_purchase" class="o_light_label"/>
+                            </div>
                         </div>
                     </setting>
                 </block>

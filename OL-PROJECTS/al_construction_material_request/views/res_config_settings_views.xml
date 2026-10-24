@@ -48,6 +48,46 @@
                                  help="Plan analítico cuyas cuentas son las áreas que piden material de oficina o de consumo. El material sale a la ubicación «Consumo interno» de cada almacén (la crea «Completar configuración»); su cuenta de valoración es la del gasto.">
                             <field name="construction_area_plan_id" options="{'no_create': True}"/>
                         </setting>
+                        <setting id="construction_internal_all"
+                                 help="Agrega «Solicitante interno» a todos los usuarios internos: cada uno pide para su área y ve solo lo suyo. Apagado, se asigna a mano.">
+                            <field name="group_construction_internal_request_all"/>
+                        </setting>
+                        <setting company_dependent="1" id="construction_internal_fallback"
+                                 help="Si quien pide no tiene jefe en su ficha de empleado, aprueba este grupo. Vacío: se aprueba al solicitarlo.">
+                            <field name="construction_internal_fallback_group_id" options="{'no_create': True}"/>
+                        </setting>
+                    </block>
+                    <block title="Vale de despacho" name="construction_slip">
+                        <setting company_dependent="1" id="construction_slip_labels" string="Firmas"
+                                 help="Texto bajo cada línea de firma del vale.">
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="construction_slip_dispatch_label" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_slip_dispatch_label"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_slip_receive_site_label" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_slip_receive_site_label"/>
+                                </div>
+                                <div class="row">
+                                    <label for="construction_slip_receive_internal_label" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_slip_receive_internal_label"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting company_dependent="1" id="construction_slip_options" string="Contenido"
+                                 help="Quién figura en «Despachado por» antes de validar y si se muestra lo despachado en bultos anteriores.">
+                            <div class="content-group">
+                                <div class="row">
+                                    <label for="construction_slip_unvalidated_signer" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_slip_unvalidated_signer"/>
+                                </div>
+                                <div>
+                                    <field name="construction_slip_show_previous"/>
+                                    <label for="construction_slip_show_previous" class="o_light_label"/>
+                                </div>
+                            </div>
+                        </setting>
                     </block>
                     <block title="Aprobación" name="construction_approval">
                         <setting id="construction_tiers" string="Reglas de aprobación"

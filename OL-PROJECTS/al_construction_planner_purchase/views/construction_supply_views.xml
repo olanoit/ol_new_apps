@@ -7,7 +7,9 @@
         <field name="model">construction.material.request</field>
         <field name="inherit_id" ref="al_construction_material_request.construction_material_request_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='location_dest_id']" position="after">
+            <!-- M111-20 E: el control de plan y, debajo, el material extra, en la
+                 columna derecha. -->
+            <xpath expr="//field[@name='is_extra']" position="before">
                 <field name="construction_plan_id" readonly="1" groups="al_construction_planner.group_planner_progress"/>
                 <field name="construction_exceed_state" widget="badge" invisible="not construction_plan_id" decoration-success="construction_exceed_state == 'ok'" decoration-danger="construction_exceed_state == 'exceeded'" decoration-info="construction_exceed_state == 'approved'"/>
             </xpath>

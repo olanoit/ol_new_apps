@@ -92,7 +92,13 @@ enteras.
    banda R25, R50, R75 y R99, con lote); marque **Pool de retazos** en las
    ubicaciones donde se guardan y elija la **Ubicación de retazos** de cada
    planta (almacén). Con **Exigir «Declarar sobrantes»**, la orden no se
-   termina sin declararlos.
+   termina sin declarar los tableros entregados.
+4. En el mismo bloque se elige dónde actúa el redondeo (**Aplicar en el
+   despacho a producción**, **en el requerimiento de obra** y **en compras**),
+   la **Tolerancia del cuadre** (0.5 % por defecto), si se puede corregir
+   **Piezas (m²)** al declarar, el **Formato del lote del retazo** (claves
+   `{codigo}`, `{banda}`, `{largo}`, `{ancho}`, `{numero}`, `{obra}` y
+   `{orden}`) y si se exige la casilla del despiece al cubrir con retazo.
 
 ### Confirmar la orden
 
@@ -115,7 +121,11 @@ línea del tablero. El asistente muestra la fracción a cubrir (necesidad 7.2 �
 0.2 plancha, 1.04 m²) y los retazos libres del mismo tablero que alcanzan, del
 más chico al más grande. Al marcar uno y confirmar que las piezas entran
 (despiece), la plancha baja a 7 y el retazo se agrega reservado con su lote.
-**Quitar retazo** lo deshace mientras el despacho no esté hecho.
+**Quitar retazo** lo deshace mientras el despacho no esté hecho. Si el retazo
+cubre todo el tablero (necesidad 0.16 con un R25), la plancha queda en 0 sin
+cancelarse y **Quitar retazo** la vuelve a pedir. El retazo no cuenta como
+material sin presupuesto en la comparación, y cambiar la cantidad de la orden
+no lo multiplica.
 
 ### Declarar sobrantes
 
@@ -124,7 +134,12 @@ lo entregado (planchas y retazos, en m²) y las piezas; se escriben las
 **Planchas sin tocar** y los retazos (largo, ancho y cantidad). Odoo calcula
 área, % de plancha y banda; hasta 10 % es merma y sobre 99 %, plancha sin
 tocar. La merma es lo que queda del cuadre y no puede ser negativa más allá
-del 0.5 % de lo entregado. Al confirmar:
+de la tolerancia (0.5 % de lo entregado por defecto). Mientras no se cargue el
+despiece, **Piezas (m²)** se puede corregir y el historial registra quién lo
+cambió y de cuánto a cuánto. Un tablero aún sin entregar sale marcado **Sin
+entregar**: no se declara ahora y el asistente lo vuelve a mostrar cuando
+llegue. El jefe de producción con **Fabricación: Usuario** declara sin otros
+permisos. Al confirmar:
 
 - las planchas sin tocar vuelven al stock con una devolución del despacho;
 - cada retazo entra con su lote (`3101508-R50-1830x1200-0001`) a la

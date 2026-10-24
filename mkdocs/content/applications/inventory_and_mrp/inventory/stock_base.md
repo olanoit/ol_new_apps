@@ -27,6 +27,13 @@ No necesita configuración: se instala como dependencia de los módulos de la
 suite. La página aparece solo en compañías peruanas, y cada grupo, solo si su
 módulo está instalado.
 
+Las tarjetas del resumen se configuran en **Inventario ‣ Configuración ‣
+Ajustes ‣ Resumen de inventario**: **Estilo de las tarjetas** (Compacta, la de
+siempre, o Estándar de Odoo), **Ancho de las tarjetas** (300, 340 o 400 px) y
+**Mostrar el gráfico en las tarjetas**. Cada usuario puede elegir otro estilo
+en **Mis preferencias ‣ Tarjetas del resumen de Inventario**; «Según la
+compañía» usa el de la compañía activa.
+
 | Grupo de la página | Módulo que lo llena | Contenido |
 |---|---|---|
 | Guía de remisión | Guía de remisión impresa (con `l10n_pe_edi_stock`) | Estado, número, ticket, modalidad, motivo y fecha de inicio |

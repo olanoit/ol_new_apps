@@ -243,7 +243,7 @@ módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_l10n_pe_stock_transfer](OL-INVENTORY/al_l10n_pe_stock_transfer/) | 4.20261018 | OPL-1 | Guía de remisión para todos los traslados de la empresa: entre establecimientos (04), compras que recoge (02, 07, 08), devoluciones (06) y exportación (09), y control de los bienes de terceros.
 [al_mrp_piece_costing](OL-INVENTORY/al_mrp_piece_costing/) | 2.20261023 | OPL-1 | La orden de corte reparte su costo entre las piezas por área, material de origen y metros de tapacanto, e importa el despiece como productos-pieza.
-[al_stock_base](OL-INVENTORY/al_stock_base/) | 3.20261023 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
+[al_stock_base](OL-INVENTORY/al_stock_base/) | 4.20261024 | OPL-1 | Página «Logística PE» en las transferencias: un solo lugar para los datos peruanos (guía de remisión, PLE, obra…).
 [ol_stock_kardex_pe](OL-INVENTORY/ol_stock_kardex_pe/) | 14.20261012 | OPL-1 | Registro de Inventario Permanente Valorizado (13.1) y en Unidades Físicas (12.1) — formato imprimible SUNAT y kardex interactivo
 
 ### OL-PROJECTS
@@ -251,16 +251,16 @@ módulo | versión | licencia | resumen
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_attendance](OL-PROJECTS/al_construction_attendance/) | 5.20261021 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
-[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 24.20261023 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_construction_material_request](OL-PROJECTS/al_construction_material_request/) | 25.20261024 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
 [al_construction_planner](OL-PROJECTS/al_construction_planner/) | 45.20261016 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
 [al_construction_planner_approvals](OL-PROJECTS/al_construction_planner_approvals/) | 6.20261021 | LGPL-3 | Plan de recursos y requerimiento de obra aprobados en la aplicación Aprobaciones, con tabla de rutas por tramos y aprobadores por grupo.
 [al_construction_planner_approvals_mrp](OL-PROJECTS/al_construction_planner_approvals_mrp/) | 7.20261024 | LGPL-3 | Exceso de la orden de fabricación frente a lo presupuestado: el jefe de producción lo aprueba dentro de su margen y, por encima, va a Aprobaciones.
 [al_construction_planner_budget](OL-PROJECTS/al_construction_planner_budget/) | 2.20261016 | LGPL-3 | Presupuesto analítico al aprobar el plan y control de la OC contra el presupuesto.
 [al_construction_planner_crew](OL-PROJECTS/al_construction_planner_crew/) | 4.20261016 | LGPL-3 | Asignar cuadrilla con turnos de Planificación, en horas o en días con costo diario por puesto, y horas de la hoja de horas como real.
 [al_construction_planner_furniture](OL-PROJECTS/al_construction_planner_furniture/) | 11.20261021 | LGPL-3 | Tipologías de mueble con módulos, piezas, método de unión y lista de materiales, productos por módulo, receta real y despacho a obra, e importación del maestro, del ETO y de la proyección de materiales.
-[al_construction_planner_mrp](OL-PROJECTS/al_construction_planner_mrp/) | 9.20261023 | LGPL-3 | Órdenes de fabricación desde el plan, etapa de consumo en la lista de materiales y espera del metrado.
+[al_construction_planner_mrp](OL-PROJECTS/al_construction_planner_mrp/) | 10.20261024 | LGPL-3 | Órdenes de fabricación desde el plan, etapa de consumo en la lista de materiales y espera del metrado.
 [al_construction_planner_production](OL-PROJECTS/al_construction_planner_production/) | 5.20261019 | LGPL-3 | Accesorios de armado pedidos desde la orden y presupuestado, requerido y consumido en la orden y en el planificador.
-[al_construction_planner_purchase](OL-PROJECTS/al_construction_planner_purchase/) | 10.20261023 | LGPL-3 | Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de compra, crear producto y material extra.
+[al_construction_planner_purchase](OL-PROJECTS/al_construction_planner_purchase/) | 11.20261024 | LGPL-3 | Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de compra, crear producto y material extra.
 [al_construction_planner_sale](OL-PROJECTS/al_construction_planner_sale/) | 4.20261016 | LGPL-3 | Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorización, cobranza y cronograma valorizado.
 [al_construction_planner_sale_furniture](OL-PROJECTS/al_construction_planner_sale_furniture/) | 1.20261013 | LGPL-3 | Partidas del contrato por familia de la tipología (cocinas, closets…).
 [al_construction_planner_spreadsheet](OL-PROJECTS/al_construction_planner_spreadsheet/) | 3.20261016 | LGPL-3 | Maestro de planificación de la obra como hoja de cálculo de Documentos, con listas de Odoo de referencia y el menú «Enviar al planificador».

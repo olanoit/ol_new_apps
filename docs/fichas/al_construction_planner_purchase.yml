@@ -31,6 +31,12 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '11.20261024'
+  fecha: 24/10/2026
+  cambios:
+    - "Paquete 1.11, M111-20 E: «¿Para qué es el material?» empieza por las etapas, muestra la planta debajo y solo los niveles que llevan la etapa elegida; «Tarea del Gantt» pasa a ser una sola, con su nota y aviso. Con niveles, «Tarea» se oculta en la cabecera."
+    - "Paquete 1.11, M111-18 y M111-19 D: la compra masiva y el tablero de abastecimiento redondean el tablero en planchas y respetan «Aplicar en compras»."
+    - "Paquete 1.11, M111-20 E: quien ve montos en el planificador ve el valor estimado del requerimiento."
 - version: '10.20261023'
   fecha: 23/10/2026
   cambios:

@@ -72,6 +72,7 @@
         <t t-set="company" t-value="o.company_id"/>
         <t t-set="slip" t-value="o._get_dispatch_slip(picking)"/>
         <t t-set="source" t-value="picking.location_id if picking else o.location_src_id"/>
+        <t t-set="show_previous" t-value="company.construction_slip_show_previous"/>
         <t t-call="al_report_base.report_pe_page">
             <t t-set="doc_title" t-value="'Vale de despacho'"/>
             <t t-set="doc_number" t-value="o.name"/>
@@ -120,7 +121,7 @@
                         <td>Material</td>
                         <td style="width: 8%;">Unidad</td>
                         <td class="text-end" style="width: 8%;">Pedido</td>
-                        <td class="text-end" style="width: 9%;">Despachado antes</td>
+                        <td t-if="show_previous" class="text-end" style="width: 9%;">Despachado antes</td>
                         <td t-if="picking" class="text-end" style="width: 9%;">En este bulto</td>
                         <td class="text-end" style="width: 8%;">Pendiente</td>
                         <td style="width: 22%;">Situación</td>
@@ -137,7 +138,7 @@
                         </td>
                         <td t-out="line.product_uom_id.name"/>
                         <td class="text-end" t-out="row['qty']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
-                        <td class="text-end" t-out="row['before']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
+                        <td t-if="show_previous" class="text-end" t-out="row['before']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
                         <td t-if="picking" class="text-end"><strong t-out="row['in_bundle']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/></td>
                         <td class="text-end" t-out="row['pending']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
                         <td t-out="row['situation']"/>
@@ -153,8 +154,9 @@
                     <td style="width: 50%; padding: 0 8px;"><div>Fecha y hora: ____/____/______ ____:____</div></td>
                 </tr>
                 <tr>
-                    <td style="width: 50%; padding: 0 8px;"><div class="pe-doc-sign-line" style="width: 90%;">Despachado por (almacén)</div></td>
-                    <td style="width: 50%; padding: 0 8px;"><div class="pe-doc-sign-line" style="width: 90%;">Recibido por (capataz)</div></td>
+                    <td style="width: 50%; padding: 0 8px;"><div class="pe-doc-sign-line" style="width: 90%;" t-out="company.construction_slip_dispatch_label or 'Despachado por (almacén)'"/></td>
+                    <td style="width: 50%; padding: 0 8px;"><div class="pe-doc-sign-line" style="width: 90%;"
+                        t-out="(company.construction_slip_receive_internal_label or 'Recibido por (área)') if o.request_type == 'internal' else (company.construction_slip_receive_site_label or 'Recibido por (capataz)')"/></td>
                 </tr>
             </table>
             <p class="pe-doc-fs-11 mt-3">Este vale acompaña el bulto. Los pendientes se enviarán en otro despacho.</p>

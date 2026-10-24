@@ -11,3 +11,9 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_whole_sheet', readonly=False)
     construction_whole_sheet_tolerance = fields.Float(
         related='company_id.construction_whole_sheet_tolerance', readonly=False)
+    construction_whole_sheet_production = fields.Boolean(
+        related='company_id.construction_whole_sheet_production', readonly=False)
+    construction_whole_sheet_request = fields.Boolean(
+        related='company_id.construction_whole_sheet_request', readonly=False)
+    construction_whole_sheet_purchase = fields.Boolean(
+        related='company_id.construction_whole_sheet_purchase', readonly=False)

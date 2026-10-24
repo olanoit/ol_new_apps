@@ -13,9 +13,10 @@
                 <li t-foreach="rows" t-as="row">
                     <strong t-out="row['product']"/>:
                     <t t-out="row['ordered']"/> pedidos,
-                    <t t-out="row['available']"/> disponibles en el almacén central.
+                    <t t-out="row['available']"/> libres en <t t-out="row['source']"/>.
                     <br/>
-                    <span t-if="row['dispatch']">Sale del almacén: <strong t-out="row['dispatch_txt']"/></span>
+                    <span t-if="row['dispatch']">Reservado para despacho desde <t t-out="row['source']"/>:
+                        <strong t-out="row['dispatch_txt']"/><t t-if="row['picking']"> (<t t-out="row['picking']"/>, por validar)</t></span>
                     <t t-if="row['dispatch'] and row['purchase']"> · </t>
                     <span t-if="row['purchase']">A compra: <strong t-out="row['purchase_txt']"/>
                         (<t t-out="row['mode']"/>)</span>
@@ -37,6 +38,28 @@
                 <i class="fa fa-exclamation-triangle"/>
                 Otro documento reservó stock antes que este requerimiento; pasó a compra:
                 <t t-out="shortages"/>.
+            </div>
+        </div>
+    </template>
+
+    <!-- Paquete 1.11, M111-20 F: al validar cada despacho, qué salió, de
+         dónde y qué queda pendiente en el requerimiento. -->
+    <template id="message_dispatch_done">
+        <div>
+            <strong>Salió de <t t-out="source"/> en
+                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="picking.id" t-out="picking.name"/>,
+                validado por <t t-out="user"/>:</strong>
+            <ul class="mb-2">
+                <li t-foreach="rows" t-as="row"><strong t-out="row['product']"/>: <t t-out="row['qty']"/></li>
+            </ul>
+            <div t-if="pending">
+                Pendiente en este requerimiento: <t t-out="pending"/> materiales
+                (<t t-out="to_dispatch"/> por despachar, <t t-out="purchasing"/> en compra).
+            </div>
+            <div t-else="">No queda nada pendiente en este requerimiento.</div>
+            <div t-foreach="backorders" t-as="backorder">
+                Orden parcial:
+                <a href="#" data-oe-model="stock.picking" t-att-data-oe-id="backorder.id" t-out="backorder.name"/>
             </div>
         </div>
     </template>

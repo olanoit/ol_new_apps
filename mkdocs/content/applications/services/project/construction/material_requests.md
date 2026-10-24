@@ -27,7 +27,8 @@ el plan de la obra lo agrega la [planificación de obra](planning.md).
    Instala los módulos de la comunidad (OCA) **Requerimiento de compra**
    (`purchase_request`) y **Aprobación por niveles** (`base_tier_validation`).
 2. Vaya a **Requerimientos de obra ‣ Configuración ‣ Ajustes** y complete el
-   **Origen** (existencias del almacén central, incluidas sus sububicaciones),
+   **Almacén por defecto** (existencias del almacén central, incluidas sus
+   sububicaciones; lo usan las líneas que ninguna ruta abastece),
    la ubicación padre **OBRAS**, el tipo de operación **Despacho a obra** y la
    recepción de compras. **Completar configuración** rellena lo que falte.
    Si los proyectos se llaman «código nombre» (`ROOFG-04-25 ROOF GARDEN`),
@@ -44,8 +45,17 @@ el plan de la obra lo agrega la [planificación de obra](planning.md).
    secuencia**.
 5. Asigne los grupos: **Solicitante** (obra), **Aprobador** (jefes),
    **Logística** (almacén), **Administrador** y **Gerencia de operaciones** para
-   el nivel por monto.
-6. Contabilidad configura la cuenta de compra en las categorías de producto.
+   el nivel por monto. El **Valor estimado** solo lo ven **Ve montos**
+   (incluido en Administrador y en Gerencia de operaciones) y, con el
+   planificador, quien ve montos en él.
+6. Si los materiales salen de varios almacenes, Logística configura las rutas
+   nativas de Inventario: cada regla dice «para abastecer este destino, toma de
+   este almacén» y se asigna a la categoría de producto (por ejemplo, «Obras
+   desde Puente Piedra» para las categorías que salen de allá). En el almacén,
+   la pestaña **Requerimientos de obra** tiene su **Tipo de despacho a obra**;
+   vacío, se usa el de la compañía. Pruebe cada ruta nueva con una compra y un
+   requerimiento: una ruta entre almacenes puede imponerse sobre «Comprar».
+7. Contabilidad configura la cuenta de compra en las categorías de producto.
 
 ![Ajustes del requerimiento de obra con el origen y los tipos de operación](material_requests/settings.png)
 
@@ -61,8 +71,8 @@ el plan de la obra lo agrega la [planificación de obra](planning.md).
 |---|---|
 | Obra | Proyecto marcado como obra, con su ubicación `OBRAS/<código>` y su cuenta analítica |
 | Código de obra | Código corto de la obra (`ROOFG-04-25`): nombra su ubicación y es el código de su cuenta analítica |
-| Origen o almacén central | Existencias desde las que se despacha, con sus sububicaciones |
-| Disponible en central | Stock libre hoy (no reservado), en la unidad de la línea |
+| Pedir al almacén | Almacén del que sale cada línea: el que da la ruta nativa de su destino o, sin ruta, el almacén por defecto |
+| Disponible en origen | Stock libre hoy (no reservado) en el almacén de la línea, en su unidad |
 | Disponible al procesar | Foto del stock libre en el momento de procesar |
 | Vía almacén central / Directo a obra | Cómo llega lo que se compra, por línea (**Si hay que comprar**) |
 | Valor estimado | Cantidad × costo de cada material; lo usan las reglas de aprobación |
@@ -101,6 +111,10 @@ recuadro **¿Para qué es el material?** debajo de la obra. Lo usan el
 supervisor, el jefe de producción, el jefe de proyectos y el asistente de
 proyectos, con el grupo **Solicitante**.
 
+Las **Etapas** van primero: si elige una de Producción, debajo aparece la
+**Planta**, y los selectores de nivel solo muestran los niveles que llevan esa
+etapa en la plantilla. Con niveles, el campo **Tarea** de la cabecera se oculta.
+
 1. Elija los niveles en cascada. Hay un selector por cada nivel de la
    plantilla de la obra (Piso, Departamento, Ambiente, Mueble en mobiliario;
    Disciplina, Subpartida, Partida en una constructora) y cada lista muestra
@@ -112,9 +126,10 @@ proyectos, con el grupo **Solicitante**.
    ofrece las de construcción por partidas. Cada línea guarda su etapa en la
    columna **Etapa**.
 3. Si el material es para una tarea del Gantt que no es nivel del plan
-   (movilización, obras provisionales), elíjala en **Tareas del Gantt**. Esas
-   tareas no tienen líneas en el plan: agregue el material a mano y cada línea
-   queda con esa tarea.
+   (movilización, obras provisionales), elíjala en **Tarea del Gantt** (una
+   sola). Esa tarea no tiene líneas en el plan: **Traer materiales del plan**
+   no la usa y los materiales que agregue a mano quedan cargados a ella. Si
+   eligió niveles y tarea, un aviso lo recuerda.
 4. Haga clic en **Traer materiales del plan**. Se crea una línea por material,
    nivel y etapa con lo que falta pedir del plan, agrupada en el nivel más bajo
    que eligió. La columna **Nivel** muestra la ruta corta («Dpto 102 /
@@ -186,11 +201,17 @@ línea:
 - si la compra llega **Vía almacén central**, se crea además la transferencia
   central → obra en espera de la compra.
 
-Si las líneas tienen destinos distintos (material de producción a la planta y
-el resto a la obra), sale una transferencia por destino.
+Sale una transferencia por almacén de origen y destino: si un material viene
+de Puente Piedra y otro de Breña, salen dos despachos, cada uno con el tipo de
+despacho de su almacén. La cabecera resume **Pedir al almacén** («ALMACEN
+BREÑA · 22 · ALMACEN PUENTE PIEDRA · 2») y lo libre se lee en el almacén de
+cada línea. Logística puede cambiar el almacén de una línea antes de procesar.
 
 El requerimiento pasa a **En proceso** y el chatter anota la división de cada
-material. Si al reservar se obtiene menos de lo calculado (otro pedido se llevó
+material («… libres en ALMACEN BREÑA · Reservado para despacho desde ALMACEN
+BREÑA: 884 Unidades (BRE/DO/00028, por validar)»). Al validar cada despacho,
+otra nota dice qué salió, de qué almacén, quién lo validó, cuántos materiales
+quedan pendientes (por despachar y en compra) y la orden parcial si la hubo. Si al reservar se obtiene menos de lo calculado (otro pedido se llevó
 el stock), la diferencia pasa a compra y el chatter lo anota. Un pedido en una
 unidad distinta (por ejemplo, docenas) se divide en la unidad de la línea.
 
@@ -223,10 +244,14 @@ lista todo el requerimiento, sin precios ni stock del almacén:
 
 Las filas que no van en el bulto salen en gris. Bajo la tabla, un resumen
 («En este bulto: 1 de 2 materiales. Pendientes: 1 (en compra).») y las firmas
-de quien despacha y de quien recibe en obra. **Despachado por** es quien validó
-la transferencia (queda en **Logística PE ‣ Validado por**) o, si aún no se
-valida, quien imprime. Marcando varias transferencias sale un vale por cada
-una.
+de quien despacha y de quien recibe en obra (o en el área, en un interno).
+**Despachado por** es quien validó la transferencia (queda en **Logística PE ‣
+Validado por**) o, si aún no se valida, quien imprime. Marcando varias
+transferencias sale un vale por cada una.
+
+En **Ajustes ‣ Vale de despacho** se cambian los textos de las firmas, se deja
+en blanco **Despachado por** mientras la transferencia no está validada y se
+quita la columna **Despachado antes**.
 
 #### Productos por despachar
 
@@ -312,11 +337,17 @@ consumo (papel, plumones, material de marketing) con el mismo documento:
    recibe la ubicación **Consumo interno** y el tipo de operación **Consumo
    interno** (secuencia CI). Contabilidad pone la cuenta de gasto en la
    **Cuenta de valoración** de esa ubicación.
-2. Dé a los usuarios de las áreas el grupo **Solicitante**.
+2. Con **Todos los usuarios pueden hacer requerimientos internos** (activo por
+   defecto), todo usuario interno tiene **Solicitante interno**: pide solo
+   internos y ve solo los suyos. Apagado, el grupo se asigna a mano. El
+   **Solicitante** sigue haciendo los dos tipos.
 3. En **Requerimientos ‣ Requerimientos internos**, el usuario crea el pedido
    con su **Área** (sin obra) y los materiales, y lo envía. Lo aprueba el jefe
    de su departamento (regla «Requerimiento interno: jefe del departamento»);
-   la regla de gerencia por monto se agrega en **Reglas de aprobación**.
+   si quien pide no tiene jefe en su ficha, lo aprueba el grupo de **Aprueba el
+   requerimiento interno si quien pide no tiene jefe** (por defecto,
+   Logística; vacío, se aprueba al solicitarlo). La regla de gerencia por monto
+   se agrega en **Reglas de aprobación**.
 4. Logística lo procesa igual que uno de obra: lo disponible sale por
    **Consumo interno** y lo que falta va a un requerimiento de compra con la
    analítica del área. El pedido aparece en **Productos por despachar** y su
@@ -383,11 +414,11 @@ bolsas (S/ 11 800,00) pasaría además por gerencia.
 | Situación | Qué pasa | Qué hacer |
 |---|---|---|
 | No se pidió aprobación | Ninguna regla aplicó (sin jefe de proyecto o bajo el umbral) | Revisar las reglas y el jefe de proyecto de la obra |
-| **Disponible en central** en 0 aunque hay stock | El stock está reservado por otro documento o fuera del origen | Revisar reservas y sububicaciones del origen |
+| **Disponible en origen** en 0 aunque hay stock | El stock está reservado por otro documento o en otro almacén | Revisar reservas, la ruta del producto y el almacén de la línea |
 | El residente no ve el requerimiento | Solo ve los suyos y los de obras que sigue o dirige | Hacerlo seguidor de la obra o asignarlo |
 | «Indique el motivo del material extra» | Es un extra sin motivo | Elegir el **Motivo del extra** |
 | «El almacén … no tiene ubicación de consumo interno» | Falta configurar el consumo interno | **Completar configuración** en los ajustes |
-| El interno no pidió aprobación | El solicitante no tiene departamento con jefe en Empleados | Completar su ficha o agregar otra regla |
+| El interno no pidió aprobación | El solicitante no tiene jefe y el ajuste del aprobador sin jefe está vacío | Completar su ficha o elegir el grupo en los ajustes |
 | «… se entrega en planchas enteras: 7.5 no es válido» | Se validó fracción de un tablero | Validar planchas enteras |
 
 Cada compañía tiene su configuración y sus reglas.

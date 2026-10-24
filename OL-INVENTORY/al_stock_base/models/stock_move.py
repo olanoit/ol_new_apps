@@ -54,16 +54,18 @@ class StockMove(models.Model):
     # Reserva y validación en planchas enteras
     # ------------------------------------------------------------------
     def _construction_whole_scope(self):
-        """El movimiento entrega planchas enteras al que las pide: lo amplían
-        los módulos que redondean (despacho a producción, requerimiento de
-        obra). Los ajustes y traslados manuales quedan fuera."""
+        """Alcance en que el movimiento entrega planchas enteras al que las
+        pide (``production`` o ``request``, M111-19 D) o False: lo amplían los
+        módulos que redondean (despacho a producción, requerimiento de obra).
+        Los ajustes y traslados manuales quedan fuera."""
         self.ensure_one()
         return False
 
     def _construction_whole_controlled(self):
         self.ensure_one()
-        return bool(self.product_id and self.product_id._construction_is_whole(self.company_id)
-                    and self._construction_whole_scope())
+        scope = self._construction_whole_scope()
+        return bool(scope and self.product_id
+                    and self.product_id._construction_is_whole(self.company_id, scope))
 
     def _action_assign(self, force_qty=False):
         res = super()._action_assign(force_qty=force_qty)

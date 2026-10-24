@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_stock_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261024 — 24/10/2026
+
+- Paquete 1.11, M111-13: validar un despacho con una fracción de plancha da el error de planchas enteras aunque ninguna línea esté marcada «Recogido».
+- Paquete 1.11, M111-19 A: Ajustes › Inventario › «Resumen de inventario» elige el estilo de las tarjetas (Estándar de Odoo o Compacta), su ancho y si llevan el gráfico; cada usuario puede elegir otro estilo en sus preferencias.
+- Paquete 1.11, M111-19 D: casillas de alcance de las planchas enteras (despacho a producción, requerimiento de obra y compras).
+- Paquete 1.11, M111-18: la compra de un tablero indivisible se redondea en planchas y luego pasa a la unidad de compra; la validación en lote ya no falla por la firma de _sanity_check.
+
 ## 3.20261023 — 23/10/2026
 
 - Paquete 1.11, M111-12 (fase B): producto retazo del tablero («Producto retazo», «Es retazo», «Retazo de») y costo fijo de una salida de producción.

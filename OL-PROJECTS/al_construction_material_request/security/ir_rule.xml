@@ -35,6 +35,24 @@
             <field name="groups" eval="[Command.link(ref('group_construction_requester'))]"/>
         </record>
 
+    </data>
+    <data noupdate="0">
+        <!-- Solicitante interno (M111-20 A): solo sus requerimientos internos. -->
+        <record id="rule_construction_request_internal_own" model="ir.rule">
+            <field name="name">Requerimiento de obra: mis internos</field>
+            <field name="model_id" ref="model_construction_material_request"/>
+            <field name="domain_force">[('request_type', '=', 'internal'), ('requested_by', '=', user.id)]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_internal_requester'))]"/>
+        </record>
+        <record id="rule_construction_request_line_internal_own" model="ir.rule">
+            <field name="name">Línea de requerimiento de obra: mis internos</field>
+            <field name="model_id" ref="model_construction_material_request_line"/>
+            <field name="domain_force">[('request_id.request_type', '=', 'internal'), ('request_id.requested_by', '=', user.id)]</field>
+            <field name="groups" eval="[Command.link(ref('group_construction_internal_requester'))]"/>
+        </record>
+    </data>
+    <data noupdate="1">
+
         <!-- Aprobador: además, los que tiene que revisar (tier validation). -->
         <record id="rule_construction_request_reviewer" model="ir.rule">
             <field name="name">Requerimiento de obra: por revisar</field>

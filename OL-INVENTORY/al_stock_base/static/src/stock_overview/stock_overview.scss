@@ -1,8 +1,17 @@
-// Resumen de inventario compacto: sin gráficos (se quitan en
-// stock.picking.type._get_view), tarjetas angostas y enlaces sin hueco.
-.o_stock_kanban .o_kanban_renderer {
+// Resumen de inventario compacto (estilo «Compacta», M111-19 A): sin
+// gráficos (se quitan en stock.picking.type._get_view, salvo que la compañía
+// los muestre), tarjetas del ancho elegido y enlaces sin hueco.
+.o_al_overview_w_medium .o_kanban_renderer {
     --KanbanRecord-width: 340px;
-
+}
+.o_al_overview_w_narrow .o_kanban_renderer {
+    --KanbanRecord-width: 300px;
+}
+.o_al_overview_w_wide .o_kanban_renderer {
+    --KanbanRecord-width: 400px;
+}
+// La clase del kanban va en la raíz del controlador.
+.o_al_overview_compact .o_kanban_renderer {
     .o_kanban_record {
         min-height: 0;
         padding-top: .5rem;

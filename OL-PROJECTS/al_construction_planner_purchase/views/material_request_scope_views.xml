@@ -12,9 +12,12 @@
             <xpath expr="//field[@name='location_dest_id']" position="after">
                 <field name="construction_needs_plant" invisible="1"/>
                 <field name="construction_production_location_id"
-                       invisible="not construction_needs_plant and not construction_production_location_id"
-                       required="construction_needs_plant and state == 'draft'"
-                       readonly="state != 'draft'" options="{'no_create': True}"/>
+                       invisible="state == 'draft' or (not construction_needs_plant and not construction_production_location_id)"
+                       readonly="1" options="{'no_create': True}"/>
+            </xpath>
+            <!-- M111-20 E: con niveles, la tarea sale del recuadro. -->
+            <xpath expr="//group[@name='site']/field[@name='task_id']" position="attributes">
+                <attribute name="invisible">not project_id or construction_has_levels</attribute>
             </xpath>
             <xpath expr="//notebook" position="before">
                 <div name="construction_scope" class="border border-primary rounded p-3 mb-3"
@@ -25,6 +28,21 @@
                     <field name="construction_default_task_id" invisible="1"/>
                     <field name="construction_plan_id" invisible="1"/>
                     <h5 class="mb-3">¿Para qué es el material?</h5>
+                    <div class="row mb-2">
+                        <div class="col-12 col-md-3 fw-bold">Etapas</div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_stage_ids" widget="many2many_tags" placeholder="Todas"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
+                    <div class="row mb-2" invisible="not construction_needs_plant">
+                        <div class="col-12 col-md-3 fw-bold">Planta</div>
+                        <div class="col-12 col-md-9">
+                            <field name="construction_production_location_id"
+                                   required="construction_needs_plant and state == 'draft'"
+                                   options="{'no_create': True}"/>
+                        </div>
+                    </div>
                     <div class="row mb-2" invisible="not construction_scope_1_label">
                         <div class="col-12 col-md-3 fw-bold"><field name="construction_scope_1_label"/></div>
                         <div class="col-12 col-md-9">
@@ -80,18 +98,14 @@
                         </div>
                     </div>
                     <div class="row mb-2">
-                        <div class="col-12 col-md-3 fw-bold">Etapas</div>
+                        <div class="col-12 col-md-3 fw-bold">Tarea del Gantt <span class="text-muted fw-normal">(opcional)</span></div>
                         <div class="col-12 col-md-9">
-                            <field name="construction_stage_ids" widget="many2many_tags" placeholder="Todas"
-                                   options="{'no_create': True}"/>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-12 col-md-3 fw-bold">Tareas del Gantt <span class="text-muted fw-normal">(opcional)</span></div>
-                        <div class="col-12 col-md-9">
-                            <field name="construction_gantt_task_ids" widget="many2many_tags"
+                            <field name="construction_gantt_task_id"
                                    placeholder="Para material de una tarea que no es nivel del plan"
                                    options="{'no_create': True}"/>
+                            <div class="text-muted small">
+                                Úsala para material de una tarea de la obra que no está en el plan (por ejemplo, una movilización o un trabajo adicional). «Traer materiales del plan» no la usa: trae el saldo de los niveles elegidos arriba. Los materiales que agregues a mano quedan cargados a esta tarea.
+                            </div>
                         </div>
                     </div>
                     <button name="action_construction_fetch_plan" type="object"

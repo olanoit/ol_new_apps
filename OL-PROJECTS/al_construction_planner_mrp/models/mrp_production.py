@@ -113,6 +113,10 @@ class MrpProduction(models.Model):
                 continue
             if self._construction_is_intermediate(move):
                 continue
+            # El retazo entrega parte de la necesidad del tablero, que ya se
+            # compara (M111-15): no es material sin presupuesto.
+            if move._construction_is_remnant():
+                continue
             # Planchas enteras (M111-12): se compara la necesidad, no el
             # entero que se entrega.
             result[move.product_id] += move.product_uom._compute_quantity(

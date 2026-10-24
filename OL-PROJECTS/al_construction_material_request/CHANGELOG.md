@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 25.20261024 — 24/10/2026
+
+- Paquete 1.11, M111-19 B: el vale de despacho tiene firmas configurables (obra e interno), «Despachado por» en blanco antes de validar si se elige, y la columna «Despachado antes» opcional.
+- Paquete 1.11, M111-19 C y M111-18: el requerimiento interno de quien no tiene jefe lo aprueba un grupo configurable (por defecto, Logística); vacío, se aprueba al solicitarlo.
+- Paquete 1.11, M111-20 A: grupo «Solicitante interno» (por defecto, todos los usuarios internos): pide solo requerimientos internos y ve solo los suyos.
+- Paquete 1.11, M111-20 C: cada línea toma su almacén de origen de la ruta nativa que abastece su destino; se despacha una transferencia por almacén con el tipo de despacho del almacén. La cabecera resume «Pedir al almacén» y el origen de siempre pasa a ser «Almacén por defecto».
+- Paquete 1.11, M111-20 E: el valor estimado solo lo ve el grupo «Ve montos» (Administrador y gerencia de operaciones); el material extra pasa a la columna derecha.
+- Paquete 1.11, M111-20 F: el historial dice «Reservado para despacho desde …» al procesar y agrega una nota al validar cada despacho con lo que salió y lo pendiente.
+
 ## 24.20261023 — 23/10/2026
 
 - Corrección: procesar un requerimiento en una compañía sin plan analítico «Área» daba error de acceso a Logística. El plan de las áreas se propone solo desde «Completar configuración» de Ajustes.

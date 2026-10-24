@@ -49,12 +49,12 @@ class MrpProduction(models.Model):
         self.ensure_one()
         return self.move_raw_ids.filtered(
             lambda m: m.state not in ('done', 'cancel')
-            and m.product_id._construction_is_whole(self.company_id)
+            and m.product_id._construction_is_whole(self.company_id, 'production')
             and not m._construction_is_remnant())
 
     def _construction_round_whole_sheets(self):
         for production in self:
-            if not production.company_id.construction_whole_sheet:
+            if not production.company_id._construction_whole_sheet_in('production'):
                 continue
             by_product = defaultdict(lambda: self.env['stock.move'])
             for move in production._construction_whole_moves():
@@ -82,9 +82,12 @@ class MrpProduction(models.Model):
                     if move.product_uom.compare(new_qty, move.product_uom_qty):
                         move.product_uom_qty = new_qty
                 # 3. En 0: en borrador se dejan (guardan la necesidad); los
-                #    confirmados se cancelan.
+                #    confirmados se cancelan, salvo los que cubre un retazo
+                #    (M111-16): guardan la necesidad y el vínculo para quitarlo
+                #    o declararlo.
                 moves.filtered(
                     lambda m: m.state != 'draft' and m.product_uom.is_zero(m.product_uom_qty)
+                    and not m._construction_covered_qty()
                 )._action_cancel()
 
     def _get_consumption_issues(self):
@@ -113,7 +116,13 @@ class MrpProduction(models.Model):
         for move in self.move_raw_ids.filtered(
                 lambda m: m.construction_need_qty and m.state not in ('done', 'cancel')):
             move.construction_need_qty *= factor
+        # El retazo es una pieza con su lote (M111-18): no se multiplica.
+        remnants = {move: move.product_uom_qty for move in self.move_raw_ids.filtered(
+            lambda m: m.state not in ('done', 'cancel') and m.construction_covers_move_id)}
         res = super()._update_raw_moves(factor)
+        for move, qty in remnants.items():
+            if move.product_uom.compare(move.product_uom_qty, qty):
+                move.with_context(no_procurement=True).product_uom_qty = qty
         self.filtered(lambda p: p.state != 'draft')._construction_round_whole_sheets()
         return res
 
@@ -126,7 +135,13 @@ class StockMove(models.Model):
         self.ensure_one()
         return False
 
+    def _run_procurement(self, old_qties=False):
+        # El componente retazo no se abastece: su movimiento del despacho, con
+        # el lote elegido, lo crea «Cubrir con retazo» (M111-18).
+        return super(StockMove, self.filtered(
+            lambda m: not m.construction_covers_move_id))._run_procurement(old_qties)
+
     def _construction_whole_scope(self):
         # El despacho a producción: abastece componentes de una orden.
-        return super()._construction_whole_scope() or bool(
-            self.move_dest_ids.raw_material_production_id)
+        return super()._construction_whole_scope() or (
+            'production' if self.move_dest_ids.raw_material_production_id else False)

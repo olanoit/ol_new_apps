@@ -25,13 +25,14 @@ planificador.
     'category': 'OL-INVENTORY/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/stock/static/description/icon.png',
-    'version': '3.20261023',
+    'version': '4.20261024',
     'license': 'OPL-1',
     # stock_account aporta stock.picking.country_code
     'depends': ['stock_account'],
     'data': [
         'views/stock_picking_views.xml',
         'views/whole_sheet_views.xml',
+        'views/stock_overview_views.xml',
     ],
     'assets': {
         # Resumen de inventario compacto (paquete 1.11, M111-09).
