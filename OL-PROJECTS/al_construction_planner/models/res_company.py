@@ -21,6 +21,17 @@ class ResCompany(models.Model):
         WEEKDAYS, string='Día de liquidación de contratas', default='3')
     construction_payment_day = fields.Selection(
         WEEKDAYS, string='Día de pago de contratas', default='5')
+    # Cancelar un plan aprobado o en ejecución sin consumos ni documentos
+    # abiertos (pedido de Allcenter del 24-oct-2026, prueba ZZMONTEC).
+    construction_plan_cancel_open = fields.Boolean(
+        string='Cancelar planes en ejecución',
+        help='Permite cancelar un plan aprobado o en ejecución que no tenga documentos '
+             'abiertos (compras, requerimientos, OF, OC de servicio) ni consumos.')
+    construction_plan_cancel_group_id = fields.Many2one(
+        'res.groups', string='Quién cancela planes en ejecución',
+        default=lambda self: self.env.ref('al_construction_planner.group_planner_manager',
+                                          raise_if_not_found=False),
+        help='Grupo que puede cancelarlos. Vacío: Planificación de obra / Administrador.')
     # Perfil de vertical (v1.7, M17-05): el que se aplicó y la plantilla de
     # niveles de las obras nuevas.
     construction_profile_id = fields.Many2one(

@@ -915,3 +915,20 @@ class ConstructionContractSettlementLine(models.Model):
             line.qty_planned = planned
             line.progress_pct = min(executed / planned, 1.0) if planned else 0.0
             line.pct_validated = round(min(executed / planned, 1.0) * 100, 2) if planned else 0.0
+
+
+class ConstructionResourcePlan(models.Model):
+    _inherit = 'construction.resource.plan'
+
+    def _construction_check_cancellable(self):
+        """Un plan en ejecución no se cancela con liquidaciones de contrata
+        que no estén anuladas."""
+        super()._construction_check_cancellable()
+        # sudo: quien cancela el plan puede no ver las liquidaciones.
+        settlements_sudo = self.env['construction.contract.settlement'].sudo().search(
+            [('plan_id', '=', self.id), ('state', '!=', 'cancel')])
+        if settlements_sudo:
+            raise UserError(self.env._(
+                'El plan %(plan)s tiene liquidaciones de contrata: %(docs)s. Anúlelas antes de '
+                'cancelar el plan, o ciérrelo.', plan=self.display_name,
+                docs=', '.join(settlements_sudo[:10].mapped('display_name'))))

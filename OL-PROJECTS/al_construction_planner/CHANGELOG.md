@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 50.20261016 — 24/10/2026
+
+- Pedido de Allcenter (prueba ZZMONTEC): «Cancelar plan» en un plan aprobado o en ejecución sin documentos abiertos ni despachos o consumos; se activa por compañía en Ajustes ‣ Planificación de obra, con el grupo que puede hacerlo (por defecto, Administrador).
+
 ## 49.20261016 — 24/10/2026
 
 - Requerimiento CREVAL v1.0, 6.4: modalidad de ejecución por partida (personal propio, contrata solo de mano de obra o contrata a todo costo). La receta trae la modalidad por defecto y su actividad de contrata; la partida la cambia antes de aprobar el plan (después, con una nueva versión). Con contrata de mano de obra, la mano de obra y las herramientas van en una línea de contrata; a todo costo, una sola línea por el costo de la receta con el detalle del APU como referencia.

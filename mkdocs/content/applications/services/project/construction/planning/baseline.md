@@ -95,6 +95,13 @@ rejilla.
   **Hecho**. No se cierra con compras, requerimientos u órdenes de fabricación
   abiertos ni con liquidaciones de contrata pendientes. En mobiliario, cerrar
   el plan archiva los productos de módulo de la obra.
+- **Cancelar plan** en un plan aprobado o en ejecución: solo si la compañía
+  lo permite y el usuario está en el grupo elegido en **Ajustes ‣
+  Planificación de obra ‣ Cancelar planes en ejecución** (por defecto,
+  Administrador). El plan no se cancela con compras, requerimientos, órdenes
+  de fabricación u OC de servicio abiertos, con material despachado o
+  consumido (lo devuelto ya no cuenta) ni con liquidaciones de contrata sin
+  anular. Al cancelarlo, su presupuesto analítico queda **Cancelado**.
 
 ## Casos especiales
 

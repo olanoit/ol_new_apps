@@ -7,7 +7,7 @@ from markupsafe import Markup
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import split_every
+from odoo.tools import float_compare, split_every
 from odoo.tools.misc import formatLang
 
 from .common import (
@@ -67,6 +67,10 @@ class ConstructionResourcePlan(models.Model):
     replan_reason = fields.Text(string='Motivo de la versión', tracking=True)
     state = fields.Selection(
         PLAN_STATES, string='Estado', required=True, default='draft', tracking=True, copy=False)
+    can_cancel_open = fields.Boolean(
+        string='Puede cancelar en ejecución', compute='_compute_can_cancel_open',
+        help='La compañía permite cancelar planes aprobados o en ejecución y el usuario está '
+             'en el grupo que lo hace (Ajustes ‣ Planificación de obra).')
     date_start = fields.Date(string='Inicio', required=True, tracking=True)
     date_end = fields.Date(string='Fin', required=True, tracking=True)
     exceed_policy = fields.Selection(
@@ -668,9 +672,76 @@ class ConstructionResourcePlan(models.Model):
         self.filtered(lambda p: p.state == 'to_approve').restart_validation()
         self.write({'state': 'draft'})
 
+    @api.depends('company_id', 'state')
+    @api.depends_context('uid')
+    def _compute_can_cancel_open(self):
+        for plan in self:
+            plan.can_cancel_open = plan.state in OPEN_STATES and plan._construction_cancel_open_allowed()
+
+    def _construction_cancel_open_allowed(self):
+        """La compañía del plan permite cancelarlo en ejecución y el usuario
+        está en el grupo configurado (por defecto, el administrador)."""
+        self.ensure_one()
+        company = self.company_id or self.env.company
+        if not company.construction_plan_cancel_open:
+            return False
+        # sudo: el grupo configurado y los grupos del usuario los lee también
+        # quien no administra usuarios ni grupos.
+        company_sudo = company.sudo()
+        group = company_sudo.construction_plan_cancel_group_id \
+            or self.env.ref('al_construction_planner.group_planner_manager')
+        user_sudo = self.env.user.sudo()
+        return group in user_sudo.all_group_ids
+
     def action_cancel(self):
-        self._check_state(('draft', 'to_approve'))
+        running = self.filtered(lambda p: p.state in OPEN_STATES)
+        (self - running)._check_state(('draft', 'to_approve'))
+        for plan in running:
+            plan._construction_check_cancel_open()
         self.write({'state': 'cancel'})
+        for plan in running:
+            plan._construction_on_cancel()
+            plan.message_post(body=self.env._(
+                'Plan cancelado en ejecución por %s: no tenía documentos abiertos ni consumos.',
+                self.env.user.name))
+
+    def _construction_check_cancel_open(self):
+        """Un plan aprobado o en ejecución se cancela solo si la compañía lo
+        permite, el usuario está en el grupo y no tiene documentos abiertos ni
+        nada despachado o consumido (lo devuelto ya no cuenta)."""
+        self.ensure_one()
+        if not self._construction_cancel_open_allowed():
+            raise UserError(self.env._(
+                'No puede cancelar el plan %s en ejecución: la compañía no lo permite o usted '
+                'no está en el grupo que lo hace (Ajustes ‣ Planificación de obra).',
+                self.display_name))
+        allocations = self.allocation_ids
+        open_docs = sorted(set(allocations.filtered(lambda a: a.state == 'open').mapped('document_name')))
+        if open_docs:
+            raise UserError(self.env._(
+                'El plan %(plan)s tiene documentos abiertos: %(docs)s. Termínelos o cancélelos '
+                'antes de cancelar el plan.', plan=self.display_name,
+                docs=', '.join(open_docs[:10]) + (' …' if len(open_docs) > 10 else '')))
+        used = sorted(set(allocations.filtered(
+            lambda a: a.state != 'cancel' and (float_compare(a.qty_dispatched, 0.0, precision_digits=4) > 0
+                                               or float_compare(a.qty_consumed, 0.0, precision_digits=4) > 0)
+        ).mapped('document_name')))
+        if used:
+            raise UserError(self.env._(
+                'El plan %(plan)s ya tiene despachos o consumos: %(docs)s. Devuélvalos antes de '
+                'cancelar el plan, o ciérrelo.', plan=self.display_name,
+                docs=', '.join(used[:10]) + (' …' if len(used) > 10 else '')))
+        self._construction_check_cancellable()
+
+    def _construction_check_cancellable(self):
+        """Gancho de la cancelación en ejecución: el puente de contratas no
+        cancela con liquidaciones vivas."""
+        self.ensure_one()
+
+    def _construction_on_cancel(self):
+        """Gancho después de cancelar un plan aprobado o en ejecución: el
+        puente de presupuesto cancela el presupuesto analítico."""
+        self.ensure_one()
 
     def _mark_in_progress(self):
         """Primer documento generado desde el plan (fases 4 a 6): «Aprobado»

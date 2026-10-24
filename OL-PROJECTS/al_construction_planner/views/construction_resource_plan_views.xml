@@ -347,6 +347,10 @@
                     <button name="action_cancel" type="object" string="Cancelar"
                             invisible="state not in ('draft', 'to_approve')"
                             groups="al_construction_planner.group_planner_plan_planner"/>
+                    <button name="action_cancel" type="object" string="Cancelar plan"
+                            invisible="not can_cancel_open"
+                            confirm="El plan en ejecución queda cancelado y su presupuesto analítico también. ¿Continuar?"/>
+                    <field name="can_cancel_open" invisible="1"/>
                     <button name="action_draft" type="object" string="Volver a borrador"
                             invisible="state not in ('to_approve', 'cancel')"
                             groups="al_construction_planner.group_planner_plan_planner"/>

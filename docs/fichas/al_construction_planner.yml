@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '50.20261016'
+    fecha: 24/10/2026
+    cambios:
+      - "Pedido de Allcenter (prueba ZZMONTEC): «Cancelar plan» en un plan aprobado o en ejecución sin documentos abiertos ni despachos o consumos; se activa por compañía en Ajustes ‣ Planificación de obra, con el grupo que puede hacerlo (por defecto, Administrador)."
   - version: '49.20261016'
     fecha: 24/10/2026
     cambios:

@@ -31,6 +31,12 @@ class ConstructionResourcePlan(models.Model):
         self.budget_analytic_id.sudo().filtered(
             lambda b: b.state == 'confirmed').action_budget_done()
 
+    def _construction_on_cancel(self):
+        super()._construction_on_cancel()
+        # sudo: mismo motivo que al crearlo (permisos de contabilidad).
+        self.budget_analytic_id.sudo().filtered(
+            lambda b: b.state in ('draft', 'confirmed')).action_budget_cancel()
+
     def _get_budget_line_values(self):
         """Una línea de presupuesto por combinación de cuentas analíticas.
 

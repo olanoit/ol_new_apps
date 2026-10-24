@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '10.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Un plan en ejecución no se cancela con liquidaciones de contrata sin anular."
 - version: '9.20261016'
   fecha: 24/10/2026
   cambios:

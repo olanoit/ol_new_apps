@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261016 — 24/10/2026
+
+- Un plan en ejecución no se cancela con liquidaciones de contrata sin anular.
+
 ## 9.20261016 — 24/10/2026
 
 - Corrección CR-07 de la prueba CREVAL: «Asignar contrata» toma el precio de cada partida del costo del plan (o la tarifa de la actividad, a elección), editable en cada línea con el total a la vista.

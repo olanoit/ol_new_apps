@@ -40,6 +40,10 @@ pasos:
     imagen: screenshots/02-logistica-pe.png
 
 novedades:
+  - version: '5.20261024'
+    fecha: 24/10/2026
+    cambios:
+      - "Devolver una transferencia sin cantidades muestra el aviso de Odoo en lugar del error «Falta el valor requerido para el campo Ubicación de destino» (lo provocaba mrp_subcontracting con el asistente sin líneas); si otro módulo deja vacío el destino de la devolución, se usa el que calcula Odoo."
   - version: '4.20261024'
     fecha: 24/10/2026
     cambios:

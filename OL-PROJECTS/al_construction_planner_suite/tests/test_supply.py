@@ -331,6 +331,31 @@ class TestSupply(PlannerCommon):
         self.assertFalse(old_lines.allocation_ids)
         self.assertEqual(new_lines.mapped('previous_line_id'), old_lines)
 
+    def test_cancel_running_plan(self):
+        """Pedido de Allcenter (24-oct): cancelar un plan en ejecución sin
+        documentos abiertos ni consumos, si la compañía lo permite y el
+        usuario está en el grupo."""
+        request_wizard = self.env['construction.plan.request.wizard'].with_context(
+            default_plan_id=self.plan.id).create({})
+        request_wizard.line_ids.filtered(lambda l: l.product_id != self.p_screw).unlink()
+        request = self.env['construction.material.request'].browse(
+            request_wizard.action_create()['res_id'])
+        self.assertEqual(self.plan.state, 'in_progress')
+        manager_plan = self.plan.with_user(self.manager)
+        self.assertFalse(manager_plan.can_cancel_open)
+        with self.assertRaisesRegex(UserError, 'la compañía no lo permite'):
+            manager_plan.action_cancel()
+        self.company.construction_plan_cancel_open = True
+        self.plan.invalidate_recordset(['can_cancel_open'])
+        self.assertTrue(manager_plan.can_cancel_open)
+        self.assertFalse(self.plan.with_user(self.buyer).can_cancel_open)
+        with self.assertRaisesRegex(UserError, 'documentos abiertos'):
+            manager_plan.action_cancel()
+        request.action_cancel()
+        manager_plan.action_cancel()
+        self.assertEqual(self.plan.state, 'cancel')
+        self.assertIn('cancelado en ejecución', self.plan.message_ids[0].body)
+
     def test_multicompany(self):
         other = self.env['res.company'].create({'name': 'Otra constructora (test)'})
         self.env.user.company_ids |= other

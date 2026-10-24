@@ -20,6 +20,10 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '3.20261016'
+  fecha: 24/10/2026
+  cambios:
+  - "Al cancelar un plan aprobado o en ejecución, su presupuesto analítico queda Cancelado."
 - version: '2.20261016'
   fecha: 16/10/2026
   cambios:

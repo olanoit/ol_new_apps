@@ -86,6 +86,16 @@
                                 </div>
                             </div>
                         </setting>
+                        <setting company_dependent="1" id="construction_plan_cancel_open" string="Cancelar planes en ejecución"
+                                 help="Permite cancelar un plan aprobado o en ejecución que no tenga documentos abiertos (compras, requerimientos, OF, OC de servicio) ni despachos o consumos.">
+                            <field name="construction_plan_cancel_open"/>
+                            <div class="content-group" invisible="not construction_plan_cancel_open">
+                                <div class="row mt-2">
+                                    <label for="construction_plan_cancel_group_id" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_plan_cancel_group_id" options="{'no_create': True}"/>
+                                </div>
+                            </div>
+                        </setting>
                         <setting company_dependent="1" id="construction_exceed_policy" string="Control de consumo"
                                  help="Política por defecto de las obras nuevas (la heredan sus planes) cuando un documento pide más de lo que queda en el plan o repite lo ya pedido de un nivel y sub etapa. Por tipo de recurso, vacía es la general.">
                             <div class="content-group">

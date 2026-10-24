@@ -70,6 +70,10 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_settlement_day', readonly=False)
     construction_payment_day = fields.Selection(
         related='company_id.construction_payment_day', readonly=False)
+    construction_plan_cancel_open = fields.Boolean(
+        related='company_id.construction_plan_cancel_open', readonly=False)
+    construction_plan_cancel_group_id = fields.Many2one(
+        related='company_id.construction_plan_cancel_group_id', readonly=False)
     construction_categ_assembly_id = fields.Many2one(
         related='company_id.construction_categ_assembly_id', readonly=False)
     construction_categ_installation_id = fields.Many2one(

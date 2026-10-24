@@ -241,6 +241,20 @@ class TestBaseline(PlannerCommon):
         with self.assertRaises(UserError):
             plan.line_ids[0].price_unit_planned = 1
 
+    def test_cancel_approved_cancels_budget(self):
+        plan = self._ready_plan()
+        self._approve(plan)
+        self.assertEqual(plan.budget_analytic_id.state, 'confirmed')
+        self.company.write({
+            'construction_plan_cancel_open': True,
+            'construction_plan_cancel_group_id': self.env.ref(
+                'al_construction_planner.group_planner_project_head').id})
+        with self.assertRaisesRegex(UserError, 'no está en el grupo'):
+            plan.with_user(self.planner).action_cancel()
+        plan.with_user(self.manager).action_cancel()
+        self.assertEqual(plan.state, 'cancel')
+        self.assertEqual(plan.budget_analytic_id.state, 'canceled')
+
     def test_back_to_draft_restarts_reviews(self):
         plan = self._ready_plan()
         plan.with_user(self.planner).action_request_approval()
