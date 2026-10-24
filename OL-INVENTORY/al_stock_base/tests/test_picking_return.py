@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Devolución de transferencias: aviso claro sin cantidades y destino de
-respaldo cuando otro módulo lo deja vacío (mrp_subcontracting con el
-asistente sin líneas)."""
-from unittest.mock import patch
-
-from odoo.addons.stock.wizard.stock_picking_return import StockReturnPicking
+"""Devolución de transferencias: aviso claro sin cantidades (con
+mrp_subcontracting, el asistente sin líneas dejaba vacío el destino)."""
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
@@ -49,18 +45,10 @@ class TestPickingReturn(TransactionCase):
         with self.assertRaisesRegex(UserError, 'al menos un producto'):
             wizard.action_create_returns()
 
-    def test_return_destination_fallback(self):
+    def test_return_with_quantity(self):
         wizard = self._wizard()
         wizard.product_return_moves.quantity = 2
-        native = StockReturnPicking._prepare_picking_default_values
-
-        def without_destination(self):
-            return dict(native(self), location_dest_id=False)
-
-        with patch.object(StockReturnPicking, '_prepare_picking_default_values',
-                          without_destination):
-            action = wizard.action_create_returns()
-        returned = self.env['stock.picking'].browse(action['res_id'])
+        returned = self.env['stock.picking'].browse(wizard.action_create_returns()['res_id'])
         self.assertEqual(returned.location_id, self.site)
         self.assertEqual(returned.location_dest_id, self.stock)
         self.assertEqual(returned.move_ids.product_uom_qty, 2)

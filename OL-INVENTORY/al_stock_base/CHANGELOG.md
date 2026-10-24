@@ -7,9 +7,9 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_stock_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 5.20261024 — 24/10/2026
+## 6.20261024 — 24/10/2026
 
-- Devolver una transferencia sin cantidades muestra el aviso de Odoo en lugar del error «Falta el valor requerido para el campo Ubicación de destino» (lo provocaba mrp_subcontracting con el asistente sin líneas); si otro módulo deja vacío el destino de la devolución, se usa el que calcula Odoo.
+- Devolver una transferencia sin cantidades muestra «Indique la cantidad a devolver de al menos un producto» en lugar del error «Falta el valor requerido para el campo Ubicación de destino», que provocaba mrp_subcontracting con el asistente sin líneas.
 
 ## 4.20261024 — 24/10/2026
 
