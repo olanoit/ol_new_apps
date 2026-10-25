@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_mrp` y `al_construction_planner_purchase`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '2.20261025'
+  fecha: 25/10/2026
+  cambios:
+    - "La reposición a planta avisa al jefe de producción o, sin él, a los responsables de Fabricación, y lo deja como responsable de la orden; nunca a quien pide (verificación en dev1)."
 - version: '1.20261025'
   fecha: 25/10/2026
   cambios:

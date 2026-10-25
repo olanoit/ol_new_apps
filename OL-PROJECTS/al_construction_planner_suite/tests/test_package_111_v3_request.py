@@ -160,15 +160,13 @@ class TestPackage111V3Request(TestProcess):
             self.assertNotIn(' %s' % unit.with_context(lang='en_US').name, note.body)
 
     # M111-23: reposición a planta sin entrar a Fabricación.
-    def test_replacement_to_plant(self):
-        head = new_test_user(self.env, 'm11123_planta', groups='mrp.group_mrp_user,stock.group_stock_user',
-                             name='Jefe de planta (test v3)')
+    def _replacement(self, head):
         manufacture = self.warehouse.manu_type_id
         replacement_type = manufacture.copy({
             'name': 'Producción de piezas · reposición (test)', 'sequence_code': 'RP',
             'construction_reason_required': True})
         self.company.write({'construction_replacement_type_id': replacement_type.id,
-                            'construction_production_head_id': head.id})
+                            'construction_production_head_id': head.id or False})
         reason = self.env['construction.production.reason'].create({
             'name': 'Falla de fabricación (test)'})
         piece = self.env['product.product'].create({
@@ -185,6 +183,23 @@ class TestPackage111V3Request(TestProcess):
         self.assertEqual(replacement.state, 'draft')
         self.assertFalse(self.requester.has_group('mrp.group_mrp_user'))
         replacement.action_submit()
+        return replacement, replacement_type, reason
+
+    def test_replacement_without_head(self):
+        """Sin jefe de producción, avisa a los responsables de Fabricación,
+        nunca a quien pide."""
+        manager = new_test_user(self.env, 'm11123_gerente_planta', groups='mrp.group_mrp_manager',
+                                name='Gerente de planta (test v3)')
+        replacement = self._replacement(self.env['res.users'])[0]
+        production = replacement.sudo().production_id
+        self.assertIn(manager, production.activity_ids.user_id)
+        self.assertNotIn(self.requester, production.activity_ids.user_id)
+        self.assertNotEqual(production.user_id, self.requester)
+
+    def test_replacement_to_plant(self):
+        head = new_test_user(self.env, 'm11123_planta', groups='mrp.group_mrp_user,stock.group_stock_user',
+                             name='Jefe de planta (test v3)')
+        replacement, replacement_type, reason = self._replacement(head)
         self.assertEqual(replacement.state, 'requested')
         self.assertTrue(replacement.production_name)
         production = replacement.sudo().production_id

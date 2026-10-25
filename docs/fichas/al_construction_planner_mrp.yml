@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '12.20261024'
+  fecha: 25/10/2026
+  cambios:
+    - "Sin «Jefe de producción» en Ajustes, la actividad «Revisar y confirmar fecha» va a los responsables de Fabricación de la compañía."
 - version: '11.20261024'
   fecha: 25/10/2026
   cambios:

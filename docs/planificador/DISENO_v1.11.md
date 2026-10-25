@@ -16,9 +16,10 @@ cuando se desarrolló; lo que el resumen no precisa se marca en
 | --- | --- | --- |
 | `al_construction_material_request` | 27.20261024 | M111-22 (necesidad en el movimiento, hooks), detalles del 24-oct |
 | `al_construction_planner_approvals` | 7.20261021 | M111-21 |
-| `al_construction_planner_mrp` | 11.20261024 | M17-18, M17-25, M111-22 (aviso «Retazo disponible») |
+| `al_construction_planner_mrp` | 12.20261024 | M17-18, M17-25, M111-22 (aviso «Retazo disponible») |
 | `al_construction_planner_furniture` | 12.20261021 | M17-25 |
-| `al_construction_planner_mrp_request` (nuevo) | 1.20261025 | M111-22, M111-23 |
+| `al_construction_planner_mrp_request` (nuevo) | 2.20261025 | M111-22, M111-23 |
+| `al_construction_planner` | 52.20261025 | Exceso del avance: actividad a cada aprobador (falla de la suite) |
 | `al_construction_planner_suite` | 21.20261023 | Pruebas |
 
 ## Diferencias frente al requerimiento
@@ -34,7 +35,7 @@ cuando se desarrolló; lo que el resumen no precisa se marca en
 | M111-22: sugerencia «Retazo disponible» | Columna informativa en el despacho (requerimiento y producción): el retazo más chico que alcanza y cuántos más hay | Es aviso, no asignación, como pide el requerimiento |
 | M111-22: tipo del despacho a preproducción | `pbm_type_id` del almacén de la ubicación de preproducción, si está activo; si no, el de siempre. Se suma a los tipos que valida solo Logística | Con fabricación en un paso el tipo «Elegir componentes» está archivado |
 | M111-23: dónde se pide | Menú **Requerimientos ‣ Reposiciones a planta** y botón **Pedir reposición a planta** en el requerimiento de obra | Sin el documento v3 no se conoce la pantalla pedida; el botón prellena obra, nivel y fecha |
-| M111-23: responsable de la actividad | El **Jefe de producción** de Ajustes (el mismo de M17-18) o, vacío, el responsable de la orden | Una sola opción por compañía para los dos encargos |
+| M111-23: responsable de la actividad | El **Jefe de producción** de Ajustes (el mismo de M17-18), que queda como responsable de la orden; vacío, los responsables de Fabricación de la compañía, nunca quien pide | Una sola opción por compañía para los dos encargos. En dev1 la actividad caía en quien pide porque la orden la crea el sistema con su usuario |
 | M111-23: estados | Borrador, Pedida a planta, En fabricación, Fabricada por despachar, Recibida en obra, Cancelada; calculados con la orden y el despacho | «Despachada» y «recibida» coinciden: el despacho a obra deja la pieza en la ubicación de la obra |
 | M111-23: despacho al terminar | Al terminar la orden (`button_mark_done`), transferencia de lo terminado de la orden a la ubicación de la obra con el «Despacho a obra» del almacén de la planta | Lo crea el sistema (`sudo`): quien termina la orden puede no tener Inventario |
 | M17-18: «fecha confirmada» | Campo `construction_date_confirmed` en la orden; escribe la **Fecha límite** nativa (`date_deadline`) y mueve el fin de la etapa de producción de sus ambientes con `action_gantt_reschedule` (arrastre de las siguientes) | Odoo no tiene una fecha confirmada en la orden de fabricación; `date_deadline` es la nativa más cercana. Mover la etapa con el método del Gantt mantiene las fechas de necesidad y el aviso a Logística |

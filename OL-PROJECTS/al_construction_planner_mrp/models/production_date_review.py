@@ -7,7 +7,7 @@ etapa de producción de sus ambientes en el cronograma, con el arrastre de las
 etapas siguientes como en el Gantt."""
 from datetime import datetime, time
 
-from odoo import fields, models
+from odoo import SUPERUSER_ID, fields, models
 
 DATE_REVIEW_ACTIVITY = 'al_construction_planner_mrp.mail_activity_production_date_review'
 
@@ -19,8 +19,22 @@ class ResCompany(models.Model):
         string='El jefe de producción confirma la fecha de cada orden', default=True)
     construction_production_head_id = fields.Many2one(
         'res.users', string='Jefe de producción', domain=[('share', '=', False)],
-        help='Recibe la actividad «Revisar y confirmar fecha». Vacío: el responsable de la '
-             'orden.')
+        help='Recibe la actividad «Revisar y confirmar fecha» y las reposiciones a planta. '
+             'Vacío: los responsables de Fabricación de la compañía.')
+
+
+    def _construction_production_heads(self):
+        """Quien revisa las órdenes del plan y las reposiciones: el jefe de
+        producción o, sin él, los responsables de Fabricación de la compañía."""
+        self.ensure_one()
+        if self.construction_production_head_id:
+            return self.construction_production_head_id
+        # Los usuarios del grupo los lee el sistema: quien crea la orden puede
+        # no administrar usuarios.
+        group_sudo = self.env.ref('mrp.group_mrp_manager').sudo()
+        return group_sudo.all_user_ids.filtered(
+            lambda u: u.active and not u.share and self in u.company_ids
+            and u.id != SUPERUSER_ID).sudo(False)
 
 
 class ResConfigSettings(models.TransientModel):
@@ -62,16 +76,16 @@ class MrpProduction(models.Model):
             company = production.company_id
             if not company.construction_production_date_review:
                 continue
-            user = company.construction_production_head_id or production.user_id \
-                or self.env.user
+            users = company._construction_production_heads() or production.user_id
             stages = production._construction_production_stages()
             proposed = max(stages.mapped('date_end')) if stages else False
             note = self.env._('Fecha del cronograma: %s.', proposed) if proposed else \
                 self.env._('Los ambientes de la orden no tienen etapa de producción en el '
                            'cronograma.')
-            production.activity_schedule(
-                DATE_REVIEW_ACTIVITY, user_id=user.id, note=note,
-                date_deadline=fields.Date.context_today(production))
+            for user in users:
+                production.activity_schedule(
+                    DATE_REVIEW_ACTIVITY, user_id=user.id, note=note,
+                    date_deadline=fields.Date.context_today(production))
 
     def _construction_apply_confirmed_date(self):
         for production in self.filtered('construction_date_confirmed'):

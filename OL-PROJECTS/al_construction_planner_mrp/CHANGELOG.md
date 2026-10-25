@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261024 — 25/10/2026
+
+- Sin «Jefe de producción» en Ajustes, la actividad «Revisar y confirmar fecha» va a los responsables de Fabricación de la compañía.
+
 ## 11.20261024 — 25/10/2026
 
 - Paquete 1.7 parte 2, M17-18: cada orden que crea el asistente del plan lleva la actividad «Revisar y confirmar fecha» para el jefe de producción (Ajustes › Fabricación); la «Fecha confirmada» queda como fecha límite de la orden y mueve la etapa de producción de sus ambientes en el cronograma.

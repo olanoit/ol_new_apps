@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 2.20261025 — 25/10/2026
+
+- La reposición a planta avisa al jefe de producción o, sin él, a los responsables de Fabricación, y lo deja como responsable de la orden; nunca a quien pide (verificación en dev1).
+
 ## 1.20261025 — 25/10/2026
 
 - Paquete 1.11, M111-22: «Cubrir con retazo» y «Quitar retazo» en el despacho del requerimiento de obra; la línea cuenta la fracción cubierta y su redondeo; el despacho a la preproducción de una planta usa el tipo «Elegir componentes» del almacén.

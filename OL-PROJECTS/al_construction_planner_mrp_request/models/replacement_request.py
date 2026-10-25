@@ -182,17 +182,22 @@ class ConstructionReplacementRequest(models.Model):
             }
             if request.date_required:
                 vals['date_deadline'] = fields.Datetime.to_datetime(request.date_required)
+            # Responsable: el jefe de producción, nunca quien pide (la orden la
+            # crea el sistema con su usuario).
+            heads = company._construction_production_heads() - self.env.user
+            if heads:
+                vals['user_id'] = heads[:1].id
             production_sudo = production_sudo.create(vals)
-            head = company.construction_production_head_id or production_sudo.user_id
-            production_sudo.activity_schedule(
-                'mail.mail_activity_data_todo', user_id=head.id,
-                summary=self.env._('Reposición pedida por la obra'),
-                note=self.env._('%(request)s: %(qty)s %(product)s para %(project)s (%(reason)s).',
-                                request=request.name, qty=request.product_qty,
-                                product=request.product_id.display_name,
-                                project=request.project_id.display_name,
-                                reason=request.reason_id.name),
-                date_deadline=request.date_required or fields.Date.context_today(request))
+            for head in heads:
+                production_sudo.activity_schedule(
+                    'mail.mail_activity_data_todo', user_id=head.id,
+                    summary=self.env._('Reposición pedida por la obra'),
+                    note=self.env._(
+                        '%(request)s: %(qty)s %(product)s para %(project)s (%(reason)s).',
+                        request=request.name, qty=request.product_qty,
+                        product=request.product_id.display_name,
+                        project=request.project_id.display_name, reason=request.reason_id.name),
+                    date_deadline=request.date_required or fields.Date.context_today(request))
             request.write({'production_id': production_sudo.id,
                            'picking_type_id': picking_type.id})
             request.message_post(body=self.env._(
