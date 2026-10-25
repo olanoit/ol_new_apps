@@ -38,6 +38,8 @@ class TestBudgetBook(TransactionCase):
 
     def _book(self, qty_second=50.0):
         from openpyxl import Workbook
+        # Los precios en la moneda de la compañía: el test no mide la conversión.
+        currency = self.env.company.currency_id.name
         book = Workbook()
         sheet = book.active
         sheet.title = 'OBRA'
@@ -47,10 +49,10 @@ class TestBudgetBook(TransactionCase):
         sheet = book.create_sheet('INSUMOS')
         sheet.append(['Código', 'Descripción', 'Tipo de insumo', 'Unidad', 'Precio sin IGV',
                       'Moneda'])
-        sheet.append(['BK-LAD', 'Ladrillo KK 18 huecos (test)', 'Material', 'und', 0.9661, 'PEN'])
-        sheet.append(['BK-OPE', 'Operario (test)', 'Mano de obra', 'hh', 23.36, 'PEN'])
+        sheet.append(['BK-LAD', 'Ladrillo KK 18 huecos (test)', 'Material', 'und', 0.9661, currency])
+        sheet.append(['BK-OPE', 'Operario (test)', 'Mano de obra', 'hh', 23.36, currency])
         sheet.append(['BK-HER', 'Herramientas manuales (test)', 'Herramienta %MO', '%MO', None,
-                      'PEN'])
+                      currency])
         sheet = book.create_sheet('APU')
         sheet.append(['Código', 'Descripción', 'Unidad', 'Rendimiento por día',
                       'Horas por jornada', 'Modalidad por defecto', 'Etapa'])
@@ -139,7 +141,8 @@ class TestBudgetBook(TransactionCase):
         from openpyxl import load_workbook
         book = load_workbook(BytesIO(content))
         book['APU_DETALLE'].append(['BK-R01', 'NO-EXISTE', None, None, 1, None])
-        book['INSUMOS'].append(['BK-LAD', 'Repetido', 'Material', 'und', 1, 'PEN'])
+        book['INSUMOS'].append(['BK-LAD', 'Repetido', 'Material', 'und', 1,
+                                self.env.company.currency_id.name])
         output = BytesIO()
         book.save(output)
         wizard.file = base64.b64encode(output.getvalue())
