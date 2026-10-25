@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 52.20261025 — 25/10/2026
+
+- El exceso del avance que espera aprobación avisa con una actividad a cada usuario de «Ejecución: aprueba» de la compañía (antes, solo al primero del grupo).
+
 ## 51.20261025 — 25/10/2026
 
 - Avance sobre el saldo del plan según la política del plan para la contrata: «Bloquear» lo rechaza como antes; «Solo alerta» lo marca y deja validarlo; «Aprobación adicional» lo deja «Excede el plan» con una actividad para la jefatura de proyectos, que lo aprueba con «Aprobar exceso» (queda en el registro de excesos autorizados) antes de que el supervisor lo valide. Si cambia la cantidad, se vuelve a aprobar.

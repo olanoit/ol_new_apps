@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '52.20261025'
+    fecha: 25/10/2026
+    cambios:
+      - "El exceso del avance que espera aprobación avisa con una actividad a cada usuario de «Ejecución: aprueba» de la compañía (antes, solo al primero del grupo)."
   - version: '51.20261025'
     fecha: 25/10/2026
     cambios:

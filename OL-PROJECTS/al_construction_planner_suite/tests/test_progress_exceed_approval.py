@@ -68,8 +68,7 @@ class TestProgressExceedApproval(TransactionCase):
         progress = self._progress(30.0)
         self.assertEqual(progress.exceed_state, 'exceeded')
         self.assertAlmostEqual(progress.exceed_qty, 10.0)
-        activity = progress.activity_ids
-        self.assertEqual(activity.user_id, self.head)
+        self.assertIn(self.head, progress.activity_ids.user_id)
         self.assertIn('Espera la aprobación', ' '.join(progress.message_ids.mapped('body')))
         # El supervisor no valida ni aprueba el exceso; lo en plan sí se valida.
         with self.assertRaisesRegex(UserError, 'esperan la aprobación de la jefatura'):

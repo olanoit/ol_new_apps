@@ -337,7 +337,9 @@ class ConstructionTaskProgress(models.Model):
             # sudo: quien reporta (capataz, contrata) no lee los usuarios del grupo.
             users = group.sudo().all_user_ids.filtered(
                 lambda u: not u.share and progress.company_id in u.company_ids) if group else []
-            for user in users[:1]:
+            # Una actividad por aprobador, como Aprobaciones: el primero del
+            # grupo podía ser el administrador.
+            for user in users:
                 # sudo: quien reporta no suele poder crear actividades para otros.
                 progress_sudo = progress.sudo()
                 progress_sudo.activity_schedule(
