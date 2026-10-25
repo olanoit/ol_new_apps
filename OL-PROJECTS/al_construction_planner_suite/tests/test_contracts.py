@@ -207,6 +207,9 @@ class TestContracts(TransactionCase):
         self.assertEqual(progress.settlement_date_planned, date(2026, 11, 5))
 
     def test_progress_wizard_balance_and_tolerance(self):
+        # Con la política «Bloquear»; la aprobación de la jefatura se prueba en
+        # test_progress_exceed_approval.
+        self.plan.exceed_policy = 'block'
         self._assign_installation()
         attachment = self.env['ir.attachment'].with_user(self.reporter).create(
             {'name': 'cocina.jpg', 'datas': PHOTO})

@@ -299,6 +299,9 @@ class TestPortalService(ContractTermsCommon):
         wall = next(p for p in data['partidas'] if p['id'] == self._wall_line().id)
         self.assertEqual(wall['last_validated'], fields.Date.to_string(today))
         self.assertEqual(wall['tolerance'], self._wall_line()._get_tolerance_qty())
+        self.assertEqual(wall['exceed_policy'],
+                         self._wall_line().plan_id._exceed_policy_for(
+                             self._wall_line().resource_type))
         self.assertEqual(data['counters']['progress_to_validate'], 1)
         self.assertEqual(data['members'][0]['partner'], self.contractor.name)
         foreman = self._service(self.foreman_user).sync(self.project.id)

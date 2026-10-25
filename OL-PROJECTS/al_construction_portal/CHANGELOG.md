@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261025 — 25/10/2026
+
+- Avance sobre el saldo más la tolerancia según la política del plan, como en el prototipo: con aprobación adicional se envía como exceso y lo aprueba la jefatura; con solo alerta se envía con aviso; con bloqueo no se guarda.
+
 ## 2.20261024 — 24/10/2026
 
 - Pantallas según el prototipo «Portal de obra CREVAL»: ingreso con la marca de la empresa, mostrar la clave y «Mantener la sesión en este celular»; QR leído con la cámara; inicio con la semana de la obra y los contadores de avances por validar, pedidos en aprobación y entregas de hoy.

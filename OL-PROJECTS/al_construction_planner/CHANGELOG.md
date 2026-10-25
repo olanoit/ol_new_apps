@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 51.20261025 — 25/10/2026
+
+- Avance sobre el saldo del plan según la política del plan para la contrata: «Bloquear» lo rechaza como antes; «Solo alerta» lo marca y deja validarlo; «Aprobación adicional» lo deja «Excede el plan» con una actividad para la jefatura de proyectos, que lo aprueba con «Aprobar exceso» (queda en el registro de excesos autorizados) antes de que el supervisor lo valide. Si cambia la cantidad, se vuelve a aprobar.
+
 ## 50.20261016 — 24/10/2026
 
 - Pedido de Allcenter (prueba ZZMONTEC): «Cancelar plan» en un plan aprobado o en ejecución sin documentos abiertos ni despachos o consumos; se activa por compañía en Ajustes ‣ Planificación de obra, con el grupo que puede hacerlo (por defecto, Administrador).

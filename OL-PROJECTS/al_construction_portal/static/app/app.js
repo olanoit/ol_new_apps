@@ -630,13 +630,16 @@
     // 5. Registrar avance.
     function progressCheck(line, d) {
         // Lo que se suma hoy y si pasa el saldo o el saldo más la tolerancia del
-        // plan (Odoo no acepta más que eso; el re-trabajo no cuenta).
+        // plan. Más allá, según la política del plan: se bloquea, solo alerta o
+        // lo aprueba la jefatura (el re-trabajo no cuenta).
         const qty = d.mode === "pct"
             ? (line.planned * Number(d.pct || 0)) / 100 - line.validated - line.pending
             : Number(d.qty || 0);
         if (d.rework) return { qty, over: false, blocked: false };
         const tolerance = line.tolerance || 0;
-        return { qty, over: qty > line.balance + 1e-6, blocked: qty > line.balance + tolerance + 1e-6 };
+        const exceeds = qty > line.balance + tolerance + 1e-6;
+        const policy = line.exceed_policy || "block";
+        return { qty, over: qty > line.balance + 1e-6, exceeds, policy, blocked: exceeds && policy === "block" };
     }
     screens.progress = () => {
         const line = ((state.data && state.data.partidas) || []).find((p) => p.id === Number(state.params.id));
@@ -667,6 +670,10 @@
                     ${
                         check.blocked
                             ? `<p class="alert box">Supera el saldo de la partida${tolerance ? ` y la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)})` : ""}: Odoo no lo acepta. Si es trabajo adicional, pida al residente el adicional; si se rehace, márquelo como re-trabajo.</p>`
+                            : check.exceeds && check.policy === "approval"
+                            ? `<p class="alert box">Supera el saldo de la partida${tolerance ? ` y la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)})` : ""}: se envía como exceso y lo aprueba la jefatura antes de validarse.</p>`
+                            : check.exceeds
+                            ? `<p class="notice box">Supera el saldo de la partida${tolerance ? ` y la tolerancia del plan` : ""}: se envía con una alerta para el residente.</p>`
                             : check.over
                             ? `<p class="notice box">Supera el saldo de la partida; entra en la tolerancia del plan (${qtyText(tolerance)} ${esc(line.uom)}) y lo revisa el residente al validarlo.</p>`
                             : ""

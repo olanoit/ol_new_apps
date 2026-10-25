@@ -1,6 +1,6 @@
 /* Service worker del portal de obra: guarda la aplicación para abrirla sin
  * señal. Los datos y la cola de envíos los maneja la página (IndexedDB). */
-const CACHE = "obra-app-v2";
+const CACHE = "obra-app-v3";
 const SHELL = [
     "/obra/app/",
     "/al_construction_portal/static/app/app.js",

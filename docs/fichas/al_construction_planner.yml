@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '51.20261025'
+    fecha: 25/10/2026
+    cambios:
+      - "Avance sobre el saldo del plan según la política del plan para la contrata: «Bloquear» lo rechaza como antes; «Solo alerta» lo marca y deja validarlo; «Aprobación adicional» lo deja «Excede el plan» con una actividad para la jefatura de proyectos, que lo aprueba con «Aprobar exceso» (queda en el registro de excesos autorizados) antes de que el supervisor lo valide. Si cambia la cantidad, se vuelve a aprobar."
   - version: '50.20261016'
     fecha: 24/10/2026
     cambios:

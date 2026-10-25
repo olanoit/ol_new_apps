@@ -104,6 +104,9 @@ class TestAnalyticV15(PlannerCommon):
         with self.assertRaises(ValidationError):
             delivery.tranche_ids[0].pct = 0
         self._generate_and_approve()
+        # Con la política «Bloquear» (la aprobación del exceso se prueba en
+        # test_progress_exceed_approval).
+        self.plan.exceed_policy = 'block'
         line = self.plan.line_ids.filtered(lambda l: l.activity_id == delivery)[0]
         cleaning = delivery.tranche_ids[0]
         photo = self.env['ir.attachment'].create({'name': 'foto.png', 'datas': base64.b64encode(b'x')})

@@ -73,6 +73,10 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '3.20261025'
+    fecha: 25/10/2026
+    cambios:
+    - "Avance sobre el saldo más la tolerancia según la política del plan, como en el prototipo: con aprobación adicional se envía como exceso y lo aprueba la jefatura; con solo alerta se envía con aviso; con bloqueo no se guarda."
   - version: '2.20261024'
     fecha: 24/10/2026
     cambios:

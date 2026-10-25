@@ -208,6 +208,8 @@ class ConstructionPortalService(models.AbstractModel):
             'pending': pending, 'balance': line.qty_planned - validated - pending,
             # Lo que admite el plan sobre lo presupuestado (tolerancia).
             'tolerance': line._get_tolerance_qty(),
+            # Qué pasa más allá: bloquear, solo alerta o aprobación de la jefatura.
+            'exceed_policy': line.plan_id._exceed_policy_for(line.resource_type),
             'last_validated': fields.Date.to_string(last_validation) if last_validation else '',
             'partner': line.partner_id.name or '',
         }
@@ -323,7 +325,8 @@ class ConstructionPortalService(models.AbstractModel):
             progress.message_post(body=values['note'], author_id=self.env.user.partner_id.id)
         self._portal_register('progress', values['uuid'], progress)
         return {'status': 'done', 'ids': str(progress.id), 'name': progress.name,
-                'over_balance': line.qty_planned < line.qty_executed + line._get_reported_qty()}
+                'over_balance': line.qty_planned < line.qty_executed + line._get_reported_qty(),
+                'exceed_state': progress.exceed_state}
 
     # ------------------------------------------------------------------
     # Parte diario (pantalla 6)

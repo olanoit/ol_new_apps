@@ -6,7 +6,7 @@ la línea del plan y entra a la liquidación semanal (fase 6)."""
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
-from .common import EXEC_VALIDATOR_GROUP
+from .common import EXCEED_STATES, EXEC_VALIDATOR_GROUP, PROJECT_HEAD_GROUPS
 from .construction_resource_plan import OPEN_STATES
 
 PROGRESS_STATES = [
@@ -17,6 +17,8 @@ PROGRESS_STATES = [
 # Campos que solo cambian mientras el avance está reportado.
 LOCKED_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'date', 'qty', 'attachment_ids',
                  'is_rework', 'rework_reason'}
+# Campos que cambian el saldo de la línea: un exceso aprobado vuelve a revisarse.
+BALANCE_FIELDS = {'task_id', 'activity_id', 'plan_line_id', 'qty', 'tranche_id', 'is_rework'}
 
 
 class ConstructionTaskProgress(models.Model):
@@ -126,6 +128,19 @@ class ConstructionTaskProgress(models.Model):
     evaluation_note = fields.Text(
         string='Observaciones y propuestas', tracking=True, copy=False,
         help='Lo que observa el supervisor y lo que propone (corregir, completar, re-trabajo).')
+    # Exceso sobre el saldo (prototipo del portal de obra): según la política
+    # del plan se bloquea, solo alerta o espera la aprobación de la jefatura
+    # antes de validarse.
+    exceed_state = fields.Selection(
+        EXCEED_STATES, string='Control del saldo', default='ok', required=True, readonly=True,
+        copy=False, tracking=True,
+        help='Excede el plan: con este avance se reporta más que lo presupuestado más la '
+             'tolerancia del plan. Si la política pide aprobación, no se valida hasta que la '
+             'apruebe la jefatura de proyectos.')
+    exceed_qty = fields.Float(
+        string='Unidades sobre el saldo', digits='Product Unit', readonly=True, copy=False)
+    exceed_approver_id = fields.Many2one(
+        'res.users', string='Exceso aprobado por', readonly=True, copy=False)
     # Lo calcula el puente de contratas con la liquidación del avance.
     settled = fields.Boolean(
         string='Liquidado', readonly=True, copy=False,
@@ -242,30 +257,95 @@ class ConstructionTaskProgress(models.Model):
                     'El re-trabajo %s necesita su motivo: cambio, faltante o mal armado.',
                     progress.display_name))
 
-    @api.constrains('qty', 'state', 'plan_line_id', 'is_rework')
-    def _check_balance(self):
-        """No acepta más que lo presupuestado más la tolerancia del plan
-        (especificación, «Control de saldo»: avance reportado)."""
+    def _construction_balance_excess(self):
+        """{(línea, tramo): (reportado, límite)} de las líneas y tramos de
+        estos avances que superan lo presupuestado más la tolerancia del
+        plan. Cada tramo admite lo presupuestado de la línea; el re-trabajo no
+        cuenta (M18-21)."""
         lines = self.filtered(lambda p: p.state != 'rejected' and not p.is_rework).plan_line_id
-        # Por tramo: cada tramo admite lo presupuestado de la línea. El
-        # re-trabajo no cuenta (M18-21).
-        totals = {}
-        for line, _tranche, qty in self._read_group(
+        result = {}
+        for line, tranche, qty in self._read_group(
                 [('plan_line_id', 'in', lines.ids), ('state', '!=', 'rejected'),
                  ('is_rework', '=', False)],
                 ['plan_line_id', 'tranche_id'], ['qty:sum']):
-            totals[line] = max(totals.get(line, 0.0), qty or 0.0)
-        for line in lines:
-            reported = totals.get(line, 0.0)
             limit = line.qty_planned + line._get_tolerance_qty()
-            if line.product_uom_id.compare(reported, limit) > 0:
-                raise ValidationError(self.env._(
-                    '%(task)s · %(activity)s: con este avance se reportan %(reported)s de '
-                    '%(planned)s %(uom)s presupuestados (tolerancia %(tolerance)s %%).',
-                    task=line.task_id.display_name, activity=line.activity_id.display_name,
-                    reported=round(reported, 2), planned=round(line.qty_planned, 2),
-                    uom=line.product_uom_id.name,
-                    tolerance=round(line.plan_id.exceed_tolerance or 0.0, 2)))
+            if line.product_uom_id.compare(qty or 0.0, limit) > 0:
+                result[line, tranche] = (qty, limit)
+        return result
+
+    def _construction_exceed_policy(self):
+        self.ensure_one()
+        return self.plan_id._exceed_policy_for(self.plan_line_id.resource_type)
+
+    @api.constrains('qty', 'state', 'plan_line_id', 'is_rework')
+    def _check_balance(self):
+        """Más que lo presupuestado más la tolerancia del plan (especificación,
+        «Control de saldo»: avance reportado) se bloquea solo si la política
+        del plan lo pide; si no, el avance queda como exceso."""
+        for (line, _tranche), (reported, _limit) in self._construction_balance_excess().items():
+            if line.plan_id._exceed_policy_for(line.resource_type) != 'block':
+                continue
+            raise ValidationError(self.env._(
+                '%(task)s · %(activity)s: con este avance se reportan %(reported)s de '
+                '%(planned)s %(uom)s presupuestados (tolerancia %(tolerance)s %%).',
+                task=line.task_id.display_name, activity=line.activity_id.display_name,
+                reported=round(reported, 2), planned=round(line.qty_planned, 2),
+                uom=line.product_uom_id.name,
+                tolerance=round(line.plan_id.exceed_tolerance or 0.0, 2)))
+
+    def _construction_mark_exceed(self, flag=True):
+        """Marca los avances reportados que exceden el saldo (los que se
+        registran o corrigen, no los anteriores de la misma línea) y avisa a
+        la jefatura cuando la política pide su aprobación. Un exceso aprobado
+        se mantiene; el que ya no excede vuelve a «En plan». Sin ``flag``,
+        solo esto último (al validar)."""
+        excess = self._construction_balance_excess()
+        flagged = self.browse()
+        for progress in self.filtered(lambda p: p.state == 'draft'):
+            over = not progress.is_rework \
+                and excess.get((progress.plan_line_id, progress.tranche_id))
+            if not over:
+                if progress.exceed_state != 'ok':
+                    progress.write({'exceed_state': 'ok', 'exceed_qty': 0.0,
+                                    'exceed_approver_id': False})
+                continue
+            if progress.exceed_state == 'approved' or not flag:
+                continue
+            qty = min(progress.qty, over[0] - over[1])
+            if progress.exceed_state != 'exceeded' or progress.exceed_qty != qty:
+                progress.write({'exceed_state': 'exceeded', 'exceed_qty': qty})
+                flagged |= progress
+        for progress in flagged:
+            line = progress.plan_line_id
+            approval = progress._construction_exceed_policy() == 'approval'
+            progress.message_post(body=self.env._(
+                'Excede el plan: %(qty)s %(uom)s sobre lo presupuestado más la tolerancia '
+                '(%(planned)s %(uom)s). %(next)s',
+                qty=round(progress.exceed_qty, 2), uom=line.product_uom_id.name or '',
+                planned=round(line.qty_planned, 2),
+                next=self.env._('Espera la aprobación de la jefatura de proyectos.') if approval
+                else self.env._('La política del plan solo alerta.')))
+        flagged.filtered(
+            lambda p: p._construction_exceed_policy() == 'approval')._notify_exceed_heads()
+
+    def _notify_exceed_heads(self):
+        """Actividad para la jefatura de proyectos: un avance excede el plan."""
+        group = self.env.ref('al_construction_planner.group_planner_exec_approver',
+                             raise_if_not_found=False)
+        activity_type = self.env.ref('mail.mail_activity_data_todo', raise_if_not_found=False)
+        for progress in self:
+            # sudo: quien reporta (capataz, contrata) no lee los usuarios del grupo.
+            users = group.sudo().all_user_ids.filtered(
+                lambda u: not u.share and progress.company_id in u.company_ids) if group else []
+            for user in users[:1]:
+                # sudo: quien reporta no suele poder crear actividades para otros.
+                progress_sudo = progress.sudo()
+                progress_sudo.activity_schedule(
+                    activity_type_id=activity_type.id if activity_type else False,
+                    summary=self.env._('Aprobar el exceso del avance'), user_id=user.id,
+                    note=self.env._('%(qty)s %(uom)s sobre el saldo del plan.',
+                                    qty=round(progress.exceed_qty, 2),
+                                    uom=progress.uom_id.name or ''))
 
     @api.depends('name', 'task_id', 'activity_id')
     def _compute_display_name(self):
@@ -289,6 +369,7 @@ class ConstructionTaskProgress(models.Model):
                     progress.plan_id.display_name))
         progresses.plan_line_id._refresh_control()
         progresses._post_report_message()
+        progresses._construction_mark_exceed()
         return progresses
 
     def _post_report_message(self):
@@ -314,10 +395,20 @@ class ConstructionTaskProgress(models.Model):
                     'Solo se corrige un avance reportado; vuelva a reportado %s primero.',
                     ', '.join(locked.mapped('name'))))
         before = self.plan_line_id
+        # Un rechazado que vuelve a reportado cuenta otra vez para el saldo.
+        revived = self.filtered(lambda p: p.state == 'rejected') \
+            if vals.get('state') == 'draft' else self.browse()
+        if BALANCE_FIELDS & set(vals) and 'exceed_state' not in vals:
+            # El exceso aprobado era por otra cantidad: se vuelve a revisar.
+            vals = dict(vals, exceed_state='ok', exceed_qty=0.0, exceed_approver_id=False)
         res = super().write(vals)
         # Lo validado es el ejecutado de la línea (estado y control).
         if {'state', 'qty', 'plan_line_id', 'settled', 'is_rework'} & set(vals):
             (before | self.plan_line_id)._refresh_control()
+        if BALANCE_FIELDS & set(vals):
+            self._construction_mark_exceed()
+        elif revived:
+            revived._construction_mark_exceed()
         return res
 
     def unlink(self):
@@ -345,6 +436,13 @@ class ConstructionTaskProgress(models.Model):
         self._check_validator()
         if self.filtered(lambda p: p.state != 'draft'):
             raise UserError(self.env._('Solo se validan avances reportados.'))
+        self._construction_mark_exceed(flag=False)
+        waiting = self.filtered(lambda p: p.exceed_state == 'exceeded'
+                                and p._construction_exceed_policy() == 'approval')
+        if waiting:
+            raise UserError(self.env._(
+                'Estos avances exceden el plan y esperan la aprobación de la jefatura de '
+                'proyectos: %s.', ', '.join(waiting.mapped('name'))))
         self.write({'state': 'validated', 'validator_id': self.env.user.id,
                     'validation_date': fields.Datetime.now(), 'reject_reason': False})
         for progress in self:
@@ -352,6 +450,36 @@ class ConstructionTaskProgress(models.Model):
                 'Validado: %(qty)s %(uom)s suman al ejecutado de la línea.',
                 qty=progress.qty, uom=progress.uom_id.name or ''))
         self.task_id._construction_update_unit_state()
+
+    def action_approve_exceed(self):
+        """La jefatura de proyectos aprueba el exceso del avance: queda en el
+        registro de excesos autorizados y el avance ya se puede validar."""
+        if not self.env.user.has_groups(PROJECT_HEAD_GROUPS):
+            raise UserError(self.env._('Aprueba el exceso del avance la jefatura de proyectos '
+                                       '(grupo Ejecución: aprueba).'))
+        progresses = self.filtered(lambda p: p.state == 'draft' and p.exceed_state == 'exceeded')
+        if not progresses:
+            raise UserError(self.env._('Solo se aprueban avances reportados que exceden el plan.'))
+        progresses.write({'exceed_state': 'approved', 'exceed_approver_id': self.env.user.id})
+        values = []
+        for progress in progresses:
+            amount = progress.exceed_qty * progress.plan_line_id.price_unit_planned
+            values.append({
+                'kind': 'excess', 'plan_id': progress.plan_id.id,
+                'project_id': progress.project_id.id, 'company_id': progress.company_id.id,
+                'plan_line_id': progress.plan_line_id.id, 'task_id': progress.task_id.id,
+                'activity_id': progress.activity_id.id, 'partner_id': progress.partner_id.id,
+                'qty': progress.exceed_qty, 'uom_id': progress.uom_id.id,
+                'amount': progress.currency_id.round(amount) if progress.currency_id else amount,
+                'reason': self.env._('Avance %s sobre el saldo del plan.', progress.name),
+                'document': progress.name, 'res_model': progress._name, 'res_id': progress.id,
+            })
+            progress.activity_feedback(['mail.mail_activity_data_todo'],
+                                       feedback=self.env._('Exceso aprobado.'))
+            progress.message_post(body=self.env._(
+                'Exceso aprobado por la jefatura: %(qty)s %(uom)s sobre el saldo.',
+                qty=round(progress.exceed_qty, 2), uom=progress.uom_id.name or ''))
+        self.env['construction.exceed.log']._log(values)
 
     def action_open_reject_wizard(self):
         self._check_validator()
