@@ -54,4 +54,5 @@ LICENSE_EXCEPTIONS = {
     'al_industry_furniture': 'LGPL-3',
 }
 # Carpetas de primer nivel que no son áreas de módulos.
-NO_AREAS = {'docs', 'scripts', 'mkdocs'}
+# backups/ es local (ignorada en .gitignore) y guarda respaldos de despliegue.
+NO_AREAS = {'docs', 'scripts', 'mkdocs', 'backups'}
