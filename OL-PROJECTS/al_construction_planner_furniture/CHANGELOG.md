@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261021 — 25/10/2026
+
+- Paquete 1.7 parte 2, M17-25: el aviso «Sin marcar como medidos» usa el mismo «Departamento / ambiente».
+
 ## 11.20261021 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba).

@@ -429,6 +429,12 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '27.20261024'
+    fecha: 25/10/2026
+    cambios:
+      - "Paquete 1.11, M111-22: el movimiento de una línea indivisible guarda la necesidad (el despacho, la parte que cubre; la entrega pendiente de compra, el resto) y muestra el redondeo. Sin productos indivisibles no cambia nada."
+      - "Paquete 1.11, M111-22: el tipo del despacho y la cantidad que un movimiento entrega a su línea pasan por métodos que los puentes amplían."
+      - "Verificación del 24-oct: «Pedir al almacén» de la línea muestra el almacén (elegir otro lleva la línea a su stock) y la ubicación queda como «Ubicación de origen»; la nota «Salió de…» usa el idioma de quien pide para la unidad y el producto."
   - version: '26.20261024'
     fecha: 24/10/2026
     cambios:

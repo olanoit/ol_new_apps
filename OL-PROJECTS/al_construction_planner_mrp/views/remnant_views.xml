@@ -144,6 +144,8 @@
                 <field name="construction_covers_move_id" column_invisible="1"/>
                 <field name="construction_remnant_lot_id" string="Retazo" optional="show"
                        invisible="not construction_remnant_lot_id"/>
+                <field name="construction_remnant_hint" optional="show" decoration-info="1"
+                       invisible="not construction_remnant_hint"/>
                 <button name="action_construction_cover_remnant" type="object" string="Cubrir con retazo"
                         icon="fa-puzzle-piece" invisible="not construction_can_cover"
                         groups="stock.group_stock_user"/>

@@ -33,6 +33,33 @@ class StockMove(models.Model):
         return super()._construction_whole_scope() or (
             'request' if self.construction_request_line_id else False)
 
+    def _construction_set_request_need(self):
+        """Necesidad del movimiento de una línea indivisible (paquete 1.11,
+        M111-22): la fracción pedida queda en el movimiento como en la orden
+        de corte. El despacho lleva la parte que cubre y la entrega pendiente
+        de compra, el resto; así el redondeo cae donde está la última plancha.
+        Sin productos indivisibles no cambia nada."""
+        for move in self:
+            line = move.construction_request_line_id
+            if not line or not move.product_id._construction_is_whole(move.company_id, 'request'):
+                continue
+            uom = line.product_uom_id
+            need = line.product_qty
+            others = sum(other.construction_need_qty for other in line.move_ids
+                         if other != move and other.state != 'cancel')
+            # Los movimientos de la línea van en su unidad.
+            own = max(need - others, 0.0)
+            if not move.created_purchase_request_line_id:
+                own = min(own, move.product_uom_qty)
+            move.construction_need_qty = uom._compute_quantity(own, move.product_uom, round=False)
+
+    def _construction_request_line_qty(self, line_uom):
+        """Lo que este movimiento hecho entrega a su línea, en ``line_uom``.
+        Hook: el retazo entrega su fracción de plancha (M111-22)."""
+        self.ensure_one()
+        return self.product_uom._compute_quantity(
+            self.quantity, line_uom, rounding_method='HALF-UP')
+
     def _get_account_move_line_vals(self):
         """Consumo interno (M111-10): el gasto lleva la analítica del área."""
         vals_list = super()._get_account_move_line_vals()

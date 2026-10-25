@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.7 parte 2, M17-18: el jefe de producción confirma la fecha. -->
+    <record id="mail_activity_production_date_review" model="mail.activity.type">
+        <field name="name">Revisar y confirmar fecha</field>
+        <field name="summary">Revisar y confirmar la fecha de la orden</field>
+        <field name="res_model">mrp.production</field>
+        <field name="icon">fa-calendar-check-o</field>
+        <field name="delay_count">0</field>
+    </record>
+</odoo>

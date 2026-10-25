@@ -45,6 +45,8 @@ LICENSE_EXCEPTIONS = {
     'al_construction_planner_approvals': 'LGPL-3',
     'al_construction_planner_approvals_mrp': 'LGPL-3',
     'al_construction_planner_production': 'LGPL-3',
+    # Paquete 1.11 (M111-22 y M111-23): producción y requerimiento de obra.
+    'al_construction_planner_mrp_request': 'LGPL-3',
     # Aplicación de obra (CREVAL v1.0, 4.11): extiende el planificador.
     'al_construction_portal': 'LGPL-3',
     # Paquetes de industria que instalan el planificador (LGPL-3 por él).

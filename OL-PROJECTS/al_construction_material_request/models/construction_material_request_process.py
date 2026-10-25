@@ -100,7 +100,8 @@ class ConstructionMaterialRequest(models.Model):
     def _prepare_picking_vals(self, location_dest=None, location_src=None):
         self.ensure_one()
         source = location_src or self.location_src_id
-        picking_type = self._get_dispatch_picking_type(source.warehouse_id)
+        picking_type = self._get_dispatch_picking_type_for(
+            source, location_dest or self.location_dest_id)
         vals = {
             'picking_type_id': picking_type.id,
             'location_id': source.id,
@@ -129,6 +130,13 @@ class ConstructionMaterialRequest(models.Model):
                 warehouse.sudo()._construction_ensure_internal_consumption()
             return warehouse.construction_internal_type_id
         return warehouse.construction_dispatch_type_id or self.company_id.construction_dispatch_type_id
+
+    def _get_dispatch_picking_type_for(self, source, destination):
+        """Tipo del despacho de ``source`` a ``destination``: el del almacén
+        de origen. Los puentes lo cambian según el destino (paquete 1.11,
+        M111-22: la preproducción de una planta)."""
+        self.ensure_one()
+        return self._get_dispatch_picking_type(source.warehouse_id)
 
     def _get_dispatch_picking_types(self):
         """Todos los tipos de despacho que puede usar el requerimiento (uno
@@ -183,7 +191,7 @@ class ConstructionMaterialRequest(models.Model):
                 self._prepare_picking_vals(location, source))
             self.env['stock.move'].create([
                 self._prepare_move_vals(line, line.qty_to_dispatch, picking) for line in group
-            ])
+            ])._construction_set_request_need()
             pickings |= picking
         if pickings:
             pickings.action_confirm()
@@ -209,6 +217,10 @@ class ConstructionMaterialRequest(models.Model):
                 move._action_cancel()
             else:
                 move.product_uom_qty = reserved
+                # La necesidad sigue a lo que se despacha: el resto va a compra.
+                if move.construction_need_qty:
+                    move.construction_need_qty = 0.0
+                    move._construction_set_request_need()
         return shortages
 
     # --- requerimiento de compra del faltante ----------------------------
@@ -301,12 +313,20 @@ class ConstructionMaterialRequest(models.Model):
                 vals['created_purchase_request_line_id'] = pr_line_by_line[line].id
                 move_vals.append(vals)
         moves = self.env['stock.move'].create(move_vals)
+        moves._construction_set_request_need()
         # Sin abastecimiento: la compra la gestiona el requerimiento de compra.
         moves._action_confirm(merge=False, create_proc=False)
         return pickings
 
     def _format_qty(self, value, uom):
-        return f'{formatLang(self.env, value, digits=2)} {uom.name}'
+        # En el idioma del requerimiento (el de quien pide), no en el de quien
+        # valida: «Unidades», no «Units» (verificación del 24-oct, M111-20 F).
+        env = self.with_context(lang=self._construction_lang()).env
+        return f'{formatLang(env, value, digits=2)} {uom.with_env(env).name}'
+
+    def _construction_lang(self):
+        self.ensure_one()
+        return self.requested_by.lang or self.company_id.partner_id.lang or self.env.lang
 
     def _post_split_message(self, lines, picking, purchase_request, pending_picking, shortages):
         modes = dict(self.env['construction.material.request.line']._fields['supply_mode']

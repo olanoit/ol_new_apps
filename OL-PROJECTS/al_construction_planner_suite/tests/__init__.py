@@ -60,3 +60,6 @@ from . import test_quotation_layers_creval
 from . import test_tool_bag_creval
 from . import test_budget_book_creval
 from . import test_progress_exceed_approval
+from . import test_package_111_internal_approvals
+from . import test_package_111_v3_production
+from . import test_package_111_v3_request

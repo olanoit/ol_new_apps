@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- M111-23: desde el requerimiento de obra. -->
+    <record id="construction_material_request_view_form_replacement" model="ir.ui.view">
+        <field name="name">construction.material.request.form.replacement</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="al_construction_material_request.construction_material_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_construction_replacement" type="object"
+                        string="Pedir reposición a planta"
+                        invisible="request_type != 'site' or not project_id"
+                        groups="al_construction_material_request.group_construction_requester"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -54,7 +54,8 @@ class StockPicking(models.Model):
                     'source': source.warehouse_id.name or source.display_name,
                     'user': self.env.user.name,
                     'rows': [{
-                        'product': move.product_id.display_name,
+                        'product': move.product_id.with_context(
+                            lang=request._construction_lang()).display_name,
                         'qty': request._format_qty(move.quantity, move.product_uom),
                     } for move in moves],
                     'pending': len(open_lines),

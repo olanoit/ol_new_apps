@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_material_request]
+modulos: [al_construction_material_request, al_construction_planner_mrp_request]
 ---
 
 # Requerimientos de materiales
@@ -275,6 +275,48 @@ despachan planchas enteras libres y el resto del entero va a compra. Con 10.6
 planchas libres se despachan 10 y se compran 4; la columna **Redondeo a plancha
 entera** muestra 0.7. Los demás materiales se reparten como siempre.
 
+Cada movimiento de un tablero guarda su **Necesidad**: el despacho, la parte
+que cubre (10), y la entrega que espera la compra, el resto (3.3). Así el
+**Redondeo** (0.7) se ve en el movimiento donde está la última plancha.
+
+En el despacho, la columna **Retazo disponible** avisa si hay un retazo libre
+del mismo tablero que alcanza para la fracción. Es solo un aviso: para usarlo,
+el almacenero pulsa **Cubrir con retazo** en la línea del tablero, como en el
+[despacho a producción](planning/production_order.md#cubrir-con-retazo). Con
+necesidad 7.2 se despachan 7 planchas y el retazo (por ejemplo, un R25 del 20.7
+%) va en el mismo despacho con su lote. La línea del requerimiento cuenta el
+retazo por su fracción de plancha (7 + 0.21 cubren 7.2) y su redondeo queda en
+0.01. **Quitar retazo** vuelve a pedir la plancha entera.
+
+### Despacho a la preproducción de una planta
+
+Lo que el requerimiento lleva a una ubicación marcada **Preproducción de
+planta** sale con el tipo **Elegir componentes** del almacén de la planta, el
+mismo que usa Odoo para llevar material a producción (fabricación en dos o tres
+pasos). Lo que va a la obra sale con **Despacho a obra**. Los dos los valida el
+almacén.
+
+### Pedir reposición a planta
+
+Cuando una pieza fabricada llega mal o se daña en la obra, el residente pulsa
+**Pedir reposición a planta** en el requerimiento (o crea una en
+**Requerimientos ‣ Reposiciones a planta**): elige la **Pieza**, la cantidad,
+el **Motivo** (por ejemplo, **Falla de fabricación**) y escribe qué pasó. Al
+pulsar **Pedir a la planta**:
+
+1. Odoo crea la orden de fabricación en borrador en el **Tipo de la reposición
+   a planta** de **Ajustes ‣ Fabricación** («Producción de piezas ·
+   reposición»), con el motivo; si ese tipo **Pide motivo**, el motivo ya va.
+2. El **Jefe de producción** de los mismos Ajustes recibe una actividad.
+3. La reposición muestra el estado de la orden sin que el residente entre a
+   Fabricación: **Pedida a planta**, **En fabricación**, **Fabricada, por
+   despachar** y **Recibida en obra**.
+4. Al terminar la orden, la pieza sale a la obra con el **Despacho a obra** del
+   almacén de la planta.
+
+La pieza no pasa por la etapa Producción del requerimiento, que puede quedar
+apagada.
+
 ### Comprar y recibir
 
 1. Desde **Req. de compra**, Compras crea la orden de compra. Toma la fecha
@@ -348,6 +390,9 @@ consumo (papel, plumones, material de marketing) con el mismo documento:
    requerimiento interno si quien pide no tiene jefe** (por defecto,
    Logística; vacío, se aprueba al solicitarlo). La regla de gerencia por monto
    se agrega en **Reglas de aprobación**.
+   Con el motor **Aplicación Aprobaciones**, el interno va a Aprobaciones con
+   los mismos aprobadores (el jefe del departamento o ese grupo) y se aprueba
+   desde el mismo requerimiento.
 4. Logística lo procesa igual que uno de obra: lo disponible sale por
    **Consumo interno** y lo que falta va a un requerimiento de compra con la
    analítica del área. El pedido aparece en **Productos por despachar** y su

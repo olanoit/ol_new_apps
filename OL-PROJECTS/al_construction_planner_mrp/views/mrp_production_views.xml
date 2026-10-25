@@ -6,6 +6,11 @@
         <field name="model">mrp.production</field>
         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
         <field name="arch" type="xml">
+            <!-- M17-18: la fecha que confirma el jefe de producción. -->
+            <xpath expr="//div[@name='date_start']" position="after">
+                <field name="construction_date_confirmed" invisible="not construction_plan_id"
+                       readonly="state in ('done', 'cancel')"/>
+            </xpath>
             <xpath expr="//page[@name='miscellaneous']" position="before">
                 <page string="Plan de obra" name="construction_plan" invisible="not construction_plan_id">
                     <group>

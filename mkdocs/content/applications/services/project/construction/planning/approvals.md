@@ -68,6 +68,12 @@ Con Aprobaciones, la política «Solo alerta» de materiales ya no deja pasar
 estos cambios: el exceso va a su ruta y queda en **Excesos autorizados** al
 aprobarse. La política **Bloquear** sigue bloqueando.
 
+El **requerimiento interno** no tiene plan ni rutas: va a Aprobaciones con el
+jefe del departamento de quien pide o, si no tiene jefe, con el grupo de
+**Aprueba el requerimiento interno si quien pide no tiene jefe**, en un solo
+tramo («basta uno»). Sin ese grupo se aprueba al solicitarlo, como con la
+validación por niveles.
+
 ### Plan de recursos
 
 La solicitud del plan muestra 0 % en **Exceso %**: lo que sube frente a la

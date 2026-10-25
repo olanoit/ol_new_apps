@@ -23,6 +23,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise y los módulos OCA de requerimientos de compra y de aprobación
   por niveles. Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '21.20261023'
+  fecha: 25/10/2026
+  cambios:
+    - "Pruebas del paquete 1.11 v3 (M111-21, M111-22, M111-23 y detalles del 24-oct) y del 1.7 parte 2 (M17-18 y M17-25), con usuarios sin administración; instala el puente al_construction_planner_mrp_request."
 - version: '20.20261023'
   fecha: 24/10/2026
   cambios:

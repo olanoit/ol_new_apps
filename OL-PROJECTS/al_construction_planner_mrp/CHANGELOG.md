@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261024 — 25/10/2026
+
+- Paquete 1.7 parte 2, M17-18: cada orden que crea el asistente del plan lleva la actividad «Revisar y confirmar fecha» para el jefe de producción (Ajustes › Fabricación); la «Fecha confirmada» queda como fecha límite de la orden y mueve la etapa de producción de sus ambientes en el cronograma.
+- Paquete 1.7 parte 2, M17-25: los avisos del asistente («Ya en una OF», metrado por aprobar, sin lista de materiales) dicen «Departamento / ambiente».
+- Paquete 1.11, M111-22: columna «Retazo disponible» en el despacho: el retazo libre más chico que alcanza para la fracción; es un aviso, se usa con «Cubrir con retazo».
+
 ## 10.20261024 — 24/10/2026
 
 - Paquete 1.11, M111-14: el jefe de producción («Fabricación: Usuario») declara sobrantes sin error de acceso, también si el producto retazo del tablero aún no existe.

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- M111-23: la orden muestra la reposición que la originó. -->
+    <record id="mrp_production_form_view_replacement" model="ir.ui.view">
+        <field name="name">mrp.production.form.replacement</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='miscellaneous']//field[@name='origin']" position="after">
+                <field name="construction_replacement_ids" widget="many2many_tags"
+                       invisible="not construction_replacement_ids" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

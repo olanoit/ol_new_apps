@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '12.20261021'
+  fecha: 25/10/2026
+  cambios:
+    - "Paquete 1.7 parte 2, M17-25: el aviso «Sin marcar como medidos» usa el mismo «Departamento / ambiente»."
 - version: '11.20261021'
   fecha: 23/10/2026
   cambios:

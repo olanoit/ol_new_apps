@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner_production, al_construction_planner_approvals_mrp, al_construction_planner_mrp]
+modulos: [al_construction_planner_production, al_construction_planner_approvals_mrp, al_construction_planner_mrp, al_construction_planner_mrp_request]
 ---
 
 # Orden de fabricación del mueble
@@ -19,6 +19,28 @@ comparación de módulo a obra y por etapa.
    otra persona los pida.
 3. En **Rutas de aprobación** queda la fila **Accesorios de armado: oficina
    técnica**, con el jefe de proyectos como seguidor.
+
+## Fecha confirmada por el jefe de producción
+
+Cada orden que crea el asistente **Orden de fabricación** del plan lleva la
+actividad **Revisar y confirmar fecha** para el **Jefe de producción** de
+**Ajustes ‣ Fabricación ‣ Órdenes del plan de obra** (vacío: el responsable de
+la orden). La nota de la actividad trae la fecha del cronograma.
+
+El jefe de producción escribe la **Fecha confirmada** en la orden. Esa fecha:
+
+- queda como **Fecha límite** nativa de la orden;
+- es el nuevo fin de la etapa de producción de sus ambientes en el
+  cronograma, con la misma duración, y empuja las etapas siguientes como al
+  arrastrar la barra;
+- marca la actividad como hecha.
+
+Con la casilla **El jefe de producción confirma la fecha de cada orden**
+apagada, las órdenes se crean sin actividad.
+
+Los avisos del asistente (**Ya en una OF**, metrado por aprobar, sin lista de
+materiales, sin marcar como medidos) nombran cada ambiente con su
+departamento: «Dpto 501 / Cocina, Dpto 502 / Cocina».
 
 ## Estación de cada etapa
 
@@ -116,8 +138,10 @@ de consumo al terminar.
 
 ### Cubrir con retazo
 
-En el despacho a producción, el almacenero pulsa **Cubrir con retazo** en la
-línea del tablero. El asistente muestra la fracción a cubrir (necesidad 7.2 →
+En el despacho a producción, la columna **Retazo disponible** avisa si hay un
+retazo libre del mismo tablero que alcanza para la fracción (el más chico
+primero). Es un aviso, no una asignación: el almacenero pulsa **Cubrir con
+retazo** en la línea del tablero. El asistente muestra la fracción a cubrir (necesidad 7.2 →
 0.2 plancha, 1.04 m²) y los retazos libres del mismo tablero que alcanzan, del
 más chico al más grande. Al marcar uno y confirmar que las piezas entran
 (despiece), la plancha baja a 7 y el retazo se agrega reservado con su lote.

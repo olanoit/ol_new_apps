@@ -61,11 +61,17 @@ class ConstructionMaterialRequestLine(models.Model):
     # destino según las rutas nativas (producto, categoría y almacén). Sin
     # regla, el almacén por defecto del requerimiento.
     location_src_id = fields.Many2one(
-        'stock.location', string='Pedir al almacén', check_company=True,
+        'stock.location', string='Ubicación de origen', check_company=True,
         compute='_compute_location_src_id', store=True, readonly=False, precompute=True,
         domain="[('usage', '=', 'internal')]",
         help='De dónde sale la línea: la regla de la ruta que abastece su destino o, sin '
              'regla, el almacén por defecto del requerimiento.')
+    # Verificación del 24-oct: la línea muestra el almacén, no la ubicación.
+    # Elegir otro almacén lleva la línea a su ubicación de existencias.
+    warehouse_src_id = fields.Many2one(
+        'stock.warehouse', string='Pedir al almacén', check_company=True,
+        compute='_compute_warehouse_src_id', inverse='_inverse_warehouse_src_id',
+        help='Almacén de donde sale la línea (el de su ubicación de origen).')
     supply_mode = fields.Selection(
         [('central', 'Vía almacén central'), ('direct', 'Directo a obra')],
         string='Si hay que comprar', default='central', required=True,
@@ -174,6 +180,17 @@ class ConstructionMaterialRequestLine(models.Model):
         for line in self:
             line.location_src_id = line._get_route_source() or line.request_id.location_src_id
 
+    @api.depends('location_src_id', 'request_id.location_src_id')
+    def _compute_warehouse_src_id(self):
+        for line in self:
+            line.warehouse_src_id = line._get_source_location().warehouse_id
+
+    def _inverse_warehouse_src_id(self):
+        for line in self:
+            warehouse = line.warehouse_src_id
+            if warehouse and line._get_source_location().warehouse_id != warehouse:
+                line.location_src_id = warehouse.lot_stock_id
+
     def _get_route_source(self):
         """Origen que da la regla nativa que abastece el destino de la línea
         (stock.rule._get_rule, como un abastecimiento): solo una regla de
@@ -260,8 +277,7 @@ class ConstructionMaterialRequestLine(models.Model):
             for move in line.move_ids.filtered(lambda m: m.state == 'done'):
                 if not site or not line.product_uom_id:
                     continue
-                qty = move.product_uom._compute_quantity(
-                    move.quantity, line.product_uom_id, rounding_method='HALF-UP')
+                qty = move._construction_request_line_qty(line.product_uom_id)
                 into_site = move.location_dest_id._child_of(site)
                 out_of_site = move.location_id._child_of(site) and not into_site
                 if into_site and not move.location_id._child_of(site):

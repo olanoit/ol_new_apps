@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 27.20261024 — 25/10/2026
+
+- Paquete 1.11, M111-22: el movimiento de una línea indivisible guarda la necesidad (el despacho, la parte que cubre; la entrega pendiente de compra, el resto) y muestra el redondeo. Sin productos indivisibles no cambia nada.
+- Paquete 1.11, M111-22: el tipo del despacho y la cantidad que un movimiento entrega a su línea pasan por métodos que los puentes amplían.
+- Verificación del 24-oct: «Pedir al almacén» de la línea muestra el almacén (elegir otro lleva la línea a su stock) y la ubicación queda como «Ubicación de origen»; la nota «Salió de…» usa el idioma de quien pide para la unidad y el producto.
+
 ## 26.20261024 — 24/10/2026
 
 - Paquete 1.11, M111-20 C: el faltante de una línea que sale de otro almacén se compra con la recepción de ese almacén (un requerimiento de compra por almacén), para que lo recibido reserve la salida a obra en espera.

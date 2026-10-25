@@ -81,13 +81,13 @@ class ConstructionPlanProductionWizard(models.TransientModel):
         notes = []
         if spaces & busy:
             notes.append(self.env._('Ya en una OF: %s.', ', '.join(
-                (spaces & busy).mapped('display_name'))))
+                self._space_label(space) for space in (spaces & busy))))
         if pending:
             notes.append(self.env._('Metrado con diferencia por aprobar: %s.', ', '.join(
-                pending.mapped('display_name'))))
+                self._space_label(space) for space in pending)))
         if no_bom:
             notes.append(self.env._('Sin producto con lista de materiales: %s.', ', '.join(
-                no_bom.mapped('display_name'))))
+                self._space_label(space) for space in no_bom)))
         values = [{
             'group_task_id': floor.id,
             'typology_id': typology.id if typology else False,
@@ -99,6 +99,12 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             'qty': qty,
         } for (floor, product, bom, typology), (group_spaces, qty) in groups.items()]
         return values, notes
+
+    def _space_label(self, space):
+        """«Departamento / ambiente» en los avisos (paquete 1.7 parte 2,
+        M17-25): «Cocina» sola no dice de qué departamento es."""
+        apartment = space.construction_apartment_task_id
+        return ' / '.join(filter(None, [apartment.name, space.name]))
 
     def _production_source(self, space):
         """(producto, BOM, cantidad, tipología) que fabrica el nivel: la línea de
@@ -156,6 +162,8 @@ class ConstructionPlanProductionWizard(models.TransientModel):
             vals.update(self._production_extra_values(line))
             productions |= self.env['mrp.production'].create(vals)
         productions._construction_sync_allocations()
+        # M17-18: el jefe de producción revisa y confirma la fecha de cada una.
+        productions._construction_schedule_date_review()
         plan._mark_in_progress()
         plan.message_post(body=self.env._(
             'Órdenes de fabricación: %s.', ', '.join(productions.mapped('name'))))

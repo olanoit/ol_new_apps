@@ -9,6 +9,18 @@
         <field name="inherit_id" ref="mrp.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//app[@name='mrp']" position="inside">
+                <block title="Órdenes del plan de obra" name="construction_production_date_block">
+                    <setting id="construction_production_date_review" company_dependent="1"
+                             help="Cada orden que crea el asistente del plan lleva la actividad «Revisar y confirmar fecha». La fecha confirmada mueve la etapa de producción del cronograma.">
+                        <field name="construction_production_date_review"/>
+                        <div class="content-group mt-2" invisible="not construction_production_date_review">
+                            <div class="row">
+                                <label for="construction_production_head_id" class="col-lg-5 o_light_label"/>
+                                <field name="construction_production_head_id" class="oe_inline" options="{'no_create': True}"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
                 <block title="Planchas y retazos" name="construction_whole_sheet_block">
                     <setting id="construction_whole_sheet" company_dependent="1"
                              help="Los tableros con unidad «Plancha entera» se entregan, compran y despachan en planchas enteras. La fracción queda como necesidad y el exceso se mide con ella.">

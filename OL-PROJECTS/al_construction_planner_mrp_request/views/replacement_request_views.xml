@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.11, M111-23: «Pedir reposición a planta». -->
+    <record id="construction_replacement_request_view_form" model="ir.ui.view">
+        <field name="name">construction.replacement.request.form</field>
+        <field name="model">construction.replacement.request</field>
+        <field name="arch" type="xml">
+            <form string="Reposición a planta">
+                <header>
+                    <button name="action_submit" type="object" string="Pedir a la planta"
+                            class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            invisible="state not in ('draft', 'requested')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,requested,in_production,produced,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking" type="object" class="oe_stat_button"
+                                icon="fa-truck" invisible="not picking_id"
+                                groups="stock.group_stock_user">
+                            <field name="picking_name" widget="statinfo" string="Despacho"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="project_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="task_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="product_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <label for="product_qty"/>
+                            <div class="o_row">
+                                <field name="product_qty" readonly="state != 'draft'"/>
+                                <field name="product_uom_id" readonly="state != 'draft'" options="{'no_create': True}" groups="uom.group_uom"/>
+                            </div>
+                            <field name="location_dest_id" readonly="state != 'draft'" options="{'no_create': True}"
+                                   groups="stock.group_stock_multi_locations"/>
+                        </group>
+                        <group>
+                            <field name="reason_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="date_required" readonly="state not in ('draft', 'requested')"/>
+                            <field name="requested_by"/>
+                            <field name="request_id" invisible="not request_id"/>
+                            <field name="picking_type_id" invisible="not picking_type_id"/>
+                            <field name="production_name" invisible="not production_id"/>
+                            <field name="production_date" invisible="not production_id"/>
+                            <field name="production_id" invisible="1"/>
+                            <field name="picking_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="reason_note" placeholder="Qué pasó con la pieza…" readonly="state != 'draft'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_replacement_request_view_list" model="ir.ui.view">
+        <field name="name">construction.replacement.request.list</field>
+        <field name="model">construction.replacement.request</field>
+        <field name="arch" type="xml">
+            <list string="Reposiciones a planta">
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="task_id" optional="show"/>
+                <field name="product_id"/>
+                <field name="product_qty"/>
+                <field name="reason_id"/>
+                <field name="date_required" optional="show"/>
+                <field name="production_name" optional="show"/>
+                <field name="requested_by" optional="hide"/>
+                <field name="state" widget="badge" decoration-info="state in ('requested', 'in_production')"
+                       decoration-warning="state == 'produced'" decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_replacement_request_view_search" model="ir.ui.view">
+        <field name="name">construction.replacement.request.search</field>
+        <field name="model">construction.replacement.request</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="product_id"/>
+                <filter name="open" string="Abiertas" domain="[('state', 'not in', ('done', 'cancel'))]"/>
+                <filter name="mine" string="Mías" domain="[('requested_by', '=', uid)]"/>
+                <group>
+                    <filter name="by_project" string="Obra" context="{'group_by': 'project_id'}"/>
+                    <filter name="by_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_replacement_request" model="ir.actions.act_window">
+        <field name="name">Reposiciones a planta</field>
+        <field name="res_model">construction.replacement.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Pida a la planta una pieza que hay que volver a fabricar</p>
+            <p>La planta la fabrica en su tipo de reposición y la despacha a la obra.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_construction_replacement_request" name="Reposiciones a planta"
+              parent="al_construction_material_request.menu_construction_requests_root"
+              action="action_construction_replacement_request" sequence="18"
+              groups="al_construction_material_request.group_construction_requester"/>
+</odoo>

@@ -27,6 +27,12 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '11.20261024'
+  fecha: 25/10/2026
+  cambios:
+    - "Paquete 1.7 parte 2, M17-18: cada orden que crea el asistente del plan lleva la actividad «Revisar y confirmar fecha» para el jefe de producción (Ajustes › Fabricación); la «Fecha confirmada» queda como fecha límite de la orden y mueve la etapa de producción de sus ambientes en el cronograma."
+    - "Paquete 1.7 parte 2, M17-25: los avisos del asistente («Ya en una OF», metrado por aprobar, sin lista de materiales) dicen «Departamento / ambiente»."
+    - "Paquete 1.11, M111-22: columna «Retazo disponible» en el despacho: el retazo libre más chico que alcanza para la fracción; es un aviso, se usa con «Cubrir con retazo»."
 - version: '10.20261024'
   fecha: 24/10/2026
   cambios:

@@ -109,7 +109,10 @@
                                     <field name="analytic_distribution" widget="analytic_distribution"
                                            optional="show" groups="analytic.group_analytic_accounting"
                                            options="{'product_field': 'product_id'}"/>
-                                    <field name="location_src_id" optional="show" options="{'no_create': True}"
+                                    <field name="warehouse_src_id" optional="show" options="{'no_create': True}"
+                                           readonly="not parent.user_is_logistics"
+                                           groups="stock.group_stock_multi_locations"/>
+                                    <field name="location_src_id" optional="hide" options="{'no_create': True}"
                                            readonly="not parent.user_is_logistics"
                                            groups="stock.group_stock_multi_locations"/>
                                     <field name="supply_mode" optional="hide"

@@ -12,6 +12,7 @@ import re
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools.misc import formatLang
 
 REMNANT_BANDS = [
     ('r10', 'R10 (merma)'),
@@ -272,6 +273,11 @@ class StockMove(models.Model):
         compute='_compute_construction_covered_qty')
     construction_can_cover = fields.Boolean(
         string='Puede cubrir con retazo', compute='_compute_construction_can_cover')
+    # Paquete 1.11, M111-22: aviso, no asignación; el almacenero decide.
+    construction_remnant_hint = fields.Char(
+        string='Retazo disponible', compute='_compute_construction_remnant_hint',
+        help='El retazo libre más chico del mismo tablero que alcanza para la fracción por '
+             'cubrir. Para usarlo, «Cubrir con retazo».')
 
     @api.depends('construction_cover_move_ids.state',
                  'construction_cover_move_ids.construction_remnant_lot_id.construction_sheet_pct')
@@ -303,6 +309,23 @@ class StockMove(models.Model):
                 and move.product_id.construction_remnant_tmpl_id
                 and move._construction_whole_controlled()
                 and move._construction_cover_fraction() > 0)
+
+    @api.depends('construction_can_cover')
+    def _compute_construction_remnant_hint(self):
+        Wizard = self.env['construction.remnant.cover.wizard']
+        for move in self:
+            hint = False
+            if move.construction_can_cover and move.product_id.construction_sheet_area_m2:
+                area = move._construction_cover_fraction() \
+                    * move.product_id.construction_sheet_area_m2
+                lines = Wizard._remnant_lines(move, area)
+                if lines:
+                    lot = self.env['stock.lot'].browse(lines[0]['lot_id'])
+                    hint = self.env._('%(lot)s (%(pct)s %% plancha)', lot=lot.name,
+                                      pct=formatLang(self.env, lines[0]['sheet_pct'], digits=0))
+                    if len(lines) > 1:
+                        hint += self.env._(' y %s más', len(lines) - 1)
+            move.construction_remnant_hint = hint
 
     # ------------------------------------------------------------------
     # Cubrir con retazo (P7)

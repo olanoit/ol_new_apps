@@ -1,0 +1,34 @@
+titulo: 'Planificación de obra: producción y requerimiento de obra'
+subtitulo: Planchas enteras y retazo en el despacho del requerimiento, despacho a la preproducción
+  de la planta y reposición a planta pedida por la obra.
+categoria: Construcción · Proyectos
+etiquetas:
+- Requerimiento de obra
+- Planchas enteras
+- Retazos
+- Reposición a planta
+destacados:
+- icono: ▦
+  titulo: Necesidad en el despacho
+  texto: El despacho de un tablero indivisible muestra la necesidad en fracción y el redondeo a plancha entera.
+- icono: ✂
+  titulo: Cubrir con retazo
+  texto: La fracción se cubre con un retazo del mismo tablero y la línea del requerimiento lo cuenta por su fracción de plancha.
+- icono: ⇢
+  titulo: Despacho según el destino
+  texto: A la preproducción de una planta sale con «Elegir componentes»; a la obra, con «Despacho a obra».
+- icono: ↻
+  titulo: Reposición a planta
+  texto: La obra pide la pieza, la planta la fabrica en su tipo de reposición y la despacha a la obra, sin que quien pide entre a Fabricación.
+configuracion:
+- "Se instala solo con **Planificación de obra: producción** y **compras y abastecimiento**."
+- "En **Ajustes ▸ Fabricación ▸ Órdenes del plan de obra**, elija el **Tipo de la reposición a planta** y el **Jefe de producción**."
+- "Marque **Preproducción de planta** en la ubicación de preproducción y use la fabricación en dos o tres pasos en el almacén de la planta."
+requisitos_nota: Requiere `al_construction_planner_mrp` y `al_construction_planner_purchase`. Licencia
+  LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
+novedades:
+- version: '1.20261025'
+  fecha: 25/10/2026
+  cambios:
+    - "Paquete 1.11, M111-22: «Cubrir con retazo» y «Quitar retazo» en el despacho del requerimiento de obra; la línea cuenta la fracción cubierta y su redondeo; el despacho a la preproducción de una planta usa el tipo «Elegir componentes» del almacén."
+    - "Paquete 1.11, M111-23: «Pedir reposición a planta» (menú Requerimientos y botón del requerimiento): orden en borrador en el tipo de reposición con el motivo, actividad al jefe de producción, estados según la orden y el despacho, y despacho a obra al terminar."

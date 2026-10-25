@@ -1176,8 +1176,16 @@
         <field name="kind">model</field>
         <field name="name">Retazo disponible</field>
         <field name="module">al_construction_planner_mrp</field>
-        <field name="path">applications/services/project/construction/planning/production_order/</field>
-        <field name="section">Mobiliario: módulos, productos y envíos</field>
+        <field name="path">applications/services/project/construction/planning/production_order/#cubrir-con-retazo</field>
+        <field name="section">Cubrir con retazo</field>
+    </record>
+    <record id="help_construction_replacement_request" model="al.docs.help">
+        <field name="key">construction.replacement.request</field>
+        <field name="kind">model</field>
+        <field name="name">Reposición a planta</field>
+        <field name="module">al_construction_planner_mrp_request</field>
+        <field name="path">applications/services/project/construction/material_requests/#pedir-reposición-a-planta</field>
+        <field name="section">Pedir reposición a planta</field>
     </record>
     <record id="help_construction_resource_plan" model="al.docs.help">
         <field name="key">construction.resource.plan</field>

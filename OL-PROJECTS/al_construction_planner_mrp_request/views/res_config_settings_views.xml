@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_replacement" model="ir.ui.view">
+        <field name="name">res.config.settings.form.replacement</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner_mrp.res_config_settings_view_form_whole_sheet"/>
+        <field name="arch" type="xml">
+            <xpath expr="//setting[@id='construction_production_date_review']" position="after">
+                <setting id="construction_replacement_type" company_dependent="1"
+                         string="Reposición a planta"
+                         help="La obra pide la pieza desde el requerimiento; la orden se crea en borrador en esta operación y la pieza sale a la obra al terminarla.">
+                    <field name="construction_replacement_type_id" options="{'no_create': True}"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+</odoo>
