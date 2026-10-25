@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261021 — 25/10/2026
+
+- Paquete 1.11, M111-21: con «Aplicación Aprobaciones», el requerimiento interno va a Aprobaciones con el jefe del departamento de quien pide o, sin jefe, con el grupo de la opción M111-19 C; sin grupo se aprueba al solicitarlo, como con los niveles.
+
 ## 6.20261021 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulo 5: accesos, menús y botones con los grupos en dos ejes (Plan: consulta, planificador, aprueba; Ejecución: reporta avance, ejecuta, valida, aprueba). La oficina técnica sale de la selección y equivale a Plan: planificador más Ejecución: valida.

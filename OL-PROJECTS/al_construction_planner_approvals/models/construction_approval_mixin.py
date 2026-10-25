@@ -157,18 +157,28 @@ class ConstructionApprovalMixin(models.AbstractModel):
             'status': 'new',
         } for index, (user, tokens) in enumerate(tokens_by_user.items())]
         project = self._construction_project()
-        reason = Markup('<p>%s</p>') % self.env._(
+        summary = self.env._(
             '%(doc)s · obra %(project)s · %(steps)s tramo(s): %(names)s.',
             doc=self.display_name, project=project.display_name, steps=len(ladder),
             names=', '.join(ladder.mapped('name')))
+        return self._construction_open_approval(
+            ladder[0].category_id, approver_values, info, summary,
+            ladder._construction_follower_partners(project))
+
+    def _construction_open_approval(self, category, approver_values, info, summary,
+                                    followers=None):
+        """Crea y confirma la solicitud con sus aprobadores ya armados."""
+        self.ensure_one()
+        project = self._construction_project()
+        reason = Markup('<p>%s</p>') % summary
         if info.get('reason'):
             reason += Markup('<p>%s</p>') % info['reason']
         # Quien envía no administra Aprobaciones (no crea aprobadores): la
         # solicitud y sus aprobadores salen de la ruta, no de su elección.
         request_sudo = self.env['approval.request'].sudo().create({
-            'name': '%s · %s' % (ladder[0].category_id.name, self.display_name),
-            'category_id': ladder[0].category_id.id,
-            'request_owner_id': owner.id,
+            'name': '%s · %s' % (category.name, self.display_name),
+            'category_id': category.id,
+            'request_owner_id': self.env.user.id,
             'company_id': self.company_id.id,
             'reference': self.display_name,
             'reason': reason,
@@ -188,7 +198,6 @@ class ConstructionApprovalMixin(models.AbstractModel):
         request_sudo.construction_notified_status = request_sudo.request_status
         # Los campos de la solicitud no tienen dependencias: se recalculan.
         self.invalidate_recordset()
-        followers = ladder._construction_follower_partners(project)
         if followers:
             request_sudo.message_subscribe(partner_ids=followers.ids)
             self.message_subscribe(partner_ids=followers.ids)

@@ -5,7 +5,11 @@ Sin cambios frente al plan va directo al almacén. Un material que no está en
 el plan es un cambio de material; más de lo que queda en el plan (o repetir
 lo ya pedido de un nivel y sub etapa) es un cambio de cantidad. Cada cambio
 sigue su escalera de la tabla de rutas; con Aprobaciones, la política «Solo
-alerta» de materiales ya no deja pasar estos cambios."""
+alerta» de materiales ya no deja pasar estos cambios.
+
+El requerimiento interno (paquete 1.11, M111-21) no tiene plan ni rutas: con
+Aprobaciones lo aprueba el jefe del departamento de quien pide o, sin jefe,
+el grupo de la compañía (M111-19 C), igual que con los niveles."""
 from odoo import models
 
 
@@ -28,6 +32,47 @@ class ConstructionMaterialRequest(models.Model):
             # El exceso no pasa por el asistente de la política: va a la ruta.
             self = self.with_context(construction_exceed_checked=True)
         return super().action_request_approval()
+
+    def _construction_submit_approval(self):
+        internal = self.filtered(lambda r: r.request_type == 'internal')
+        submitted = super(ConstructionMaterialRequest, self - internal)._construction_submit_approval()
+        for request in internal:
+            users = request._construction_internal_approvers()
+            if not users:
+                continue
+            # Un solo tramo, «basta uno», con el jefe o con el grupo.
+            approver_values = [{
+                'user_id': user.id,
+                'sequence': 1000 + index,
+                'construction_step': 1,
+                'construction_slots': '1:any:internal',
+                'status': 'new',
+            } for index, user in enumerate(users)]
+            category = self.env['approval.category']._construction_category(request.company_id)
+            summary = self.env._(
+                '%(doc)s · requerimiento interno de %(user)s · %(approver)s.',
+                doc=request.display_name, user=request.requested_by.name,
+                approver=request.construction_department_manager_id.name
+                or request.company_id.construction_internal_fallback_group_id.name)
+            request._construction_open_approval(
+                category, approver_values, request._construction_approval_info(), summary)
+            submitted |= request
+        return submitted
+
+    def _construction_internal_approvers(self):
+        """Quien aprueba el interno: el jefe del departamento o, sin jefe,
+        los usuarios internos activos del grupo de la compañía, nunca quien
+        pide. Vacío: se aprueba al solicitarlo."""
+        self.ensure_one()
+        manager = self.construction_department_manager_id
+        if manager:
+            return manager - self.env.user
+        group = self.company_id.construction_internal_fallback_group_id
+        # Los usuarios del grupo los lee el sistema: quien pide no ve grupos.
+        group_sudo = group.sudo()
+        return group_sudo.all_user_ids.filtered(
+            lambda u: u.active and not u.share and self.company_id in u.company_ids
+        ).sudo(False) - self.env.user
 
     def _write_approved(self):
         if not self.env.context.get('construction_approval_granted'):

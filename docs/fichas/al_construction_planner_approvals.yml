@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '7.20261021'
+  fecha: 25/10/2026
+  cambios:
+    - "Paquete 1.11, M111-21: con «Aplicación Aprobaciones», el requerimiento interno va a Aprobaciones con el jefe del departamento de quien pide o, sin jefe, con el grupo de la opción M111-19 C; sin grupo se aprueba al solicitarlo, como con los niveles."
 - version: '6.20261021'
   fecha: 23/10/2026
   cambios:
