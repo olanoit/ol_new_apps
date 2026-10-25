@@ -92,9 +92,10 @@ class TestRequestFixes(TestRequestScope):
         self.assertIn(works, request.construction_allowed_stage_ids)
 
     def test_past_need_date_proposes_today(self):
-        today = fields.Date.context_today(self.plan)
-        self.plan.line_ids.date_needed = today - timedelta(days=4)
+        # «Hoy» en el huso de quien pide, como lo propone el requerimiento.
         request = self._new_request()
+        today = fields.Date.context_today(request)
+        self.plan.line_ids.date_needed = today - timedelta(days=4)
         self._scope(request, spaces=self.space_501, stages=self.stage_assembly)
         request.action_construction_fetch_plan()
         self.assertEqual(request.date_required, today)
