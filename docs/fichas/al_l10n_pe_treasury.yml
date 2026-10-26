@@ -1,0 +1,104 @@
+titulo: Tesorería
+subtitulo: >-
+  La aplicación del tesorero: cuánto dinero hay y cuánto se puede usar, qué se paga y
+  quién lo aprueba, transferencias y compra de dólares con el T.C. pactado y las líneas
+  de crédito de cada banco.
+categoria: Localización Perú · Tesorería
+etiquetas: [Tesorería, Posición bancaria, Programación de pagos, Aprobaciones, Compra de dólares, Bancarización]
+
+destacados_intro: >-
+  Todo sale de la contabilidad y de los pagos de Odoo: la app ordena el trabajo diario
+  sin un registro paralelo.
+destacados:
+  - icono: "▤"
+    titulo: Posición diaria
+    texto: >-
+      Saldo contable y del extracto, cobros y pagos en tránsito, pagos programados,
+      saldo mínimo y sobregiro: el disponible de cada banco, en su moneda y en soles.
+  - icono: "✓"
+    titulo: Pagos con aprobación
+    texto: >-
+      Propuesta por vencimiento, importe por documento, una o dos firmas según el
+      importe y sin que apruebe quien prepara.
+  - icono: "⇄"
+    titulo: Cambio de moneda
+    texto: >-
+      Compra y venta de dólares entre cuentas propias con el T.C. pactado; diferencia
+      de cambio a 676/776 si se valoriza al T.C. del día.
+  - icono: "%"
+    titulo: Líneas de crédito
+    texto: >-
+      Límite, uso y disponible por banco; los préstamos y las cartas fianza la
+      consumen.
+  - icono: "!"
+    titulo: Bancarización
+    texto: >-
+      Aviso o bloqueo de los pagos en efectivo desde S/ 2 000 o US$ 500 (TUO de la
+      Ley 28194, DL 1529).
+  - icono: "⇆"
+    titulo: Multicompañía
+    texto: >-
+      Cada compañía con sus bancos, programaciones y aprobaciones.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Las funciones de tesorería estaban repartidas: el flujo de caja, los depósitos, los
+    cheques y la caja chica en el menú Perú; los pagos en Contabilidad, y la posición
+    del día y la programación de pagos en hojas de cálculo. La app las reúne y agrega lo
+    que faltaba: el disponible real de cada banco, la programación de pagos con firmas y
+    las operaciones de cambio con su diferencia de cambio.
+  nota: >-
+    **Sobre lo nativo.** Los pagos se registran con el asistente de Odoo (actúan la
+    retención, el ITF y el T.C. pactado de la suite) y las transferencias son dos pagos
+    contra la cuenta de transferencias (1051), listos para conciliar con el extracto.
+
+pasos_intro: >-
+  Un día de tesorería.
+pasos:
+  - titulo: Ver la posición
+    ruta: Tesorería ▸ Posición ▸ Posición diaria
+    texto: >-
+      Se guarda una posición por día; «Actualizar» la recalcula. El disponible descuenta
+      lo programado y el saldo mínimo y suma el sobregiro autorizado.
+  - titulo: Programar los pagos
+    ruta: Tesorería ▸ Operaciones ▸ Programación de pagos
+    texto: >-
+      Banco y fecha, «Proponer documentos» (vencidos hasta una fecha, por proveedor),
+      ajustar el importe de cada uno y «Enviar a aprobar».
+  - titulo: Aprobar y pagar
+    texto: >-
+      El aprobador firma (y el administrador si supera la segunda firma); «Pagar» registra
+      un pago por proveedor y, con el TXT del banco, el lote.
+  - titulo: Comprar dólares
+    ruta: Tesorería ▸ Operaciones ▸ Transferencias y cambio de moneda
+    texto: >-
+      Banco en soles a banco en dólares, importe y T.C. pactado: la app calcula lo
+      recibido y registra la salida y la entrada.
+
+configuracion:
+  - "Grupos en Ajustes ▸ Usuarios: Tesorería (Usuario, Aprobador, Administrador)."
+  - "Importes de aprobación, días de aviso y bancarización en Ajustes ▸ Perú ▸ Tesorería."
+  - "Saldo mínimo, sobregiro y fondos no disponibles en cada banco (pestaña Tesorería del diario)."
+  - "Cuenta de transferencias internas (1051) en Contabilidad ▸ Ajustes y cuentas de pagos y cobros pendientes en los métodos de pago de los bancos."
+
+faq:
+  - pregunta: "¿El ITF se cobra en las transferencias entre mis cuentas?"
+    respuesta: >-
+      No están gravadas (Informe SUNAT 143-2010). Si el banco lo cobró, marque «ITF en el
+      origen» o «en el destino» y se registra con el pago.
+  - pregunta: "¿Puedo pagar solo una parte de una factura?"
+    respuesta: >-
+      Sí: baje el importe «A pagar» del documento; se paga por separado y la factura queda
+      parcialmente pagada.
+  - pregunta: "¿Qué pasa si no aprueban?"
+    respuesta: >-
+      «Devolver» deja la programación en borrador y borra las firmas.
+
+novedades:
+  - version: 1.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "Primera versión: aplicación Tesorería con posición diaria, programación de pagos con aprobación, transferencias y cambio de moneda, líneas de crédito y bancarización."
+
+relacionados: [al_l10n_pe_bank_loan, al_l10n_pe_bank_guarantee, al_l10n_pe_cash_forecast, al_l10n_pe_term_deposit, al_l10n_pe_batch_payment, al_l10n_pe_itf]

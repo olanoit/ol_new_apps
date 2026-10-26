@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+  <!-- Tesorería (AL): caja fuerte, billete y moneda superpuestos. -->
+  <rect x="3" y="14" width="30" height="30" rx="4" fill="#005E7A"/>
+  <rect x="15" y="5" width="32" height="21" rx="4" fill="#1AD3BB"/>
+  <rect x="21" y="12" width="20" height="7" rx="3.5" fill="#FFFFFF"/>
+  <circle cx="35" cy="36" r="11" fill="#FBB945"/>
+  <rect x="31" y="34" width="8" height="4" rx="2" fill="#FFFFFF"/>
+</svg>

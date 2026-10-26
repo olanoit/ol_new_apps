@@ -1,0 +1,21 @@
+titulo: Programación de pagos con lote bancario
+subtitulo: >-
+  La programación de pagos aprobada se paga y sus pagos quedan en un lote listo para el
+  archivo TXT del banco.
+categoria: Localización Perú · Tesorería
+etiquetas: [Programación de pagos, Pagos masivos, TXT bancario]
+
+destacados:
+  - icono: "✓"
+    titulo: De la aprobación al archivo
+    texto: >-
+      Con el método «archivo TXT del banco», «Pagar» crea los pagos y el lote enlazado a
+      la programación.
+
+novedades:
+  - version: 1.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "Primera versión: lote bancario desde la programación de pagos."
+
+relacionados: [al_l10n_pe_treasury, al_l10n_pe_batch_payment]

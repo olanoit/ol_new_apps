@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Guarda la posición del día de cada compañía (se recalcula si ya existe). -->
+    <record id="ir_cron_treasury_daily_position" model="ir.cron">
+        <field name="name">Tesorería: posición diaria</field>
+        <field name="model_id" ref="model_l10n_pe_treasury_position"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_l10n_pe_daily_position()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+    <!-- Aviso antes del vencimiento de las líneas de crédito. -->
+    <record id="ir_cron_treasury_credit_line_notice" model="ir.cron">
+        <field name="name">Tesorería: vencimiento de líneas de crédito</field>
+        <field name="model_id" ref="model_l10n_pe_treasury_credit_line"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_l10n_pe_credit_line_notice()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

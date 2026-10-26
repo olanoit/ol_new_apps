@@ -1,0 +1,48 @@
+titulo: Cartas fianza
+subtitulo: >-
+  Las cartas fianza que el banco emite a pedido de la empresa y las que se reciben de
+  proveedores y contratistas: vigencia, renovación, comisión y avisos a tiempo.
+categoria: Localización Perú · Tesorería
+etiquetas: [Cartas fianza, Licitaciones, Fiel cumplimiento, Adelantos, Cuentas de orden]
+
+destacados:
+  - icono: "▤"
+    titulo: Emitidas y recibidas
+    texto: >-
+      Fiel cumplimiento, adelantos, seriedad de oferta, pago o aduanera, con beneficiario,
+      contrato y condiciones.
+  - icono: "%"
+    titulo: Comisión
+    texto: >-
+      Tasa trimestral con mínimo al emitir y al renovar (6391), con ITF opcional.
+  - icono: "⏰"
+    titulo: Art. 1898
+    texto: >-
+      En las recibidas, el aviso vence el último día para requerir al banco: vencimiento
+      más 15 días.
+  - icono: "↻"
+    titulo: Renovar, liberar, ejecutar
+    texto: >-
+      Cada renovación es una carta fianza enlazada; la ejecución registra lo pagado o
+      cobrado.
+  - icono: "▥"
+    titulo: Línea de crédito
+    texto: >-
+      Las emitidas consumen la línea del banco; el fondo en garantía se enlaza con
+      Depósitos y garantías.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Una carta fianza no se registra como deuda, así que suele llevarse en una hoja de
+    cálculo. Si vence sin renovarse, la empresa pierde el contrato o, en las recibidas,
+    la garantía: el fiador queda libre si no se le requiere dentro de los 15 días
+    siguientes al vencimiento (art. 1898 del Código Civil).
+
+novedades:
+  - version: 1.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "Primera versión: cartas fianza emitidas y recibidas, comisión, renovación, liberación, ejecución, cuentas de orden, línea de crédito y avisos."
+
+relacionados: [al_l10n_pe_treasury, al_l10n_pe_term_deposit, al_l10n_pe_bank_loan]

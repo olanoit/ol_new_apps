@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bank_guarantee_list" model="ir.ui.view">
+        <field name="name">l10n_pe.bank.guarantee.list</field>
+        <field name="model">l10n_pe.bank.guarantee</field>
+        <field name="arch" type="xml">
+            <list string="Cartas fianza" sample="1"
+                  decoration-muted="state in ('renewed', 'released', 'cancel')"
+                  decoration-info="state == 'draft'" decoration-danger="state == 'expired'"
+                  decoration-warning="due_soon">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="due_soon" column_invisible="1"/>
+                <field name="number"/>
+                <field name="direction" optional="show"/>
+                <field name="guarantee_type"/>
+                <field name="bank_id"/>
+                <field name="partner_id"/>
+                <field name="contract_reference" optional="show"/>
+                <field name="date_issue" optional="hide"/>
+                <field name="date_end"/>
+                <field name="claim_deadline" optional="hide"/>
+                <field name="amount" sum="Importe"/>
+                <field name="commission_amount" sum="Comisión" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'" decoration-danger="state in ('expired', 'executed')"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_bank_guarantee_form" model="ir.ui.view">
+        <field name="name">l10n_pe.bank.guarantee.form</field>
+        <field name="model">l10n_pe.bank.guarantee</field>
+        <field name="arch" type="xml">
+            <form string="Carta fianza">
+                <header>
+                    <button name="action_activate" type="object" string="Registrar vigente" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_renew" type="object" string="Renovar" class="btn-primary"
+                            invisible="state not in ('active', 'expired')"/>
+                    <button name="action_release" type="object" string="Liberar"
+                            invisible="state not in ('active', 'expired')"
+                            confirm="La carta fianza se da por devuelta y deja de estar vigente. ¿Continuar?"/>
+                    <button name="action_execute" type="object" string="Ejecutar"
+                            invisible="state not in ('active', 'expired')"/>
+                    <button name="action_cancel" type="object" string="Anular" invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Volver a borrador" invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,released"/>
+                </header>
+                <div class="alert alert-warning mb-0" role="alert"
+                     invisible="direction != 'received' or state not in ('active', 'expired') or not due_soon">
+                    Vence el <field name="date_end" readonly="1" class="oe_inline"/>: si la obligación no está
+                    cumplida, pida la renovación o requiera al banco antes del
+                    <field name="claim_deadline" class="oe_inline"/> (art. 1898 del Código Civil).
+                </div>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-bars"
+                                invisible="not move_count">
+                            <field name="move_count" widget="statinfo" string="Asientos"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="number"/>
+                        <h1><field name="number" placeholder="N.º del banco" readonly="state != 'draft'"/></h1>
+                        <field name="name" readonly="1" class="text-muted"/>
+                    </div>
+                    <group>
+                        <group string="Carta fianza">
+                            <field name="due_soon" invisible="1"/>
+                            <field name="direction" widget="radio" readonly="state != 'draft'"/>
+                            <field name="guarantee_type" readonly="state != 'draft'"/>
+                            <field name="bank_id" readonly="state != 'draft'" options="{'no_quick_create': True}"/>
+                            <field name="partner_id" readonly="state != 'draft'" options="{'no_quick_create': True}"/>
+                            <field name="contract_reference"/>
+                            <field name="currency_id" readonly="state != 'draft'" options="{'no_create': True}"
+                                   groups="base.group_multi_currency"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group string="Vigencia">
+                            <field name="date_issue" readonly="state != 'draft'"/>
+                            <field name="date_end" readonly="state != 'draft'"/>
+                            <field name="days_to_end" invisible="state not in ('active', 'expired')"/>
+                            <field name="claim_deadline" invisible="direction != 'received'"/>
+                            <field name="renewed_from_id" invisible="not renewed_from_id"/>
+                            <field name="renewal_id" invisible="not renewal_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Condiciones" name="conditions">
+                            <group>
+                                <group>
+                                    <field name="is_solidary" readonly="state != 'draft'"/>
+                                    <field name="is_irrevocable" readonly="state != 'draft'"/>
+                                    <field name="is_unconditional" readonly="state != 'draft'"/>
+                                </group>
+                                <group>
+                                    <field name="is_automatic" readonly="state != 'draft'"/>
+                                    <field name="no_excussion" readonly="state != 'draft'"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Comisión y línea" name="commission" invisible="direction != 'issued'">
+                            <group>
+                                <group string="Comisión">
+                                    <field name="journal_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                                    <field name="commission_rate" readonly="state != 'draft'"/>
+                                    <field name="commission_min" readonly="state != 'draft'"/>
+                                    <field name="commission_amount" readonly="state != 'draft'"/>
+                                    <field name="commission_account_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                                    <field name="itf_applies" readonly="state != 'draft'"/>
+                                </group>
+                                <group string="Respaldo">
+                                    <field name="credit_line_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                                    <field name="deposit_id" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notas" name="notes">
+                            <field name="notes" placeholder="Texto de la carta fianza, contacto en el banco…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_bank_guarantee_search" model="ir.ui.view">
+        <field name="name">l10n_pe.bank.guarantee.search</field>
+        <field name="model">l10n_pe.bank.guarantee</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="number"/>
+                <field name="partner_id"/>
+                <field name="bank_id"/>
+                <field name="contract_reference"/>
+                <filter name="issued" string="Emitidas" domain="[('direction', '=', 'issued')]"/>
+                <filter name="received" string="Recibidas" domain="[('direction', '=', 'received')]"/>
+                <separator/>
+                <filter name="active" string="Vigentes" domain="[('state', 'in', ('active', 'expired'))]"/>
+                <filter name="expired" string="Vencidas" domain="[('state', '=', 'expired')]"/>
+                <separator/>
+                <filter name="date_end" string="Vencimiento" date="date_end"/>
+                <group>
+                    <filter name="group_bank" string="Banco" context="{'group_by': 'bank_id'}"/>
+                    <filter name="group_partner" string="Beneficiario / afianzado" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_type" string="Tipo" context="{'group_by': 'guarantee_type'}"/>
+                    <filter name="group_month" string="Mes de vencimiento" context="{'group_by': 'date_end:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_bank_guarantee_calendar" model="ir.ui.view">
+        <field name="name">l10n_pe.bank.guarantee.calendar</field>
+        <field name="model">l10n_pe.bank.guarantee</field>
+        <field name="arch" type="xml">
+            <calendar string="Vencimientos" date_start="date_end" color="direction" mode="month">
+                <field name="partner_id"/>
+                <field name="amount"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="action_bank_guarantee" model="ir.actions.act_window">
+        <field name="name">Cartas fianza</field>
+        <field name="res_model">l10n_pe.bank.guarantee</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre sus cartas fianza</p>
+            <p>Las que el banco emite a su pedido (licitaciones, contratos, adelantos) y las que recibe
+               de proveedores y contratistas, con su vencimiento, renovación y comisión.</p>
+        </field>
+    </record>
+</odoo>

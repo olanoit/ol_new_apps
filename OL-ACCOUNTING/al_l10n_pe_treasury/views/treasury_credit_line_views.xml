@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_treasury_credit_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.credit.line.list</field>
+        <field name="model">l10n_pe.treasury.credit.line</field>
+        <field name="arch" type="xml">
+            <list string="Líneas de crédito" sample="1" decoration-danger="amount_available &lt; 0 or expired">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="expired" column_invisible="1"/>
+                <field name="partner_id"/>
+                <field name="name"/>
+                <field name="line_type"/>
+                <field name="currency_id" string="Moneda" optional="show"/>
+                <field name="amount_limit"/>
+                <field name="amount_used"/>
+                <field name="amount_available"/>
+                <field name="usage_percent" widget="progressbar" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_treasury_credit_line_form" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.credit.line.form</field>
+        <field name="model">l10n_pe.treasury.credit.line</field>
+        <field name="arch" type="xml">
+            <form string="Línea de crédito">
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
+                    <widget name="web_ribbon" title="Vencida" bg_color="text-bg-warning" invisible="not expired or not active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="p. ej. Línea de cartas fianza BCP"/></h1>
+                    </div>
+                    <group>
+                        <group string="Línea">
+                            <field name="active" invisible="1"/>
+                            <field name="expired" invisible="1"/>
+                            <field name="partner_id" options="{'no_quick_create': True}"/>
+                            <field name="line_type"/>
+                            <field name="currency_id" options="{'no_create': True}" groups="base.group_multi_currency"/>
+                            <field name="amount_limit"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                        <group string="Uso">
+                            <field name="amount_used"/>
+                            <field name="amount_available"/>
+                            <field name="usage_percent" widget="progressbar"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Vigencia">
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                        <group string="Condiciones">
+                            <field name="rate"/>
+                            <field name="commission_rate"/>
+                            <field name="guarantee"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notas" name="notes">
+                            <field name="notes" placeholder="Condiciones del banco, contacto, covenants…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_treasury_credit_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.credit.line.search</field>
+        <field name="model">l10n_pe.treasury.credit.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter name="archived" string="Archivadas" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter name="group_partner" string="Banco" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_type" string="Tipo" context="{'group_by': 'line_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_treasury_credit_line" model="ir.actions.act_window">
+        <field name="name">Líneas de crédito</field>
+        <field name="res_model">l10n_pe.treasury.credit.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre las líneas de crédito de sus bancos</p>
+            <p>El límite aprobado por cada banco, cuánto usan los préstamos y las cartas fianza y cuánto
+               queda disponible.</p>
+        </field>
+    </record>
+</odoo>

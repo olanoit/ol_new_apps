@@ -2147,6 +2147,54 @@
         <field name="path">applications/finance/accounting/collection/</field>
         <field name="section">Cobranza</field>
     </record>
+    <record id="help_l10n_pe_bank_guarantee" model="al.docs.help">
+        <field name="key">l10n_pe.bank.guarantee</field>
+        <field name="kind">model</field>
+        <field name="name">Carta fianza</field>
+        <field name="module">al_l10n_pe_bank_guarantee</field>
+        <field name="path">applications/finance/treasury/bank_guarantees/</field>
+        <field name="section">Cartas fianza</field>
+    </record>
+    <record id="help_l10n_pe_bank_guarantee_wizard" model="al.docs.help">
+        <field name="key">l10n_pe.bank.guarantee.wizard</field>
+        <field name="kind">model</field>
+        <field name="name">Renovar o ejecutar una carta fianza</field>
+        <field name="module">al_l10n_pe_bank_guarantee</field>
+        <field name="path">applications/finance/treasury/bank_guarantees/</field>
+        <field name="section">Cartas fianza</field>
+    </record>
+    <record id="help_l10n_pe_bank_loan" model="al.docs.help">
+        <field name="key">l10n_pe.bank.loan</field>
+        <field name="kind">model</field>
+        <field name="name">Préstamo bancario</field>
+        <field name="module">al_l10n_pe_bank_loan</field>
+        <field name="path">applications/finance/treasury/bank_loans/</field>
+        <field name="section">Préstamos y pagarés bancarios</field>
+    </record>
+    <record id="help_l10n_pe_bank_loan_account_config" model="al.docs.help">
+        <field name="key">l10n_pe.bank.loan.account.config</field>
+        <field name="kind">model</field>
+        <field name="name">Cuentas de préstamos bancarios</field>
+        <field name="module">al_l10n_pe_bank_loan</field>
+        <field name="path">applications/finance/treasury/bank_loans/</field>
+        <field name="section">Préstamos y pagarés bancarios</field>
+    </record>
+    <record id="help_l10n_pe_bank_loan_line" model="al.docs.help">
+        <field name="key">l10n_pe.bank.loan.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cuota de préstamo bancario</field>
+        <field name="module">al_l10n_pe_bank_loan</field>
+        <field name="path">applications/finance/treasury/bank_loans/</field>
+        <field name="section">Préstamos y pagarés bancarios</field>
+    </record>
+    <record id="help_l10n_pe_bank_loan_payment" model="al.docs.help">
+        <field name="key">l10n_pe.bank.loan.payment</field>
+        <field name="kind">model</field>
+        <field name="name">Pago de cuota o prepago de préstamo</field>
+        <field name="module">al_l10n_pe_bank_loan</field>
+        <field name="path">applications/finance/treasury/bank_loans/</field>
+        <field name="section">Préstamos y pagarés bancarios</field>
+    </record>
     <record id="help_l10n_pe_cash_closing" model="al.docs.help">
         <field name="key">l10n_pe.cash.closing</field>
         <field name="kind">model</field>
@@ -3626,6 +3674,62 @@
         <field name="module">al_l10n_pe_term_deposit</field>
         <field name="path">applications/finance/accounting/term_deposits/</field>
         <field name="section">Depósitos a plazo y garantías</field>
+    </record>
+    <record id="help_l10n_pe_treasury_credit_line" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.credit.line</field>
+        <field name="kind">model</field>
+        <field name="name">Línea de crédito bancaria</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/</field>
+        <field name="section">Tesorería</field>
+    </record>
+    <record id="help_l10n_pe_treasury_payment_plan" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.payment.plan</field>
+        <field name="kind">model</field>
+        <field name="name">Programación de pagos</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/#programación-de-pagos</field>
+        <field name="section">Programación de pagos</field>
+    </record>
+    <record id="help_l10n_pe_treasury_payment_plan_line" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.payment.plan.line</field>
+        <field name="kind">model</field>
+        <field name="name">Documento programado para pago</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/</field>
+        <field name="section">Tesorería</field>
+    </record>
+    <record id="help_l10n_pe_treasury_payment_plan_propose" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.payment.plan.propose</field>
+        <field name="kind">model</field>
+        <field name="name">Proponer documentos a pagar</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/</field>
+        <field name="section">Tesorería</field>
+    </record>
+    <record id="help_l10n_pe_treasury_position" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.position</field>
+        <field name="kind">model</field>
+        <field name="name">Posición de tesorería</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/</field>
+        <field name="section">Tesorería</field>
+    </record>
+    <record id="help_l10n_pe_treasury_position_line" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.position.line</field>
+        <field name="kind">model</field>
+        <field name="name">Cuenta en la posición de tesorería</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/</field>
+        <field name="section">Tesorería</field>
+    </record>
+    <record id="help_l10n_pe_treasury_transfer" model="al.docs.help">
+        <field name="key">l10n_pe.treasury.transfer</field>
+        <field name="kind">model</field>
+        <field name="name">Transferencia entre cuentas propias</field>
+        <field name="module">al_l10n_pe_treasury</field>
+        <field name="path">applications/finance/treasury/</field>
+        <field name="section">Tesorería</field>
     </record>
     <record id="help_mcp_auth_code" model="al.docs.help">
         <field name="key">mcp.auth.code</field>

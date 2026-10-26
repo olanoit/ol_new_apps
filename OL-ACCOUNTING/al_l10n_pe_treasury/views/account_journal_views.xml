@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_journal_form_treasury" model="ir.ui.view">
+        <field name="name">account.journal.form.l10n_pe.treasury</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='bank_account']" position="after">
+                <page name="l10n_pe_treasury" string="Tesorería" invisible="type not in ('bank', 'cash')">
+                    <group>
+                        <group string="Cuenta">
+                            <field name="l10n_pe_treasury_kind"/>
+                            <field name="l10n_pe_forecast_exclude"/>
+                            <field name="l10n_pe_treasury_user_id" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Disponible">
+                            <field name="l10n_pe_treasury_currency_id" invisible="1"/>
+                            <field name="l10n_pe_treasury_min_balance"/>
+                            <field name="l10n_pe_treasury_overdraft" invisible="type != 'bank'"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_journal_list_treasury" model="ir.ui.view">
+        <field name="name">account.journal.list.l10n_pe.treasury</field>
+        <field name="model">account.journal</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Bancos y cajas">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="type"/>
+                <field name="l10n_pe_treasury_kind"/>
+                <field name="bank_id" optional="show"/>
+                <field name="bank_account_id" optional="show"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="l10n_pe_treasury_currency_id" column_invisible="1"/>
+                <field name="l10n_pe_treasury_min_balance" optional="show"/>
+                <field name="l10n_pe_treasury_overdraft" optional="show"/>
+                <field name="l10n_pe_forecast_exclude" optional="show"/>
+                <field name="l10n_pe_treasury_user_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_treasury_journals" model="ir.actions.act_window">
+        <field name="name">Bancos y cajas</field>
+        <field name="res_model">account.journal</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('type', 'in', ('bank', 'cash'))]</field>
+        <field name="context">{'default_type': 'bank'}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_account_journal_list_treasury')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('account.view_account_journal_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre sus cuentas bancarias y cajas</p>
+            <p>Cada banco o caja es un diario de Odoo. Aquí se indica su tipo, el saldo mínimo, el
+               sobregiro autorizado y si sus fondos están restringidos (detracciones).</p>
+        </field>
+    </record>
+</odoo>

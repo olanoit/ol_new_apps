@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aplicación Tesorería. Primer nivel como Contabilidad:
+           10 Posición        lo que hay y lo que se puede usar
+           20 Operaciones     pagos, transferencias, cheques, caja
+           30 Financiamiento  líneas de crédito, préstamos, cartas fianza, depósitos
+           40 Planificación   flujo de caja proyectado
+          100 Configuración
+         Segundo nivel: secciones; tercer nivel: acciones (sin cuarto nivel).
+         Los préstamos y las cartas fianza cuelgan de Financiamiento desde sus módulos. -->
+    <menuitem id="menu_treasury_root" name="Tesorería" sequence="45"
+              web_icon="al_l10n_pe_treasury,static/description/icon.png"
+              groups="al_l10n_pe_treasury.group_treasury_user,account.group_account_readonly"/>
+
+    <menuitem id="menu_treasury_position_root" name="Posición" parent="menu_treasury_root" sequence="10"/>
+    <menuitem id="menu_treasury_position_section" name="Posición" parent="menu_treasury_position_root"
+              sequence="10"/>
+    <menuitem id="menu_treasury_position" name="Posición diaria" parent="menu_treasury_position_section"
+              action="action_treasury_position" sequence="10"/>
+    <menuitem id="menu_treasury_position_history" name="Evolución del disponible"
+              parent="menu_treasury_position_section" action="action_treasury_position_history" sequence="20"/>
+    <menuitem id="menu_treasury_journals" name="Bancos y cajas" parent="menu_treasury_position_section"
+              action="action_treasury_journals" sequence="30"/>
+
+    <menuitem id="menu_treasury_operations_root" name="Operaciones" parent="menu_treasury_root" sequence="20"/>
+    <menuitem id="menu_treasury_operations_payments" name="Pagos" parent="menu_treasury_operations_root"
+              sequence="10"/>
+    <menuitem id="menu_treasury_payment_plan" name="Programación de pagos"
+              parent="menu_treasury_operations_payments" action="action_treasury_payment_plan" sequence="10"/>
+    <menuitem id="menu_treasury_payment_plan_line" name="Documentos programados"
+              parent="menu_treasury_operations_payments" action="action_treasury_payment_plan_line" sequence="20"/>
+    <menuitem id="menu_treasury_vendor_payments" name="Pagos a proveedores"
+              parent="menu_treasury_operations_payments" action="account.action_account_payments_payable"
+              sequence="30"/>
+    <menuitem id="menu_treasury_customer_payments" name="Cobros de clientes"
+              parent="menu_treasury_operations_payments" action="account.action_account_payments" sequence="40"/>
+    <menuitem id="menu_treasury_operations_banks" name="Bancos" parent="menu_treasury_operations_root"
+              sequence="20"/>
+    <menuitem id="menu_treasury_transfer" name="Transferencias y cambio de moneda"
+              parent="menu_treasury_operations_banks" action="action_treasury_transfer" sequence="10"/>
+    <menuitem id="menu_treasury_third_party_checks" name="Cheques de terceros"
+              parent="menu_treasury_operations_banks" action="l10n_latam_check.action_third_party_check"
+              sequence="20"/>
+    <menuitem id="menu_treasury_own_checks" name="Cheques propios"
+              parent="menu_treasury_operations_banks" action="l10n_latam_check.action_own_check" sequence="30"/>
+    <menuitem id="menu_treasury_operations_cash" name="Caja" parent="menu_treasury_operations_root"
+              sequence="30"/>
+    <menuitem id="menu_treasury_cash_closing" name="Cierres de caja" parent="menu_treasury_operations_cash"
+              action="al_l10n_pe_cash_closing.action_cash_closing" sequence="10"/>
+    <menuitem id="menu_treasury_cash_fund" name="Entregas a rendir y caja chica"
+              parent="menu_treasury_operations_cash" action="al_l10n_pe_cash_fund.action_cash_fund" sequence="20"/>
+    <menuitem id="menu_treasury_cash_settlement" name="Rendiciones"
+              parent="menu_treasury_operations_cash" action="al_l10n_pe_cash_fund.action_cash_settlement"
+              sequence="30"/>
+
+    <menuitem id="menu_treasury_financing_root" name="Financiamiento" parent="menu_treasury_root" sequence="30"/>
+    <menuitem id="menu_treasury_financing_credit" name="Crédito bancario" parent="menu_treasury_financing_root"
+              sequence="10"/>
+    <menuitem id="menu_treasury_credit_line" name="Líneas de crédito" parent="menu_treasury_financing_credit"
+              action="action_treasury_credit_line" sequence="10"/>
+    <menuitem id="menu_treasury_financing_investments" name="Inversiones y garantías"
+              parent="menu_treasury_financing_root" sequence="30"/>
+    <menuitem id="menu_treasury_term_deposit" name="Depósitos a plazo y garantías"
+              parent="menu_treasury_financing_investments" action="al_l10n_pe_term_deposit.action_term_deposit"
+              sequence="10"/>
+
+    <menuitem id="menu_treasury_planning_root" name="Planificación" parent="menu_treasury_root" sequence="40"/>
+    <menuitem id="menu_treasury_planning_section" name="Flujo de caja" parent="menu_treasury_planning_root"
+              sequence="10"/>
+    <menuitem id="menu_treasury_cash_forecast" name="Flujo de caja proyectado"
+              parent="menu_treasury_planning_section" action="al_l10n_pe_cash_forecast.action_cash_forecast"
+              sequence="10"/>
+
+    <menuitem id="menu_treasury_config_root" name="Configuración" parent="menu_treasury_root" sequence="100"
+              groups="al_l10n_pe_treasury.group_treasury_manager"/>
+    <menuitem id="menu_treasury_config_section" name="Tesorería" parent="menu_treasury_config_root"
+              sequence="10"/>
+    <menuitem id="menu_treasury_settings" name="Ajustes" parent="menu_treasury_config_section"
+              action="al_account_base.action_pe_settings" sequence="10" groups="base.group_system"/>
+    <menuitem id="menu_treasury_config_journals" name="Bancos y cajas" parent="menu_treasury_config_section"
+              action="action_treasury_journals" sequence="20"/>
+    <menuitem id="menu_treasury_config_banks" name="Bancos" parent="menu_treasury_config_section"
+              action="base.action_res_bank_form" sequence="30"/>
+    <menuitem id="menu_treasury_config_bank_accounts" name="Cuentas bancarias"
+              parent="menu_treasury_config_section" action="base.action_res_partner_bank_account_form"
+              sequence="40"/>
+
+    <!-- Espejo en la app Perú ▸ Tesorería. -->
+    <menuitem id="menu_pe_treasury_operations" name="Operaciones de tesorería"
+              parent="al_account_base.al_l10n_pe_menu_treasury" sequence="5"
+              groups="al_l10n_pe_treasury.group_treasury_user"/>
+    <menuitem id="menu_pe_treasury_position" name="Posición diaria" parent="menu_pe_treasury_operations"
+              action="action_treasury_position" sequence="10"/>
+    <menuitem id="menu_pe_treasury_payment_plan" name="Programación de pagos" parent="menu_pe_treasury_operations"
+              action="action_treasury_payment_plan" sequence="20"/>
+    <menuitem id="menu_pe_treasury_transfer" name="Transferencias y cambio de moneda"
+              parent="menu_pe_treasury_operations" action="action_treasury_transfer" sequence="30"/>
+    <menuitem id="menu_pe_treasury_credit_line" name="Líneas de crédito" parent="menu_pe_treasury_operations"
+              action="action_treasury_credit_line" sequence="40"/>
+</odoo>

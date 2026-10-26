@@ -40,6 +40,14 @@ en el Perú.
 | [Cheques recibidos y girados](accounting/checks.md) | Cartera de cheques de terceros, depósito, rechazo, cheques propios y plazo de presentación |
 | [DUA de importación](accounting/import_dua.md) | DUA como compra: derechos, IGV, percepción aduanera y costos en destino |
 
+## Tesorería
+
+| Página | Qué cubre |
+|---|---|
+| [Tesorería](treasury.md) | Posición diaria, programación y aprobación de pagos, transferencias y cambio de moneda, líneas de crédito y bancarización |
+| [Préstamos y pagarés bancarios](treasury/bank_loans.md) | Cronograma con TEA, desembolso, devengo, cuotas, prepagos y TCEA |
+| [Cartas fianza](treasury/bank_guarantees.md) | Emitidas y recibidas: comisión, renovación, liberación, ejecución y avisos |
+
 ## Proveedores de pago
 
 | Página | Qué cubre |

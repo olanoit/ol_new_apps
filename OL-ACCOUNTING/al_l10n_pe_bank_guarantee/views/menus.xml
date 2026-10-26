@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tesorería ▸ Financiamiento ▸ Inversiones y garantías; espejo en Perú ▸ Tesorería. -->
+    <menuitem id="menu_bank_guarantee" name="Cartas fianza"
+              parent="al_l10n_pe_treasury.menu_treasury_financing_investments" action="action_bank_guarantee"
+              sequence="5"/>
+    <menuitem id="menu_pe_bank_guarantee" name="Cartas fianza"
+              parent="al_l10n_pe_treasury.menu_pe_treasury_operations" action="action_bank_guarantee" sequence="60"/>
+</odoo>

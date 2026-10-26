@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_treasury_transfer_list" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.transfer.list</field>
+        <field name="model">l10n_pe.treasury.transfer</field>
+        <field name="arch" type="xml">
+            <list string="Transferencias y cambio de moneda" sample="1"
+                  decoration-muted="state == 'cancel'" decoration-info="state == 'draft'"
+                  decoration-warning="state == 'to_approve'">
+                <field name="currency_from_id" column_invisible="1"/>
+                <field name="currency_to_id" column_invisible="1"/>
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="journal_from_id"/>
+                <field name="journal_to_id"/>
+                <field name="exchange_type" optional="show"/>
+                <field name="amount"/>
+                <field name="amount_to"/>
+                <field name="agreed_rate" optional="show"/>
+                <field name="amount_company" sum="Total (S/)" optional="hide"/>
+                <field name="exchange_difference" sum="Diferencia de cambio" optional="hide"/>
+                <field name="reference" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"
+                       decoration-info="state == 'draft'" decoration-warning="state == 'to_approve'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_treasury_transfer_form" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.transfer.form</field>
+        <field name="model">l10n_pe.treasury.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Transferencia">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirmar" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Aprobar" class="btn-primary"
+                            invisible="state != 'to_approve'"
+                            groups="al_l10n_pe_treasury.group_treasury_approver"/>
+                    <button name="action_reject" type="object" string="Devolver"
+                            invisible="state != 'to_approve'"
+                            groups="al_l10n_pe_treasury.group_treasury_approver"/>
+                    <button name="action_cancel" type="object" string="Anular"
+                            invisible="state in ('cancel',)"
+                            confirm="Se anulan los pagos de la operación. ¿Continuar?"/>
+                    <button name="action_draft" type="object" string="Volver a borrador" invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,to_approve,done"/>
+                </header>
+                <div class="alert alert-info mb-0" role="alert" invisible="not needs_approval or state != 'draft'">
+                    El importe supera el límite de Ajustes: la operación necesita aprobación.
+                </div>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_payments" type="object" class="oe_stat_button" icon="fa-money"
+                                string="Pagos" invisible="not payment_from_id"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Origen">
+                            <field name="date" readonly="state not in ('draft',)"/>
+                            <field name="journal_from_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="currency_from_id" groups="base.group_multi_currency"/>
+                            <field name="amount" readonly="state != 'draft'"/>
+                            <field name="itf_from" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Destino">
+                            <field name="journal_to_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="currency_to_id" groups="base.group_multi_currency"/>
+                            <field name="amount_to" readonly="state != 'draft' or not is_exchange"/>
+                            <field name="itf_to" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <group invisible="not is_exchange">
+                        <group string="Operación de cambio">
+                            <field name="is_exchange" invisible="1"/>
+                            <field name="exchange_type"/>
+                            <field name="agreed_rate" readonly="state != 'draft'"
+                                   required="exchange_type in ('buy', 'sell')"/>
+                            <field name="official_rate"/>
+                            <field name="valuation" readonly="state != 'draft'" widget="radio"/>
+                        </group>
+                        <group string="Resultado">
+                            <field name="company_currency_id" invisible="1"/>
+                            <field name="amount_company"/>
+                            <field name="exchange_difference" invisible="not exchange_move_id"/>
+                            <field name="exchange_move_id" invisible="not exchange_move_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Datos">
+                            <field name="counterpart_id" options="{'no_quick_create': True}"/>
+                            <field name="reference"/>
+                            <field name="memo"/>
+                        </group>
+                        <group string="Control">
+                            <field name="needs_approval" invisible="1"/>
+                            <field name="user_id"/>
+                            <field name="approved_by_id" invisible="not approved_by_id"/>
+                            <field name="payment_from_id" invisible="not payment_from_id"/>
+                            <field name="payment_to_id" invisible="not payment_to_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_treasury_transfer_search" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.transfer.search</field>
+        <field name="model">l10n_pe.treasury.transfer</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="journal_from_id"/>
+                <field name="journal_to_id"/>
+                <field name="reference"/>
+                <filter name="to_approve" string="Por aprobar" domain="[('state', '=', 'to_approve')]"/>
+                <filter name="done" string="Realizadas" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter name="exchange" string="Operaciones de cambio" domain="[('is_exchange', '=', True)]"/>
+                <filter name="same_currency" string="Misma moneda" domain="[('is_exchange', '=', False)]"/>
+                <separator/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_type" string="Operación" context="{'group_by': 'exchange_type'}"/>
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_month" string="Mes" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_treasury_transfer" model="ir.actions.act_window">
+        <field name="name">Transferencias y cambio de moneda</field>
+        <field name="res_model">l10n_pe.treasury.transfer</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Registre una transferencia entre sus cuentas</p>
+            <p>Entre cuentas de la misma moneda o como compra y venta de dólares con el T.C. pactado
+               con el banco o la casa de cambio. Cada operación genera la salida y la entrada de banco,
+               listas para conciliar con los extractos.</p>
+        </field>
+    </record>
+</odoo>

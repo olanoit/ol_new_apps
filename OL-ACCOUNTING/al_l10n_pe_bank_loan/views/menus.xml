@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tesorería ▸ Financiamiento ▸ Crédito bancario; espejo en Perú ▸ Tesorería y cuentas
+         en Perú ▸ Configuración ▸ Cuentas de la localización. -->
+    <menuitem id="menu_bank_loan" name="Préstamos y pagarés"
+              parent="al_l10n_pe_treasury.menu_treasury_financing_credit" action="action_bank_loan" sequence="20"/>
+    <menuitem id="menu_bank_loan_line" name="Calendario de cuotas"
+              parent="al_l10n_pe_treasury.menu_treasury_financing_credit" action="action_bank_loan_line"
+              sequence="30"/>
+    <menuitem id="menu_pe_bank_loan" name="Préstamos y pagarés"
+              parent="al_l10n_pe_treasury.menu_pe_treasury_operations" action="action_bank_loan" sequence="50"/>
+    <menuitem id="menu_bank_loan_account_config" name="Préstamos bancarios"
+              parent="al_account_base.al_l10n_pe_config_accounts" action="action_bank_loan_account_config"
+              groups="account.group_account_manager" sequence="55"/>
+    <menuitem id="menu_treasury_bank_loan_account_config" name="Cuentas de préstamos"
+              parent="al_l10n_pe_treasury.menu_treasury_config_section" action="action_bank_loan_account_config"
+              groups="account.group_account_manager" sequence="50"/>
+</odoo>

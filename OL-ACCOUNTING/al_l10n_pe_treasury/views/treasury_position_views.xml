@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_treasury_position_line_list" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.line.list</field>
+        <field name="model">l10n_pe.treasury.position.line</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas" create="0" edit="0" decoration-muted="restricted"
+                  decoration-danger="available &lt; 0">
+                <field name="company_currency_id" column_invisible="1"/>
+                <field name="journal_id"/>
+                <field name="kind" optional="show"/>
+                <field name="bank_id" optional="hide"/>
+                <field name="currency_id" string="Moneda" optional="show"/>
+                <field name="balance"/>
+                <field name="statement_balance" optional="hide"/>
+                <field name="receipts_transit" optional="show"/>
+                <field name="payments_transit" optional="show"/>
+                <field name="scheduled" optional="show"/>
+                <field name="min_balance" optional="hide"/>
+                <field name="overdraft" optional="hide"/>
+                <field name="projected" optional="show"/>
+                <field name="available"/>
+                <field name="restricted" optional="hide"/>
+                <field name="rate" optional="hide"/>
+                <field name="balance_company" sum="Saldo (S/)" optional="show"/>
+                <field name="available_company" sum="Disponible (S/)"/>
+                <button name="action_open_journal_items" type="object" icon="fa-list" title="Apuntes"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_treasury_position_line_pivot" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.line.pivot</field>
+        <field name="model">l10n_pe.treasury.position.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Posición de tesorería" sample="1">
+                <field name="date" type="col" interval="day"/>
+                <field name="kind" type="row"/>
+                <field name="balance_company" type="measure"/>
+                <field name="available_company" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_treasury_position_line_graph" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.line.graph</field>
+        <field name="model">l10n_pe.treasury.position.line</field>
+        <field name="arch" type="xml">
+            <graph string="Posición de tesorería" type="line" sample="1">
+                <field name="date" interval="day"/>
+                <field name="available_company" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_treasury_position_line_search" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.line.search</field>
+        <field name="model">l10n_pe.treasury.position.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="journal_id"/>
+                <field name="bank_id"/>
+                <filter name="free" string="Disponibles" domain="[('restricted', '=', False)]"/>
+                <filter name="restricted" string="Restringidas" domain="[('restricted', '=', True)]"/>
+                <separator/>
+                <filter name="date" string="Fecha" date="date"/>
+                <group>
+                    <filter name="group_journal" string="Cuenta" context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_currency" string="Moneda" context="{'group_by': 'currency_id'}"/>
+                    <filter name="group_kind" string="Tipo de cuenta" context="{'group_by': 'kind'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_treasury_position_history" model="ir.actions.act_window">
+        <field name="name">Evolución del disponible</field>
+        <field name="res_model">l10n_pe.treasury.position.line</field>
+        <field name="view_mode">graph,pivot,list</field>
+        <field name="context">{'search_default_free': 1}</field>
+    </record>
+
+    <record id="view_treasury_position_list" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.list</field>
+        <field name="model">l10n_pe.treasury.position</field>
+        <field name="arch" type="xml">
+            <list string="Posiciones de tesorería" sample="1">
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="total_balance"/>
+                <field name="total_scheduled" optional="show"/>
+                <field name="total_restricted" optional="show"/>
+                <field name="total_available"/>
+                <field name="computed_at" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_treasury_position_form" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.form</field>
+        <field name="model">l10n_pe.treasury.position</field>
+        <field name="arch" type="xml">
+            <form string="Posición de tesorería">
+                <header>
+                    <button name="action_compute" type="object" string="Actualizar" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="fa-bar-chart"
+                                string="Análisis"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="journal_ids" widget="many2many_tags" options="{'no_create': True}"
+                                   placeholder="Todos los bancos y cajas"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+                            <field name="computed_at"/>
+                        </group>
+                        <group string="Totales en soles">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="total_balance"/>
+                            <field name="total_scheduled"/>
+                            <field name="total_restricted"/>
+                            <field name="total_available" class="fw-bold"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Cuentas" name="lines">
+                            <field name="line_ids" readonly="1"
+                                   context="{'list_view_ref': 'al_l10n_pe_treasury.view_treasury_position_line_list'}"/>
+                        </page>
+                        <page string="Notas" name="note">
+                            <field name="note" placeholder="Comentarios del día: fondeos, sobregiros, pagos urgentes…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_treasury_position_search" model="ir.ui.view">
+        <field name="name">l10n_pe.treasury.position.search</field>
+        <field name="model">l10n_pe.treasury.position</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="date"/>
+                <filter name="date" string="Fecha" date="date"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_treasury_position" model="ir.actions.act_window">
+        <field name="name">Posición diaria</field>
+        <field name="res_model">l10n_pe.treasury.position</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Calcule la posición de tesorería del día</p>
+            <p>Saldo de cada banco y caja, cobros y pagos en tránsito, pagos programados y disponible,
+               en su moneda y en soles. Se guarda una posición por día automáticamente.</p>
+        </field>
+    </record>
+</odoo>

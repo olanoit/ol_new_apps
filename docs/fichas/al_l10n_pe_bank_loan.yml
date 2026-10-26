@@ -1,0 +1,79 @@
+titulo: Préstamos y pagarés bancarios
+subtitulo: >-
+  El cronograma del banco dentro de Odoo: cuota, intereses del mes, saldo de capital y
+  costo efectivo de cada préstamo o pagaré, con sus asientos.
+categoria: Localización Perú · Tesorería
+etiquetas: [Préstamos, Pagarés, TEA, TCEA, Cronograma, PCGE 45]
+
+destacados_intro: >-
+  Cada préstamo con su cronograma y su contabilidad, desde el desembolso hasta la
+  última cuota.
+destacados:
+  - icono: "▦"
+    titulo: Cronograma
+    texto: >-
+      Francés, alemán o al vencimiento, con la TEA y los días reales de cada periodo,
+      gracia parcial o total, desgravamen y comisiones.
+  - icono: "%"
+    titulo: TCEA
+    texto: >-
+      Costo efectivo anual con intereses, seguro, comisiones y gastos de desembolso.
+  - icono: "↻"
+    titulo: Devengo mensual
+    texto: >-
+      Intereses del mes (67311 / 45511) sin duplicar, y el pago de la cuota con el
+      interés que cobró el banco.
+  - icono: "⇣"
+    titulo: Prepagos
+    texto: >-
+      Reducen la cuota o el plazo; el cronograma pendiente se rehace desde la fecha del
+      prepago.
+  - icono: "⌛"
+    titulo: Corriente y no corriente
+    texto: >-
+      Capital que vence en los próximos 12 meses y el resto, para los estados
+      financieros.
+  - icono: "→"
+    titulo: Línea y flujo de caja
+    texto: >-
+      Consume la línea de crédito del banco y sus cuotas entran al flujo de caja
+      proyectado.
+
+contexto:
+  titulo: El problema que resuelve
+  texto: >-
+    Odoo Enterprise lleva préstamos solo en la moneda de la compañía y sin banco ni TEA;
+    el módulo de OCA no existe en la versión 19. Con asientos manuales, los intereses se
+    registran al pagar la cuota y no al devengarse, y el saldo de capital, la porción
+    corriente y el costo efectivo se calculan aparte.
+  nota: >-
+    **Moneda extranjera.** Los préstamos en dólares llevan la moneda en sus asientos; la
+    diferencia de cambio la ajusta el cierre de T.C. de la suite sobre las cuentas
+    marcadas.
+
+pasos:
+  - titulo: Registrar el préstamo
+    ruta: Tesorería ▸ Financiamiento ▸ Préstamos y pagarés
+    texto: >-
+      Banco, capital, TEA, cuotas, frecuencia y gracia; «Calcular cronograma» (las líneas
+      se pueden corregir con el del banco).
+  - titulo: Desembolsar
+    texto: >-
+      Ingresa al banco el capital menos los gastos de desembolso y nace la deuda (4511 o
+      4544).
+  - titulo: Pagar cada cuota
+    texto: >-
+      «Pagar cuota» con el interés cobrado por el banco: cancela capital, lo devengado y
+      la diferencia de intereses.
+
+configuracion:
+  - "Cuentas por tipo y moneda en Perú ▸ Configuración ▸ Cuentas de la localización ▸ Préstamos bancarios (PCGE por defecto)."
+  - "Cuentas de pagos y cobros pendientes en los métodos de pago del banco, para conciliar con el extracto."
+
+novedades:
+  - version: 1.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "Primera versión: cronograma francés, alemán y al vencimiento, desembolso, devengo, pago de cuotas, prepago, TCEA, porción corriente, línea de crédito y flujo de caja."
+
+relacionados: [al_l10n_pe_treasury, al_l10n_pe_bank_guarantee, al_l10n_pe_cash_forecast, al_l10n_pe_exchange_closure]

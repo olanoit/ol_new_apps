@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="treasury_privilege" model="res.groups.privilege">
+        <field name="name">Tesorería</field>
+        <field name="sequence">26</field>
+    </record>
+
+    <!-- Usuario: prepara la posición, las transferencias y las programaciones de pago. -->
+    <record id="group_treasury_user" model="res.groups">
+        <field name="name">Usuario</field>
+        <field name="privilege_id" ref="treasury_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('account.group_account_invoice'))]"/>
+    </record>
+
+    <!-- Aprobador: además aprueba las programaciones y las transferencias que lo requieren. -->
+    <record id="group_treasury_approver" model="res.groups">
+        <field name="name">Aprobador</field>
+        <field name="privilege_id" ref="treasury_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('group_treasury_user'))]"/>
+    </record>
+
+    <!-- Administrador: segunda aprobación, líneas de crédito y configuración. -->
+    <record id="group_treasury_manager" model="res.groups">
+        <field name="name">Administrador</field>
+        <field name="privilege_id" ref="treasury_privilege"/>
+        <field name="implied_ids" eval="[(4, ref('group_treasury_approver')), (4, ref('account.group_account_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <data noupdate="1">
+        <record id="treasury_position_company_rule" model="ir.rule">
+            <field name="name">Posición de tesorería: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_treasury_position"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="treasury_position_line_company_rule" model="ir.rule">
+            <field name="name">Línea de la posición de tesorería: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_treasury_position_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="treasury_transfer_company_rule" model="ir.rule">
+            <field name="name">Transferencia de tesorería: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_treasury_transfer"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="treasury_payment_plan_company_rule" model="ir.rule">
+            <field name="name">Programación de pagos: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_treasury_payment_plan"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="treasury_payment_plan_line_company_rule" model="ir.rule">
+            <field name="name">Documento programado: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_treasury_payment_plan_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="treasury_credit_line_company_rule" model="ir.rule">
+            <field name="name">Línea de crédito: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_treasury_credit_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>

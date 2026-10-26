@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_treasury" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.treasury</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="60"/>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']" position="inside">
+                <block title="Tesorería" name="pe_treasury_block">
+                    <setting company_dependent="1" string="Aprobación de pagos"
+                             help="Importes (en soles) desde los que una programación de pagos necesita una o dos aprobaciones. Con 0 en el primero, todas necesitan aprobación.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_treasury_plan_approval_amount" string="Aprobación desde"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_treasury_plan_approval_amount"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_treasury_plan_double_amount" string="Segunda aprobación desde"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_treasury_plan_double_amount"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Aprobación de transferencias"
+                             help="Importe (en soles) desde el que una transferencia o una operación de cambio necesita aprobación. 0: ninguna.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_treasury_transfer_approval_amount" string="Aprobación desde"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_treasury_transfer_approval_amount"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Aviso de vencimientos"
+                             help="Días antes del vencimiento de una línea de crédito, una cuota de préstamo o una carta fianza en que su responsable recibe una actividad.">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_pe_treasury_notice_days" string="Días de aviso"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_treasury_notice_days"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting company_dependent="1" string="Bancarización"
+                             help="Pagos en efectivo desde el monto en que la ley obliga a usar medios de pago (TUO de la Ley 28194, DL 1529).">
+                        <field name="l10n_pe_bancarization_mode" widget="radio"/>
+                        <div class="content-group" invisible="l10n_pe_bancarization_mode == 'none'">
+                            <div class="row mt8">
+                                <label for="l10n_pe_bancarization_amount_pen" string="Soles desde"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_bancarization_amount_pen"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_pe_bancarization_amount_usd" string="Dólares desde"
+                                       class="col-lg-5 o_light_label"/>
+                                <field name="l10n_pe_bancarization_amount_usd"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -44,6 +44,9 @@
     * [Cobranza](accounting/collection.md)
     * [Arrendamientos (NIIF 16)](accounting/leases.md)
     * [DUA de importación](accounting/import_dua.md)
+* [Tesorería](treasury.md)
+    * [Préstamos y pagarés bancarios](treasury/bank_loans.md)
+    * [Cartas fianza](treasury/bank_guarantees.md)
 * Proveedores de pago
     * [Culqi](payment_providers/culqi.md)
     * [Izipay](payment_providers/izipay.md)

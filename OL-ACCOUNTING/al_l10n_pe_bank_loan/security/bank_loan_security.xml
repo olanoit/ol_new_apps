@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="bank_loan_company_rule" model="ir.rule">
+            <field name="name">Préstamo bancario: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_bank_loan"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="bank_loan_line_company_rule" model="ir.rule">
+            <field name="name">Cuota de préstamo: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_bank_loan_line"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+        <record id="bank_loan_account_config_company_rule" model="ir.rule">
+            <field name="name">Cuentas de préstamos: multicompañía</field>
+            <field name="model_id" ref="model_l10n_pe_bank_loan_account_config"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+    </data>
+</odoo>
