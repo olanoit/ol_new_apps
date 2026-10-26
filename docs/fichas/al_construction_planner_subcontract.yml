@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '13.20261016'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-11: el ajuste de redondeo se guarda también con la revisión por niveles abierta (al aprobar la valorización)."
 - version: '12.20261016'
   fecha: 26/10/2026
   cambios:

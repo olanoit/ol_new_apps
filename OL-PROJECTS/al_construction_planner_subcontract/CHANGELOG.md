@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261016 — 26/10/2026
+
+- CR-11: el ajuste de redondeo se guarda también con la revisión por niveles abierta (al aprobar la valorización).
+
 ## 12.20261016 — 26/10/2026
 
 - CR-11 (re-prueba E14): el ajuste de redondeo se mide contra la base sin redondear (cantidad × tarifa) con la precisión del precio, así cuadran también el IGV y el total (1.111 × 221.30 daba IGV 44.26 frente a 44.25). La valorización deja en su historial el ajuste exacto.

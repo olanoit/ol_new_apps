@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261016 — 26/10/2026
+
+- CR-01: por avance, la cantidad de cada línea en la factura es la parte del periodo (monto ÷ precio), sin depender de lo facturado antes con otra cantidad.
+
 ## 11.20261016 — 26/10/2026
 
 - CR-01 (re-prueba E14): la factura de la valorización por avance cobra cada línea por porcentaje con la precisión de la cantidad (una línea de 1 «Unidad» al 49.08 % no se podía facturar) y el ajuste de redondeo se mide contra la base sin redondear, para que cuadren base, IGV y total.

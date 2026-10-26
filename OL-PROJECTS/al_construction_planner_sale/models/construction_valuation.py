@@ -583,10 +583,13 @@ class ConstructionValuation(models.Model):
             sale_line = line.sale_line_id
             uom = sale_line.product_uom_id
             if by_progress:
+                # La parte del periodo, sin depender de lo ya facturado (una
+                # valorización facturada directo puede haber usado otra cantidad).
                 cumulative = float_round(sale_line.product_uom_qty * line.progress_confirmed,
                                          precision_digits=qty_digits)
-                quantity = float_round(cumulative - sale_line.qty_invoiced,
-                                       precision_digits=qty_digits)
+                quantity = float_round(
+                    sale_line.product_uom_qty * line.amount_confirmed / line.price
+                    if line.price else 0.0, precision_digits=qty_digits)
             else:
                 cumulative = uom.round(sale_line.product_uom_qty * line.progress_confirmed)
                 quantity = uom.round(cumulative - sale_line.qty_invoiced)

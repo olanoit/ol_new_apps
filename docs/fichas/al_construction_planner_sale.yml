@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '12.20261016'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-01: por avance, la cantidad de cada línea en la factura es la parte del periodo (monto ÷ precio), sin depender de lo facturado antes con otra cantidad."
 - version: '11.20261016'
   fecha: 26/10/2026
   cambios:

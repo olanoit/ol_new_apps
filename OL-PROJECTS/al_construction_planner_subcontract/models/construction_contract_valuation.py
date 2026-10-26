@@ -745,7 +745,9 @@ class ConstructionContractSettlement(models.Model):
             'analytic_distribution': self._weighted_distribution(services) if services
             else False,
         })]})
-        self.sudo().amount_invoice_rounding = diff
+        # Lo escribe el sistema: también con la revisión por niveles abierta
+        # (al aprobarla), como los totales.
+        self.sudo().with_context(skip_validation_check=True).amount_invoice_rounding = diff
         self.message_post(body=self.env._(
             'Factura %(invoice)s: ajuste de redondeo de %(diff)s para que su base y su IGV sean '
             'los de la valorización.', invoice=invoice.display_name, diff=diff))
