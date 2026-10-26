@@ -73,6 +73,10 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '5.20261025'
+    fecha: 26/10/2026
+    cambios:
+    - "CR-17: el rol no repite el tipo cuando la actividad ya lo dice («Drywall (contrata)»)."
   - version: '4.20261025'
     fecha: 26/10/2026
     cambios:

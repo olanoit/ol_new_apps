@@ -49,7 +49,8 @@ def _task_labels(task, activity=None, kind=None):
     code, name = _split_task(task)
     parent = task.parent_id
     role = activity.name if activity else ''
-    if role and kind in KIND_LABELS:
+    # Sin repetir el tipo si la actividad ya lo dice («Drywall (contrata)»).
+    if role and kind in KIND_LABELS and KIND_LABELS[kind] not in role.lower():
         role = '%s (%s)' % (role, KIND_LABELS[kind])
     return {
         'task_code': code, 'task_name': name,

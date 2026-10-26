@@ -9,7 +9,7 @@ from odoo import Command, fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import new_test_user, tagged
 
-from odoo.addons.al_construction_portal.models.portal_service import _initials
+from odoo.addons.al_construction_portal.models.portal_service import _initials, _task_labels
 from odoo.addons.al_construction_planner_subcontract.tests.test_contract_terms_creval import (
     PHOTO, ContractTermsCommon,
 )
@@ -324,6 +324,9 @@ class TestPortalService(ContractTermsCommon):
                          ('04.01', 'Tabique drywall (test)', 'Tabiquería (test)'))
         self.assertEqual(wall['item'], '04.01')
         self.assertIn('(contrata)', wall['role_label'])
+        activity = self.env['construction.labor.activity'].new({'name': 'Tabique (contrata)'})
+        self.assertEqual(_task_labels(self.partida, activity, 'contract')['role_label'],
+                         'Tabique (contrata)')
         for row in data['partidas'] + foreman['daily']['work']:
             self.assertNotIn('/', '%s %s' % (row['item'], row.get('path', '')))
         self.assertEqual(foreman['daily']['own_today'], 0)

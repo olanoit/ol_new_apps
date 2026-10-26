@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261025 — 26/10/2026
+
+- CR-17: el rol no repite el tipo cuando la actividad ya lo dice («Drywall (contrata)»).
+
 ## 4.20261025 — 26/10/2026
 
 - CR-17: Avance, Requerimientos y Cuadrilla y tareo muestran el código y el nombre de la partida, con su nivel superior y el rol; ya no la ruta interna. El servicio agrega task_code, task_name, parent_label y role_label sin quitar los campos anteriores; lo guardado sin señal se envía igual.
