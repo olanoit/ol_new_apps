@@ -24,7 +24,7 @@
                             <field name="journal_id" readonly="state != 'open' or id" options="{'no_create': True}"/>
                             <field name="date" readonly="state != 'open' or id"/>
                             <field name="user_id" readonly="state != 'open'"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                         </group>
                         <group>
                             <field name="currency_id" invisible="1"/>
@@ -98,7 +98,7 @@
                 <field name="balance_book"/>
                 <field name="balance_counted"/>
                 <field name="difference" sum="Diferencia"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
                 <field name="state" widget="badge" decoration-success="state == 'closed'"/>
             </list>
         </field>

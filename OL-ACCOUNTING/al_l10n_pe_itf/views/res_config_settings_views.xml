@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//app[@name='al_account_base']" position="inside">
                 <block title="ITF" name="pe_itf_block">
-                    <setting string="Impuesto a las Transacciones Financieras"
+                    <setting company_dependent="1" string="Impuesto a las Transacciones Financieras"
                              help="Se registra al confirmar los pagos y cobros de los diarios bancarios marcados como afectos al ITF (pestaña Configuración avanzada del diario).">
                         <div class="content-group">
                             <div class="row mt8">

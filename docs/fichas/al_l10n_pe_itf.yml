@@ -97,6 +97,10 @@ faq:
       «ITF» para registrar la línea del banco.
 
 novedades:
+  - version: 2.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "El ajuste del ITF lleva el ícono de valores por compañía y la compañía es de solo lectura en el análisis."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

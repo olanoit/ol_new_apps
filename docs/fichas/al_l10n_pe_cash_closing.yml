@@ -88,6 +88,10 @@ faq:
       métodos de pago, en los asientos de esa caja.
 
 novedades:
+  - version: 2.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "Multicompañía: movimientos y arqueo con control de compañía y compañía de solo lectura en las vistas."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

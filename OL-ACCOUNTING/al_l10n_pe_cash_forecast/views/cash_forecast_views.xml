@@ -23,7 +23,7 @@
                                 <field name="period_count" class="oe_inline"/>
                                 <field name="period_type" class="oe_inline"/>
                             </div>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="1"/>
                             <field name="refreshed_on"/>
                         </group>
                         <group>
@@ -96,7 +96,7 @@
                 <field name="opening_balance"/>
                 <field name="closing_balance"/>
                 <field name="refreshed_on" optional="show"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
             </list>
         </field>
     </record>

@@ -100,6 +100,10 @@ class TestItf(TransactionCase):
                 self.assertFalse(payment.l10n_pe_itf_move_id)
 
     def test_journal_without_outstanding_uses_reconcile_model(self):
+        # Sin la app Contabilidad (accountant), Odoo pone una cuenta de pendientes a
+        # todos los pagos y siempre crea su asiento: el caso no existe.
+        if self.env['account.move']._get_invoice_in_payment_state() != 'in_payment':
+            self.skipTest('Solo con la app Contabilidad (accountant) hay pagos sin asiento.')
         payment = self._payment(5000, journal=self.bank_plain)
         self.assertFalse(payment.move_id)
         self.assertFalse(payment.l10n_pe_itf_move_id, 'su ITF se registra al conciliar el extracto')

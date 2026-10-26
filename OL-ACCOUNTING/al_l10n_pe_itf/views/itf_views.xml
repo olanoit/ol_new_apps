@@ -15,7 +15,7 @@
                 <field name="company_currency_id" column_invisible="True"/>
                 <field name="amount_currency" string="ITF (moneda)" optional="show"/>
                 <field name="balance" string="ITF (M.N.)" sum="Total"/>
-                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show" readonly="1"/>
             </list>
         </field>
     </record>

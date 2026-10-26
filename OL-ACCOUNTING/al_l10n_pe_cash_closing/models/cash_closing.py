@@ -317,14 +317,15 @@ class L10nPeCashClosing(models.Model):
 class L10nPeCashClosingLine(models.Model):
     _name = 'l10n_pe.cash.closing.line'
     _description = 'Movimiento del cierre de caja'
+    _check_company_auto = True
     _order = 'id'
 
     closing_id = fields.Many2one('l10n_pe.cash.closing', string='Cierre de caja', required=True, ondelete='cascade',
-                                 index=True)
+                                 index=True, check_company=True)
     company_id = fields.Many2one(related='closing_id.company_id', store=True)
     currency_id = fields.Many2one(related='closing_id.currency_id')
     move_id = fields.Many2one('account.move', string='Asiento', readonly=True)
-    payment_id = fields.Many2one('account.payment', string='Pago', readonly=True)
+    payment_id = fields.Many2one('account.payment', string='Pago', readonly=True, check_company=True)
     partner_id = fields.Many2one('res.partner', string='Socio', readonly=True)
     name = fields.Char(string='Concepto', readonly=True)
     category = fields.Selection(CATEGORIES, string='Tipo', readonly=True)
@@ -337,10 +338,11 @@ class L10nPeCashClosingLine(models.Model):
 class L10nPeCashClosingCount(models.Model):
     _name = 'l10n_pe.cash.closing.count'
     _description = 'Arqueo por denominación'
+    _check_company_auto = True
     _order = 'sequence, value desc, id'
 
     closing_id = fields.Many2one('l10n_pe.cash.closing', string='Cierre de caja', required=True, ondelete='cascade',
-                                 index=True)
+                                 index=True, check_company=True)
     company_id = fields.Many2one(related='closing_id.company_id', store=True)
     currency_id = fields.Many2one(related='closing_id.currency_id')
     denomination_id = fields.Many2one('l10n_pe.cash.denomination', string='Denominación', required=True)

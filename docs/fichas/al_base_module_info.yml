@@ -126,6 +126,10 @@ faq:
       como siempre.
 
 novedades:
+  - version: 3.20261026
+    fecha: 26/10/2026
+    cambios:
+      - "Prueba multicompañía: excepciones justificadas del flujo de caja y del cierre de caja (apuntes de sucursales)."
   - version: 2.20261008
     fecha: 08/10/2026
     cambios:

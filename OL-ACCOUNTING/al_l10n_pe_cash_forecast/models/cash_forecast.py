@@ -365,10 +365,11 @@ class L10nPeCashForecast(models.Model):
 class L10nPeCashForecastPeriod(models.Model):
     _name = 'l10n_pe.cash.forecast.period'
     _description = 'Periodo del flujo de caja'
+    _check_company_auto = True
     _order = 'sequence'
 
     forecast_id = fields.Many2one('l10n_pe.cash.forecast', string='Flujo de caja', required=True,
-                                  ondelete='cascade', index=True)
+                                  ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='forecast_id.company_id', store=True)
     currency_id = fields.Many2one(related='forecast_id.currency_id')
     sequence = fields.Integer()
@@ -428,13 +429,14 @@ class L10nPeCashForecastPeriod(models.Model):
 class L10nPeCashForecastLine(models.Model):
     _name = 'l10n_pe.cash.forecast.line'
     _description = 'Partida del flujo de caja'
+    _check_company_auto = True
     _order = 'date_expected, id'
 
     forecast_id = fields.Many2one('l10n_pe.cash.forecast', string='Flujo de caja', required=True,
-                                  ondelete='cascade', index=True)
+                                  ondelete='cascade', index=True, check_company=True)
     company_id = fields.Many2one(related='forecast_id.company_id', store=True)
     currency_id = fields.Many2one(related='forecast_id.currency_id')
-    period_id = fields.Many2one('l10n_pe.cash.forecast.period', string='Periodo', index=True)
+    period_id = fields.Many2one('l10n_pe.cash.forecast.period', string='Periodo', index=True, check_company=True)
     category = fields.Selection(CATEGORIES, string='Tipo', required=True, default='manual')
     direction = fields.Selection([('in', 'Ingreso'), ('out', 'Egreso')], string='Sentido',
                                  compute='_compute_direction', store=True)
