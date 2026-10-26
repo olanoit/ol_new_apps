@@ -24,6 +24,17 @@
                 <field name="line_currency_id" optional="hide" options="{'no_create': True}"
                        groups="base.group_multi_currency"/>
             </xpath>
+            <!-- El % del costo directo de un grupo se calcula en el plan (CR-05). -->
+            <xpath expr="//field[@name='line_ids']/list/field[@name='amount_unit']" position="attributes">
+                <attribute name="invisible">calc_method == 'pct_group'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='line_ids']/list/field[@name='amount_unit']" position="after">
+                <field name="amount_note" string="" class="text-muted fst-italic"
+                       invisible="calc_method != 'pct_group'"/>
+            </xpath>
+            <xpath expr="//group/field[@name='amount_unit']" position="after">
+                <field name="amount_pct_note" invisible="not amount_pct_note"/>
+            </xpath>
         </field>
     </record>
 

@@ -45,6 +45,8 @@ RECIPE_COLUMNS = [
     ('calc_method', 'Forma de cálculo', False),
     ('calc_pct', 'Porcentaje', False),
     ('currency', 'Moneda', False),
+    # CR-05: el nivel (especialidad o sub-especialidad) del % del costo directo.
+    ('calc_task', 'Nivel del porcentaje', False),
 ]
 # Forma de cálculo escrita en el libro → código.
 CALC_ALIASES = {
@@ -293,6 +295,31 @@ class ConstructionRecipeImportWizard(models.TransientModel):
             result |= template
         return result, created, updated
 
+    def _resolve_calc_tasks(self, templates, recipes):
+        """«Nivel del porcentaje» de las líneas por % del costo directo: el
+        nivel de la obra cuyo nombre empieza con ese código (CR-05)."""
+        errors = []
+        Task = self.env['project.task']
+        for template in templates:
+            pending = recipes.get(template.code, {}).get('calc_tasks')
+            if not pending:
+                continue
+            lines = template.line_ids.sorted('id')
+            for index, (code, row) in pending.items():
+                task = Task
+                if self.project_id:
+                    candidates = Task.search([
+                        ('project_id', '=', self.project_id.id),
+                        '|', ('name', '=ilike', code), ('name', '=ilike', '%s %%' % code)])
+                    task = candidates.sorted(lambda t: len(t.construction_path or ''))[:1]
+                if not task:
+                    errors.append(self.env._(
+                        'RECETAS fila %(row)s: no hay un nivel %(code)s en la obra para el '
+                        'porcentaje (elija la obra en el asistente).', row=row, code=code))
+                    continue
+                lines[index].write({'calc_scope': 'task', 'calc_task_id': task.id})
+        return errors
+
     def _recipes_from_rows(self, rows):
         Product = self.env['product.product']
         recipes, errors = {}, []
@@ -300,7 +327,7 @@ class ConstructionRecipeImportWizard(models.TransientModel):
             code = _text(row.get('recipe_code'))
             recipe = recipes.setdefault(code, {'name': _text(row.get('recipe_name')),
                                                'uom': self._uom(row.get('recipe_uom')),
-                                               'lines': []})
+                                               'lines': [], 'calc_tasks': {}})
             rtype = self._resource_type(row.get('type'))
             qty = _number(row.get('qty'))
             stage = self._stage_code(row.get('stage'))
@@ -325,6 +352,10 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                 pct = _number(row.get('calc_pct'))
                 if pct is not None:
                     vals['calc_pct'] = pct
+            level_code = _text(row.get('calc_task'))
+            if method == 'pct_group' and level_code:
+                # Se resuelve al final: la hoja NIVELES puede crear el nivel.
+                recipe['calc_tasks'][len(recipe['lines'])] = (level_code, row['_row'])
             currency_text = _text(row.get('currency'))
             if currency_text:
                 currency = self.env['res.currency'].with_context(active_test=False).search(
@@ -505,13 +536,15 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                 recipes, recipe_errors = self._recipes_from_rows(sheets['RECETAS'])
                 errors += recipe_errors
                 refs = dict.fromkeys(recipes, self.filename or False)
-                _templates, created, updated = self._upsert_recipes(recipes, 'excel', refs)
+                templates, created, updated = self._upsert_recipes(recipes, 'excel', refs)
                 messages.append(self.env._('Recetas: %(new)s nuevas y %(upd)s actualizadas.',
                                            new=created, upd=updated))
             if sheets.get('NIVELES'):
                 created, level_errors = self._import_levels(sheets['NIVELES'])
                 errors += level_errors
                 messages.append(self.env._('Niveles: %s tareas nuevas.', created))
+            if sheets.get('RECETAS'):
+                errors += self._resolve_calc_tasks(templates, recipes)
         body = Markup('').join(Markup('<p>%s</p>') % message for message in messages)
         if errors:
             body += Markup('<ul class="text-warning">%s</ul>') % Markup('').join(

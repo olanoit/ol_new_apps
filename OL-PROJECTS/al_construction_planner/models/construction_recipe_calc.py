@@ -154,14 +154,36 @@ class ConstructionExecutionTemplateLine(models.Model):
 
     @api.depends('qty', 'price_unit', 'product_id.standard_price',
                  'product_id.construction_internal_rate', 'calc_method', 'calc_pct',
+                 'calc_scope', 'calc_task_id', 'productivity', 'crew_size',
                  'line_currency_id', 'template_id.line_ids.amount_unit')
     def _compute_amount_unit(self):
         pct_lines = self.filtered(lambda l: l.calc_method == 'pct_labor')
-        for line in self - pct_lines:
+        # El % del costo directo de un grupo depende de la obra: en la receta
+        # no tiene monto propio, se calcula en el plan (CR-05).
+        group_lines = self.filtered(lambda l: l.calc_method == 'pct_group')
+        for line in self - pct_lines - group_lines:
             price = line.price_unit or line._construction_default_cost()
             line.amount_unit = line.qty * line._construction_to_company(price)
         for line in pct_lines:
             line.amount_unit = line.calc_pct / 100.0 * line._construction_labor_base()
+        group_lines.amount_unit = 0.0
+
+    amount_note = fields.Char(string='Nota del costo', compute='_compute_amount_note')
+
+    @api.depends('calc_method')
+    def _compute_amount_note(self):
+        for line in self:
+            line.amount_note = self.env._('Se calcula en el plan') \
+                if line.calc_method == 'pct_group' else False
+
+    def _construction_pct_group_label(self):
+        """«más 2 % del costo directo de 3 ARQUITECTURA»."""
+        self.ensure_one()
+        scopes = dict(CALC_SCOPES)
+        target = self.calc_task_id.display_name if self.calc_scope == 'task' \
+            else scopes.get(self.calc_scope, '').lower()
+        return self.env._('más %(pct)s %% del costo directo de %(target)s',
+                          pct=round(self.calc_pct, 4), target=target or '—')
 
     def _construction_to_company(self, amount, date=None):
         """``amount`` en la moneda del costo → moneda de la compañía."""
@@ -207,6 +229,22 @@ class ConstructionExecutionTemplateLine(models.Model):
                 raise ValidationError(self.env._(
                     '«Cuadrilla ÷ rendimiento» en la receta %s necesita el rendimiento.',
                     line.template_id.display_name))
+
+
+class ConstructionExecutionTemplate(models.Model):
+    _inherit = 'construction.execution.template'
+
+    amount_pct_note = fields.Char(
+        string='Más', compute='_compute_amount_pct_note',
+        help='Las líneas por % del costo directo de un grupo de partidas: se calculan en el plan.')
+
+    @api.depends('line_ids.calc_method', 'line_ids.calc_pct', 'line_ids.calc_scope',
+                 'line_ids.calc_task_id')
+    def _compute_amount_pct_note(self):
+        for template in self:
+            lines = template.line_ids.filtered(lambda l: l.calc_method == 'pct_group')
+            template.amount_pct_note = '; '.join(
+                line._construction_pct_group_label() for line in lines) or False
 
 
 class ConstructionResourcePlanLine(models.Model):

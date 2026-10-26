@@ -31,6 +31,10 @@ requisitos_nota: Requiere los requerimientos de compra (OCA `purchase_request`) 
   de obra (`al_construction_material_request`). Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '16.20261024'
+  fecha: 26/10/2026
+  cambios:
+    - "CR-06: lo que el cliente entrega en la obra (recepción desde clientes, o del cliente de la obra) suma a «Recibido del cliente» de su línea de suministro del cliente; lo que se le devuelve, resta."
 - version: '15.20261024'
   fecha: 26/10/2026
   cambios:

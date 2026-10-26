@@ -1220,6 +1220,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '53.20261025'
+    fecha: 26/10/2026
+    cambios:
+      - "CR-05: en la receta, la línea «% del costo directo de un grupo de partidas» no tiene monto propio («Se calcula en el plan») y la receta muestra «más 2 % del costo directo de ‹nivel›»; el monto de la receta depende también de la forma de cálculo, el grupo, el nivel, el rendimiento y las personas."
+      - "CR-05: el libro de recetas acepta la columna «Nivel del porcentaje» (código de la especialidad o sub-especialidad de la obra)."
   - version: '52.20261025'
     fecha: 25/10/2026
     cambios:

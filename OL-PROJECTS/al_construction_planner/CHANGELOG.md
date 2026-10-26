@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 53.20261025 — 26/10/2026
+
+- CR-05: en la receta, la línea «% del costo directo de un grupo de partidas» no tiene monto propio («Se calcula en el plan») y la receta muestra «más 2 % del costo directo de ‹nivel›»; el monto de la receta depende también de la forma de cálculo, el grupo, el nivel, el rendimiento y las personas.
+- CR-05: el libro de recetas acepta la columna «Nivel del porcentaje» (código de la especialidad o sub-especialidad de la obra).
+
 ## 52.20261025 — 25/10/2026
 
 - El exceso del avance que espera aprobación avisa con una actividad a cada usuario de «Ejecución: aprueba» de la compañía (antes, solo al primero del grupo).

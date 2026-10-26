@@ -371,3 +371,78 @@ class TestRecipeCalc(TransactionCase):
         self.assertEqual(usage.analytic_line_id.amount, -36.0)
         self.assertEqual(line.qty_executed, 8.0)
         self.assertEqual(line._get_line_execution()[line][1], 36.0)
+
+    # Correcciones del 25-oct (CR-05): la receta no valoriza el % del costo
+    # directo de un grupo; el plan sí, sobre el nivel elegido.
+    def test_recipe_percentage_of_chosen_level(self):
+        project, partida = self._project()
+        structures = partida.parent_id.parent_id
+        architecture = self.env['project.task'].create({
+            'name': '3 ARQUITECTURA (test)', 'project_id': project.id,
+            'construction_level_line_id': structures.construction_level_line_id.id})
+        supervision = self.env['construction.execution.template'].create({
+            'code': 'CALC-R14', 'name': 'Supervisión 2 % (test)', 'uom_id': self.unit.id,
+            'line_ids': [Command.create({
+                'resource_type': 'equipment', 'product_id': self.tools.id,
+                'stage': 'calc_test_stage', 'product_uom_id': self.unit.id,
+                'calc_method': 'pct_group', 'calc_pct': 2.0, 'calc_scope': 'task',
+                'calc_task_id': structures.id, 'price_unit': 7060.03})]})
+        line = supervision.line_ids
+        self.assertEqual(line.amount_unit, 0.0)
+        self.assertEqual(line.amount_note, 'Se calcula en el plan')
+        self.assertIn('2.0 % del costo directo de', supervision.amount_pct_note)
+        # De vuelta a «Cantidad por unidad»: el monto se calcula en el momento.
+        line.write({'calc_method': 'qty', 'qty': 1.0})
+        self.assertAlmostEqual(line.amount_unit, 7060.03)
+        line.write({'calc_method': 'pct_group', 'calc_pct': 2.0, 'calc_scope': 'task',
+                    'calc_task_id': structures.id})
+        # En el plan: el 2 % del costo directo planificado de Estructuras.
+        general = self.env['project.task'].create({
+            'name': '3.01 Generales (test)', 'project_id': project.id,
+            'parent_id': architecture.id, 'construction_level_line_id':
+                partida.parent_id.construction_level_line_id.id})
+        self.env['project.task'].create({
+            'name': '3.01.01 Supervisión (test)', 'project_id': project.id,
+            'parent_id': general.id, 'construction_level_line_id':
+                partida.construction_level_line_id.id,
+            'construction_execution_template_id': supervision.id, 'construction_qty': 1.0})
+        plan = self.env['construction.resource.plan'].create({'project_id': project.id})
+        self.env['construction.plan.recipe.wizard'].create({'plan_id': plan.id}).action_generate()
+        pct = plan.line_ids.filtered(lambda l: l.calc_method == 'pct_group')
+        self.assertEqual(pct.calc_task_id, structures)
+
+        def direct():
+            return sum(plan.line_ids.filtered(
+                lambda l: l.calc_method not in ('pct_labor', 'pct_group')
+                and l.task_id.parent_id.parent_id == structures).mapped('amount_planned'))
+        self.assertAlmostEqual(pct.amount_planned, round(direct() * 0.02, 2))
+        # Cambia una partida de Estructuras: el porcentaje se recalcula.
+        brick = plan.line_ids.filtered(lambda l: l.product_id == self.brick)
+        brick.qty_planned = 150.0
+        self.assertAlmostEqual(pct.amount_planned, round(direct() * 0.02, 2))
+
+    def test_import_percentage_level(self):
+        project, partida = self._project()
+        from openpyxl import Workbook
+        book = Workbook()
+        sheet = book.active
+        sheet.title = 'RECETAS'
+        sheet.append(['Código de la receta', 'Nombre de la receta', 'Tipo de recurso',
+                      'Código del recurso', 'Cantidad por unidad', 'Etapa', 'Unidad',
+                      'Forma de cálculo', 'Porcentaje', 'Nivel del porcentaje'])
+        sheet.append(['CALC-R15', 'Supervisión (test)', 'equipment', '', 0, 'calc_test_stage',
+                      'und', '% del costo directo', 2, 'Estructuras'])
+        sheet.append(['CALC-R15', None, 'equipment', '', 0, 'calc_test_stage', 'und',
+                      '% del costo directo', 1, 'NO-EXISTE'])
+        output = BytesIO()
+        book.save(output)
+        wizard = self.env['construction.recipe.import.wizard'].create({
+            'source': 'excel', 'project_id': project.id,
+            'file': base64.b64encode(output.getvalue()), 'filename': 'recetas.xlsx'})
+        wizard.action_import()
+        recipe = self.env['construction.execution.template'].search([('code', '=', 'CALC-R15')])
+        first, second = recipe.line_ids.sorted('id')
+        self.assertEqual((first.calc_scope, first.calc_task_id),
+                         ('task', partida.parent_id.parent_id))
+        self.assertFalse(second.calc_task_id)
+        self.assertIn('no hay un nivel NO-EXISTE', wizard.result_html)

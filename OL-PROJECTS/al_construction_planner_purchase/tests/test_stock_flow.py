@@ -63,3 +63,34 @@ class TestStockFlow(TransactionCase):
             'inventory_quantity': 7})
         quant.action_apply_inventory()
         self.assertEqual(self._qty(self.stock), 7)
+
+    def test_client_supply_received_at_site(self):
+        """CR-06: lo que el cliente entrega en la obra suma a «Recibido del
+        cliente» de su línea del plan; lo que se le devuelve, resta."""
+        env = self.env
+        env['tier.definition'].search([('model', '=', 'construction.resource.plan')]).active = False
+        stage = env['construction.stage'].create({
+            'name': 'Equipamiento del cliente (test)', 'code': 'client_supply_test',
+            'sequence': 931})
+        customer = env['res.partner'].create({'name': 'Cliente de la obra (test)'})
+        project = env['project.project'].create({
+            'name': 'Obra con suministro del cliente (test)', 'is_construction_site': True,
+            'partner_id': customer.id, 'construction_location_id': self.site.id})
+        task = env['project.task'].create({'name': '9.01 Televisores (test)',
+                                           'project_id': project.id})
+        plan = env['construction.resource.plan'].create({'project_id': project.id})
+        line = env['construction.resource.plan.line'].create({
+            'plan_id': plan.id, 'task_id': task.id, 'resource_type': 'material',
+            'product_id': self.product.id, 'product_uom_id': self.product.uom_id.id,
+            'qty_planned': 4.0, 'stage': stage.code, 'is_client_supply': True,
+            'price_unit_planned': 0.0})
+        plan.action_request_approval()
+        customers = env.ref('stock.stock_location_customers')
+        self._validate(self.warehouse.in_type_id, customers, self.site, 3)
+        self.assertEqual(line.qty_client_received, 3.0)
+        self._validate(self.warehouse.int_type_id, self.site, customers, 1)
+        self.assertEqual(line.qty_client_received, 2.0)
+        # Lo que llega del almacén central no es del cliente.
+        self._validate(self.warehouse.in_type_id, self.supplier_location, self.stock, 5)
+        self._validate(self.warehouse.int_type_id, self.stock, self.site, 2)
+        self.assertEqual(line.qty_client_received, 2.0)
