@@ -9,6 +9,8 @@ proporción (CR-12).
 * Las líneas de la venta marcadas como gastos generales, imprevistos,
   utilidad o descuento no son partidas: quedan fuera de los niveles y del
   plan y se valorizan en la proporción del costo directo valorizado."""
+from collections import defaultdict
+
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
@@ -159,6 +161,7 @@ class ConstructionValuation(models.Model):
         lines_by_partida = project._construction_lines_by_partida(plan)
         all_lines = self.env['construction.resource.plan.line'].union(*lines_by_partida.values())
         execution = all_lines._construction_valued_execution(cutoff)
+        outside = self._construction_invoiced_outside(project, cutoff)
         previous = self.env['construction.valuation.line'].search([
             ('valuation_id.project_id', '=', project.id),
             ('valuation_id.state', 'in', DONE_STATES),
@@ -172,16 +175,51 @@ class ConstructionValuation(models.Model):
                 project, plan_lines, execution, validated)
             price = sale_line._construction_price(cutoff)
             before = previous.filtered(lambda l, s=sale_line: l.sale_line_id == s)
-            confirmed_before = sum(before.mapped('amount_confirmed'))
+            confirmed_before = sum(before.mapped('amount_confirmed')) + outside[sale_line][0]
             amount = max(currency.round(price * progress - confirmed_before), 0.0)
             values.append({
                 'sale_line_id': sale_line.id, 'price': price,
                 'progress_delivered': progress, 'pct_rule': round(progress * 100, 2),
                 'confirmed_before': confirmed_before,
-                'amortization_before': sum(before.mapped('amount_amortization')),
+                'amortization_before': sum(before.mapped('amount_amortization'))
+                + outside[sale_line][1],
                 'amount_delivered': amount, 'amount_confirmed': amount,
             })
         return values
+
+    @api.model
+    def _construction_invoiced_outside(self, project, cutoff):
+        """{línea de venta: [monto, amortización]} facturado desde la orden del
+        contrato fuera de una valorización (una valorización anterior a la
+        herramienta o facturada directo). Cuenta como confirmado antes; el
+        anticipo descontado en esas facturas se reparte entre sus líneas en
+        proporción a su monto."""
+        result = defaultdict(lambda: [0.0, 0.0])
+        if project.construction_valuation_basis != 'progress':
+            return result
+        company = project.company_id or self.env.company
+        # sudo: quien prepara o confirma la valorización (Proyectos) no lee
+        # facturas; solo se toman los montos de las de la orden del contrato.
+        moves_sudo = project.construction_sale_order_id.sudo().invoice_ids.filtered(
+            lambda m: m.state != 'cancel' and not m.construction_valuation_id
+            and m.move_type in ('out_invoice', 'out_refund'))
+        for move in moves_sudo:
+            sign = -1 if move.move_type == 'out_refund' else 1
+            date = move.invoice_date or move.date or cutoff
+
+            def convert(amount, move=move, date=date):
+                return move.currency_id._convert(amount, company.currency_id, company, date)
+            lines = move.invoice_line_ids.filtered(lambda l: l.sale_line_ids)
+            advance = lines.filtered(lambda l: any(l.sale_line_ids.mapped('is_downpayment')))
+            lines -= advance
+            total = sum(lines.mapped('price_subtotal'))
+            deducted = -sum(advance.filtered(lambda l: l.price_subtotal < 0).mapped('price_subtotal'))
+            for line in lines:
+                share = result[line.sale_line_ids[:1].sudo(False)]
+                share[0] += sign * convert(line.price_subtotal)
+                if total and deducted:
+                    share[1] += sign * convert(deducted * line.price_subtotal / total)
+        return result
 
     @api.model
     def _construction_validated_qty(self, plan_lines, cutoff):
@@ -255,6 +293,7 @@ class ConstructionValuation(models.Model):
                 ('valuation_id', '!=', valuation.id)])
             sections = project._construction_line_sections() \
                 if project.construction_proportional_scope == 'section' else {}
+            outside = self._construction_invoiced_outside(project, cutoff)
             for sale_line in proportional:
                 # Con prorrateo por especialidad, las partidas de su sección;
                 # sin partidas en la sección, las de toda la venta.
@@ -266,17 +305,19 @@ class ConstructionValuation(models.Model):
                     continue
                 mine = valuation.line_ids.filtered(lambda l, p=partidas: l.sale_line_id in p)
                 before = sum(previous.filtered(lambda l, p=partidas: l.sale_line_id in p).mapped(
-                    'amount_confirmed'))
+                    'amount_confirmed')) + sum(outside[line][0] for line in partidas)
                 delivered_ratio = (before + sum(mine.mapped('amount_delivered'))) / direct
                 confirmed_ratio = (before + sum(mine.mapped('amount_confirmed'))) / direct
                 price = sale_line._construction_price(cutoff)
                 line_before = previous.filtered(lambda l, s=sale_line: l.sale_line_id == s)
-                confirmed_before = sum(line_before.mapped('amount_confirmed'))
+                confirmed_before = sum(line_before.mapped('amount_confirmed')) \
+                    + outside[sale_line][0]
                 delivered = currency.round(price * delivered_ratio - confirmed_before)
                 confirmed = currency.round(price * confirmed_ratio - confirmed_before)
                 vals = {
                     'price': price, 'confirmed_before': confirmed_before,
-                    'amortization_before': sum(line_before.mapped('amount_amortization')),
+                    'amortization_before': sum(line_before.mapped('amount_amortization'))
+                    + outside[sale_line][1],
                     'progress_delivered': delivered_ratio,
                     'pct_rule': round(delivered_ratio * 100, 2),
                     'amount_delivered': delivered, 'amount_confirmed': confirmed,

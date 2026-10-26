@@ -165,3 +165,34 @@ class TestValuationProgressQty(TestValuationProgress):
         self.assertAlmostEqual(valuation.amount_detraction,
                                round((valuation.amount_confirmed + valuation.amount_tax) * 0.04, 2),
                                delta=0.01)
+
+    def test_invoiced_outside_valuations(self):
+        """Lo facturado desde la orden del contrato fuera de una valorización
+        (re-prueba E14: «VAL 01» facturada directo) cuenta como confirmado
+        antes, y la valorización siguiente se factura sin error."""
+        if not isinstance(self, TestValuationProgressQty):
+            return
+        self.partida.qty_delivered = 0.2
+        direct = self.order._create_invoices()
+        direct.invoice_line_ids.filtered(lambda l: l.sale_line_ids != self.partida).unlink()
+        self._post_invoice(direct)
+        self._progress(4502.23, date(2026, 10, 22))
+        valuation = self._prepare_valuation(date(2026, 10, 28))
+        line = valuation.line_ids.filtered(lambda l: l.sale_line_id == self.partida)
+        invoiced = direct.invoice_line_ids.filtered(lambda l: l.sale_line_ids == self.partida)
+        self.assertAlmostEqual(line.confirmed_before, invoiced.price_subtotal, places=2)
+        self.assertAlmostEqual(line.amount_delivered,
+                               round(PRICE * 4502.23 / 13000 - invoiced.price_subtotal, 2), places=2)
+        valuation.with_user(self.projects_user).action_send()
+        self._confirm_valuation(valuation)
+        valuation.with_user(self.finance).action_create_invoice()
+        self.assertAlmostEqual(valuation.invoice_id.amount_untaxed,
+                               valuation._construction_invoice_expected(valuation.invoice_id.invoice_date
+                                                                       or date.today()), places=2)
+
+    def _post_invoice(self, move):
+        move.invoice_date = date(2026, 10, 20)
+        if 'l10n_latam_use_documents' in move._fields and move.l10n_latam_use_documents \
+                and not move.l10n_latam_document_number:
+            move.l10n_latam_document_number = 'F001-%06d' % move.id
+        move.action_post()

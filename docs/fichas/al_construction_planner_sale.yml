@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '10.20261016'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-01 (re-prueba E14): lo facturado desde la orden del contrato fuera de una valorización (una valorización facturada directo o anterior a la herramienta) cuenta como confirmado antes, y el adelanto descontado en esas facturas como amortizado antes; la valorización siguiente ya no vuelve a cobrarlo y se factura sin error."
 - version: '9.20261016'
   fecha: 26/10/2026
   cambios:

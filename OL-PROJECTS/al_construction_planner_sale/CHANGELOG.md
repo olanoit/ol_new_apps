@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261016 — 26/10/2026
+
+- CR-01 (re-prueba E14): lo facturado desde la orden del contrato fuera de una valorización (una valorización facturada directo o anterior a la herramienta) cuenta como confirmado antes, y el adelanto descontado en esas facturas como amortizado antes; la valorización siguiente ya no vuelve a cobrarlo y se factura sin error.
+
 ## 9.20261016 — 26/10/2026
 
 - CR-01 (preparación de la re-prueba E14): la valorización por avance amortiza el adelanto del contrato vigente de la obra, como el fondo y la detracción; con el adelanto de la obra en 0 %, la amortización salía negativa por la línea del descuento.
