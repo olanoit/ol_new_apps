@@ -61,17 +61,62 @@ class ResCompany(models.Model):
             'al_construction_material_request.group_construction_logistics',
             raise_if_not_found=False))
 
+    # Requerimiento de obra al que no le aplica ninguna regla de aprobación
+    # (CREVAL, 7.4): se aprueba al enviarlo o pasa al jefe de la obra.
+    construction_site_request_without_rule = fields.Selection(
+        [('manager', 'Pasar al jefe de la obra'), ('approve', 'Aprobar al enviar')],
+        string='Requerimiento de obra sin regla de aprobación', default='manager',
+        required=True)
+
     @api.model_create_multi
     def create(self, vals_list):
         companies = super().create(vals_list)
         companies._construction_sync_internal_fallback_rule()
+        companies._construction_sync_site_fallback_rule()
         return companies
 
     def write(self, vals):
         res = super().write(vals)
         if 'construction_internal_fallback_group_id' in vals:
             self._construction_sync_internal_fallback_rule()
+        if 'construction_site_request_without_rule' in vals:
+            self._construction_sync_site_fallback_rule()
         return res
+
+    def _construction_sync_site_fallback_rule(self):
+        """Regla «requerimiento de obra sin otra regla → jefe de la obra» de
+        cada compañía; archivada si la compañía aprueba al enviar."""
+        # Configuración técnica, como la regla del interno sin jefe.
+        Definition_sudo = self.env['tier.definition'].sudo().with_context(active_test=False)
+        model = self.env['ir.model']._get('construction.material.request')
+        field = self.env['ir.model.fields']._get('construction.material.request',
+                                                 'project_manager_id')
+        for company in self:
+            rule = Definition_sudo.search([
+                ('construction_site_fallback', '=', True),
+                ('company_id', '=', company.id)], limit=1)
+            if company.construction_site_request_without_rule != 'manager':
+                rule.active = False
+                continue
+            vals = {
+                'name': _('Requerimiento de obra sin otra regla: jefe de la obra'),
+                'model_id': model.id,
+                'review_type': 'field',
+                'reviewer_field_id': field.id,
+                'definition_domain': repr([
+                    ('request_type', '=', 'site'),
+                    ('construction_without_rule', '=', True),
+                    ('project_manager_id', '!=', False),
+                    ('company_id', '=', company.id)]),
+                'company_id': company.id,
+                'sequence': 90,
+                'approve_sequence': True,
+                'active': True,
+            }
+            if rule:
+                rule.write(vals)
+            else:
+                Definition_sudo.create(dict(vals, construction_site_fallback=True))
 
     def _construction_sync_internal_fallback_rule(self):
         """Regla de aprobación «interno y sin jefe» de cada compañía, con el

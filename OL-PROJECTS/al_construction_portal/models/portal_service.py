@@ -30,6 +30,34 @@ API_VERSION = 1
 LEGAL_WORDS = {'SA', 'SAC', 'SAA', 'SRL', 'EIRL', 'DE', 'DEL', 'LA', 'LOS', 'Y'}
 
 
+#: «3.04.01 Trabajo de pintura» → código y nombre de la partida (CR-17).
+TASK_CODE = re.compile(r'^\s*(\d[\w.\-]*)\s+(.*)$', re.S)
+#: Rol del recurso de la línea del plan en el portal.
+KIND_LABELS = {'labor': 'personal propio', 'contract': 'contrata'}
+
+
+def _split_task(task):
+    """(código, nombre) de una partida cuyo nombre empieza con su código."""
+    name = (task.name or '').strip()
+    match = TASK_CODE.match(name)
+    return (match.group(1), match.group(2).strip()) if match else ('', name)
+
+
+def _task_labels(task, activity=None, kind=None):
+    """Cómo se muestra una partida en el portal (CR-17): código, nombre, nivel
+    superior y rol; nunca la ruta interna del árbol."""
+    code, name = _split_task(task)
+    parent = task.parent_id
+    role = activity.name if activity else ''
+    if role and kind in KIND_LABELS:
+        role = '%s (%s)' % (role, KIND_LABELS[kind])
+    return {
+        'task_code': code, 'task_name': name,
+        'parent_label': ' '.join(_split_task(parent)).strip() if parent else '',
+        'role_label': role,
+    }
+
+
 def _initials(name):
     words = [w for w in re.split(r'[^\w]+', name or '') if w and w.upper() not in LEGAL_WORDS]
     return ''.join(w[0] for w in words[:2]).upper() or 'OB'
@@ -200,9 +228,12 @@ class ConstructionPortalService(models.AbstractModel):
     def _line_data(self, line, last_validation=None):
         validated = line.qty_executed
         pending = line._get_reported_qty()
-        return {
-            'id': line.id, 'item': line.task_id.construction_path or '',
-            'name': line.task_id.name, 'path': line.task_path or '',
+        labels = _task_labels(line.task_id, line.activity_id, line.resource_type)
+        return dict(labels, **{
+            # «item» y «path» siguen para la aplicación ya instalada, sin la
+            # ruta interna (CR-17): el código de la partida y su nivel superior.
+            'id': line.id, 'item': labels['task_code'],
+            'name': line.task_id.name, 'path': labels['parent_label'],
             'activity': line.activity_id.display_name, 'uom': line.activity_id.uom_id.name,
             'kind': line.resource_type, 'planned': line.qty_planned, 'validated': validated,
             'pending': pending, 'balance': line.qty_planned - validated - pending,
@@ -212,7 +243,7 @@ class ConstructionPortalService(models.AbstractModel):
             'exceed_policy': line.plan_id._exceed_policy_for(line.resource_type),
             'last_validated': fields.Date.to_string(last_validation) if last_validation else '',
             'partner': line.partner_id.name or '',
-        }
+        })
 
     def _last_validation(self, lines):
         """Fecha de la última validación de cada partida."""
@@ -276,9 +307,13 @@ class ConstructionPortalService(models.AbstractModel):
         progress = self.env['construction.task.progress'].sudo().search([
             ('task_id.project_id', '=', project.id), ('date', '=', today),
             ('state', '!=', 'rejected')], order='id')
-        work = [{'item': p.task_id.construction_path or '', 'name': p.task_id.name,
-                 'partner': p.partner_id.commercial_partner_id.name or '',
-                 'qty': p.qty, 'uom': p.activity_id.uom_id.name or ''} for p in progress]
+        states = dict(progress._fields['state']._description_selection(self.env))
+        # Reportados y validados, con su estado (7.1).
+        work = [dict(_task_labels(p.task_id, p.activity_id), **{
+            'item': _split_task(p.task_id)[0], 'name': _split_task(p.task_id)[1],
+            'partner': p.partner_id.commercial_partner_id.name or '',
+            'qty': p.qty, 'uom': p.activity_id.uom_id.name or '',
+            'state': p.state, 'state_label': states.get(p.state, '')}) for p in progress]
         return {'own_today': own, 'contractors': contractors, 'work': work}
 
     # ------------------------------------------------------------------
@@ -459,10 +494,16 @@ class ConstructionPortalService(models.AbstractModel):
             # el portal (RR. HH. la ve como marcación de la sede).
             if existing:
                 existing.write(vals)
-                attendances |= existing
+                attendance = existing
             else:
-                attendances |= Attendance.create(dict(
+                attendance = Attendance.create(dict(
                     vals, employee_id=employee_id, l10n_pe_construction_site_id=site.id))
+            # Las horas trabajadas descuentan el almuerzo del horario del
+            # empleado: la salida se corre lo que dura el descanso.
+            gap = worked - attendance.worked_hours
+            if gap > 0.01:
+                attendance.check_out += timedelta(hours=gap)
+            attendances |= attendance
         if tareos and not attendances:
             self.env['construction.crew.day']._refresh_executed(project, day, day)
         records = attendances or tareos
@@ -491,12 +532,12 @@ class ConstructionPortalService(models.AbstractModel):
             material_lines = material_lines.search(domain)
         partida = []
         for line in material_lines:
-            partida.append({
+            labels = _task_labels(line.task_id)
+            partida.append(dict(labels, **{
                 'product_id': line.product_id.id, 'name': line.product_id.display_name,
                 'uom': line.product_uom_id.name, 'task_id': line.task_id.id,
-                'item': line.task_id.construction_path or '',
-                'task': line.task_id.display_name,
-                'balance': line.qty_planned - line.qty_requested})
+                'item': labels['task_code'], 'task': labels['task_name'],
+                'balance': line.qty_planned - line.qty_requested}))
         company = project.company_id or self.env.company
         result = {'partida': partida}
         for catalog in ('epp', 'office'):
@@ -585,8 +626,10 @@ class ConstructionPortalService(models.AbstractModel):
                 raise UserError(self.env._(
                     'La obra %s no tiene la analítica de gastos generales para EPP, útiles y '
                     'aseo.', project.display_name))
+            # Con la obra (7.3): se carga a gastos generales, pero aparece en
+            # la obra y en sus reportes.
             requests |= Request.create(dict(
-                common, request_type='internal', area_id=area.id,
+                common, request_type='internal', area_id=area.id, project_id=project.id,
                 line_ids=[(0, 0, line) for line in internal_lines]))
         for request in requests.filtered('line_ids'):
             request.action_request_approval()

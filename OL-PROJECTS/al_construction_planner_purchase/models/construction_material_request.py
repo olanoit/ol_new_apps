@@ -40,7 +40,8 @@ class ConstructionMaterialRequest(models.Model):
 
     def _construction_open_plan(self):
         self.ensure_one()
-        if not self.project_id:
+        # El interno puede llevar la obra (CREVAL 7.3), pero no sale del plan.
+        if not self.project_id or self.request_type == 'internal':
             return self.env['construction.resource.plan']
         # El residente no ve los planes: solo se busca el vigente de su obra.
         plans_sudo = self.env['construction.resource.plan'].sudo()

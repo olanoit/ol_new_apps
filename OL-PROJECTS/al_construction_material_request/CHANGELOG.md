@@ -9,6 +9,7 @@ Generado desde `docs/fichas/al_construction_material_request.yml` (sección `nov
 
 ## 28.20261024 — 26/10/2026
 
+- 7.3: el requerimiento interno puede llevar la obra (EPP y útiles pedidos desde el portal): se carga a su área y aparece en la obra. 7.4: ajuste «Requerimiento de obra sin regla»: pasa al jefe de la obra o se aprueba al enviarlo (las compañías existentes siguen aprobando al enviar).
 - CR-16: ajuste «Analítica en la compra para el almacén»: la línea de compra de un requerimiento abastecido desde el almacén central puede llevar la analítica de la obra o del área (apagado por defecto: la compra masiva sigue sin analítica). La línea de compra muestra las partidas de sus requerimientos.
 
 ## 27.20261024 — 25/10/2026

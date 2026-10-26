@@ -3,7 +3,7 @@
 (M111-19 B), aprobador del interno sin jefe (M111-19 C y M111-18), solicitante
 interno (M111-20 A), origen por ruta (M111-20 C), valor estimado con su grupo
 (M111-20 E) e historial (M111-20 F)."""
-from odoo.exceptions import ValidationError
+from odoo.exceptions import AccessError
 from odoo.tests import new_test_user, tagged
 
 from .test_dispatch_slip import PICKING_REPORT, REQUEST_REPORT, TestDispatchSlip
@@ -90,8 +90,9 @@ class TestPackage111Options(TestDispatchSlip):
         request = self._internal(user)
         self.assertEqual(Request.new({}).request_type, 'internal')
         self.assertFalse(request.user_is_site_requester)
-        with self.assertRaises(ValidationError):
-            Request.create({'project_id': self.site_a.id})
+        # No pide para obras: lo frena la regla de acceso.
+        with self.assertRaises(AccessError):
+            Request.create({'request_type': 'site', 'project_id': self.site_a.id})
         mine = self._internal(self.requester)
         self.assertEqual(Request.search([]), request, 'solo ve sus internos')
         self.assertTrue(mine)

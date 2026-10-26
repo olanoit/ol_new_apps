@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261025 — 26/10/2026
+
+- CR-17: Avance, Requerimientos y Cuadrilla y tareo muestran el código y el nombre de la partida, con su nivel superior y el rol; ya no la ruta interna. El servicio agrega task_code, task_name, parent_label y role_label sin quitar los campos anteriores; lo guardado sin señal se envía igual.
+- CR-17: el catálogo de Requerimientos busca por producto y por código o nombre de la partida.
+- 7.1: el parte diario lista los avances reportados y validados del día con su estado. 7.2: el tareo dice partida y rol en cada columna y agrupa por partida. 7.3: el requerimiento interno pedido desde el portal queda en la obra.
+- Tareo: la marcación de la cuadrilla registra las horas del tareo completas; la salida se corre lo que dura el almuerzo del horario del empleado (Odoo lo descuenta de las horas trabajadas).
+
 ## 3.20261025 — 25/10/2026
 
 - Avance sobre el saldo más la tolerancia según la política del plan, como en el prototipo: con aprobación adicional se envía como exceso y lo aprueba la jefatura; con solo alerta se envía con aviso; con bloqueo no se guarda.

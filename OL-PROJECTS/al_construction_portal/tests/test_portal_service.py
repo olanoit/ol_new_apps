@@ -167,7 +167,13 @@ class TestPortalService(ContractTermsCommon):
         self.assertEqual(sorted(requests.mapped('request_type')), ['internal', 'site'])
         site = requests.filtered(lambda r: r.request_type == 'site')
         self.assertEqual(site.line_ids.task_id, self.partida)
-        self.assertEqual(requests.filtered(lambda r: r.request_type == 'internal').area_id, area)
+        internal = requests.filtered(lambda r: r.request_type == 'internal')
+        self.assertEqual(internal.area_id, area)
+        # El interno pedido desde el portal queda en la obra (7.3).
+        self.assertEqual(internal.project_id, self.project)
+        # El buscador del catálogo usa el código y el nombre de la partida (CR-17).
+        row = next(r for r in catalog['partida'] if r['product_id'] == cement.id)
+        self.assertEqual((row['task_code'], row['task_name']), ('04.01', 'Tabique drywall (test)'))
         self.assertTrue(all(state != 'draft' for state in requests.mapped('state')))
         with self.assertRaises(AccessError):
             service.material_request(dict(values, uuid='req-3', lines=[
@@ -309,8 +315,52 @@ class TestPortalService(ContractTermsCommon):
         self.assertEqual(foreman['counters']['deliveries_today'], 0)
         self.assertIn(self.contractor.name, [c['name'] for c in foreman['daily']['contractors']])
         self.assertEqual(sorted(w['qty'] for w in foreman['daily']['work']), [10.0, 40.0])
+        # Reportados y validados del día, con su estado (7.1).
+        self.assertEqual(sorted(w['state'] for w in foreman['daily']['work']),
+                         ['draft', 'validated'])
+        self.assertTrue(all(w['state_label'] for w in foreman['daily']['work']))
+        # La partida legible, sin la ruta interna (CR-17).
+        self.assertEqual((wall['task_code'], wall['task_name'], wall['parent_label']),
+                         ('04.01', 'Tabique drywall (test)', 'Tabiquería (test)'))
+        self.assertEqual(wall['item'], '04.01')
+        self.assertIn('(contrata)', wall['role_label'])
+        for row in data['partidas'] + foreman['daily']['work']:
+            self.assertNotIn('/', '%s %s' % (row['item'], row.get('path', '')))
         self.assertEqual(foreman['daily']['own_today'], 0)
         self.assertNotIn('orders', foreman)
+
+    def test_site_request_without_rule(self):
+        """Sin regla de aprobación, el requerimiento de obra pasa al jefe de
+        la obra o se aprueba al enviarlo, según la compañía (7.4)."""
+        manager = new_test_user(self.env, 'portal_residente', name='Residente (test)',
+                                groups='al_construction_planner.group_planner_user')
+        self.project.user_id = manager
+        cement = self.env['product.product'].create({
+            'name': 'Cemento sin regla (test portal)', 'is_storable': True})
+        self.env['construction.resource.plan.line'].with_context(
+            construction_plan_force=True).create({
+                'plan_id': self.plan.id, 'task_id': self.partida.id, 'resource_type': 'material',
+                'product_id': cement.id, 'stage': 'creval_tab', 'qty_planned': 50,
+                'price_unit_planned': 30.0, 'product_uom_id': cement.uom_id.id})
+        # Sin otras reglas para los requerimientos de obra.
+        self.env['tier.definition'].search([
+            ('model', '=', 'construction.material.request'),
+            ('construction_site_fallback', '=', False)]).active = False
+        service = self._service(self.foreman_user)
+
+        def request(uuid):
+            result = service.material_request({
+                'uuid': uuid, 'project_id': self.project.id, 'lines': [
+                    {'catalog': 'partida', 'product_id': cement.id,
+                     'task_id': self.partida.id, 'qty': 1}]})
+            return self.env['construction.material.request'].browse(int(result['ids']))
+        self.company.construction_site_request_without_rule = 'manager'
+        first = request('sin-regla-1')
+        self.assertEqual(first.state, 'to_approve')
+        self.assertIn(manager, first.review_ids.reviewer_ids)
+        self.company.construction_site_request_without_rule = 'approve'
+        second = request('sin-regla-2')
+        self.assertNotIn(second.state, ('draft', 'to_approve'))
 
     def test_initials(self):
         self.assertEqual(_initials('Creamos Valor S.A.C.'), 'CV')

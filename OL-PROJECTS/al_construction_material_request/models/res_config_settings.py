@@ -32,6 +32,8 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_slip_show_previous', readonly=False)
     construction_internal_fallback_group_id = fields.Many2one(
         related='company_id.construction_internal_fallback_group_id', readonly=False)
+    construction_site_request_without_rule = fields.Selection(
+        related='company_id.construction_site_request_without_rule', readonly=False)
     group_construction_internal_request_all = fields.Boolean(
         string='Todos los usuarios pueden hacer requerimientos internos',
         implied_group='al_construction_material_request.group_construction_internal_requester')

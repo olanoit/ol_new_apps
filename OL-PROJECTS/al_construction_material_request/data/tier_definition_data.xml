@@ -14,4 +14,9 @@
             <field name="approve_sequence" eval="True"/>
         </record>
     </data>
+    <!-- Requerimiento de obra sin otra regla (CREVAL, 7.4): la regla de cada
+         compañía según su ajuste. -->
+    <function model="res.company" name="_construction_sync_site_fallback_rule">
+        <value model="res.company" search="[]"/>
+    </function>
 </odoo>

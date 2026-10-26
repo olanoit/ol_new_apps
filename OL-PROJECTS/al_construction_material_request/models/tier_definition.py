@@ -8,6 +8,10 @@ class TierDefinition(models.Model):
     # Regla del interno sin jefe (M111-19 C): la crea y actualiza la compañía.
     construction_internal_fallback = fields.Boolean(
         string='Interno sin jefe', readonly=True, copy=False)
+    # Regla del requerimiento de obra sin otra regla (CREVAL, 7.4): la crea y
+    # actualiza la compañía.
+    construction_site_fallback = fields.Boolean(
+        string='Obra sin regla', readonly=True, copy=False)
 
     @api.model
     def _get_tier_validation_model_names(self):

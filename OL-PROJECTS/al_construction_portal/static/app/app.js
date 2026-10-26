@@ -453,6 +453,13 @@
         return "";
     }
     const join = (...parts) => parts.filter(Boolean).join(" · ");
+    // Partida legible (CR-17): código y nombre, y debajo su nivel superior y
+    // el rol; nunca la ruta interna. Los datos de antes de la versión 1.1 no
+    // traen task_code y caen en item/name.
+    const taskCode = (p) => (p.task_code !== undefined ? p.task_code : p.item) || "";
+    const taskName = (p) => p.task_name || p.name || "";
+    const taskSub = (p) => join(p.parent_label, p.role_label || (p.activity !== p.name ? p.activity : ""));
+    const matches = (q, ...parts) => !q || parts.filter(Boolean).join(" ").toLowerCase().includes(q);
     const pill = (text, kind) => `<span class="pill ${kind || ""}">${esc(text)}</span>`;
     const stepper = (attr, value, label, small) =>
         `<div class="stepper ${small ? "small" : ""}"><button ${attr} data-delta="-1" aria-label="Restar">−</button>
@@ -602,7 +609,7 @@
         const rows = data.partidas.filter(
             (p) =>
                 (filter === "all" || (filter === "pending" ? p.pending > 0 : p.balance > 0)) &&
-                (!q || (p.item + " " + p.name + " " + p.activity).toLowerCase().includes(q))
+                matches(q, taskCode(p), taskName(p), p.parent_label, p.activity)
         );
         const chip = (key, label) =>
             `<button class="chip ${filter === key ? "on" : ""}" data-filter="${key}" aria-pressed="${filter === key}">${label}</button>`;
@@ -616,8 +623,8 @@
                         const pct = p.planned ? Math.min(100, (100 * done) / p.planned) : 0;
                         const [stateText, cls] = partidaState(p);
                         return `<button class="card partida" data-go="progress" data-id="${p.id}">
-                            <div class="row top"><span class="tag">${esc(p.item)}</span><b class="grow">${esc(p.name)}</b>${svg("next", 18)}</div>
-                            ${p.activity && p.activity !== p.name ? `<small>${esc(p.activity)}</small>` : ""}
+                            <div class="row top">${taskCode(p) ? `<span class="tag">${esc(taskCode(p))}</span>` : ""}<b class="grow clamp2">${esc(taskName(p))}</b>${svg("next", 18)}</div>
+                            ${taskSub(p) ? `<small class="muted">${esc(taskSub(p))}</small>` : ""}
                             <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
                             <div class="row between"><small>${qtyText(done)} de ${qtyText(p.planned)} ${esc(p.uom)}</small>
                             <small class="strong ${cls}">${esc(stateText)}</small></div>
@@ -655,8 +662,8 @@
         return `${header("Registrar avance", "", "partidas")}
             <main class="page">
                 <div class="card">
-                    <div class="row"><span class="tag">${esc(line.item)}</span><small>${esc(line.path)}</small></div>
-                    <b class="title">${esc(line.name)}</b>${line.activity && line.activity !== line.name ? `<small>${esc(line.activity)}</small>` : ""}
+                    <div class="row">${taskCode(line) ? `<span class="tag">${esc(taskCode(line))}</span>` : ""}<small>${esc(line.parent_label || "")}</small></div>
+                    <b class="title">${esc(taskName(line))}</b>${line.role_label || (line.activity && line.activity !== line.name) ? `<small>${esc(line.role_label || line.activity)}</small>` : ""}
                     <div class="grid4"><span>Plan<b>${qtyText(line.planned)}</b></span><span>Validado<b>${qtyText(line.validated)}</b></span>
                     <span>Por validar<b class="warn">${qtyText(line.pending)}</b></span><span>Saldo ${esc(line.uom)}<b class="accent">${qtyText(line.balance)}</b></span></div>
                 </div>
@@ -804,7 +811,8 @@
         const d = dailyDraft();
         const daily = state.data.daily || { work: [] };
         // Lo enviado (de toda la obra) y lo que aún está en la cola de este equipo.
-        const work = daily.work.map((w) => ({ label: join(`${w.item} ${w.name}`, w.partner), qty: `${qtyText(w.qty)} ${w.uom}` }));
+        // Reportados y validados del día, con su estado (7.1).
+        const work = daily.work.map((w) => ({ label: join(`${taskCode(w)} ${taskName(w)}`.trim(), w.partner), qty: join(`${qtyText(w.qty)} ${w.uom}`, w.state_label) }));
         state.queue
             .filter((q) => q.kind === "progress" && q.status === "pending" && q.payload.date === d.date)
             .forEach((q) => work.push({ label: q.label.split(":")[0].replace(/^Avance /, ""), qty: (q.label.split(": ")[1] || "") + " · por enviar" }));
@@ -844,10 +852,31 @@
             </main>`;
     };
 
+    // Encabezado del tareo (7.2): cada columna dice partida y rol; la partida
+    // con más de un rol se agrupa en una fila superior.
+    function crewHead(lines) {
+        const groups = [];
+        lines.forEach((l) => {
+            const key = taskCode(l) + "|" + taskName(l);
+            const last = groups[groups.length - 1];
+            if (last && last.key === key) last.lines.push(l);
+            else groups.push({ key, lines: [l] });
+        });
+        const label = (l) => `${esc(taskCode(l))}<small>${esc(taskName(l))}</small>`;
+        const role = (l) => esc(l.role_label || l.activity || "");
+        if (groups.every((g) => g.lines.length === 1)) {
+            return `<tr><th>Persona</th>${lines.map((l) => `<th>${label(l)}<small class="muted">${role(l)}</small></th>`).join("")}<th>Total</th></tr>`;
+        }
+        return `<tr><th rowspan="2">Persona</th>${groups.map((g) => `<th colspan="${g.lines.length}">${label(g.lines[0])}</th>`).join("")}<th rowspan="2">Total</th></tr>
+            <tr>${groups.map((g) => g.lines.map((l) => `<th><small>${role(l)}</small></th>`).join("")).join("")}</tr>`;
+    }
+
     // 8. Cuadrilla y tareo (pensada para tablet).
     screens.crew = () => {
         const crew = state.data.crew || [];
-        const lines = (state.data.partidas || []).filter((p) => p.kind === "labor");
+        // Agrupadas por partida para el encabezado (7.2).
+        const lines = (state.data.partidas || []).filter((p) => p.kind === "labor")
+            .sort((a, b) => (taskCode(a) + taskName(a)).localeCompare(taskCode(b) + taskName(b)) || a.id - b.id);
         const d = (state.draft.crew = state.draft.crew || {
             date: today(),
             attendance: Object.fromEntries(crew.map((w) => [w.id, { present: true, time: "07:30" }])),
@@ -876,13 +905,13 @@
                     })
                     .join("") || '<small class="muted">La cuadrilla no tiene personas con turno en la obra.</small>'}</div>
                 <div class="card scroll"><div class="row between"><b>Horas por partida</b><small class="muted">jornada de ${hoursDay} horas; las horas extra van aparte</small></div>
-                <table class="tareo"><thead><tr><th>Persona</th>${lines.map((l) => `<th>${esc(l.item)}<small>${esc(l.name.split(" ")[0])}</small></th>`).join("")}<th>Total</th></tr></thead>
+                <table class="tareo"><thead>${crewHead(lines)}</thead>
                 <tbody>${crew
                     .map((w) => {
                         const on = present(w);
                         const t = total(w.id);
                         return `<tr class="${on ? "" : "absent"}"><td>${esc(w.name)}</td>${lines
-                            .map((l) => `<td><input type="number" min="0" max="12" step="0.5" value="${d.hours[w.id + ":" + l.id] || ""}" data-bind="crew.hours.${w.id}:${l.id}" aria-label="Horas de ${esc(w.name)} en ${esc(l.item)}" ${on ? "" : "disabled"}></td>`)
+                            .map((l) => `<td><input type="number" min="0" max="12" step="0.5" value="${d.hours[w.id + ":" + l.id] || ""}" data-bind="crew.hours.${w.id}:${l.id}" aria-label="Horas de ${esc(w.name)} en ${esc(join(taskCode(l), l.role_label || l.activity))}" ${on ? "" : "disabled"}></td>`)
                             .join("")}<td class="strong ${on ? (t === hoursDay ? "ok" : "bad") : "muted"}" data-total="${w.id}">${on ? qtyText(t) : "—"}</td></tr>`;
                     })
                     .join("")}</tbody></table>
@@ -898,7 +927,9 @@
             return cat.partida.map((p) => ({
                 key: `partida:${p.product_id}:${p.task_id}`, catalog: "partida", product_id: p.product_id,
                 task_id: p.task_id, name: p.name, uom: p.uom,
-                dest: `Partida ${join(p.item, p.task)}`, sub: `${p.uom} · saldo del plan ${qtyText(p.balance)} · ${p.item || p.task}`,
+                dest: `Partida ${join(taskCode(p), p.task_name || p.task)}`,
+                sub: join(`${p.uom} · saldo del plan ${qtyText(p.balance)}`, taskCode(p), p.task_name || p.task),
+                search: [taskCode(p), p.task_name || p.task, p.parent_label].join(" "),
             }));
         }
         return cat[tab].products.map((p) => ({
@@ -913,11 +944,14 @@
         const tab = state.params.tab || "partida";
         const qty = (key) => (state.cart.find((c) => c.key === key) || {}).qty || 0;
         const tabs = [["partida", "De la partida"], ["epp", "EPP"], ["office", "Útiles y aseo"]];
-        const items = catalogItems(tab);
+        const q = (state.params.q || "").toLowerCase();
+        // Busca por producto y, en «De la partida», por código o nombre de la partida (CR-17).
+        const items = catalogItems(tab).filter((it) => matches(q, it.name, it.search));
         const kits = tab === "partida" ? [] : state.data.catalog[tab].kits;
         return `${header("Requerimientos", join(projectParts().code, "para el almacén central o compra"), "home")}
             <div class="tabs" role="tablist">${tabs.map(([key, label]) => `<button role="tab" aria-selected="${tab === key}" class="${tab === key ? "on" : ""}" data-tab="${key}">${label}</button>`).join("")}</div>
             <main class="page">
+                <label class="search">${svg("search", 20)}<input type="search" placeholder="Buscar producto o partida" value="${esc(state.params.q || "")}" data-input="q" aria-label="Buscar en el catálogo"></label>
                 ${tab === "partida" ? `<p class="muted">Materiales de las recetas de su cuadrilla, con el saldo del plan de la obra.</p>` : ""}
                 ${kits.length ? `<div class="chips">${kits.map((k) => `<button class="chip outline" data-kit="${tab}:${k.id}">+ ${esc(k.name)}</button>`).join("")}</div>` : ""}
                 ${items

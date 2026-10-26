@@ -68,7 +68,8 @@ class ConstructionMaterialRequest(models.Model):
         required=True, tracking=True,
         help='Obra: material para una obra. Interno: material de oficina o de consumo de '
              'un área; sale a la ubicación de consumo interno del almacén.')
-    # Obligatoria en los de obra (_check_request_type): el interno no lleva obra.
+    # Obligatoria en los de obra (_check_request_type); el interno puede
+    # llevarla (7.3).
     project_id = fields.Many2one(
         'project.project', string='Obra', index=True,
         tracking=True, check_company=True,
@@ -87,6 +88,8 @@ class ConstructionMaterialRequest(models.Model):
         compute='_compute_construction_department_manager_id')
     project_manager_id = fields.Many2one(
         related='project_id.user_id', string='Jefe de proyecto', store=True)
+    construction_without_rule = fields.Boolean(
+        string='Sin regla de aprobación', compute='_compute_construction_without_rule')
     task_id = fields.Many2one(
         'project.task', string='Tarea', check_company=True,
         domain="[('project_id', '=', project_id)]")
@@ -202,20 +205,30 @@ class ConstructionMaterialRequest(models.Model):
 
     @api.constrains('request_type', 'project_id')
     def _check_request_type(self):
+        # El interno puede llevar la obra (EPP y útiles de la obra, 7.3): se
+        # carga a su área, pero aparece en la obra y en sus reportes.
         for request in self:
             if request.request_type == 'site' and not request.project_id:
                 raise ValidationError(_('Indique la obra del requerimiento %s.', request.name))
-            if request.request_type == 'internal' and request.project_id:
-                raise ValidationError(_(
-                    'El requerimiento interno %s no lleva obra.', request.name))
 
     @api.onchange('request_type')
     def _onchange_request_type(self):
         if self.request_type == 'internal':
-            self.project_id = False
             self.task_id = False
         else:
             self.area_id = False
+
+    def _compute_construction_without_rule(self):
+        """Ninguna regla de aprobación, salvo la de «sin regla», aplica al
+        requerimiento (7.4)."""
+        Definition = self.env['tier.definition'].sudo()
+        definitions = Definition.search([
+            ('model', '=', self._name), ('construction_site_fallback', '=', False)])
+        for request in self:
+            applicable = definitions.filtered(
+                lambda d: not d.company_id or d.company_id == request.company_id)
+            request.construction_without_rule = not any(
+                request.evaluate_tier(definition) for definition in applicable)
 
     @api.depends('company_id')
     def _compute_location_src_id(self):

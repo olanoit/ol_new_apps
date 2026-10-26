@@ -63,7 +63,7 @@
                                    readonly="state != 'draft' or not user_is_site_requester"/>
                             <field name="area_plan_id" invisible="1"/>
                             <field name="project_id" readonly="state != 'draft'"
-                                   invisible="request_type == 'internal'"
+                                   invisible="request_type == 'internal' and not project_id"
                                    required="request_type == 'site'"
                                    options="{'no_create': True}" placeholder="¿Para qué obra?"/>
                             <field name="area_id" readonly="state != 'draft'"

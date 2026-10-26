@@ -130,11 +130,12 @@ class TestInternalRequest(ConstructionRequestCommon):
                 'request_type': 'site',
                 'line_ids': [(0, 0, {'product_id': self.paper.id, 'product_qty': 1})],
             })
-        with self.assertRaises(ValidationError):
-            self.env['construction.material.request'].create({
-                'request_type': 'internal', 'project_id': self.site_a.id,
-                'line_ids': [(0, 0, {'product_id': self.paper.id, 'product_qty': 1})],
-            })
+        # El interno puede llevar la obra (CREVAL 7.3): se carga a su área.
+        internal = self.env['construction.material.request'].create({
+            'request_type': 'internal', 'project_id': self.site_a.id,
+            'line_ids': [(0, 0, {'product_id': self.paper.id, 'product_qty': 1})],
+        })
+        self.assertEqual(internal.project_id, self.site_a)
 
     def test_setup_without_area_plan_as_logistics(self):
         """Procesar en una compañía sin plan de áreas no lee planes
