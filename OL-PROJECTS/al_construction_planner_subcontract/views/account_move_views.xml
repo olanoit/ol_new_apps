@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Factura de una valorización que no suma lo mismo (CR-11). -->
+    <record id="view_move_form_construction_valuation" model="ir.ui.view">
+        <field name="name">account.move.form.construction.valuation</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='alerts']" position="after">
+                <div class="alert alert-warning" role="alert"
+                     invisible="not construction_valuation_difference">
+                    El total difiere del de la valorización en
+                    <field name="construction_valuation_difference" class="oe_inline fw-bold"/>.
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

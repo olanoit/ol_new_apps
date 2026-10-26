@@ -23,6 +23,27 @@ class AccountMove(models.Model):
         string='Vencimiento del fondo', copy=False, readonly=True)
     construction_guarantee_fund_ids = fields.One2many(
         'construction.guarantee.fund', 'move_id', string='Fondos de garantía')
+    # Factura corregida o registrada a mano: avisa si no suma lo mismo que su
+    # valorización (CR-11).
+    construction_valuation_difference = fields.Monetary(
+        string='Diferencia con la valorización', compute='_compute_construction_valuation_difference',
+        currency_field='currency_id')
+
+    @api.depends('amount_total', 'construction_settlement_ids.amount_total',
+                 'construction_settlement_ids.amount_advance')
+    def _compute_construction_valuation_difference(self):
+        for move in self:
+            # sudo: quien registra la factura (contabilidad) no siempre ve las
+            # valorizaciones; solo se leen sus totales.
+            valuations_sudo = move.sudo().construction_settlement_ids.filtered(
+                lambda s: s.uses_terms and s.state != 'cancel')
+            if not valuations_sudo:
+                move.construction_valuation_difference = 0.0
+                continue
+            expected = sum(valuations_sudo.mapped('amount_total')) \
+                - sum(valuations_sudo.mapped('amount_advance'))
+            move.construction_valuation_difference = move.currency_id.round(
+                move.amount_total - expected)
 
     @api.depends('construction_guarantee_amount', 'construction_guarantee_date')
     def _compute_needed_terms(self):

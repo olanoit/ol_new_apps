@@ -27,6 +27,10 @@
                             <field name="construction_deduction_account_id" options="{'no_create': True}"/>
                             <field name="construction_deduction_journal_id" options="{'no_create': True}"/>
                         </setting>
+                        <setting company_dependent="1" id="construction_rounding_account" string="Ajuste de redondeo de contratas"
+                                 help="Cuenta de la línea que iguala la factura de la valorización con la suma de sus líneas redondeadas (hasta 0.05). Vacía: la del servicio.">
+                            <field name="construction_rounding_account_id" options="{'no_create': True}"/>
+                        </setting>
                         <setting id="construction_purchase_tier" string="Aprobación por niveles de la orden de contrata"
                                  help="Reglas por monto, aprobadores y secuencia para la orden (purchase_tier_validation de OCA). Sin reglas, rige la aprobación nativa de Compras.">
                             <field name="module_purchase_tier_validation"/>

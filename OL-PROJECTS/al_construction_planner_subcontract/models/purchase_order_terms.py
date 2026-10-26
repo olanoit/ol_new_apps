@@ -387,6 +387,11 @@ class ResCompany(models.Model):
         'account.account', string='Cuenta de deductivos a contratas', check_company=True,
         help='Deductivo en la factura (línea propia) o descontado al pago. Vacía: la cuenta del '
              'servicio.')
+    construction_rounding_account_id = fields.Many2one(
+        'account.account', string='Cuenta del ajuste de redondeo de contratas',
+        check_company=True,
+        help='Línea de ajuste (hasta 0.05) para que la factura de la valorización sume lo mismo '
+             'que sus líneas redondeadas. Vacía: la cuenta del servicio.')
     construction_deduction_journal_id = fields.Many2one(
         'account.journal', string='Diario del descuento al pago', check_company=True,
         domain="[('type', '=', 'general')]",

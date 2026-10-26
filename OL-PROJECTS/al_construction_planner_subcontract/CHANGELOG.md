@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261016 — 26/10/2026
+
+- CR-15: «Actualizar avances» actualiza las líneas en vez de rehacerlas y conserva las decisiones del validador (pago del re-trabajo, porcentaje escrito, cantidad final reducida) con su motivo y su autor. Si el avance cambia después de la decisión, la línea avisa y el validador la confirma; la que se queda sin avances queda en 0 y no se borra.
+- CR-11: la factura de la valorización suma lo mismo que sus líneas redondeadas. Con el redondeo global de impuestos, Odoo calculaba la base sin redondear y salía un céntimo distinto: ahora va una línea de ajuste de redondeo (hasta 0.05, cuenta en Ajustes) que queda visible en la valorización, y la factura avisa si su total difiere del de la valorización.
+
 ## 10.20261016 — 24/10/2026
 
 - Un plan en ejecución no se cancela con liquidaciones de contrata sin anular.

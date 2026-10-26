@@ -205,12 +205,34 @@ class ConstructionContractSettlementLine(models.Model):
                                       currency_field='currency_id')
 
     @api.depends('qty_period', 'pct_manual', 'qty_settled_before', 'is_rework', 'qty_final',
-                 'qty_previous')
+                 'qty_previous', 'rework_paid', 'no_progress')
     def _compute_qty_settle(self):
         super()._compute_qty_settle()
         for line in self.filtered(lambda l: l.settlement_id.settlement_type == 'settlement'
-                                  and not l.is_rework and l.qty_final):
+                                  and not l.is_rework and l.qty_final and not l.no_progress):
             line.qty_settle = max(line.qty_final - line.qty_previous, 0.0)
+
+    def _construction_has_decision(self):
+        # La cantidad final reducida con motivo (CR-15).
+        return super()._construction_has_decision() or bool(self.final_reason)
+
+    @api.model
+    def _decision_fields(self):
+        return super()._decision_fields() | {'qty_final', 'final_reason'}
+
+    def _record_decision(self, vals):
+        if self.env.context.get('construction_final_sync'):
+            return
+        super()._record_decision(vals)
+
+    def _sync_refresh(self):
+        """Sin reducción con motivo, la cantidad final sigue al acumulado
+        validado, como al crear la línea."""
+        super()._sync_refresh()
+        for line in self.filtered(lambda l: l.settlement_id.settlement_type == 'settlement'
+                                  and not l.is_rework and not l.final_reason):
+            line.with_context(construction_final_sync=True).qty_final = \
+                line.qty_previous + line.qty_period
 
     def _compute_released(self):
         for line in self:

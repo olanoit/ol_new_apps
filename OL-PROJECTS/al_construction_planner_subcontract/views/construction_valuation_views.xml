@@ -131,6 +131,7 @@
                         <field name="amount_advance"/>
                         <field name="amount_retention"/>
                         <field name="amount_to_pay" class="oe_subtotal_footer_separator"/>
+                        <field name="amount_invoice_rounding" invisible="not amount_invoice_rounding"/>
                         <field name="progress_pct" widget="percentage"/>
                     </group>
                 </page>

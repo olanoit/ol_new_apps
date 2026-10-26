@@ -18,6 +18,8 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_deduction_account_id', readonly=False)
     construction_deduction_journal_id = fields.Many2one(
         related='company_id.construction_deduction_journal_id', readonly=False)
+    construction_rounding_account_id = fields.Many2one(
+        related='company_id.construction_rounding_account_id', readonly=False)
     # Aprobación por niveles de la orden de contrata (3.4): el módulo de OCA;
     # sin reglas, rige la aprobación nativa de Compras.
     module_purchase_tier_validation = fields.Boolean(

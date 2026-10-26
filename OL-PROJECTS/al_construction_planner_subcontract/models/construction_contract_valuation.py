@@ -32,8 +32,11 @@ SUMMARY_GROUPS = {
 TERMS_AMOUNT_FIELDS = (
     'amount_direct', 'amount_additional', 'amount_adjustments', 'amount_deductions',
     'amount_subtotal', 'amount_tax', 'amount_total', 'amount_advance', 'amount_retention',
-    'amount_to_pay',
+    'amount_to_pay', 'amount_invoice_rounding',
 )
+# Tope del ajuste de redondeo entre la valorización y su factura (CR-11): más
+# que eso no es redondeo y se revisa a mano.
+MAX_INVOICE_ROUNDING = 0.05
 
 
 def _last_day(day):
@@ -100,6 +103,11 @@ class ConstructionContractSettlement(models.Model):
                                        currency_field='currency_id')
     amount_to_pay = fields.Monetary(string='Total a pagar', readonly=True, copy=False,
                                     currency_field='currency_id')
+    amount_invoice_rounding = fields.Monetary(
+        string='Ajuste de redondeo en la factura', readonly=True, copy=False,
+        currency_field='currency_id',
+        help='Línea que se agregó a la factura para que su base sea la suma de las líneas de la '
+             'valorización, redondeadas una vez cada una (CR-11).')
     # Revisar antes de aprobar.
     review_manual_count = fields.Integer(string='Metrados escritos a mano',
                                          compute='_compute_review')
@@ -293,7 +301,7 @@ class ConstructionContractSettlement(models.Model):
         settlement_sudo = self.sudo()
         (settlement_sudo.progress_ids - included).write({'settlement_id': False})
         included.write({'settlement_id': self.id})
-        commands = [Command.clear()]
+        vals_list = []
         for (po_line, is_rework, reason), progresses in sorted(
                 groups.items(), key=lambda kv: (kv[0][0].sequence, kv[0][0].id, kv[0][1],
                                                 kv[0][2] or '')):
@@ -304,16 +312,14 @@ class ConstructionContractSettlement(models.Model):
                     and po_line.product_uom_id != activity.uom_id:
                 qty = activity.uom_id._compute_quantity(qty, po_line.product_uom_id)
                 repeat = activity.uom_id._compute_quantity(repeat, po_line.product_uom_id)
-            commands.append(Command.create({
+            vals_list.append({
                 'activity_id': activity.id, 'purchase_line_id': po_line.id, 'qty_period': qty,
                 'price_unit': po_line.price_unit, 'retention_pct': 0.0, 'is_rework': is_rework,
                 'rework_reason': reason, 'qty_repeat': repeat,
                 'progress_ids': [Command.set(progresses.ids)],
-            }))
-        settlement_sudo.write({
-            'line_ids': commands,
-            'plan_id': self.project_id._construction_current_plan().id,
-        })
+            })
+        self._sync_lines(vals_list)
+        settlement_sudo.write({'plan_id': self.project_id._construction_current_plan().id})
         self._attach_deductions()
         self._terms_recompute()
 
@@ -687,6 +693,7 @@ class ConstructionContractSettlement(models.Model):
         extra += self._invoice_regularization_values()
         if extra:
             invoice.write({'invoice_line_ids': [Command.create(v) for v in extra]})
+        self._invoice_rounding_adjustment(invoice, main, services)
         if not self.currency_id.is_zero(self.amount_retention):
             invoice.write({
                 'construction_guarantee_amount': self.amount_retention,
@@ -696,6 +703,36 @@ class ConstructionContractSettlement(models.Model):
             invoice.invoice_date_due = self.payment_date
         self._create_payment_discount_entry(invoice)
         return invoice
+
+    def _invoice_rounding_adjustment(self, invoice, main, services):
+        """Con el redondeo global de impuestos, Odoo calcula la base de la
+        factura sobre la suma de cantidad × tarifa sin redondear, y no sobre
+        las líneas redondeadas de la valorización: puede salir un céntimo
+        distinto (CR-11). La diferencia va en una línea de ajuste."""
+        self.ensure_one()
+        currency = self.currency_id
+        lines = invoice.invoice_line_ids.filtered(lambda l: l.display_type == 'product')
+        diff = currency.round(sum(lines.mapped('price_subtotal')) - invoice.amount_untaxed)
+        if currency.is_zero(diff):
+            return
+        if currency.compare_amounts(abs(diff), MAX_INVOICE_ROUNDING) > 0:
+            self.message_post(body=self.env._(
+                'La base de la factura %(invoice)s difiere en %(diff)s de la suma de sus líneas: '
+                'pasa el ajuste de redondeo permitido y se revisa a mano.',
+                invoice=invoice.display_name, diff=diff))
+            return
+        account = self.company_id.construction_rounding_account_id or main.account_id
+        invoice.write({'invoice_line_ids': [Command.create({
+            'display_type': 'product',
+            'name': self.env._('Ajuste de redondeo (%s)', self.title or self.name),
+            'account_id': account.id,
+            'quantity': 1.0,
+            'price_unit': diff,
+            'tax_ids': [Command.set(main.tax_ids.ids)],
+            'analytic_distribution': self._weighted_distribution(services) if services
+            else False,
+        })]})
+        self.sudo().amount_invoice_rounding = diff
 
     def _weighted_distribution(self, lines):
         """Distribución analítica de las líneas del servicio ponderada por su

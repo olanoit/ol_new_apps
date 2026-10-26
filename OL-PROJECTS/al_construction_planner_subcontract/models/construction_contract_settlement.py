@@ -13,6 +13,7 @@ from markupsafe import Markup
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import format_date
 
 from odoo.addons.al_construction_planner.models.common import (
     DRIVER_TYPES, EXEC_USER_GROUP, EXEC_VALIDATOR_GROUP, PROJECT_HEAD_GROUPS,
@@ -274,7 +275,7 @@ class ConstructionContractSettlement(models.Model):
             settlement_sudo = settlement.sudo()
             (settlement_sudo.progress_ids - included).write({'settlement_id': False})
             included.write({'settlement_id': settlement.id})
-            commands = [Command.clear()]
+            vals_list = []
             for (po_line, is_rework, rework_reason), progresses in sorted(
                     by_po_line.items(), key=lambda kv: (kv[0][0].sequence, kv[0][0].id,
                                                         kv[0][1], kv[0][2] or '')):
@@ -285,7 +286,7 @@ class ConstructionContractSettlement(models.Model):
                         and po_line.product_uom_id != activity.uom_id:
                     qty = activity.uom_id._compute_quantity(qty, po_line.product_uom_id)
                     repeat = activity.uom_id._compute_quantity(repeat, po_line.product_uom_id)
-                commands.append(Command.create({
+                vals_list.append({
                     'activity_id': activity.id,
                     'purchase_line_id': po_line.id,
                     'qty_period': qty,
@@ -294,13 +295,13 @@ class ConstructionContractSettlement(models.Model):
                     'is_rework': is_rework,
                     'rework_reason': rework_reason,
                     'qty_repeat': repeat,
-                }))
+                })
             po_lines = [key[0] for key in by_po_line]
             orders = Progress.env['purchase.order.line'].union(*po_lines).order_id \
                 if po_lines else self.env['purchase.order']
             settlement._construction_refresh_discounts()
+            settlement._sync_lines(vals_list)
             settlement_sudo.write({
-                'line_ids': commands,
                 'purchase_order_id': orders.sorted('id', reverse=True)[:1].id
                 or settlement.purchase_order_id.id,
                 'plan_id': settlement.project_id._construction_current_plan().id,
@@ -309,6 +310,39 @@ class ConstructionContractSettlement(models.Model):
                 settlement.message_post(body=self.env._(
                     'Avances validados sin OC de servicio de la contrata (asigne la contrata '
                     'con «Asignar contrata»): %s.', ', '.join(orphans.mapped('name'))))
+
+    def _sync_lines(self, vals_list):
+        """Actualiza las líneas por su clave (línea de la OC, re-trabajo y su
+        motivo) en vez de rehacerlas, para no perder las decisiones del
+        validador (CREVAL, CR-15). La línea que se queda sin avances se borra,
+        salvo que tenga una decisión: queda en 0 y con aviso."""
+        self.ensure_one()
+        # sudo: como al rehacer las líneas, quien prepara la valorización no
+        # siempre puede escribirlas (lo controla el estado del documento).
+        lines_sudo = self.sudo().line_ids
+        existing = {}
+        for line in lines_sudo:
+            existing.setdefault(line._sync_key(), line)
+        kept = lines_sudo.browse()
+        to_create = []
+        for vals in vals_list:
+            line = existing.pop((vals['purchase_line_id'], vals['is_rework'],
+                                 vals['rework_reason'] or False), None)
+            if line:
+                line.write(dict(vals, no_progress=False))
+                kept |= line
+            else:
+                to_create.append(vals)
+        leftover = lines_sudo - kept
+        decided = leftover.filtered(lambda l: l._construction_has_decision())
+        (leftover - decided).unlink()
+        orphan_vals = {'qty_period': 0.0, 'qty_repeat': 0.0, 'no_progress': True}
+        if 'progress_ids' in decided._fields:
+            orphan_vals['progress_ids'] = [Command.clear()]
+        decided.write(orphan_vals)
+        (kept | decided)._sync_refresh()
+        if to_create:
+            self.sudo().write({'line_ids': [Command.create(vals) for vals in to_create]})
 
     def _repeat_qty(self, progresses):
         """Cantidad de ``progresses`` (no re-trabajo) que repite lo ya liquidado:
@@ -798,6 +832,18 @@ class ConstructionContractSettlementLine(models.Model):
         help='El driver de la semana o, con un porcentaje escrito, lo que lleva el acumulado a '
              'ese porcentaje.')
     retention_pct = fields.Float(string='Retención (%)', digits=(5, 2))
+    # Decisión del validador frente al avance (CR-15): «Actualizar avances»
+    # la conserva y avisa si el avance cambió desde que se tomó.
+    no_progress = fields.Boolean(
+        string='Sin avances', readonly=True,
+        help='Sus avances ya no están en el periodo; queda en 0 por tener una decisión del '
+             'validador.')
+    decision_qty = fields.Float(string='Avance al decidir', digits='Product Unit', readonly=True)
+    decision_date = fields.Datetime(string='Decidido el', readonly=True)
+    decision_warning = fields.Char(
+        string='Aviso', compute='_compute_decision_warning', store=True,
+        help='El avance cambió desde la decisión del validador: la decisión se mantiene hasta '
+             'que la confirme o la quite.')
     qty_cumulative = fields.Float(
         string='Acumulado', compute='_compute_cumulative', digits='Product Unit')
     qty_planned = fields.Float(
@@ -810,9 +856,15 @@ class ConstructionContractSettlementLine(models.Model):
             line.is_repeat = bool(line.uom_id) and line.uom_id.compare(line.qty_repeat, 0.0) > 0 \
                 if line.uom_id else line.qty_repeat > 0
 
-    @api.depends('qty_period', 'pct_manual', 'qty_settled_before', 'is_rework', 'rework_paid')
+    @api.depends('qty_period', 'pct_manual', 'qty_settled_before', 'is_rework', 'rework_paid',
+                 'no_progress')
     def _compute_qty_settle(self):
         for line in self:
+            if line.no_progress:
+                line.qty_settle = 0.0
+                line.is_manual = bool(line.pct_manual)
+                line.manual_over = False
+                continue
             if line.is_rework or not line.pct_manual:
                 line.qty_settle = line.qty_period \
                     if not line.is_rework or line.rework_paid else 0.0
@@ -840,6 +892,70 @@ class ConstructionContractSettlementLine(models.Model):
                 line.rework_pay_reason for line in self)):
             raise UserError(self.env._('Pagar un re-trabajo pide su motivo.'))
         return dict(vals, rework_paid_by=self.env.user.id if vals['rework_paid'] else False)
+
+    def _sync_key(self):
+        self.ensure_one()
+        return (self.purchase_line_id.id, self.is_rework, self.rework_reason or False)
+
+    def _construction_has_decision(self):
+        """La línea tiene una decisión del validador que se conserva al
+        actualizar (gancho: la liquidación agrega la cantidad final)."""
+        self.ensure_one()
+        return bool(self.rework_paid or self.pct_manual)
+
+    def _sync_refresh(self):
+        """Recalcula lo que la línea toma de otras liquidaciones después de
+        actualizarla (al crearla lo hace ``create``)."""
+        self._set_settled_before()
+
+    @api.depends('qty_period', 'decision_qty', 'decision_date', 'no_progress')
+    def _compute_decision_warning(self):
+        for line in self:
+            warning = False
+            if line.decision_date and line._construction_has_decision():
+                date = format_date(self.env, line.decision_date)
+                uom = line.purchase_line_id.product_uom_id
+                if line.no_progress:
+                    warning = self.env._(
+                        'Sin avances desde la decisión del %(date)s: la línea queda en 0.',
+                        date=date)
+                elif uom.compare(line.qty_period, line.decision_qty) if uom \
+                        else line.qty_period != line.decision_qty:
+                    warning = self.env._(
+                        'El avance cambió desde la decisión del %(date)s: de %(before)s a '
+                        '%(now)s.', date=date, before=round(line.decision_qty, 4),
+                        now=round(line.qty_period, 4))
+            line.decision_warning = warning
+
+    @api.model
+    def _decision_fields(self):
+        """Campos con los que el validador decide sobre la línea (gancho)."""
+        return {'rework_paid', 'pct_manual'}
+
+    def _record_decision(self, vals):
+        """Al tomar una decisión se guarda el avance de ese momento."""
+        if not any(vals.get(name) for name in self._decision_fields()):
+            return
+        now = fields.Datetime.now()
+        for line in self:
+            # sudo: campos de solo lectura; la decisión ya pasó sus controles.
+            line.sudo().write({'decision_qty': line.qty_period, 'decision_date': now})
+
+    def action_confirm_decision(self):
+        """El validador confirma su decisión con el avance actual (CR-15). Sin
+        avances no hay qué confirmar: se quita la decisión."""
+        if not self.env.user.has_groups(EXEC_VALIDATOR_GROUP):
+            raise UserError(self.env._('Confirma la decisión quien valida la ejecución.'))
+        lines = self.filtered(lambda l: l.decision_warning and not l.no_progress)
+        if any(line.settlement_id.state not in ('draft', 'submitted') for line in lines):
+            raise UserError(self.env._(
+                'La decisión se confirma con la liquidación en borrador o presentada.'))
+        for line in lines:
+            line.settlement_id.message_post(body=self.env._(
+                '%(activity)s: decisión confirmada con el avance actual (%(warning)s)',
+                activity=line.activity_id.display_name, warning=line.decision_warning))
+        lines._record_decision(dict.fromkeys(self._decision_fields(), True))
+        return True
 
     def _qty_to_receive(self):
         """Lo que se recibe en la OC: lo liquidado menos lo repetido."""
@@ -886,6 +1002,7 @@ class ConstructionContractSettlementLine(models.Model):
         if 'rework_paid' in vals:
             vals = self._check_rework_payment(vals)
         res = super().write(vals)
+        self._record_decision(vals)
         if 'pct_manual' in vals:
             for line in self:
                 line.settlement_id.message_post(body=self.env._(

@@ -112,7 +112,7 @@
                         <page string="Líneas" name="lines">
                             <field name="line_ids" nolabel="1" readonly="state not in ('draft', 'submitted')">
                                 <list create="0" delete="0" editable="bottom"
-                                      decoration-warning="is_repeat or manual_over"
+                                      decoration-warning="is_repeat or manual_over or decision_warning"
                                       decoration-info="is_rework">
                                     <field name="activity_id" readonly="1"/>
                                     <field name="is_rework" optional="show" readonly="1"/>
@@ -132,6 +132,12 @@
                                     <field name="rework_pay_reason" optional="show"
                                            required="rework_paid" readonly="not is_rework"
                                            groups="al_construction_planner.group_planner_exec_validator"/>
+                                    <field name="decision_warning" optional="show" readonly="1"/>
+                                    <field name="no_progress" column_invisible="True"/>
+                                    <button name="action_confirm_decision" type="object" icon="fa-check"
+                                            title="Confirmar la decisión con el avance actual"
+                                            invisible="not decision_warning or no_progress"
+                                            groups="al_construction_planner.group_planner_exec_validator"/>
                                     <field name="is_manual" optional="hide" readonly="1"/>
                                     <field name="manual_over" column_invisible="True"/>
                                     <field name="qty_settle" readonly="1"/>

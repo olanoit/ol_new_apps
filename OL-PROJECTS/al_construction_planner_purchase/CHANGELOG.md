@@ -7,7 +7,7 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
-## 15.20261026 — 26/10/2026
+## 15.20261024 — 26/10/2026
 
 - CR-16: validar recepciones, despachos, devoluciones y ajustes de inventario ya no falla sin Fabricación instalada («'stock.move' object has no attribute 'raw_material_production_id'»). Los consumos de las OF los suma al plan el puente al_construction_planner_mrp_request.
 
