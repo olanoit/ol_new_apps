@@ -248,6 +248,10 @@
                              help="El celular comprime las fotos a este lado mayor antes de guardarlas.">
                         <field name="construction_portal_photo_max_px" class="oe_inline"/> px
                     </setting>
+                    <setting company_dependent="1" string="Devolución de lo dañado"
+                             help="Ubicación a la que vuelve lo que la obra devuelve como dañado (Bajas del almacén). Vacía: sale de la obra como desecho.">
+                        <field name="construction_portal_damaged_location_id" options="{'no_create': True}"/>
+                    </setting>
                 </block>
             </xpath>
         </field>

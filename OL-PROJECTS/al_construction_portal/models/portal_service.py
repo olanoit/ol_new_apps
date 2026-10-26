@@ -747,23 +747,33 @@ class ConstructionPortalService(models.AbstractModel):
             [('company_id', '=', company.id)], limit=1)
         Product = self.env['product.product'].sudo()
         records = self.env['stock.picking'].sudo()
-        if good:
+        # Con ubicación de bajas, lo dañado vuelve en su propia transferencia
+        # (CR-16); sin ella, se desecha en la obra.
+        bajas = company.construction_portal_damaged_location_id
+        groups = [(warehouse.lot_stock_id, good, self.env._('Devolución de %s', project.display_name))]
+        if bajas:
+            groups.append((bajas, damaged, self.env._('Dañado en %s', project.display_name)))
+            damaged = []
+        for destination, rows, origin in groups:
+            if not rows:
+                continue
             # sudo: la devolución la registra la obra; el almacén la recibe.
             picking = records.create({
                 'picking_type_id': warehouse.int_type_id.id, 'location_id': location.id,
-                'location_dest_id': warehouse.lot_stock_id.id, 'origin': self.env._(
-                    'Devolución de %s', project.display_name),
+                'location_dest_id': destination.id, 'origin': origin,
                 'move_ids': [(0, 0, {
                     'product_id': product_id, 'product_uom_qty': qty,
                     'product_uom': Product.browse(product_id).uom_id.id,
-                    'location_id': location.id, 'location_dest_id': warehouse.lot_stock_id.id,
-                }) for product_id, qty in good]})
+                    'location_id': location.id, 'location_dest_id': destination.id,
+                }) for product_id, qty in rows]})
             picking.action_confirm()
             note = self.env._('Traslado: %s', dict(
                 own=self.env._('unidad propia (guía de remisión)'),
                 supplier=self.env._('flete de proveedor')).get(values.get('transport'), '-'))
-            attachments.write({'res_id': picking.id})
-            picking.message_post(body=note, attachment_ids=attachments.ids)
+            # Las fotos van con la primera transferencia; la de bajas lleva copia.
+            photos = attachments.copy() if records else attachments
+            photos.write({'res_id': picking.id})
+            picking.message_post(body=note, attachment_ids=photos.ids)
             records |= picking
         scraps = self.env['stock.scrap'].sudo()
         for product_id, qty in damaged:

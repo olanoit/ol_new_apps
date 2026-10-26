@@ -213,6 +213,18 @@ class TestPortalService(ContractTermsCommon):
                       {'product_id': board.id, 'qty': 1, 'state': 'damaged'}]})
         self.assertEqual(len(result['pickings']), 1)
         self.assertEqual(result['scraps'], 1)
+        # Con ubicación de bajas, lo dañado vuelve en su propia transferencia.
+        bajas = self.env['stock.location'].create({
+            'name': 'Bajas (test portal)', 'usage': 'internal',
+            'location_id': self.env['stock.warehouse'].search(
+                [('company_id', '=', self.company.id)], limit=1).view_location_id.id})
+        self.company.construction_portal_damaged_location_id = bajas
+        again = service.return_material({
+            'uuid': 'dev-bajas', 'project_id': self.project.id, 'photos': PHOTOS,
+            'lines': [{'product_id': board.id, 'qty': 1, 'state': 'damaged'}]})
+        self.assertEqual(again['scraps'], 0)
+        to_bajas = self.env['stock.picking'].search([('name', 'in', again['pickings'])])
+        self.assertEqual(to_bajas.location_dest_id, bajas)
         with self.assertRaisesRegex(UserError, 'No hay tanto'):
             service.return_material({
                 'uuid': 'dev-2', 'project_id': self.project.id, 'photos': PHOTOS,

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261025 — 26/10/2026
+
+- CR-16, criterio 5: ajuste «Devolución de lo dañado»: lo que la obra devuelve como dañado vuelve en su propia transferencia a esa ubicación (Bajas del almacén); vacío, se desecha en la obra como antes.
+
 ## 5.20261025 — 26/10/2026
 
 - CR-17: el rol no repite el tipo cuando la actividad ya lo dice («Drywall (contrata)»).

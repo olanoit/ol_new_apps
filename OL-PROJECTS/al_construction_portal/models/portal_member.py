@@ -44,6 +44,13 @@ class ResCompany(models.Model):
     construction_portal_photo_max_px = fields.Integer(
         string='Lado mayor de las fotos (px)', default=1600,
         help='El celular comprime las fotos a este tamaño antes de guardarlas.')
+    # Devolución de lo dañado (CREVAL, CR-16): a una ubicación de bajas del
+    # almacén; sin ella, desecho.
+    construction_portal_damaged_location_id = fields.Many2one(
+        'stock.location', string='Ubicación de lo dañado', check_company=True,
+        domain="[('usage', '=', 'internal'), ('company_id', 'in', [id, False])]",
+        help='Lo que la obra devuelve marcado como dañado va a esta ubicación (por ejemplo, '
+             'Bajas del almacén). Vacía: sale de la obra como desecho.')
 
 
 class ResConfigSettings(models.TransientModel):
@@ -55,6 +62,8 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_portal_progress_days', readonly=False)
     construction_portal_photo_max_px = fields.Integer(
         related='company_id.construction_portal_photo_max_px', readonly=False)
+    construction_portal_damaged_location_id = fields.Many2one(
+        related='company_id.construction_portal_damaged_location_id', readonly=False)
 
 
 class ProjectProject(models.Model):

@@ -73,6 +73,10 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '6.20261025'
+    fecha: 26/10/2026
+    cambios:
+    - "CR-16, criterio 5: ajuste «Devolución de lo dañado»: lo que la obra devuelve como dañado vuelve en su propia transferencia a esa ubicación (Bajas del almacén); vacío, se desecha en la obra como antes."
   - version: '5.20261025'
     fecha: 26/10/2026
     cambios:
