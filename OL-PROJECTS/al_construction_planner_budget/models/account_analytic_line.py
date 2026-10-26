@@ -42,8 +42,10 @@ class AccountAnalyticLine(models.Model):
                 resource_type = 'material' if product.type == 'consu' else 'service'
                 stock_move = line.move_line_id.move_id.stock_move_id \
                     if 'stock_move_id' in line.move_line_id.move_id._fields else False
+                # Sin Fabricación el movimiento no tiene el campo (CR-16).
                 if line.category == 'manufacturing_order' or (
-                        stock_move and stock_move.raw_material_production_id):
+                        stock_move and 'raw_material_production_id' in stock_move._fields
+                        and stock_move.raw_material_production_id):
                     stage = Stage._consumption_code('production')
                 elif stock_move:
                     stage = Stage._consumption_code('site')

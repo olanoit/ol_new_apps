@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261026 — 26/10/2026
+
+- CR-16: aquí se suman al plan los consumos de las órdenes de fabricación al validar (antes en el puente de compras, que no depende de Fabricación).
+
 ## 2.20261025 — 25/10/2026
 
 - La reposición a planta avisa al jefe de producción o, sin él, a los responsables de Fabricación, y lo deja como responsable de la orden; nunca a quien pide (verificación en dev1).

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261026 — 26/10/2026
+
+- CR-16: validar recepciones, despachos, devoluciones y ajustes de inventario ya no falla sin Fabricación instalada («'stock.move' object has no attribute 'raw_material_production_id'»). Los consumos de las OF los suma al plan el puente al_construction_planner_mrp_request.
+
 ## 14.20261024 — 24/10/2026
 
 - Requerimiento CREVAL v1.0, 6.1: bolsa de herramientas manuales. Con la categoría de herramientas manuales en Ajustes, las compras de esa categoría con la analítica de la obra son el comprometido y el real de sus líneas en % de la mano de obra.

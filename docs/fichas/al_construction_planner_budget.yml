@@ -20,6 +20,10 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '4.20261026'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-16: el apunte de un consumo sin Fabricación instalada ya no lee la orden de fabricación del movimiento."
 - version: '3.20261016'
   fecha: 24/10/2026
   cambios:

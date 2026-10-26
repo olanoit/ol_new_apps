@@ -9,11 +9,18 @@ cuenta el retazo por su fracción de plancha, no como una unidad."""
 import math
 
 from odoo import api, fields, models
+from odoo.fields import Domain
 from odoo.exceptions import UserError
 
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+
+    def _construction_plan_allocation_domain(self):
+        # Los consumos de las OF también cambian el plan (CR-16: vive aquí
+        # porque el puente de compras no depende de Fabricación).
+        return super()._construction_plan_allocation_domain() \
+            | Domain('production_id', 'in', self.raw_material_production_id.ids)
 
     def _construction_is_request_board(self):
         """Movimiento plancha del despacho de un requerimiento (no un retazo)."""
