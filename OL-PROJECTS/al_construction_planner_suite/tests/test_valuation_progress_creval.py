@@ -146,3 +146,22 @@ class TestValuationProgressQty(TestValuationProgress):
         overhead = valuation.line_ids.filtered(lambda l: l.sale_line_id == self.overhead)
         # Los gastos generales van con «Closets», que no tiene avance.
         self.assertFalse(overhead.amount_delivered)
+
+    def test_terms_from_active_contract(self):
+        """Adelanto, fondo y detracción del contrato vigente de la obra: la
+        amortización no sale negativa por el descuento (re-prueba E14)."""
+        contract = self.env['construction.contract'].create({
+            'name': 'Contrato de obra (test)', 'project_id': self.project.id,
+            'partner_id': self.customer.id, 'sale_order_id': self.order.id,
+            'advance_pct': 10.0, 'guarantee_pct': 5.0, 'detraction_pct': 4.0})
+        contract.state = 'active'
+        self._progress(4502.23, date(2026, 10, 22))
+        valuation = self._prepare_valuation(date(2026, 10, 28))
+        self.assertEqual((valuation.guarantee_pct, valuation.advance_amortization_pct,
+                          valuation.detraction_pct), (5.0, 10.0, 4.0))
+        self.assertGreater(valuation.amount_amortization, 0.0)
+        self.assertAlmostEqual(valuation.amount_amortization,
+                               round(valuation.amount_confirmed * 0.10, 2), delta=0.05)
+        self.assertAlmostEqual(valuation.amount_detraction,
+                               round((valuation.amount_confirmed + valuation.amount_tax) * 0.04, 2),
+                               delta=0.01)

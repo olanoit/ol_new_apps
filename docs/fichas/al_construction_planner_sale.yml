@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '9.20261016'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-01 (preparación de la re-prueba E14): la valorización por avance amortiza el adelanto del contrato vigente de la obra, como el fondo y la detracción; con el adelanto de la obra en 0 %, la amortización salía negativa por la línea del descuento."
 - version: '8.20261016'
   fecha: 26/10/2026
   cambios:

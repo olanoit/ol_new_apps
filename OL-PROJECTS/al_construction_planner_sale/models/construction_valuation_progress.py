@@ -357,6 +357,16 @@ class ConstructionValuation(models.Model):
                      if line.sale_line_id in partidas and not line.is_manual]
         self.with_context(construction_proportional_sync=True).line_ids = commands
 
+    def _construction_advance_pct(self):
+        """Por avance de la partida, el adelanto del contrato vigente de la
+        obra, como el fondo y la detracción (CR-01)."""
+        self.ensure_one()
+        if not self.contract_id and self.project_id.construction_valuation_basis == 'progress':
+            contract = self.project_id._construction_terms_contract()
+            if contract:
+                return contract.advance_pct
+        return super()._construction_advance_pct()
+
     def _construction_valued_by_progress(self):
         self.ensure_one()
         return self.project_id.construction_valuation_basis == 'progress' \

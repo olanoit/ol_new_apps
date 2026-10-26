@@ -418,6 +418,13 @@ class ConstructionValuation(models.Model):
         if not self.env.user.has_groups(group):
             raise UserError(label)
 
+    def _construction_advance_pct(self):
+        """Adelanto del cliente (% del precio) que se amortiza: el del
+        contrato de la valorización o el de la obra."""
+        self.ensure_one()
+        return self.contract_id.advance_pct if self.contract_id \
+            else self.project_id.construction_advance_pct
+
     def _construction_valued_by_progress(self):
         """Valorización por avance de la partida (CR-01): no lleva entregas
         ni hitos."""
@@ -834,9 +841,7 @@ class ConstructionValuationLine(models.Model):
             confirmed = line.amount_confirmed
             line.amount_pending = line.amount_delivered - confirmed
             guarantee = confirmed * valuation.guarantee_pct / 100.0
-            advance_pct = valuation.contract_id.advance_pct if valuation.contract_id \
-                else valuation.project_id.construction_advance_pct
-            advance = line.price * advance_pct / 100.0
+            advance = line.price * valuation._construction_advance_pct() / 100.0
             amortization = min(confirmed * valuation.advance_amortization_pct / 100.0,
                                max(advance - line.amortization_before, 0.0))
             if currency:

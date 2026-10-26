@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261016 — 26/10/2026
+
+- CR-01 (preparación de la re-prueba E14): la valorización por avance amortiza el adelanto del contrato vigente de la obra, como el fondo y la detracción; con el adelanto de la obra en 0 %, la amortización salía negativa por la línea del descuento.
+
 ## 8.20261016 — 26/10/2026
 
 - CR-01: la partida se reconoce por la línea de venta de su tarea aunque todas las partidas de la cotización compartan producto y no tengan receta (la valorización por avance salía en 0 %). Sirve la cotización de la obra con sus metrados.
