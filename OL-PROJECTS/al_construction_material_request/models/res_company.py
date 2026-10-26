@@ -25,6 +25,15 @@ class ResCompany(models.Model):
     construction_pr_picking_type_id = fields.Many2one(
         'stock.picking.type', string='Recepción de los requerimientos de compra',
         domain="[('code', '=', 'incoming'), ('company_id', '=', id)]")
+    # CREVAL, CR-16: la compra para el almacén central puede llevar la
+    # analítica de la obra (sin ella, la compra masiva va sin analítica,
+    # v1.6, M16-02).
+    construction_stock_purchase_analytic = fields.Boolean(
+        string='Compra para el almacén con la analítica del requerimiento',
+        help='La línea de compra de un requerimiento que se abastece desde el almacén central '
+             'lleva la analítica de la obra (o la del área, si es interno). Úsela si el costo de '
+             'la obra se toma de la compra: si el despacho a obra también valoriza el material, '
+             'el costo se contaría dos veces.')
     construction_area_plan_id = fields.Many2one(
         'account.analytic.plan', string='Plan analítico de las áreas',
         help='Las cuentas de este plan son las áreas que piden material interno '

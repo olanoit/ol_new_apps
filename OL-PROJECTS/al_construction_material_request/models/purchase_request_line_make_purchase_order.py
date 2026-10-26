@@ -16,8 +16,13 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
     def _al_is_general_stock(self, item):
         """La compra masiva entra como stock general (v1.6, M16-02): sin
         analítica de la obra. La entrega directa en obra conserva su destino y
-        su analítica."""
-        return item.line_id.construction_request_line_id.supply_mode != 'direct'
+        su analítica, y también la compra para el almacén si la compañía lo
+        pide (CR-16)."""
+        line = item.line_id
+        if (line.company_id or self.env.company).construction_stock_purchase_analytic \
+                and line.construction_request_line_id:
+            return False
+        return line.construction_request_line_id.supply_mode != 'direct'
 
     def _al_final_location(self, item):
         """Ubicación final de la entrega directa en obra (vacía: el almacén)."""

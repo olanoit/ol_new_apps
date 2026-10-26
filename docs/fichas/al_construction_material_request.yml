@@ -429,6 +429,10 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '28.20261024'
+    fecha: 26/10/2026
+    cambios:
+      - "CR-16: ajuste «Analítica en la compra para el almacén»: la línea de compra de un requerimiento abastecido desde el almacén central puede llevar la analítica de la obra o del área (apagado por defecto: la compra masiva sigue sin analítica). La línea de compra muestra las partidas de sus requerimientos."
   - version: '27.20261024'
     fecha: 25/10/2026
     cambios:

@@ -49,4 +49,16 @@
               groups="purchase.group_purchase_user"
               sequence="15"/>
 
+    <!-- Partidas de los requerimientos que atiende la línea de compra (CR-16). -->
+    <record id="purchase_order_form_construction_request_task" model="ir.ui.view">
+        <field name="name">purchase.order.form.construction.request.task</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='analytic_distribution']" position="after">
+                <field name="construction_request_task_ids" widget="many2many_tags" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

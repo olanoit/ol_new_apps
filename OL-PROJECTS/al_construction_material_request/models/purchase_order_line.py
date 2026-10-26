@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import api, fields, models
 from odoo.tools.misc import formatLang
 
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
+
+    # Partidas de los requerimientos de obra que atiende la línea (CR-16).
+    construction_request_task_ids = fields.Many2many(
+        'project.task', string='Partidas', compute='_compute_construction_request_task_ids')
+
+    @api.depends('purchase_request_lines.construction_request_line_id.task_id')
+    def _compute_construction_request_task_ids(self):
+        for line in self:
+            line.construction_request_task_ids = \
+                line.purchase_request_lines.construction_request_line_id.task_id
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
         """Entrega directa en obra: la recepción de la línea va a la ubicación

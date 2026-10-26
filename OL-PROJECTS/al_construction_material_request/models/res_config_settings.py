@@ -15,6 +15,8 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_code_from_name', readonly=False)
     construction_pr_picking_type_id = fields.Many2one(
         related='company_id.construction_pr_picking_type_id', readonly=False)
+    construction_stock_purchase_analytic = fields.Boolean(
+        related='company_id.construction_stock_purchase_analytic', readonly=False)
     construction_area_plan_id = fields.Many2one(
         related='company_id.construction_area_plan_id', readonly=False)
     # Paquete 1.11, M111-19 B y C, M111-20 A.

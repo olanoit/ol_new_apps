@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 28.20261024 — 26/10/2026
+
+- CR-16: ajuste «Analítica en la compra para el almacén»: la línea de compra de un requerimiento abastecido desde el almacén central puede llevar la analítica de la obra o del área (apagado por defecto: la compra masiva sigue sin analítica). La línea de compra muestra las partidas de sus requerimientos.
+
 ## 27.20261024 — 25/10/2026
 
 - Paquete 1.11, M111-22: el movimiento de una línea indivisible guarda la necesidad (el despacho, la parte que cubre; la entrega pendiente de compra, el resto) y muestra el redondeo. Sin productos indivisibles no cambia nada.

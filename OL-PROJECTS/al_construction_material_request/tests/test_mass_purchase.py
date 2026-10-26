@@ -74,6 +74,21 @@ class TestMassPurchase(ConstructionRequestCommon):
         # Stock general: la línea consolidada no lleva analítica de ninguna obra.
         self.assertFalse(order.order_line.analytic_distribution)
 
+    def test_stock_purchase_with_site_analytic(self):
+        """CR-16: con el ajuste de la compañía, la compra para el almacén lleva
+        la analítica de cada obra (una línea por obra) y la partida."""
+        self.env.company.construction_stock_purchase_analytic = True
+        line_a, mr_line_a = self._purchase_request_line(self.site_a, 100)
+        line_b, _mr_line_b = self._purchase_request_line(self.site_b, 40)
+        order = self._make_order(line_a | line_b)
+        self.assertEqual(len(order.order_line), 2)
+        for po_line, pr_line in ((order.order_line.filtered(lambda l: l.product_qty == 100), line_a),
+                                 (order.order_line.filtered(lambda l: l.product_qty == 40), line_b)):
+            self.assertTrue(po_line.analytic_distribution)
+            self.assertEqual(po_line.analytic_distribution, pr_line.analytic_distribution)
+        self.assertEqual(order.order_line.filtered(lambda l: l.product_qty == 100)
+                         .construction_request_task_ids, mr_line_a.task_id)
+
     def test_supplier_rounding_is_shared(self):
         """Si la orden compra más (mínimo del proveedor, redondeo), el exceso
         se reparte en proporción a lo que pidió cada solicitud."""
