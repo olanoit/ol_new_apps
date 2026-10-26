@@ -31,6 +31,10 @@ configuracion:
 requisitos_nota: Requiere Ventas con proyectos (`sale_project`) y `al_report_base`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '11.20261016'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-01 (re-prueba E14): la factura de la valorización por avance cobra cada línea por porcentaje con la precisión de la cantidad (una línea de 1 «Unidad» al 49.08 % no se podía facturar) y el ajuste de redondeo se mide contra la base sin redondear, para que cuadren base, IGV y total."
 - version: '10.20261016'
   fecha: 26/10/2026
   cambios:

@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Compras y Portal. Licencia LGPL-3 porque el planificador depende
   de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '12.20261016'
+  fecha: 26/10/2026
+  cambios:
+  - "CR-11 (re-prueba E14): el ajuste de redondeo se mide contra la base sin redondear (cantidad × tarifa) con la precisión del precio, así cuadran también el IGV y el total (1.111 × 221.30 daba IGV 44.26 frente a 44.25). La valorización deja en su historial el ajuste exacto."
 - version: '11.20261016'
   fecha: 26/10/2026
   cambios:

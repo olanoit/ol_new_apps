@@ -14,6 +14,7 @@ from datetime import timedelta
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_round
 
 from .construction_contract_condition import SCHEME_KINDS, compute_cascade
 
@@ -37,6 +38,16 @@ TERMS_AMOUNT_FIELDS = (
 # Tope del ajuste de redondeo entre la valorización y su factura (CR-11): más
 # que eso no es redondeo y se revisa a mano.
 MAX_INVOICE_ROUNDING = 0.05
+
+
+def _raw_rounding_gap(lines, expected):
+    """Lo que le falta a la suma sin redondear de cantidad × precio de
+    ``lines`` para ser ``expected``, con la precisión del precio (CR-11). Con
+    el redondeo global de impuestos Odoo calcula base e IGV sobre esa suma."""
+    digits = lines.env['decimal.precision'].precision_get('Product Price')
+    raw = sum(line.quantity * line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+              for line in lines)
+    return float_round(expected - raw, precision_digits=digits)
 
 
 def _last_day(day):
@@ -712,8 +723,10 @@ class ConstructionContractSettlement(models.Model):
         self.ensure_one()
         currency = self.currency_id
         lines = invoice.invoice_line_ids.filtered(lambda l: l.display_type == 'product')
-        diff = currency.round(sum(lines.mapped('price_subtotal')) - invoice.amount_untaxed)
-        if currency.is_zero(diff):
+        # La diferencia se mide contra la base sin redondear: así la línea de
+        # ajuste deja también el IGV igual al de la valorización.
+        diff = _raw_rounding_gap(lines, sum(lines.mapped('price_subtotal')))
+        if not diff:
             return
         if currency.compare_amounts(abs(diff), MAX_INVOICE_ROUNDING) > 0:
             self.message_post(body=self.env._(
@@ -733,6 +746,9 @@ class ConstructionContractSettlement(models.Model):
             else False,
         })]})
         self.sudo().amount_invoice_rounding = diff
+        self.message_post(body=self.env._(
+            'Factura %(invoice)s: ajuste de redondeo de %(diff)s para que su base y su IGV sean '
+            'los de la valorización.', invoice=invoice.display_name, diff=diff))
 
     def _weighted_distribution(self, lines):
         """Distribución analítica de las líneas del servicio ponderada por su

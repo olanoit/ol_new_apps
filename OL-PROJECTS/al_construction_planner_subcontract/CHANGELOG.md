@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261016 — 26/10/2026
+
+- CR-11 (re-prueba E14): el ajuste de redondeo se mide contra la base sin redondear (cantidad × tarifa) con la precisión del precio, así cuadran también el IGV y el total (1.111 × 221.30 daba IGV 44.26 frente a 44.25). La valorización deja en su historial el ajuste exacto.
+
 ## 11.20261016 — 26/10/2026
 
 - CR-15: «Actualizar avances» actualiza las líneas en vez de rehacerlas y conserva las decisiones del validador (pago del re-trabajo, porcentaje escrito, cantidad final reducida) con su motivo y su autor. Si el avance cambia después de la decisión, la línea avisa y el validador la confirma; la que se queda sin avances queda en 0 y no se borra.

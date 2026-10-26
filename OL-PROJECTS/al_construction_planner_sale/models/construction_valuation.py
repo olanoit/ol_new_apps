@@ -574,11 +574,22 @@ class ConstructionValuation(models.Model):
         vals_list = []
         delivered = {}
         # Con signo: el descuento valorizado en proporción es negativo (CR-12).
+        # Por avance de la partida la línea se cobra por porcentaje (CR-01): la
+        # cantidad lleva la precisión de la cantidad, no el redondeo de su
+        # unidad (una línea de 1 «Unidad» al 49.08 %).
+        by_progress = self._construction_valued_by_progress()
+        qty_digits = self.env['decimal.precision'].precision_get('Product Unit')
         for line in self.line_ids.filtered(lambda l: not l.currency_id.is_zero(l.amount_confirmed)):
             sale_line = line.sale_line_id
             uom = sale_line.product_uom_id
-            cumulative = uom.round(sale_line.product_uom_qty * line.progress_confirmed)
-            quantity = uom.round(cumulative - sale_line.qty_invoiced)
+            if by_progress:
+                cumulative = float_round(sale_line.product_uom_qty * line.progress_confirmed,
+                                         precision_digits=qty_digits)
+                quantity = float_round(cumulative - sale_line.qty_invoiced,
+                                       precision_digits=qty_digits)
+            else:
+                cumulative = uom.round(sale_line.product_uom_qty * line.progress_confirmed)
+                quantity = uom.round(cumulative - sale_line.qty_invoiced)
             if quantity <= 0:
                 raise UserError(self.env._(
                     '%(partida)s: el %% acumulado confirmado (%(pct)s %%) no alcanza una unidad '
@@ -684,9 +695,15 @@ class ConstructionValuation(models.Model):
         una línea de ajuste sin partida."""
         self.ensure_one()
         currency = invoice.currency_id
-        diff = currency.round(self._construction_invoice_expected(invoice_date)
-                              - invoice.amount_untaxed)
-        if currency.is_zero(diff):
+        # Contra la base sin redondear (cantidad × precio): así cuadran también
+        # el IGV y el total.
+        lines = invoice.invoice_line_ids.filtered(lambda l: l.display_type == 'product')
+        digits = self.env['decimal.precision'].precision_get('Product Price')
+        raw = sum(line.quantity * line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+                  for line in lines)
+        diff = float_round(self._construction_invoice_expected(invoice_date) - raw,
+                           precision_digits=digits)
+        if not diff:
             return
         if currency.compare_amounts(abs(diff), MAX_INVOICE_ROUNDING) > 0:
             self.message_post(body=self.env._(

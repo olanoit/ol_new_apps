@@ -53,3 +53,34 @@ class TestInvoiceRounding(ContractTermsCommon):
             invoice.button_draft()
         rounding.unlink()
         self.assertTrue(invoice.construction_valuation_difference)
+
+    def test_invoice_tax_matches_valuation(self):
+        """La base cuadra al céntimo pero el IGV no (1.111 × 221.30 =
+        245.8643 → IGV 44.26 frente a 44.25 de la valorización): el ajuste
+        lleva la base sin redondear al subtotal (re-prueba E14)."""
+        self.company.tax_calculation_rounding_method = 'round_globally'
+        self.env.ref('product.decimal_price').digits = 4
+        wizard = self.env['construction.plan.contract.wizard'].with_context(
+            default_plan_id=self.plan.id, construction_selection_project=True,
+        ).create({'stage': 'creval_tab', 'partner_id': self.contractor.id,
+                  'condition_id': self.condition.id, 'date_start': date(2026, 11, 2)})
+        wizard.line_ids.filtered(lambda r: r.activity_id == self.act_wall).price_unit = 221.30
+        wizard.action_assign()
+        order = self.env['purchase.order'].search([
+            ('partner_id', '=', self.contractor.id),
+            ('construction_project_id', '=', self.project.id)], order='id desc', limit=1)
+        order.button_confirm()
+        action = order.action_construction_register_advance()
+        self._post(self.env['account.move'].browse(action['res_id']), date(2026, 11, 2))
+        # Cuatro decimales en la cantidad, como en la base del cliente.
+        self.env['decimal.precision'].search([('name', '=', 'Product Unit')]).digits = 4
+        self._report(self.partida, self.act_wall, 1.111, date(2026, 11, 4))
+        settlement = self._prepare()
+        settlement.action_submit()
+        settlement.action_validate()
+        invoice = settlement.invoice_id
+        self.assertAlmostEqual(invoice.amount_untaxed, settlement.amount_subtotal
+                               - (settlement.amount_advance / 1.18 if settlement.amount_advance else 0),
+                               delta=0.011)
+        self.assertAlmostEqual(invoice.amount_total,
+                               settlement.amount_total - settlement.amount_advance, places=2)
