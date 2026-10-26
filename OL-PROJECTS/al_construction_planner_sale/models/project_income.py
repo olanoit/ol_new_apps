@@ -48,8 +48,9 @@ class ProjectProject(models.Model):
     construction_sale_order_id = fields.Many2one(
         'sale.order', string='Orden de venta del contrato', check_company=True, tracking=True,
         domain="[('state', '!=', 'cancel')]",
-        help='Una línea por partida (cantidad 1). Las entregas semanales devengan el precio de '
-             'cada partida y la factura de la valorización sale de esta orden.')
+        help='Una línea por partida: sirve la cotización de la obra con sus metrados (la partida '
+             'se valoriza por porcentaje de su subtotal). Las entregas semanales devengan el '
+             'precio de cada partida y la factura de la valorización sale de esta orden.')
     @api.model_create_multi
     def create(self, vals_list):
         projects = super().create(vals_list)
@@ -182,11 +183,23 @@ class ProjectProject(models.Model):
         if not partidas:
             return result
         resolve = self._construction_partida_resolver(partidas)
+        # Primero la línea de venta de la tarea o de un nivel superior: la
+        # partida creada desde la cotización (CREVAL, CR-01). Sin ella, el
+        # resolvedor (receta, familia).
+        by_task = {}
+
+        def task_partida(task):
+            if task.id not in by_task:
+                node = task
+                while node and node.sale_line_id not in partidas:
+                    node = node.parent_id
+                by_task[task.id] = node.sale_line_id if node else None
+            return by_task[task.id]
         # Ids por partida y un solo browse al final: unir las líneas de una en
         # una (``|=``) crecía de forma cuadrática (2,5 s con 7.200 líneas).
         ids = defaultdict(list)
         for plan_line in plan.line_ids:
-            sale_line = resolve(plan_line)
+            sale_line = task_partida(plan_line.task_id) or resolve(plan_line)
             if sale_line:
                 ids[sale_line].append(plan_line.id)
         PlanLine = self.env['construction.resource.plan.line']

@@ -279,6 +279,7 @@
                                 <group string="Retenciones">
                                     <field name="guarantee_pct" string="Fondo de garantía (%)"/>
                                     <field name="advance_amortization_pct"/>
+                                    <field name="detraction_pct" invisible="not detraction_pct"/>
                                 </group>
                                 <group class="oe_subtotal_footer">
                                     <field name="amount_delivered"/>
@@ -287,6 +288,9 @@
                                     <field name="amount_amortization"/>
                                     <field name="amount_guarantee"/>
                                     <field name="amount_net" class="oe_subtotal_footer_separator"/>
+                                    <field name="amount_tax" invisible="not amount_tax"/>
+                                    <field name="amount_detraction" invisible="not detraction_pct"/>
+                                    <field name="amount_to_collect" invisible="not amount_tax"/>
                                     <field name="currency_id" invisible="1"/>
                                 </group>
                             </group>
@@ -402,6 +406,10 @@
                             </div>
                             <field name="construction_valuation_unit"/>
                             <field name="construction_valuation_basis"/>
+                            <field name="construction_progress_source"
+                                   invisible="construction_valuation_basis != 'progress'"/>
+                            <field name="construction_proportional_scope"
+                                   invisible="construction_valuation_basis != 'progress'"/>
                         </group>
                         <group string="Plazos (días)">
                             <field name="construction_valuation_submit_days"/>

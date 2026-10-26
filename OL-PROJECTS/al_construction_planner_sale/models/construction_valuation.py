@@ -12,6 +12,10 @@ from odoo.tools import float_round
 
 from odoo.addons.al_construction_planner.models.common import PROJECT_HEAD_GROUPS
 
+# Tope del ajuste de redondeo entre la valorización y su factura (CR-01): el
+# precio por partida se redondea hacia abajo para no pasar lo confirmado.
+MAX_INVOICE_ROUNDING = 1.0
+
 VALUATION_STATES = [
     ('draft', 'Borrador'),
     ('sent', 'Enviada'),
@@ -641,6 +645,7 @@ class ConstructionValuation(models.Model):
         })
         invoice = self.env['account.move'].with_company(self.company_id).with_context(
             default_move_type='out_invoice').create(vals)
+        self._construction_invoice_rounding(invoice, today)
         for sale_line, qty in delivered.items():
             if sale_line.qty_delivered_method == 'manual':
                 sale_line.qty_delivered = qty
@@ -648,6 +653,49 @@ class ConstructionValuation(models.Model):
         self._construction_check_invoice_balance()
         self.message_post(body=Markup(self.env._('Factura creada: %s')) % invoice._get_html_link())
         return self.action_view_invoice()
+
+    def _construction_invoice_expected(self, invoice_date):
+        """Base que debe tener la factura: lo confirmado por partida menos el
+        fondo de garantía y la amortización que van en la factura."""
+        self.ensure_one()
+        company = self.company_id
+        currency = self.sale_order_id.currency_id
+
+        def convert(amount):
+            return company.currency_id._convert(amount, currency, company, invoice_date)
+        expected = sum(convert(line.amount_confirmed) for line in self.line_ids)
+        for field, account in (('amount_guarantee', company.construction_guarantee_account_id),
+                               ('amount_amortization', company.construction_advance_account_id)):
+            if account and not self.currency_id.is_zero(self[field]):
+                expected -= convert(self[field])
+        return currency.round(expected)
+
+    def _construction_invoice_rounding(self, invoice, invoice_date):
+        """La factura suma lo mismo que la valorización (CR-01): el precio de
+        cada partida se ajusta hacia abajo para no pasar lo confirmado y el
+        redondeo global de impuestos suma sin redondear; la diferencia va en
+        una línea de ajuste sin partida."""
+        self.ensure_one()
+        currency = invoice.currency_id
+        diff = currency.round(self._construction_invoice_expected(invoice_date)
+                              - invoice.amount_untaxed)
+        if currency.is_zero(diff):
+            return
+        if currency.compare_amounts(abs(diff), MAX_INVOICE_ROUNDING) > 0:
+            self.message_post(body=self.env._(
+                'La factura %(invoice)s difiere en %(diff)s de la valorización: pasa el ajuste de '
+                'redondeo permitido y se revisa a mano.', invoice=invoice.display_name, diff=diff))
+            return
+        main = invoice.invoice_line_ids.filtered('sale_line_ids')[:1]
+        invoice.write({'invoice_line_ids': [Command.create({
+            'display_type': 'product',
+            'name': self.env._('Ajuste de redondeo (%s)', self.name),
+            'account_id': main.account_id.id,
+            'quantity': 1.0,
+            'price_unit': diff,
+            'tax_ids': [Command.set(main.tax_ids.ids)],
+            'analytic_distribution': main.analytic_distribution,
+        })]})
 
     def action_view_invoice(self):
         self.ensure_one()

@@ -88,6 +88,7 @@ class ConstructionValuationPrepareWizardLine(models.TransientModel):
     currency_id = fields.Many2one(related='wizard_id.currency_id', string='Moneda')
     sale_line_id = fields.Many2one('sale.order.line', string='Partida', readonly=True)
     progress_delivered = fields.Float(string='Avance entregado', readonly=True)
+    progress_period = fields.Float(string='% periodo', readonly=True)
     amount_delivered = fields.Monetary(string='Entregado', readonly=True)
 
 

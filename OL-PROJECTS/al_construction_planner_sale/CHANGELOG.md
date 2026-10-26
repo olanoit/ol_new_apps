@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261016 — 26/10/2026
+
+- CR-01: la partida se reconoce por la línea de venta de su tarea aunque todas las partidas de la cotización compartan producto y no tengan receta (la valorización por avance salía en 0 %). Sirve la cotización de la obra con sus metrados.
+- CR-01: el avance de la partida es, por defecto, la cantidad validada al corte ÷ la presupuestada (sin re-trabajos); la obra puede elegir el avance valorizado. «Actualizar» conserva el % escrito con su motivo, autor y fecha.
+- CR-01: gastos generales, utilidad y descuento se prorratean sobre toda la venta o sobre las partidas de su sección (ajuste de la obra); adelanto, fondo de garantía y detracción salen del contrato vigente; la valorización muestra IGV, detracción y neto a cobrar.
+- CR-01: la factura de la valorización suma lo mismo que la valorización (línea de ajuste de redondeo) y el asistente «Preparar valorización» muestra la base y crea la valorización por avance.
+
 ## 7.20261016 — 24/10/2026
 
 - Requerimiento CREVAL v1.0, 6.7: el libro de APU y presupuesto lee también la pestaña PLAN de la hoja de trabajo (modalidad final y fechas de cada partida) en el destino plan.

@@ -32,6 +32,8 @@ class ConstructionValuationPrepareWizard(models.TransientModel):
             wizard.line_ids = [Command.clear()] + [Command.create({
                 'sale_line_id': vals['sale_line_id'],
                 'progress_delivered': vals['progress_delivered'],
+                'progress_period': vals['amount_delivered'] / vals['price'] if vals['price']
+                else 0.0,
                 'amount_delivered': vals['amount_delivered'],
             }) for vals in values if vals['amount_delivered']]
             wizard.amount_delivered = sum(v['amount_delivered'] for v in values)
