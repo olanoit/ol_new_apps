@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 12.20261021 — 25/10/2026
 
 - Paquete 1.7 parte 2, M17-25: el aviso «Sin marcar como medidos» usa el mismo «Departamento / ambiente».

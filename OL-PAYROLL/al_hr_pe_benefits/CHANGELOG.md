@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 23.20261012 — 12/10/2026
 
 - Beneficios sociales en secciones: Beneficios, Vacaciones, Adelantos y préstamos (con los adelantos quincenales) y Renta y provisiones; tipos de adelanto y de préstamo en Configuración ▸ Tipos y plantillas.

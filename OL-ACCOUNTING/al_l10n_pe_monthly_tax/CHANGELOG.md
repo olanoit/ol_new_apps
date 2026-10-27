@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_monthly_tax.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 4.20261021 — 21/10/2026
 
 - El auditor (contabilidad de solo lectura) puede consultar las declaraciones y los regímenes.

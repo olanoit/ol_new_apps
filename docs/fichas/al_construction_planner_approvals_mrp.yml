@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals` y `al_construction_planner_mrp`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '8.20261027'
+  fecha: 27/10/2026
+  cambios:
+    - "Ícono nuevo: el isotipo de ALTA."
 - version: '7.20261024'
   fecha: 24/10/2026
   cambios:

@@ -35,8 +35,8 @@ moneda. Además:
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/account/static/description/icon.png',
-    'version': '5.20261018',
+    'icon': '/al_l10n_pe_term_deposit/static/description/icon.png',
+    'version': '6.20261027',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],

@@ -196,6 +196,10 @@ faq:
       y el vehículo.
 
 novedades:
+  - version: '13.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 12.20261012
     fecha: 12/10/2026
     cambios:

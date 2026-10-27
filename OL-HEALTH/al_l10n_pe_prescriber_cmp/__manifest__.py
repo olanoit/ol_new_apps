@@ -21,8 +21,8 @@ Reemplaza la lectura automática del portal antiguo de al_peru_medico_data
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
-    'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '3.20261018',
+    'icon': '/al_l10n_pe_prescriber_cmp/static/description/icon.png',
+    'version': '4.20261027',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'l10n_pe'],
     'data': [

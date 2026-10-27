@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_ose_factory_hka.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 4.20261012 — 12/10/2026
 
 - La firma por The Factory HKA usa el tipo del comprobante que se envía (20 para el CRE, 40 para el comprobante de percepción de al_l10n_pe_perception) en lugar de fijar el 20.

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_budget.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 4.20261016 — 26/10/2026
 
 - CR-16: el apunte de un consumo sin Fabricación instalada ya no lee la orden de fabricación del movimiento.

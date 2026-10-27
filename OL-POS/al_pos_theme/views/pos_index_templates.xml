@@ -22,7 +22,7 @@
             <meta name="application-name" t-att-content="al_theme_brand or 'POS'"/>
         </xpath>
         <xpath expr="//head/link[@rel='icon']" position="replace">
-            <link rel="icon" t-att-href="al_theme_favicon or '/al_pos_theme/static/description/icon.svg'"/>
+            <link rel="icon" t-att-href="al_theme_favicon or '/al_pos_theme/static/src/img/icon.svg'"/>
         </xpath>
         <!-- Fondo inicial (antes de cargar los assets) con el color de marca
              en vez del gris #222 del core: evita el "flash" oscuro de Odoo. -->
@@ -41,7 +41,7 @@
     <template id="customer_display_index" inherit_id="point_of_sale.customer_display_index"
               name="Tema TPV (AL): pantalla del cliente">
         <xpath expr="//head/link[@rel='icon']" position="replace">
-            <link rel="icon" t-att-href="session_info.get('al_theme_favicon') or '/al_pos_theme/static/description/icon.svg'"/>
+            <link rel="icon" t-att-href="session_info.get('al_theme_favicon') or '/al_pos_theme/static/src/img/icon.svg'"/>
         </xpath>
         <xpath expr="//head/title" position="replace">
             <title t-out="session_info.get('al_theme_title') or 'POS'"/>

@@ -287,6 +287,10 @@ faq:
       actualizaciones del módulo no los sobrescriben.
 
 novedades:
+  - version: '11.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 10.20261012
     fecha: 12/10/2026
     cambios:

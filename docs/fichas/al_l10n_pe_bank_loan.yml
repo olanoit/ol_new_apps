@@ -71,6 +71,10 @@ configuracion:
   - "Cuentas de pagos y cobros pendientes en los métodos de pago del banco, para conciliar con el extracto."
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261026
     fecha: 26/10/2026
     cambios:

@@ -373,6 +373,10 @@ faq:
       No. Sin la casilla, el diario numera igual que el Odoo estándar.
 
 novedades:
+  - version: '14.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 13.20261008
     fecha: 08/10/2026
     cambios:

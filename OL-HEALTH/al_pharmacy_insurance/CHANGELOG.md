@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_insurance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 2.20261019 — 19/10/2026
 
 - Devoluciones en la caja: el paciente recupera solo lo que pagó y la parte cubierta vuelve a la aseguradora con el método del convenio.

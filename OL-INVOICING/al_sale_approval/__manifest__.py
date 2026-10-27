@@ -20,8 +20,8 @@ Aprobación de órdenes de venta
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-INVOICING/Apps',
-    'icon': '/approvals/static/description/icon.png',
-    'version': '2.20261013',
+    'icon': '/al_sale_approval/static/description/icon.png',
+    'version': '3.20261027',
     'license': 'OPL-1',
     'depends': ['sale_management', 'approvals'],
     'data': [

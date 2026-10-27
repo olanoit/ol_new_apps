@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_bank_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 7.20261022 — 22/10/2026
 
 - El acceso a convenios y formatos en los Ajustes de Cobranza sigue el diseño de las apps de Odoo, con enlace a la guía.

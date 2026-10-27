@@ -379,6 +379,10 @@ faq:
       `al_l10n_pe_delivery_guide_report`, instalable por separado.
 
 novedades:
+  - version: '22.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 21.20261018
     fecha: 18/10/2026
     cambios:

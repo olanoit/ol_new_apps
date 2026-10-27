@@ -63,6 +63,10 @@ faq:
       Sí, desde la lista de cheques con Acción ▸ Imprimir cheques, si son del mismo formato.
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

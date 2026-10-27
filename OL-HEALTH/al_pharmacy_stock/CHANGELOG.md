@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_stock.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 3.20261019 — 19/10/2026
 
 - Precio por vencer: escalas de descuento por días al vencimiento (opcionalmente por categoría) y lista de lotes por vencer con su precio sugerido.

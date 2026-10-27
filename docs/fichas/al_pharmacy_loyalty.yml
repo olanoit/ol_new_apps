@@ -34,6 +34,10 @@ configuracion:
   - "Configure el programa en **Punto de venta ▸ Productos ▸ Descuentos y programas de lealtad** y agréguelo a la caja."
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '1.20261019'
     fecha: 19/10/2026
     cambios:

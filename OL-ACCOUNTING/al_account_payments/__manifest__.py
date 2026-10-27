@@ -27,8 +27,8 @@ dependencia muerta de ``al_account_dua``.
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/account/static/description/icon.png',
-    'version': '10.20261012',
+    'icon': '/al_account_payments/static/description/icon.png',
+    'version': '11.20261027',
     'license': 'OPL-1',
     'depends': [
         'account',

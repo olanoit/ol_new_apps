@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 30.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 29.20261024 — 27/10/2026
 
 - CR-16 (D5): ajuste «Sububicación de lo dañado» (por defecto «Dañados»): cada obra nueva nace con esa sububicación dentro de su ubicación; lo dañado se queda en la obra y en su costo hasta que Logística decida.

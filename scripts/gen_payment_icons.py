@@ -3,10 +3,10 @@
 
 Odoo dibuja dos imágenes por pasarela y las dos sirven de modelo aquí:
 
-* ``static/description/icon.svg`` (lienzo 50 × 50) y su ``icon.png`` de
+* ``static/img/<código>_icon.svg`` (lienzo 50 × 50) y su ``_icon.png`` de
   100 × 100: la marca centrada sobre fondo transparente, como
-  ``payment_stripe`` o ``payment_mercado_pago``. Es el ícono del módulo en
-  Aplicaciones y la imagen del proveedor (``image_128``).
+  ``payment_stripe`` o ``payment_mercado_pago``. Es la imagen del proveedor
+  (``image_128``); el ícono del módulo en Aplicaciones es el isotipo de ALTA.
 * Una tarjeta de 240 × 160 como las de ``payment/static/img`` (``visa.png``,
   ``paypal.png``): el logo sobre el color de la marca o sobre blanco. La usa
   ``al_pos_payment_gateway`` como imagen del método de pago del TPV
@@ -94,13 +94,13 @@ def build():
 
     return {
         # Íconos de 50 × 50 (Odoo: marca centrada, fondo transparente).
-        'al_payment_niubiz/static/description/icon.svg': _svg(
+        'al_payment_niubiz/static/img/niubiz_icon.svg': _svg(
             50, 50, niubiz_image(_png_data_uri(niubiz), 44, 25, 25)),
-        'al_payment_culqi/static/description/icon.svg': _svg(
+        'al_payment_culqi/static/img/culqi_icon.svg': _svg(
             50, 50, culqi_group('icon', 46, 25, 25)),
         # Izipay se reconoce por su cuadro rojo: se conserva, con esquinas
         # redondeadas y el logotipo más grande.
-        'al_payment_izipay/static/description/icon.svg': _svg(
+        'al_payment_izipay/static/img/izipay_icon.svg': _svg(
             50, 50, '<clipPath id="r"><rect width="50" height="50" rx="9"/></clipPath>'
                     f'<g clip-path="url(#r)"><rect width="50" height="50" fill="{IZIPAY_RED}"/>'
                     f'{izipay_image(50, 25, 25, 42)}</g>'),
@@ -135,7 +135,7 @@ def main():
         svg_path = ACCOUNTING / relative
         svg_path.parent.mkdir(parents=True, exist_ok=True)
         svg_path.write_text(content)
-        if svg_path.name == 'icon.svg':
+        if svg_path.name.endswith('_icon.svg'):
             render(svg_path, svg_path.with_suffix('.png'), 100, 100)
         else:
             render(svg_path, svg_path.with_suffix('.png'), 240, 160)

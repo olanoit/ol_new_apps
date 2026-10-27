@@ -24,8 +24,8 @@ planificador.
     'countries': ['pe'],
     'category': 'OL-INVENTORY/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/stock/static/description/icon.png',
-    'version': '6.20261024',
+    'icon': '/al_stock_base/static/description/icon.png',
+    'version': '7.20261027',
     'license': 'OPL-1',
     # stock_account aporta stock.picking.country_code
     'depends': ['stock_account'],

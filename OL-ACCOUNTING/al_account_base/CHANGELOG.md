@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 18.20261013 — 21/10/2026
 
 - Gancho común de bloqueo: los saldos que cobra un tercero (letra en el banco, factura cedida con recurso) no se pagan con el asistente de pago, que lo avisa al abrirse.

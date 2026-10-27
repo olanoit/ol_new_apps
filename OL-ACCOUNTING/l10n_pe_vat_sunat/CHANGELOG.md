@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/l10n_pe_vat_sunat.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 22.20261012 — 16/10/2026
 
 - Sin token no se habilita la consulta: el contacto oculta «Actualizar desde API» y avisa qué falta y dónde se configura; los Ajustes dicen si la consulta de RUC o de DNI no podrá funcionar y qué conexiones no tienen token.

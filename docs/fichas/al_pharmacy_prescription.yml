@@ -31,6 +31,10 @@ configuracion:
   - "Las ventas del TPV de farmacia registran sus recetas solas; también puede registrarlas en **Farmacia ▸ Dispensación ▸ Recetas**."
 
 novedades:
+  - version: '4.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '3.20261022'
     fecha: 22/10/2026
     cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_factoring.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 10.20261018 — 21/10/2026
 
 - Una factura cedida con recurso tampoco se puede pagar desde sus apuntes, un pago múltiple ni una aplicación de documentos.

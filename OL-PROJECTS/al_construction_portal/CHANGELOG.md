@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 7.20261025 — 27/10/2026
 
 - CR-16, criterio 5: «En buen estado» crea la devolución nativa del despacho recibido (stock.return.picking, con el movimiento de origen, el requerimiento y la partida), lista para que el almacén la valide; al validarse baja «Despachado».

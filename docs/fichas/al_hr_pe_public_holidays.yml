@@ -323,6 +323,10 @@ faq:
       después de instalar el módulo.
 
 novedades:
+  - version: '11.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 10.20261008
     fecha: 08/10/2026
     cambios:

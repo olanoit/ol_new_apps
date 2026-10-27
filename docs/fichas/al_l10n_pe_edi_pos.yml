@@ -206,6 +206,10 @@ faq:
       porque pueden mezclar boletas y facturas.
 
 novedades:
+  - version: '17.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '16.20261019'
     fecha: 19/10/2026
     cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_payment_gateway.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 6.20261018 — 18/10/2026
 
 - Antes de mostrar el QR de la pasarela se revisa que el comprobante de la venta se pueda emitir: si no (por ejemplo, una línea sin impuesto en la boleta), el cajero ve el motivo y no se cobra.

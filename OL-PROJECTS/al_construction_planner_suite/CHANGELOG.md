@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 21.20261023 — 25/10/2026
 
 - Pruebas del paquete 1.11 v3 (M111-21, M111-22, M111-23 y detalles del 24-oct) y del 1.7 parte 2 (M17-18 y M17-25), con usuarios sin administración; instala el puente al_construction_planner_mrp_request.

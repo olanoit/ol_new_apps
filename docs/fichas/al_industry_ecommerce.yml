@@ -26,6 +26,10 @@ configuracion:
   - "Active el proveedor de pago con sus llaves en **Sitio web ▸ Configuración ▸ Proveedores de pago**."
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261017
     fecha: 17/10/2026
     cambios:

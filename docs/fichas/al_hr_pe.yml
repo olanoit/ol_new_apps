@@ -724,6 +724,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: '36.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 35.20261012
     fecha: 12/10/2026
     cambios:

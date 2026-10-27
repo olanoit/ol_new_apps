@@ -27,8 +27,8 @@ inventario y proyectos sin arrastrar dependencias entre ellos.
     'website': 'https://www.altabpo.com',
     'category': 'OL-TOOLS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/base/static/description/settings.png',
-    'version': '2.20261011',
+    'icon': '/al_report_base/static/description/icon.png',
+    'version': '3.20261027',
     'license': 'OPL-1',
     'depends': ['web'],
     'data': [

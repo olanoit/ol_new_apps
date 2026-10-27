@@ -25,6 +25,10 @@ funcionalidades:
   - "Consejo regional, fecha y responsable de la verificación."
 
 novedades:
+  - version: '4.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 3.20261018
     fecha: 18/10/2026
     cambios:

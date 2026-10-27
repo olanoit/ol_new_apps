@@ -99,6 +99,10 @@ requisitos_nota: >-
   El QR fijo no lleva el importe: el cliente lo escribe en su app.
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261014
     fecha: 14/10/2026
     cambios:

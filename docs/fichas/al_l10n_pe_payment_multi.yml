@@ -97,6 +97,10 @@ faq:
       Sí: seleccione las facturas y elija Acción ▸ Pago múltiple.
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 2.20261021
     fecha: 21/10/2026
     cambios:

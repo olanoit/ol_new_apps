@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_pharmacy_controlled.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 3.20261019 — 19/10/2026
 
 - Balance trimestral registrado por local (listas IIA, IIIA, IIIB y IIIC): saldos, cuadre contra el stock, vencimiento a los 15 días y borrador automático con actividad para el director técnico.

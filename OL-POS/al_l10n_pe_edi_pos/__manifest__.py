@@ -30,8 +30,8 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
     'countries': ['pe'],
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/point_of_sale/static/description/icon.png',
-    'version': '16.20261019',
+    'icon': '/al_l10n_pe_edi_pos/static/description/icon.png',
+    'version': '17.20261027',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

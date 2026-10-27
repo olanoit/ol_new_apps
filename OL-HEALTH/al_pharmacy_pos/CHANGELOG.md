@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_pos.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 10.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 9.20261022 — 22/10/2026
 
 - Bioequivalentes en la caja: entre las alternativas y en la ficha del producto, con la etiqueta «Bioequivalente»; se cargan aunque no entren en el límite de productos.

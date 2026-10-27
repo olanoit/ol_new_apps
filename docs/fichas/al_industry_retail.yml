@@ -28,6 +28,10 @@ configuracion:
   - "Configure los diarios de boleta y factura del TPV y el método de pago con QR."
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 2.20261017
     fecha: 17/10/2026
     cambios:

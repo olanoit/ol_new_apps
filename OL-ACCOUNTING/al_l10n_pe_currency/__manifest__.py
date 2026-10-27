@@ -40,8 +40,8 @@ Tipo de cambio Perú — refactor Odoo 19
     'countries': ['pe'],
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/account/static/description/icon.png',
-    'version': '15.20261012',
+    'icon': '/al_l10n_pe_currency/static/description/icon.png',
+    'version': '16.20261027',
     'license': 'OPL-1',
     'depends': ['account', 'al_account_base'],
     'external_dependencies': {'python': ['requests']},

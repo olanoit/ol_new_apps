@@ -1220,6 +1220,11 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '55.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
+      - "La tarjeta «Mis obras» del portal conserva el ícono anterior (static/src/img/portal_icon.png)."
   - version: '54.20261025'
     fecha: 27/10/2026
     cambios:

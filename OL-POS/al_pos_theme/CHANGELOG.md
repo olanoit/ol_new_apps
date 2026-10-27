@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_theme.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+- El favicon y el ícono de la app del TPV siguen siendo la caja registradora neutra (static/src/img/icon.svg).
+
 ## 6.20261022 — 22/10/2026
 
 - El buscador enfocado muestra un solo halo (antes se veían dos anillos, uno dentro del otro); igual en el buscador del historial de tickets.

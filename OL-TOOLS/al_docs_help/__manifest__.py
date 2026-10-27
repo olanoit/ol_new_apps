@@ -30,8 +30,8 @@ módulo y las páginas de la documentación que lo declaran (``modulos:``);
     'website': 'https://www.altabpo.com',
     'category': 'OL-TOOLS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/base/static/description/settings.png',
-    'version': '12.20261023',
+    'icon': '/al_docs_help/static/description/icon.png',
+    'version': '13.20261027',
     'license': 'OPL-1',
     'depends': ['web'],
     'data': [

@@ -47,8 +47,8 @@ sin dependencias externas.
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/point_of_sale/static/description/icon.png',
-    'version': '7.20261011',
+    'icon': '/al_pos_product_view/static/description/icon.png',
+    'version': '8.20261027',
     'license': 'OPL-1',
     # `stock` ya viene transitivamente vía point_of_sale ->
     # stock_account -> stock; se declara explícito porque

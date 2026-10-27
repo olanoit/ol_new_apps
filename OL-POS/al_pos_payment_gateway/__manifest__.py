@@ -26,8 +26,8 @@ con al_payment_izipay, al_payment_niubiz y al_payment_culqi.
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/point_of_sale/static/description/icon.png',
-    'version': '6.20261018',
+    'icon': '/al_pos_payment_gateway/static/description/icon.png',
+    'version': '7.20261027',
     'license': 'OPL-1',
     'depends': ['al_pos_online_payment'],
     'data': [

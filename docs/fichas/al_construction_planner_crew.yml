@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere Enterprise (`project_forecast`) y Hojas de horas. Licencia LGPL-3
   porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '5.20261027'
+  fecha: 27/10/2026
+  cambios:
+    - "Ícono nuevo: el isotipo de ALTA."
 - version: '4.20261016'
   fecha: 23/10/2026
   cambios:

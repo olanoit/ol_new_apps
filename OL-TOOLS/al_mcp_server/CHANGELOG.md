@@ -6,6 +6,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`). Este módulo no tiene ficha
 en `docs/fichas/`: el historial se mantiene a mano y debe coincidir con el
 de `static/description/index.html`.
 
+## 10.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 8.20261009 — 09/10/2026
 
 - Ícono propio en el menú principal (nodo central conectado a tres extremos), con el estilo del de la app Perú (fondo de color y trazo blanco), para no confundirlo con la app oficial de IA; en Aplicaciones y Ajustes sigue el ícono nativo.

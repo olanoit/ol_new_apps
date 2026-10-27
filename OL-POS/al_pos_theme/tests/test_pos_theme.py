@@ -43,7 +43,7 @@ class TestPosThemeConfig(TransactionCase):
         self.assertIn("--alpt-logo-inverse: none;", css)
         self.assertIn("--alpt-brand-text-display: block;", css)
         # Teléfono: icono del módulo en la barra.
-        self.assertIn('--alpt-logo-icon: url("/al_pos_theme/static/description/icon.svg");', css)
+        self.assertIn('--alpt-logo-icon: url("/al_pos_theme/static/src/img/icon.svg");', css)
         self.assertNotIn("--navbar-logo", css, "el logo va en --alpt-logo (ver branding.scss)")
 
     def test_css_vars_dark_contrast(self):
@@ -106,4 +106,11 @@ class TestPosThemeWebManifest(HttpCase):
         self.assertEqual(manifest["name"], f"{config.company_id.name} · Caja PWA")
         self.assertEqual(manifest["theme_color"], "#2563EB")
         self.assertNotIn("714B67", json.dumps(manifest).upper())
-        self.assertTrue(manifest["icons"][0]["src"].startswith("/al_pos_theme/"))
+        self.assertEqual(manifest["icons"][0]["src"], "/al_pos_theme/static/src/img/icon.svg")
+
+    def test_scoped_app_icon_png(self):
+        """En iOS la app del TPV usa el ícono de Punto de venta, no el isotipo del módulo."""
+        self.authenticate(None, None)
+        response = self.url_open("/scoped_app_icon_png?app_id=al_pos_theme")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers["Content-Type"], "image/png")

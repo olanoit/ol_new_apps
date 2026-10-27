@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 36.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 35.20261012 — 12/10/2026
 
 - Menús de Nómina con el patrón de la app Perú: las secciones de la localización (Parámetros, Seguridad social, Catálogos SUNAT, Tipos y plantillas) pasan al segundo nivel de Configuración, sin el submenú «Perú» que obligaba a un cuarto nivel; periodos en Parámetros, derechohabientes en Seguridad social, T21 en Catálogos SUNAT y suspensiones de labores en Entradas de trabajo.

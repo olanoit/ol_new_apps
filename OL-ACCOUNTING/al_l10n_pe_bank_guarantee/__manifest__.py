@@ -25,8 +25,8 @@ Cartas fianza
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono de la aplicación a la que pertenece (Tesorería).
-    'icon': '/al_l10n_pe_treasury/static/description/icon.png',
-    'version': '1.20261026',
+    'icon': '/al_l10n_pe_bank_guarantee/static/description/icon.png',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_treasury'],

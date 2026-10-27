@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_detraction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 26.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 25.20261018 — 18/10/2026
 
 - Los datos de demostración llevan nombres reales (Servicio de asesoría empresarial, Consultores Asociados del Sur S.A.C., Ventas y Compras con detracción) en lugar del prefijo DEMO; las bases que ya los tienen se renombran al actualizar.

@@ -14,8 +14,8 @@ ambientes de esa familia; la única partida sin familia toma el resto.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '2.20261013',
+    'icon': '/al_construction_planner_sale_furniture/static/description/icon.png',
+    'version': '3.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_sale', 'al_construction_planner_furniture'],

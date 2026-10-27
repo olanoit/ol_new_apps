@@ -16,7 +16,7 @@ Se instala solo cuando están al_l10n_pe_collection y sale.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '1.20261022',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_l10n_pe_collection', 'sale'],

@@ -563,6 +563,10 @@ faq:
       la boleta para que relea los días trabajados.
 
 novedades:
+  - version: '23.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 22.20261012
     fecha: 12/10/2026
     cambios:

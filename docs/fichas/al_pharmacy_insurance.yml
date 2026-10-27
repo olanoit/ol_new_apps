@@ -37,6 +37,10 @@ configuracion:
   - "Agregue el método a la caja (con la sesión cerrada) y registre los afiliados."
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '2.20261019'
     fecha: 19/10/2026
     cambios:

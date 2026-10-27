@@ -25,8 +25,8 @@ para el cliente peruano:
     'countries': ['pe'],
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/website_sale/static/description/icon.png',
-    'version': '1.20261014',
+    'icon': '/al_website_sale_pe/static/description/icon.png',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'depends': [
         'website_sale',

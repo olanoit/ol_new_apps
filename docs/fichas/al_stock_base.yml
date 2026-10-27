@@ -40,6 +40,10 @@ pasos:
     imagen: screenshots/02-logistica-pe.png
 
 novedades:
+  - version: '7.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '6.20261024'
     fecha: 24/10/2026
     cambios:

@@ -636,6 +636,10 @@ faq:
       marcarlas y pulsar Aplicar marcadas.
 
 novedades:
+  - version: '26.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 25.20261018
     fecha: 18/10/2026
     cambios:

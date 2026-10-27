@@ -803,6 +803,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: '24.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 23.20261012
     fecha: 12/10/2026
     cambios:

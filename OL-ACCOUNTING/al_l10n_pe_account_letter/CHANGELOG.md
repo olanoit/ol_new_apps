@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_account_letter.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 22.20261018 — 21/10/2026
 
 - Una letra en el banco (cobranza libre o descuento) ya no se puede cobrar con un pago directo, un pago múltiple ni una aplicación de documentos: se registra con «Cobro del banco» o «Protesto».

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 24.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 23.20261012 — 12/10/2026
 
 - Pagos masivos bancarios pasa a Recibos de nómina ▸ Pagos y contabilidad; plantillas de contrato en Configuración ▸ Tipos y plantillas.

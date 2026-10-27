@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_sire.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 22.20261012 — 20/10/2026
 
 - Validación al publicar: cada factura, boleta o nota pasa por las reglas del RVIE o el RCE al publicarse (avisar, impedir o no validar, por compañía).

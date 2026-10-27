@@ -29,8 +29,8 @@ Fase 5 (actual):
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/hr_payroll/static/description/icon.png',
-    'version': '12.20261012',
+    'icon': '/al_hr_pe_account/static/description/icon.png',
+    'version': '13.20261027',
     'license': 'OPL-1',
     'depends': ['al_hr_pe_benefits', 'hr_payroll_account'],
     'data': [

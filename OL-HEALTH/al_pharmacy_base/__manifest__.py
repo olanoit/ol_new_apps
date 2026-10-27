@@ -27,7 +27,7 @@ Núcleo de la suite de farmacias y boticas (docs/farmacia/PLAN_FARMACIA.md).
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
     'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '4.20261022',
+    'version': '5.20261027',
     'license': 'OPL-1',
     'depends': ['product', 'uom', 'stock', 'product_expiry', 'hr', 'mail', 'al_report_base'],
     'data': [

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 7.20261024 — 24/10/2026
 
 - El jefe de producción ve el Gantt de proyectos (grupo Gantt: usuario, que incluye Proyecto: usuario); el plan de recursos sigue en solo lectura.

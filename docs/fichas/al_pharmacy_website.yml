@@ -40,6 +40,10 @@ configuracion:
   - "Las recetas por validar están en **Farmacia ▸ Dispensación ▸ Recetas en línea**."
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '2.20261022'
     fecha: 22/10/2026
     cambios:

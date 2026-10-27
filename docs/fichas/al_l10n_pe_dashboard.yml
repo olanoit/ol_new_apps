@@ -74,6 +74,10 @@ faq:
       Sí, sobre una copia: duplíquelo en la app Tableros. El original lo mantiene el módulo.
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

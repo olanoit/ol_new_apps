@@ -23,7 +23,7 @@ demás con el botón «Aplicar a la compañía activa».
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
-    'version': '1.20261017',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'depends': [
         'l10n_pe',

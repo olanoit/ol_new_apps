@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_base_module_info.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 4.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 3.20261026 — 26/10/2026
 
 - Prueba multicompañía: excepciones justificadas del flujo de caja y del cierre de caja (apuntes de sucursales).

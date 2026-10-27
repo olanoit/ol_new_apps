@@ -178,6 +178,10 @@ faq:
       máximos de respuesta**. No hay cuota por usuario.
 
 novedades:
+  - version: '9.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 8.20261013
     fecha: 13/10/2026
     cambios:

@@ -7,7 +7,7 @@
         </xpath>
         <div id="portal_service_category" position="inside">
             <t t-call="portal.portal_docs_entry">
-                <t t-set="icon" t-value="'/al_construction_planner/static/description/icon.png'"/>
+                <t t-set="icon" t-value="'/al_construction_planner/static/src/img/portal_icon.png'"/>
                 <t t-set="title">Mis obras</t>
                 <t t-set="url" t-value="'/my/obra'"/>
                 <t t-set="text">Lo asignado a su empresa y el registro de avance</t>

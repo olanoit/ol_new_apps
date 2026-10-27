@@ -22,8 +22,8 @@ Paquete 1.9. Se instala solo con las aprobaciones en fabricación.
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '5.20261019',
+    'icon': '/al_construction_planner_production/static/description/icon.png',
+    'version': '6.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_approvals_mrp'],

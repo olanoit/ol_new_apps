@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_product_view.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 8.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 7.20261011 — 11/10/2026
 
 - Modo oscuro del TPV: el botón de información de las tarjetas y la sombra de las filas de la lista se adaptan al tema oscuro.

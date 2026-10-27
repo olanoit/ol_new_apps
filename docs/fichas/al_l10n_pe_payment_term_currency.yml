@@ -55,6 +55,10 @@ faq:
       La última cuota siempre es el saldo de la factura, por eso la marca no la cambia.
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261021
     fecha: 21/10/2026
     cambios:

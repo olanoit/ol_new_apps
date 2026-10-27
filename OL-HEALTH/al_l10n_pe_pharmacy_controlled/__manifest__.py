@@ -37,8 +37,8 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
-    'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '3.20261019',
+    'icon': '/al_l10n_pe_pharmacy_controlled/static/description/icon.png',
+    'version': '4.20261027',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_stock', 'sale', 'l10n_pe', 'al_report_base'],
     'data': [

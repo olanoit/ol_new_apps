@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pharmacy_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 4.20261022 — 22/10/2026
 
 - Bioequivalentes: vínculo manual y recíproco entre productos intercambiables que no comparten la clave (otra sal, otra forma); cuentan como equivalentes.

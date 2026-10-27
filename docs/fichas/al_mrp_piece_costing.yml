@@ -26,6 +26,10 @@ configuracion:
 - "Importe el despiece en **Fabricación ▸ Operaciones ▸ Importar despiece**."
 requisitos_nota: Requiere Fabricación con contabilidad (`mrp_account`); las piezas con costo promedio o FIFO.
 novedades:
+- version: '3.20261027'
+  fecha: 27/10/2026
+  cambios:
+    - "Ícono nuevo: el isotipo de ALTA."
 - version: '2.20261023'
   fecha: 23/10/2026
   cambios:

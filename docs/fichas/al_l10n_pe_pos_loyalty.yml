@@ -82,6 +82,10 @@ ejemplos:
       - ["1212", Pago de la boleta con el vale, "", "20,00"]
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261019
     fecha: 19/10/2026
     cambios:

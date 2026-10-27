@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_pharmacy/static/description/icon.png',
-    'version': '11.20261019',
+    'version': '12.20261027',
     'license': 'OPL-1',
     'depends': [
         'al_industry_base',

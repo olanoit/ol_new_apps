@@ -40,8 +40,8 @@ Precio por vencer y canje (mejora E11, docs/farmacia/MEJORAS_PROCESOS.md):
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
-    'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '3.20261019',
+    'icon': '/al_pharmacy_stock/static/description/icon.png',
+    'version': '4.20261027',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'purchase_stock', 'product_expiry', 'al_report_base'],
     'data': [

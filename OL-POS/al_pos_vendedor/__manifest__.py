@@ -33,8 +33,8 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/point_of_sale/static/description/icon.png',
-    'version': '4.20261011',
+    'icon': '/al_pos_vendedor/static/description/icon.png',
+    'version': '5.20261027',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

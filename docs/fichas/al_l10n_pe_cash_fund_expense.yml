@@ -21,6 +21,10 @@ funcionalidades:
   - "Los gastos sin fondo siguen como en Odoo."
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 1.20261024
     fecha: 24/10/2026
     cambios:

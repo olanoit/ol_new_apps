@@ -29,6 +29,10 @@ configuracion:
   - "Para comandas en impresoras de red instale también **Impresoras de red en el TPV** (necesita queue_job en server_wide_modules)."
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 2.20261017
     fecha: 17/10/2026
     cambios:

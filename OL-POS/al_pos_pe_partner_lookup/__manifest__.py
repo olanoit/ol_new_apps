@@ -26,8 +26,8 @@ social, la dirección y el ubigeo, listo para emitir la factura o la boleta.
     'countries': ['pe'],
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/point_of_sale/static/description/icon.png',
-    'version': '2.20261014',
+    'icon': '/al_pos_pe_partner_lookup/static/description/icon.png',
+    'version': '3.20261027',
     'license': 'OPL-1',
     'depends': [
         'point_of_sale',

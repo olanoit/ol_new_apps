@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 5.20261021 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, 4.3: la asistencia pasa a la sección Personal propio de Ejecución en el menú por momento.

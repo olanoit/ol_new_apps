@@ -97,6 +97,10 @@ faq:
       «ITF» para registrar la línea del banco.
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 2.20261026
     fecha: 26/10/2026
     cambios:

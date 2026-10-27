@@ -16,8 +16,8 @@ Instala el planificador con todos sus puentes (perfil mobiliario completo) y reÃ
     'maintainer': 'CRISTÃ“BAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '21.20261023',
+    'icon': '/al_construction_planner_suite/static/description/icon.png',
+    'version': '22.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_furniture', 'al_construction_planner_purchase', 'al_construction_planner_subcontract', 'al_construction_planner_subcontract_purchase', 'al_construction_planner_crew', 'al_construction_planner_budget', 'al_construction_planner_sale',

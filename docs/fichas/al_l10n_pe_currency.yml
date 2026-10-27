@@ -409,6 +409,10 @@ faq:
       en cualquier otro caso Odoo convierte con su tasa nativa.
 
 novedades:
+  - version: '16.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 15.20261012
     fecha: 21/10/2026
     cambios:

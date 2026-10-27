@@ -16,8 +16,8 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaciÃ
     'maintainer': 'CRISTÃ“BAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '13.20261016',
+    'icon': '/al_construction_planner_sale/static/description/icon.png',
+    'version': '14.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'sale_project', 'al_report_base'],

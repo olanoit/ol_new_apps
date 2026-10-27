@@ -22,7 +22,7 @@ o desinstalar módulos de la localización. Filtros por periodo y por cliente o 
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '1.20261021',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['al_account_base', 'l10n_pe_edi', 'spreadsheet_dashboard'],

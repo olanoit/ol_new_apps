@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_vendedor.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 4.20261011 — 11/10/2026
 
 - Modo oscuro del TPV: la ventana «Seleccionar vendedor» (buscador, tarjetas, estrella, ayuda y pie) se adapta al tema oscuro de la caja.

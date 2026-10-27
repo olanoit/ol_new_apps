@@ -23,7 +23,7 @@ Culqi 3DS).
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
-    'version': '2.20261018',
+    'version': '3.20261027',
     'license': 'OPL-1',
     'depends': ['payment'],
     'data': [

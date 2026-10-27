@@ -146,6 +146,11 @@ faq:
       el aviso de un pago hecho al límite, Odoo lo confirma igual.
 
 novedades:
+  - version: '2.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
+      - "La imagen del proveedor de pago no cambia: pasa a static/img/pagoefectivo_icon.png."
   - version: 1.20261022
     fecha: 22/10/2026
     cambios:

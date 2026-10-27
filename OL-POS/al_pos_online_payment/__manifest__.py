@@ -21,8 +21,8 @@ pasarela. Se instala solo con el pago en línea del TPV.
     'website': 'https://www.altabpo.com',
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/point_of_sale/static/description/icon.png',
-    'version': '1.20261016',
+    'icon': '/al_pos_online_payment/static/description/icon.png',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'depends': ['pos_online_payment'],
     'assets': {

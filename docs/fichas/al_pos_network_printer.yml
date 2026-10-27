@@ -199,6 +199,10 @@ faq:
       en una caja o impresora de preparación activa.
 
 novedades:
+  - version: '5.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 4.20261009
     fecha: 09/10/2026
     cambios:

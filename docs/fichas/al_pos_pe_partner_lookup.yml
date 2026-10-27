@@ -80,6 +80,10 @@ requisitos_nota: >-
   a internet en la caja.
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 2.20261014
     fecha: 16/10/2026
     cambios:

@@ -35,8 +35,8 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     'countries': ['pe'],
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/hr_payroll/static/description/icon.png',
-    'version': '23.20261012',
+    'icon': '/al_hr_pe_reports/static/description/icon.png',
+    'version': '24.20261027',
     'license': 'OPL-1',
     # Formato común de los documentos impresos (el del comprobante A4).
     'depends': ['al_hr_pe_benefits', 'al_report_base'],

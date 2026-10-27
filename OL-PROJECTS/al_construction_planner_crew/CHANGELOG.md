@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_crew.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 4.20261016 — 23/10/2026
 
 - Requerimiento CREVAL v1.0, capítulos 4 y 5: «Asignar cuadrilla» en el tablero de obra, en el menú Ejecutar y en la sección Personal propio del menú por momento; grupos en dos ejes.

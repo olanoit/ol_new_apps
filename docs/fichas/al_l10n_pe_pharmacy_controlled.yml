@@ -38,6 +38,10 @@ configuracion:
   - "Genere libros y balance en **Farmacia ▸ Controlados ▸ Libros y balance**."
 
 novedades:
+  - version: '4.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: '3.20261019'
     fecha: 19/10/2026
     cambios:

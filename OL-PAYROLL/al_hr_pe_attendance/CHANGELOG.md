@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 23.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 22.20261012 — 12/10/2026
 
 - Asistencia pasa a Entradas de trabajo ▸ Asistencia (registro, tareaje, monitor, asignaciones de ciclo) y Configuración ▸ Asistencia (ciclos atípicos, fotocheck).

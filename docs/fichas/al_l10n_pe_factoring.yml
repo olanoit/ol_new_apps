@@ -260,6 +260,10 @@ campos:
       - [Cobrado / Por cobrar, Lo que el cliente ya pagó al factor, 0, Cobros parciales]
 
 novedades:
+  - version: '11.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 10.20261018
     fecha: 21/10/2026
     cambios:

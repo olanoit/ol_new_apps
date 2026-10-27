@@ -26,7 +26,7 @@ AL_THEME_PAYLOAD_EXCLUDED = (
 # Icono por defecto (pestaña del navegador y barra del teléfono): el del
 # módulo. Sin logo de caja ni de compañía no hay logo por defecto: se muestra
 # el nombre de la marca como texto (ver navbar.scss).
-DEFAULT_FAVICON = "/al_pos_theme/static/description/icon.svg"
+DEFAULT_FAVICON = "/al_pos_theme/static/src/img/icon.svg"
 # Variante del icono para la barra en modo oscuro (baldosa clara sobre el
 # fondo oscuro).
 DEFAULT_ICON_INVERSE = "/al_pos_theme/static/src/img/icon_inverse.svg"

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 19.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 18.20261011 — 11/10/2026
 
 - Diagrama de Gantt en PDF con el formato común de los documentos impresos (al_report_base), en A4 horizontal: encabezado con el recuadro R.U.C./tipo, tabla con cabecera gris oscuro y pie con la numeración.

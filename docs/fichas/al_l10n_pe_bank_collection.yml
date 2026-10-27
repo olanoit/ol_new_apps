@@ -68,6 +68,10 @@ pasos:
     imagen: screenshots/v3-response.png
 
 novedades:
+  - version: '8.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 7.20261022
     fecha: 22/10/2026
     cambios:

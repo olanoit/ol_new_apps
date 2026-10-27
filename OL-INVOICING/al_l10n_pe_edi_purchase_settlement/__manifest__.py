@@ -32,8 +32,8 @@ R.S. 244-2019/SUNAT).
     'countries': ['pe'],
     'category': 'OL-INVOICING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
-    'icon': '/account/static/description/icon.png',
-    'version': '4.20261018',
+    'icon': '/al_l10n_pe_edi_purchase_settlement/static/description/icon.png',
+    'version': '5.20261027',
     'license': 'OPL-1',
     'depends': [
         # Páginas «Facturación PE», ajustes y menús de la app Perú

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_ple.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 27.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 26.20261012 — 12/10/2026
 
 - Menús en Perú ▸ SUNAT ▸ Libros PLE (con los formatos 10.1 a 10.4 en la misma sección) y Libros PLE nativos.

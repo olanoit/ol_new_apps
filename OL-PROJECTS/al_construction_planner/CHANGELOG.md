@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 55.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+- La tarjeta «Mis obras» del portal conserva el ícono anterior (static/src/img/portal_icon.png).
+
 ## 54.20261025 — 27/10/2026
 
 - CR-18, D4: la importación de recetas expone dónde se guardan (`_recipe_scope_values`), para que el puente de ventas guarde las recetas de una cotización sin obra fuera de la biblioteca.

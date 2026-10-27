@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_pos_pe_partner_lookup.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 2.20261014 — 16/10/2026
 
 - Sin token configurado, el TPV dice que la consulta de RUC o DNI no está configurada, en vez de «no se encontraron datos».

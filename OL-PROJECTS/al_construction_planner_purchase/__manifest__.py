@@ -16,8 +16,8 @@ Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de comp
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
-    'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '16.20261024',
+    'icon': '/al_construction_planner_purchase/static/description/icon.png',
+    'version': '17.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'al_construction_material_request', 'purchase_request'],

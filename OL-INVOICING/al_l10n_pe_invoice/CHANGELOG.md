@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_invoice.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 22.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 21.20261018 — 18/10/2026
 
 - Las líneas sin producto (descuento de una NC, intereses de una ND) imprimen «Servicio» en la columna Unidad, como la unidad ZZ del XML.

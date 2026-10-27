@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 13.20261016 — 27/10/2026
 
 - CR-18: el libro de carga y la hoja usan las columnas A a W de PRESUPUESTO (6.6) con «Costo unitario sin APU»; sin APU ni costo, error «Partida ‹ítem›: sin código de APU ni costo unitario» y no se envía (D1).

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 12.20261024 — 25/10/2026
 
 - Sin «Jefe de producción» en Ajustes, la actividad «Revisar y confirmar fecha» va a los responsables de Fabricación de la compañía.

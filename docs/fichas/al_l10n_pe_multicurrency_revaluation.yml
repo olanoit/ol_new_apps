@@ -155,6 +155,10 @@ faq:
     respuesta: No. El informe queda como el nativo, sin la columna T.C.
 
 novedades:
+  - version: '7.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Ícono nuevo: el isotipo de ALTA."
   - version: 6.20261012
     fecha: 12/10/2026
     cambios:

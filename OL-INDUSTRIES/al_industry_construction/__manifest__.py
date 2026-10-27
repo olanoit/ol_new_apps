@@ -19,7 +19,7 @@ compañías ▸ Industrias.
     'countries': ['pe'],
     'category': 'OL-INDUSTRIES/Apps',
     'icon': '/al_industry_construction/static/description/icon.png',
-    'version': '1.20261017',
+    'version': '2.20261027',
     # LGPL-3 como el planificador que instala (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': [

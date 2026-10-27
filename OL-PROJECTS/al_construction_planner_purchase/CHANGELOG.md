@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 16.20261024 — 26/10/2026
 
 - CR-06: lo que el cliente entrega en la obra (recepción desde clientes, o del cliente de la obra) suma a «Recibido del cliente» de su línea de suministro del cliente; lo que se le devuelve, resta.

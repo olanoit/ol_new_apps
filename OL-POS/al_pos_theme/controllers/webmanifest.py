@@ -4,14 +4,21 @@ from urllib.parse import unquote
 
 from odoo import http
 from odoo.http import request
+from odoo.tools import file_open
+from odoo.tools.image import image_process
 from odoo.addons.web.controllers import webmanifest
 
 from ..models.pos_config import AL_THEME_DEFAULTS
 
 # app_id propio: el botón "Instalar App" del PdV apunta a este módulo (ver
 # static/src/js/navbar_patch.js), así el icono sale de
-# al_pos_theme/static/description/icon.svg y no del de point_of_sale.
+# al_pos_theme/static/src/img/icon.svg y no del de point_of_sale.
 THEME_APP_ID = "al_pos_theme"
+# El ícono del módulo (static/description) es el isotipo de ALTA; la app del
+# TPV de cada cliente mantiene la caja registradora neutra y, en iOS, el ícono
+# de Punto de venta.
+THEME_APP_ICON = "/al_pos_theme/static/src/img/icon.svg"
+THEME_APP_ICON_PNG = "point_of_sale/static/description/icon.png"
 
 
 class WebManifest(webmanifest.WebManifest):
@@ -28,6 +35,19 @@ class WebManifest(webmanifest.WebManifest):
             if config:
                 return config._al_theme_page_title()
         return super()._get_scoped_app_name(app_id)
+
+    def _get_scoped_app_icons(self, app_id):
+        if app_id == THEME_APP_ID:
+            return [{"src": THEME_APP_ICON, "sizes": "any", "type": "image/svg+xml"}]
+        return super()._get_scoped_app_icons(app_id)
+
+    @http.route()
+    def scoped_app_icon_png(self, app_id, add_padding=False):
+        if app_id != THEME_APP_ID:
+            return super().scoped_app_icon_png(app_id, add_padding=add_padding)
+        with file_open(THEME_APP_ICON_PNG, "rb") as file:
+            image = image_process(file.read(), size=(180, 180), expand=True, colorize=(255, 255, 255), padding=16)
+        return request.make_response(image, headers=[("Content-Type", "image/png")])
 
     @http.route()
     def scoped_app(self, app_id, path="", app_name=""):

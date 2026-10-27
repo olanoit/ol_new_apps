@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_report_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 3.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 2.20261011 — 23/10/2026
 
 - Casillas de firma report_pe_sign_boxes: un rectángulo por paso (elaboró, cada nivel de aprobación, conformidad) con rol, nombre, cargo y fecha (requerimiento CREVAL v1.0, 3.12).

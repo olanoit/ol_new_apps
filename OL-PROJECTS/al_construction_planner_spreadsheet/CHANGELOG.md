@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 5.20261016 — 27/10/2026
 
 - CR-18, a: todas las celdas se guardan como texto (la hoja con números no abría: «content.startsWith is not a function»); migración que convierte las hojas de trabajo existentes sin perder sus revisiones.

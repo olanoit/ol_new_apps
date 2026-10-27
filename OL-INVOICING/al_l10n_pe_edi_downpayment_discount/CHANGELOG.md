@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_edi_downpayment_discount.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 5.20261018 — 18/10/2026
 
 - Comprobante con ítems gratuitos y pagados (leyenda 1002): total de impuestos y valor de venta de lo pagado; SUNAT beta rechazaba con 3294.

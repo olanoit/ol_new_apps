@@ -18,7 +18,7 @@ Se instala solo cuando están al_pharmacy_base y l10n_pe_edi.
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
-    'version': '2.20261018',
+    'version': '3.20261027',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'l10n_pe_edi'],
     'demo': ['demo/pharmacy_edi_demo.xml'],

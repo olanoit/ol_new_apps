@@ -38,8 +38,8 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
     'website': 'https://www.altabpo.com',
     'countries': ['pe'],
     'category': 'OL-HEALTH/Apps',
-    'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '5.20261019',
+    'icon': '/al_l10n_pe_pharmacy_digemid/static/description/icon.png',
+    'version': '6.20261027',
     'license': 'OPL-1',
     # resource: feriados del calendario laboral para el plazo de rectificación.
     'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'resource', 'al_report_base'],

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_collection.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261027 — 27/10/2026
+
+- Ícono nuevo: el isotipo de ALTA.
+
 ## 11.20261022 — 22/10/2026
 
 - Predicción de la fecha de pago de cada cuota (historial del cliente ponderado por importe y recencia, atraso que ya lleva, estacionalidad de la cartera y compromisos), con su confianza; columna y filtros «Se atrasará» en la cartera, atraso típico en el cliente y en la cola de trabajo, y la proyección usa la fecha prevista. Medición de la precisión contra pagos reales.

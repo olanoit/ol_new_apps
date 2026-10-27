@@ -36,8 +36,8 @@ Sugerido de compra por local:
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'website': 'https://www.altabpo.com',
     'category': 'OL-HEALTH/Apps',
-    'icon': '/al_pharmacy_base/static/description/icon.png',
-    'version': '1.20261019',
+    'icon': '/al_pharmacy_replenishment/static/description/icon.png',
+    'version': '2.20261027',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_pos', 'purchase_stock'],
     'data': [
