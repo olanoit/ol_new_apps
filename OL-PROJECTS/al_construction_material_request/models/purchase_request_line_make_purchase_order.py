@@ -38,6 +38,9 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             vals['location_final_id'] = site.id
         if self._al_is_general_stock(item):
             vals['analytic_distribution'] = False
+        else:
+            # La partida del requerimiento (CR-16, criterio 8).
+            vals['construction_task_id'] = item.line_id.construction_request_line_id.task_id.id
         return vals
 
     @api.model
@@ -51,6 +54,10 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             domain = [leaf for leaf in domain
                       if not (isinstance(leaf, (list, tuple)) and leaf[0] == 'analytic_distribution')]
             domain.append(('analytic_distribution', '=', False))
+        else:
+            # Una línea de compra por partida.
+            domain.append(('construction_task_id', '=',
+                           item.line_id.construction_request_line_id.task_id.id))
         site = self._al_final_location(item)
         domain.append(('location_final_id', '=', site.id if site else False))
         return domain
@@ -63,4 +70,5 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
                           if leaf[0] == 'id'), [])
         for order in self.env['purchase.order'].browse(set(order_ids)):
             order.origin = order._al_requests_origin() or order.origin
+            order._al_set_request_project()
         return action

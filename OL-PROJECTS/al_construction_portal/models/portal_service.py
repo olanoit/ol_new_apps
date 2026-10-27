@@ -709,9 +709,13 @@ class ConstructionPortalService(models.AbstractModel):
         location = project.construction_location_id
         if not location:
             return []
+        # Lo que está en «Dañados» ya no vuelve como material en buen estado
+        # (CR-16, D5).
+        damaged = project._construction_damaged_location()
         # sudo: el stock de la ubicación de la obra.
         quants = self.env['stock.quant'].sudo().search([
-            ('location_id', 'child_of', location.id), ('quantity', '>', 0)])
+            ('location_id', 'child_of', location.id), ('quantity', '>', 0)]).filtered(
+            lambda q: not (damaged and q.location_id._child_of(damaged)))
         totals = defaultdict(float)
         for quant in quants:
             totals[quant.product_id] += quant.quantity
@@ -719,10 +723,33 @@ class ConstructionPortalService(models.AbstractModel):
                  'uom': product.uom_id.name, 'qty': qty}
                 for product, qty in sorted(totals.items(), key=lambda kv: kv[0].display_name)]
 
+    def _dispatched_moves(self, project, product):
+        """Movimientos hechos que trajeron el producto a la obra desde fuera,
+        con lo que aún se puede devolver de cada uno (en la unidad del
+        producto), del más reciente al más antiguo."""
+        location = project.construction_location_id
+        # sudo: los despachos de la obra.
+        moves = self.env['stock.move'].sudo().search([
+            ('product_id', '=', product.id), ('state', '=', 'done'),
+            ('picking_id', '!=', False), ('location_dest_id', 'child_of', location.id),
+            ('location_id', 'not in', self.env['stock.location'].sudo().search(
+                [('id', 'child_of', location.id)]).ids),
+        ], order='date desc, id desc')
+        result = []
+        for move in moves:
+            returned = sum(m.product_uom._compute_quantity(m.product_uom_qty, product.uom_id)
+                           for m in move.returned_move_ids if m.state != 'cancel')
+            left = move.product_uom._compute_quantity(move.quantity, product.uom_id) - returned
+            if product.uom_id.compare(left, 0.0) > 0:
+                result.append((move, left))
+        return result
+
     @api.model
     def return_material(self, values):
-        """Lo que vuelve al almacén central (transferencia) y lo dañado a
-        merma (desecho)."""
+        """Lo que está en buen estado vuelve con la devolución nativa del
+        despacho (enlazada a su movimiento, su requerimiento y su partida); lo
+        dañado pasa a la sububicación «Dañados» de la obra, sin salir de ella
+        (CR-16, D5). Ambas quedan listas para que las valide quien recibe."""
         submission = self._submission('return', values.get('uuid'))
         if submission:
             return {'status': 'done', 'ids': submission.res_ids, 'duplicate': True}
@@ -743,49 +770,76 @@ class ConstructionPortalService(models.AbstractModel):
         if not good and not damaged:
             raise UserError(self.env._('Indique lo que devuelve.'))
         company = project.company_id or self.env.company
-        warehouse = self.env['stock.warehouse'].sudo().search(
-            [('company_id', '=', company.id)], limit=1)
         Product = self.env['product.product'].sudo()
         records = self.env['stock.picking'].sudo()
-        # Con ubicación de bajas, lo dañado vuelve en su propia transferencia
-        # (CR-16); sin ella, se desecha en la obra.
-        bajas = company.construction_portal_damaged_location_id
-        groups = [(warehouse.lot_stock_id, good, self.env._('Devolución de %s', project.display_name))]
-        if bajas:
-            groups.append((bajas, damaged, self.env._('Dañado en %s', project.display_name)))
-            damaged = []
-        for destination, rows, origin in groups:
-            if not rows:
-                continue
-            # sudo: la devolución la registra la obra; el almacén la recibe.
+        # Buen estado: lo que se devuelve de cada despacho, del más reciente.
+        by_picking = defaultdict(dict)
+        for product_id, qty in good:
+            product = Product.browse(product_id)
+            pending = qty
+            for move, left in self._dispatched_moves(project, product):
+                take = min(pending, left)
+                by_picking[move.picking_id][move] = by_picking[move.picking_id].get(move, 0.0) + take
+                pending -= take
+                if product.uom_id.compare(pending, 0.0) <= 0:
+                    break
+            if product.uom_id.compare(pending, 0.0) > 0:
+                raise UserError(self.env._(
+                    '%s no llegó a la obra por un despacho: la devolución la registra el almacén.',
+                    product.display_name))
+        for picking, quantities in by_picking.items():
+            # sudo: la devolución la registra la obra; el almacén la valida al
+            # recibirla.
+            wizard = self.env['stock.return.picking'].sudo().with_context(
+                active_id=picking.id, active_model='stock.picking').create({'picking_id': picking.id})
+            for line in wizard.product_return_moves:
+                qty = quantities.get(line.move_id, 0.0)
+                line.quantity = line.move_id.product_id.uom_id._compute_quantity(
+                    qty, line.uom_id) if qty else 0.0
+            records |= wizard._create_return()
+        if damaged:
+            destination = project._construction_damaged_location()
+            if not destination:
+                raise UserError(self.env._(
+                    'La compañía no tiene el nombre de la sububicación de lo dañado (Ajustes ▸ '
+                    'Requerimientos de obra).'))
+            warehouse = self.env['stock.warehouse'].sudo().search(
+                [('company_id', '=', company.id)], limit=1)
+            moves = []
+            for product_id, qty in damaged:
+                product = Product.browse(product_id)
+                # La partida y el requerimiento del último despacho del
+                # producto: el costo sigue en la obra y en la partida.
+                dispatched = self._dispatched_moves(project, product)
+                moves.append((0, 0, {
+                    'product_id': product_id, 'product_uom_qty': qty,
+                    'product_uom': product.uom_id.id,
+                    'location_id': location.id, 'location_dest_id': destination.id,
+                    'construction_request_line_id':
+                        dispatched[0][0].construction_request_line_id.id if dispatched else False,
+                }))
+            # sudo: el traslado lo registra la obra; lo valida quien recibe en
+            # obra o Logística.
             picking = records.create({
                 'picking_type_id': warehouse.int_type_id.id, 'location_id': location.id,
-                'location_dest_id': destination.id, 'origin': origin,
-                'move_ids': [(0, 0, {
-                    'product_id': product_id, 'product_uom_qty': qty,
-                    'product_uom': Product.browse(product_id).uom_id.id,
-                    'location_id': location.id, 'location_dest_id': destination.id,
-                }) for product_id, qty in rows]})
+                'location_dest_id': destination.id, 'project_id': project.id,
+                'origin': self.env._('Dañado en %s', project.display_name),
+                'move_ids': moves})
             picking.action_confirm()
-            note = self.env._('Traslado: %s', dict(
-                own=self.env._('unidad propia (guía de remisión)'),
-                supplier=self.env._('flete de proveedor')).get(values.get('transport'), '-'))
-            # Las fotos van con la primera transferencia; la de bajas lleva copia.
-            photos = attachments.copy() if records else attachments
-            photos.write({'res_id': picking.id})
-            picking.message_post(body=note, attachment_ids=photos.ids)
+            picking.action_assign()
             records |= picking
-        scraps = self.env['stock.scrap'].sudo()
-        for product_id, qty in damaged:
-            scrap = scraps.create({'product_id': product_id, 'scrap_qty': qty,
-                                   'product_uom_id': Product.browse(product_id).uom_id.id,
-                                   'location_id': location.id,
-                                   'origin': self.env._('Dañado en %s', project.display_name),
-                                   'company_id': company.id})
-            scrap.action_validate()
-            scraps |= scrap
-        self._portal_register('return', values['uuid'], records or scraps)
-        return {'status': 'done', 'pickings': records.mapped('name'), 'scraps': len(scraps)}
+        note = self.env._('Traslado: %s', dict(
+            own=self.env._('unidad propia (guía de remisión)'),
+            supplier=self.env._('flete de proveedor')).get(values.get('transport'), '-'))
+        reason = values.get('note')
+        for index, picking in enumerate(records):
+            # Las fotos van con la primera transferencia; las demás llevan copia.
+            photos = attachments.copy() if index else attachments
+            photos.write({'res_id': picking.id})
+            picking.message_post(body='%s%s' % (note, ('. %s' % reason) if reason else ''),
+                                 attachment_ids=photos.ids)
+        self._portal_register('return', values['uuid'], records)
+        return {'status': 'done', 'pickings': records.mapped('name'), 'scraps': 0}
 
     # ------------------------------------------------------------------
     # Valorizaciones de la contrata (pantallas 12 y 13)

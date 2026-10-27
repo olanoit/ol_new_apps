@@ -88,6 +88,22 @@ class TestMassPurchase(ConstructionRequestCommon):
             self.assertEqual(po_line.analytic_distribution, pr_line.analytic_distribution)
         self.assertEqual(order.order_line.filtered(lambda l: l.product_qty == 100)
                          .construction_request_task_ids, mr_line_a.task_id)
+        self.assertEqual(order.order_line.filtered(lambda l: l.product_qty == 100)
+                         .construction_task_id, mr_line_a.task_id)
+        # Dos obras: la orden no se queda con ninguna en «Proyecto».
+        if 'project_id' in order._fields:
+            self.assertFalse(order.project_id)
+
+    def test_stock_purchase_of_one_site_sets_project(self):
+        """CR-16, criterio 8: la compra de una sola obra lleva la obra en
+        «Proyecto» (``project_purchase``), su analítica y la partida."""
+        self.env.company.construction_stock_purchase_analytic = True
+        line_a, mr_line_a = self._purchase_request_line(self.site_a, 100)
+        order = self._make_order(line_a)
+        self.assertEqual(order.order_line.analytic_distribution, line_a.analytic_distribution)
+        self.assertEqual(order.order_line.construction_task_id, mr_line_a.task_id)
+        if 'project_id' in order._fields:
+            self.assertEqual(order.project_id, self.site_a)
 
     def test_supplier_rounding_is_shared(self):
         """Si la orden compra más (mínimo del proveedor, redondeo), el exceso

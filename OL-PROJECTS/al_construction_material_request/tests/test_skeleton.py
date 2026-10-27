@@ -19,6 +19,18 @@ class TestSkeleton(ConstructionRequestCommon):
         project.is_construction_site = True
         self.assertTrue(project.construction_location_id)
 
+    def test_site_is_born_with_damaged_sublocation(self):
+        """CR-16, D5: la obra nueva nace con su «Dañados», con el nombre de
+        la compañía."""
+        self.company.construction_damaged_location_name = 'Dañados (test)'
+        project = self.env['project.project'].create(
+            {'name': 'Obra nueva (test)', 'is_construction_site': True})
+        damaged = self.env['stock.location'].search(
+            [('location_id', '=', project.construction_location_id.id)])
+        self.assertEqual(damaged.mapped('name'), ['Dañados (test)'])
+        self.assertEqual(damaged.usage, 'internal')
+        self.assertEqual(project._construction_damaged_location(), damaged)
+
     def test_setup_is_idempotent(self):
         dispatch = self.company.construction_dispatch_type_id
         self.assertEqual(dispatch.code, 'internal')

@@ -6,6 +6,10 @@ from odoo.tools.misc import formatLang
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    # Partida de la línea cuando nace de un solo requerimiento de obra
+    # (CR-16, criterio 8). Mismo campo que la orden de servicio de contratas.
+    construction_task_id = fields.Many2one(
+        'project.task', string='Partida', copy=False, index='btree_not_null', check_company=True)
     # Partidas de los requerimientos de obra que atiende la línea (CR-16).
     construction_request_task_ids = fields.Many2many(
         'project.task', string='Partidas', compute='_compute_construction_request_task_ids')
@@ -64,3 +68,21 @@ class PurchaseOrder(models.Model):
             site = request._al_site_name()
             labels.append('%s (%s)' % (request.name, site) if site else request.name)
         return ', '.join(labels)
+
+    def _al_set_request_project(self):
+        """«Proyecto» de la orden (nativo, ``project_purchase``) con la obra de
+        sus requerimientos, si es una sola y la compra lleva su analítica
+        (CR-16, criterio 8). La analítica de cada línea se conserva: la de un
+        requerimiento interno es la de gastos generales de la obra."""
+        self.ensure_one()
+        if 'project_id' not in self._fields or self.project_id:
+            return
+        lines = self.order_line.filtered('purchase_request_lines')
+        projects = lines.purchase_request_lines.construction_request_line_id.request_id.project_id
+        if len(projects) != 1 or not all(lines.mapped('analytic_distribution')):
+            return
+        distributions = {line: line.analytic_distribution for line in self.order_line}
+        self.project_id = projects
+        for line, distribution in distributions.items():
+            if line.analytic_distribution != distribution:
+                line.analytic_distribution = distribution

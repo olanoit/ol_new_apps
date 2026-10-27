@@ -73,6 +73,12 @@ pasos:
     imagen: screenshots/06-valorizacion.png
 
 novedades:
+  - version: '7.20261025'
+    fecha: 27/10/2026
+    cambios:
+    - "CR-16, criterio 5: «En buen estado» crea la devolución nativa del despacho recibido (stock.return.picking, con el movimiento de origen, el requerimiento y la partida), lista para que el almacén la valide; al validarse baja «Despachado»."
+    - "CR-16, criterio 6 (D5): «Dañado» ya no desecha: crea el traslado de la obra a su sububicación «Dañados», con la foto y el motivo (obligatorio), listo para validar; «Despachado» no cambia. Se retira el ajuste «Devolución de lo dañado» (Bajas)."
+    - "Lo que está en «Dañados» ya no aparece para devolver; después de una recepción o una devolución, la pantalla Devolución se actualiza sola (sin «Actualizar»)."
   - version: '6.20261025'
     fecha: 26/10/2026
     cambios:

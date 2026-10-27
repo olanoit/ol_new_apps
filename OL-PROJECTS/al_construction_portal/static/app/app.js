@@ -263,6 +263,7 @@
             return;
         }
         flushing = true;
+        let stockChanged = false;
         try {
             for (const item of await queueAll()) {
                 if (item.status !== "pending") {
@@ -274,6 +275,7 @@
                     item.result = result;
                     item.sent = new Date().toISOString();
                     await queuePut(item);
+                    stockChanged = stockChanged || item.kind === "reception" || item.kind === "return";
                 } catch (error) {
                     if (error.status === 401) {
                         break;
@@ -290,6 +292,10 @@
         } finally {
             flushing = false;
             state.queue = await queueAll();
+            // Lo recibido o devuelto cambia el material de la obra: sin esperar a «Actualizar».
+            if (stockChanged) {
+                await refresh();
+            }
             render();
         }
     }
@@ -1052,7 +1058,7 @@
         const where = state.data.project.location;
         return `${header("Devolución al almacén", where ? `De la ubicación ${where} al almacén central` : "Al almacén central", "home")}
             <main class="page">
-                <p class="muted">Elija lo que regresa. Lo que se devuelve sale del costo de la partida.</p>
+                <p class="muted">Elija lo que regresa. Lo que está en buen estado vuelve al almacén y sale del costo de la partida; lo dañado pasa a «Dañados» de la obra hasta que Logística decida.</p>
                 ${items
                     .map((it) => {
                         const row = d.lines[it.product_id];
@@ -1070,6 +1076,7 @@
                 <div class="card form"><label>Traslado<select data-bind="ret.transport">
                     <option value="own" ${d.transport === "own" ? "selected" : ""}>Unidad propia (guía de remisión)</option>
                     <option value="supplier" ${d.transport === "supplier" ? "selected" : ""}>Flete de proveedor</option></select></label></div>
+                <div class="card form"><label>Motivo<textarea rows="2" data-bind="ret.note" placeholder="Qué pasó con lo dañado">${esc(d.note || "")}</textarea></label></div>
                 ${photosCard("ret", d, true, "Foto de la carga")}
                 ${state.params.error ? `<p class="error">${esc(state.params.error)}</p>` : ""}
                 <button class="primary" data-action="save-return">Generar devolución</button>
@@ -1596,7 +1603,10 @@
             if (!d.photos.length) {
                 return alertInline("Tome la foto de la carga.");
             }
-            await enqueue("return", "/return", { uuid: uuid(), project_id: state.projectId, transport: d.transport, photos: d.photos, lines }, `Devolución de ${lines.length} ${lines.length === 1 ? "producto" : "productos"}`);
+            if (lines.some((line) => line.state === "damaged") && !(d.note || "").trim()) {
+                return alertInline("Indique el motivo de lo dañado.");
+            }
+            await enqueue("return", "/return", { uuid: uuid(), project_id: state.projectId, transport: d.transport, note: d.note || "", photos: d.photos, lines }, `Devolución de ${lines.length} ${lines.length === 1 ? "producto" : "productos"}`);
             state.draft.ret = null;
             go("queue", { saved: "return" });
         },

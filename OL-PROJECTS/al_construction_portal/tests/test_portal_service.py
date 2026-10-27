@@ -209,22 +209,36 @@ class TestPortalService(ContractTermsCommon):
         self.assertEqual(returnables[0]['qty'], 8.0)
         result = service.return_material({
             'uuid': 'dev-1', 'project_id': self.project.id, 'transport': 'own', 'photos': PHOTOS,
+            'note': 'Placa rota en la descarga',
             'lines': [{'product_id': board.id, 'qty': 3, 'state': 'good'},
                       {'product_id': board.id, 'qty': 1, 'state': 'damaged'}]})
-        self.assertEqual(len(result['pickings']), 1)
-        self.assertEqual(result['scraps'], 1)
-        # Con ubicación de bajas, lo dañado vuelve en su propia transferencia.
-        bajas = self.env['stock.location'].create({
-            'name': 'Bajas (test portal)', 'usage': 'internal',
-            'location_id': self.env['stock.warehouse'].search(
-                [('company_id', '=', self.company.id)], limit=1).view_location_id.id})
-        self.company.construction_portal_damaged_location_id = bajas
-        again = service.return_material({
-            'uuid': 'dev-bajas', 'project_id': self.project.id, 'photos': PHOTOS,
-            'lines': [{'product_id': board.id, 'qty': 1, 'state': 'damaged'}]})
-        self.assertEqual(again['scraps'], 0)
-        to_bajas = self.env['stock.picking'].search([('name', 'in', again['pickings'])])
-        self.assertEqual(to_bajas.location_dest_id, bajas)
+        self.assertEqual(len(result['pickings']), 2)
+        pickings = self.env['stock.picking'].search([('name', 'in', result['pickings'])])
+        # En buen estado: la devolución nativa del despacho, enlazada a su
+        # movimiento y lista para que el almacén la valide (CR-16).
+        back = pickings.filtered('return_id')
+        self.assertEqual(back.return_id, picking)
+        self.assertEqual(back.move_ids.origin_returned_move_id, picking.move_ids)
+        self.assertEqual(back.location_dest_id, warehouse.lot_stock_id)
+        self.assertEqual(back.move_ids.product_uom_qty, 3.0)
+        self.assertEqual(back.state, 'assigned')
+        # Dañado: sigue en la obra, en su sububicación «Dañados» (D5).
+        damaged = pickings - back
+        self.assertEqual(damaged.location_dest_id, self.project._construction_damaged_location())
+        self.assertEqual(damaged.location_dest_id.location_id, location)
+        self.assertEqual(damaged.project_id, self.project)
+        damaged.button_validate()
+        self.assertEqual(damaged.state, 'done')
+        # Lo de «Dañados» ya no se devuelve como buen estado.
+        returnables = service.sync(self.project.id)['returnables']
+        self.assertEqual(returnables[0]['qty'], 7.0)
+        back.button_validate()
+        self.assertEqual(service.sync(self.project.id)['returnables'][0]['qty'], 4.0)
+        # Lo que queda por devolver del despacho descuenta la devolución.
+        with self.assertRaisesRegex(UserError, 'No hay tanto'):
+            service.return_material({
+                'uuid': 'dev-3', 'project_id': self.project.id, 'photos': PHOTOS,
+                'lines': [{'product_id': board.id, 'qty': 5, 'state': 'good'}]})
         with self.assertRaisesRegex(UserError, 'No hay tanto'):
             service.return_material({
                 'uuid': 'dev-2', 'project_id': self.project.id, 'photos': PHOTOS,

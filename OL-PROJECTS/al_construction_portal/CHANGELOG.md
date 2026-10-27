@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_portal.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261025 — 27/10/2026
+
+- CR-16, criterio 5: «En buen estado» crea la devolución nativa del despacho recibido (stock.return.picking, con el movimiento de origen, el requerimiento y la partida), lista para que el almacén la valide; al validarse baja «Despachado».
+- CR-16, criterio 6 (D5): «Dañado» ya no desecha: crea el traslado de la obra a su sububicación «Dañados», con la foto y el motivo (obligatorio), listo para validar; «Despachado» no cambia. Se retira el ajuste «Devolución de lo dañado» (Bajas).
+- Lo que está en «Dañados» ya no aparece para devolver; después de una recepción o una devolución, la pantalla Devolución se actualiza sola (sin «Actualizar»).
+
 ## 6.20261025 — 26/10/2026
 
 - CR-16, criterio 5: ajuste «Devolución de lo dañado»: lo que la obra devuelve como dañado vuelve en su propia transferencia a esa ubicación (Bajas del almacén); vacío, se desecha en la obra como antes.

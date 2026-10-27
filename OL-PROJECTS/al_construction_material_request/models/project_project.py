@@ -122,6 +122,24 @@ class ProjectProject(models.Model):
                     'company_id': company_sudo.id,
                 })
             project.construction_location_id = location_sudo.id
+            project._construction_damaged_location()
+
+    def _construction_damaged_location(self):
+        """Sububicación «Dañados» de la obra (CR-16, D5); se crea si falta.
+        Vacía si la obra no tiene ubicación o la compañía no le da nombre."""
+        self.ensure_one()
+        site = self.construction_location_id
+        # sudo: misma razón que en _al_construction_create_locations.
+        Location_sudo = self.env['stock.location'].sudo()
+        name = (site.company_id or self.company_id or self.env.company) \
+            .construction_damaged_location_name
+        if not site or not name:
+            return Location_sudo
+        return Location_sudo.search([
+            ('location_id', '=', site.id), ('name', '=', name),
+            ('usage', '=', 'internal')], limit=1) or Location_sudo.create({
+                'name': name, 'usage': 'internal', 'location_id': site.id,
+                'company_id': site.company_id.id})
 
     def action_view_construction_requests(self):
         self.ensure_one()

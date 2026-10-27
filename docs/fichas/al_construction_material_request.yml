@@ -429,6 +429,11 @@ faq:
       revisor, además, los que tiene por revisar. Logística ve todos.
 
 novedades:
+  - version: '29.20261024'
+    fecha: 27/10/2026
+    cambios:
+    - "CR-16 (D5): ajuste «Sububicación de lo dañado» (por defecto «Dañados»): cada obra nueva nace con esa sububicación dentro de su ubicación; lo dañado se queda en la obra y en su costo hasta que Logística decida."
+    - "CR-16, criterio 8: la compra que nace de un requerimiento lleva la partida (`construction_task_id`) en cada línea y, si atiende una sola obra con su analítica, la obra en «Proyecto» (nativo, project_purchase) sin cambiar la analítica de las líneas (la de gastos generales en un requerimiento interno). Una línea de compra por partida."
   - version: '28.20261024'
     fecha: 26/10/2026
     cambios:

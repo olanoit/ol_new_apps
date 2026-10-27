@@ -14,6 +14,13 @@ class ResCompany(models.Model):
         'stock.location', string='Ubicación padre de las obras',
         domain="[('company_id', 'in', [id, False])]",
         help='Rama OBRAS: cada obra tiene una sububicación debajo.')
+    # Material dañado en obra (CR-16, D5): no sale de la obra, va a esta
+    # sububicación de la ubicación de cada obra.
+    construction_damaged_location_name = fields.Char(
+        string='Sububicación de lo dañado', default='Dañados',
+        help='Nombre de la sububicación que se crea dentro de la ubicación de cada obra. '
+             'Lo que la obra marca como dañado va ahí: sigue en la obra y en su costo hasta '
+             'que Logística decida su destino.')
     construction_code_from_name = fields.Boolean(
         string='El nombre del proyecto empieza con el código de obra',
         help='La primera palabra del nombre del proyecto es el código de la obra '

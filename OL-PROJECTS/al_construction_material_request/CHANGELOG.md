@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 29.20261024 — 27/10/2026
+
+- CR-16 (D5): ajuste «Sububicación de lo dañado» (por defecto «Dañados»): cada obra nueva nace con esa sububicación dentro de su ubicación; lo dañado se queda en la obra y en su costo hasta que Logística decida.
+- CR-16, criterio 8: la compra que nace de un requerimiento lleva la partida (`construction_task_id`) en cada línea y, si atiende una sola obra con su analítica, la obra en «Proyecto» (nativo, project_purchase) sin cambiar la analítica de las líneas (la de gastos generales en un requerimiento interno). Una línea de compra por partida.
+
 ## 28.20261024 — 26/10/2026
 
 - 7.3: el requerimiento interno puede llevar la obra (EPP y útiles pedidos desde el portal): se carga a su área y aparece en la obra. 7.4: ajuste «Requerimiento de obra sin regla»: pasa al jefe de la obra o se aprueba al enviarlo (las compañías existentes siguen aprobando al enviar).
