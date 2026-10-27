@@ -6,6 +6,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`). Este módulo no tiene ficha
 en `docs/fichas/`: el historial se mantiene a mano y debe coincidir con el
 de `static/description/index.html`.
 
+## 11.20261027 — 27/10/2026
+
+- Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
+
 ## 10.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '57.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
   - version: '56.20261027'
     fecha: 27/10/2026
     cambios:

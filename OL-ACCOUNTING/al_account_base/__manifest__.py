@@ -28,7 +28,7 @@ campos sin uso.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_account_base/static/description/icon.png',
-    'version': '19.20261027',
+    'version': '20.20261027',
     'license': 'OPL-1',
     # El formato de los documentos impresos (encabezado, pie y estilos del
     # comprobante A4) vive en al_report_base, común a toda la suite.

@@ -30,8 +30,8 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
 [al_construction_attendance](al_construction_attendance/) | 6.20261027 | LGPL-3 | Sedes de obra con ubicación y horario, quiosco de marcación para personal propio y de contratas, asistencia diaria y costo de la planilla por obra, etapa y partida.
-[al_construction_material_request](al_construction_material_request/) | 30.20261027 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
-[al_construction_planner](al_construction_planner/) | 56.20261027 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
+[al_construction_material_request](al_construction_material_request/) | 31.20261027 | LGPL-3 | El personal de obra pide materiales, se aprueba por niveles y lo disponible sale del almacén central; el faltante va a requerimiento de compra (OCA purchase_request).
+[al_construction_planner](al_construction_planner/) | 57.20261027 | LGPL-3 | Plan de recursos de la obra para cualquier rubro: niveles, etapas, tipos de recurso y recetas configurables, con perfiles de vertical y funciones que se activan por puentes.
 [al_construction_planner_approvals](al_construction_planner_approvals/) | 8.20261027 | LGPL-3 | Plan de recursos y requerimiento de obra aprobados en la aplicación Aprobaciones, con tabla de rutas por tramos y aprobadores por grupo.
 [al_construction_planner_approvals_mrp](al_construction_planner_approvals_mrp/) | 8.20261027 | LGPL-3 | Exceso de la orden de fabricación frente a lo presupuestado: el jefe de producción lo aprueba dentro de su margen y, por encima, va a Aprobaciones.
 [al_construction_planner_budget](al_construction_planner_budget/) | 6.20261027 | LGPL-3 | Presupuesto analítico al aprobar el plan y control de la OC contra el presupuesto.
@@ -51,7 +51,7 @@ módulo | versión | licencia | resumen
 [al_construction_planner_suite](al_construction_planner_suite/) | 23.20261027 | LGPL-3 | Instala el planificador con todos sus puentes (perfil mobiliario completo) y reúne las pruebas de integración.
 [al_construction_portal](al_construction_portal/) | 8.20261027 | LGPL-3 | Portal instalable y sin señal para capataces, contratas y oficina técnica: avance con fotos, parte diario, cuadrilla y tareo, requerimientos, recepción, devolución y valorizaciones, sobre servicios JSON versionados.
 [al_project_gantt_ai](al_project_gantt_ai/) | 9.20261027 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
-[al_project_gantt_backend](al_project_gantt_backend/) | 18.20261027 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
+[al_project_gantt_backend](al_project_gantt_backend/) | 19.20261027 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
 [al_project_gantt_base](al_project_gantt_base/) | 19.20261027 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
 [al_project_gantt_website](al_project_gantt_website/) | 13.20261027 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
 [//]: # (end addons)

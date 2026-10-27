@@ -1,5 +1,15 @@
-<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title>ALTA</title><defs><clipPath id="alta_ring"><path d="M3.5 30.5a15.5 15.5 0 1 0 31 0a15.5 15.5 0 1 0 -31 0ZM12.75 30.5a6.25 6.25 0 1 0 12.5 0a6.25 6.25 0 1 0 -12.5 0Z" clip-rule="evenodd"/></clipPath></defs>
-<path d="M3.5 30.5a15.5 15.5 0 1 0 31 0a15.5 15.5 0 1 0 -31 0ZM12.75 30.5a6.25 6.25 0 1 0 12.5 0a6.25 6.25 0 1 0 -12.5 0Z" fill="#7B70B4" fill-rule="evenodd"/>
-<path d="M27 15H35a4 4 0 0 1 4 4V42a4 4 0 0 1 -4 4H31a4 4 0 0 1 -4 -4V15Z" fill="#1F3145"/>
-<path d="M27 15H35a4 4 0 0 1 4 4V42a4 4 0 0 1 -4 4H31a4 4 0 0 1 -4 -4V15Z" fill="#06182E" clip-path="url(#alta_ring)"/>
-<path d="M27 15V13.2A10.2 10.2 0 0 1 37.2 3H44V4.8A10.2 10.2 0 0 1 33.8 15Z" fill="#EF9F27"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Icono de la app Cobranza (AL): calendario de cobros con flecha de ingreso. -->
+  <rect width="100" height="100" rx="22" fill="#9D174D"/>
+  <rect x="16" y="24" width="50" height="50" rx="6" fill="#FFFFFF"/>
+  <rect x="16" y="24" width="50" height="12" rx="6" fill="#FBCFE8"/>
+  <rect x="25" y="18" width="5" height="12" rx="2.5" fill="#FFFFFF"/>
+  <rect x="52" y="18" width="5" height="12" rx="2.5" fill="#FFFFFF"/>
+  <rect x="24" y="44" width="8" height="7" rx="1.5" fill="#9D174D" opacity="0.35"/>
+  <rect x="37" y="44" width="8" height="7" rx="1.5" fill="#9D174D"/>
+  <rect x="50" y="44" width="8" height="7" rx="1.5" fill="#9D174D" opacity="0.35"/>
+  <rect x="24" y="57" width="8" height="7" rx="1.5" fill="#9D174D" opacity="0.35"/>
+  <rect x="37" y="57" width="8" height="7" rx="1.5" fill="#9D174D" opacity="0.35"/>
+  <circle cx="72" cy="66" r="16" fill="#F9A8D4"/>
+  <path d="M72 56 v18 m-7 -7 l7 7 l7 -7" stroke="#831843" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_account_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261027 — 27/10/2026
+
+- Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
+
 ## 19.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

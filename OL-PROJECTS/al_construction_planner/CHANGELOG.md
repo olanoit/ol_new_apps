@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 57.20261027 — 27/10/2026
+
+- Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
+
 ## 56.20261027 — 27/10/2026
 
 - Paquete 1.12, M112-04: «Modalidad por defecto» en las etapas (personal propio) y «Modalidad» en las actividades. Con el plan aprobado, la modalidad de un ambiente con líneas se cambia en una nueva versión del plan.

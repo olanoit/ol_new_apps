@@ -25,6 +25,10 @@ configuracion:
   - "En **Planificación de obra ▸ Configuración ▸ Ajustes** elija las categorías de los servicios de armado e instalación."
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
   - version: '2.20261027'
     fecha: 27/10/2026
     cambios:

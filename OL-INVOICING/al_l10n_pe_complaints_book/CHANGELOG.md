@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_complaints_book.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 11.20261027 — 27/10/2026
+
+- Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.
+
 ## 10.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

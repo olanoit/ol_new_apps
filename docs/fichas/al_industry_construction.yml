@@ -31,6 +31,10 @@ configuracion:
   - "Asigne a los usuarios los grupos del planificador y de oficina técnica."
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
   - version: '2.20261027'
     fecha: 27/10/2026
     cambios:

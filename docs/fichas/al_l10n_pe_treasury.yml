@@ -96,6 +96,10 @@ faq:
       «Devolver» deja la programación en borrador y borra las firmas.
 
 novedades:
+  - version: '3.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
   - version: '2.20261027'
     fecha: 27/10/2026
     cambios:

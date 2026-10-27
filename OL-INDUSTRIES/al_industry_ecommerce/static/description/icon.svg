@@ -1,5 +1,1 @@
-<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><title>ALTA</title><defs><clipPath id="alta_ring"><path d="M3.5 30.5a15.5 15.5 0 1 0 31 0a15.5 15.5 0 1 0 -31 0ZM12.75 30.5a6.25 6.25 0 1 0 12.5 0a6.25 6.25 0 1 0 -12.5 0Z" clip-rule="evenodd"/></clipPath></defs>
-<path d="M3.5 30.5a15.5 15.5 0 1 0 31 0a15.5 15.5 0 1 0 -31 0ZM12.75 30.5a6.25 6.25 0 1 0 12.5 0a6.25 6.25 0 1 0 -12.5 0Z" fill="#7B70B4" fill-rule="evenodd"/>
-<path d="M27 15H35a4 4 0 0 1 4 4V42a4 4 0 0 1 -4 4H31a4 4 0 0 1 -4 -4V15Z" fill="#1F3145"/>
-<path d="M27 15H35a4 4 0 0 1 4 4V42a4 4 0 0 1 -4 4H31a4 4 0 0 1 -4 -4V15Z" fill="#06182E" clip-path="url(#alta_ring)"/>
-<path d="M27 15V13.2A10.2 10.2 0 0 1 37.2 3H44V4.8A10.2 10.2 0 0 1 33.8 15Z" fill="#EF9F27"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50"><rect x="6" y="15" width="38" height="31" rx="4" fill="#088BF5"/><path d="M16 20v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#144496" stroke-width="4" stroke-linecap="round"/><rect x="17" y="27" width="16" height="10" rx="3" fill="#1AD3BB"/></svg>

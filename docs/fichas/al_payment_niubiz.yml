@@ -238,6 +238,10 @@ faq:
       insuficientes) y puede pagar con otra tarjeta sin rehacer el pedido.
 
 novedades:
+  - version: '5.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono."
   - version: '4.20261027'
     fecha: 27/10/2026
     cambios:

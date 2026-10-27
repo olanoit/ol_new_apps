@@ -31,7 +31,7 @@ Tabla generada desde los manifiestos con `python3 scripts/gen_addons_table.py`
 [//]: # (addons)
 módulo | versión | licencia | resumen
 --- | --- | --- | ---
-[al_account_base](al_account_base/) | 19.20261027 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
+[al_account_base](al_account_base/) | 20.20261027 | OPL-1 | Personalizaciones genéricas de la localización contable peruana: glosa en asientos/líneas, menú "Perú" y utilidades compartidas.
 [al_account_destinations](al_account_destinations/) | 13.20261027 | OPL-1 | Genera automáticamente el asiento de destino (clase 6 a 9 o viceversa) según los porcentajes configurados por cuenta.
 [al_account_move_name_sequence](al_account_move_name_sequence/) | 14.20261027 | OPL-1 | Secuencia ir.sequence OPCIONAL por diario para controlar la numeración (serie-correlativo SUNAT) de los comprobantes.
 [al_account_payments](al_account_payments/) | 11.20261027 | OPL-1 | Medio de pago SUNAT (catálogo 1) y número de operación bancaria en pagos y en el asistente de registro de pagos.
@@ -47,7 +47,7 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_cash_fund_expense](al_l10n_pe_cash_fund_expense/) | 2.20261027 | OPL-1 | Gastos pagados con una caja chica o entrega a rendir: cada gasto es la factura de su proveedor con su tipo y número de comprobante, y la rendición del fondo la paga.
 [al_l10n_pe_check](al_l10n_pe_check/) | 3.20261027 | OPL-1 | Cartera de cheques de terceros y cheques propios sobre el módulo nativo de Odoo: diarios y cuentas del PCGE, emisor con RUC o DNI y plazo de presentación de la Ley de Títulos Valores.
 [al_l10n_pe_check_printing](al_l10n_pe_check_printing/) | 2.20261027 | OPL-1 | Imprime los cheques propios sobre la hoja de la chequera del banco, con un formato calibrable por diario: fecha, beneficiario e importe en números y en letras.
-[al_l10n_pe_collection](al_l10n_pe_collection/) | 12.20261027 | OPL-1 | Gestión de cobranza: cartera por gestor, gestiones, compromisos de pago, reclamos, cobranza judicial, calificación de riesgo, bloqueo de crédito, intereses, provisión de cobranza dudosa, centrales de riesgo, proyección, metas y estado de cuenta.
+[al_l10n_pe_collection](al_l10n_pe_collection/) | 13.20261027 | OPL-1 | Gestión de cobranza: cartera por gestor, gestiones, compromisos de pago, reclamos, cobranza judicial, calificación de riesgo, bloqueo de crédito, intereses, provisión de cobranza dudosa, centrales de riesgo, proyección, metas y estado de cuenta.
 [al_l10n_pe_collection_sale](al_l10n_pe_collection_sale/) | 2.20261027 | OPL-1 | No deja confirmar pedidos de venta de clientes con bloqueo de crédito por mora y lo advierte en el pedido.
 [al_l10n_pe_cpe_validation](al_l10n_pe_cpe_validation/) | 4.20261027 | OPL-1 | Consulta integrada de comprobantes de pago de SUNAT para las facturas de proveedor: de una en una, en lote o al publicar, con aviso o bloqueo.
 [al_l10n_pe_currency](al_l10n_pe_currency/) | 16.20261027 | OPL-1 | Tipo de cambio SUNAT (compra/venta) para USD/PEN desde cuatro fuentes —SUNAT, BCRP, Decolecta y apis.net.pe—, con actualización diaria, registro manual coherente y visualización del T.C. aplicado en facturas en moneda extranjera.
@@ -71,11 +71,11 @@ módulo | versión | licencia | resumen
 [al_l10n_pe_retention](al_l10n_pe_retention/) | 25.20261027 | OPL-1 | Régimen de Retenciones del IGV (R.S. 037-2002/SUNAT): agente de retención, aplicabilidad con excepciones y retención del 3% en el pago sobre el marco nativo.
 [al_l10n_pe_sire](al_l10n_pe_sire/) | 23.20261027 | OPL-1 | Conciliación con el Sistema Integrado de Registros Electrónicos de SUNAT
 [al_l10n_pe_term_deposit](al_l10n_pe_term_deposit/) | 6.20261027 | OPL-1 | Depósitos a plazo, fondos en garantía y depósitos en garantía entregados: apertura, devengo mensual de intereses (TEA), vencimiento, cancelación, renovación y liberación con sus asientos.
-[al_l10n_pe_treasury](al_l10n_pe_treasury/) | 2.20261027 | OPL-1 | Aplicación de tesorería para Perú: posición diaria de bancos y cajas, programación y aprobación de pagos, transferencias entre cuentas propias, compra y venta de moneda extranjera con T.C. pactado, líneas de crédito y control de bancarización.
+[al_l10n_pe_treasury](al_l10n_pe_treasury/) | 3.20261027 | OPL-1 | Aplicación de tesorería para Perú: posición diaria de bancos y cajas, programación y aprobación de pagos, transferencias entre cuentas propias, compra y venta de moneda extranjera con T.C. pactado, líneas de crédito y control de bancarización.
 [al_l10n_pe_treasury_batch_payment](al_l10n_pe_treasury_batch_payment/) | 2.20261027 | OPL-1 | Al pagar una programación de Tesorería con el método «archivo TXT del banco», sus pagos quedan agrupados en un lote listo para generar el archivo.
-[al_payment_culqi](al_payment_culqi/) | 3.20261027 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
-[al_payment_izipay](al_payment_izipay/) | 3.20261027 | OPL-1 | Izipay como proveedor de pago de Odoo: formulario emergente de Izipay con tarjetas y cuotas, confirmación por IPN firmada, anulaciones y devoluciones.
-[al_payment_niubiz](al_payment_niubiz/) | 4.20261027 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
-[al_payment_pagoefectivo](al_payment_pagoefectivo/) | 2.20261027 | OPL-1 | PagoEfectivo como proveedor de pago de Odoo: código de pago (CIP) para pagar en efectivo en agentes y bodegas o desde la banca, confirmado por notificación firmada.
+[al_payment_culqi](al_payment_culqi/) | 4.20261027 | OPL-1 | Culqi como proveedor de pago de Odoo: tarjetas y Yape con Checkout Custom, autenticación 3DS y devoluciones totales o parciales.
+[al_payment_izipay](al_payment_izipay/) | 4.20261027 | OPL-1 | Izipay como proveedor de pago de Odoo: formulario emergente de Izipay con tarjetas y cuotas, confirmación por IPN firmada, anulaciones y devoluciones.
+[al_payment_niubiz](al_payment_niubiz/) | 5.20261027 | OPL-1 | Niubiz Checkout All-In-One como proveedor de pago: tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo, con anulación y devoluciones.
+[al_payment_pagoefectivo](al_payment_pagoefectivo/) | 3.20261027 | OPL-1 | PagoEfectivo como proveedor de pago de Odoo: código de pago (CIP) para pagar en efectivo en agentes y bodegas o desde la banca, confirmado por notificación firmada.
 [l10n_pe_vat_sunat](l10n_pe_vat_sunat/) | 23.20261027 | OPL-1 | Consulta y actualización automática de datos de RUC y DNI desde el portal SUNAT, ApiPerú, Apis.net.pe y JSON-PE. Padrón de buenos contribuyentes y agentes de retención con caché diaria.
 [//]: # (end addons)

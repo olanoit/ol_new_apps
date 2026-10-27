@@ -35,7 +35,7 @@ cheques, los cierres de caja y las entregas a rendir de la suite.
     'website': 'https://www.altabpo.com',
     'category': 'OL-ACCOUNTING/Apps',
     'icon': '/al_l10n_pe_treasury/static/description/icon.png',
-    'version': '2.20261027',
+    'version': '3.20261027',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': [
