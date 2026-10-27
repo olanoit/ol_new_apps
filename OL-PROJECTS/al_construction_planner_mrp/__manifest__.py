@@ -17,11 +17,11 @@ Odoo vive en su puente y se activa desde Ajustes.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_mrp/static/description/icon.png',
-    'version': '13.20261027',
+    'version': '14.20261027',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     # al_stock_base: regla de las planchas enteras (paquete 1.11, M111-12).
-    'depends': ['al_construction_planner', 'project_mrp', 'al_stock_base'],
+    'depends': ['al_construction_planner', 'project_mrp', 'project_mrp_account', 'al_stock_base'],
     'data': [
         'views/exceed_wizard_views.xml',
         'security/planner_groups.xml',

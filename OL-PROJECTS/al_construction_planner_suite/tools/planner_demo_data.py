@@ -64,7 +64,10 @@ for code, name, stage, uom, base, site, extra in ACTIVITIES:
     if not activity:
         activity = env['construction.labor.activity'].create(dict({
             'code': full_code, 'name': f'{P}{name}', 'stage': stage, 'uom_id': uom.id,
-            'default_price': base, 'productivity_source': 'estimated'}, **extra))
+            'default_price': base, 'productivity_source': 'estimated',
+            # El ejemplo de la especificación paga todo a contratas (la etapa
+            # trae personal propio por defecto desde el paquete 1.12).
+            'execution_mode': 'labor_contract'}, **extra))
         env['construction.labor.rate'].create({
             'activity_id': activity.id, 'price': base, 'retention_pct': 10.0})
         if site is not None:

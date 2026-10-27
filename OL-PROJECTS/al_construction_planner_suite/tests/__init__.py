@@ -63,3 +63,6 @@ from . import test_progress_exceed_approval
 from . import test_package_111_internal_approvals
 from . import test_package_111_v3_production
 from . import test_package_111_v3_request
+from . import test_package_112_analytic
+from . import test_package_112_request
+from . import test_package_112_mode

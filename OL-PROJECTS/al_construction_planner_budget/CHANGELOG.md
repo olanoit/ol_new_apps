@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_budget.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261027 — 27/10/2026
+
+- Paquete 1.12, M112-02: el consumo de una orden de obra ya no recibe la primera etapa de fabricación del hook de apuntes: la trae el movimiento.
+
 ## 5.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

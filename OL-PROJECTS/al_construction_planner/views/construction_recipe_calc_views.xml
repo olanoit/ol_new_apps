@@ -148,7 +148,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='construction_execution_template_id']" position="after">
                 <field name="construction_execution_mode"
-                       invisible="not construction_execution_template_id"/>
+                       invisible="not construction_execution_template_id and construction_level != 'space'"
+                       placeholder="La de la actividad o de su etapa"/>
             </xpath>
         </field>
     </record>

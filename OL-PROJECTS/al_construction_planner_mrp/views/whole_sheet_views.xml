@@ -20,6 +20,10 @@
                             </div>
                         </div>
                     </setting>
+                    <setting id="construction_intermediate_no_analytic" company_dependent="1"
+                             help="El paquete de piezas que consume la orden de armado ya cargó su material en la orden de corte: no vuelve a cargar costo analítico a la obra. Su asiento contable no cambia.">
+                        <field name="construction_intermediate_no_analytic"/>
+                    </setting>
                 </block>
                 <block title="Planchas y retazos" name="construction_whole_sheet_block">
                     <setting id="construction_whole_sheet" company_dependent="1"

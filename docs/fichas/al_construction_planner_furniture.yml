@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '14.20261027'
+  fecha: 27/10/2026
+  cambios:
+    - "Paquete 1.12, M112-04: «Generar plan» crea cada actividad como personal propio o como contrata según la modalidad del ambiente, de la actividad o de su etapa; personal propio por defecto. «Contrata a todo costo» sale como contrata y se avisa."
 - version: '13.20261027'
   fecha: 27/10/2026
   cambios:

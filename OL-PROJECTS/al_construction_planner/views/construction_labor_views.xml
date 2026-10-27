@@ -11,6 +11,7 @@
                 <field name="code"/>
                 <field name="name"/>
                 <field name="stage"/>
+                <field name="execution_mode" optional="show" placeholder="La de la etapa"/>
                 <field name="uom_id"/>
                 <field name="driver_source" optional="show"/>
                 <field name="module_level" optional="show"/>
@@ -39,6 +40,7 @@
                         <group string="Actividad">
                             <field name="code"/>
                             <field name="stage"/>
+                            <field name="execution_mode" placeholder="La de la etapa"/>
                             <field name="uom_id" options="{'no_create': True}"/>
                             <field name="driver_source" widget="radio" options="{'horizontal': True}"/>
                             <field name="product_id" options="{'no_create': True}"/>

@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '56.20261027'
+    fecha: 27/10/2026
+    cambios:
+      - "Paquete 1.12, M112-04: «Modalidad por defecto» en las etapas (personal propio) y «Modalidad» en las actividades. Con el plan aprobado, la modalidad de un ambiente con líneas se cambia en una nueva versión del plan."
   - version: '55.20261027'
     fecha: 27/10/2026
     cambios:

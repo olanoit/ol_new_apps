@@ -1,5 +1,5 @@
 ---
-modulos: [al_construction_planner, al_construction_planner_budget]
+modulos: [al_construction_planner, al_construction_planner_budget, al_construction_planner_mrp]
 ---
 
 # Tramos, analítica y presupuesto
@@ -62,9 +62,19 @@ planificador completa las columnas vacías con las reglas:
 
 | Apunte | Etapa que toma |
 |---|---|
-| Consumo de una orden de fabricación | Producción |
+| Consumo de una orden de fabricación | La **Etapa analítica** del motivo de la orden; si no tiene, la etapa de consumo de su línea de la lista de materiales; si la línea no la tiene, la primera etapa de fabricación |
 | Consumo de material en obra | Instalación |
 | Factura de una contrata (producto de una actividad) | La de la actividad |
 
 La partida sale de la regla del tipo de recurso y de la categoría del
 producto. Lo que ya trae una cuenta en esa columna no se cambia.
+
+### El paquete de piezas no se carga dos veces
+
+El material del paquete de piezas (tableros y cantos) ya se cargó a la obra en
+la orden de corte. Con **El componente intermedio no carga costo analítico**
+(**Ajustes ‣ Fabricación ‣ Órdenes del plan de obra**, activo por defecto), el
+paquete que consume la orden de armado no genera apunte analítico: la orden
+de armado solo carga sus accesorios y materiales de armado. El asiento
+contable y la valorización del paquete no cambian. Apagado, se comporta como
+antes.

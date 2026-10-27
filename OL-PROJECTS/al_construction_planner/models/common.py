@@ -83,6 +83,14 @@ RESOURCE_TYPES = [
     ('production', 'Producción'),
 ]
 
+# Modalidad de ejecución (CREVAL v1.0, 6.4; en la etapa y la actividad desde
+# el paquete 1.12, M112-04).
+EXECUTION_MODES = [
+    ('own', 'Personal propio'),
+    ('labor_contract', 'Contrata solo de mano de obra'),
+    ('full_contract', 'Contrata a todo costo'),
+]
+
 MODULE_TYPES = [
     ('low', 'Bajo'),
     ('high', 'Alto'),

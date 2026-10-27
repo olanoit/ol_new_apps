@@ -38,7 +38,11 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         help='Crea bajo cada ambiente sin módulos una tarea por módulo de la plantilla de '
              'su tipología. Si el ambiente ya tiene módulos (p. ej. del ETO), no los duplica.')
     include_material = fields.Boolean(string='Materiales', default=True)
-    include_contract = fields.Boolean(string='Contratas', default=True)
+    include_contract = fields.Boolean(
+        string='Actividades', default=True,
+        help='Armado, instalación y demás actividades de mano de obra: como contrata o como '
+             'personal propio según su modalidad (la del ambiente, la de la actividad o la de su '
+             'etapa).')
     stage_production = fields.Boolean(string='Producción de piezas', default=True)
     stage_assembly = fields.Boolean(string='Armado', default=True)
     stage_installation = fields.Boolean(string='Instalación', default=True)
@@ -137,7 +141,21 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             ('piece_types', '!=', False), ('company_id', 'in', (plan.company_id.id, False))],
             order='sequence, code, id')
 
+        # Modalidad de cada actividad (M112-04): la del ambiente (nivel con
+        # etapas), la de la actividad o la de su etapa; personal propio por
+        # defecto. La contrata a todo costo no aplica al mobiliario: sale como
+        # contrata solo de mano de obra y se avisa.
+        stage_modes = self.env['construction.stage'].sudo()._execution_modes()
+
+        def labor_type(activity, space):
+            mode = activity._execution_mode(space, stage_modes)
+            if mode == 'full_contract':
+                result['warnings']['full_contract'].append(activity.display_name)
+            return 'labor' if mode == 'own' else 'contract'
+
         def add(kind, vals):
+            if vals['resource_type'] == 'labor':
+                kind = 'labor'
             result['lines'].append(vals)
             counter = result['line_kinds'][kind]
             counter[0] += 1
@@ -215,7 +233,8 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         continue
                     price, basis, basis_date = rate(activity)
                     add('assembly_module', dict(
-                        common, task_id=task.id if task else False, resource_type='contract',
+                        common, task_id=task.id if task else False,
+                        resource_type=labor_type(activity, space),
                         stage=activity.stage, activity_id=activity.id,
                         product_id=activity.product_id.id, product_uom_id=activity.uom_id.id,
                         qty_planned=1.0, price_unit_planned=price, price_basis=basis,
@@ -233,7 +252,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         price, basis, basis_date = rate(activity)
                         add('contract_pieces', dict(
                             common, task_id=task.id if task else False,
-                            resource_type='contract', stage=activity.stage,
+                            resource_type=labor_type(activity, space), stage=activity.stage,
                             activity_id=activity.id, product_id=activity.product_id.id,
                             product_uom_id=activity.uom_id.id, qty_planned=qty,
                             price_unit_planned=price, price_basis=basis,
@@ -254,7 +273,8 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                         if not listed_qty and not has_widths:
                             continue
                     price, basis, basis_date = rate(activity)
-                    base = dict(common, resource_type='contract', stage=activity.stage,
+                    base = dict(common, resource_type=labor_type(activity, space),
+                                stage=activity.stage,
                                 activity_id=activity.id, product_id=activity.product_id.id,
                                 product_uom_id=activity.uom_id.id, price_unit_planned=price,
                                 price_basis=basis, price_basis_date=basis_date)
@@ -355,6 +375,8 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
              self.env._('Ambiente')),
             ('contract_furniture', self.env._('Líneas de contrata por ML del mueble'),
              self.env._('Mueble')),
+            ('labor', self.env._('Líneas de personal propio'),
+             self.env._('Ambiente o módulo')),
             ('material_staged', self.env._('Líneas de material con etapa'), ''),
             ('material_unstaged', self.env._('Líneas de material sin etapa'), ''),
         ]
@@ -412,6 +434,9 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                 'tipo especial (no se genera su armado)'),
             'module_missing': self.env._(
                 'Módulos de la plantilla que no existen en el ambiente (no se generan)'),
+            'full_contract': self.env._(
+                'Actividades en «Contrata a todo costo», que no aplica al mobiliario: salen como '
+                'contrata solo de mano de obra'),
             'ml_on_space': self.env._(
                 'Tipologías sin anchos por módulo: la instalación y la limpieza por ML quedan '
                 'en el ambiente (se resuelve cargando los anchos del ETO)'),

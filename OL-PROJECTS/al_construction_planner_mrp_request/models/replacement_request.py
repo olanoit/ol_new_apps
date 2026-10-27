@@ -164,9 +164,7 @@ class ConstructionReplacementRequest(models.Model):
             # Quien pide no tiene permisos de Fabricación: la orden la crea el
             # sistema en la planta, en borrador, para que la planta la revise.
             production_sudo = self.env['mrp.production'].sudo().with_company(company)
-            bom_sudo = self.env['mrp.bom'].sudo()._bom_find(
-                request.product_id, picking_type=picking_type, company_id=company.id
-            )[request.product_id]
+            bom_sudo, picking_type = request._construction_replacement_bom(picking_type)
             vals = {
                 'product_id': request.product_id.id,
                 'product_qty': request.product_qty,
@@ -205,6 +203,39 @@ class ConstructionReplacementRequest(models.Model):
                 plant=picking_type.warehouse_id.name or picking_type.display_name,
                 order=production_sudo.name))
         return True
+
+    def _construction_replacement_bom(self, picking_type):
+        """(lista, tipo de operación) de la orden de reposición (paquete 1.12,
+        M112-03). La lista del tipo configurado o sin tipo; si no la hay, la
+        del producto en otra planta (el plan deja la del módulo en la planta
+        de la última etapa), con el tipo de ese almacén que pide motivo. Nunca
+        una orden sin lista."""
+        self.ensure_one()
+        product, company = self.product_id, self.company_id
+        # La lista y los tipos de la planta los lee el sistema por quien pide.
+        Bom = self.env['mrp.bom'].sudo()
+        bom_sudo = Bom._bom_find(
+            product, picking_type=picking_type, company_id=company.id)[product]
+        if bom_sudo:
+            return bom_sudo, picking_type
+        bom_sudo = Bom._bom_find(product, company_id=company.id, bom_type='normal')[product]
+        if not bom_sudo:
+            raise UserError(self.env._(
+                '%s no tiene lista de materiales: la planta no puede fabricarla. Pida a '
+                'Producción que cree su lista.', product.display_name))
+        warehouse = bom_sudo.picking_type_id.warehouse_id
+        other_type_sudo = warehouse and self.env['stock.picking.type'].sudo().search([
+            ('warehouse_id', '=', warehouse.id), ('code', '=', 'mrp_operation'),
+            ('construction_reason_required', '=', True), ('company_id', '=', company.id),
+        ], order='sequence, id', limit=1)
+        if not other_type_sudo:
+            raise UserError(self.env._(
+                'La lista de %(product)s es de %(warehouse)s y ese almacén no tiene una operación '
+                'de fabricación que pida motivo (posventa o reposición): configúrela en '
+                'Inventario › Configuración › Tipos de operación.',
+                product=product.display_name,
+                warehouse=warehouse.name or bom_sudo.picking_type_id.display_name))
+        return bom_sudo, other_type_sudo
 
     def action_cancel(self):
         for request in self:

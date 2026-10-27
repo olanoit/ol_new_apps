@@ -20,6 +20,10 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261027'
+  fecha: 27/10/2026
+  cambios:
+    - "Paquete 1.12, M112-02: el consumo de una orden de obra ya no recibe la primera etapa de fabricación del hook de apuntes: la trae el movimiento."
 - version: '5.20261027'
   fecha: 27/10/2026
   cambios:

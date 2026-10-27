@@ -33,8 +33,13 @@ class AccountAnalyticLine(models.Model):
         Stage = self.env['construction.stage']
         activities = {a.product_id.id: a for a in Activity.search(
             [('product_id', 'in', lines.product_id.ids)])}
+        # El consumo de una orden de obra ya trae su etapa y su partida desde
+        # el movimiento (paquete 1.12, M112-02, puente de fabricación).
+        by_move = self.env.context.get('construction_analytic_by_move')
         for line in lines:
             product = line.product_id
+            if by_move and line.category == 'manufacturing_order':
+                continue
             activity = activities.get(product.id)
             if activity:
                 resource_type, stage = 'contract', activity.stage

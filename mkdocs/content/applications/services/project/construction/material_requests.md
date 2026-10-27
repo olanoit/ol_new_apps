@@ -307,6 +307,12 @@ pulsar **Pedir a la planta**:
 1. Odoo crea la orden de fabricación en borrador en el **Tipo de la reposición
    a planta** de **Ajustes ‣ Fabricación** («Producción de piezas ·
    reposición»), con el motivo; si ese tipo **Pide motivo**, el motivo ya va.
+   Si la lista de materiales de la pieza es de otra planta (el plan deja la
+   lista del módulo en la planta de la última etapa), la orden se crea en esa
+   planta, con su lista y en el primer tipo de fabricación de su almacén que
+   **Pide motivo** (por la secuencia de los tipos de operación). Si la pieza
+   no tiene lista, o la planta de su lista no tiene un tipo que pida motivo,
+   Odoo lo avisa y no crea ninguna orden.
 2. El **Jefe de producción** de los mismos Ajustes recibe una actividad.
 3. La reposición muestra el estado de la orden sin que el residente entre a
    Fabricación: **Pedida a planta**, **En fabricación**, **Fabricada, por

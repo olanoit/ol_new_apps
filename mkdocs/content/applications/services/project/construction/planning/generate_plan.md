@@ -50,6 +50,29 @@ que elija.
 Las actividades por ML cuelgan del módulo cuando se conoce su ancho; si no,
 quedan en el ambiente con la cantidad de la tipología y se avisa.
 
+### Personal propio o contrata
+
+Cada actividad sale como **Personal propio** o como **Contrata** según su
+modalidad de ejecución, que se busca en este orden:
+
+1. la **Modalidad de ejecución** del ambiente (el nivel con etapas, p. ej.
+   «Mueble instalado»);
+2. la **Modalidad** de la actividad (**Configuración ‣ Actividades**);
+3. la **Modalidad por defecto** de su etapa (**Configuración ‣ Etapas**), que
+   viene en **Personal propio**;
+4. personal propio.
+
+La línea de personal propio lleva la misma actividad, cantidad, unidad y
+tarifa que tendría la contrata, y su analítica sale de la regla del tipo de
+recurso **Personal propio**. **Contrata a todo costo** no aplica al
+mobiliario: la línea sale como contrata solo de mano de obra y se avisa.
+
+Para tercerizar una etapa en todas las obras, cambie la modalidad de la
+etapa; para un ambiente, la de su tarea. Con el plan aprobado, la modalidad
+de un ambiente con líneas se cambia en una nueva versión del plan. El
+catálogo de etapas es de toda la base: su modalidad vale para todas las
+compañías.
+
 ### Volver a generar
 
 Con el modo **Reemplazar lo generado**, el asistente borra solo las líneas

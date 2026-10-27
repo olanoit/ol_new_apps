@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 14.20261027 — 27/10/2026
+
+- Paquete 1.12, M112-01: el paquete de piezas no vuelve a cargar costo analítico en la orden que lo consume (ajuste «El componente intermedio no carga costo analítico», activo por defecto); el asiento contable no cambia.
+- Paquete 1.12, M112-02: el apunte de una orden de obra toma la etapa de su línea de la lista o la «Etapa analítica» de su motivo, y la partida de las reglas analíticas. Ahora depende de `project_mrp_account`.
+
 ## 13.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

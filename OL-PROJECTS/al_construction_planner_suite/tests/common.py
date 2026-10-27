@@ -51,6 +51,11 @@ class PlannerCommon(TransactionCase):
         # las necesita crea las suyas.
         cls.env['tier.definition'].search(
             [('model', '=', 'construction.resource.plan')]).active = False
+        # Estas pruebas son anteriores al paquete 1.12 (M112-04): sus etapas
+        # se ejecutan con contrata. Las de personal propio por defecto están
+        # en test_package_112_mode.
+        cls.env['construction.stage'].with_context(active_test=False).search(
+            []).default_execution_mode = 'labor_contract'
 
         cls.project = cls.env['project.project'].create({
             'name': 'Obra MOMEN (test)', 'is_construction_site': True})
