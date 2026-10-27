@@ -9,6 +9,7 @@
                 <field name="state" invisible="1"/>
                 <field name="currency_id" invisible="1"/>
                 <field name="has_warnings" invisible="1"/>
+                <field name="can_send" invisible="1"/>
                 <group invisible="state == 'done'">
                     <group>
                         <field name="sale_order_id"/>
@@ -34,7 +35,7 @@
                     <button name="action_preview" type="object" string="Revisar" class="btn-primary"
                             invisible="state != 'upload'" data-hotkey="q"/>
                     <button name="action_import" type="object" string="Enviar"
-                            class="btn-primary" invisible="state != 'preview'"/>
+                            class="btn-primary" invisible="state != 'preview' or not can_send"/>
                     <button name="action_download_template" type="object" string="Descargar plantilla"
                             invisible="state != 'upload'"/>
                     <button string="Cerrar" special="cancel" data-hotkey="x"/>

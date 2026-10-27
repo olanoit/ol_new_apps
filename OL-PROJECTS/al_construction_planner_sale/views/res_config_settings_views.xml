@@ -69,6 +69,10 @@
                                 </div>
                             </div>
                         </setting>
+                        <setting company_dependent="1" id="construction_sheet_change_pct" string="Envío del presupuesto"
+                                 help="En la revisión del libro o de la hoja de trabajo, las partidas que bajan a 0 o cambian más que este porcentaje salen en rojo.">
+                            <field name="construction_sheet_change_pct" class="oe_inline"/> %
+                        </setting>
                     </block>
             </block>
         </field>

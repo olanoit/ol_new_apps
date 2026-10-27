@@ -147,7 +147,8 @@ class SaleOrderLine(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if set(LAYER_FIELDS) & set(vals):
+        # Cotización confirmada (CR-18, D3): los costos cambian, la oferta no.
+        if set(LAYER_FIELDS) & set(vals) and not self.env.context.get('construction_keep_offer'):
             for line in self:
                 values = line._construction_layer_values()
                 if values:

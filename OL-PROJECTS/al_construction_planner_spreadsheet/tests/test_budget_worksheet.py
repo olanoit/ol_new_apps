@@ -42,7 +42,14 @@ class TestBudgetWorksheet(TestBudgetBook):
                                  'PRESUPUESTO', 'PLAN', 'LISTAS', 'REFERENCIAS', 'ERRORES'])
         budget = next(sheet for sheet in data['sheets'] if sheet['name'] == 'PRESUPUESTO')
         self.assertEqual(budget['cells']['A1'], 'Ítem')
-        self.assertIn('VLOOKUP', budget['cells']['O2'])
+        # CR-18, c: columnas A a W del libro 6.6; M es el costo unitario.
+        self.assertEqual(budget['cells']['F1'], 'Costo unitario sin APU')
+        self.assertEqual(budget['cells']['W1'], 'Reserva por holguras')
+        self.assertIn('VLOOKUP', budget['cells']['M2'])
+        # CR-18, a: ninguna celda se guarda como número.
+        for sheet in data['sheets']:
+            for ref, content in sheet.get('cells', {}).items():
+                self.assertIsInstance(content, str, '%s!%s' % (sheet['name'], ref))
         self.assertEqual(document._get_spreadsheet_metadata()['construction_sheet_kind'],
                          'budget')
         # La obra de la cotización abre la misma hoja.
@@ -80,8 +87,59 @@ class TestBudgetWorksheet(TestBudgetBook):
         costs = document.construction_current_costs(['BK-LAD', 'X'])
         self.assertAlmostEqual(costs['BK-LAD'][0], 0.9661)
         rows = document.construction_odoo_rows()
-        self.assertEqual(len(rows['PRESUPUESTO']), 2)
-        self.assertEqual(rows['PRESUPUESTO'][0][4], 'BK-R01')
+        self.assertEqual(len(rows['PRESUPUESTO']), 3)
+        self.assertEqual(rows['PRESUPUESTO'][0][5], 'Costo unitario sin APU')
+        self.assertEqual(rows['PRESUPUESTO'][1][4], 'BK-R01')
+        self.assertTrue(all(isinstance(value, str) for row in rows['PRESUPUESTO']
+                            for value in row))
+
+    def test_round_trip_keeps_a_foreign_budget(self):
+        """CR-18, criterio 3: una cotización que vino de otro sistema (precio
+        por partida, sin capas ni recetas) va a la hoja y vuelve igual, con su
+        pie (gastos generales, utilidad y descuento)."""
+        order = self.env['sale.order'].create({'partner_id': self.customer.id})
+        product = self.env['construction.budget.import.wizard'].new(
+            {'sale_order_id': order.id})._partida_product()
+        Line = self.env['sale.order.line']
+        Line.create({'order_id': order.id, 'display_type': 'line_section',
+                     'name': 'Estructuras'})
+        for item, qty, price in (('02.01', 158.9, 37.15), ('02.02', 12.5, 1210.4),
+                                 ('02.03', 3, 845.333)):
+            Line.create({'order_id': order.id, 'product_id': product.id,
+                         'name': '%s Partida %s (test)' % (item, item),
+                         'construction_budget_item': item, 'product_uom_qty': qty,
+                         'price_unit': price})
+        partidas = order.amount_untaxed
+        for name, amount in (('Gastos generales 8 %', partidas * 0.08),
+                             ('Utilidad 7 %', partidas * 0.07),
+                             ('Descuento 24.9631 %', -partidas * 1.15 * 0.24963145)):
+            Line.create({'order_id': order.id, 'product_id': product.id, 'name': name,
+                         'product_uom_qty': 1, 'price_unit': order.currency_id.round(amount)})
+        total = order.amount_untaxed
+        order.action_construction_open_spreadsheet()
+        document = self.env['documents.document'].search([
+            ('construction_sale_order_id', '=', order.id), ('construction_source_id', '=', False)])
+        rows = document.construction_odoo_rows()
+        obra = dict(rows['OBRA'])
+        self.assertAlmostEqual(float(obra['Gastos generales %']), 8.0, places=3)
+        self.assertAlmostEqual(float(obra['Descuento %']), 24.963145, places=3)
+        # Valores de la hoja: los datos tal cual y las fórmulas vacías (el
+        # servidor las vuelve a calcular).
+        budget = [[value if not value.startswith('=') else '' for value in row]
+                  for row in rows['PRESUPUESTO']]
+        sheets = {'OBRA': rows['OBRA'], 'INSUMOS': [['Código', 'Descripción', 'Tipo de insumo',
+                                                     'Unidad']],
+                  'APU': [['Código', 'Descripción', 'Unidad']],
+                  'APU_DETALLE': [['Código del APU', 'Código del insumo']],
+                  'PRESUPUESTO': budget}
+        action = document.action_construction_send_to_planner(sheets, 'budget')
+        wizard = self.env[action['res_model']].browse(action['res_id'])
+        self.assertTrue(wizard.can_send, wizard.preview_html)
+        wizard.action_import()
+        self.assertAlmostEqual(order.amount_untaxed, total, delta=0.011)
+        self.assertEqual(len(order.order_line.filtered(
+            lambda l: not l.display_type and l.construction_line_role == 'partida')), 3)
+
 
 
 # Las pruebas heredadas ya corren en su clase.

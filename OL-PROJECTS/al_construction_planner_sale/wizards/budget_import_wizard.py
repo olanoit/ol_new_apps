@@ -279,6 +279,8 @@ class SaleOrder(models.Model):
                 'subsección y partida).', project.display_name))
         Task = self.env['project.task']
         recipes = self.env['construction.execution.template']
+        # Las recetas de la cotización pasan a la obra una sola vez (CR-18, D4).
+        own_recipes = self._construction_copy_quote_recipes(project)
         cache = {}
 
         def node(name, level, parent):
@@ -300,9 +302,15 @@ class SaleOrder(models.Model):
             if subsection:
                 parent = node(subsection.name, levels[1], parent)
             partida = node(line.name.splitlines()[0], levels[2], parent)
-            recipe = recipes.search([('code', '=', line.construction_budget_item),
-                                     ('project_id', 'in', (project.id, False))], limit=1) \
-                if line.construction_budget_item else recipes
+            recipe = line.construction_execution_template_id
+            if recipe and recipe.project_id != project:
+                recipe = own_recipes.get(recipe.code) or (recipe if not recipe.project_id
+                                                          else recipes)
+            if not recipe and line.construction_budget_item:
+                recipe = recipes.search([('code', '=', line.construction_budget_item),
+                                         ('construction_sale_order_id', '=', False),
+                                         ('project_id', 'in', (project.id, False))],
+                                        order='project_id', limit=1)
             # El plan va con el metrado real; la cantidad de la cotización es
             # el ofertado, con su holgura (CREVAL v1.0, 6.5).
             values = {'construction_qty': line.construction_qty_real or line.product_uom_qty,

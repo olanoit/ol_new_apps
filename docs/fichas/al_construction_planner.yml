@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '54.20261025'
+    fecha: 27/10/2026
+    cambios:
+    - "CR-18, D4: la importación de recetas expone dónde se guardan (`_recipe_scope_values`), para que el puente de ventas guarde las recetas de una cotización sin obra fuera de la biblioteca."
   - version: '53.20261025'
     fecha: 26/10/2026
     cambios:

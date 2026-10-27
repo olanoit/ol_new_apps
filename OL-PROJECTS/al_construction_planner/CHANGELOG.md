@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 54.20261025 — 27/10/2026
+
+- CR-18, D4: la importación de recetas expone dónde se guardan (`_recipe_scope_values`), para que el puente de ventas guarde las recetas de una cotización sin obra fuera de la biblioteca.
+
 ## 53.20261025 — 26/10/2026
 
 - CR-05: en la receta, la línea «% del costo directo de un grupo de partidas» no tiene monto propio («Se calcula en el plan») y la receta muestra «más 2 % del costo directo de ‹nivel›»; el monto de la receta depende también de la forma de cálculo, el grupo, el nivel, el rendimiento y las personas.

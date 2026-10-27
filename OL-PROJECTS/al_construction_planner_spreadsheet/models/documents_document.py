@@ -16,6 +16,8 @@ from markupsafe import Markup
 from odoo import fields, models
 from odoo.exceptions import UserError
 
+from .project_project import PRESUPUESTO_HEADERS, cell_text, presupuesto_row
+
 SHEET_KINDS = [
     ('budget', 'Presupuesto y plan'),
     ('furniture', 'Maestro de mobiliario'),
@@ -50,6 +52,10 @@ class DocumentsDocument(models.Model):
         data['construction_project_id'] = document_sudo.construction_project_id.id or False
         data['construction_sheet_kind'] = document_sudo.construction_sheet_kind or (
             'furniture' if document_sudo.construction_project_id else False)
+        order = document_sudo.construction_sale_order_id or \
+            document_sudo.construction_project_id.construction_sale_order_id
+        # D3: con la cotización confirmada no se envía el presupuesto.
+        data['construction_offer_locked'] = bool(order) and order._construction_offer_locked()
         return data
 
     # ------------------------------------------------------------------
@@ -123,7 +129,9 @@ class DocumentsDocument(models.Model):
         """«Validar plantilla»: los errores de la hoja como filas de la
         pestaña ERRORES (hoja, fila, columna, mensaje) y los avisos."""
         self.ensure_one()
-        wizard = self._construction_book_wizard(sheets)
+        # La cotización confirmada no es un error de la plantilla (D3).
+        wizard = self._construction_book_wizard(sheets).with_context(
+            construction_validate_only=True)
         _book, errors, warnings = wizard._parse()
         wizard.unlink()
         return {
@@ -151,7 +159,16 @@ class DocumentsDocument(models.Model):
         order = self.construction_sale_order_id or \
             self.construction_project_id.construction_sale_order_id
         project = self.construction_project_id or order.project_id
-        return self.env['project.project']._construction_budget_rows(order, project)
+        rows = self.env['project.project']._construction_budget_rows(order, project)
+        # Todo como texto (CR-18, a); PRESUPUESTO con sus encabezados y sus
+        # fórmulas, para que una hoja anterior quede con las columnas A a W.
+        result = {name: [[cell_text(value) for value in row] for row in sheet_rows]
+                  for name, sheet_rows in rows.items() if name != 'PRESUPUESTO'}
+        result['PRESUPUESTO'] = [PRESUPUESTO_HEADERS] + [
+            presupuesto_row(values, number) for number, values in
+            enumerate(rows['PRESUPUESTO'], start=2)]
+        result['_from_top'] = ['OBRA', 'PRESUPUESTO']
+        return result
 
     def action_construction_new_version(self):
         """«Nueva versión»: una copia numerada de la hoja en la misma carpeta,

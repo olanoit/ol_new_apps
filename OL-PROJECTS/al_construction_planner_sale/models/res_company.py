@@ -55,6 +55,13 @@ class ResCompany(models.Model):
              'como línea negativa a esta cuenta. Sin cuenta, la amortización queda solo en la '
              'valorización.')
 
+    # Hoja de trabajo (CR-18, e): la vista previa del envío marca en rojo la
+    # partida cuyo precio o metrado cambia más que este porcentaje.
+    construction_sheet_change_pct = fields.Float(
+        string='Cambio que se marca en el envío (%)', default=20.0,
+        help='En la revisión del libro o de la hoja de trabajo, las partidas cuyo precio o '
+             'metrado ofertado cambia más que este porcentaje, o que bajan a 0, salen en rojo.')
+
     def _construction_is_working_day(self, day, cache=None):
         """Día hábil del ingreso: con horario en el calendario de días hábiles
         del ingreso o, sin él, en el de la compañía (sin horario, todos los

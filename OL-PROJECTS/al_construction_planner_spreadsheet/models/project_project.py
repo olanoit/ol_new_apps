@@ -9,7 +9,9 @@ import json
 
 from odoo import api, fields, models
 
-from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import COLUMNS
+from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import (
+    COLUMNS, PRESUPUESTO_FORMULAS,
+)
 
 SPREADSHEET_VERSION = '18.5.10'
 HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE = 1, 2, 3, 4
@@ -56,13 +58,33 @@ CALCULATED = {
                             '{x:Parcial MO (calc.)}$2:{x:Parcial MO (calc.)}${n}),'
                             '{x:Cantidad (calc.)}{r}*{x:Precio (calc.)}{r}))'),
     ],
-    'PRESUPUESTO': [
-        ('Costo del APU (calc.)', '=IF({c:apu}{r}="","",IFERROR(VLOOKUP({c:apu}{r},APU!$A$2:'
-                                  '{a:unit}${n},{a:unit_index},0),0))'),
-        ('Costo real', '=IF(OR({c:apu}{r}="",{c:qty_real}{r}=""),"",{c:qty_real}{r}*'
-                       '{x:Costo del APU (calc.)}{r})'),
-    ],
 }
+# PRESUPUESTO (CR-18, c): columnas A a W en el orden del libro 6.6; las
+# fórmulas usan la letra de cada clave ({clave}) y los porcentajes van en %.
+PRESUPUESTO_KEYS = [key for key, _aliases, _required in COLUMNS['PRESUPUESTO']]
+PRESUPUESTO_HEADERS = [aliases[0] for _key, aliases, _required in COLUMNS['PRESUPUESTO']]
+PRESUPUESTO_FORMULA_TEXT = {
+    'qty_offered': '=IF({qty_real}{r}="","",{qty_real}{r}*(1+N({qty_slack_pct}{r})/100)'
+                   '+N({qty_slack}{r}))',
+    'unit_cost': '=IF({apu}{r}="",IF({cost_no_apu}{r}="","",{cost_no_apu}{r}),'
+                 'IFERROR(VLOOKUP({apu}{r},APU!$A:${apu_unit},{apu_unit_index},0),0))',
+    'cost_offered': '=IF({unit_cost}{r}="","",{unit_cost}{r}*(1+N({cost_slack_pct}{r})/100)'
+                    '+N({cost_slack}{r}))',
+    'price_unit': '=IF({cost_offered}{r}="","",{cost_offered}{r}*(1+N({margin_pct}{r})/100)'
+                  '+N({margin}{r}))',
+    'cost_real': '=IF(OR({qty_real}{r}="",{unit_cost}{r}=""),"",{qty_real}{r}*{unit_cost}{r})',
+    'amount_offered': '=IF(OR({qty_offered}{r}="",{cost_offered}{r}=""),"",'
+                      '{qty_offered}{r}*{cost_offered}{r})',
+    'subtotal': '=IF(OR({qty_offered}{r}="",{price_unit}{r}=""),"",'
+                '{qty_offered}{r}*{price_unit}{r})',
+    'reserve': '=IF(OR({amount_offered}{r}="",{cost_real}{r}=""),"",'
+               '{amount_offered}{r}-{cost_real}{r})',
+}
+# Unidad de la partida con APU: la del APU.
+PRESUPUESTO_UOM_FORMULA = '=IFERROR(VLOOKUP({apu}{r},APU!$A:$C,3,0),"")'
+# Porcentajes de OBRA desde la cotización (CR-18, d): rol de la línea → fila.
+FOOTER_ROLES = [('overhead', 'Gastos generales %'), ('contingency', 'Imprevistos %'),
+                ('profit', 'Utilidad %'), ('discount', 'Descuento %')]
 PLAN_COLUMNS = ['Ítem', 'Partida', 'Modalidad final', 'Contratista sugerido', 'Inicio', 'Fin',
                 'Frente o ambiente']
 LISTS = {
@@ -84,6 +106,40 @@ def _col(index):
         index, rest = divmod(index - 1, 26)
         letters = chr(65 + rest) + letters
     return letters
+
+
+def cell_text(value):
+    """Contenido de una celda como lo guarda o-spreadsheet: siempre texto
+    (CR-18, a: un número guardado como número no abre la hoja)."""
+    if value is None or value is False:
+        return ''
+    return value if isinstance(value, str) else str(value)
+
+
+def presupuesto_formula(key, row):
+    """Fórmula de la columna ``key`` de PRESUPUESTO en la fila ``row``."""
+    letters = {k: _col(i) for i, k in enumerate(PRESUPUESTO_KEYS)}
+    apu_headers = sheet_headers('APU')[0]
+    text = PRESUPUESTO_FORMULA_TEXT[key] if key != 'uom' else PRESUPUESTO_UOM_FORMULA
+    text = text.replace('{apu_unit_index}', str(len(apu_headers) + 1)).replace(
+        '{apu_unit}', _col(len(apu_headers))).replace('{r}', str(row))
+    for name, letter in letters.items():
+        text = text.replace('{%s}' % name, letter)
+    return text
+
+
+def presupuesto_row(values, row):
+    """Fila completa de PRESUPUESTO: los datos de ``values`` y las fórmulas
+    grises; la unidad, con fórmula si hay APU."""
+    result = []
+    for key in PRESUPUESTO_KEYS:
+        if key in PRESUPUESTO_FORMULAS:
+            result.append(presupuesto_formula(key, row))
+        elif key == 'uom' and values.get('apu'):
+            result.append(presupuesto_formula('uom', row))
+        else:
+            result.append(cell_text(values.get(key)))
+    return result
 
 
 def sheet_headers(name):
@@ -169,13 +225,25 @@ class ProjectProject(models.Model):
                                               .selection).get(order.construction_print_format,
                                                               '')],
             ]
-        recipes = self.env['construction.execution.template']
+        if order:
+            rows['OBRA'] += self._construction_footer_pcts(order)
+        Template = self.env['construction.execution.template']
         if project:
-            recipes = recipes.search([('project_id', '=', project.id)])
+            recipes = Template.search([('project_id', '=', project.id)])
+        else:
+            # Cotización sin obra (D4): la biblioteca de la compañía y las
+            # recetas que ya guardó la cotización (las de la cotización mandan).
+            company = order.company_id if order else self.env.company
+            own = order.construction_recipe_ids if order else Template
+            recipes = own | Template.search([
+                ('project_id', '=', False), ('construction_sale_order_id', '=', False),
+                ('company_id', '=', company.id), ('code', 'not in', own.mapped('code'))])
         tasks = self.env['project.task']
         if order:
             tasks = tasks.search([('sale_line_id', 'in', order.order_line.ids)])
             recipes |= tasks.construction_execution_template_id
+            recipes |= order.order_line.construction_execution_template_id.filtered(
+                lambda r: not r.project_id or r.project_id == project)
         insumos = {}
         for recipe in recipes:
             rows['APU'].append([recipe.code, recipe.name, recipe.uom_id.name or '', '', '',
@@ -216,19 +284,81 @@ class ProjectProject(models.Model):
                 name = (line.name or '').splitlines()[0]
                 if item and name.startswith(item):
                     name = name[len(item):].strip()
-                rows['PRESUPUESTO'].append([
-                    item, section, subsection, name,
-                    task.construction_execution_template_id.code or '',
-                    line.product_uom_id.name or '',
-                    modes.get(task.construction_execution_mode, ''),
-                    line.construction_qty_real or line.product_uom_qty,
-                    line.construction_qty_slack_pct or '', line.construction_qty_slack or '',
-                    line.construction_cost_slack_pct or '', line.construction_cost_slack or '',
-                    line.construction_margin_pct or '', line.construction_margin_amount or ''])
+                apu = (task.construction_execution_template_id or
+                       line.construction_execution_template_id).code or ''
+                rows['PRESUPUESTO'].append({
+                    'item': item, 'specialty': section, 'subspecialty': subsection,
+                    'name': name, 'apu': apu,
+                    # D1: sin receta, el costo de la línea (o su precio, si
+                    # vino de otro sistema solo con precio por partida).
+                    'cost_no_apu': '' if apu else (
+                        line.construction_cost_apu or line.price_unit),
+                    'uom': line.product_uom_id.name or '',
+                    'mode': modes.get(task.construction_execution_mode, ''),
+                    'qty_real': line.construction_qty_real or line.product_uom_qty,
+                    'qty_slack_pct': line.construction_qty_slack_pct or '',
+                    'qty_slack': line.construction_qty_slack or '',
+                    'cost_slack_pct': line.construction_cost_slack_pct or '',
+                    'cost_slack': line.construction_cost_slack or '',
+                    'margin_pct': line.construction_margin_pct or '',
+                    'margin': line.construction_margin_amount or ''})
                 if task:
                     rows['PLAN'].append([item, name, modes.get(task.construction_execution_mode,
                                                                ''), '', '', '', ''])
         return rows
+
+    @api.model
+    def _construction_presupuesto_sheet(self, partidas, rows, last):
+        """Pestaña PRESUPUESTO (CR-18, c): columnas A a W; amarillo los
+        datos, gris las fórmulas, que llegan hasta la última fila."""
+        cells, styles = {}, {}
+        for i, (key, header) in enumerate(zip(PRESUPUESTO_KEYS, PRESUPUESTO_HEADERS)):
+            cells['%s1' % _col(i)] = header
+            styles['%s1' % _col(i)] = CALC_STYLE if key in PRESUPUESTO_FORMULAS else DATA_STYLE
+        for number in range(2, rows + 2):
+            index = number - 2
+            values = partidas[index] if index < len(partidas) else {}
+            for i, content in enumerate(presupuesto_row(values, number)):
+                if content:
+                    cells['%s%s' % (_col(i), number)] = content
+        mode = _col(PRESUPUESTO_KEYS.index('mode'))
+        return {
+            'id': 'sheet_presupuesto', 'name': 'PRESUPUESTO',
+            'colNumber': max(26, len(PRESUPUESTO_KEYS)), 'rowNumber': rows + 50,
+            'cells': cells, 'styles': styles, 'panes': {'xSplit': 0, 'ySplit': 1},
+            'cols': {str(i): {'size': max(110, 8 * len(header))}
+                     for i, header in enumerate(PRESUPUESTO_HEADERS)},
+            'dataValidationRules': [{
+                'id': 'PRESUPUESTO_mode', 'isBlocking': False,
+                'ranges': ['%s2:%s%s' % (mode, mode, last)],
+                'criterion': {'type': 'isValueInList', 'displayStyle': 'arrow',
+                              'values': LISTS['Modalidad']}}],
+        }
+
+    @api.model
+    def _construction_footer_pcts(self, order):
+        """Filas de OBRA con los % de gastos generales, imprevistos, utilidad
+        y descuento de la cotización (CR-18, d), con 6 decimales (D2): los tres
+        primeros sobre las partidas; el descuento, sobre partidas más ellos."""
+        lines = order.order_line.filtered(lambda l: not l.display_type and not l.is_downpayment)
+        partidas = sum(lines.filtered(
+            lambda l: l.construction_line_role == 'partida').mapped('price_subtotal'))
+        before_discount = partidas
+        amounts = {}
+        for role, _label in FOOTER_ROLES:
+            amounts[role] = sum(lines.filtered(
+                lambda l, r=role: l.construction_line_role == r).mapped('price_subtotal'))
+            if role != 'discount':
+                before_discount += amounts[role]
+        result = []
+        for role, label in FOOTER_ROLES:
+            base = before_discount if role == 'discount' else partidas
+            if not amounts[role] or not base:
+                result.append([label, ''])
+                continue
+            pct = abs(amounts[role]) / base * 100.0
+            result.append([label, round(pct, 6)])
+        return result
 
     @api.model
     def _construction_budget_spreadsheet_data(self, order=None, project=None):
@@ -250,7 +380,7 @@ class ProjectProject(models.Model):
             obra_styles['A%s' % index] = HEADER_STYLE
             obra_styles['B%s' % index] = DATA_STYLE
             if given.get(label) not in (None, ''):
-                obra_cells['B%s' % index] = given[label]
+                obra_cells['B%s' % index] = cell_text(given[label])
         sheets.append({'id': 'sheet_obra', 'name': 'OBRA', 'colNumber': 4, 'rowNumber': 30,
                        'cells': obra_cells, 'styles': obra_styles,
                        'cols': {'0': {'size': 220}, '1': {'size': 260}}})
@@ -266,7 +396,7 @@ class ProjectProject(models.Model):
         apu_letters, apu_calc = letters_by_sheet['APU']
         unit_letter = apu_calc['Costo unitario']
         unit_index = len(sheet_headers('APU')[0]) + 1
-        for position, name in enumerate(('INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO'), 2):
+        for position, name in enumerate(('INSUMOS', 'APU', 'APU_DETALLE'), 2):
             data_headers, calc_headers = sheet_headers(name)
             letters, calc_letters = letters_by_sheet[name]
             cells, styles = {}, {}
@@ -276,7 +406,7 @@ class ProjectProject(models.Model):
             for number, row in enumerate(values[name], start=2):
                 for i, value in enumerate(row[:len(data_headers)]):
                     if value not in (None, '', False):
-                        cells['%s%s' % (_col(i), number)] = value
+                        cells['%s%s' % (_col(i), number)] = cell_text(value)
             for header, formula in CALCULATED.get(name, []):
                 column = calc_letters[header]
                 for number in range(2, rows + 2):
@@ -305,11 +435,12 @@ class ProjectProject(models.Model):
                          for i, header in enumerate(headers)},
                 'dataValidationRules': rules,
             })
+        sheets.append(self._construction_presupuesto_sheet(values['PRESUPUESTO'], rows, last))
         plan_cells = {'%s1' % _col(i): header for i, header in enumerate(PLAN_COLUMNS)}
         for number, row in enumerate(values['PLAN'], start=2):
             for i, value in enumerate(row):
                 if value not in (None, '', False):
-                    plan_cells['%s%s' % (_col(i), number)] = value
+                    plan_cells['%s%s' % (_col(i), number)] = cell_text(value)
         sheets.append({'id': 'sheet_plan', 'name': 'PLAN', 'colNumber': 10,
                        'rowNumber': rows + 50, 'cells': plan_cells,
                        'styles': {'%s1' % _col(i): DATA_STYLE for i in range(len(PLAN_COLUMNS))},

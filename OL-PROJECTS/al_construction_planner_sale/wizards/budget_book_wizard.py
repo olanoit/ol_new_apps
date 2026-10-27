@@ -67,24 +67,37 @@ COLUMNS = {
         ('price', ('Precio manual',), False),
         ('stage', ('Etapa',), False),
     ],
+    # Columnas A a W del libro 6.6 con «Costo unitario sin APU» (CR-18, c y
+    # D1), en el orden de la hoja; las de PRESUPUESTO_FORMULAS son fórmulas.
     'PRESUPUESTO': [
         ('item', ('Ítem', 'Item'), False),
         ('specialty', ('Especialidad',), False),
         ('subspecialty', ('Sub-especialidad', 'Subespecialidad'), False),
         ('name', ('Partida',), True),
         ('apu', ('Código del APU', 'Codigo del APU', 'APU'), False),
+        ('cost_no_apu', ('Costo unitario sin APU',), False),
         ('uom', ('Unidad',), False),
-        ('mode', ('Modalidad',), False),
+        ('mode', ('Modalidad de ejecución', 'Modalidad'), False),
         ('qty_real', ('Metrado real',), True),
         ('qty_slack_pct', ('Holgura de metrado (%)', 'Holgura de metrado %'), False),
-        ('qty_slack', ('Holgura de metrado',), False),
+        ('qty_slack', ('Holgura de metrado (cantidad)', 'Holgura de metrado'), False),
+        ('qty_offered', ('Metrado ofertado',), False),
+        ('unit_cost', ('Costo unitario',), False),
         ('cost_slack_pct', ('Holgura de costo (%)', 'Holgura de costo %'), False),
-        ('cost_slack', ('Holgura de costo',), False),
+        ('cost_slack', ('Holgura de costo (monto)', 'Holgura de costo'), False),
+        ('cost_offered', ('Costo unitario ofertado',), False),
         ('margin_pct', ('Margen (%)', 'Margen %'), False),
-        ('margin', ('Margen',), False),
+        ('margin', ('Margen (monto)', 'Margen'), False),
+        ('price_unit', ('Precio unitario',), False),
         ('cost_real', ('Costo real',), False),
+        ('amount_offered', ('Costo ofertado',), False),
+        ('subtotal', ('Parcial de venta',), False),
+        ('reserve', ('Reserva por holguras',), False),
     ],
 }
+# Columnas de PRESUPUESTO que son fórmulas (gris); la unidad lo es solo con APU.
+PRESUPUESTO_FORMULAS = ('qty_offered', 'unit_cost', 'cost_offered', 'price_unit', 'cost_real',
+                        'amount_offered', 'subtotal', 'reserve')
 # Campos de la hoja OBRA (columna A) → clave.
 OBRA_FIELDS = {
     'obra': 'project', 'cliente': 'customer', 'moneda': 'currency',
@@ -171,6 +184,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         [('upload', 'Archivo'), ('preview', 'Revisión'), ('done', 'Hecho')], default='upload')
     preview_html = fields.Html(string='Revisión', readonly=True, sanitize=False)
     accept_warnings = fields.Boolean(string='Acepto los avisos')
+    can_send = fields.Boolean(readonly=True, help='La revisión no encontró errores.')
     has_warnings = fields.Boolean(readonly=True)
 
     @api.depends('sale_order_id')
@@ -229,11 +243,25 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         return result
 
     def _uom(self, text):
+        """Unidad de un texto: una equivalencia («Escrito como») o el nombre
+        de una unidad de Odoo en cualquiera de los idiomas instalados (CR-18,
+        b: la hoja puede traer «Hours» o «Horas»)."""
         text = _text(text)
         if not text:
             return self.env['uom.uom']
-        return self.env['construction.uom.alias']._find(text, self.company_id) or \
-            self.env['uom.uom'].search([('name', '=ilike', text)], limit=1)
+        uom = self.env['construction.uom.alias']._find(text, self.company_id)
+        if uom:
+            return uom
+        # Los nombres en todos los idiomas, una vez por transacción.
+        names = self.env.cr.cache.get('construction_uom_names')
+        if names is None:
+            names = {}
+            UoM = self.env['uom.uom'].with_context(active_test=False)
+            for lang, _name in self.env['res.lang'].get_installed():
+                for record in UoM.with_context(lang=lang).search([]):
+                    names.setdefault(norm(record.name), record.id)
+            self.env.cr.cache['construction_uom_names'] = names
+        return self.env['uom.uom'].browse(names.get(norm(text), []))
 
     def _parse(self, content=None):
         """El libro como datos y la lista de errores y avisos:
@@ -343,7 +371,16 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if item:
                 items[item] += 1
             mode_text = norm(_text(row.get('mode')))
+            cost_no_apu = _number(row.get('cost_no_apu'))
+            cost_real = _number(row.get('cost_real'))
+            # D1: sin receta, el costo lo escribe el presupuestador; nunca se
+            # envía un 0 por falta de dato.
+            if not apu and cost_no_apu is None and cost_real is None:
+                errors.append(('PRESUPUESTO', row['_row'], 'cost_no_apu', self.env._(
+                    'Partida %s: sin código de APU ni costo unitario.',
+                    item or _text(row.get('name')))))
             book['partidas'].append({
+                'cost_no_apu': cost_no_apu,
                 'item': item, 'specialty': _text(row.get('specialty')),
                 'subspecialty': _text(row.get('subspecialty')), 'name': _text(row.get('name')),
                 'apu': apu, 'uom': uom_of(row.get('uom'), 'PRESUPUESTO', row['_row'], False),
@@ -355,7 +392,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'cost_slack': _number(row.get('cost_slack')) or 0.0,
                 'margin_pct': _number(row.get('margin_pct')) or 0.0,
                 'margin': _number(row.get('margin')) or 0.0,
-                'cost_real': _number(row.get('cost_real')), 'row': row['_row']})
+                'cost_real': cost_real, 'row': row['_row']})
         for item, count in items.items():
             if count > 1:
                 warnings.append(self.env._('El ítem %(item)s aparece %(count)s veces.',
@@ -391,6 +428,16 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         if self.target == 'plan' and not self.project_id:
             errors.append(('OBRA', 0, '', self.env._(
                 'El destino Plan necesita la obra de la cotización.')))
+        # D3: con la cotización confirmada, precio y metrado ofertado van por
+        # cambio de obra.
+        if self.target == 'budget' and self.sale_order_id._construction_offer_locked() and \
+                not self.env.context.get('construction_validate_only'):
+            errors.append(('OBRA', 0, '', self.env._(
+                'La cotización está confirmada: los cambios de precio o metrado ofertado van por '
+                'cambio de obra.')))
+        if not errors and book['partidas'] and \
+                self.currency_id.is_zero(self._book_direct_cost(book)):
+            errors.append(('PRESUPUESTO', 0, '', self.env._('El costo directo de la hoja es 0.')))
         if self.target == 'plan' and self.sale_order_id.construction_contract_type == \
                 'unit_price' and any(p['qty_slack'] or p['qty_slack_pct']
                                      for p in book['partidas']):
@@ -412,6 +459,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
     def action_preview(self):
         self.ensure_one()
         book, errors, warnings = self._parse()
+        self.can_send = not errors
         if errors:
             body = Markup('<p class="text-danger">%s</p>') % self.env._(
                 'El libro tiene %s errores: corríjalos y vuelva a cargarlo.', len(errors))
@@ -426,9 +474,79 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 body += Markup('<p class="text-warning mb-1">%s</p><ul>%s</ul>') % (
                     self.env._('Avisos (acéptelos para enviar):'),
                     Markup('').join(Markup('<li>%s</li>') % w for w in warnings))
+            body += self._changes_html(book)
         self.write({'state': 'preview', 'preview_html': body, 'has_warnings': bool(warnings),
                     'accept_warnings': False})
         return self._reopen()
+
+    def _partida_offer(self, book, partida):
+        """(costo unitario, metrado ofertado, precio unitario) de la partida
+        con las fórmulas de la hoja (CR-18, c)."""
+        if partida['cost_real'] is not None and partida['qty_real']:
+            cost = partida['cost_real'] / partida['qty_real']
+        elif partida['apu']:
+            cost = self._apu_unit_cost(book, book['apus'][partida['apu']])
+        else:
+            cost = partida['cost_no_apu'] or 0.0
+        qty = partida['qty_real'] * (1 + partida['qty_slack_pct'] / 100.0) + partida['qty_slack']
+        offered = cost * (1 + partida['cost_slack_pct'] / 100.0) + partida['cost_slack']
+        price = offered * (1 + partida['margin_pct'] / 100.0) + partida['margin']
+        return cost, qty, price
+
+    def _changes_html(self, book):
+        """Vista previa por partida (CR-18, e): precio y metrado actuales y
+        nuevos; en rojo las que bajan a 0 o cambian más del porcentaje de la
+        compañía. Con la cotización confirmada, el cambio de precio o de
+        metrado ofertado va por cambio de obra (D3)."""
+        order = self.sale_order_id
+        locked = order._construction_offer_locked()
+        limit = self.company_id.construction_sheet_change_pct or 0.0
+        by_item = {line.construction_budget_item: line for line in order.order_line
+                   if line.construction_budget_item and not line.display_type}
+        uom_digits = self.env['decimal.precision'].precision_get('Product Unit')
+        rows, flagged = [], 0
+
+        def changed(old, new):
+            if not old:
+                return bool(new)
+            return abs(new - old) / abs(old) * 100.0 > limit
+
+        for partida in book['partidas']:
+            _cost, qty, price = self._partida_offer(book, partida)
+            line = by_item.get(partida['item']) if partida['item'] else False
+            old_qty = line.product_uom_qty if line else 0.0
+            old_price = line.price_unit if line else 0.0
+            notes = []
+            red = self.currency_id.is_zero(price) or (line and (
+                changed(old_price, price) or changed(old_qty, qty)))
+            if not line:
+                notes.append(self.env._('Nueva') if not locked else
+                             self.env._('Nueva: va por cambio de obra'))
+            elif locked and (self.currency_id.compare_amounts(old_price, price) or
+                             round(old_qty - qty, uom_digits)):
+                notes.append(self.env._('Va por cambio de obra'))
+            if self.currency_id.is_zero(price):
+                notes.append(self.env._('Precio 0'))
+            flagged += bool(red)
+            rows.append(Markup(
+                '<tr class="%s"><td>%s</td><td>%s</td><td class="text-end">%s</td>'
+                '<td class="text-end">%s</td><td class="text-end">%s</td>'
+                '<td class="text-end">%s</td><td>%s</td></tr>') % (
+                'text-danger fw-bold' if red else '', partida['item'] or '', partida['name'],
+                round(old_qty, uom_digits) if line else '', round(qty, uom_digits),
+                self.currency_id.format(old_price) if line else '',
+                self.currency_id.format(price), ', '.join(notes)))
+        header = Markup(
+            '<p class="mt-2 mb-1">%s</p><table class="table table-sm o_construction_changes">'
+            '<thead><tr><th>%s</th><th>%s</th><th class="text-end">%s</th>'
+            '<th class="text-end">%s</th><th class="text-end">%s</th><th class="text-end">%s</th>'
+            '<th>%s</th></tr></thead><tbody>') % (
+            self.env._('%(count)s partidas; %(flagged)s en rojo (bajan a 0 o cambian más de '
+                       '%(limit)s %%).', count=len(rows), flagged=flagged, limit=round(limit, 2)),
+            self.env._('Ítem'), self.env._('Partida'), self.env._('Metrado actual'),
+            self.env._('Metrado nuevo'), self.env._('Precio actual'), self.env._('Precio nuevo'),
+            self.env._('Nota'))
+        return header + Markup('').join(rows) + Markup('</tbody></table>')
 
     def _reopen(self):
         return {'type': 'ir.actions.act_window', 'res_model': self._name, 'res_id': self.id,
@@ -444,6 +562,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 total += partida['cost_real']
             elif partida['apu']:
                 total += partida['qty_real'] * unit[partida['apu']]
+            else:
+                total += partida['qty_real'] * (partida.get('cost_no_apu') or 0.0)
         return total
 
     def _apu_unit_cost(self, book, apu):
@@ -476,7 +596,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         book, errors, warnings = self._parse()
         if errors:
             raise UserError(self.env._(
-                'El libro tiene errores; revíselos con «Revisar» antes de enviar.'))
+                'El libro tiene errores; revíselos con «Revisar» antes de enviar.\n%s',
+                '\n'.join(message for _sheet, _row, _col, message in errors[:5])))
         if warnings and not self.accept_warnings:
             raise UserError(self.env._('Acepte los avisos de la revisión para enviar.'))
         result = self._apply(book)
@@ -502,12 +623,11 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         recipes = self._apply_apus(book, products, activities)
         lines = self._apply_budget(book, recipes)
         real = sum(lines.mapped('construction_amount_real'))
-        # Con «Costo real» en el libro, la cotización da lo mismo (máx. 0.01).
-        with_cost = [p for p in book['partidas'] if p['cost_real'] is not None]
-        expected = sum(p['cost_real'] for p in with_cost)
-        compared = sum(line.construction_amount_real for line in lines
-                       if line.construction_budget_item in {p['item'] for p in with_cost})
-        if with_cost and abs(compared - expected) > 0.011:
+        # El costo directo de la cotización es el de la hoja (máx. 0.01; 6.7
+        # y CR-18, e).
+        expected = self._book_direct_cost(book)
+        compared = real
+        if abs(compared - expected) > 0.011:
             raise UserError(self.env._(
                 'El costo directo de la cotización (%(real)s) no es el del libro (%(book)s): '
                 'se revierte el envío. Revise los costos del APU y el «Costo real».',
@@ -608,7 +728,9 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     vals['line_currency_id'] = insumo['currency'].id
                 lines.append(vals)
             recipes[code] = {'name': apu['name'], 'uom': apu['uom'], 'lines': lines}
-        importer = self.env['construction.recipe.import.wizard'].create({
+        # Sin obra, las recetas son de la cotización (D4), no de la biblioteca.
+        importer = self.env['construction.recipe.import.wizard'].with_context(
+            construction_recipe_sale_order_id=self.sale_order_id.id).create({
             'source': 'excel', 'project_id': self.project_id.id,
             'company_id': self.company_id.id})
         templates, _created, _updated = importer._upsert_recipes(
@@ -626,12 +748,19 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         """Secciones, subsecciones y partidas de la cotización (y el pie):
         se actualizan por el ítem o el nombre; las nuevas se crean."""
         order = self.sale_order_id
-        # Crear los niveles confirma la venta (Odoo, al enlazar la tarea): la
-        # revisión del presupuesto sigue entrando a la orden mientras no esté
-        # bloqueada ni anulada.
-        if order.state == 'cancel' or order.locked:
+        if order.state == 'cancel':
+            raise UserError(self.env._('El presupuesto no entra a una orden anulada.'))
+        # D3: con la cotización confirmada (o bloqueada) solo se actualizan
+        # receta, modalidad, metrado real y costos; precio, metrado ofertado y
+        # el pie van por cambio de obra.
+        locked = order._construction_offer_locked()
+        if locked and self.target != 'plan':
             raise UserError(self.env._(
-                'El presupuesto no entra a una orden anulada o bloqueada.'))
+                'La cotización está confirmada: los cambios de precio o metrado ofertado van por '
+                'cambio de obra.'))
+        Line = self.env['sale.order.line']
+        if locked:
+            return self._apply_costs_only(book, recipes)
         obra = book['obra']
         header = {}
         contract_type = CONTRACT_TYPES.get(norm(_text(obra.get('contract_type'))))
@@ -643,7 +772,6 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         if header:
             order.write(header)
         product = self._partida_product()
-        Line = self.env['sale.order.line']
         existing = order.order_line
         by_item = {line.construction_budget_item: line for line in existing
                    if line.construction_budget_item and not line.display_type}
@@ -676,14 +804,9 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 else:
                     subsection_key = key
             sequence += 1
-            # El costo del libro manda (el «Costo real» de la partida o las
-            # fórmulas del APU, sin redondear: CR-03).
-            if partida['cost_real'] is not None and partida['qty_real']:
-                cost_apu = partida['cost_real'] / partida['qty_real']
-            elif partida['apu']:
-                cost_apu = self._apu_unit_cost(book, book['apus'][partida['apu']])
-            else:
-                cost_apu = 0.0
+            # El costo del libro manda (el «Costo real» de la partida, las
+            # fórmulas del APU sin redondear, CR-03, o el costo sin APU, D1).
+            cost_apu = self._partida_offer(book, partida)[0]
             label = ' '.join(filter(None, [partida['item'], partida['name']]))
             values = {
                 'name': label, 'sequence': sequence,
@@ -697,6 +820,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'construction_margin_pct': partida['margin_pct'],
                 'construction_margin_amount': partida['margin'],
                 'construction_line_role': 'partida',
+                'construction_execution_template_id':
+                    recipes[partida['apu']].id if partida['apu'] else False,
             }
             if partida['uom']:
                 values['product_uom_id'] = partida['uom'].id
@@ -707,31 +832,61 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 line = Line.create(dict(values, order_id=order.id, product_id=product.id))
             touched |= line
         partidas = touched.filtered(lambda l: not l.display_type)
-        self._apply_footer(book, partidas, sequence)
+        self._apply_footer(book, sequence)
         return partidas
 
-    def _apply_footer(self, book, partidas, sequence):
-        """Gastos generales, imprevistos, utilidad y descuento del libro (hoja
-        OBRA, en % del costo de las partidas): líneas que no son partidas."""
+    def _apply_costs_only(self, book, recipes):
+        """Cotización confirmada (D3): receta, metrado real y costos de las
+        partidas que ya están; ni precio, ni metrado ofertado, ni el pie."""
+        order = self.sale_order_id
+        by_item = {line.construction_budget_item: line for line in order.order_line
+                   if line.construction_budget_item and not line.display_type}
+        lines = self.env['sale.order.line']
+        for partida in book['partidas']:
+            line = by_item.get(partida['item']) if partida['item'] else False
+            if not line:
+                continue
+            line.with_context(construction_keep_offer=True).write({
+                'construction_qty_real': partida['qty_real'],
+                'construction_cost_apu': self._partida_offer(book, partida)[0],
+                'construction_execution_template_id':
+                    recipes[partida['apu']].id if partida['apu'] else False,
+            })
+            lines |= line
+        return lines
+
+    def _apply_footer(self, book, sequence):
+        """Gastos generales, imprevistos y utilidad en % de la suma del
+        «Parcial de venta» de las partidas; el descuento, en % de partidas más
+        esas tres líneas (CR-18, D2). Cada monto se redondea una vez (CR-11)."""
         order = self.sale_order_id
         product = self._partida_product()
-        base = sum(partidas.mapped('price_subtotal'))
+        currency = order.currency_id
+        lines = order.order_line.filtered(lambda l: not l.display_type and not l.is_downpayment)
+        partidas = sum(lines.filtered(
+            lambda l: l.construction_line_role == 'partida').mapped('price_subtotal'))
+        before_discount = partidas
         for key, label, sign in FOOTER_LINES:
             pct = _number(book['obra'].get(key))
-            if not pct:
+            role = key[:-len('_pct')]
+            line = lines.filtered(lambda l, r=role: l.construction_line_role == r)[:1]
+            if pct is None or (not pct and not line):
+                if line and role != 'discount':
+                    before_discount += line.price_subtotal
                 continue
             sequence += 1
-            name = '%s %s %%' % (label, round(pct, 4))
-            line = order.order_line.filtered(
-                lambda l, n=norm(label): not l.display_type and l.construction_line_role != 'partida'
-                and norm(l.name or '').startswith(n))[:1]
-            values = {'name': name, 'product_uom_qty': 1.0, 'sequence': sequence,
-                      'price_unit': sign * base * pct / 100.0}
+            base = before_discount if role == 'discount' else partidas
+            values = {'name': '%s %s %%' % (label, round(pct, 4)), 'product_uom_qty': 1.0,
+                      'sequence': sequence,
+                      'price_unit': currency.round(sign * base * pct / 100.0),
+                      'construction_line_role': role}
             if line:
                 line.write(values)
             else:
-                self.env['sale.order.line'].create(dict(values, order_id=order.id,
-                                                        product_id=product.id))
+                line = self.env['sale.order.line'].create(dict(values, order_id=order.id,
+                                                               product_id=product.id))
+            if role != 'discount':
+                before_discount += line.price_subtotal
 
     def _apply_plan(self, book, recipes, lines):
         """Niveles de la obra desde la cotización, con la receta, la modalidad

@@ -31,3 +31,5 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_guarantee_account_id', readonly=False)
     construction_advance_account_id = fields.Many2one(
         related='company_id.construction_advance_account_id', readonly=False)
+    construction_sheet_change_pct = fields.Float(
+        related='company_id.construction_sheet_change_pct', readonly=False)

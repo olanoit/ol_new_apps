@@ -16,3 +16,4 @@ from . import project_planning
 from . import account_move
 from . import construction_planner_home
 from . import construction_board
+from . import construction_quote_recipe

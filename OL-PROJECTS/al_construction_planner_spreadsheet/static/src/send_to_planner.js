@@ -89,6 +89,7 @@ patch(SpreadsheetAction.prototype, {
                 this.orm.call("documents.document", method, [[this.resId], ...args]),
             constructionDoAction: (action) => this.actionService.doAction(action),
             constructionNotify: (message, type = "success") => notification.add(message, { type }),
+            constructionOfferLocked: () => Boolean(this.data?.construction_offer_locked),
         });
     },
 });
@@ -156,19 +157,17 @@ async function updateCosts(env) {
 
 async function bringFromOdoo(env) {
     const data = await env.constructionCall("construction_odoo_rows");
+    // OBRA y PRESUPUESTO llegan con su primera fila (encabezados y fórmulas).
+    const fromTop = data._from_top || ["OBRA"];
     for (const [name, rows] of Object.entries(data)) {
-        if (!rows.length) {
+        if (name === "_from_top" || !rows.length) {
             continue;
         }
         const sheetId = env.model.getters.getSheetIdByName(name);
         if (!sheetId) {
             continue;
         }
-        if (name === "OBRA") {
-            writeRows(env.model, sheetId, rows, 0);
-            continue;
-        }
-        writeRows(env.model, sheetId, rows, 1);
+        writeRows(env.model, sheetId, rows, fromTop.includes(name) ? 0 : 1);
     }
     env.constructionNotify(_t("Datos de Odoo traídos a la hoja."));
 }
@@ -186,6 +185,8 @@ topbarMenuRegistry.add("construction_planner", {
 topbarMenuRegistry.addChild("construction_send_budget", ["construction_planner"], {
     name: _t("Enviar al planificador: presupuesto"),
     sequence: 10,
+    // Con la cotización confirmada, precio y metrado van por cambio de obra (D3).
+    isEnabled: (env) => !(env.constructionOfferLocked && env.constructionOfferLocked()),
     execute: (env) => send(env, "budget"),
     icon: "o-spreadsheet-Icon.ARROW_RIGHT",
 });

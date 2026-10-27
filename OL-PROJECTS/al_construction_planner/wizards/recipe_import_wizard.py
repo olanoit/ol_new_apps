@@ -271,9 +271,10 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         Template = self.env['construction.execution.template']
         created = updated = 0
         result = Template
+        scope = self._recipe_scope_values()
         for code, data in recipes.items():
-            domain = [('code', '=', code), ('company_id', '=', self.company_id.id),
-                      ('project_id', '=', self.project_id.id or False)]
+            domain = [('code', '=', code), ('company_id', '=', self.company_id.id)] + [
+                (name, '=', value) for name, value in scope.items()]
             template = Template.with_context(active_test=False).search(domain, limit=1)
             vals = {'name': data.get('name') or code, 'source': source,
                     'execution_mode': self.execution_mode,
@@ -290,10 +291,16 @@ class ConstructionRecipeImportWizard(models.TransientModel):
                 updated += 1
             else:
                 template = Template.create(dict(vals, code=code, company_id=self.company_id.id,
-                                                project_id=self.project_id.id or False))
+                                                **scope))
                 created += 1
             result |= template
         return result, created, updated
+
+    def _recipe_scope_values(self):
+        """Dónde viven las recetas que se importan: la obra o, sin ella, la
+        biblioteca de la compañía. El puente de ventas agrega la cotización
+        de origen."""
+        return {'project_id': self.project_id.id or False}
 
     def _resolve_calc_tasks(self, templates, recipes):
         """«Nivel del porcentaje» de las líneas por % del costo directo: el

@@ -152,6 +152,160 @@ class TestBudgetBook(TransactionCase):
         with self.assertRaises(UserError):
             wizard.action_import()
 
+    def _edited_book(self, edit, order=None):
+        """El libro de ``_book`` cambiado por ``edit(book)``."""
+        from openpyxl import load_workbook
+        book = load_workbook(BytesIO(base64.b64decode(self._book())))
+        edit(book)
+        output = BytesIO()
+        book.save(output)
+        return base64.b64encode(output.getvalue())
+
+    def _send(self, file, target='budget', order=None):
+        wizard = self.env['construction.budget.book.wizard'].create({
+            'sale_order_id': (order or self.order).id, 'target': target, 'file': file,
+            'filename': 'libro.xlsx'})
+        wizard.action_preview()
+        return wizard
+
+    def test_partida_without_apu_needs_its_cost(self):
+        """CR-18, D1: sin APU, el costo lo escribe el presupuestador en
+        «Costo unitario sin APU»; sin él, error y no se envía."""
+        def no_cost(book):
+            book['PRESUPUESTO'].append(['01.03', 'Arquitectura', 'Muros', 'Limpieza final',
+                                        None, 'und', None, 1])
+        wizard = self._send(self._edited_book(no_cost))
+        self.assertIn('Partida 01.03: sin código de APU ni costo unitario', wizard.preview_html)
+        self.assertFalse(wizard.can_send)
+        with self.assertRaises(UserError):
+            wizard.action_import()
+
+        def with_cost(book):
+            sheet = book['PRESUPUESTO']
+            sheet.cell(row=1, column=10, value='Costo unitario sin APU')
+            sheet.append(['01.03', 'Arquitectura', 'Muros', 'Limpieza final', None, 'und', None,
+                          1, None, 350.25])
+        wizard = self._send(self._edited_book(with_cost))
+        self.assertTrue(wizard.can_send)
+        wizard.action_import()
+        line = self.order.order_line.filtered(lambda l: l.construction_budget_item == '01.03')
+        self.assertAlmostEqual(line.price_unit, 350.25)
+        self.assertAlmostEqual(line.construction_cost_apu, 350.25)
+        self.assertFalse(line.construction_execution_template_id)
+        first = self.order.order_line.filtered(lambda l: l.construction_budget_item == '01.01')
+        self.assertEqual(first.construction_execution_template_id.code, 'BK-R01')
+
+    def test_odoo_unit_names_are_valid(self):
+        """CR-18, b: el nombre de una unidad de Odoo vale sin equivalencia."""
+        hour = self.env.ref('uom.product_uom_hour')
+
+        def odoo_units(book):
+            sheet = book['INSUMOS']
+            sheet.cell(row=3, column=4, value=hour.with_context(lang='en_US').name)
+            # Sin la equivalencia «hh» de LISTAS.
+            book['LISTAS'].cell(row=2, column=5, value=None)
+            book['LISTAS'].cell(row=2, column=6, value=None)
+        wizard = self._send(self._edited_book(odoo_units))
+        self.assertNotIn('no tiene equivalencia', wizard.preview_html or '')
+        book, errors, _warnings = wizard._parse()
+        self.assertEqual(errors, [])
+        self.assertEqual(book['insumos']['BK-OPE']['uom'], hour)
+
+    def test_zero_direct_cost_blocks_sending(self):
+        """CR-18, e: con costo directo 0 no se envía."""
+        def zero(book):
+            sheet = book['PRESUPUESTO']
+            sheet.delete_rows(2, 2)
+            sheet.cell(row=1, column=10, value='Costo unitario sin APU')
+            sheet.append(['01.09', 'Arquitectura', 'Muros', 'Partida sin costo', None, 'und',
+                          None, 1, None, 0])
+        wizard = self._send(self._edited_book(zero))
+        self.assertIn('El costo directo de la hoja es 0', wizard.preview_html)
+        self.assertFalse(wizard.can_send)
+
+    def test_footer_recalculated_on_sending(self):
+        """CR-18, D2: gastos generales y utilidad sobre las partidas; el
+        descuento sobre partidas más ellos; cada monto redondeado una vez."""
+        def footer(book):
+            sheet = book['OBRA']
+            sheet.append(['Descuento %', 24.963145])
+            sheet.cell(row=3, column=2, value=10)
+        self._send(self._edited_book(footer)).action_import()
+        lines = self.order.order_line.filtered(lambda l: not l.display_type)
+        role = {r: lines.filtered(lambda l, r=r: l.construction_line_role == r)
+                for r in ('partida', 'overhead', 'profit', 'discount')}
+        partidas = sum(role['partida'].mapped('price_subtotal'))
+        currency = self.order.currency_id
+        self.assertEqual(role['overhead'].price_unit, currency.round(partidas * 0.10))
+        self.assertEqual(role['profit'].price_unit, currency.round(partidas * 0.07))
+        before = partidas + role['overhead'].price_subtotal + role['profit'].price_subtotal
+        self.assertEqual(role['discount'].price_unit, currency.round(-before * 0.24963145))
+        self.assertIn('24.9631 %', role['discount'].name)
+        self.assertAlmostEqual(self.order.amount_untaxed,
+                               before + role['discount'].price_subtotal, places=2)
+
+    def test_preview_lists_each_partida(self):
+        """CR-18, e: la vista previa da precio y metrado actuales y nuevos;
+        en rojo lo que baja a 0 o cambia más del porcentaje."""
+        self._send(self._book()).action_import()
+
+        def cheaper(book):
+            book['PRESUPUESTO'].cell(row=3, column=8, value=10)
+        wizard = self._send(self._edited_book(cheaper))
+        self.assertIn('Muro del eje A', wizard.preview_html)
+        self.assertIn('Muro del eje B', wizard.preview_html)
+        self.assertIn('1 en rojo', wizard.preview_html)
+
+    def test_confirmed_order_keeps_its_offer(self):
+        """CR-18, D3: confirmada, «presupuesto» no se envía; «presupuesto y
+        plan» actualiza costos y plan sin tocar precio ni metrado ofertado."""
+        self._send(self._book()).action_import()
+        self.order.action_confirm()
+        lines = self.order.order_line.filtered(lambda l: not l.display_type)
+        offer = {line: (line.price_unit, line.product_uom_qty) for line in lines}
+        total = self.order.amount_untaxed
+        wizard = self._send(self._book())
+        self.assertIn('La cotización está confirmada', wizard.preview_html)
+        self.assertFalse(wizard.can_send)
+
+        def more(book):
+            book['PRESUPUESTO'].cell(row=2, column=8, value=120)
+        wizard = self._send(self._edited_book(more), target='plan')
+        self.assertIn('Va por cambio de obra', wizard.preview_html)
+        wizard.write({'replan_reason': 'Metrado medido (test)'})
+        wizard.action_import()
+        for line, (price, qty) in offer.items():
+            self.assertEqual((line.price_unit, line.product_uom_qty), (price, qty))
+        self.assertEqual(self.order.amount_untaxed, total)
+        first = lines.filtered(lambda l: l.construction_budget_item == '01.01')
+        self.assertEqual(first.construction_qty_real, 120.0)
+
+    def test_quote_without_site_keeps_its_recipes(self):
+        """CR-18, D4: sin obra, el envío guarda las recetas en la cotización
+        (no en la biblioteca) y la obra las recibe al crear sus niveles."""
+        Template = self.env['construction.execution.template']
+        library = Template.create({'code': 'BK-R01', 'name': 'Receta de la biblioteca (test)',
+                                   'company_id': self.env.company.id})
+        order = self.env['sale.order'].create({'partner_id': self.customer.id})
+        self._send(self._book(), order=order).action_import()
+        own = order.construction_recipe_ids
+        self.assertEqual(own.mapped('code'), ['BK-R01'])
+        self.assertNotEqual(own, library)
+        self.assertEqual(library.name, 'Receta de la biblioteca (test)')
+        self.assertFalse(library.line_ids)
+        site = self.env['project.project'].create({
+            'name': 'OBR-04 Obra desde la cotización (test)', 'is_construction_site': True})
+        order.project_id = site
+        copy = Template.search([('project_id', '=', site.id), ('code', '=', 'BK-R01')])
+        self.assertEqual(len(copy), 1)
+        self.assertEqual(len(copy.line_ids), len(own.line_ids))
+        partida = order.order_line.filtered(lambda l: l.construction_budget_item == '01.01')
+        self.assertEqual(partida.construction_execution_template_id, copy)
+        # Una sola vez: volver a asignar la obra no duplica.
+        order.project_id = site
+        self.assertEqual(Template.search_count(
+            [('project_id', '=', site.id), ('code', '=', 'BK-R01')]), 1)
+
     def test_template(self):
         from openpyxl import load_workbook
         content = self.env['construction.budget.book.wizard']._template_workbook()

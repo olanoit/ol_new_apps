@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261016 — 27/10/2026
+
+- CR-18: el libro de carga y la hoja usan las columnas A a W de PRESUPUESTO (6.6) con «Costo unitario sin APU»; sin APU ni costo, error «Partida ‹ítem›: sin código de APU ni costo unitario» y no se envía (D1).
+- CR-18, b: una unidad vale si es una equivalencia o el nombre de una unidad de Odoo en cualquier idioma instalado (Hours, Horas, Units…).
+- CR-18, D2: en cada envío se recalculan gastos generales, imprevistos y utilidad sobre el parcial de venta de las partidas, y el descuento sobre partidas más esas líneas; cada monto se redondea una vez y la línea se busca por su rol.
+- CR-18, e: la revisión lista cada partida con metrado y precio actuales y nuevos, en rojo las que bajan a 0 o cambian más del ajuste «Cambio que se marca en el envío» (20 %); con costo directo 0 o con errores no se puede enviar, y si al terminar el costo directo de la cotización no es el de la hoja, el envío se revierte.
+- CR-18, D3: con la cotización confirmada o bloqueada, «presupuesto» no se envía; «presupuesto y plan» actualiza receta, metrado real y costos sin tocar precio, metrado ofertado ni el pie, y la revisión marca «Va por cambio de obra».
+- CR-18, D4: sin obra, el envío guarda las recetas en la cotización (campo «Cotización de origen»), no en la biblioteca; la línea de venta guarda su receta y, al asignar la obra o crear sus niveles, las recetas se copian a la obra una sola vez.
+
 ## 12.20261016 — 26/10/2026
 
 - CR-01: por avance, la cantidad de cada línea en la factura es la parte del periodo (monto ÷ precio), sin depender de lo facturado antes con otra cantidad.
