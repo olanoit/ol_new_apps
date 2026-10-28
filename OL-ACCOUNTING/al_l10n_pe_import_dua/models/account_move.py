@@ -46,7 +46,7 @@ class AccountMove(models.Model):
         help='Valor CIF de la mercancía en la moneda de la DUA (normalmente soles, al tipo '
              'de cambio de la fecha de numeración).')
     l10n_pe_dua_ad_valorem = fields.Monetary(string='Ad valorem', copy=False)
-    l10n_pe_dua_isc = fields.Monetary(string='ISC', copy=False)
+    l10n_pe_dua_isc = fields.Monetary(string='ISC de la DUA', copy=False)
     l10n_pe_dua_other_duties = fields.Monetary(
         string='Otros derechos', copy=False,
         help='Derechos específicos, antidumping, tasa de despacho y otros que forman la base '

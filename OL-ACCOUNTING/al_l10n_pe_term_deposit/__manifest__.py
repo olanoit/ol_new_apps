@@ -36,7 +36,7 @@ moneda. Además:
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_term_deposit/static/description/icon.png',
-    'version': '6.20261027',
+    'version': '7.20261028',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],

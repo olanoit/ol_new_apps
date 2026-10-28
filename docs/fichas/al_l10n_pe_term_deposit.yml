@@ -199,6 +199,10 @@ campos:
       - [Afecto al ITF, Por depósito, El de Ajustes, "Desmarcar si la cuenta está exonerada (declaración jurada ante el banco)"]
 
 novedades:
+  - version: '7.20261028'
+    fecha: 28/10/2026
+    cambios:
+      - "La tasa y la cuenta del ITF de los depósitos tienen etiqueta propia y ya no se confunden con las del módulo del ITF en los filtros y en Ajustes."
   - version: '6.20261027'
     fecha: 27/10/2026
     cambios:

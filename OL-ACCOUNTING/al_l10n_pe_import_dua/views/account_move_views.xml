@@ -34,7 +34,7 @@
                         <group string="Liquidación">
                             <field name="l10n_pe_dua_customs_value" readonly="state != 'draft'"/>
                             <field name="l10n_pe_dua_ad_valorem" readonly="state != 'draft'"/>
-                            <field name="l10n_pe_dua_isc" readonly="state != 'draft'"/>
+                            <field name="l10n_pe_dua_isc" string="ISC" readonly="state != 'draft'"/>
                             <field name="l10n_pe_dua_other_duties" readonly="state != 'draft'"/>
                             <field name="l10n_pe_dua_tax_base"/>
                             <field name="l10n_pe_dua_igv_tax_id" readonly="state != 'draft'"

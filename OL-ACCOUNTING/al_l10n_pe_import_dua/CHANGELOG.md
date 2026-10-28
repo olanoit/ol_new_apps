@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_import_dua.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261028 — 28/10/2026
+
+- El campo ISC de la DUA tiene etiqueta propia («ISC de la DUA») y ya no se confunde con el ISC del comprobante en los filtros; el formulario sigue mostrando «ISC».
+
 ## 5.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

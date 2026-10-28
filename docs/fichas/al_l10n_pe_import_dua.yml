@@ -82,6 +82,10 @@ configuracion:
   - "Para la percepción aduanera, instale Percepciones del IGV y configure su cuenta de percepciones por aplicar."
 
 novedades:
+  - version: '6.20261028'
+    fecha: 28/10/2026
+    cambios:
+      - "El campo ISC de la DUA tiene etiqueta propia («ISC de la DUA») y ya no se confunde con el ISC del comprobante en los filtros; el formulario sigue mostrando «ISC»."
   - version: '5.20261027'
     fecha: 27/10/2026
     cambios:
