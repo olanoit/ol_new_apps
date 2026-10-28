@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Apartado «Hoja de trabajo» en la app Perú de Ajustes (del base) -->
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.al.financial.reports</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_account_base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='al_account_base']//block[@name='pe_accounting_block']"
+                   position="after">
+                <block title="Hoja de trabajo" name="pe_worksheet_block">
+                    <setting company_dependent="1" string="Cuentas por función" name="pe_worksheet_function_setting"
+                             help="Prefijos de las cuentas de resultados que van a «Resultados por función», separados por comas. Añada las cuentas de la clase 6 sin destino (por ejemplo 66 o 67) para que cuadre con el resultado por naturaleza.">
+                        <field name="l10n_pe_ws_function_prefixes" readonly="not is_root_company"/>
+                        <div class="text-muted" invisible="is_root_company">Es del RUC: se configura en la compañía raíz.</div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

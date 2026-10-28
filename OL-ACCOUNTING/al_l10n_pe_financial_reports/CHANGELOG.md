@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_financial_reports.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 5.20261028 — 28/10/2026
+
+- Hoja de trabajo en formatos 1 y 2, con resultados por naturaleza y por función.
+- Cierre del ejercicio: cascada de la clase 8 hasta la 59 con reglas editables, y cierre y reapertura del balance opcionales.
+- Balance y Estado de resultados peruanos por centro de costo y sin los asientos de cierre.
+
 ## 4.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

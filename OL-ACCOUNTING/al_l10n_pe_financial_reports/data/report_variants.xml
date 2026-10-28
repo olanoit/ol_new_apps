@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Balance y Estado de resultados de Enterprise (variante peruana):
+        * el Estado de resultados sin los asientos de los diarios de cierre,
+          que saldan las cuentas de resultados al 31/12;
+        * el Balance sin el cierre y la reapertura del balance (que lo dejarían
+          en cero al 31/12), pero con el traslado del resultado a la 59;
+        * con el filtro analítico, para sacarlos por centro de costo.
+    -->
+    <record id="l10n_pe_reports.account_financial_report_bs" model="account.report">
+        <field name="l10n_pe_exclude_closing">balance</field>
+        <field name="filter_analytic" eval="True"/>
+    </record>
+    <record id="l10n_pe_reports.account_financial_report_pnl" model="account.report">
+        <field name="l10n_pe_exclude_closing">journal</field>
+        <field name="filter_analytic" eval="True"/>
+    </record>
+</odoo>

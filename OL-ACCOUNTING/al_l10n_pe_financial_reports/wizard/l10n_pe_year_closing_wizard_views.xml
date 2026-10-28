@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_pe_year_closing_wizard_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.year.closing.wizard.form</field>
+        <field name="model">l10n_pe.year.closing.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cierre del ejercicio">
+                <div class="alert alert-info" role="alert">
+                    Los asientos se crean en borrador para revisarlos. Las
+                    cuentas que salda cada paso están en Perú ▸ Configuración ▸
+                    Contabilidad ▸ Reglas del cierre del ejercicio.
+                </div>
+                <group>
+                    <group>
+                        <field name="company_id" invisible="1"/>
+                        <field name="date_to"/>
+                        <field name="journal_id" options="{'no_create': True}"/>
+                    </group>
+                    <group>
+                        <field name="include_balance"/>
+                    </group>
+                </group>
+                <field name="move_ids" readonly="1" invisible="not move_ids">
+                    <list>
+                        <field name="date"/>
+                        <field name="name"/>
+                        <field name="ref"/>
+                        <field name="l10n_pe_closing_step"/>
+                        <field name="amount_total_signed" string="Importe"/>
+                        <field name="state" widget="badge"
+                               decoration-success="state == 'posted'"
+                               decoration-info="state == 'draft'"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_generate" type="object" string="Generar asientos"
+                            class="btn-primary"/>
+                    <button name="action_post" type="object" string="Publicar"
+                            invisible="not move_ids"/>
+                    <button string="Cerrar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_year_closing_wizard" model="ir.actions.act_window">
+        <field name="name">Cierre del ejercicio</field>
+        <field name="res_model">l10n_pe.year.closing.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

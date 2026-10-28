@@ -30,4 +30,32 @@
               parent="menu_pe_financial_statements"
               action="pe_action_statement_changes_equity"
               sequence="30"/>
+
+    <menuitem id="menu_pe_worksheet_format_1"
+              name="Hoja de trabajo (formato 1)"
+              parent="menu_pe_financial_statements"
+              action="pe_action_worksheet_format_1"
+              sequence="40"/>
+
+    <menuitem id="menu_pe_worksheet_format_2"
+              name="Hoja de trabajo (formato 2)"
+              parent="menu_pe_financial_statements"
+              action="pe_action_worksheet_format_2"
+              sequence="50"/>
+
+    <!-- Contabilidad ▸ Cierre del mes: el cierre del ejercicio va con los
+         demás procesos de cierre. -->
+    <menuitem id="menu_pe_year_closing"
+              name="Cierre del ejercicio"
+              parent="al_account_base.al_l10n_pe_accounting_closing"
+              action="action_l10n_pe_year_closing_wizard"
+              groups="account.group_account_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_pe_closing_rules"
+              name="Reglas del cierre del ejercicio"
+              parent="al_account_base.al_l10n_pe_config_accounting"
+              action="action_l10n_pe_closing_rule"
+              groups="account.group_account_manager"
+              sequence="90"/>
 </odoo>

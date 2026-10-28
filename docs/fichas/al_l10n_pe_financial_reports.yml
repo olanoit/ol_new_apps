@@ -1,10 +1,11 @@
 titulo: Reportes financieros Perú
 subtitulo: >-
   Los estados financieros peruanos en un solo lugar: el 3.19 Estado de Cambios
-  en el Patrimonio Neto según el PCGE, junto al Balance y el Estado de
-  resultados, con filtros, comparaciones y exportación a PDF y Excel.
+  en el Patrimonio Neto según el PCGE, la hoja de trabajo (formatos 1 y 2), el
+  cierre del ejercicio con la cascada de la clase 8 y el Balance y el Estado de
+  resultados por centro de costo.
 categoria: Localización Perú · Contabilidad
-etiquetas: [3.19 Patrimonio neto, PCGE, Balance, Estado de resultados, Líneas editables, Comparación de periodos]
+etiquetas: [3.19 Patrimonio neto, Hoja de trabajo, Cierre del ejercicio, Clase 8, PCGE, Centro de costo]
 portada: screenshots/02-estado-cambios-patrimonio.png
 
 destacados_intro: >-
@@ -26,10 +27,23 @@ destacados:
     texto: >-
       Cambios de políticas, corrección de errores, aportes, distribuciones y
       subsidiarias se registran en el propio informe, con nota.
-  - icono: "PE"
-    titulo: Menú Estados financieros
+  - icono: "HT"
+    titulo: Hoja de trabajo
     texto: >-
-      Balance, Estado de resultados y 3.19 en la app Perú.
+      Formato 1 (sumas, saldos, balance, naturaleza y función) y formato 2
+      (con saldos iniciales y movimientos), con el resultado que iguala cada
+      par de columnas.
+  - icono: "89"
+    titulo: Cierre del ejercicio
+    texto: >-
+      9 contra 79, saldos intermediarios de gestión (80 a 85), resultado (89)
+      y resultados acumulados (59), con reglas editables; cierre y reapertura
+      del balance opcionales.
+  - icono: "CC"
+    titulo: Por centro de costo
+    texto: >-
+      Balance, Estado de resultados y hoja de trabajo con filtro analítico, y
+      sin los asientos de cierre.
 
 contexto:
   titulo: El problema que resuelve
@@ -89,8 +103,46 @@ pasos:
       periodo. Los importes se guardan a la fecha final del periodo.
     imagen: screenshots/03-lineas-editables.png
 
+  - seccion: Hoja de trabajo
+    texto: El balance de comprobación con las columnas de balance y de resultados.
+  - titulo: Abrir la hoja de trabajo
+    ruta: Perú ▸ Informes ▸ Estados financieros ▸ Hoja de trabajo (formato 1 o 2)
+    texto: >-
+      Una línea por cuenta con sus sumas y saldos. El saldo de las cuentas de
+      balance va a **Activo** o **Pasivo y patrimonio**; el de las cuentas de
+      resultados, a **naturaleza** (60-68, 70-78 y 88) y a **función** (69,
+      ingresos, 88, clase 9 y las cuentas que indique Ajustes). Al pie, las
+      sumas, el **resultado del ejercicio** y los **totales**, que se igualan.
+      El formato 2 añade los saldos iniciales y los movimientos del periodo.
+    puntos:
+      - "Las cuentas de resultados empiezan en cero cada ejercicio; lo de ejercicios anteriores sale en **Resultados de ejercicios anteriores**."
+      - "Filtro por centro de costo y por diario; no cuenta los asientos de cierre."
+
+  - seccion: Cierre del ejercicio
+    texto: Los asientos de cierre del 31/12, generados y revisables.
+  - titulo: Generar los asientos de cierre
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Cierre del ejercicio
+    texto: >-
+      Elija la fecha de cierre (último día del ejercicio) y el diario de
+      naturaleza **Cierre**, y pulse **Generar asientos**. Se crea un asiento
+      en borrador por cada paso de la cascada: 9 contra 79, margen comercial
+      (801), producción (81), valor agregado (821), excedente bruto (831),
+      resultado de explotación (841), resultado antes de impuestos (851),
+      resultado del ejercicio (891 o 892) y resultados acumulados (5911 o
+      5921). Si se vuelve a generar, los borradores se rehacen.
+    puntos:
+      - "**Cerrar y reabrir las cuentas de balance** añade el cierre del balance al 31/12 y su reapertura el 1/1, ambos en el diario de cierre."
+      - "**Publicar** publica los asientos y concilia la reapertura con el cierre en las cuentas conciliables: las partidas abiertas siguen siendo las de los comprobantes."
+      - "Si una cuenta de resultados queda con saldo porque ninguna regla la salda, el asistente lo avisa con su código."
+  - titulo: Ajustar las reglas del cierre
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Reglas del cierre del ejercicio
+    texto: >-
+      Cada regla salda las cuentas que empiezan por sus prefijos y lleva el
+      neto a la cuenta destino (o a la de pérdida si el neto es deudor). Se
+      aplican en orden y cada una recoge lo que dejaron las anteriores.
+
   - seccion: Configuración contable
-    texto: Para que el cierre del ejercicio no altere el informe.
+    texto: Para que el cierre del ejercicio no altere los informes.
   - titulo: Marcar los diarios de apertura y de cierre
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios ▸ Naturaleza del diario
     texto: >-
@@ -117,6 +169,23 @@ campos:
     ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Diarios
     campos:
       - [Naturaleza del diario, "Movimiento, Apertura o Cierre.", Movimiento, "Cierre: no cuenta · Apertura: saldo inicial"]
+  - grupo: Cierre del ejercicio
+    ruta: Perú ▸ Contabilidad ▸ Cierre del mes ▸ Cierre del ejercicio
+    campos:
+      - [Cierre al, Último día del ejercicio que se cierra., Fin del ejercicio anterior, Obligatorio]
+      - [Diario de cierre, Diario de naturaleza Cierre., El primero de la compañía, Los informes no lo cuentan]
+      - [Cerrar y reabrir las cuentas de balance, Cierre del balance al 31/12 y reapertura el 1/1., "No", Solo para los libros]
+  - grupo: Regla del cierre
+    ruta: Perú ▸ Configuración ▸ Contabilidad ▸ Reglas del cierre del ejercicio
+    campos:
+      - [Paso, Nombre del asiento., "—", "Ej.: Margen comercial"]
+      - [Cuentas que salda, "Prefijos separados por comas.", "—", "Ej.: 701,709,741,731,601,611,691"]
+      - [Cuenta destino, Código exacto que recibe el neto., "—", "Ej.: 801"]
+      - [Cuenta destino si es pérdida, Recibe el neto deudor., Vacía, "Ej.: 892 frente a 891"]
+  - grupo: Hoja de trabajo
+    ruta: Ajustes ▸ Perú ▸ Hoja de trabajo
+    campos:
+      - [Cuentas por función, Prefijos de resultados que van a función., "69,70,71,72,73,74,75,76,77,78,88,9", "Añada las cuentas 6 sin destino (66, 67)"]
 
 ejemplos:
   - titulo: Un ejercicio con asiento de cierre
@@ -141,6 +210,7 @@ ejemplos:
 configuracion:
   - Instale el módulo desde Aplicaciones (requiere Odoo Enterprise y la localización peruana).
   - Marque la naturaleza de los diarios de apertura y de cierre.
+  - Revise las reglas del cierre del ejercicio y las cuentas por función de la hoja de trabajo.
   - Abra el informe desde Perú ▸ Informes ▸ Estados financieros.
 requisitos_nota: >-
   Se apoya en el motor de informes contables de Odoo Enterprise.
@@ -164,6 +234,12 @@ faq:
       de Patrimonio 3.19.
 
 novedades:
+  - version: '5.20261028'
+    fecha: 28/10/2026
+    cambios:
+      - "Hoja de trabajo en formatos 1 y 2, con resultados por naturaleza y por función."
+      - "Cierre del ejercicio: cascada de la clase 8 hasta la 59 con reglas editables, y cierre y reapertura del balance opcionales."
+      - "Balance y Estado de resultados peruanos por centro de costo y sin los asientos de cierre."
   - version: '4.20261027'
     fecha: 27/10/2026
     cambios:

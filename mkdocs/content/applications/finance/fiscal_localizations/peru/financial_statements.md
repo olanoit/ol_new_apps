@@ -6,11 +6,13 @@ modulos: [al_l10n_pe_financial_reports]
 
 **Perú ‣ Informes ‣ Estados financieros** reúne los estados financieros peruanos como
 informes contables de Odoo: el **Estado de Cambios en el Patrimonio Neto
-(formato 3.19)**, calculado desde los asientos con las cuentas del PCGE, y los
-accesos al **Balance** y al **Estado de resultados** de Odoo Enterprise en su
-variante peruana. Lo usa el contador al cierre del ejercicio o de un periodo
-intermedio. El 3.19 sale en pantalla, en PDF y en XLSX, y cuadra con el
-patrimonio del Balance a la misma fecha.
+(formato 3.19)**, calculado desde los asientos con las cuentas del PCGE, la
+**hoja de trabajo** (formatos 1 y 2) y los accesos al **Balance** y al
+**Estado de resultados** de Odoo Enterprise en su variante peruana, que aquí
+se pueden filtrar por centro de costo. El módulo trae además el asistente de
+**cierre del ejercicio** con la cascada de la clase 8. Lo usa el contador al
+cierre del ejercicio o de un periodo intermedio. Todo sale en pantalla, en PDF
+y en XLSX.
 
 No incluye el Estado de Flujos de Efectivo ni la versión por columnas del
 3.19. El TXT 3.19 para el PLE lo genera
@@ -105,6 +107,111 @@ Balance: capital 60 000 + reserva 6 200 + resultados acumulados 10 800 +
 resultado del ejercicio 12 000. La línea de la cuenta 59 suma el dividendo
 (−8 000) y el traslado a la reserva (−1 200).
 
+## Hoja de trabajo
+
+**Perú ‣ Informes ‣ Estados financieros ‣ Hoja de trabajo (formato 1)** y
+**(formato 2)** muestran una línea por cuenta:
+
+| Columnas | Formato 1 | Formato 2 | Qué llevan |
+|---|---|---|---|
+| Saldo inicial debe / haber | | ✓ | Saldo al día anterior al periodo |
+| Movimiento debe / haber | | ✓ | Debe y haber del periodo |
+| Sumas debe / haber | ✓ | ✓ | Saldo inicial + movimiento |
+| Saldo deudor / acreedor | ✓ | ✓ | Diferencia de las sumas |
+| Activo / Pasivo y patrimonio | ✓ | ✓ | Saldo de las cuentas de balance |
+| Pérdidas / Ganancias por naturaleza | ✓ | ✓ | Cuentas 60 a 68, 70 a 78 y 88 |
+| Pérdidas / Ganancias por función | ✓ | ✓ | Cuentas de **Ajustes ‣ Perú ‣ Hoja de trabajo** (por defecto 69, 70 a 78, 88 y la clase 9) |
+
+Al pie salen las **Sumas**, el **Resultado del ejercicio** (la utilidad va al
+haber de cada par; la pérdida, al debe) y los **Totales**, que se igualan.
+
+- Las cuentas de resultados empiezan en cero cada ejercicio: lo que traen de
+  ejercicios anteriores sale en la línea **Resultados de ejercicios
+  anteriores**, en el pasivo y patrimonio.
+- La hoja no cuenta los asientos de los diarios de **Cierre**, así que se
+  puede sacar después de cerrar.
+- Se filtra por diario y por **centro de costo** (cuenta analítica).
+
+!!! tip "Cuadre de naturaleza y función"
+    Si el resultado por función no coincide con el de naturaleza, falta llevar
+    a función alguna cuenta de la clase 6 sin destino (por ejemplo, 67 si los
+    gastos financieros no se destinan a la 97): añádala en **Ajustes ‣ Perú ‣
+    Hoja de trabajo ‣ Cuentas por función**. Con inventario permanente el
+    costo de ventas está en la 69, que es de función: el resultado por
+    naturaleza solo cuadra si la variación de existencias (61) refleja el
+    consumo del ejercicio.
+
+## Cierre del ejercicio
+
+**Perú ‣ Contabilidad ‣ Cierre del mes ‣ Cierre del ejercicio** genera los
+asientos de cierre en un diario de naturaleza **Cierre**.
+
+1. Elija **Cierre al** (último día del ejercicio) y el **Diario de cierre**.
+2. Marque **Cerrar y reabrir las cuentas de balance** si lleva el Libro diario
+   con el asiento de cierre del balance y el de reapertura.
+3. Pulse **Generar asientos**. Se crean en borrador, un asiento por paso:
+
+    | Paso | Salda | Va a |
+    |---|---|---|
+    | Cancelación de las cuentas analíticas | Clase 9 | 791 |
+    | Margen comercial | 701, 709, 741, 731, 601, 611, 691 | 801 |
+    | Producción de bienes / servicios / activo inmovilizado | 702, 704, 71, 692, 694 / 703, 693 / 72 | 811 / 812 / 813 |
+    | Valor agregado | 80, 81, demás 60 y 61, 63 | 821 |
+    | Excedente bruto de explotación | 821, 62, 64 | 831 |
+    | Resultado de explotación | 831, 65, 68, demás 69 y 70, 73, 74, 75, 78, 79 | 841 |
+    | Resultado antes del impuesto a la renta | 841, 66, 67, 76, 77 | 851 |
+    | Resultado del ejercicio | 851, 88 | 891 utilidad · 892 pérdida |
+    | Resultados acumulados | 891, 892 | 5911 utilidad · 5921 pérdida |
+
+4. Revise los asientos y pulse **Publicar**. Si marcó el cierre del balance,
+   la reapertura queda conciliada con el cierre en las cuentas conciliables:
+   las partidas abiertas de clientes y proveedores siguen siendo las de sus
+   comprobantes.
+
+- Si vuelve a generar, los borradores del asistente se rehacen; los
+  asientos que usted haya registrado a mano en el diario de cierre no se
+  tocan. Un cierre publicado se rehace pasándolo antes a borrador.
+- Si una cuenta de resultados queda con saldo porque ninguna regla la salda,
+  el asistente lo avisa con su código.
+- Las reglas se editan en **Perú ‣ Configuración ‣ Contabilidad ‣ Reglas del
+  cierre del ejercicio**: cada una salda las cuentas que empiezan por sus
+  prefijos y lleva el neto a la cuenta destino. Se aplican en orden, y un
+  prefijo amplio en un paso posterior solo recoge lo que dejaron los
+  anteriores.
+
+!!! note
+    El cierre del balance y la reapertura van al diario de **Cierre**, no al
+    de **Apertura**: Odoo arrastra los saldos por sí mismo y los informes no
+    cuentan ese diario. El diario de **Apertura** queda para la carga inicial.
+
+- El cierre es del RUC: se hace en la compañía raíz y recoge los apuntes de
+  todas sus sucursales. Hace falta acceso a todas ellas.
+- Las reglas sin compañía valen para todos los RUC de la base; una regla con
+  compañía solo para ese RUC.
+- En moneda extranjera, el cierre del balance cancela por separado el monto en
+  moneda y el saldo en soles cuando la diferencia de cambio los deja con signos
+  distintos.
+- Si ejercicios anteriores quedaron sin cerrar, su resultado se reconoce en la
+  59 (5911 utilidad, 5921 pérdida) dentro del cierre del balance.
+
+## Por centro de costo
+
+El **Balance** y el **Estado de resultados** peruanos tienen el filtro
+**Analítica**: elija uno o varios centros de costo para sacar el estado solo
+con sus apuntes.
+
+Después del cierre:
+
+- el **Estado de resultados** y la **hoja de trabajo** no cuentan ningún
+  asiento de los diarios de **Cierre**, así que el ejercicio no sale en cero;
+- el **Balance** sí cuenta el traslado del resultado a la 59, pero no el
+  cierre ni la reapertura del balance: al 31/12 muestra el resultado en
+  resultados acumulados y no queda en cero.
+
+!!! warning
+    El Libro mayor y los saldos por empresa sí cuentan el cierre del balance:
+    al 31/12 muestran esas cuentas en cero.
+
 ## Reportes
 
 - **Balance** y **Estado de resultados** (Enterprise), en el mismo menú.
@@ -120,6 +227,9 @@ resultado del ejercicio 12 000. La línea de la cuenta 59 suma el dividendo
 |---|---|---|
 | El saldo final no cuadra con el Balance | Hay ajustes editables o asientos de cierre en un diario sin naturaleza **Cierre** | Revise las líneas editables y la naturaleza de los diarios |
 | El resultado sale duplicado | El asiento de cierre está en un diario de movimiento | Pase el asiento a un diario de naturaleza **Cierre** |
+| El asistente dice que una cuenta sigue con saldo | Ninguna regla del cierre la salda | Añada su prefijo a la regla que corresponda |
+| «No existe la cuenta 821» (u otra) | El plan de cuentas no tiene la cuenta destino de una regla | Créela o cambie el código en la regla |
+| La hoja de trabajo no cuadra naturaleza con función | Hay cuentas de la clase 6 sin destino fuera de función | Añádalas en **Cuentas por función** |
 
 !!! info "Ver también"
     - [NIC 1 — Presentación de estados financieros](https://www.ifrs.org/issued-standards/list-of-standards/ias-1-presentation-of-financial-statements/)

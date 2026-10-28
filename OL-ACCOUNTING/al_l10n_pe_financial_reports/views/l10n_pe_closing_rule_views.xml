@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_pe_closing_rule_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.closing.rule.list</field>
+        <field name="model">l10n_pe.closing.rule</field>
+        <field name="arch" type="xml">
+            <list string="Reglas del cierre del ejercicio" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="source_prefixes"/>
+                <field name="target_code"/>
+                <field name="loss_code"/>
+                <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_closing_rule_view_search" model="ir.ui.view">
+        <field name="name">l10n_pe.closing.rule.search</field>
+        <field name="model">l10n_pe.closing.rule</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="source_prefixes"/>
+                <filter name="inactive" string="Archivadas" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_closing_rule" model="ir.actions.act_window">
+        <field name="name">Reglas del cierre del ejercicio</field>
+        <field name="res_model">l10n_pe.closing.rule</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Defina los pasos del cierre del ejercicio</p>
+            <p>Cada regla salda las cuentas que empiezan por sus prefijos y lleva
+               el neto a la cuenta destino. Se aplican en orden.</p>
+        </field>
+    </record>
+</odoo>

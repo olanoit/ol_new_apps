@@ -8,7 +8,41 @@ como informes contables de Odoo (`account.report`). Cada informe nuevo va aquí.
 | Informe | Dónde |
 |---|---|
 | 3.19 Estado de Cambios en el Patrimonio Neto | Perú ▸ Informes ▸ Estados financieros · Contabilidad ▸ Informes |
-| Balance y Estado de resultados (Enterprise, variante peruana) | Perú ▸ Informes ▸ Estados financieros |
+| Balance y Estado de resultados (Enterprise, variante peruana), por centro de costo y sin asientos de cierre | Perú ▸ Informes ▸ Estados financieros |
+| Hoja de trabajo (formatos 1 y 2) | Perú ▸ Informes ▸ Estados financieros |
+| Cierre del ejercicio (asistente) | Perú ▸ Contabilidad ▸ Cierre del mes |
+
+## Hoja de trabajo
+
+`account.pe.worksheet.report.handler` (`models/account_worksheet_report.py`)
+arma las líneas con una consulta agrupada por cuenta sobre
+`_get_report_query` (respeta compañías, diarios, filtro analítico y borradores).
+Cada informe (`data/report_worksheet.xml`) declara solo sus columnas. Las cuentas
+de resultados restan lo anterior al ejercicio, que va a la línea «Resultados de
+ejercicios anteriores». Naturaleza: prefijos 60-68, 70-78 y 88; función: el
+ajuste de compañía `l10n_pe_ws_function_prefixes` (delegado a la raíz).
+
+## Cierre del ejercicio
+
+`l10n_pe.year.closing.wizard` (`wizard/`) aplica las reglas
+`l10n_pe.closing.rule` (`data/l10n_pe_closing_rule_data.xml`, `noupdate`) sobre los
+saldos del ejercicio sin diarios de cierre, un asiento en borrador por regla.
+Opcionalmente cierra el balance y lo reabre (ambos en el diario de cierre).
+`account.move.l10n_pe_closing_date` marca lo generado: solo eso se borra al
+rehacer. «Publicar» concilia reapertura y cierre por cuenta, socio y moneda.
+
+## Informes sin asientos de cierre
+
+`account.report.l10n_pe_exclude_closing` añade una condición al `forced_domain`
+de las opciones: `journal` excluye los diarios de naturaleza cierre (Estado de
+resultados y hoja de trabajo); `balance` solo los asientos generados de cierre y
+reapertura del balance (`l10n_pe_closing_step`), así el Balance ve la 59. El
+cierre corre en la compañía raíz con `allowed_company_ids` de todas sus
+sucursales (la regla de apuntes solo deja ver las activas). Activo en la hoja de
+trabajo y en el Balance y el Estado de resultados de `l10n_pe_reports`
+(`data/report_variants.xml`, que además activa `filter_analytic`). Si se
+actualiza `l10n_pe_reports` solo, su XML vuelve a poner `filter_analytic` en
+falso: actualice también este módulo.
 
 ## 3.19 Estado de Cambios en el Patrimonio Neto
 

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        Cascada del PCGE: saldos intermediarios de gestión (clase 8) y
+        determinación del resultado. Las reglas se aplican en orden y cada una
+        recoge lo que dejaron las anteriores, así que un prefijo amplio en una
+        regla posterior solo salda lo que quedó (por ejemplo, «60» en el valor
+        agregado recoge las compras que no son de mercaderías).
+        Son editables: cada empresa las ajusta a su plan de cuentas.
+    -->
+    <record id="closing_rule_analytic" model="l10n_pe.closing.rule">
+        <field name="sequence">10</field>
+        <field name="name">Cancelación de las cuentas analíticas (9 contra 79)</field>
+        <field name="source_prefixes">9</field>
+        <field name="target_code">791</field>
+    </record>
+    <record id="closing_rule_trade_margin" model="l10n_pe.closing.rule">
+        <field name="sequence">20</field>
+        <field name="name">Margen comercial</field>
+        <field name="source_prefixes">701,709,741,731,601,611,691</field>
+        <field name="target_code">801</field>
+    </record>
+    <record id="closing_rule_production_goods" model="l10n_pe.closing.rule">
+        <field name="sequence">30</field>
+        <field name="name">Producción de bienes</field>
+        <field name="source_prefixes">702,704,71,692,694</field>
+        <field name="target_code">811</field>
+    </record>
+    <record id="closing_rule_production_services" model="l10n_pe.closing.rule">
+        <field name="sequence">40</field>
+        <field name="name">Producción de servicios</field>
+        <field name="source_prefixes">703,693</field>
+        <field name="target_code">812</field>
+    </record>
+    <record id="closing_rule_production_assets" model="l10n_pe.closing.rule">
+        <field name="sequence">50</field>
+        <field name="name">Producción de activo inmovilizado</field>
+        <field name="source_prefixes">72</field>
+        <field name="target_code">813</field>
+    </record>
+    <record id="closing_rule_value_added" model="l10n_pe.closing.rule">
+        <field name="sequence">60</field>
+        <field name="name">Valor agregado</field>
+        <field name="source_prefixes">801,811,812,813,60,61,63</field>
+        <field name="target_code">821</field>
+    </record>
+    <record id="closing_rule_gross_surplus" model="l10n_pe.closing.rule">
+        <field name="sequence">70</field>
+        <field name="name">Excedente bruto (insuficiencia bruta) de explotación</field>
+        <field name="source_prefixes">821,62,64</field>
+        <field name="target_code">831</field>
+    </record>
+    <record id="closing_rule_operating_result" model="l10n_pe.closing.rule">
+        <field name="sequence">80</field>
+        <field name="name">Resultado de explotación</field>
+        <field name="source_prefixes">831,65,68,69,70,73,74,75,78,79</field>
+        <field name="target_code">841</field>
+    </record>
+    <record id="closing_rule_pretax_result" model="l10n_pe.closing.rule">
+        <field name="sequence">90</field>
+        <field name="name">Resultado antes del impuesto a la renta</field>
+        <field name="source_prefixes">841,66,67,76,77</field>
+        <field name="target_code">851</field>
+    </record>
+    <record id="closing_rule_year_result" model="l10n_pe.closing.rule">
+        <field name="sequence">100</field>
+        <field name="name">Resultado del ejercicio</field>
+        <field name="source_prefixes">851,88</field>
+        <field name="target_code">891</field>
+        <field name="loss_code">892</field>
+    </record>
+    <record id="closing_rule_retained_earnings" model="l10n_pe.closing.rule">
+        <field name="sequence">110</field>
+        <field name="name">Resultados acumulados</field>
+        <field name="source_prefixes">891,892</field>
+        <field name="target_code">5911</field>
+        <field name="loss_code">5921</field>
+    </record>
+</odoo>

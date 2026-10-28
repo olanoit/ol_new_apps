@@ -2,8 +2,9 @@
 {
     'name': 'PE - Reportes financieros (AL)',
     'summary': 'Estados financieros peruanos sobre el motor de informes de '
-               'Odoo: 3.19 Estado de Cambios en el Patrimonio Neto, junto al '
-               'Balance y el Estado de resultados, en la app Perú.',
+               'Odoo: 3.19, hoja de trabajo (formatos 1 y 2), cierre del '
+               'ejercicio con la cascada de la clase 8 y EEFF por centro de '
+               'costo.',
     'description': """
 Reportes financieros — Perú
 ===========================
@@ -31,8 +32,22 @@ a PDF y XLSX con las herramientas estándar.
   Sin ajustes editables, el saldo final coincide con el patrimonio del
   Balance a la misma fecha.
 
-* Menú **Perú ▸ Informes ▸ Estados financieros** con el Balance, el Estado de resultados
-  y el 3.19; el 3.19 aparece también en Contabilidad ▸ Informes.
+* **Hoja de trabajo** formato 1 (sumas, saldos, balance, resultados por
+  naturaleza y por función) y formato 2 (además saldos iniciales y
+  movimientos), con el resultado del ejercicio que iguala cada par de
+  columnas y filtro por centro de costo.
+
+* **Cierre del ejercicio** (Perú ▸ Contabilidad ▸ Cierre del mes): asientos
+  en borrador que cancelan la clase 9 contra la 79, determinan los saldos
+  intermediarios de gestión (80 a 85), el resultado (89) y lo llevan a la 59,
+  según reglas editables; opcionalmente cierran y reabren las cuentas de
+  balance. Al publicar, concilia la reapertura con el cierre.
+
+* El **Balance** y el **Estado de resultados** peruanos no cuentan los
+  asientos de cierre y tienen filtro por centro de costo.
+
+* Menú **Perú ▸ Informes ▸ Estados financieros** con el Balance, el Estado de resultados,
+  el 3.19 y la hoja de trabajo; el 3.19 aparece también en Contabilidad ▸ Informes.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',
     'maintainer': 'CRISTÓBAL OCH <olanoit@gmail.com>',
@@ -41,15 +56,24 @@ a PDF y XLSX con las herramientas estándar.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_financial_reports/static/description/icon.png',
-    'version': '4.20261027',
+    'version': '5.20261028',
     'license': 'OPL-1',
     'depends': [
         'account_reports',
         'l10n_pe',
+        'l10n_pe_reports',
         'al_account_base',
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'security/l10n_pe_closing_rule_security.xml',
+        'data/l10n_pe_closing_rule_data.xml',
         'data/report_equity_changes.xml',
+        'data/report_worksheet.xml',
+        'data/report_variants.xml',
+        'wizard/l10n_pe_year_closing_wizard_views.xml',
+        'views/l10n_pe_closing_rule_views.xml',
+        'views/res_config_settings_views.xml',
         'views/menu.xml',
     ],
     'installable': True,

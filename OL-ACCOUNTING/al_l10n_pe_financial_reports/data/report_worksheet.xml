@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Hoja de trabajo. Formato 1: sumas, saldos, balance y resultados por
+        naturaleza y por función. Formato 2: además los saldos iniciales y
+        los movimientos del periodo. Las líneas las arma
+        account.pe.worksheet.report.handler; cada informe muestra solo las
+        columnas que declara aquí.
+    -->
+    <record id="pe_worksheet_format_1" model="account.report">
+        <field name="name">Hoja de trabajo (formato 1)</field>
+        <field name="country_id" ref="base.pe"/>
+        <field name="availability_condition">country</field>
+        <field name="custom_handler_model_id" ref="model_account_pe_worksheet_report_handler"/>
+        <field name="l10n_pe_exclude_closing">journal</field>
+        <field name="filter_date_range" eval="True"/>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="filter_growth_comparison" eval="False"/>
+        <field name="filter_unfold_all" eval="False"/>
+        <field name="filter_journals" eval="True"/>
+        <field name="filter_analytic" eval="True"/>
+        <field name="filter_analytic_groupby" eval="False"/>
+        <field name="filter_multi_company">selector</field>
+        <field name="filter_show_draft" eval="True"/>
+        <field name="filter_hierarchy">never</field>
+        <field name="default_opening_date_filter">this_year</field>
+        <field name="load_more_limit" eval="0"/>
+        <field name="search_bar" eval="True"/>
+        <field name="column_ids">
+            <record id="pe_worksheet_format_1_column_sum_debit" model="account.report.column">
+                <field name="name">Sumas debe</field>
+                <field name="expression_label">sum_debit</field>
+                <field name="sequence" eval="10"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_sum_credit" model="account.report.column">
+                <field name="name">Sumas haber</field>
+                <field name="expression_label">sum_credit</field>
+                <field name="sequence" eval="20"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_balance_debit" model="account.report.column">
+                <field name="name">Saldo deudor</field>
+                <field name="expression_label">balance_debit</field>
+                <field name="sequence" eval="30"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_balance_credit" model="account.report.column">
+                <field name="name">Saldo acreedor</field>
+                <field name="expression_label">balance_credit</field>
+                <field name="sequence" eval="40"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_asset" model="account.report.column">
+                <field name="name">Activo</field>
+                <field name="expression_label">asset</field>
+                <field name="sequence" eval="50"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_liability" model="account.report.column">
+                <field name="name">Pasivo y patrimonio</field>
+                <field name="expression_label">liability</field>
+                <field name="sequence" eval="60"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_nature_loss" model="account.report.column">
+                <field name="name">Pérdidas por naturaleza</field>
+                <field name="expression_label">nature_loss</field>
+                <field name="sequence" eval="70"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_nature_profit" model="account.report.column">
+                <field name="name">Ganancias por naturaleza</field>
+                <field name="expression_label">nature_profit</field>
+                <field name="sequence" eval="80"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_function_loss" model="account.report.column">
+                <field name="name">Pérdidas por función</field>
+                <field name="expression_label">function_loss</field>
+                <field name="sequence" eval="90"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_1_column_function_profit" model="account.report.column">
+                <field name="name">Ganancias por función</field>
+                <field name="expression_label">function_profit</field>
+                <field name="sequence" eval="100"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+        </field>
+    </record>
+
+    <record id="pe_action_worksheet_format_1" model="ir.actions.client">
+        <field name="name">Hoja de trabajo (formato 1)</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('pe_worksheet_format_1')}"/>
+    </record>
+
+    <record id="pe_worksheet_format_2" model="account.report">
+        <field name="name">Hoja de trabajo (formato 2)</field>
+        <field name="country_id" ref="base.pe"/>
+        <field name="availability_condition">country</field>
+        <field name="custom_handler_model_id" ref="model_account_pe_worksheet_report_handler"/>
+        <field name="l10n_pe_exclude_closing">journal</field>
+        <field name="filter_date_range" eval="True"/>
+        <field name="filter_period_comparison" eval="False"/>
+        <field name="filter_growth_comparison" eval="False"/>
+        <field name="filter_unfold_all" eval="False"/>
+        <field name="filter_journals" eval="True"/>
+        <field name="filter_analytic" eval="True"/>
+        <field name="filter_analytic_groupby" eval="False"/>
+        <field name="filter_multi_company">selector</field>
+        <field name="filter_show_draft" eval="True"/>
+        <field name="filter_hierarchy">never</field>
+        <field name="default_opening_date_filter">this_year</field>
+        <field name="load_more_limit" eval="0"/>
+        <field name="search_bar" eval="True"/>
+        <field name="column_ids">
+            <record id="pe_worksheet_format_2_column_init_debit" model="account.report.column">
+                <field name="name">Saldo inicial debe</field>
+                <field name="expression_label">init_debit</field>
+                <field name="sequence" eval="10"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_init_credit" model="account.report.column">
+                <field name="name">Saldo inicial haber</field>
+                <field name="expression_label">init_credit</field>
+                <field name="sequence" eval="20"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_period_debit" model="account.report.column">
+                <field name="name">Movimiento debe</field>
+                <field name="expression_label">period_debit</field>
+                <field name="sequence" eval="30"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_period_credit" model="account.report.column">
+                <field name="name">Movimiento haber</field>
+                <field name="expression_label">period_credit</field>
+                <field name="sequence" eval="40"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_sum_debit" model="account.report.column">
+                <field name="name">Sumas debe</field>
+                <field name="expression_label">sum_debit</field>
+                <field name="sequence" eval="50"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_sum_credit" model="account.report.column">
+                <field name="name">Sumas haber</field>
+                <field name="expression_label">sum_credit</field>
+                <field name="sequence" eval="60"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_balance_debit" model="account.report.column">
+                <field name="name">Saldo deudor</field>
+                <field name="expression_label">balance_debit</field>
+                <field name="sequence" eval="70"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_balance_credit" model="account.report.column">
+                <field name="name">Saldo acreedor</field>
+                <field name="expression_label">balance_credit</field>
+                <field name="sequence" eval="80"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_asset" model="account.report.column">
+                <field name="name">Activo</field>
+                <field name="expression_label">asset</field>
+                <field name="sequence" eval="90"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_liability" model="account.report.column">
+                <field name="name">Pasivo y patrimonio</field>
+                <field name="expression_label">liability</field>
+                <field name="sequence" eval="100"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_nature_loss" model="account.report.column">
+                <field name="name">Pérdidas por naturaleza</field>
+                <field name="expression_label">nature_loss</field>
+                <field name="sequence" eval="110"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_nature_profit" model="account.report.column">
+                <field name="name">Ganancias por naturaleza</field>
+                <field name="expression_label">nature_profit</field>
+                <field name="sequence" eval="120"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_function_loss" model="account.report.column">
+                <field name="name">Pérdidas por función</field>
+                <field name="expression_label">function_loss</field>
+                <field name="sequence" eval="130"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+            <record id="pe_worksheet_format_2_column_function_profit" model="account.report.column">
+                <field name="name">Ganancias por función</field>
+                <field name="expression_label">function_profit</field>
+                <field name="sequence" eval="140"/>
+                <field name="figure_type">monetary</field>
+                <field name="blank_if_zero" eval="True"/>
+            </record>
+        </field>
+    </record>
+
+    <record id="pe_action_worksheet_format_2" model="ir.actions.client">
+        <field name="name">Hoja de trabajo (formato 2)</field>
+        <field name="tag">account_report</field>
+        <field name="context" eval="{'report_id': ref('pe_worksheet_format_2')}"/>
+    </record>
+</odoo>
