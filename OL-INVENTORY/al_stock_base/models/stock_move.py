@@ -94,5 +94,5 @@ class StockMove(models.Model):
                     line.unlink()
                 else:
                     line.quantity = uom._compute_quantity(
-                        line_qty - take, line.product_uom_id, round=False)
+                        line_qty - take, line.uom_id, round=False)
             move._recompute_state()
