@@ -71,10 +71,10 @@ collection_commission_line_user_rule,Cobro de la liquidación: solo los propios,
 collection_commission_line_manager_rule,Cobro de la liquidación: todos,l10n_pe.collection.commission.line,al_l10n_pe_collection.group_collection_manager,crud,
 collection_commission_line_agency_rule,Cobro de la liquidación: los de la agencia,l10n_pe.collection.commission.line,al_l10n_pe_collection.group_collection_agency,r,"[('commission_id.agency_id.user_ids', 'in', [user.id])]"
 collection_commission_line_company_rule,Cobro de la liquidación de comisiones: multicompañía,l10n_pe.collection.commission.line,,crud,"[('company_id', 'in', company_ids)]"
-collection_account_move_agency_rule,Asientos: clientes de la agencia de cobranza,account.model_account_move,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
-collection_account_move_line_agency_rule,Apuntes: clientes de la agencia de cobranza,account.model_account_move_line,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
-access_account_journal_agency,account.journal agency,account.model_account_journal,al_l10n_pe_collection.group_collection_agency,r,
-collection_partial_agency_rule,Conciliaciones: clientes de la agencia de cobranza,account.model_account_partial_reconcile,al_l10n_pe_collection.group_collection_agency,r,"[('debit_move_id.partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_account_move_agency_rule,Asientos: clientes de la agencia de cobranza,account.move,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_account_move_line_agency_rule,Apuntes: clientes de la agencia de cobranza,account.move.line,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+access_account_journal_agency,account.journal agency,account.journal,al_l10n_pe_collection.group_collection_agency,r,
+collection_partial_agency_rule,Conciliaciones: clientes de la agencia de cobranza,account.partial.reconcile,al_l10n_pe_collection.group_collection_agency,r,"[('debit_move_id.partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
 collection_lawsuit_user_rule,Proceso judicial: solo los propios,l10n_pe.collection.lawsuit,al_l10n_pe_collection.group_collection_user,cru,"[('user_id', '=', user.id)]"
 collection_lawsuit_manager_rule,Proceso judicial: todos,l10n_pe.collection.lawsuit,al_l10n_pe_collection.group_collection_manager,crud,
 collection_lawsuit_agency_rule,Proceso judicial: los del estudio,l10n_pe.collection.lawsuit,al_l10n_pe_collection.group_collection_agency,ru,"[('agency_id.user_ids', 'in', [user.id])]"

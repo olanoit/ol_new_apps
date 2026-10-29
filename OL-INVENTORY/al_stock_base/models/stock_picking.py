@@ -20,7 +20,7 @@ class StockPicking(models.Model):
                 if not move._construction_whole_controlled():
                     continue
                 uom = move.product_id.uom_id
-                qty = uom.round(move.product_uom._compute_quantity(move.quantity, uom, round=False))
+                qty = uom.round(move.uom_id._compute_quantity(move.quantity, uom, round=False))
                 if uom.compare(qty, int(qty)) != 0:
                     raise UserError(self.env._(
                         '%(product)s se entrega en planchas enteras: %(qty)s no es válido.',

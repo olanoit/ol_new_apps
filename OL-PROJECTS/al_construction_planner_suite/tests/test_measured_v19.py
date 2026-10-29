@@ -5,14 +5,14 @@ El supervisor marca la cocina del Dpto 501 como medida con fecha y archivo,
 sin cantidades ni aprobación; aparece en la lista de pendientes de
 Optimización y sale de ella cuando entra en una orden de fabricación. La
 orden de un ambiente sin marcar se prepara con aviso."""
-import base64
 
+from odoo.tools import BinaryBytes
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import new_test_user, tagged
 
 from .common import PlannerCommon
 
-PLAN_PDF = base64.b64encode(b'%PDF-1.4 plano de la cocina (test)')
+PLAN_PDF = BinaryBytes(b'%PDF-1.4 plano de la cocina (test)')
 
 
 @tagged('post_install', '-at_install')

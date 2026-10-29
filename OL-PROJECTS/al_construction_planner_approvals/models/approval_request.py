@@ -29,8 +29,9 @@ def _qty_text(qty):
 class ApprovalCategory(models.Model):
     _inherit = 'approval.category'
 
+    # Odoo 20 retiró approval_type de approval.category; lo define este módulo.
     approval_type = fields.Selection(
-        selection_add=[('construction', 'Planificación de obra')])
+        [('construction', 'Planificación de obra')], string='Tipo de aprobación')
 
     @api.model
     def _construction_category(self, company):

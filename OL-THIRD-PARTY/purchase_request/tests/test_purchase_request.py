@@ -102,14 +102,8 @@ class TestPurchaseRequest(TransactionCase):
         purchase_request.button_approved()
         vals = {"supplier_id": self.supplier.id}
 
-        # It is required to have a picking type
-        purchase_request.picking_type_id = False
-        with self.assertRaisesRegex(UserError, "a Picking Type"):
-            self.wiz.with_context(
-                active_model="purchase.request",
-                active_ids=[purchase_request.id],
-            ).create(vals)
-        purchase_request.picking_type_id = self.picking_type_id
+        # Odoo 20 escribe el tipo de operación (requerido) antes de llegar a
+        # la validación del asistente: ya no se puede dejar vacío.
 
         # Picking type across all lines have to be the same
         purchase_request2 = purchase_request.copy(

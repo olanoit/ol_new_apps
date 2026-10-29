@@ -152,7 +152,7 @@ class ConstructionMaterialRequest(models.Model):
         # Campos como purchase.order.line._prepare_stock_move_vals.
         return {
             'product_id': line.product_id.id,
-            'product_uom': line.product_uom_id.id,
+            'uom_id': line.product_uom_id.id,
             'product_uom_qty': qty,
             'location_id': picking.location_id.id,
             'location_dest_id': picking.location_dest_id.id,
@@ -205,7 +205,7 @@ class ConstructionMaterialRequest(models.Model):
         for move in picking.move_ids:
             line = move.construction_request_line_id
             reserved = move.quantity
-            if move.product_uom.compare(reserved, move.product_uom_qty) >= 0:
+            if move.uom_id.compare(reserved, move.product_uom_qty) >= 0:
                 continue
             shortage = move.product_uom_qty - reserved
             shortages[line] = shortage
@@ -213,7 +213,7 @@ class ConstructionMaterialRequest(models.Model):
                 'qty_to_dispatch': line.qty_to_dispatch - shortage,
                 'qty_to_purchase': line.qty_to_purchase + shortage,
             })
-            if move.product_uom.is_zero(reserved):
+            if move.uom_id.is_zero(reserved):
                 move._action_cancel()
             else:
                 move.product_uom_qty = reserved

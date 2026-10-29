@@ -71,7 +71,7 @@ class MrpProduction(models.Model):
         self.ensure_one()
         return self.move_finished_ids.filtered(
             lambda m: m.state not in ('done', 'cancel')
-            and m.product_uom.compare(m.quantity, 0) > 0
+            and m.uom_id.compare(m.quantity, 0) > 0
             and not m.construction_fixed_cost)
 
     def _piece_fixed_moves(self):
@@ -80,12 +80,12 @@ class MrpProduction(models.Model):
         self.ensure_one()
         return self.move_finished_ids.filtered(
             lambda m: m.state not in ('done', 'cancel')
-            and m.product_uom.compare(m.quantity, 0) > 0
+            and m.uom_id.compare(m.quantity, 0) > 0
             and m.construction_fixed_cost)
 
     @staticmethod
     def _piece_product_qty(move):
-        return move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id)
+        return move.uom_id._compute_quantity(move.quantity, move.product_id.uom_id)
 
     def _piece_measures(self, move):
         """(área, tapacanto) del movimiento: medida de una pieza por cantidad."""

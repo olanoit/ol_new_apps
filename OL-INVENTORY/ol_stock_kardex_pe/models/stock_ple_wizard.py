@@ -81,7 +81,7 @@ class L10nPeStockPleWizard(models.TransientModel):
         balances = defaultdict(lambda: [0.0, 0.0])
         for flag, sign in (('is_in', 1), ('is_out', -1)):
             groups = self.env['stock.move']._read_group(
-                domain + [(flag, '=', True)], ['product_id', 'product_uom'],
+                domain + [(flag, '=', True)], ['product_id', 'uom_id'],
                 ['value:sum', 'quantity:sum'])
             for product, uom, value, qty in groups:
                 balances[product][0] += sign * uom._compute_quantity(qty, product.uom_id)

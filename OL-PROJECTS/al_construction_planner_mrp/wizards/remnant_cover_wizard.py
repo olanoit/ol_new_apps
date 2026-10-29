@@ -40,7 +40,7 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
         area = fraction * move.product_id.construction_sheet_area_m2
         values.update({
             'production_id': raw_moves.raw_material_production_id[:1].id,
-            'need_qty': sum(m.product_uom._compute_quantity(m.construction_need_qty, uom,
+            'need_qty': sum(m.uom_id._compute_quantity(m.construction_need_qty, uom,
                                                             round=False) for m in raw_moves),
             'fraction_to_cover': fraction,
             'fit_required': move.company_id.construction_remnant_fit_required,
@@ -70,7 +70,7 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
         lines = []
         for quant in quants:
             lot = quant.lot_id
-            if quant.product_uom_id.compare(quant.quantity - quant.reserved_quantity, 1.0) < 0:
+            if quant.uom_id.compare(quant.quantity - quant.reserved_quantity, 1.0) < 0:
                 continue
             if lot.construction_area_m2 + 1e-6 < area:
                 continue

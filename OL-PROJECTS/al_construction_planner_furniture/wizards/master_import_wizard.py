@@ -113,10 +113,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
         # El cliente web vuelve a leer el asistente con ``bin_size`` al pulsar
         # Importar: sin quitarlo, ``file`` llega como «45.3 KB» y la vista
         # previa mostraba un instante «no es un libro válido».
-        content = self.with_context(bin_size=False).file
+        content = self.file.content
         try:
             from openpyxl import load_workbook
-            workbook = load_workbook(BytesIO(base64.b64decode(content)), read_only=True,
+            workbook = load_workbook(BytesIO(content), read_only=True,
                                      data_only=True)
         except Exception as exc:  # noqa: BLE001 - cualquier archivo que no sea un libro
             _logger.info('Libro no válido para W-15: %s', exc)
@@ -1012,7 +1012,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
             product = products.get(code)
             if not product:
                 continue
-            vals = {'product_qty': line['qty'], 'product_uom_id': line['uom'].id,
+            vals = {'product_qty': line['qty'], 'uom_id': line['uom'].id,
                     'construction_consumption_stage': stage or False}
             if (code, stage) in current:
                 commands.append((1, current.pop((code, stage)).id, vals))

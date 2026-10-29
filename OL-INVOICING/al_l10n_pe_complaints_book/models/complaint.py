@@ -602,7 +602,7 @@ class ResCompany(models.Model):
         calendar = self._l10n_pe_complaint_calendar()
         if not calendar:
             return True
-        tz = pytz.timezone(calendar.tz or 'America/Lima')
+        tz = pytz.timezone((calendar.company_id or self.env.company).tz or 'America/Lima')
         start = tz.localize(datetime.combine(day, time(12))).astimezone(pytz.utc).replace(tzinfo=None)
         return not self.env['resource.calendar.leaves'].sudo().search_count([
             ('calendar_id', 'in', (calendar.id, False)),

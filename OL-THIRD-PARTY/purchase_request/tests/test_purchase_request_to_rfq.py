@@ -323,7 +323,7 @@ class TestPurchaseRequestToRfq(common.TransactionCase):
         # PO uses product's base UoM (Units)
         self.assertEqual(po_line.product_qty, 12, "Quantity should be 12 units")
         self.assertEqual(
-            po_line.product_uom_id,
+            po_line.uom_id,
             self.env.ref("uom.product_uom_unit"),
             "The purchase UoM should be Unit(s)",
         )

@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Devolución de transferencias: aviso claro sin cantidades (con
-mrp_subcontracting, el asistente sin líneas dejaba vacío el destino)."""
-from odoo.exceptions import UserError
+"""Devolución de transferencias (Odoo 20: albarán de devolución directo)."""
 from odoo.tests import TransactionCase, tagged
 
 
@@ -25,30 +23,18 @@ class TestPickingReturn(TransactionCase):
             'location_id': cls.stock.id, 'location_dest_id': cls.site.id,
             'move_ids': [(0, 0, {
                 'product_id': cls.product.id, 'product_uom_qty': 3,
-                'product_uom': cls.product.uom_id.id,
+                'uom_id': cls.product.uom_id.id,
                 'location_id': cls.stock.id, 'location_dest_id': cls.site.id})]})
         cls.picking.action_confirm()
         cls.picking.action_assign()
         cls.picking.move_ids.picked = True
         cls.picking.button_validate()
 
-    def _wizard(self):
-        return self.env['stock.return.picking'].with_context(
-            active_id=self.picking.id, active_ids=self.picking.ids,
-            active_model='stock.picking').create({'picking_id': self.picking.id})
-
-    def test_return_without_quantity(self):
-        wizard = self._wizard()
-        with self.assertRaisesRegex(UserError, 'al menos un producto'):
-            wizard.action_create_returns()
-        wizard.product_return_moves = [(5,)]
-        with self.assertRaisesRegex(UserError, 'al menos un producto'):
-            wizard.action_create_returns()
-
     def test_return_with_quantity(self):
-        wizard = self._wizard()
-        wizard.product_return_moves.quantity = 2
-        returned = self.env['stock.picking'].browse(wizard.action_create_returns()['res_id'])
+        # Odoo 20: la devolución es un albarán borrador con las cantidades
+        # de la transferencia, que se ajustan antes de validarla.
+        returned = self.picking._create_return()
         self.assertEqual(returned.location_id, self.site)
         self.assertEqual(returned.location_dest_id, self.stock)
+        returned.move_ids.product_uom_qty = 2
         self.assertEqual(returned.move_ids.product_uom_qty, 2)

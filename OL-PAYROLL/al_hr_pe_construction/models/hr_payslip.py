@@ -155,7 +155,7 @@ class HrPayslip(models.Model):
         working_weekdays = set(calendar.attendance_ids.mapped('dayofweek'))
         if not working_weekdays:
             return 0.0
-        tz = timezone(calendar.tz or 'UTC')
+        tz = timezone((calendar.company_id or self.env.company).tz or 'UTC')
         start = tz.localize(datetime.combine(self.date_from, time.min))
         stop = tz.localize(datetime.combine(self.date_to, time.max))
         leaves = self.env['resource.calendar.leaves'].search([

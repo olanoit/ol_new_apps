@@ -9,15 +9,8 @@ class ResUsers(models.Model):
     al_stock_overview_style = fields.Selection(
         [('company', 'Según la compañía'), ('standard', 'Estándar de Odoo'),
          ('compact', 'Compacta')],
-        string='Tarjetas del resumen de Inventario', default='company', required=True)
-
-    @property
-    def SELF_READABLE_FIELDS(self):
-        return super().SELF_READABLE_FIELDS + ['al_stock_overview_style']
-
-    @property
-    def SELF_WRITEABLE_FIELDS(self):
-        return super().SELF_WRITEABLE_FIELDS + ['al_stock_overview_style']
+        string='Tarjetas del resumen de Inventario', default='company', required=True,
+        user_writeable=True)
 
     def _al_stock_overview_options(self):
         """(estilo, gráfico, ancho) efectivos del resumen de Inventario: el

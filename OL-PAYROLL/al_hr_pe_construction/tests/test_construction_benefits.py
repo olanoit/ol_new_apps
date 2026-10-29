@@ -164,7 +164,7 @@ class TestConstructionBenefits(TransactionCase):
             self.env['resource.calendar'].create({
                 'name': 'Obra lunes a sábado',
                 'attendance_ids': [(5, 0, 0)] + [
-                    (0, 0, {'name': 'Día %s' % day, 'dayofweek': str(day),
+                    (0, 0, {'dayofweek': str(day),
                             'hour_from': 8.0, 'hour_to': 16.0,
                             'day_period': 'morning'})
                     for day in range(6)],

@@ -80,7 +80,7 @@ class L10nPeHrConstructionSite(models.Model):
     def _tz(self):
         self.ensure_one()
         company = self.company_id or self.env.company
-        return pytz.timezone(company.resource_calendar_id.tz or company.partner_id.tz
+        return pytz.timezone(company.tz or company.partner_id.tz
                              or 'America/Lima')
 
     def _is_late(self, check_in):

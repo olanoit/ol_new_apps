@@ -23,7 +23,7 @@ access_purchase_request_line_purchase_user,purchase.request.line,purchase.reques
 purchase_request_line_comp_rule,Purchase Request Line multi-company,purchase.request.line,,crud,"
             ['|',('company_id','=',False),('company_id', 'in', company_ids)]
         "
-access_stock_move_purchase_request_user,stock.move,stock.model_stock_move,purchase_request.group_purchase_request_user,r,
+access_stock_move_purchase_request_user,stock.move,stock.move,purchase_request.group_purchase_request_user,r,
 access_purchase_order_user,access.purchase.order.user,purchase.order,purchase_request.group_purchase_request_user,r,
 access_purchase_order_line_user,access.purchase.order.line.user,purchase.order.line,purchase_request.group_purchase_request_user,r,
 access_purchase_request_allocation_manager,purchase.request.allocation,purchase.request.allocation,purchase_request.group_purchase_request_manager,crud,

@@ -47,7 +47,7 @@ class TestKardexReport(TestSaleCommon):
                 'name': cls.product_kdx.name,
                 'product_id': cls.product_kdx.id,
                 'product_qty': qty,
-                'product_uom_id': cls.product_kdx.uom_id.id,
+                'uom_id': cls.product_kdx.uom_id.id,
                 'price_unit': price,
                 'tax_ids': [Command.clear()],
             })],

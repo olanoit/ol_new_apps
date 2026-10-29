@@ -147,7 +147,7 @@ class ConstructionResourcePlanAllocation(models.Model):
                              + date_domain), -1),
             ):
                 consumed += sign * sum(
-                    m.product_uom._compute_quantity(m.quantity, product.uom_id,
+                    m.uom_id._compute_quantity(m.quantity, product.uom_id,
                                                     rounding_method='HALF-UP')
                     for m in moves)
             ordered = siblings.sorted(lambda a: (a.date_needed or date.max, a.id))

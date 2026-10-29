@@ -19,7 +19,7 @@ class TestAttendanceRegister(TransactionCase):
             'name': 'Diurno registro',
             'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [
-                (0, 0, {'name': 'Día %s' % dia, 'dayofweek': str(dia),
+                (0, 0, {'dayofweek': str(dia),
                         'hour_from': 8.0, 'hour_to': 16.0,
                         'day_period': 'morning'})
                 for dia in range(0, 5)],

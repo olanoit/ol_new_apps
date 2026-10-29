@@ -810,13 +810,13 @@ class HrTareajeManager(models.Model):
             lambda leave: leave.date_to - leave.date_from
             >= timedelta(hours=20))
         holidays = defaultdict(set)
-        default_tz = self.company_id.resource_calendar_id.tz \
+        default_tz = self.company_id.tz \
             or 'America/Lima'
         for leave in leaves:
             # Las fechas se guardan en UTC: un feriado de 00:00 a 23:59
             # hora de Lima termina a las 04:59 UTC del día siguiente, así
             # que .date() en UTC marcaba también ese día como feriado.
-            tz = leave.calendar_id.tz or default_tz
+            tz = leave.calendar_id.company_id.tz or default_tz
             day = max(self._to_local_date(leave.date_from, tz),
                       self.date_start)
             last = min(self._to_local_date(leave.date_to, tz),

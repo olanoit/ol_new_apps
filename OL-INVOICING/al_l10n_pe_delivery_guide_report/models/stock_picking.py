@@ -22,7 +22,7 @@ class StockPicking(models.Model):
         for move in self.move_ids.filtered(lambda m: m.quantity > 0):
             lines.append({
                 'product': move.product_id,
-                'uom': move.product_uom,
+                'uom': move.uom_id,
                 'quantity': move.quantity,
                 # ordenados: un set no tiene orden y cada impresión variaba
                 'lots': sorted({ml.lot_id.name for ml in move.move_line_ids if ml.lot_id}),

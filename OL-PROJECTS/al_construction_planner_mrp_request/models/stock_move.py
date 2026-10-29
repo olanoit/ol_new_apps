@@ -33,8 +33,8 @@ class StockMove(models.Model):
         if not self._construction_is_request_board():
             return super()._construction_cover_fraction()
         uom = self.product_id.uom_id
-        need = self.product_uom._compute_quantity(self.construction_need_qty, uom, round=False)
-        covered = self.product_uom._compute_quantity(
+        need = self.uom_id._compute_quantity(self.construction_need_qty, uom, round=False)
+        covered = self.uom_id._compute_quantity(
             self.construction_covered_qty, uom, round=False)
         net = uom.round(max(need - covered, 0.0))
         return uom.round(net - math.floor(net))
@@ -60,15 +60,15 @@ class StockMove(models.Model):
         necesidad menos lo cubierto con retazos."""
         for move in self:
             uom = move.product_id.uom_id
-            need = move.product_uom._compute_quantity(move.construction_need_qty, uom, round=False)
-            covered = move.product_uom._compute_quantity(
+            need = move.uom_id._compute_quantity(move.construction_need_qty, uom, round=False)
+            covered = move.uom_id._compute_quantity(
                 move.construction_covered_qty, uom, round=False)
             whole = move.product_id._construction_whole_qty(need - covered, move.company_id)
-            new_qty = uom._compute_quantity(whole, move.product_uom, round=False)
-            if move.product_uom.compare(new_qty, move.product_uom_qty):
+            new_qty = uom._compute_quantity(whole, move.uom_id, round=False)
+            if move.uom_id.compare(new_qty, move.product_uom_qty):
                 move._do_unreserve()
                 move.product_uom_qty = new_qty
-                if not move.product_uom.is_zero(new_qty):
+                if not move.uom_id.is_zero(new_qty):
                     move._action_assign()
             line = move.construction_request_line_id
             # La línea muestra el redondeo que queda después del retazo.
@@ -84,7 +84,7 @@ class StockMove(models.Model):
             variant = quant.product_id
             remnant = self.create({
                 'product_id': variant.id,
-                'product_uom': variant.uom_id.id,
+                'uom_id': variant.uom_id.id,
                 'product_uom_qty': 1.0,
                 'location_id': quant.location_id.id,
                 'location_dest_id': self.location_dest_id.id,
@@ -105,7 +105,7 @@ class StockMove(models.Model):
                 'move_id': remnant.id,
                 'picking_id': picking.id,
                 'product_id': variant.id,
-                'product_uom_id': variant.uom_id.id,
+                'uom_id': variant.uom_id.id,
                 'lot_id': quant.lot_id.id,
                 'quantity': 1.0,
                 'location_id': quant.location_id.id,

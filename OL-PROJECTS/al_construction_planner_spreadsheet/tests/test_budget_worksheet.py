@@ -2,7 +2,6 @@
 """Hoja de trabajo de presupuesto y plan (requerimiento CREVAL v1.0, 6.7):
 plantilla en Presupuestos › cotización, validación, envío al planificador con
 el asistente del libro (6.6), costos vigentes y versiones."""
-import base64
 import json
 from io import BytesIO
 
@@ -61,7 +60,7 @@ class TestBudgetWorksheet(TestBudgetBook):
 
     def test_send_validate_costs_and_versions(self):
         document = self._document()
-        sheets = _sheets_from_book(base64.b64decode(self._book()))
+        sheets = _sheets_from_book(self._book().content)
         result = document.action_construction_validate(sheets)
         self.assertEqual(result['errors'], [])
         bad = dict(sheets, APU_DETALLE=sheets['APU_DETALLE'] + [['BK-R01', 'NO-EXISTE', '', '',

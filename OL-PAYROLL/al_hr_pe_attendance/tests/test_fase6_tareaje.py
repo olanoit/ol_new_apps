@@ -195,7 +195,7 @@ class TestTareajeFlow(TransactionCase):
             'tz': 'America/Lima',
             'hours_per_day': 8.0,
             'attendance_ids': [(5, 0, 0)] + [
-                (0, 0, {'name': 'Noche %s' % dia, 'dayofweek': str(dia),
+                (0, 0, {'dayofweek': str(dia),
                         'hour_from': desde, 'hour_to': hasta,
                         'day_period': periodo})
                 for dia in range(0, 5)
@@ -239,11 +239,11 @@ class TestTareajeFlow(TransactionCase):
             'name': 'Nocturno día siguiente',
             'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [
-                (0, 0, {'name': 'Noche %s' % dia, 'dayofweek': str(dia),
+                (0, 0, {'dayofweek': str(dia),
                         'hour_from': 22.0, 'hour_to': 24.0,
                         'day_period': 'afternoon'})
                 for dia in range(0, 5)] + [
-                (0, 0, {'name': 'Madrugada %s' % dia, 'dayofweek': str(dia),
+                (0, 0, {'dayofweek': str(dia),
                         'hour_from': 0.0, 'hour_to': 6.0,
                         'day_period': 'morning'})
                 for dia in range(1, 6)],
@@ -263,7 +263,7 @@ class TestTareajeFlow(TransactionCase):
         calendario = self.env['resource.calendar'].create({
             'name': 'Diurno test',
             'attendance_ids': [(5, 0, 0)] + [
-                (0, 0, {'name': 'Lunes %s' % periodo, 'dayofweek': '0',
+                (0, 0, {'dayofweek': '0',
                         'hour_from': desde, 'hour_to': hasta,
                         'day_period': periodo})
                 for desde, hasta, periodo in [(8.0, 13.0, 'morning'),

@@ -29,7 +29,7 @@ class TestStockFlow(TransactionCase):
             'location_id': source.id, 'location_dest_id': dest.id,
             'move_ids': [(0, 0, {
                 'product_id': self.product.id, 'product_uom_qty': qty,
-                'product_uom': self.product.uom_id.id,
+                'uom_id': self.product.uom_id.id,
                 'location_id': source.id, 'location_dest_id': dest.id})]})
         picking.action_confirm()
         picking.action_assign()
@@ -45,11 +45,9 @@ class TestStockFlow(TransactionCase):
         self._validate(self.warehouse.in_type_id, self.supplier_location, self.stock, 5)
         dispatch = self._validate(self.warehouse.int_type_id, self.stock, self.site, 3)
         self.assertEqual(self._qty(self.site), 3)
-        wizard = self.env['stock.return.picking'].with_context(
-            active_id=dispatch.id, active_ids=dispatch.ids,
-            active_model='stock.picking').create({'picking_id': dispatch.id})
-        wizard.product_return_moves.quantity = 1
-        returned = self.env['stock.picking'].browse(wizard.action_create_returns()['res_id'])
+        # Odoo 20: la devolución es un albarán borrador que se ajusta.
+        returned = dispatch._create_return()
+        returned.move_ids.product_uom_qty = 1
         self.assertEqual(returned.location_dest_id, self.stock)
         returned.move_ids.picked = True
         returned.button_validate()

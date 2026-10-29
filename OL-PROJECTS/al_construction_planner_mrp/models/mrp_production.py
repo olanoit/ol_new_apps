@@ -119,7 +119,7 @@ class MrpProduction(models.Model):
                 continue
             # Planchas enteras (M111-12): se compara la necesidad, no el
             # entero que se entrega.
-            result[move.product_id] += move.product_uom._compute_quantity(
+            result[move.product_id] += move.uom_id._compute_quantity(
                 move.construction_need_qty, move.product_id.uom_id, round=False) \
                 if move.construction_need_qty else move.product_qty
         return result

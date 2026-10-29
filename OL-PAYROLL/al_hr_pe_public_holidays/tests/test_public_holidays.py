@@ -131,9 +131,10 @@ class TestPeruPublicHolidays(TransactionCase):
     # Aplicación a los calendarios
     # ------------------------------------------------------------------
     def _calendar(self, tz='America/Lima'):
+        # Odoo 20: la zona horaria es de la compañía, no del calendario.
+        self.company.tz = tz
         return self.Calendar.create({
             'name': 'Calendario prueba feriados %s' % tz,
-            'tz': tz,
             'company_id': self.company.id,
         })
 
@@ -181,7 +182,7 @@ class TestPeruPublicHolidays(TransactionCase):
         original = self.Leaves.search([
             ('pe_public_holiday_id', '=', holiday.id),
             ('calendar_id', '=', calendar.id)]).date_from
-        calendar.tz = 'UTC'
+        calendar.company_id.tz = 'UTC'
         holiday.action_apply_to_calendars()
         leaves = self.Leaves.search([
             ('pe_public_holiday_id', '=', holiday.id),
@@ -260,8 +261,7 @@ class TestPeruPublicHolidays(TransactionCase):
         """
         other = self.env['res.company'].create({'name': 'AJENA SAC'})
         foreign = self.Calendar.create({
-            'name': 'Calendario ajeno', 'tz': 'America/Lima',
-            'company_id': other.id})
+            'name': 'Calendario ajeno', 'company_id': other.id})
         holiday = self._holiday(day=date(2043, 7, 28))
         holiday.with_context(
             allowed_company_ids=[self.company.id]).action_apply_to_calendars()

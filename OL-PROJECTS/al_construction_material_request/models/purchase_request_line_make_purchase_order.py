@@ -35,7 +35,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
         vals = super()._prepare_purchase_order_line(po, item)
         site = self._al_final_location(item)
         if site:
-            vals['location_final_id'] = site.id
+            vals['construction_location_final_id'] = site.id
         if self._al_is_general_stock(item):
             vals['analytic_distribution'] = False
         else:
@@ -59,7 +59,7 @@ class PurchaseRequestLineMakePurchaseOrder(models.TransientModel):
             domain.append(('construction_task_id', '=',
                            item.line_id.construction_request_line_id.task_id.id))
         site = self._al_final_location(item)
-        domain.append(('location_final_id', '=', site.id if site else False))
+        domain.append(('construction_location_final_id', '=', site.id if site else False))
         return domain
 
     def make_purchase_order(self):

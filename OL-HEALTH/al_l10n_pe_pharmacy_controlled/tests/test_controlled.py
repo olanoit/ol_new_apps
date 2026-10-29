@@ -82,7 +82,7 @@ class TestControlled(TransactionCase):
             'picking_type_id': picking_type.id, 'location_id': source.id,
             'location_dest_id': dest.id, 'origin': origin, 'partner_id': partner and partner.id,
             'move_ids': [(0, 0, {'product_id': product.id, 'product_uom_qty': qty,
-                                 'product_uom': product.uom_id.id, 'location_id': source.id,
+                                 'uom_id': product.uom_id.id, 'location_id': source.id,
                                  'location_dest_id': dest.id})],
         })
         if picking_type.code == 'incoming':

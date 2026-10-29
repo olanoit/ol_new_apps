@@ -89,8 +89,7 @@ class ConstructionProjectionImportWizard(models.TransientModel):
         self.ensure_one()
         from openpyxl import load_workbook
         try:
-            workbook = load_workbook(BytesIO(self.with_context(
-                bin_size=False).file.content), data_only=True, read_only=False)
+            workbook = load_workbook(BytesIO(self.file.content), data_only=True, read_only=False)
         except Exception as exc:  # noqa: BLE001 - archivo de usuario
             _logger.info('Hoja de proyección no válida: %s', exc)
             raise UserError(self.env._('El archivo no es un libro Excel (.xlsx) válido.')) from exc

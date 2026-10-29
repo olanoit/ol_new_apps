@@ -434,7 +434,7 @@ class TestContracts(TransactionCase):
         # Jueves 05/11 feriado: la liquidación se corre al miércoles 04/11; el
         # sábado 07/11 feriado: el pago, al viernes 06/11.
         calendar = self.env.company.resource_calendar_id
-        calendar.tz = 'America/Lima'
+        self.env.company.tz = 'America/Lima'
         self.env['resource.calendar.leaves'].create([
             {'name': 'Feriado (test)', 'calendar_id': calendar.id,
              'date_from': '2026-11-05 13:00:00', 'date_to': '2026-11-05 18:00:00'},

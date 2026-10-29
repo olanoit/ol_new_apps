@@ -33,12 +33,12 @@ class MrpProduction(models.Model):
             need = deliver = covered = 0.0
             for move in production.move_raw_ids.filtered('construction_need_qty'):
                 uom = move.product_id.uom_id
-                need += move.product_uom._compute_quantity(
+                need += move.uom_id._compute_quantity(
                     move.construction_need_qty, uom, round=False)
-                covered += move.product_uom._compute_quantity(
+                covered += move.uom_id._compute_quantity(
                     move._construction_covered_qty(), uom, round=False)
                 if move.state != 'cancel':
-                    deliver += move.product_uom._compute_quantity(
+                    deliver += move.uom_id._compute_quantity(
                         move.product_uom_qty, uom, round=False)
             production.construction_sheet_need = need
             production.construction_sheet_to_deliver = deliver
@@ -66,10 +66,10 @@ class MrpProduction(models.Model):
                 for move in moves:
                     if not move.construction_need_qty:
                         move.construction_need_qty = move.product_uom_qty
-                own = {move: move.product_uom._compute_quantity(
+                own = {move: move.uom_id._compute_quantity(
                     move.construction_need_qty, uom, round=False) for move in moves}
                 need = sum(own.values())
-                covered = sum(move.product_uom._compute_quantity(
+                covered = sum(move.uom_id._compute_quantity(
                     move._construction_covered_qty(), uom, round=False) for move in moves)
                 whole = product._construction_whole_qty(need - covered, production.company_id)
                 # 2. Cada movimiento vuelve a su necesidad y la diferencia va
@@ -78,15 +78,15 @@ class MrpProduction(models.Model):
                 for move in moves.sorted(lambda m: -own[m]):
                     qty = max(own[move] + delta, 0.0)
                     delta -= qty - own[move]
-                    new_qty = uom._compute_quantity(qty, move.product_uom, round=False)
-                    if move.product_uom.compare(new_qty, move.product_uom_qty):
+                    new_qty = uom._compute_quantity(qty, move.uom_id, round=False)
+                    if move.uom_id.compare(new_qty, move.product_uom_qty):
                         move.product_uom_qty = new_qty
                 # 3. En 0: en borrador se dejan (guardan la necesidad); los
                 #    confirmados se cancelan, salvo los que cubre un retazo
                 #    (M111-16): guardan la necesidad y el vínculo para quitarlo
                 #    o declararlo.
                 moves.filtered(
-                    lambda m: m.state != 'draft' and m.product_uom.is_zero(m.product_uom_qty)
+                    lambda m: m.state != 'draft' and m.uom_id.is_zero(m.product_uom_qty)
                     and not m._construction_covered_qty()
                 )._action_cancel()
 
@@ -102,7 +102,7 @@ class MrpProduction(models.Model):
                 continue
             whole = moves.filtered('construction_need_qty')
             if whole and order.product_qty:
-                planned = sum(m.product_uom._compute_quantity(
+                planned = sum(m.uom_id._compute_quantity(
                     m.product_uom_qty, product.uom_id, round=False) for m in whole) \
                     * order.qty_producing / order.product_qty
                 if product.uom_id.compare(consumed, planned) == 0:
@@ -121,7 +121,7 @@ class MrpProduction(models.Model):
             lambda m: m.state not in ('done', 'cancel') and m.construction_covers_move_id)}
         res = super()._update_raw_moves(factor)
         for move, qty in remnants.items():
-            if move.product_uom.compare(move.product_uom_qty, qty):
+            if move.uom_id.compare(move.product_uom_qty, qty):
                 move.with_context(no_procurement=True).product_uom_qty = qty
         self.filtered(lambda p: p.state != 'draft')._construction_round_whole_sheets()
         return res

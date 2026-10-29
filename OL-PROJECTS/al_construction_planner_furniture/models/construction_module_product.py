@@ -130,14 +130,14 @@ class ConstructionTypologyModule(models.Model):
             module.product_id = product
             lines = [Command.create({
                 'product_id': material.product_id.id, 'product_qty': material.qty,
-                'product_uom_id': (material.uom_id or material.product_id.uom_id).id,
+                'uom_id': (material.uom_id or material.product_id.uom_id).id,
                 'construction_consumption_stage': material.stage or False})
                 for material in module.material_ids
                 if not material.stage or material.stage in codes]
             if not lines and module.bom_id:
                 lines = [Command.create({
                     'product_id': line.product_id.id, 'product_qty': line.product_qty,
-                    'product_uom_id': line.product_uom_id.id,
+                    'uom_id': line.uom_id.id,
                     'construction_consumption_stage': line.construction_consumption_stage})
                     for line in module.bom_id.bom_line_ids
                     if not line.construction_consumption_stage
@@ -216,7 +216,7 @@ class ConstructionResourcePlan(models.Model):
             lot = self._module_lot(product, apartment)
             production = self.env['mrp.production'].create({
                 'product_id': product.id, 'product_qty': len(tasks),
-                'product_uom_id': product.uom_id.id, 'company_id': self.company_id.id,
+                'uom_id': product.uom_id.id, 'company_id': self.company_id.id,
                 'origin': '%s · %s' % (self.display_name, apartment.display_name),
                 'construction_module_task_ids': [Command.set(tasks.ids)],
             })
@@ -280,7 +280,7 @@ class ConstructionResourcePlan(models.Model):
         for (product, apartment), tasks in groups.items():
             moves.append(Command.create({
                 'product_id': product.id, 'product_uom_qty': len(tasks),
-                'product_uom': product.uom_id.id, 'location_id': source.id,
+                'uom_id': product.uom_id.id, 'location_id': source.id,
                 'location_dest_id': dest.id,
                 'description_picking': '%s · %s' % (apartment.display_name, ', '.join(
                     tasks.construction_space_task_id.mapped('name'))),
@@ -289,7 +289,7 @@ class ConstructionResourcePlan(models.Model):
             }))
         for product, qty in loose or []:
             moves.append(Command.create({
-                'product_id': product.id, 'product_uom_qty': qty, 'product_uom': product.uom_id.id,
+                'product_id': product.id, 'product_uom_qty': qty, 'uom_id': product.uom_id.id,
                 'location_id': source.id, 'location_dest_id': dest.id}))
         picking = self.env['stock.picking'].create({
             'picking_type_id': picking_type.id, 'location_id': source.id,

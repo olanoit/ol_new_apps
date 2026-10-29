@@ -17,8 +17,10 @@ class TestComplaintsBook(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # Odoo 20: la zona horaria es de la compañía, no del calendario.
+        cls.company.tz = 'America/Lima'
         cls.calendar = cls.env['resource.calendar'].create({
-            'name': 'Lunes a viernes (reclamos)', 'tz': 'America/Lima', 'company_id': cls.company.id})
+            'name': 'Lunes a viernes (reclamos)', 'company_id': cls.company.id})
         cls.company.write({'l10n_pe_complaint_calendar_id': cls.calendar.id,
                            'l10n_pe_complaint_alert_days': 5})
         cls.responsible = new_test_user(cls.env, login='atencion_reclamos',

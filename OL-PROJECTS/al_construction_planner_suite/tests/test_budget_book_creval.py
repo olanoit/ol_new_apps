@@ -156,7 +156,7 @@ class TestBudgetBook(TransactionCase):
     def _edited_book(self, edit, order=None):
         """El libro de ``_book`` cambiado por ``edit(book)``."""
         from openpyxl import load_workbook
-        book = load_workbook(BytesIO(base64.b64decode(self._book())))
+        book = load_workbook(BytesIO(self._book().content))
         edit(book)
         output = BytesIO()
         book.save(output)

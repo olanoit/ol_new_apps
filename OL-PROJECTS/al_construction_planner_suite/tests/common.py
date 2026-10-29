@@ -33,11 +33,12 @@ class PlannerCommon(TransactionCase):
         cls.company = cls.env.company
         # Días hábiles de la obra de lunes a viernes (las bases de prueba
         # pueden traer sábados laborables).
+        # Odoo 20: la zona horaria es de la compañía, no del calendario.
+        cls.company.tz = 'America/Lima'
         cls.company.resource_calendar_id = cls.env['resource.calendar'].create({
             'name': 'Lunes a viernes (test planificador)', 'company_id': cls.company.id,
-            'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [(0, 0, {
-                'name': 'Día %s' % day, 'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
+                'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
                 'day_period': 'full_day'}) for day in range(5)]})
         cls.unit = cls.env.ref('uom.product_uom_unit')
         cls.meter = cls.env.ref('uom.product_uom_meter')

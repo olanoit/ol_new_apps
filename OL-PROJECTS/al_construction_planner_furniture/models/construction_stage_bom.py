@@ -137,12 +137,12 @@ class ConstructionTypology(models.Model):
             current.setdefault(key, line)
         commands = []
         wanted = [((product, stage_code, False), {
-            'product_qty': qty, 'product_uom_id': uom.id,
+            'product_qty': qty, 'uom_id': uom.id,
             'construction_consumption_stage': stage_code, 'construction_intermediate': False})
             for (product, uom, stage_code), qty in components.items()]
         if intermediate:
             wanted.insert(0, ((intermediate, False, True), {
-                'product_qty': 1.0, 'product_uom_id': intermediate.uom_id.id,
+                'product_qty': 1.0, 'uom_id': intermediate.uom_id.id,
                 'construction_consumption_stage': False, 'construction_intermediate': True}))
         for key, vals in wanted:
             line = current.pop(key, None)
@@ -256,7 +256,7 @@ class ConstructionTypology(models.Model):
             commands = []
             for module in modules:
                 product = module.product_id
-                vals = {'product_qty': 1.0, 'product_uom_id': product.uom_id.id,
+                vals = {'product_qty': 1.0, 'uom_id': product.uom_id.id,
                         'cost_share': shares[module]}
                 byproduct = current.pop(product, None)
                 if byproduct:

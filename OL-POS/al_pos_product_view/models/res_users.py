@@ -21,20 +21,13 @@ class ResUsers(models.Model):
             "configuración del TPV. Se actualiza automáticamente cuando el "
             "usuario cambia de vista desde la pantalla del TPV."
         ),
+        # Sin esto, un cajero que guarda sus preferencias recibe «No tienes
+        # permiso para modificar registros Usuario»: un usuario interno solo
+        # puede leer y escribir en su propio registro los campos
+        # user_writeable; el resto pasa por los permisos normales de
+        # res.users, que no tiene.
+        user_writeable=True,
     )
-
-    # Sin esto, un cajero que guarda sus preferencias recibe «No tienes
-    # permiso para modificar registros Usuario»: un usuario interno solo
-    # puede leer y escribir en su propio registro los campos declarados
-    # aquí; el resto pasa por los permisos normales de res.users, que no
-    # tiene.
-    @property
-    def SELF_READABLE_FIELDS(self):
-        return super().SELF_READABLE_FIELDS + ["pos_product_view_mode"]
-
-    @property
-    def SELF_WRITEABLE_FIELDS(self):
-        return super().SELF_WRITEABLE_FIELDS + ["pos_product_view_mode"]
 
     # --- Exposición de datos al frontend -----------------------------------
     @api.model

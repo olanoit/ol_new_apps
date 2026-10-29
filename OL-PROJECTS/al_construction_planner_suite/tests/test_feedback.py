@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Correcciones de la prueba integral de ALTA (obra ZZMOMEN-98-26)."""
-import base64
 from datetime import date
 
+from odoo.tools import BinaryBytes
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools.misc import file_open
@@ -105,7 +105,7 @@ class TestFeedback(PlannerCommon):
     def test_import_reads_file_with_bin_size(self):
         with file_open('al_construction_planner_furniture/static/examples/maestro_planificacion_ejemplo.xlsx',
                        'rb') as handle:
-            content = base64.b64encode(handle.read())
+            content = BinaryBytes(handle.read())
         wizard = self.env['construction.master.import.wizard'].create({
             'project_id': self.project.id, 'file': content,
             'filename': 'maestro_planificacion_ejemplo.xlsx'})

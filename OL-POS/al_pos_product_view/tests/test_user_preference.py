@@ -2,8 +2,8 @@
 """El cajero puede guardar su preferencia desde Mis preferencias.
 
 Un usuario interno solo lee y escribe en su propio registro los campos que
-``res.users`` declara como propios (``SELF_READABLE_FIELDS`` /
-``SELF_WRITEABLE_FIELDS``); con los demás se aplican los permisos normales
+``res.users`` declara como propios (``user_writeable=True`` desde Odoo 20);
+con los demás se aplican los permisos normales
 de ``res.users``, que un cajero no tiene. Sin declarar el campo, guardar
 las preferencias fallaba con «No tienes permiso para modificar registros
 Usuario».
@@ -34,9 +34,7 @@ class TestUserPreference(TransactionCase):
         return self.env['res.users'].with_user(self.cashier).browse(self.cashier.id)
 
     def test_field_is_declared_as_own(self):
-        own = self._own_record()
-        self.assertIn(FIELD, own.SELF_READABLE_FIELDS)
-        self.assertIn(FIELD, own.SELF_WRITEABLE_FIELDS)
+        self.assertTrue(self.env['res.users']._fields[FIELD].user_writeable)
 
     def test_cashier_saves_the_preference(self):
         own = self._own_record()

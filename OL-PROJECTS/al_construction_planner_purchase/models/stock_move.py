@@ -56,8 +56,8 @@ class StockMove(models.Model):
                 lambda l: l.is_client_supply and l.product_id == move.product_id)
             if lines:
                 lines._construction_add_client_received(
-                    move.product_uom._compute_quantity(
-                        move.quantity, lines[0].product_uom_id or move.product_uom,
+                    move.uom_id._compute_quantity(
+                        move.quantity, lines[0].product_uom_id or move.uom_id,
                         round=False) * sign)
 
 

@@ -78,7 +78,7 @@ class TestGuideGrouping(TransactionCase):
                 # v19: stock.move ya no tiene campo `name`.
                 'product_id': product.id,
                 'product_uom_qty': qty,
-                'product_uom': (uom or product.uom_id).id,
+                'uom_id': (uom or product.uom_id).id,
                 'location_id': picking_type.default_location_src_id.id,
                 'location_dest_id': picking_type.default_location_dest_id.id,
             }) for product, qty, uom in lines],
@@ -103,7 +103,7 @@ class TestGuideGrouping(TransactionCase):
             'picking_id': picking.id,
             'product_id': self.product.id,
             'product_uom_qty': 2.0,
-            'product_uom': self.uom_unit.id,
+            'uom_id': self.uom_unit.id,
             'location_id': picking_type.default_location_src_id.id,
             'location_dest_id': picking_type.default_location_dest_id.id,
         })._action_confirm(merge=False)

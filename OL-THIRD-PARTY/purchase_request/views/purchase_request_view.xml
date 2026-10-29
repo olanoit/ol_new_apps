@@ -347,14 +347,14 @@
                     <filter
                         name="requested_by"
                         string="Requested by"
-                        icon="person" icon_class="oi-filled"
+                        icon="person"
                         domain="[]"
                         context="{'group_by':'requested_by'}"
                     />
                     <filter
                         name="assigned_to"
                         string="Assigned to"
-                        icon="person" icon_class="oi-filled"
+                        icon="person"
                         domain="[]"
                         context="{'group_by':'assigned_to'}"
                     />
@@ -368,7 +368,7 @@
                     <filter
                         name="start_date"
                         string="Start Date"
-                        icon="calendar_today" icon_class="oi-filled"
+                        icon="calendar_today"
                         domain="[]"
                         context="{'group_by':'date_start'}"
                     />

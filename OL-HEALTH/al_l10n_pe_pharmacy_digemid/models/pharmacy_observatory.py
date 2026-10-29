@@ -86,7 +86,7 @@ class ResCompany(models.Model):
         calendar = self.resource_calendar_id
         if not calendar:
             return set()
-        tz = pytz.timezone(calendar.tz or 'America/Lima')
+        tz = pytz.timezone((calendar.company_id or self.env.company).tz or 'America/Lima')
         start = tz.localize(datetime.combine(date_from, time.min)).astimezone(pytz.utc).replace(tzinfo=None)
         end = tz.localize(datetime.combine(date_to, time.max)).astimezone(pytz.utc).replace(tzinfo=None)
         # sudo: los feriados son configuración de Recursos Humanos que el

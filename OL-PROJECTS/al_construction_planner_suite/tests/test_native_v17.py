@@ -102,7 +102,7 @@ class TestNativeProduction(PlannerCommon):
             'product_tmpl_id': cls.spool_product.product_tmpl_id.id, 'product_qty': 1.0,
             'bom_line_ids': [
                 (0, 0, {'product_id': cls.pipe.id, 'product_qty': 6.0,
-                        'product_uom_id': cls.meter.id,
+                        'uom_id': cls.meter.id,
                         'construction_consumption_stage': 'test17_shop'}),
                 (0, 0, {'product_id': cls.flange.id, 'product_qty': 2.0,
                         'construction_consumption_stage': 'test17_shop'})]})

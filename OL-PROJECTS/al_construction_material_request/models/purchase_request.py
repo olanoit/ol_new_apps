@@ -69,8 +69,8 @@ class PurchaseRequestLine(models.Model):
         for po_line in self.purchase_lines:
             if po_line.state == 'cancel' or (states and po_line.state not in states):
                 continue
-            uom = line_uom or po_line.product_uom_id
-            po_qty = po_line.product_uom_id._compute_quantity(po_line.product_qty, uom)
+            uom = line_uom or po_line.uom_id
+            po_qty = po_line.uom_id._compute_quantity(po_line.product_qty, uom)
             allocations = po_line.purchase_request_allocation_ids
             own = allocations.filtered(lambda a: a.purchase_request_line_id == self)
             total = sum(a.product_uom_id._compute_quantity(a.requested_product_uom_qty, uom)

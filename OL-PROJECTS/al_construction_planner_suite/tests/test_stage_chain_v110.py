@@ -355,7 +355,7 @@ class TestStageChainV110(PlannerCommon):
             'location_dest_id': destination.id,
             'move_ids': [Command.create({
                 'product_id': product.id, 'product_uom_qty': 1.0,
-                'product_uom': product.uom_id.id, 'location_id': stock.id,
+                'uom_id': product.uom_id.id, 'location_id': stock.id,
                 'location_dest_id': destination.id}) for product in products]})
         if 'construction_location_id' in self.site._fields:
             self.assertEqual(picking.construction_project_id, self.site)
@@ -403,7 +403,7 @@ class TestStageChainV110(PlannerCommon):
             'location_dest_id': plan._construction_site_location().id,
             'move_ids': [Command.create({
                 'product_id': product.id, 'product_uom_qty': 1.0,
-                'product_uom': product.uom_id.id, 'location_id': stock.id,
+                'uom_id': product.uom_id.id, 'location_id': stock.id,
                 'location_dest_id': plan._construction_site_location().id})]})
         picking.action_confirm()
         picking.action_assign()

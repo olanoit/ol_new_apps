@@ -22,7 +22,7 @@ class TestReplenishment(TestPoSCommon):
         cls.losartan = cls.create_product('Losartán 50 mg', category, 0.50)
         cls.losartan.product_tmpl_id.write({
             'pharmacy_ok': True,
-            'seller_ids': [(0, 0, {'partner_id': cls.vendor_a.id, 'product_uom_id': cls.box_10.id,
+            'seller_ids': [(0, 0, {'partner_id': cls.vendor_a.id, 'uom_id': cls.box_10.id,
                                    'price': 3.0})],
         })
         # Se compra por unidad al proveedor B, pero se vende en cajas de 20.
@@ -125,7 +125,7 @@ class TestReplenishment(TestPoSCommon):
             'location_id': self.warehouse.lot_stock_id.id,
             'location_dest_id': self.env.ref('stock.stock_location_customers').id,
             'move_ids': [(0, 0, {'product_id': self.losartan.id, 'product_uom_qty': 6,
-                                 'product_uom': self.units.id,
+                                 'uom_id': self.units.id,
                                  'location_id': self.warehouse.lot_stock_id.id,
                                  'location_dest_id': self.env.ref('stock.stock_location_customers').id})],
         })

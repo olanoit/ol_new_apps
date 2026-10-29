@@ -103,7 +103,7 @@ class ConstructionPlanPurchaseWizard(models.TransientModel):
     def _get_purchase_uom(self, product):
         sellers = product.seller_ids.filtered(
             lambda s: not s.company_id or s.company_id == self.company_id)
-        return sellers[:1].product_uom_id or product.uom_id
+        return sellers[:1].uom_id or product.uom_id
 
     @api.depends('plan_id', 'task_ids', 'whole_project', 'mode', 'picking_type_id',
                  'product_ids', 'date_from', 'date_to', 'group_by', 'stage_ids')

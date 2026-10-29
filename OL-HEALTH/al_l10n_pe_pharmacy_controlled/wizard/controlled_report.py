@@ -76,7 +76,7 @@ class PharmacyControlledReport(models.TransientModel):
         return lines, inside
 
     def _signed_quantity(self, move_line, inside):
-        quantity = move_line.product_uom_id._compute_quantity(move_line.quantity,
+        quantity = move_line.uom_id._compute_quantity(move_line.quantity,
                                                               move_line.product_id.uom_id)
         source_in = move_line.location_id in inside
         dest_in = move_line.location_dest_id in inside

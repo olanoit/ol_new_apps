@@ -63,7 +63,7 @@ class ConstructionMaterialRequestLine(models.Model):
         uom = self.product_uom_id
 
         def to_line_uom(moves):
-            return sum(move.product_uom._compute_quantity(
+            return sum(move.uom_id._compute_quantity(
                 move.quantity, uom, rounding_method='HALF-UP') for move in moves) \
                 if uom else 0.0
 

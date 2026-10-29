@@ -98,7 +98,8 @@ class PeruPublicHoliday(models.Model):
             holiday.leave_count = len(holiday.leave_ids)
 
     def _holiday_datetime_range(self, calendar):
-        tz_name = calendar.tz or "UTC"
+        # Odoo 20: la zona horaria es de la compañía del calendario.
+        tz_name = (calendar.company_id or self.env.company).tz or "UTC"
         tz = timezone(tz_name)
         local_start = tz.localize(datetime.combine(self.date, time(0, 0, 0)))
         if self.is_full_day:

@@ -45,7 +45,7 @@ class TestPharmacyStock(TransactionCase):
             'location_dest_id': self.customer_location.id,
             'move_ids': [(0, 0, {
                 'product_id': self.product.id, 'product_uom_qty': qty,
-                'product_uom': self.product.uom_id.id,
+                'uom_id': self.product.uom_id.id,
                 'location_id': self.stock.id, 'location_dest_id': self.customer_location.id,
             })],
         })
@@ -61,7 +61,7 @@ class TestPharmacyStock(TransactionCase):
             'location_dest_id': self.stock.id,
             'move_ids': [(0, 0, {
                 'product_id': self.product.id, 'product_uom_qty': 5,
-                'product_uom': self.product.uom_id.id,
+                'uom_id': self.product.uom_id.id,
                 'location_id': self.supplier_location.id, 'location_dest_id': self.stock.id,
             })],
         })

@@ -268,7 +268,7 @@ class TestPleExport(TransactionCase):
             'move_ids': [(0, 0, {
                 'product_id': product.id,
                 'product_uom_qty': 5.0,
-                'product_uom': product.uom_id.id,
+                'uom_id': product.uom_id.id,
                 'location_id': picking_type.default_location_src_id.id,
                 'location_dest_id':
                     picking_type.default_location_dest_id.id

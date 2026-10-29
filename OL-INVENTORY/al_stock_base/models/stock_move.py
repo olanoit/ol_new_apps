@@ -31,14 +31,14 @@ class StockMove(models.Model):
         string='Costo fijo de la salida', digits='Product Price', copy=False,
         help='Costo total del subproducto, fijado al declararlo (retazo).')
 
-    @api.depends('construction_need_qty', 'product_uom_qty', 'product_uom',
-                 'move_dest_ids.construction_need_qty', 'move_dest_ids.product_uom')
+    @api.depends('construction_need_qty', 'product_uom_qty', 'uom_id',
+                 'move_dest_ids.construction_need_qty', 'move_dest_ids.uom_id')
     def _compute_construction_need_display(self):
         for move in self:
             need = move.construction_need_qty
             if not need:
-                need = sum(dest.product_uom._compute_quantity(
-                    dest.construction_need_qty, move.product_uom, round=False)
+                need = sum(dest.uom_id._compute_quantity(
+                    dest.construction_need_qty, move.uom_id, round=False)
                     for dest in move.move_dest_ids if dest.construction_need_qty)
             move.construction_need_display = need
             move.construction_rounding_qty = (
@@ -80,7 +80,7 @@ class StockMove(models.Model):
             if not move._construction_whole_controlled():
                 continue
             uom = move.product_id.uom_id
-            reserved = move.product_uom._compute_quantity(move.quantity, uom, round=False)
+            reserved = move.uom_id._compute_quantity(move.quantity, uom, round=False)
             excess = uom.round(reserved - math.floor(uom.round(reserved)))
             if uom.is_zero(excess):
                 continue

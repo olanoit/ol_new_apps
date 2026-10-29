@@ -6,7 +6,7 @@
     <record id="product_uom_form_view_whole_sheet" model="ir.ui.view">
         <field name="name">uom.uom.form.whole.sheet</field>
         <field name="model">uom.uom</field>
-        <field name="inherit_id" ref="uom.product_uom_form_view"/>
+        <field name="inherit_id" ref="uom.uom_uom_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='uom_details']" position="inside">
                 <field name="construction_whole_sheet" groups="stock.group_stock_manager"/>
@@ -18,7 +18,7 @@
     <record id="product_uom_tree_view_whole_sheet" model="ir.ui.view">
         <field name="name">uom.uom.list.whole.sheet</field>
         <field name="model">uom.uom</field>
-        <field name="inherit_id" ref="uom.product_uom_tree_view"/>
+        <field name="inherit_id" ref="uom.uom_uom_view_list"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='relative_uom_id']" position="after">
                 <field name="construction_whole_sheet" optional="show" widget="boolean_toggle"
@@ -31,7 +31,7 @@
     <record id="product_template_form_view_whole_sheet" model="ir.ui.view">
         <field name="name">product.template.form.whole.sheet</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="stock.view_template_property_form"/>
+        <field name="inherit_id" ref="stock.product_template_form_view_stock"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='inventory']" position="inside">
                 <group name="construction_whole_sheet" string="Plancha">

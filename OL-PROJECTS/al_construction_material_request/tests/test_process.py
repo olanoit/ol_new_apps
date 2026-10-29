@@ -159,7 +159,7 @@ class TestProcess(ConstructionRequestCommon):
         line = request.line_ids
         self.assertEqual((line.qty_to_dispatch, line.qty_to_purchase), (2.5, 2.5))
         move = self._dispatch_picking(request).move_ids
-        self.assertEqual(move.product_uom, uom_dozen)
+        self.assertEqual(move.uom_id, uom_dozen)
         self.assertEqual(move.product_qty, 30)
         pr_line = request.purchase_request_ids.line_ids
         self.assertEqual((pr_line.product_qty, pr_line.product_uom_id), (2.5, uom_dozen))
@@ -197,11 +197,9 @@ class TestProcess(ConstructionRequestCommon):
         picking = self._dispatch_picking(request)
         self._validate(picking)
         self.assertEqual(request.line_ids.qty_received_on_site, 100)
-        wizard = self.env['stock.return.picking'].with_context(
-            active_id=picking.id, active_ids=picking.ids, active_model='stock.picking').create({})
-        wizard.product_return_moves.quantity = 30
-        action = wizard.action_create_returns()
-        return_picking = self.env['stock.picking'].browse(action['res_id'])
+        # Odoo 20: la devolución es un albarán borrador que se ajusta.
+        return_picking = picking._create_return()
+        return_picking.move_ids.product_uom_qty = 30
         self.assertEqual(return_picking.move_ids.construction_request_line_id, request.line_ids)
         self._validate(return_picking)
         line = request.line_ids
@@ -320,7 +318,7 @@ class TestProcess(ConstructionRequestCommon):
         self._process(request)
         self.assertFalse(request.picking_ids)
         order = self._buy(request.purchase_request_ids)
-        self.assertEqual(order.order_line.location_final_id,
+        self.assertEqual(order.order_line.construction_location_final_id,
                          self.site_a.construction_location_id)
         receipt = order.picking_ids
         self.assertEqual(receipt.move_ids.location_dest_id,

@@ -6,6 +6,10 @@ from odoo.tools.misc import formatLang
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
+    # Ubicación de la obra para la entrega directa. Odoo 20 retiró
+    # location_final_id de la línea de compra, que guardaba este dato.
+    construction_location_final_id = fields.Many2one(
+        'stock.location', string='Destino final (obra)', copy=False, index='btree_not_null')
     # Partida de la línea cuando nace de un solo requerimiento de obra
     # (CR-16, criterio 8). Mismo campo que la orden de servicio de contratas.
     construction_task_id = fields.Many2one(
@@ -22,9 +26,10 @@ class PurchaseOrderLine(models.Model):
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
         """Entrega directa en obra: la recepción de la línea va a la ubicación
-        de la obra (``location_final_id``, puesto por el asistente de OCA)."""
+        de la obra (``construction_location_final_id``, puesto por el
+        asistente de OCA)."""
         vals = super()._prepare_stock_move_vals(picking, price_unit, product_uom_qty, product_uom)
-        site = self.location_final_id
+        site = self.construction_location_final_id
         direct_lines = self.purchase_request_lines.construction_request_line_id.filtered(
             lambda l: l.supply_mode == 'direct')
         if site and direct_lines and site in direct_lines.mapped(
@@ -32,15 +37,15 @@ class PurchaseOrderLine(models.Model):
             vals['location_dest_id'] = site.id
         return vals
 
-    @api.onchange('product_qty', 'product_uom_id', 'product_id')
+    @api.onchange('product_qty', 'uom_id', 'product_id')
     def _onchange_construction_whole_sheet(self):
         """Planchas enteras (paquete 1.11, M111-12): una compra manual de un
         tablero indivisible con fracción avisa, sin impedirla."""
         product = self.product_id
         company = self.order_id.company_id or self.env.company
-        if not (product and self.product_uom_id and product._construction_is_whole(company, 'purchase')):
+        if not (product and self.uom_id and product._construction_is_whole(company, 'purchase')):
             return None
-        qty = self.product_uom_id._compute_quantity(
+        qty = self.uom_id._compute_quantity(
             self.product_qty, product.uom_id, round=False)
         whole = product._construction_whole_qty(qty, company)
         if product.uom_id.compare(qty, whole) == 0:

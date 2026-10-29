@@ -56,11 +56,10 @@ else:
             ('name', '=', 'Días hábiles del ingreso (lunes a viernes)'),
             ('company_id', '=', company.id)], limit=1) or env['resource.calendar'].create({
                 'name': 'Días hábiles del ingreso (lunes a viernes)',
-                'company_id': company.id, 'tz': 'America/Lima',
+                'company_id': company.id,
                 'attendance_ids': [Command.clear()] + [Command.create({
-                    'name': name, 'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
-                    'day_period': 'full_day'}) for day, name in enumerate(
-                        ('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'))]})
+                    'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
+                    'day_period': 'full_day'}) for day in range(5)]})
         company.construction_income_calendar_id = calendar
     customer_vals = {'name': f'{P}Inmobiliaria MOMEN', 'is_company': True,
                      'vat': '20557912879', 'company_id': False}

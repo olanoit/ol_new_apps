@@ -23,7 +23,7 @@ class TestPurchaseRequestProcurement(common.TransactionCase):
                 "name": "Test Product",
                 "type": "consu",
                 "purchase_request": True,
-                "route_ids": [(4, self.route_buy.id)],
+                # Odoo 20: «Comprar» es una ruta de almacén, no del producto.
             }
         )
         self.rule_buy = self.route_buy.rule_ids.filtered(
@@ -61,7 +61,7 @@ class TestPurchaseRequestProcurement(common.TransactionCase):
                 "origin": origin,
                 "procure_method": "make_to_order",
                 "product_id": product.id,
-                "product_uom": product.uom_id.id,
+                "uom_id": product.uom_id.id,
                 "product_uom_qty": qty,
                 "route_ids": [(4, self.route_buy.id)],
             }

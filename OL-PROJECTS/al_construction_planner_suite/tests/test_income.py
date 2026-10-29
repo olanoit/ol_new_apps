@@ -31,10 +31,12 @@ class IncomeCommon(TransactionCase):
             [('model', '=', 'construction.resource.plan')]).active = False
         cls.company = cls.env.company
         # Calendario de lunes a viernes y feriado del 25/12 (P-21, nota 2).
+        # Odoo 20: la zona horaria es de la compañía, no del calendario.
+        cls.company.tz = 'America/Lima'
         cls.calendar = cls.env['resource.calendar'].create({
-            'name': 'Lunes a viernes (test)', 'company_id': cls.company.id, 'tz': 'America/Lima',
+            'name': 'Lunes a viernes (test)', 'company_id': cls.company.id,
             'attendance_ids': [Command.clear()] + [Command.create({
-                'name': 'Día %s' % day, 'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
+                'dayofweek': str(day), 'hour_from': 8, 'hour_to': 17,
                 'day_period': 'full_day'}) for day in range(5)]})
         cls.company.construction_income_calendar_id = cls.calendar
         cls.env['resource.calendar.leaves'].create({

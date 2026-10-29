@@ -17,4 +17,4 @@ rule_construction_request_line_reviewer,Línea de requerimiento de obra: por rev
 rule_construction_request_line_all,Línea de requerimiento de obra: todas,construction.material.request.line,al_construction_material_request.group_construction_logistics,crud,
 rule_construction_request_line_internal_own_1,Línea de requerimiento de obra: mis internos,construction.material.request.line,al_construction_material_request.group_construction_internal_requester,cru,"[('request_id.request_type', '=', 'internal'), ('request_id.requested_by', '=', user.id)]"
 rule_construction_request_line_company,Línea de requerimiento de obra: multicompañía,construction.material.request.line,,crud,"[('company_id', 'in', company_ids)]"
-access_account_analytic_account_construction_internal,account.analytic.account construction internal requester (áreas),analytic.model_account_analytic_account,al_construction_material_request.group_construction_internal_requester,r,
+access_account_analytic_account_construction_internal,account.analytic.account construction internal requester (áreas),account.analytic.account,al_construction_material_request.group_construction_internal_requester,r,

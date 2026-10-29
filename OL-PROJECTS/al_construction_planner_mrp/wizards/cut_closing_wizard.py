@@ -48,15 +48,15 @@ class ConstructionCutClosingWizard(models.TransientModel):
             area = board.construction_sheet_area_m2
             raw = production.move_raw_ids.filtered(
                 lambda m: m.product_id == board and m.state != 'cancel')
-            need = sum(m.product_uom._compute_quantity(m.construction_need_qty, uom, round=False)
+            need = sum(m.uom_id._compute_quantity(m.construction_need_qty, uom, round=False)
                        for m in raw)
             # Lo que entró a la planta: hecho o reservado en el despacho.
             dispatch = raw.move_orig_ids.filtered(
                 lambda m: m.product_id == board and m.state != 'cancel')
-            sheets = sum(m.product_uom._compute_quantity(m.quantity, uom, round=False)
+            sheets = sum(m.uom_id._compute_quantity(m.quantity, uom, round=False)
                          for m in dispatch)
             if not dispatch:
-                sheets = sum(m.product_uom._compute_quantity(m.product_uom_qty, uom, round=False)
+                sheets = sum(m.uom_id._compute_quantity(m.product_uom_qty, uom, round=False)
                              for m in raw)
             remnants = production.move_raw_ids.filtered(
                 lambda m: m.construction_covers_move_id in raw and m.state != 'cancel')
@@ -242,12 +242,12 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
         delta = float(untouched)
         for move in self._board_raw_moves(production).sorted(
                 lambda m: -m.construction_need_qty):
-            own = move.product_uom._compute_quantity(move.product_uom_qty, uom, round=False)
+            own = move.uom_id._compute_quantity(move.product_uom_qty, uom, round=False)
             take = min(own, delta)
             delta -= take
-            move.product_uom_qty = uom._compute_quantity(own - take, move.product_uom,
+            move.product_uom_qty = uom._compute_quantity(own - take, move.uom_id,
                                                          round=False)
-            if move.picked or not move.product_uom.is_zero(move.quantity):
+            if move.picked or not move.uom_id.is_zero(move.quantity):
                 move.quantity = move.product_uom_qty
             if not delta:
                 break
@@ -262,11 +262,13 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
             production._construction_sync_sheet_dispatch(self.product_id)
             return
         picking = done[0].picking_id
-        wizard = self.env['stock.return.picking'].with_context(
-            active_id=picking.id, active_ids=picking.ids, active_model='stock.picking').create({})
-        for line in wizard.product_return_moves:
-            line.quantity = untouched if line.move_id == done[0] else 0.0
-        returned = wizard._create_return()
+        # Odoo 20: la devolución es un albarán borrador que se ajusta.
+        returned = picking._create_return()
+        for move in returned.move_ids:
+            if move.origin_returned_move_id == done[0]:
+                move.product_uom_qty = untouched
+            else:
+                move.unlink()
         returned.action_confirm()
         returned.action_assign()
         returned.message_post(body=self.env._(
@@ -334,7 +336,7 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
                         'move_id': move.id,
                         'company_id': production.company_id.id,
                         'product_id': variant.id,
-                        'product_uom_id': variant.uom_id.id,
+                        'uom_id': variant.uom_id.id,
                         'lot_id': lot.id,
                         'quantity': 1.0,
                         'location_id': move.location_id.id,

@@ -170,7 +170,7 @@ class ConstructionSupplyBoard(models.AbstractModel):
         W-02); sin proveedor, la del producto."""
         sellers = product.seller_ids.filtered(
             lambda s: not s.company_id or s.company_id == company)
-        return sellers[:1].product_uom_id or product.uom_id
+        return sellers[:1].uom_id or product.uom_id
 
     @api.model
     def _get_free_stock(self, project, company, products):
@@ -205,7 +205,7 @@ class ConstructionSupplyBoard(models.AbstractModel):
             ('analytic_distribution', 'in', account.ids),
         ])
         for po_line in po_lines_sudo:
-            received = po_line.product_uom_id._compute_quantity(
+            received = po_line.uom_id._compute_quantity(
                 po_line.qty_received, po_line.product_id.uom_id, round=False)
             pending = po_line.product_uom_qty - received
             if pending > 0:

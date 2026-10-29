@@ -142,7 +142,7 @@ class MrpProduction(models.Model):
         for move in self.move_raw_ids.filtered('construction_need_qty'):
             uom = move.product_id.uom_id
             delivered = 0.0 if move.state == 'cancel' else move.product_uom_qty
-            result[move.product_id] += move.product_uom._compute_quantity(
+            result[move.product_id] += move.uom_id._compute_quantity(
                 delivered + move._construction_covered_qty() - move.construction_need_qty,
                 uom, round=False)
         return result

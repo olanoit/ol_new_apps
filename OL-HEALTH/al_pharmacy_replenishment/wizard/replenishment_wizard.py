@@ -105,8 +105,8 @@ class PharmacyReplenishmentWizard(models.TransientModel):
 
     def _purchase_multiple(self, product, seller):
         """Múltiplo de compra en unidades del producto."""
-        if seller and seller.product_uom_id and seller.product_uom_id != product.uom_id:
-            return seller.product_uom_id._compute_quantity(1.0, product.uom_id)
+        if seller and seller.uom_id and seller.uom_id != product.uom_id:
+            return seller.uom_id._compute_quantity(1.0, product.uom_id)
         presentations = product.product_tmpl_id.pharmacy_presentation_ids.filtered('active')
         return max(presentations.mapped('factor'), default=1.0) or 1.0
 
@@ -206,7 +206,7 @@ class PharmacyReplenishmentWizard(models.TransientModel):
             for line in vendor_lines:
                 seller = self._main_seller(line.product_id).filtered(
                     lambda s: s.partner_id == vendor)
-                uom = seller.product_uom_id or line.product_id.uom_id
+                uom = seller.uom_id or line.product_id.uom_id
                 qty = line.product_id.uom_id._compute_quantity(line.suggested_qty, uom)
                 order_lines.append(Command.create({
                     'product_id': line.product_id.id,
@@ -247,7 +247,7 @@ class PharmacyReplenishmentWizard(models.TransientModel):
             'move_ids': [Command.create({
                 'product_id': line.product_id.id,
                 'product_uom_qty': line.suggested_qty,
-                'product_uom': line.product_id.uom_id.id,
+                'uom_id': line.product_id.uom_id.id,
                 'location_id': location.id,
                 'location_dest_id': destination.id,
             }) for line in lines],

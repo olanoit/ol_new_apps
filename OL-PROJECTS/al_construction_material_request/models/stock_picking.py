@@ -56,7 +56,7 @@ class StockPicking(models.Model):
                     'rows': [{
                         'product': move.product_id.with_context(
                             lang=request._construction_lang()).display_name,
-                        'qty': request._format_qty(move.quantity, move.product_uom),
+                        'qty': request._format_qty(move.quantity, move.uom_id),
                     } for move in moves],
                     'pending': len(open_lines),
                     'purchasing': len(open_lines.filtered(lambda l: l.line_state == 'purchasing')),

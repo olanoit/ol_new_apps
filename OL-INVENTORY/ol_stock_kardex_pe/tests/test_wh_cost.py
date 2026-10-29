@@ -76,7 +76,7 @@ class TestWarehouseCost(TestSaleCommon):
         move = self.env['stock.move'].create({
             'product_id': self.product.id,
             'product_uom_qty': qty,
-            'product_uom': self.product.uom_id.id,
+            'uom_id': self.product.uom_id.id,
             'location_id': source.lot_stock_id.id,
             'location_dest_id': destination.lot_stock_id.id,
         })
@@ -152,10 +152,9 @@ class TestWarehouseCost(TestSaleCommon):
     def test_customer_return_comes_back_at_its_cost(self):
         self._scenario()
         with freeze_time('2024-01-14 15:00'):
-            wizard = Form(self.env['stock.return.picking'].with_context(
-                active_id=self.delivery.id, active_model='stock.picking')).save()
-            wizard.product_return_moves.quantity = 1
-            return_picking = self.env['stock.picking'].browse(wizard._create_return().id)
+            # Odoo 20: la devolución es un albarán borrador que se ajusta.
+            return_picking = self.delivery._create_return()
+            return_picking.move_ids.product_uom_qty = 1
             return_picking.move_ids.write({'quantity': 1, 'picked': True})
             return_picking.button_validate()
         self.company._l10n_pe_wh_cost_refresh()

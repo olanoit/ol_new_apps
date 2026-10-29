@@ -287,7 +287,7 @@ class StockMove(models.Model):
                           for cover in move.construction_cover_move_ids
                           if cover.state != 'cancel')
             move.construction_covered_qty = move.product_id.uom_id._compute_quantity(
-                covered, move.product_uom, round=False) if covered else 0.0
+                covered, move.uom_id, round=False) if covered else 0.0
 
     @api.depends('construction_cover_move_ids.state')
     def _compute_construction_need_display(self):
@@ -345,8 +345,8 @@ class StockMove(models.Model):
         uom = self.product_id.uom_id
         need = covered = 0.0
         for raw in raw_moves:
-            need += raw.product_uom._compute_quantity(raw.construction_need_qty, uom, round=False)
-            covered += raw.product_uom._compute_quantity(
+            need += raw.uom_id._compute_quantity(raw.construction_need_qty, uom, round=False)
+            covered += raw.uom_id._compute_quantity(
                 raw.construction_covered_qty, uom, round=False)
         net = uom.round(max(need - covered, 0.0))
         return uom.round(net - math.floor(net))
@@ -419,10 +419,10 @@ class MrpProduction(models.Model):
         raw_moves = self.move_raw_ids.filtered(
             lambda m: m.product_id == product and not m._construction_is_remnant())
         uom = product.uom_id
-        total = sum(m.product_uom._compute_quantity(m.product_uom_qty, uom, round=False)
+        total = sum(m.uom_id._compute_quantity(m.product_uom_qty, uom, round=False)
                     for m in raw_moves if m.state != 'cancel')
         origins = raw_moves.move_orig_ids.filtered(lambda m: m.product_id == product)
-        done = sum(m.product_uom._compute_quantity(m.quantity, uom, round=False)
+        done = sum(m.uom_id._compute_quantity(m.quantity, uom, round=False)
                    for m in origins if m.state == 'done')
         open_moves = origins.filtered(lambda m: m.state not in ('done', 'cancel'))
         if not open_moves:
@@ -434,7 +434,7 @@ class MrpProduction(models.Model):
             if template and uom.compare(missing, 0.0) > 0:
                 dests = raw_moves.filtered(lambda m: m.state not in ('done', 'cancel'))
                 new_move = template.copy({
-                    'product_uom_qty': uom._compute_quantity(missing, template.product_uom,
+                    'product_uom_qty': uom._compute_quantity(missing, template.uom_id,
                                                              round=False),
                     'picking_id': False,
                     'move_orig_ids': [Command.clear()],
@@ -445,14 +445,14 @@ class MrpProduction(models.Model):
                 new_move._action_assign()
             return
         target = open_moves[0]
-        others = sum(m.product_uom._compute_quantity(m.product_uom_qty, uom, round=False)
+        others = sum(m.uom_id._compute_quantity(m.product_uom_qty, uom, round=False)
                      for m in open_moves[1:])
-        new_qty = uom._compute_quantity(max(total - done - others, 0.0), target.product_uom,
+        new_qty = uom._compute_quantity(max(total - done - others, 0.0), target.uom_id,
                                         round=False)
-        if target.product_uom.compare(new_qty, target.product_uom_qty) == 0:
+        if target.uom_id.compare(new_qty, target.product_uom_qty) == 0:
             return
         target._do_unreserve()
-        if target.product_uom.is_zero(new_qty):
+        if target.uom_id.is_zero(new_qty):
             # Si un retazo cubre todo el tablero, el movimiento queda en 0 (su
             # retazo va en el mismo despacho).
             if raw_moves.filtered(lambda m: m.state != 'cancel' and m._construction_covered_qty()):
@@ -485,7 +485,7 @@ class MrpProduction(models.Model):
             picking = dispatch.picking_id
             pick_move = self.env['stock.move'].create({
                 'product_id': variant.id,
-                'product_uom': variant.uom_id.id,
+                'uom_id': variant.uom_id.id,
                 'product_uom_qty': 1.0,
                 'location_id': quant.location_id.id,
                 'location_dest_id': raw.location_id.id,
@@ -506,7 +506,7 @@ class MrpProduction(models.Model):
                 'move_id': pick_move.id,
                 'picking_id': picking.id,
                 'product_id': variant.id,
-                'product_uom_id': variant.uom_id.id,
+                'uom_id': variant.uom_id.id,
                 'lot_id': lot.id,
                 'quantity': 1.0,
                 'location_id': quant.location_id.id,
@@ -574,7 +574,7 @@ class MrpProduction(models.Model):
         if fixed and not piece_costing:
             finished = self.move_finished_ids.filtered(
                 lambda m: m.product_id == self.product_id and m.state not in ('done', 'cancel'))
-            qty = sum(m.product_uom._compute_quantity(m.quantity, m.product_id.uom_id)
+            qty = sum(m.uom_id._compute_quantity(m.quantity, m.product_id.uom_id)
                       for m in finished)
             total = sum(consumed_moves.mapped('value')) \
                 + sum(wo._cal_cost() for wo in self.workorder_ids) + self.extra_cost * qty
@@ -584,7 +584,7 @@ class MrpProduction(models.Model):
         res = super()._cal_price(consumed_moves)
         if fixed and not piece_costing:
             for move in fixed.filtered(lambda m: m.product_id.cost_method in ('fifo', 'average')):
-                qty = move.product_uom._compute_quantity(move.quantity, move.product_id.uom_id)
+                qty = move.uom_id._compute_quantity(move.quantity, move.product_id.uom_id)
                 if qty:
                     move.price_unit = move.construction_fixed_cost / qty
         return res

@@ -49,7 +49,7 @@ class TestPricesSupply(PlannerCommon):
             'currency_id': (currency or company.currency_id).id,
             'order_line': [Command.create({
                 'product_id': product.id, 'product_qty': qty, 'price_unit': price,
-                'discount': discount, 'product_uom_id': (uom or product.uom_id).id,
+                'discount': discount, 'uom_id': (uom or product.uom_id).id,
                 'analytic_distribution': analytic or False,
             })],
         })
@@ -308,7 +308,7 @@ class TestPricesSupply(PlannerCommon):
         self.assertEqual(product.categ_id, family)
         self.assertEqual(product.construction_created_from_plan_id, self.plan)
         self.assertEqual(product.seller_ids.partner_id, self.novopan)
-        self.assertEqual(product.seller_ids.product_uom_id, self.dozen)
+        self.assertEqual(product.seller_ids.uom_id, self.dozen)
         self.assertEqual(product.seller_ids.price, 30.0)
         self.assertEqual(line.product_uom_id, self.unit)
         self.assertFalse(line.price_unit_planned, 'El costo se fija después con W-12.')

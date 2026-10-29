@@ -119,7 +119,7 @@ class L10nPeDetractionImportWizard(models.TransientModel):
     def _read_rows(self):
         """Filas del archivo como dicts por clave interna."""
         self.ensure_one()
-        content = base64.b64decode(self.with_context(bin_size=False).file or b'')
+        content = self.file.content if self.file else b''
         rows = self._read_excel(content)
         if rows is None:
             rows = self._read_csv(content)

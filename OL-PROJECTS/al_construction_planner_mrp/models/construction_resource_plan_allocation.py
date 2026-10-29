@@ -42,7 +42,7 @@ class ConstructionResourcePlanAllocation(models.Model):
             moves = self.production_id.move_raw_ids.filtered(
                 lambda m: m.state == 'done' and m.product_id == product
                 and (not date_to or m.date <= date_to))
-            consumed = sum(self._to_uom(m.quantity, m.product_uom) for m in moves)
+            consumed = sum(self._to_uom(m.quantity, m.uom_id) for m in moves)
             # Lo que la OF consume ya se entregó en planta.
             return {'dispatched': consumed, 'consumed': consumed}
         return super()._get_document_totals()

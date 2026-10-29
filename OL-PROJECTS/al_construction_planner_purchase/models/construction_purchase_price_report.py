@@ -115,7 +115,7 @@ class ConstructionPurchasePriceReport(models.Model):
                   JOIN product_product pp ON pp.id = pol.product_id
                   JOIN product_template pt ON pt.id = pp.product_tmpl_id
                   JOIN uom_uom pu ON pu.id = pt.uom_id
-                  JOIN uom_uom lu ON lu.id = pol.product_uom_id
+                  JOIN uom_uom lu ON lu.id = pol.uom_id
                  WHERE po.state = 'purchase'
                    AND po.date_approve IS NOT NULL
                    AND pol.display_type IS NULL

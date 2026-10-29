@@ -191,7 +191,7 @@ class TestPortalService(ContractTermsCommon):
         picking = self.env['stock.picking'].create({
             'picking_type_id': warehouse.int_type_id.id, 'location_id': warehouse.lot_stock_id.id,
             'location_dest_id': location.id, 'move_ids': [Command.create({
-                'product_id': board.id, 'product_uom_qty': 10, 'product_uom': board.uom_id.id,
+                'product_id': board.id, 'product_uom_qty': 10, 'uom_id': board.uom_id.id,
                 'location_id': warehouse.lot_stock_id.id, 'location_dest_id': location.id})]})
         picking.action_confirm()
         picking.action_assign()

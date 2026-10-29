@@ -141,10 +141,9 @@ class TestKardexDocument(TestKardexReport):
         purchase = self._receive_purchase(5, 10.0)
         bill = self._bill(purchase, 'F001-00000301')
         receipt = purchase.picking_ids
-        wizard = Form(self.env['stock.return.picking'].with_context(
-            active_id=receipt.id, active_model='stock.picking')).save()
-        wizard.product_return_moves.quantity = 2
-        returned = self.env['stock.picking'].browse(wizard.action_create_returns()['res_id'])
+        # Odoo 20: la devolución es un albarán borrador que se ajusta.
+        returned = receipt._create_return()
+        returned.move_ids.product_uom_qty = 2
         returned.move_ids.write({'quantity': 2, 'picked': True})
         returned.button_validate()
         refund_form = Form(self.env['account.move'].with_context(default_move_type='in_refund'))

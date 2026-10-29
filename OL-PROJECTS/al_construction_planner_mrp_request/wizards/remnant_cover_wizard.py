@@ -14,7 +14,7 @@ class ConstructionRemnantCoverWizard(models.TransientModel):
         values = super().default_get(fields_list)
         move = self.env['stock.move'].browse(values.get('move_id'))
         if move and move._construction_is_request_board():
-            values['need_qty'] = move.product_uom._compute_quantity(
+            values['need_qty'] = move.uom_id._compute_quantity(
                 move.construction_need_qty, move.product_id.uom_id, round=False)
         return values
 

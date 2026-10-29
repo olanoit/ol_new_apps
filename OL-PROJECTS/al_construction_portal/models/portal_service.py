@@ -658,7 +658,7 @@ class ConstructionPortalService(models.AbstractModel):
                  'kind': 'purchase' if picking.picking_type_id.code == 'incoming' else 'dispatch',
                  'partner': picking.partner_id.commercial_partner_id.name or '',
                  'lines': [{'move_id': move.id, 'name': move.product_id.display_name,
-                            'uom': move.product_uom.name, 'sent': move.product_uom_qty}
+                            'uom': move.uom_id.name, 'sent': move.product_uom_qty}
                            for move in picking.move_ids.filtered(
                                lambda m: m.state not in ('done', 'cancel'))]}
                 for picking in pickings]
@@ -737,9 +737,9 @@ class ConstructionPortalService(models.AbstractModel):
         ], order='date desc, id desc')
         result = []
         for move in moves:
-            returned = sum(m.product_uom._compute_quantity(m.product_uom_qty, product.uom_id)
+            returned = sum(m.uom_id._compute_quantity(m.product_uom_qty, product.uom_id)
                            for m in move.returned_move_ids if m.state != 'cancel')
-            left = move.product_uom._compute_quantity(move.quantity, product.uom_id) - returned
+            left = move.uom_id._compute_quantity(move.quantity, product.uom_id) - returned
             if product.uom_id.compare(left, 0.0) > 0:
                 result.append((move, left))
         return result
@@ -790,13 +790,16 @@ class ConstructionPortalService(models.AbstractModel):
         for picking, quantities in by_picking.items():
             # sudo: la devolución la registra la obra; el almacén la valida al
             # recibirla.
-            wizard = self.env['stock.return.picking'].sudo().with_context(
-                active_id=picking.id, active_model='stock.picking').create({'picking_id': picking.id})
-            for line in wizard.product_return_moves:
-                qty = quantities.get(line.move_id, 0.0)
-                line.quantity = line.move_id.product_id.uom_id._compute_quantity(
-                    qty, line.uom_id) if qty else 0.0
-            records |= wizard._create_return()
+            # Odoo 20: la devolución es un albarán borrador con un movimiento
+            # por cada uno del despacho; se ajusta lo que vuelve.
+            returned = picking.sudo()._create_return()
+            for move in returned.move_ids:
+                qty = quantities.get(move.origin_returned_move_id, 0.0)
+                if qty:
+                    move.product_uom_qty = move.product_id.uom_id._compute_quantity(qty, move.uom_id)
+                else:
+                    move.unlink()
+            records |= returned
         if damaged:
             destination = project._construction_damaged_location()
             if not destination:
@@ -813,7 +816,7 @@ class ConstructionPortalService(models.AbstractModel):
                 dispatched = self._dispatched_moves(project, product)
                 moves.append((0, 0, {
                     'product_id': product_id, 'product_uom_qty': qty,
-                    'product_uom': product.uom_id.id,
+                    'uom_id': product.uom_id.id,
                     'location_id': location.id, 'location_dest_id': destination.id,
                     'construction_request_line_id':
                         dispatched[0][0].construction_request_line_id.id if dispatched else False,

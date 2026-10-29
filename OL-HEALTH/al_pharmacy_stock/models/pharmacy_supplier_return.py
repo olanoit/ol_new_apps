@@ -90,7 +90,7 @@ class PharmacySupplierReturn(models.Model):
             'move_ids': [Command.create({
                 'product_id': line.product_id.id,
                 'product_uom_qty': line.quantity,
-                'product_uom': line.product_id.uom_id.id,
+                'uom_id': line.product_id.uom_id.id,
                 'location_id': line.location_id.id,
                 'location_dest_id': dest.id,
                 'pharmacy_supplier_return_line_id': line.id,
@@ -109,7 +109,7 @@ class PharmacySupplierReturn(models.Model):
                 'move_id': move.id,
                 'picking_id': picking.id,
                 'product_id': line.product_id.id,
-                'product_uom_id': line.product_id.uom_id.id,
+                'uom_id': line.product_id.uom_id.id,
                 'lot_id': line.lot_id.id,
                 'quantity': line.quantity,
                 'location_id': line.location_id.id,

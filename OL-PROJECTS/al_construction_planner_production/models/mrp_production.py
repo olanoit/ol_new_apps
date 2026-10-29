@@ -166,7 +166,7 @@ class MrpProduction(models.Model):
             move = production_sudo.move_raw_ids.filtered(
                 lambda m: m.product_id == product and m.state not in ('done', 'cancel'))[:1]
             if move:
-                move.product_uom_qty += product.uom_id._compute_quantity(qty, move.product_uom)
+                move.product_uom_qty += product.uom_id._compute_quantity(qty, move.uom_id)
                 continue
             new_moves |= Move_sudo.create(production_sudo._get_move_raw_values(
                 product, qty, product.uom_id))
@@ -213,7 +213,7 @@ class MrpProduction(models.Model):
         self.ensure_one()
         result = defaultdict(lambda: [0.0, 0.0])
         for move in self.sudo().move_raw_ids.filtered(lambda m: m.state == 'done'):
-            result[move.product_id][0] += move.product_uom._compute_quantity(
+            result[move.product_id][0] += move.uom_id._compute_quantity(
                 move.quantity, move.product_id.uom_id)
             result[move.product_id][1] += abs(move.value)
         return result

@@ -231,7 +231,7 @@ class StockPicking(models.Model):
             for product, tasks in modules.items():
                 moves = picking.move_ids.filtered(
                     lambda m, p=product: m.product_id == p and m.state != 'cancel')
-                qty = int(round(sum(m.product_uom._compute_quantity(
+                qty = int(round(sum(m.uom_id._compute_quantity(
                     m.product_uom_qty, product.uom_id) for m in moves)))
                 available = self._construction_available_modules(tasks, picking).sorted(
                     lambda t: (t.construction_shipment_picking_id != picking, t.id))
@@ -348,7 +348,7 @@ class StockPicking(models.Model):
             product = move.product_id
             if product.product_tmpl_id.construction_project_id != project or product not in modules:
                 continue
-            qty = int(round(move.product_uom._compute_quantity(move.quantity, product.uom_id)))
+            qty = int(round(move.uom_id._compute_quantity(move.quantity, product.uom_id)))
             available = self._construction_available_modules(modules[product], self).filtered(
                 lambda t: t not in dispatched).sorted(
                 lambda t: (t.construction_shipment_picking_id != self, t.id))

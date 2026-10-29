@@ -168,7 +168,7 @@ class ConstructionReplacementRequest(models.Model):
             vals = {
                 'product_id': request.product_id.id,
                 'product_qty': request.product_qty,
-                'product_uom_id': request.product_uom_id.id,
+                'uom_id': request.product_uom_id.id,
                 'bom_id': bom_sudo.id,
                 'picking_type_id': picking_type.id,
                 'company_id': company.id,
@@ -268,7 +268,7 @@ class ConstructionReplacementRequest(models.Model):
                 'company_id': request.company_id.id,
                 'move_ids': [Command.create({
                     'product_id': request.product_id.id,
-                    'product_uom': request.product_uom_id.id,
+                    'uom_id': request.product_uom_id.id,
                     'product_uom_qty': request.product_qty,
                     'location_id': source.id,
                     'location_dest_id': request.location_dest_id.id,

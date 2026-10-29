@@ -51,13 +51,13 @@ class StockMove(models.Model):
             own = max(need - others, 0.0)
             if not move.created_purchase_request_line_id:
                 own = min(own, move.product_uom_qty)
-            move.construction_need_qty = uom._compute_quantity(own, move.product_uom, round=False)
+            move.construction_need_qty = uom._compute_quantity(own, move.uom_id, round=False)
 
     def _construction_request_line_qty(self, line_uom):
         """Lo que este movimiento hecho entrega a su línea, en ``line_uom``.
         Hook: el retazo entrega su fracción de plancha (M111-22)."""
         self.ensure_one()
-        return self.product_uom._compute_quantity(
+        return self.uom_id._compute_quantity(
             self.quantity, line_uom, rounding_method='HALF-UP')
 
     def _get_account_move_line_vals(self):

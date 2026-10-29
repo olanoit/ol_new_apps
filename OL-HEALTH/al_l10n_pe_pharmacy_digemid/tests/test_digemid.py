@@ -199,9 +199,9 @@ class TestDigemid(TransactionCase):
     def test_rectification_skips_company_holidays(self):
         company = self.env.company
         calendar = company.resource_calendar_id or self.env['resource.calendar'].create(
-            {'name': 'Lima', 'tz': 'America/Lima'})
+            {'name': 'Lima'})
         company.resource_calendar_id = calendar
-        calendar.tz = 'America/Lima'
+        company.tz = 'America/Lima'
         # Feriado el martes 20/10/2026: de 00:00 a 00:00 del día siguiente en Lima (UTC−5).
         leave = self.env['resource.calendar.leaves'].create({
             'name': 'Feriado de prueba', 'calendar_id': calendar.id, 'company_id': company.id,

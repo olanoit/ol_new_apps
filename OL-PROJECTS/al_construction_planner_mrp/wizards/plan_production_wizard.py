@@ -148,7 +148,7 @@ class ConstructionPlanProductionWizard(models.TransientModel):
                 'product_id': line.product_id.id,
                 'bom_id': bom.id,
                 'product_qty': line.qty,
-                'product_uom_id': bom.product_uom_id.id,
+                'uom_id': bom.uom_id.id,
                 'picking_type_id': self._production_picking_type(bom).id,
                 'date_start': self.date_start,
                 'origin': ' · '.join(filter(None, [
