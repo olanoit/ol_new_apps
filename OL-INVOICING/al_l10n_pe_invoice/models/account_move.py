@@ -205,7 +205,7 @@ class AccountMove(models.Model):
             return ''
         account = self.company_id.bank_ids.filtered(
             lambda b: b.bank_id == national_bank)
-        return account[0].acc_number if account else ''
+        return account[0].account_number if account else ''
 
     # ------------------------------------------------------------------
     # Detalle tributario SUNAT — campos almacenados, un solo cálculo

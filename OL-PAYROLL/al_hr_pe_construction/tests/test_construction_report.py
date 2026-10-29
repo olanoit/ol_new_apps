@@ -22,7 +22,7 @@ class TestConstructionReport(TransactionCase):
         cls.report = cls.env.ref(
             'al_hr_pe_construction.action_report_boleta_construccion')
         cls.wd_dlab = cls.env.ref('al_hr_pe.wd_DLAB')
-        cls.dni = cls.env.ref('l10n_pe.it_DNI')
+        cls.dni = cls.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         # El QWeb de la boleta lee los Parámetros Principales (firma del
         # representante, categorías de conceptos).
         # El parámetro de neto apunta a la regla del régimen general: es
@@ -40,7 +40,7 @@ class TestConstructionReport(TransactionCase):
         employee = self.env['hr.employee'].create({
             'name': 'Obrero Boleta %d' % seq, 'company_id': self.company.id,
             'identification_id': '4800000%d' % seq,
-            'l10n_latam_identification_type_id': self.dni.id})
+            'l10n_pe_document_type_id': self.dni.id})
         vals = {
             'contract_date_start': date(2026, 1, 1),
             'l10n_pe_labor_regime': 'construccion',

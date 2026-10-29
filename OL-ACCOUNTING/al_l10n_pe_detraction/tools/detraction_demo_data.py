@@ -52,7 +52,7 @@ bn_account = get_or_create(
     [('partner_id', '=', company.partner_id.id),
      ('bank_id', '=', national_bank.id)],
     {'partner_id': company.partner_id.id, 'bank_id': national_bank.id,
-     'acc_number': '00-045-123456'})
+     'account_number': '00-045-123456'})
 
 dtype_37 = env.ref('al_l10n_pe_detraction.detraction_037')  # 12%
 service = get_or_create('product.product',
@@ -117,7 +117,7 @@ log('op. EDI 1001 automática',
 spot = invoice._l10n_pe_edi_get_spot()
 log('bloque spot XML nativo', bool(spot)
     and spot.get('payment_means_code') == '999'
-    and spot.get('payee_financial_account') == bn_account.acc_number,
+    and spot.get('payee_financial_account') == bn_account.account_number,
     'means=%s cuenta BN=%s monto=%s' % (
         spot.get('payment_means_code'),
         spot.get('payee_financial_account'), spot.get('amount')))

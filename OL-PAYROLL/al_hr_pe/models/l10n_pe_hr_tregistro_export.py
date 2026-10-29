@@ -99,7 +99,7 @@ class HrEmployee(models.Model):
         los demás documentos SUNAT obliga a poner 604.
         """
         self.ensure_one()
-        code = (self.l10n_latam_identification_type_id
+        code = (self.l10n_pe_document_type_id
                 .l10n_pe_hr_sunat_code or '').strip()
         doc_type = code.zfill(2) if code.isdigit() else code
         if not doc_type:

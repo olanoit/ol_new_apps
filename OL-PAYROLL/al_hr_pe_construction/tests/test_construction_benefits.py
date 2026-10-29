@@ -28,7 +28,7 @@ class TestConstructionBenefits(TransactionCase):
             'al_hr_pe_construction.construction_structure')
         cls.wd_dlab = cls.env.ref('al_hr_pe.wd_DLAB')
         cls.wd_he60 = cls.env.ref('al_hr_pe_construction.wd_HE60')
-        cls.dni = cls.env.ref('l10n_pe.it_DNI')
+        cls.dni = cls.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         cls.child_type = cls.env.ref('al_hr_pe.dependent_type_05')
 
     def _worker(self, category='category_operario'):
@@ -39,7 +39,7 @@ class TestConstructionBenefits(TransactionCase):
             'name': 'Obrero Beneficios %d' % self._doc_seq,
             'company_id': self.company.id,
             'identification_id': '4123456%d' % self._doc_seq,
-            'l10n_latam_identification_type_id': self.dni.id})
+            'l10n_pe_document_type_id': self.dni.id})
         employee.version_id.write({
             'l10n_pe_labor_regime': 'construccion',
             'l10n_pe_construction_category_id': self.env.ref(
@@ -82,7 +82,7 @@ class TestConstructionBenefits(TransactionCase):
             'employee_id': employee.id,
             'type_id': self.child_type.id,
             'last_name': 'Hijo', 'names': 'Uno',
-            'l10n_latam_identification_type_id': self.dni.id,
+            'l10n_pe_document_type_id': self.dni.id,
             'identification_id': kwargs.pop(
                 'identification_id', '7111111%d' % employee.id),
             'birthday': today - relativedelta(years=years),

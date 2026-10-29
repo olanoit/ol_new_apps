@@ -190,7 +190,7 @@ class ConstructionContractOpeningWizard(models.TransientModel):
             po_line = self.env['purchase.order.line'].create({
                 'order_id': order.id, 'product_id': product.id,
                 'name': '%s · %s' % (task.display_name, activity.display_name),
-                'product_qty': qty, 'product_uom_id': activity.uom_id.id,
+                'product_qty': qty, 'uom_id': activity.uom_id.id,
                 'price_unit': self._float(line_row['price']),
                 'tax_ids': [Command.set(taxes.ids)] if taxes else [Command.clear()],
                 'date_planned': fields.Datetime.now(),

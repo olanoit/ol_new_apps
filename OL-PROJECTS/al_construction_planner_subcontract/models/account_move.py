@@ -53,7 +53,9 @@ class AccountMove(models.Model):
             if not amount or invoice.invoice_payment_term_id \
                     or not invoice.construction_guarantee_date or len(invoice.needed_terms) != 1:
                 continue
-            key, values = next(iter(invoice.needed_terms.items()))
+            # Odoo 20: needed_terms es una lista de pares (clave, valores).
+            key, values = invoice.needed_terms[0]
+            key = frozendict(key)
             sign = -1 if values['balance'] < 0 else 1
             currency = invoice.currency_id
             fund_currency = sign * currency.round(amount)
@@ -63,11 +65,11 @@ class AccountMove(models.Model):
             fund_key = frozendict(dict(key, date_maturity=invoice.construction_guarantee_date))
             if fund_key == key:
                 continue
-            invoice.needed_terms = {
-                key: dict(values, balance=values['balance'] - fund_balance,
-                          amount_currency=values['amount_currency'] - fund_currency),
-                fund_key: dict(values, balance=fund_balance, amount_currency=fund_currency),
-            }
+            invoice.needed_terms = [
+                (key, dict(values, balance=values['balance'] - fund_balance,
+                           amount_currency=values['amount_currency'] - fund_currency)),
+                (fund_key, dict(values, balance=fund_balance, amount_currency=fund_currency)),
+            ]
 
     def _compute_payment_state(self):
         super()._compute_payment_state()

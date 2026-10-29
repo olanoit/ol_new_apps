@@ -24,15 +24,13 @@ class TestDependents(TransactionCase):
         cls.env.user.company_ids = [(4, cls.company.id)]
         cls.env = cls.env(context=dict(
             cls.env.context, allowed_company_ids=cls.company.ids))
-        cls.dni = cls.env.ref('l10n_pe.it_DNI', raise_if_not_found=False) \
-            or cls.env['l10n_latam.identification.type'].search(
-                [('country_id.code', '=', 'PE')], limit=1)
+        cls.dni = cls.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         cls.employee = cls.env['hr.employee'].create({
             'name': 'Quispe Mamani Juan',
             'last_name': 'Quispe', 'm_last_name': 'Mamani', 'names': 'Juan',
             'company_id': cls.company.id,
             'identification_id': '45678901',
-            'l10n_latam_identification_type_id': cls.dni.id,
+            'l10n_pe_document_type_id': cls.dni.id,
         })
         cls.type_spouse = cls.env.ref('al_hr_pe.dependent_type_02')
         cls.type_partner = cls.env.ref('al_hr_pe.dependent_type_03')
@@ -47,7 +45,7 @@ class TestDependents(TransactionCase):
             'type_id': (type_id or self.type_child).id,
             'last_name': 'Quispe', 'm_last_name': 'Flores',
             'names': 'Ana', 'gender': 'female',
-            'l10n_latam_identification_type_id': self.dni.id,
+            'l10n_pe_document_type_id': self.dni.id,
             'identification_id': kwargs.pop('identification_id', '71234567'),
             'date_start': self.today - relativedelta(years=1),
         }
@@ -232,7 +230,7 @@ class TestDependents(TransactionCase):
             'group_ids': [Command.set([self.env.ref('base.group_user').id])],
         })
         with self.assertRaises(AccessError):
-            attachment.with_user(intern).read(['datas'])
+            attachment.with_user(intern).read(['raw'])
 
         import base64
         workbook = load_workbook(io.BytesIO(attachment.raw.content))
@@ -269,7 +267,7 @@ class TestDependents(TransactionCase):
             'employee_id': undocumented.id,
             'type_id': self.type_child.id,
             'last_name': 'Sin', 'names': 'Hija',
-            'l10n_latam_identification_type_id': self.dni.id,
+            'l10n_pe_document_type_id': self.dni.id,
             'identification_id': '73333333',
             'birthday': self.today - relativedelta(years=3),
             'date_start': self.today,
@@ -283,14 +281,14 @@ class TestDependents(TransactionCase):
         other_employee = self.env['hr.employee'].create({
             'name': 'Otro Trabajador', 'company_id': other.id,
             'identification_id': '11111111',
-            'l10n_latam_identification_type_id': self.dni.id,
+            'l10n_pe_document_type_id': self.dni.id,
         })
         first = self._dependent(years=5)
         second = self.env['l10n_pe.hr.dependent'].create({
             'employee_id': other_employee.id,
             'type_id': self.type_child.id,
             'names': 'Hijo', 'last_name': 'Otro',
-            'l10n_latam_identification_type_id': self.dni.id,
+            'l10n_pe_document_type_id': self.dni.id,
             'identification_id': '72222222',
             'birthday': self.today - relativedelta(years=4),
             'date_start': self.today,

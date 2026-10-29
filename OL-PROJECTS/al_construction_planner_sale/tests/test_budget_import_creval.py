@@ -2,9 +2,9 @@
 """Importación del presupuesto con secciones (requerimiento CREVAL v1.0, 6.4):
 el costo directo de la cotización importada es igual al del archivo y cada
 partida queda con sus tres niveles. Datos ficticios."""
-import base64
 import io
 
+from odoo.tools import BinaryBytes
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 
@@ -54,7 +54,7 @@ class TestBudgetImport(TransactionCase):
             ws.append(row)
         buffer = io.BytesIO()
         book.save(buffer)
-        return base64.b64encode(buffer.getvalue())
+        return BinaryBytes(buffer.getvalue())
 
     def test_import_and_levels(self):
         wizard = self.env['construction.budget.import.wizard'].create({

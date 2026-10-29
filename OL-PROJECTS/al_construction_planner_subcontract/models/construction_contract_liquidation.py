@@ -171,7 +171,7 @@ class ConstructionContractSettlement(models.Model):
         order_sudo = self.purchase_order_id.sudo()
         released = []
         for line in order_sudo.order_line.filtered(lambda l: not l.display_type):
-            if line.product_uom_id.compare(line.qty_received, line.product_qty) < 0:
+            if line.uom_id.compare(line.qty_received, line.product_qty) < 0:
                 released.append('%s: %s → %s' % (line.name, round(line.product_qty, 2),
                                                 round(line.qty_received, 2)))
                 line.product_qty = line.qty_received
@@ -254,7 +254,7 @@ class ConstructionContractSettlementLine(models.Model):
         if 'qty_final' in vals and not self.env.context.get('construction_final_sync'):
             for line in self:
                 validated = line.qty_previous + line.qty_period
-                uom = line.purchase_line_id.product_uom_id
+                uom = line.purchase_line_id.uom_id
                 if line.settlement_id.state not in ('draft', 'submitted'):
                     raise UserError(self.env._(
                         'La cantidad final se escribe con la liquidación en borrador o presentada.'))

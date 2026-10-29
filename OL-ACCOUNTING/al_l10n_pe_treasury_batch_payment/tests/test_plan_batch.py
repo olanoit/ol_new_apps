@@ -18,7 +18,7 @@ class TestPlanBatch(TransactionCase):
         pen = cls.env.ref('base.PEN')
         bcp = cls.env['res.bank'].create({'name': 'BCP (prueba lote)', 'l10n_pe_batch_format': 'bcp'})
         account = cls.env['res.partner.bank'].create({
-            'partner_id': cls.company.partner_id.id, 'bank_id': bcp.id, 'acc_number': '191-7654321-0-99',
+            'partner_id': cls.company.partner_id.id, 'bank_id': bcp.id, 'account_number': '191-7654321-0-99',
             'currency_id': pen.id})
         cls.journal = cls.env['account.journal'].create({
             'name': 'BCP lote (prueba)', 'code': 'TBLT', 'type': 'bank', 'currency_id': pen.id,
@@ -33,7 +33,7 @@ class TestPlanBatch(TransactionCase):
             partner = cls.env['res.partner'].create({
                 'name': name, 'is_company': True, 'vat': vat, 'l10n_latam_identification_type_id': ruc.id,
                 'country_id': cls.env.ref('base.pe').id})
-            cls.env['res.partner.bank'].create({'partner_id': partner.id, 'bank_id': bcp.id, 'acc_number': number,
+            cls.env['res.partner.bank'].create({'partner_id': partner.id, 'bank_id': bcp.id, 'account_number': number,
                                                 'allow_out_payment': True})
             bill = cls.env['account.move'].create({
                 'move_type': 'in_invoice', 'partner_id': partner.id, 'journal_id': purchase.id,

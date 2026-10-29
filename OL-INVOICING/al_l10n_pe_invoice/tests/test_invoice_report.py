@@ -21,7 +21,7 @@ class TestInvoiceReport(AccountTestInvoicingCommon):
         # El check EDI nativo exige la cuenta del Banco de la Nación para
         # publicar facturas con detracción (mismo setup que TestPeEdiCommon)
         cls.national_bank_account = cls.env['res.partner.bank'].create({
-            'acc_number': '00-000-123456',
+            'account_number': '00-000-123456',
             'bank_id': cls.env.ref('l10n_pe.peruvian_national_bank').id,
             'partner_id': company.partner_id.id,
             'allow_out_payment': True,
@@ -72,7 +72,7 @@ class TestInvoiceReport(AccountTestInvoicingCommon):
         self.assertGreater(move.l10n_pe_detraction_amount, 0.0)
         self.assertEqual(
             move._l10n_pe_get_national_bank_account_number(),
-            self.national_bank_account.acc_number)
+            self.national_bank_account.account_number)
 
     def test_reports_render_without_error(self):
         move = self._create_invoice(self.product_detraction, 1000.0)

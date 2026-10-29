@@ -182,7 +182,7 @@ class L10nPeHrContractTemplate(models.Model):
                 self._selection_label(version, 'marital'),
             'sexo_trabajador': self._selection_label(version, 'sex'),
             'td_trabajador':
-                employee.l10n_latam_identification_type_id.name or '',
+                employee.l10n_pe_document_type_id.name or '',
             'dni_trabajador': version.identification_id or '',
             'nacionalidad_trabajador': version.country_id.name or '',
             'direccion_trabajador': version.private_street or '',
@@ -295,7 +295,7 @@ class HrVersion(models.Model):
             (self.employee_id.name, 'Nombre del empleado'),
             (self.identification_id,
              'Número de documento (Empleado → Personal)'),
-            (self.employee_id.l10n_latam_identification_type_id,
+            (self.employee_id.l10n_pe_document_type_id,
              'Tipo de documento (Empleado → Personal)'),
             (self.private_street,
              'Dirección domiciliaria (Empleado → Personal)'),

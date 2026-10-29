@@ -60,13 +60,13 @@ class L10nPeHrDependent(models.Model):
         self.ensure_one()
         employee = self.employee_id
         return (self._l10n_pe_doc_code(
-                    employee.l10n_latam_identification_type_id),
+                    employee.l10n_pe_document_type_id),
                 employee.identification_id or '')
 
     def _l10n_pe_dependent_doc(self):
         self.ensure_one()
         return (self._l10n_pe_doc_code(
-                    self.l10n_latam_identification_type_id),
+                    self.l10n_pe_document_type_id),
                 self.identification_id or '')
 
     @staticmethod

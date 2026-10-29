@@ -319,10 +319,10 @@ class ConstructionContractSettlement(models.Model):
             activity = progresses.activity_id[:1] or po_line.construction_activity_id
             qty = sum(progresses.mapped('qty_weighted'))
             repeat = 0.0 if is_rework else self._repeat_qty(progresses)
-            if po_line.product_uom_id and activity.uom_id \
-                    and po_line.product_uom_id != activity.uom_id:
-                qty = activity.uom_id._compute_quantity(qty, po_line.product_uom_id)
-                repeat = activity.uom_id._compute_quantity(repeat, po_line.product_uom_id)
+            if po_line.uom_id and activity.uom_id \
+                    and po_line.uom_id != activity.uom_id:
+                qty = activity.uom_id._compute_quantity(qty, po_line.uom_id)
+                repeat = activity.uom_id._compute_quantity(repeat, po_line.uom_id)
             vals_list.append({
                 'activity_id': activity.id, 'purchase_line_id': po_line.id, 'qty_period': qty,
                 'price_unit': po_line.price_unit, 'retention_pct': 0.0, 'is_rework': is_rework,
@@ -642,13 +642,13 @@ class ConstructionContractSettlement(models.Model):
             po_line = line.purchase_line_id
             received = po_line.qty_received + line._qty_to_receive()
             limit = po_line.product_qty * (1 + tolerance / 100.0)
-            if po_line.product_uom_id.compare(received, limit) > 0 and not self.head_authorized_by:
+            if po_line.uom_id.compare(received, limit) > 0 and not self.head_authorized_by:
                 raise UserError(self.env._(
                     '%(activity)s: con esta valorización se recibirían %(received)s de '
                     '%(ordered)s %(uom)s contratados (tolerancia %(tol)s %%). Amplíe la orden o '
                     'pida la autorización del exceso.', activity=line.activity_id.display_name,
                     received=round(received, 2), ordered=round(po_line.product_qty, 2),
-                    uom=po_line.product_uom_id.name, tol=round(tolerance, 2)))
+                    uom=po_line.uom_id.name, tol=round(tolerance, 2)))
         for line in lines:
             line.purchase_line_id.qty_received += line._qty_to_receive()
 
@@ -1024,7 +1024,7 @@ class ConstructionContractSettlementLine(models.Model):
                 continue
             tolerance = settlement.terms_id.progress_tolerance_pct
             limit = line.purchase_line_id.product_qty * (1 + tolerance / 100.0)
-            uom = line.purchase_line_id.product_uom_id
+            uom = line.purchase_line_id.uom_id
             line.over_contract = uom.compare(line.qty_previous + line.qty_settle, limit) > 0
 
     def _compute_columns(self):

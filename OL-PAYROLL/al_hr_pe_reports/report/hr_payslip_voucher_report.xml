@@ -46,7 +46,7 @@
                     <tr>
                         <td class="pe-doc-label">Apellidos y nombres</td>
                         <td class="pe-doc-value"><strong t-out="emp.name"/></td>
-                        <td class="pe-doc-label"><t t-out="emp.l10n_latam_identification_type_id.name or 'Documento'"/></td>
+                        <td class="pe-doc-label"><t t-out="emp.l10n_pe_document_type_id.name or 'Documento'"/></td>
                         <td class="pe-doc-value"><strong t-out="emp.identification_id"/></td>
                     </tr>
                     <tr>
@@ -285,9 +285,9 @@
                             </div>
                             <div class="pe-doc-sign-line">
                                 <strong t-out="d['param'].reprentante_legal_id.name or o.company_id.name"/>
-                                <div t-if="d['param'].reprentante_legal_id.vat">
-                                    <span t-out="d['param'].reprentante_legal_id.l10n_latam_identification_type_id.name or 'Doc.'"/>
-                                    <span t-out="d['param'].reprentante_legal_id.vat"/>
+                                <div t-if="d['param'].reprentante_legal_id.l10n_pe_sunat_id_value">
+                                    <span t-out="d['param'].reprentante_legal_id.l10n_pe_document_label or 'Doc.'"/>
+                                    <span t-out="d['param'].reprentante_legal_id.l10n_pe_sunat_id_value"/>
                                 </div>
                                 <div>Empleador</div>
                             </div>
@@ -299,7 +299,7 @@
                             <div class="pe-doc-sign-line">
                                 <strong t-out="emp.name"/>
                                 <div t-if="emp.identification_id">
-                                    <span t-out="emp.l10n_latam_identification_type_id.name or 'Doc.'"/>
+                                    <span t-out="emp.l10n_pe_document_type_id.name or 'Doc.'"/>
                                     <span t-out="emp.identification_id"/>
                                 </div>
                                 <div>Recibí conforme</div>

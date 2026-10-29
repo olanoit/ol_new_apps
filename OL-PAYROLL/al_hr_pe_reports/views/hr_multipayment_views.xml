@@ -295,7 +295,7 @@
         <field name="model">res.partner.bank</field>
         <field name="inherit_id" ref="base.view_partner_bank_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='acc_number']" position="after">
+            <xpath expr="//field[@name='account_number']" position="after">
                 <field name="type_of_account"/>
                 <field name="branch_name" invisible="type_of_account not in ('0', '1')"/>
             </xpath>

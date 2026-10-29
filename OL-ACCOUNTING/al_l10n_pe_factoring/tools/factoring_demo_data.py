@@ -88,7 +88,7 @@ if factor and not Contract.search([('factor_id', '=', factor.id)], limit=1):
     bank = env['res.bank'].search([('name', 'ilike', 'Crédito')], limit=1) or env['res.bank'].create(
         {'name': 'Banco de Crédito del Perú'})
     account = env['res.partner.bank'].create({
-        'partner_id': factor.id, 'acc_number': '193-2456789-0-12', 'bank_id': bank.id,
+        'partner_id': factor.id, 'account_number': '193-2456789-0-12', 'bank_id': bank.id,
         'currency_id': company.currency_id.id})
     contract = Contract.create({
         'name': 'Línea de factoring 2026', 'factor_id': factor.id, 'factor_bank_id': account.id,

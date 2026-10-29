@@ -139,7 +139,7 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="al_stock_base.view_picking_form_whole_sheet"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='move_ids']/list/field[@name='construction_rounding_qty']" position="after">
+            <xpath expr="//field[@name='move_ids']/list//field[@name='construction_rounding_qty']" position="after">
                 <field name="construction_can_cover" column_invisible="1"/>
                 <field name="construction_covers_move_id" column_invisible="1"/>
                 <field name="construction_remnant_lot_id" string="Retazo" optional="show"
@@ -169,7 +169,7 @@
                         invisible="not construction_has_whole_sheets or construction_cut_closed or state not in ('confirmed', 'progress', 'to_close')"
                         groups="mrp.group_mrp_user"/>
             </xpath>
-            <xpath expr="//field[@name='move_raw_ids']/list/field[@name='construction_rounding_qty']" position="after">
+            <xpath expr="//field[@name='move_raw_ids']/list//field[@name='construction_rounding_qty']" position="after">
                 <field name="construction_covered_qty" string="Cubierto con retazo" optional="show"
                        invisible="not construction_covered_qty"/>
                 <field name="construction_remnant_lot_id" string="Retazo" optional="hide"

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from datetime import date, datetime, timedelta
 
 from odoo import Command
@@ -336,7 +337,7 @@ class TestControl(PlannerCommon):
             progresses |= self.env['construction.task.progress'].create({
                 'task_id': module.id, 'activity_id': line.activity_id.id,
                 'date': date(2026, 11, 2), 'qty': line.qty_planned,
-                'attachment_ids': [Command.create({'name': 'm.jpg', 'datas': PHOTO})],
+                'attachment_ids': [Command.create({'name': 'm.jpg', 'raw': base64.b64decode(PHOTO)})],
             })
         progresses.with_user(self.planner).action_validate()
         self.assertEqual(module.construction_unit_state, 'produced')

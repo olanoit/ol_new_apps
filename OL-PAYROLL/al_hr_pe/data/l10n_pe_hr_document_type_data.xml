@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tipos de documento con los códigos de planilla: SUNAT (T-PLAME) y
+         AFPNet. Reemplaza la extensión de l10n_latam.identification.type
+         (retirado en Odoo 20). -->
+    <record id="l10n_pe_hr_document_type_dni" model="l10n_pe.hr.document.type">
+        <field name="name">DNI</field>
+        <field name="code">PE_DNI</field>
+        <field name="sequence">1</field>
+        <field name="l10n_pe_hr_sunat_code">1</field>
+        <field name="l10n_pe_hr_afp_code">0</field>
+    </record>
+    <record id="l10n_pe_hr_document_type_ce" model="l10n_pe.hr.document.type">
+        <field name="name">Carné de extranjería</field>
+        <field name="code">PE_CE</field>
+        <field name="sequence">2</field>
+        <field name="l10n_pe_hr_sunat_code">4</field>
+        <field name="l10n_pe_hr_afp_code">1</field>
+    </record>
+    <record id="l10n_pe_hr_document_type_ruc" model="l10n_pe.hr.document.type">
+        <field name="name">RUC</field>
+        <field name="code">PE_RUC</field>
+        <field name="sequence">3</field>
+        <field name="l10n_pe_hr_sunat_code">6</field>
+    </record>
+    <record id="l10n_pe_hr_document_type_passport" model="l10n_pe.hr.document.type">
+        <field name="name">Pasaporte</field>
+        <field name="code">PASSPORT</field>
+        <field name="sequence">4</field>
+        <field name="l10n_pe_hr_sunat_code">7</field>
+        <field name="l10n_pe_hr_afp_code">4</field>
+    </record>
+    <!-- Sin código SUNAT de planilla (NE en v18) -->
+    <record id="l10n_pe_hr_document_type_ptp" model="l10n_pe.hr.document.type">
+        <field name="name">Permiso Temporal de Permanencia</field>
+        <field name="code">PE_PTP</field>
+        <field name="sequence">5</field>
+        <field name="l10n_pe_hr_afp_code">6</field>
+    </record>
+</odoo>

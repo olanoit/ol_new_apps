@@ -70,8 +70,9 @@ class L10nPeHrFinancialEntity(models.Model):
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
-class ResBank(models.Model):
-    _inherit = 'res.bank'
+class ResPartnerBank(models.Model):
+    # Odoo 20 retiró res.bank: el banco es un dato de la propia cuenta.
+    _inherit = 'res.partner.bank'
 
     l10n_pe_financial_entity_id = fields.Many2one(
         'l10n_pe.hr.financial.entity', string='Entidad SUNAT (T36)',
@@ -238,8 +239,8 @@ class HrEmployee(models.Model):
         if not account:
             return []
         doc_type, doc_number, country = self._l10n_pe_doc_pair()
-        entity = account.bank_id.l10n_pe_financial_entity_id
-        number = re.sub(r'\D', '', account.acc_number or '')
+        entity = account.l10n_pe_financial_entity_id
+        number = re.sub(r'\D', '', account.account_number or '')
         return [[doc_type, doc_number, country, entity.code or '', number]]
 
     # ------------------------------------------------------------------
@@ -252,13 +253,13 @@ class HrEmployee(models.Model):
         account = self.sudo().primary_bank_account_id
         if not account:
             return [_('%s: sin cuenta de abono.', self.display_name)]
-        entity = account.bank_id.l10n_pe_financial_entity_id
-        number = re.sub(r'\D', '', account.acc_number or '')
+        entity = account.l10n_pe_financial_entity_id
+        number = re.sub(r'\D', '', account.account_number or '')
         name = self.display_name
         if not entity:
             issues.append(_(
                 '%(name)s: el banco %(bank)s no tiene código de la tabla 36.',
-                name=name, bank=account.bank_id.display_name or '—'))
+                name=name, bank=account.bank_name or '—'))
         if not 6 <= len(number) <= 20:
             issues.append(_('%s: la cuenta debe tener entre 6 y 20 dígitos.',
                             name))
@@ -275,7 +276,7 @@ class HrEmployee(models.Model):
             issues.append(_(
                 '%(name)s: %(bank)s admite cuentas de %(lengths)s dígitos, '
                 'no de %(actual)s.', name=name,
-                bank=account.bank_id.display_name,
+                bank=account.bank_name,
                 lengths=' o '.join(str(n) for n in allowed),
                 actual=len(number)))
         if (len(number) == 20 and entity.code in CCI_ENTITIES

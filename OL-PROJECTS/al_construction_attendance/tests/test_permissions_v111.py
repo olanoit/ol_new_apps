@@ -32,7 +32,7 @@ class TestPermissionsV111(PlannerCommon):
         for plan_line in self.plan.line_ids.filtered(lambda l: not l.price_unit_planned):
             plan_line.price_unit_planned = 10.0
         self.plan.action_request_approval()
-        photo = self.env['ir.attachment'].create({'name': 'foto.png', 'datas': 'eA=='})
+        photo = self.env['ir.attachment'].create({'name': 'foto.png', 'raw': 'eA=='})
         return self.env['construction.task.progress'].create({
             'task_id': line.task_id.id, 'activity_id': line.activity_id.id,
             'plan_line_id': line.id, 'qty': 1, 'date': day,

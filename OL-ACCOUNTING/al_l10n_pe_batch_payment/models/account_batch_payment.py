@@ -36,7 +36,7 @@ class AccountBatchPayment(models.Model):
         mismo banco de la empresa o, si es de otro banco, su CCI."""
         bank = payment.partner_bank_id
         if bank.bank_id and bank.bank_id == self.journal_id.bank_id:
-            return digits(bank.acc_number), False
+            return digits(bank.account_number), False
         return digits(bank.l10n_pe_cci), True
 
     def check_payments_for_errors(self):
@@ -52,7 +52,7 @@ class AccountBatchPayment(models.Model):
                 'help': self.env._('Elija el formato en el banco (Contabilidad ‣ '
                                    'Configuración ‣ Bancos).'),
             })
-        if not journal.bank_account_id.acc_number:
+        if not journal.bank_account_id.account_number:
             errors.append({
                 'title': self.env._('El diario %s no tiene la cuenta de cargo.',
                                     journal.display_name),
@@ -170,7 +170,7 @@ class AccountBatchPayment(models.Model):
             'currency': self.currency_id.name,
             'payment_date': self.date,
             'now': fields.Datetime.context_timestamp(self, fields.Datetime.now()),
-            'charge_acc': journal.bank_account_id.acc_number,
+            'charge_acc': journal.bank_account_id.account_number,
             'company_name': company.name,
             'company_vat': company.vat or '',
             'reference': self.name,

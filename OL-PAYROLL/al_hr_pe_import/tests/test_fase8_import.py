@@ -10,7 +10,6 @@ Los tests llaman a ``_process_all_rows`` de forma síncrona (camino
 documentado para tests): ``action_run_import`` lanza un hilo con cursor
 real, que no es apto para la transacción de prueba.
 """
-import base64
 import io
 from datetime import date, datetime
 
@@ -32,7 +31,7 @@ def _xlsx(sheets):
             ws.append(row)
     buf = io.BytesIO()
     wb.save(buf)
-    return base64.b64encode(buf.getvalue())
+    return BinaryBytes(buf.getvalue())
 
 
 @tagged('post_install', '-at_install')

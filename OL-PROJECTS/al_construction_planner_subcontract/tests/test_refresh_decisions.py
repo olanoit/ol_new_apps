@@ -3,6 +3,7 @@
 «Actualizar avances» actualiza las líneas en vez de rehacerlas y conserva el
 pago del re-trabajo, el porcentaje escrito y su autor; si el avance cambia,
 la línea avisa. Datos ficticios."""
+import base64
 from datetime import date
 
 from odoo import Command
@@ -22,7 +23,7 @@ class TestRefreshDecisions(ContractTermsCommon):
         progress = self.env['construction.task.progress'].create({
             'task_id': self.partida.id, 'activity_id': self.act_wall.id,
             'date': day, 'qty': qty, 'is_rework': True, 'rework_reason': 'bad_assembly',
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         progress.action_validate()
         return progress
 

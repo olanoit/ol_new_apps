@@ -802,7 +802,7 @@ def _create_attachment(env, filename: str, content_bytes: bytes, mimetype: str) 
     content_b64 = base64.b64encode(content_bytes).decode()
     attachment = env["ir.attachment"].create({
         "name": filename,
-        "datas": content_b64,
+        "raw": content_b64,
         "mimetype": mimetype,
     })
     return {

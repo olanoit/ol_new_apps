@@ -118,7 +118,7 @@
                     </group>
                 </page>
             </xpath>
-            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+            <xpath expr="//field[@name='order_line']/list//field[@name='name']" position="after">
                 <field name="construction_task_id" optional="hide" readonly="1"
                        column_invisible="not parent.construction_is_service_order"/>
                 <field name="construction_is_additional" optional="show" readonly="1"

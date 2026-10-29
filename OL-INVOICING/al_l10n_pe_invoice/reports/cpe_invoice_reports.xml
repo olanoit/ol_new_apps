@@ -315,7 +315,7 @@
                             <td class="text-center"><span t-out="bank_index + 1"/></td>
                             <td><span t-field="bank.bank_id.name"/></td>
                             <td class="text-center"><span t-field="bank.currency_id.name"/></td>
-                            <td><span t-field="bank.acc_number"/></td>
+                            <td><span t-field="bank.account_number"/></td>
                         </tr>
                     </tbody>
                 </table>

@@ -40,7 +40,7 @@ class TestConstructionAuditFixes(TransactionCase):
         cls.wd_dlab = cls.env.ref('al_hr_pe.wd_DLAB')
         cls.wd_dom = cls.env.ref('al_hr_pe.wd_DOM')
         cls.wd_dmed = cls.env.ref('al_hr_pe.wd_DMED')
-        cls.dni = cls.env.ref('l10n_pe.it_DNI')
+        cls.dni = cls.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         cls.operario = cls.env.ref('al_hr_pe_construction.category_operario')
         cls.peon = cls.env.ref('al_hr_pe_construction.category_peon')
         cls.Table = cls.env['l10n_pe.hr.construction.wage.table']
@@ -55,7 +55,7 @@ class TestConstructionAuditFixes(TransactionCase):
             'name': 'Obrero Auditoría %d' % seq,
             'company_id': self.company.id,
             'identification_id': '4700000%d' % seq,
-            'l10n_latam_identification_type_id': self.dni.id})
+            'l10n_pe_document_type_id': self.dni.id})
         employee.version_id.write({
             'contract_date_start': date(2026, 1, 1),
             'resource_calendar_id': self.calendar.id,

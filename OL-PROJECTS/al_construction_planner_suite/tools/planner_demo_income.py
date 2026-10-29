@@ -23,7 +23,6 @@ Idempotente (si la obra ya tiene orden de venta del contrato no hace nada).
 Ejecutar con:
   odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < planner_demo_income.py
 """
-import base64
 from datetime import date
 
 from odoo import Command
@@ -133,15 +132,14 @@ else:
             'reason': 'Dos cocinas del piso 05 con puertas por regular.'}).action_confirm()
     valuation.message_post(body='Observación levantada con fotos de las puertas reguladas.')
     valuation.action_send()
-    act = base64.b64encode(
-        'Acta de conformidad de la valorización 1 (documento de ejemplo).'.encode())
+    act = 'Acta de conformidad de la valorización 1 (documento de ejemplo).'.encode()
     confirm = env['construction.valuation.confirm.wizard'].with_context(
         default_valuation_id=valuation.id).create({
             'confirm_date': date(2026, 11, 18),
             'confirm_name': 'Ing. Rosa Quispe',
             'confirm_role': 'Residente de obra del cliente',
             'attachment_ids': [Command.create({'name': 'Acta de conformidad VAL 1.txt',
-                                               'datas': act, 'mimetype': 'text/plain'})],
+                                               'raw': act, 'mimetype': 'text/plain'})],
         })
     confirm.action_confirm()
     valuation.action_create_invoice()

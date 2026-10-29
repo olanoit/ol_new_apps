@@ -48,14 +48,14 @@
                         invisible="not project_id"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </xpath>
-            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="before">
+            <xpath expr="//field[@name='order_line']/list//field[@name='name']" position="before">
                 <field name="construction_budget_item" optional="hide"/>
             </xpath>
-            <xpath expr="//field[@name='order_line']/list/field[@name='name']" position="after">
+            <xpath expr="//field[@name='order_line']/list//field[@name='name']" position="after">
                 <field name="construction_line_role" optional="hide"/>
             </xpath>
             <!-- Costo real, holguras y precio (CREVAL v1.0, 6.5): columnas internas. -->
-            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_uom_qty']" position="before">
                 <field name="construction_qty_real" optional="hide"/>
                 <field name="construction_qty_slack_pct" optional="hide"/>
                 <field name="construction_qty_slack" optional="hide"/>

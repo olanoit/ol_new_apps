@@ -184,7 +184,7 @@ class L10nPeHrConafovicer(models.Model):
         for line in self.line_ids:
             employee = line.employee_id
             sheet.append([
-                (employee.l10n_latam_identification_type_id
+                (employee.l10n_pe_document_type_id
                  .l10n_pe_hr_sunat_code or ''),
                 employee.identification_id or '',
                 employee.name or '',

@@ -29,7 +29,7 @@ Estructura del port:
 Cambios de datos v18 → v19:
 
 * ``hr.type.document.{bbva,bcp,interbank,banbif}_code`` →
-  ``l10n_latam.identification.type.l10n_pe_hr_*_code`` (extensión aquí;
+  ``l10n_pe.hr.document.type.l10n_pe_hr_*_code`` (extensión aquí;
   data en ``data/bank_codes_data.xml``).
 * Cuenta de haberes: ``employee.wage_bank_account_id`` (v18) →
   ``employee.primary_bank_account_id`` (nativo v19, primera cuenta de
@@ -87,7 +87,7 @@ from odoo.addons.al_hr_pe_benefits.models.hr_benefits_engine import \
 #   doc_number:       número de documento
 #   name:             nombre completo del beneficiario
 #   last_name / m_last_name / names: nombre descompuesto
-#   acc_number:       cuenta destino
+#   account_number:       cuenta destino
 #   acc_type:         tipo de la cuenta destino ('0'/'1'/'3')
 #   acc_bic:          BIC del banco de la cuenta destino (BanBif)
 #   amount:           monto a abonar (float, en la moneda del proceso)
@@ -216,7 +216,7 @@ def bbva_haberes_txt(header, lines):
                        p_doc_type=line['doc_bbva'],
                        p_doc_num=txt_field(line['doc_number'], 'str', 12),
                        charge_type='I' if line['acc_type'] == '3' else 'P',
-                       payment_doc=txt_field(line['acc_number'], 'str', 20),
+                       payment_doc=txt_field(line['account_number'], 'str', 20),
                        beneficiary_name=txt_field(line['name'], 'str', 40),
                        amount=txt_field(line['amount'], 'float', 15,
                                         left=False),
@@ -238,7 +238,7 @@ def bcp_haberes_txt(header, lines):
     for line in lines:
         if line['amount'] > 0:
             start = 10 if line['acc_type'] == '3' else 3
-            acc_numbers.append(int(line['acc_number'][start:]))
+            acc_numbers.append(int(line['account_number'][start:]))
             count += 1
     acc_numbers.append(int(header['charge_acc'][3:]))
     checksum = str(sum(acc_numbers)).strip().rjust(15, '0')
@@ -264,7 +264,7 @@ def bcp_haberes_txt(header, lines):
                    '{beneficiary_name}{beneficiary_ref}{company_ref}'
                    '{currency}{amount}{flag}\r\n'.format(
                        account_type=account_type.get(line['acc_type'], ' '),
-                       payment_doc=txt_field(line['acc_number'], 'str', 20),
+                       payment_doc=txt_field(line['account_number'], 'str', 20),
                        p_doc_type=line['doc_bcp'],
                        p_doc_num=txt_field(line['doc_number'], 'str', 12),
                        beneficiary_name=txt_field(line['name'], 'str', 75),
@@ -320,7 +320,7 @@ def interbank_haberes_txt(header, lines):
         is_cci = line['acc_type'] == '3'
         out.append('02{doc_type}{beneficiary_code}{doc_number}{date_to}'
                    '{charge_currency}{amount} {charge_type}{account_type}'
-                   '{account_currency}{acc_number}{person_type}{p_doc_type}'
+                   '{account_currency}{account_number}{person_type}{p_doc_type}'
                    '{p_doc_num}{benef_name}{currency_cts}{amount_cts}'
                    '{filler}{cell_phone}{email}\r\n'.format(
                        doc_type=line['doc_interbank'],
@@ -335,9 +335,9 @@ def interbank_haberes_txt(header, lines):
                                                      ' ' * 3),
                        account_currency=' ' * 2 if is_cci
                        else charge_currency,
-                       acc_number=(' ' * 3) + txt_field(
-                           line['acc_number'], 'str', 20) if is_cci
-                       else txt_field(line['acc_number'], 'str', 23),
+                       account_number=(' ' * 3) + txt_field(
+                           line['account_number'], 'str', 20) if is_cci
+                       else txt_field(line['account_number'], 'str', 23),
                        person_type=header['person_type'] or ' ',
                        p_doc_type=line['doc_interbank'],
                        p_doc_num=txt_field(line['doc_number'], 'str', 15),
@@ -370,7 +370,7 @@ def scotiabank_haberes_txt(header, lines):
             continue
         is_cci = line['acc_type'] == '3'
         out.append('{doc_type}{doc_number}{employee_name}{payment_way}'
-                   '{acc_number}{acc_number_cci}{amount}{labor_regime}'
+                   '{account_number}{acc_number_cci}{amount}{labor_regime}'
                    '{currency}{concept}{payment_type}\r\n'.format(
                        doc_type=doc_type.get(line['doc_sunat'], ' '),
                        doc_number=txt_field(
@@ -379,11 +379,11 @@ def scotiabank_haberes_txt(header, lines):
                        payment_way=header['payment_way'],
                        # sin guiones antes de truncar: «970-0123456» se
                        # convertía en otra cuenta
-                       acc_number=txt_field(
-                           _digits(line['acc_number']) if not is_cci else '',
+                       account_number=txt_field(
+                           _digits(line['account_number']) if not is_cci else '',
                            'str', 10),
                        acc_number_cci=txt_field(
-                           _digits(line['acc_number']) if is_cci else '', 'str', 20),
+                           _digits(line['account_number']) if is_cci else '', 'str', 20),
                        amount=txt_field(line['amount'], 'float', 11,
                                         left=False),
                        labor_regime='1',
@@ -420,7 +420,7 @@ def banbif_haberes_txt(header, lines):
                                        'str', 10),
                        platype='H',
                        codbank=line.get('acc_bic') or '038',
-                       account_number=line['acc_number'].rjust(20, ' '),
+                       account_number=line['account_number'].rjust(20, ' '),
                        currency_type='1',
                        amount=_banbif_amount(line['amount']),
                        motdep=header['subtype_banbif'],
@@ -471,7 +471,7 @@ def bbva_cts_txt(header, lines):
                        p_doc_type=line['doc_bbva'],
                        p_doc_num=txt_field(line['doc_number'], 'str', 12),
                        charge_type='I' if line['acc_type'] == '3' else 'P',
-                       payment_doc=txt_field(line['acc_number'], 'str', 20),
+                       payment_doc=txt_field(line['account_number'], 'str', 20),
                        beneficiary_name=txt_field(line['name'], 'str', 40),
                        amount=txt_field(line['amount'], 'float', 15,
                                         left=False),
@@ -500,7 +500,7 @@ def bcp_cts_txt(header, lines):
     # Solo las cuentas que van en el archivo (las de la moneda emitida y con
     # importe): con un lote mixto PEN/USD el checksum no cuadraba y BCP
     # rechazaba el archivo.
-    emitted_accs = [line['acc_number'] for line in lines if line['amount'] > 0]
+    emitted_accs = [line['account_number'] for line in lines if line['amount'] > 0]
     checksum = str(
         int(header['charge_acc'][3:])
         + sum(int(acc[3:]) for acc in emitted_accs if acc[3:].isdigit())
@@ -525,7 +525,7 @@ def bcp_cts_txt(header, lines):
         out.append('2{payment_doc}{p_doc_type}{p_doc_num}'
                    '{beneficiary_name}{beneficiary_ref}{company_ref}'
                    '{currency}{amount}\r\n'.format(
-                       payment_doc=txt_field(line['acc_number'], 'str', 20),
+                       payment_doc=txt_field(line['account_number'], 'str', 20),
                        p_doc_type=line['doc_bcp'],
                        p_doc_num=txt_field(line['doc_number'], 'str', 15),
                        beneficiary_name=txt_field(line['name'], 'str', 75),
@@ -574,7 +574,7 @@ def interbank_cts_txt(header, lines):
         is_cci = line['acc_type'] == '3'
         out.append('02{doc_type}{beneficiary_code}{doc_number}{date_to}'
                    '{charge_currency}{amount} {charge_type}{account_type}'
-                   '\t\t\t\t\t\t\t{account_currency}{acc_number}'
+                   '\t\t\t\t\t\t\t{account_currency}{account_number}'
                    '{person_type}{p_doc_type}{p_doc_num}{benef_name}'
                    '{currency_cts}{amount_cts}{espacios}\r\n'.format(
                        doc_type=line['doc_interbank'],
@@ -589,9 +589,9 @@ def interbank_cts_txt(header, lines):
                                                      ' ' * 3),
                        account_currency=' ' * 2 if is_cci
                        else charge_currency,
-                       acc_number=(' ' * 3) + txt_field(
-                           line['acc_number'], 'str', 20) if is_cci
-                       else txt_field(line['acc_number'], 'str', 23),
+                       account_number=(' ' * 3) + txt_field(
+                           line['account_number'], 'str', 20) if is_cci
+                       else txt_field(line['account_number'], 'str', 23),
                        person_type=header['person_type'] or ' ',
                        p_doc_type=line['doc_interbank'],
                        p_doc_num=txt_field(line['doc_number'], 'str', 15),
@@ -628,9 +628,9 @@ def scotiabank_cts_txt(header, lines):
                        cts_currency='01' if dollars else '00',
                        payment_method='1',  # abono en cuenta CTS (CCI=2)
                        cts_acc=txt_field(
-                           _digits(line['acc_number']) if not is_cci else '', 'str', 10),
+                           _digits(line['account_number']) if not is_cci else '', 'str', 10),
                        cci_acc=txt_field(
-                           _digits(line['acc_number']) if is_cci else '', 'str', 20),
+                           _digits(line['account_number']) if is_cci else '', 'str', 20),
                        rem_amount='{0:.2f}'.format(
                            line['amount_soles']).replace('.', '')
                        .zfill(11),
@@ -664,7 +664,7 @@ def banbif_cts_txt(header, lines):
                                        'str', 10),
                        platype='C',
                        codbank=line.get('acc_bic') or '038',
-                       account_number=line['acc_number'].strip()
+                       account_number=line['account_number'].strip()
                        .rjust(20, ' '),
                        currency_type='2' if dollars else '1',
                        amount=_banbif_amount(line['amount']),
@@ -727,12 +727,12 @@ class ResPartnerBank(models.Model):
         help='Código de oficina que el layout BBVA intercala en la '
              'cuenta de cargo (posición 9).')
 
-    @api.constrains('type_of_account', 'acc_number')
+    @api.constrains('type_of_account', 'account_number')
     def _check_type_of_account_length(self):
         """Valida la longitud (solo dígitos) según el tipo de cuenta:
         11 para detracciones, 20 para CCI."""
-        for account in self.filtered('acc_number'):
-            digits = re.sub(r'[^0-9]', '', account.acc_number)
+        for account in self.filtered('account_number'):
+            digits = re.sub(r'[^0-9]', '', account.account_number)
             if account.type_of_account == '2' and len(digits) != 11:
                 raise UserError(self.env._(
                     'El número de dígitos para una cuenta de detracción '
@@ -743,11 +743,11 @@ class ResPartnerBank(models.Model):
                     'ser 20.'))
 
 
-class L10nLatamIdentificationType(models.Model):
+class L10nPeHrDocumentType(models.Model):
     """Códigos del tipo de documento por banco (port de
     ``hr.type.document.{bbva,bcp,interbank,banbif}_code`` v18 sobre el
-    catálogo latam nativo; data en ``data/bank_codes_data.xml``)."""
-    _inherit = 'l10n_latam.identification.type'
+    catálogo de tipos de documento; data en ``data/bank_codes_data.xml``)."""
+    _inherit = 'l10n_pe.hr.document.type'
 
     l10n_pe_hr_bbva_code = fields.Char(string='Código BBVA')
     l10n_pe_hr_bcp_code = fields.Char(string='Código BCP')
@@ -1074,51 +1074,51 @@ class HrAutomateMultipayment(models.Model):
         if not account.currency_id:
             log += self.env._(
                 'No se ha especificado una moneda en la cuenta %s\n'
-            ) % account.acc_number
+            ) % account.account_number
         elif not account.type_of_account:
             log += self.env._(
                 'No se ha especificado un tipo de cuenta en la cuenta '
-                '%s\n') % account.acc_number
+                '%s\n') % account.account_number
         elif account.type_of_account not in ('0', '1', '3'):
             log += self.env._(
                 'La cuenta %s tiene un tipo de cuenta diferente a '
                 'Corriente, Ahorros o Interbancaria\n'
-            ) % account.acc_number
+            ) % account.account_number
         if account.type_of_account == '3' \
-                and len(account.acc_number) != 20:
+                and len(account.account_number) != 20:
             log += self.env._(
                 'La cuenta %s debe tener 20 dígitos\n'
-            ) % account.acc_number
+            ) % account.account_number
         if bank == 'bbva':
             if account.type_of_account in ('0', '1') \
-                    and len(account.acc_number) != 20:
+                    and len(account.account_number) != 20:
                 log += self.env._(
                     'La cuenta %s debe tener 20 dígitos\n'
-                ) % account.acc_number
+                ) % account.account_number
         elif bank == 'bcp':
             if account.type_of_account == '0' \
-                    and len(account.acc_number) != 13:
+                    and len(account.account_number) != 13:
                 log += self.env._(
                     'La cuenta %s debe tener 13 dígitos\n'
-                ) % account.acc_number
+                ) % account.account_number
             if account.type_of_account == '1' \
-                    and len(account.acc_number) != 14:
+                    and len(account.account_number) != 14:
                 log += self.env._(
                     'La cuenta %s debe tener 14 dígitos\n'
-                ) % account.acc_number
+                ) % account.account_number
         elif bank == 'interbank':
             if account.type_of_account in ('0', '1') \
-                    and len(account.acc_number) != 13:
+                    and len(account.account_number) != 13:
                 log += self.env._(
                     'La cuenta %s debe tener 13 dígitos\n'
-                ) % account.acc_number
+                ) % account.account_number
         elif bank == 'scotiabank':
             # el archivo reserva 10 posiciones a la cuenta (sin CCI)
             if account.type_of_account in ('0', '1') \
-                    and len(_digits(account.acc_number)) != 10:
+                    and len(_digits(account.account_number)) != 10:
                 log += self.env._(
                     'La cuenta %s debe tener 10 dígitos\n'
-                ) % account.acc_number
+                ) % account.account_number
         return log
 
     _BANK_DOC_FIELD = {
@@ -1141,7 +1141,7 @@ class HrAutomateMultipayment(models.Model):
                 log += self.env._(
                     'No se puede utilizar la cuenta %s de tipo '
                     'interbancaria como cuenta de cargo\n'
-                ) % charge_account.acc_number
+                ) % charge_account.account_number
         if bank == 'bbva':
             if not self.cts_id and not charge_account.branch_name:
                 log += self.env._(
@@ -1175,7 +1175,7 @@ class HrAutomateMultipayment(models.Model):
         for line in lines:
             employee = line.employee_id
             if doc_field and not \
-                    employee.l10n_latam_identification_type_id[doc_field]:
+                    employee.l10n_pe_document_type_id[doc_field]:
                 log += self.env._(
                     'El tipo de documento de %(employee)s no tiene su '
                     'código %(bank)s\n') % {
@@ -1201,7 +1201,7 @@ class HrAutomateMultipayment(models.Model):
             lambda l: l.is_txt) if self.cts_id else \
             self.env['hr.automate.multipayment.line']
         return {
-            'charge_acc': charge_account.acc_number or '',
+            'charge_acc': charge_account.account_number or '',
             'charge_acc_type': charge_account.type_of_account or '',
             'charge_branch': charge_account.branch_name or '',
             'currency': charge_account.currency_id.name or '',
@@ -1223,14 +1223,14 @@ class HrAutomateMultipayment(models.Model):
             'cts_dollars': self.cts_dollars,
             'cts_name': self.cts_id.name or '',
             'cts_checksum_accs': [
-                line.bank_account_id.acc_number for line in cts_all_lines
+                line.bank_account_id.account_number for line in cts_all_lines
                 if line.amount > 0 or line.amount_usd > 0],
         }
 
     def _line_dict(self, line):
         """Línea para las funciones puras de formato."""
         employee = line.employee_id
-        doc_type = employee.l10n_latam_identification_type_id
+        doc_type = employee.l10n_pe_document_type_id
         account = line.bank_account_id
         if self.cts_id and self.cts_dollars:
             amount = line.amount_usd
@@ -1260,7 +1260,7 @@ class HrAutomateMultipayment(models.Model):
             'last_name': employee.last_name or '',
             'm_last_name': employee.m_last_name or '',
             'names': employee.names or '',
-            'acc_number': account.acc_number or '',
+            'account_number': account.account_number or '',
             'acc_type': account.type_of_account or '',
             'acc_bic': account.bank_id.bic or '',
             'amount': amount,

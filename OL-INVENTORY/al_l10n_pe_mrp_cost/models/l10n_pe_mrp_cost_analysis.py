@@ -46,8 +46,8 @@ class L10nPeMrpCostAnalysis(models.Model):
     amount = fields.Monetary(string='Costo', readonly=True)
 
     @property
-    def _table_query(self):
-        return SQL("""
+    def _table_sql(self):
+        query = SQL("""(
             SELECT ROW_NUMBER() OVER (ORDER BY c.production_id, c.element, c.workcenter_id, c.pool_id) AS id, c.*
               FROM (
                 SELECT mp.id AS production_id, mp.product_id, mp.company_id,
@@ -84,4 +84,8 @@ class L10nPeMrpCostAnalysis(models.Model):
                   JOIN l10n_pe_mrp_cost_close cl ON cl.id = l.close_id AND cl.state = 'done'
                   JOIN mrp_production mp ON mp.id = l.production_id
               ) c
-        """)
+        )""")
+        # Como el _table_sql base: se escribe en la base lo que lee la consulta.
+        to_flush = [self.env[model]._fields[fname]
+                    for model, fnames in self._depends.items() for fname in fnames]
+        return SQL("%s", query, to_flush=to_flush)

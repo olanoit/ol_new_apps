@@ -75,7 +75,7 @@
                             <field name="last_name"/>
                             <field name="m_last_name"/>
                             <field name="names"/>
-                            <field name="l10n_latam_identification_type_id"
+                            <field name="l10n_pe_document_type_id"
                                    options="{'no_create': True}"
                                    required="not is_unborn"/>
                             <field name="identification_id"

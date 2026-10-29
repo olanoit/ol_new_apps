@@ -105,7 +105,7 @@
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="after">
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_qty']" position="after">
                 <field name="pharmacy_bonus_qty" optional="show"
                        readonly="pharmacy_bonus_of_id or parent.state not in ('draft', 'sent')"/>
                 <field name="pharmacy_bonus_of_id" column_invisible="True"/>

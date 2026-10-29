@@ -11,9 +11,9 @@ S/ 1, más S/ 10 de costo extra: S/ 313.
 | Puerta     | roble   | 0.50 | 1         | 200      | 1         | 3.7037  | 204.7037 |
 | Principal  | —       | 0.10 | 0         | —        | —         | 0.7407  | 0.7407   |
 """
-import base64
 import io
 
+from odoo.tools import BinaryBytes
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
@@ -164,7 +164,7 @@ class TestPieceCosting(TransactionCase):
             sheet.append(row)
         buffer = io.BytesIO()
         workbook.save(buffer)
-        return base64.b64encode(buffer.getvalue())
+        return BinaryBytes(buffer.getvalue())
 
     def test_import_pieces(self):
         data = self._workbook([

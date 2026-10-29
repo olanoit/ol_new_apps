@@ -282,10 +282,10 @@ class ConstructionContractSettlement(models.Model):
                 activity = progresses.activity_id[:1]
                 qty = sum(progresses.mapped('qty_weighted'))
                 repeat = 0.0 if is_rework else settlement._repeat_qty(progresses)
-                if po_line.product_uom_id and activity.uom_id \
-                        and po_line.product_uom_id != activity.uom_id:
-                    qty = activity.uom_id._compute_quantity(qty, po_line.product_uom_id)
-                    repeat = activity.uom_id._compute_quantity(repeat, po_line.product_uom_id)
+                if po_line.uom_id and activity.uom_id \
+                        and po_line.uom_id != activity.uom_id:
+                    qty = activity.uom_id._compute_quantity(qty, po_line.uom_id)
+                    repeat = activity.uom_id._compute_quantity(repeat, po_line.uom_id)
                 vals_list.append({
                     'activity_id': activity.id,
                     'purchase_line_id': po_line.id,
@@ -645,13 +645,13 @@ class ConstructionContractSettlement(models.Model):
         for line in lines:
             po_line = line.purchase_line_id
             received = po_line.qty_received + line._qty_to_receive()
-            if po_line.product_uom_id.compare(received, po_line.product_qty) > 0:
+            if po_line.uom_id.compare(received, po_line.product_qty) > 0:
                 raise UserError(self.env._(
                     '%(activity)s: con esta liquidación se recibirían %(received)s de '
                     '%(ordered)s %(uom)s ordenados en %(order)s. Amplíe la OC (Asignar '
                     'contrata) o corrija los avances.', activity=line.activity_id.display_name,
                     received=round(received, 2), ordered=round(po_line.product_qty, 2),
-                    uom=po_line.product_uom_id.name, order=po_line.order_id.name))
+                    uom=po_line.uom_id.name, order=po_line.order_id.name))
         for line in lines:
             line.purchase_line_id.qty_received += line._qty_to_receive()
 
@@ -914,7 +914,7 @@ class ConstructionContractSettlementLine(models.Model):
             warning = False
             if line.decision_date and line._construction_has_decision():
                 date = format_date(self.env, line.decision_date)
-                uom = line.purchase_line_id.product_uom_id
+                uom = line.purchase_line_id.uom_id
                 if line.no_progress:
                     warning = self.env._(
                         'Sin avances desde la decisión del %(date)s: la línea queda en 0.',

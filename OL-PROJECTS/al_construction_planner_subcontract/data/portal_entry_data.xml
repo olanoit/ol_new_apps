@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Tarjeta en «Mi cuenta» (Odoo 20: las tarjetas del portal son portal.entry) -->
+    <record id="portal_entry_construction" model="portal.entry">
+        <field name="name">Mis obras</field>
+        <field name="description">Lo asignado a su empresa y el registro de avance</field>
+        <field name="url">/my/obra</field>
+        <field name="image" type="bytes" file="al_construction_planner/static/src/img/portal_icon.png"/>
+        <field name="placeholder_count">construction_line_count</field>
+        <field name="category">service_category</field>
+        <field name="sequence" eval="45"/>
+    </record>
+</odoo>

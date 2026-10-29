@@ -46,7 +46,7 @@ class TestAdditional(ContractTermsCommon):
         progress = self.env['construction.task.progress'].create({
             'task_id': self.extra_task.id, 'activity_id': self.act_seal.id,
             'date': date(2026, 11, 4), 'qty': 40.0,
-            'attachment_ids': [(0, 0, {'name': 'foto.jpg', 'datas': b'iVBORw0KGgo='})]})
+            'attachment_ids': [(0, 0, {'name': 'foto.jpg', 'raw': 'iVBORw0KGgo='})]})
         progress.action_validate()
         order.action_construction_approve_extension()
         self.assertFalse(order.construction_needs_reapproval)

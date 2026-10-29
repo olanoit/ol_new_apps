@@ -51,7 +51,7 @@ class TestContractV15(PlannerCommon):
         valuation._action_confirm({
             'confirm_date': date(2026, 11, 18), 'confirm_name': 'Ing. Rosa Quispe',
             'confirm_role': 'Residente',
-            'confirm_attachment_ids': [Command.create({'name': 'ok.pdf', 'datas': PDF})],
+            'confirm_attachment_ids': [Command.create({'name': 'ok.pdf', 'raw': base64.b64decode(PDF)})],
         }, {line: line.amount_delivered for line in valuation.line_ids})
 
     def test_templates_sum_100(self):

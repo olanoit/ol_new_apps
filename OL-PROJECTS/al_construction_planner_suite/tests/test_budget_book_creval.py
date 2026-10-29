@@ -84,7 +84,7 @@ class TestBudgetBook(TransactionCase):
         sheet.append([None, None, None, None, 'm2', 'm²'])
         output = BytesIO()
         book.save(output)
-        return base64.b64encode(output.getvalue())
+        return BinaryBytes(output.getvalue())
 
     def _wizard(self, target='budget', **vals):
         return self.env['construction.budget.book.wizard'].create(dict({
@@ -160,7 +160,7 @@ class TestBudgetBook(TransactionCase):
         edit(book)
         output = BytesIO()
         book.save(output)
-        return base64.b64encode(output.getvalue())
+        return BinaryBytes(output.getvalue())
 
     def _send(self, file, target='budget', order=None):
         wizard = self.env['construction.budget.book.wizard'].create({

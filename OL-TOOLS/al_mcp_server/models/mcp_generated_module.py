@@ -181,7 +181,7 @@ class McpGeneratedModule(models.Model):
         zip_b64 = base64.b64encode(zip_bytes).decode()
         attachment = self.env["ir.attachment"].sudo().create({
             "name": f"{self.technical_name}.zip",
-            "datas": zip_b64,
+            "raw": zip_b64,
             "mimetype": "application/zip",
             "res_model": self._name,
             "res_id": self.id,

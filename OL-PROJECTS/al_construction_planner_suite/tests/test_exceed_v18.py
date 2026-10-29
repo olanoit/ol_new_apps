@@ -2,6 +2,7 @@
 """Control de consumo sin repetición (v1.8, M18-05), pago repetido y
 re-trabajo de contratas (M18-21) y porcentaje manual en la liquidación
 (M18-09, parte de contratas)."""
+import base64
 from datetime import date
 
 from odoo import Command
@@ -124,7 +125,7 @@ class TestRepeatAndRework(TestContracts):
             'task_id': line.task_id.id, 'activity_id': line.activity_id.id,
             'date': date(2026, 11, 3), 'qty': 1.0, 'is_rework': True,
             'rework_reason': 'bad_assembly',
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         rework.with_user(self.planner).action_validate()
         self.assertAlmostEqual(line.qty_executed, line.qty_planned)
         settlement = self._settle(date(2026, 11, 5))

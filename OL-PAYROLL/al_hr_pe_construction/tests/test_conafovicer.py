@@ -26,7 +26,7 @@ class TestConafovicer(TransactionCase):
         cls.structure = cls.env.ref(
             'al_hr_pe_construction.construction_structure')
         cls.wd_dlab = cls.env.ref('al_hr_pe.wd_DLAB')
-        cls.dni = cls.env.ref('l10n_pe.it_DNI')
+        cls.dni = cls.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         cls.env['hr.period.generator'].create({
             'year': 2026, 'company_id': cls.company.id,
             'generate_weekly': True}).action_generate()
@@ -38,7 +38,7 @@ class TestConafovicer(TransactionCase):
         employee = self.env['hr.employee'].create({
             'name': 'Obrero CONAF %d' % seq, 'company_id': self.company.id,
             'identification_id': '4600000%d' % seq,
-            'l10n_latam_identification_type_id': self.dni.id})
+            'l10n_pe_document_type_id': self.dni.id})
         employee.version_id.write({
             'contract_date_start': date(2026, 1, 1),
             'l10n_pe_labor_regime': 'construccion',

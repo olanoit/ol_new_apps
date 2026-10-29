@@ -144,7 +144,7 @@ class ConstructionPortalService(models.AbstractModel):
             data = photo['data'].split(',', 1)[-1]
             if len(data) * 3 / 4 > MAX_PHOTO_BYTES:
                 raise UserError(self.env._('La foto %s pesa más de 8 MB.', index))
-            values.append({'name': photo.get('name') or 'foto-%s.jpg' % index, 'datas': data,
+            values.append({'name': photo.get('name') or 'foto-%s.jpg' % index, 'raw': data,
                            'mimetype': photo.get('mimetype') or 'image/jpeg',
                            'res_model': res_model, 'res_id': 0})
         # sudo: las fotos del portal las adjunta el sistema al registro.

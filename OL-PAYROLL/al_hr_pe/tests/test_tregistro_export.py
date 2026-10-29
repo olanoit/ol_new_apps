@@ -27,7 +27,7 @@ class TestTregistroExport(TransactionCase):
         cls.env.user.company_ids = [(4, cls.company.id)]
         cls.env = cls.env(context=dict(
             cls.env.context, allowed_company_ids=cls.company.ids))
-        cls.dni = cls.env.ref('l10n_pe.it_DNI')
+        cls.dni = cls.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         cls.district = cls.env['l10n_pe.res.city.district'].search(
             [('code', '=', '150101')], limit=1) or \
             cls.env['l10n_pe.res.city.district'].search([], limit=1)
@@ -38,7 +38,7 @@ class TestTregistroExport(TransactionCase):
             'names': 'José María',
             'company_id': cls.company.id,
             'identification_id': '03300605',
-            'l10n_latam_identification_type_id': cls.dni.id,
+            'l10n_pe_document_type_id': cls.dni.id,
             'birthday': date(1970, 12, 12),
             'sex': 'male',
             'private_phone': '073375169',
@@ -215,7 +215,7 @@ class TestTregistroExport(TransactionCase):
             'group_ids': [Command.set([self.env.ref('base.group_user').id])],
         })
         with self.assertRaises(AccessError):
-            attachment.with_user(intern).read(['datas'])
+            attachment.with_user(intern).read(['raw'])
         import base64
         archive = zipfile.ZipFile(io.BytesIO(attachment.raw.content))
         self.assertEqual(len(archive.namelist()), 4)
@@ -228,7 +228,7 @@ class TestTregistroExport(TransactionCase):
             'last_name': 'Vargas', 'm_last_name': 'Soto', 'names': 'Ana',
             'company_id': self.company.id,
             'identification_id': '03300606',
-            'l10n_latam_identification_type_id': self.dni.id,
+            'l10n_pe_document_type_id': self.dni.id,
             'birthday': date(1985, 3, 4),
             'sex': 'female',
             'l10n_pe_district_id': self.district.id,
@@ -309,9 +309,9 @@ class TestTregistroExport(TransactionCase):
 
     def test_foreign_document_needs_country(self):
         """Con pasaporte, el país emisor sale de la tabla 26, no 604."""
-        passport = self.env.ref('l10n_latam_base.it_pass')
+        passport = self.env.ref('al_hr_pe.l10n_pe_hr_document_type_passport')
         passport.l10n_pe_hr_sunat_code = '7'
-        self.employee.l10n_latam_identification_type_id = passport
+        self.employee.l10n_pe_document_type_id = passport
         doc_type, dummy, country = self.employee._l10n_pe_doc_pair()
         self.assertEqual(doc_type, '07')
         self.assertFalse(country, 'sin código de país no se inventa 604')

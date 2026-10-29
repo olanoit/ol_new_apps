@@ -4,6 +4,7 @@ import io
 
 from PIL import Image
 
+from odoo.tools import BinaryBytes
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
@@ -14,7 +15,7 @@ from odoo.addons.al_account_base.tests.common import use_pe_company
 def _png():
     buffer = io.BytesIO()
     Image.new('RGB', (40, 40), (114, 46, 209)).save(buffer, format='PNG')
-    return base64.b64encode(buffer.getvalue())
+    return BinaryBytes(buffer.getvalue())
 
 
 @tagged('post_install', '-at_install')
@@ -27,7 +28,7 @@ class TestWalletQr(TransactionCase):
         cls.company = cls.env.company
         cls.pen = cls.env.ref('base.PEN')
         cls.bank_account = cls.env['res.partner.bank'].create({
-            'acc_number': '19112345678090',
+            'account_number': '19112345678090',
             'partner_id': cls.company.partner_id.id,
             'l10n_pe_wallet_qr_image': _png(),
         })

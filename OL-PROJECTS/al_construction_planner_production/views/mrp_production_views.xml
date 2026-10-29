@@ -18,10 +18,10 @@
                     <field name="construction_accessory_count" widget="statinfo" string="Accesorios"/>
                 </button>
             </xpath>
-            <xpath expr="//field[@name='construction_versus_ids']/list/field[@name='qty_required']" position="after">
+            <xpath expr="//field[@name='construction_versus_ids']/list//field[@name='qty_required']" position="after">
                 <field name="qty_consumed" sum="Total"/>
             </xpath>
-            <xpath expr="//field[@name='construction_versus_ids']/list/field[@name='amount_required']" position="after">
+            <xpath expr="//field[@name='construction_versus_ids']/list//field[@name='amount_required']" position="after">
                 <field name="amount_consumed" sum="Total" groups="al_construction_planner.group_planner_amounts"/>
             </xpath>
             <xpath expr="//page[@name='construction_versus']" position="inside">

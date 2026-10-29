@@ -79,3 +79,5 @@ access_l10n_pe_employee_education_manager,l10n_pe.hr.employee.education manager,
 l10n_pe_employee_education_company_rule,Estudios concluidos: solo de la compañía,l10n_pe.hr.employee.education,,crud,"[('company_id', 'in', company_ids)]"
 access_l10n_pe_hr_rmv_user,l10n_pe.hr.rmv user,l10n_pe.hr.rmv,base.group_user,r,
 access_l10n_pe_hr_rmv_manager,l10n_pe.hr.rmv manager,l10n_pe.hr.rmv,hr_payroll.group_hr_payroll_manager,crud,
+access_l10n_pe_hr_document_type_user,l10n_pe.hr.document.type user,l10n_pe.hr.document.type,base.group_user,r,
+access_l10n_pe_hr_document_type_manager,l10n_pe.hr.document.type manager,l10n_pe.hr.document.type,hr_payroll.group_hr_payroll_manager,crud,

@@ -8,6 +8,7 @@ doble). Con 48 m² de muro ejecutados la partida va al 40 %; el emplacado
 avanza y se liquida por su cantidad sin mover el avance de la partida.
 Datos de demostración inventados para la prueba."""
 
+import base64
 from odoo import Command
 from odoo.tests import new_test_user, tagged
 from odoo.tests.common import TransactionCase
@@ -71,7 +72,7 @@ class TestPartidaDriver(TransactionCase):
         Progress = self.env['construction.task.progress'].with_user(user or self.supervisor)
         return Progress.create({
             'task_id': line.task_id.id, 'activity_id': line.activity_id.id, 'qty': qty,
-            'attachment_ids': [Command.create({'name': 'avance.png', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'avance.png', 'raw': base64.b64decode(PHOTO)})]})
 
     def test_partida_progress_by_its_driver(self):
         self.assertTrue(self.wall.uses_level_driver)

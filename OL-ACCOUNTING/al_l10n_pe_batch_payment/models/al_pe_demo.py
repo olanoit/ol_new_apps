@@ -25,7 +25,7 @@ class AlPeDemo(models.AbstractModel):
                                 {'name': 'Interbank', 'l10n_pe_batch_format': 'interbank'})
         company_account = self._demo_record(
             'al_l10n_pe_batch_payment.demo_company_bank_account', env['res.partner.bank'], {
-                'partner_id': company.partner_id.id, 'bank_id': bcp.id, 'acc_number': '191-2233445-0-66',
+                'partner_id': company.partner_id.id, 'bank_id': bcp.id, 'account_number': '191-2233445-0-66',
                 'currency_id': pen.id})
         journal = self._demo_journal(env, 'al_l10n_pe_batch_payment.demo_journal_bcp', 'BCP soles', 'DBCP',
                                      'bank', currency_id=pen.id, bank_account_id=company_account.id,
@@ -47,7 +47,7 @@ class AlPeDemo(models.AbstractModel):
             # la carga de datos ya es de superusuario).
             bank_account = self._demo_record(
                 'al_l10n_pe_batch_payment.demo_supplier_account_%s' % key, trusted_banks, {
-                    'partner_id': partner.id, 'bank_id': bank.id, 'acc_number': number, 'l10n_pe_cci': cci,
+                    'partner_id': partner.id, 'bank_id': bank.id, 'account_number': number, 'l10n_pe_cci': cci,
                     'allow_out_payment': True})
             payments |= env['account.payment'].create({
                 'payment_type': 'outbound', 'partner_type': 'supplier', 'partner_id': partner.id,

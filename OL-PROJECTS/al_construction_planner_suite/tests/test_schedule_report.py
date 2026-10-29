@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from datetime import date
 
 from freezegun import freeze_time
@@ -213,7 +214,7 @@ class TestScheduleReport(IncomeCommon):
         mine = Progress.create({
             'task_id': self.space.id, 'activity_id': self.activity.id,
             'date': date(2026, 10, 22), 'qty': 10,
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         # Otra obra con su plan y un avance reportado.
         other = self.env['project.project'].create({
             'name': 'Otra obra (test inicio)', 'is_construction_site': True,
@@ -233,7 +234,7 @@ class TestScheduleReport(IncomeCommon):
         plan.action_request_approval()
         theirs = Progress.create({
             'task_id': space.id, 'activity_id': self.activity.id, 'date': date(2026, 10, 22),
-            'qty': 5, 'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'qty': 5, 'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
 
         supervisor = new_test_user(
             self.env, 'inicio_supervisor', name='Supervisor de obra (test)',

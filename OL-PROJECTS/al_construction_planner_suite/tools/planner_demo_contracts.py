@@ -18,7 +18,6 @@ Idempotente (si Leandro ya tiene la instalación asignada no hace nada).
 Ejecutar con:
   odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < planner_demo_contracts.py
 """
-import base64
 import io
 from datetime import date
 
@@ -55,7 +54,7 @@ def photo(label):
     draw.text((30, 30), label, fill=(15, 23, 42))
     buffer = io.BytesIO()
     image.save(buffer, format='PNG')
-    return base64.b64encode(buffer.getvalue())
+    return buffer.getvalue()
 
 
 def report(apartment, code, qty, day, module=None):
@@ -65,7 +64,7 @@ def report(apartment, code, qty, day, module=None):
     progress = env['construction.task.progress'].create({
         'task_id': line.task_id.id, 'activity_id': act[code].id, 'date': day, 'qty': qty,
         'attachment_ids': [Command.create({'name': f'{line.task_id.name}.png',
-                                           'datas': photo(label)})],
+                                           'raw': photo(label)})],
     })
     progress.attachment_ids.write({'res_model': progress._name, 'res_id': progress.id})
     return progress

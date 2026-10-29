@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from datetime import date
 
 from odoo import Command
@@ -84,7 +85,7 @@ class TestContracts(TransactionCase):
             'activity_id': line.activity_id.id,
             'date': day,
             'qty': qty,
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})],
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})],
         })
 
     def _confirm_order(self):
@@ -212,7 +213,7 @@ class TestContracts(TransactionCase):
         self.plan.exceed_policy = 'block'
         self._assign_installation()
         attachment = self.env['ir.attachment'].with_user(self.reporter).create(
-            {'name': 'cocina.jpg', 'datas': PHOTO})
+            {'name': 'cocina.jpg', 'raw': base64.b64decode(PHOTO)})
         wizard = self.env['construction.plan.progress.wizard'].with_user(self.reporter) \
             .with_context(default_plan_id=self.plan.id,
                           construction_selection_task_ids=self.apartments['Dpto 501'].ids) \
@@ -295,7 +296,7 @@ class TestContracts(TransactionCase):
             self.env['construction.task.progress'].create({
                 'task_id': module.id, 'activity_id': line.activity_id.id,
                 'date': date(2026, 11, 2), 'qty': line.qty_planned,
-                'attachment_ids': [Command.create({'name': 'm.jpg', 'datas': PHOTO})],
+                'attachment_ids': [Command.create({'name': 'm.jpg', 'raw': base64.b64decode(PHOTO)})],
             }).with_user(self.planner).action_validate()
         self.assertEqual(module.construction_unit_state, 'produced')
         self.assertEqual(modules[1].construction_unit_state, 'planned')

@@ -66,8 +66,8 @@ class ResCompany(models.Model):
         key = (self.id, year)
         if key in cache:
             return cache[key]
-        calendar = self.resource_calendar_id
-        tz = pytz.timezone(calendar.tz or self.partner_id.tz or 'UTC')
+        # Odoo 20: la zona horaria es de la compañía, ya no del calendario.
+        tz = pytz.timezone(self.tz or self.partner_id.tz or 'UTC')
         first, last = date(year, 1, 1), date(year, 12, 31)
         start = tz.localize(datetime.combine(first, time.min)).astimezone(pytz.utc)
         end = tz.localize(datetime.combine(last, time.max)).astimezone(pytz.utc)

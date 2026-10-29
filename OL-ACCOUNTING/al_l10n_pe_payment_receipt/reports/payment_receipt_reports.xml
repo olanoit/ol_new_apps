@@ -33,7 +33,7 @@
                     <td class="pe-doc-value">
                         <span t-out="o.pe_payment_method_id.display_name or o.payment_method_line_id.name"/>
                         · <span t-out="o.journal_id.name"/>
-                        <t t-if="o.journal_id.bank_account_id"> · <span t-out="o.journal_id.bank_account_id.acc_number"/></t>
+                        <t t-if="o.journal_id.bank_account_id"> · <span t-out="o.journal_id.bank_account_id.account_number"/></t>
                     </td>
                     <td class="pe-doc-label">N.º de operación</td>
                     <td class="pe-doc-value"><span t-out="o.bank_operation_number or o.payment_reference or '—'"/></td>

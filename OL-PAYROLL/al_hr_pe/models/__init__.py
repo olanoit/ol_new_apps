@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from . import display_name
 from . import l10n_pe_hr_catalogs
+from . import l10n_pe_hr_document_type
 from . import l10n_pe_hr_dependent
 from . import l10n_pe_hr_dependent_export
 from . import l10n_pe_hr_address
@@ -8,6 +9,7 @@ from . import hr_membership
 from . import hr_uit
 from . import hr_period
 from . import res_company
+from . import res_partner
 from . import hr_main_parameter
 from . import hr_employee
 from . import hr_payslip

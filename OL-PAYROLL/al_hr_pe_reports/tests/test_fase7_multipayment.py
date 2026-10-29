@@ -70,7 +70,7 @@ def make_line(**overrides):
         'last_name': 'PEREZ',
         'm_last_name': 'QUISPE',
         'names': 'JUAN',
-        'acc_number': '01230000009876543210',
+        'account_number': '01230000009876543210',
         'acc_type': '1',
         'acc_bic': '038',
         'amount': 1500.50,
@@ -175,7 +175,7 @@ class TestFase7MultipaymentFormats(TransactionCase):
         """Cuenta CCI: tipo de abono 'I'."""
         header = make_header(charge_acc='01230000001234567890')
         lines = [make_line(acc_type='3',
-                           acc_number='00212345678901234567')]
+                           account_number='00212345678901234567')]
         detail = rows(bbva_haberes_txt(header, lines))[1]
         self.assertEqual(detail[16], 'I')
 
@@ -218,8 +218,8 @@ class TestFase7MultipaymentFormats(TransactionCase):
         monto de 17 posiciones CON punto decimal."""
         header = make_header()
         lines = [
-            make_line(acc_number='19187654321098', amount=1200.0),
-            make_line(acc_number='00219100112233445566', acc_type='3',
+            make_line(account_number='19187654321098', amount=1200.0),
+            make_line(account_number='00219100112233445566', acc_type='3',
                       amount=800.25),
             make_line(amount=0.0),
         ]
@@ -261,7 +261,7 @@ class TestFase7MultipaymentFormats(TransactionCase):
         monto + moneda + base computable ×4."""
         header = make_header(
             cts_checksum_accs=['19187654321098', '19112223334445'])
-        lines = [make_line(acc_number='19187654321098')]
+        lines = [make_line(account_number='19187654321098')]
         result = rows(bcp_cts_txt(header, lines))
         head = result[0]
         self.assertEqual(len(head), 125)
@@ -286,7 +286,7 @@ class TestFase7MultipaymentFormats(TransactionCase):
         """Cabecera '0104' de 104 y detalle de 380 con el nombre
         descompuesto en 20+20+20 para persona natural."""
         header = make_header(charge_acc='1231234567890')
-        lines = [make_line(acc_number='1239876543210', acc_type='0'),
+        lines = [make_line(account_number='1239876543210', acc_type='0'),
                  make_line(amount=0.0)]
         result = rows(interbank_haberes_txt(header, lines))
         self.assertEqual(len(result), 2)
@@ -334,7 +334,7 @@ class TestFase7MultipaymentFormats(TransactionCase):
         """Cabecera '0106' y 7 TABs literales heredados en el detalle;
         el tipo de cuenta de ahorros pasa a '007'."""
         header = make_header(charge_acc='1231234567890')
-        lines = [make_line(acc_number='1239876543210')]
+        lines = [make_line(account_number='1239876543210')]
         result = rows(interbank_cts_txt(header, lines))
         self.assertEqual(result[0][0:4], '0106')
         detail = result[1]
@@ -352,7 +352,7 @@ class TestFase7MultipaymentFormats(TransactionCase):
         """Sin cabecera; fila de 140 con monto de 11 posiciones sin
         punto y concepto fijo HABERES."""
         header = make_header(charge_acc='12345678901234')
-        lines = [make_line(acc_number='1234567890'),
+        lines = [make_line(account_number='1234567890'),
                  make_line(amount=0.0)]
         result = rows(scotiabank_haberes_txt(header, lines))
         self.assertEqual(len(result), 1)  # sin cabecera, omite ≤ 0
@@ -374,7 +374,7 @@ class TestFase7MultipaymentFormats(TransactionCase):
         """rem_amount: 2 decimales sin punto a 11 con ceros, SIEMPRE del
         monto en soles; concepto = slice crudo de 20 del nombre CTS."""
         header = make_header(charge_acc='12345678901234')
-        lines = [make_line(acc_number='1234567890')]
+        lines = [make_line(account_number='1234567890')]
         row = rows(scotiabank_cts_txt(header, lines))[0]
         self.assertEqual(row[0], '1')
         self.assertEqual(row[1:13], '12345678'.ljust(12))
@@ -471,7 +471,7 @@ class TestFase7MultipaymentOrigen(TransactionCase):
             {'name': cls.employee.name, 'company_id': cls.company.id})
         cls.employee.work_contact_id = partner
         cls.account = cls.env['res.partner.bank'].create({
-            'acc_number': '19100000001',
+            'account_number': '19100000001',
             'partner_id': partner.id,
             'bank_id': cls.bank.id,
             'company_id': cls.company.id,

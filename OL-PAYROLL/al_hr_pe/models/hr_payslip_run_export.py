@@ -26,7 +26,7 @@ Cambios estructurales respecto a v18 (plan §6.5 «attachments, no filesystem»)
 * ``hr.contract`` → ``hr.version`` (``payslip.version_id``); los campos PE
   viven en la versión (``membership_id``, ``situation_id``,
   ``l10n_pe_cuspp``, ``l10n_pe_exception``, ``l10n_pe_work_type``, …).
-* ``hr.type.document`` → ``l10n_latam.identification.type`` con
+* ``hr.type.document`` → ``l10n_pe.hr.document.type`` (v20) con
   ``l10n_pe_hr_sunat_code`` / ``l10n_pe_hr_afp_code`` (plan §6.4).
 * AFPNet se genera con ``openpyxl`` (antes ``xlsxwriter`` + archivo en
   disco).
@@ -103,12 +103,12 @@ class HrPayslipRun(models.Model):
         """Código SUNAT del tipo de documento del empleado (Tabla 3).
 
         v18: ``he.type_document_id.sunat_code`` (LEFT JOIN, podía imprimir
-        ``None``). v19: extensión latam nativa. Se devuelve ``''`` cuando
+        ``None``). v20: catálogo l10n_pe.hr.document.type. Se devuelve ``''`` cuando
         falta el dato en lugar del ``None`` literal que colaba el SQL.
         La tabla 3 usa dos dígitos (``01`` DNI): el maestro guarda ``1`` y
         el .rem/.jor/.toc salían con un dígito.
         """
-        code = (employee.l10n_latam_identification_type_id
+        code = (employee.l10n_pe_document_type_id
                 .l10n_pe_hr_sunat_code or '').strip()
         return code.zfill(2) if code.isdigit() else code
 
@@ -618,7 +618,7 @@ class HrPayslipRun(models.Model):
                            value=version.l10n_pe_cuspp or '')
             worksheet.cell(
                 row=row, column=3,
-                value=(employee.l10n_latam_identification_type_id
+                value=(employee.l10n_pe_document_type_id
                        .l10n_pe_hr_afp_code or ''))
             worksheet.cell(row=row, column=4,
                            value=employee.identification_id or '')

@@ -7,6 +7,7 @@ masiva por partida, la contrata de cableado por punto con su OC de servicio,
 el avance validado como ejecutado y el control por tablero y por sistema.
 Datos de demostración inventados para la prueba.
 """
+import base64
 from datetime import date
 
 from odoo import Command
@@ -130,7 +131,7 @@ class TestElectricalContractor(PlannerCommon):
         progress = self.env['construction.task.progress'].with_user(self.reporter).create({
             'task_id': self.partidas[0].id, 'activity_id': self.act_wiring.id,
             'date': date(2026, 11, 4), 'qty': 20.0,
-            'attachment_ids': [Command.create({'name': 'tablero.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'tablero.jpg', 'raw': base64.b64decode(PHOTO)})]})
         progress.with_user(self.planner).action_validate()
         wiring = self.plan.line_ids.filtered(
             lambda l: l.task_id == self.partidas[0] and l.resource_type == 'contract')

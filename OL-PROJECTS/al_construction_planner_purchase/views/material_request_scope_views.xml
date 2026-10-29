@@ -121,17 +121,17 @@
             <xpath expr="//field[@name='line_ids']" position="attributes">
                 <attribute name="context">{'default_task_id': construction_default_task_id or task_id, 'default_construction_stage': construction_default_stage}</attribute>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/list/field[@name='product_id']" position="after">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='product_id']" position="after">
                 <field name="construction_level_label" optional="show"/>
                 <field name="construction_stage" optional="show"/>
                 <field name="location_dest_id" optional="hide" options="{'no_create': True}"
                        groups="stock.group_stock_multi_locations"/>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/list/field[@name='product_qty']" position="before">
-                <xpath expr="//field[@name='line_ids']/list/field[@name='construction_plan_remaining']" position="move"/>
+            <xpath expr="//field[@name='line_ids']/list//field[@name='product_qty']" position="before">
+                <xpath expr="//field[@name='line_ids']/list//field[@name='construction_plan_remaining']" position="move"/>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/list/field[@name='product_uom_id']" position="after">
-                <xpath expr="//field[@name='line_ids']/list/field[@name='qty_available_now']" position="move"/>
+            <xpath expr="//field[@name='line_ids']/list//field[@name='product_uom_id']" position="after">
+                <xpath expr="//field[@name='line_ids']/list//field[@name='qty_available_now']" position="move"/>
             </xpath>
             <xpath expr="//field[@name='line_ids']/form//field[@name='task_id']" position="after">
                 <field name="construction_stage"/>

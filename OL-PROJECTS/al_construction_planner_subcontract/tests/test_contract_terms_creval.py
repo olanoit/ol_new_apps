@@ -4,9 +4,11 @@ garantía y periodicidad (requerimiento CREVAL v1.0, 3.4 a 3.10), con el
 ejemplo de demostración de 3.5 y 3.6: subtotal costo directo 38,200.00 y
 adicionales 1,800.00 dan un total a pagar de 35,532.75 y una factura de
 37,901.60. Datos ficticios."""
+import base64
 from datetime import date, timedelta
 from unittest.mock import patch
 
+from odoo.tools import BinaryBytes
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import new_test_user, tagged
@@ -133,7 +135,7 @@ class ContractTermsCommon(TransactionCase):
     def _report(self, task, activity, qty, day):
         progress = self.env['construction.task.progress'].create({
             'task_id': task.id, 'activity_id': activity.id, 'date': day, 'qty': qty,
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         progress.action_validate()
         return progress
 
@@ -142,7 +144,7 @@ class ContractTermsCommon(TransactionCase):
             'purchase_order_id': order.id, 'type_id': self.deduction_type.id,
             'description': 'Remate de tabique hecho por personal propio', 'amount': amount,
             'date': date(2026, 11, 4),
-            'attachment_ids': [Command.create({'name': 'acta.pdf', 'datas': PHOTO})],
+            'attachment_ids': [Command.create({'name': 'acta.pdf', 'raw': base64.b64decode(PHOTO)})],
         }, **vals))
 
     def _scenario(self):
@@ -383,7 +385,7 @@ class TestContractTerms(ContractTermsCommon):
         pair = Deduction.create([{
             'purchase_order_id': order.id, 'type_id': self.deduction_type.id,
             'description': 'Deductivo %s' % amount, 'amount': amount,
-            'attachment_ids': [Command.create({'name': 'acta.pdf', 'datas': PHOTO})]}
+            'attachment_ids': [Command.create({'name': 'acta.pdf', 'raw': base64.b64decode(PHOTO)})]}
             for amount in (10.0, 20.0)])
         self.assertEqual([name[-4:] for name in pair.mapped('name')], ['0002', '0003'])
         pair[0].unlink()
@@ -494,7 +496,7 @@ class TestContractLiquidation(ContractTermsCommon):
         with self.assertRaises(UserError):
             liquidation.action_close_order()
         liquidation.order_document_ids.attachment_ids = [Command.create(
-            {'name': 'no_deuda.pdf', 'datas': PHOTO})]
+            {'name': 'no_deuda.pdf', 'raw': base64.b64decode(PHOTO)})]
         self.assertTrue(liquidation.can_close_order)
         liquidation.action_close_order()
         self.assertTrue(order.construction_closed)
@@ -538,7 +540,7 @@ class TestContractOpening(ContractTermsCommon):
                 ws.append(row)
         buffer = io.BytesIO()
         book.save(buffer)
-        return base64.b64encode(buffer.getvalue())
+        return BinaryBytes(buffer.getvalue())
 
     def test_opening_load(self):
         wizard = self.env['construction.contract.opening.wizard'].create({'file': self._book()})

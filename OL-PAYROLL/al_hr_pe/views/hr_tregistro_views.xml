@@ -430,13 +430,13 @@
         </field>
     </record>
 
-    <!-- Entidad SUNAT en el banco -->
-    <record id="view_res_bank_form_pe" model="ir.ui.view">
-        <field name="name">res.bank.form.inherit.pe</field>
-        <field name="model">res.bank</field>
-        <field name="inherit_id" ref="base.view_res_bank_form"/>
+    <!-- Entidad SUNAT del banco de la cuenta -->
+    <record id="view_partner_bank_form_pe_entity" model="ir.ui.view">
+        <field name="name">res.partner.bank.form.inherit.pe.entity</field>
+        <field name="model">res.partner.bank</field>
+        <field name="inherit_id" ref="base.view_partner_bank_form"/>
         <field name="arch" type="xml">
-            <field name="bic" position="after">
+            <field name="bank_bic" position="after">
                 <field name="l10n_pe_financial_entity_id"
                        options="{'no_create': True}"/>
             </field>

@@ -35,7 +35,7 @@ class ConstructionResourcePlanAllocation(models.Model):
             line = self.purchase_line_id
             if line.order_id.state == 'cancel':
                 return 'cancel'
-            if line.product_uom_id.compare(line.qty_received, line.product_qty) >= 0:
+            if line.uom_id.compare(line.qty_received, line.product_qty) >= 0:
                 return 'done'
             return 'open'
         return super()._get_document_state(now)
@@ -43,7 +43,7 @@ class ConstructionResourcePlanAllocation(models.Model):
     def _get_document_totals(self):
         if self.kind == 'service_order':
             line = self.purchase_line_id
-            return {'done': self._to_uom(line.qty_received, line.product_uom_id)}
+            return {'done': self._to_uom(line.qty_received, line.uom_id)}
         return super()._get_document_totals()
 
     @api.depends('purchase_line_id.qty_received')

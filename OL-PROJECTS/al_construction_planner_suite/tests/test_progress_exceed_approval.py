@@ -7,6 +7,7 @@ validarse.
 Una partida de muro drywall de 120 m² sin tolerancia: un avance de 130 m²
 excede en 10 m². Datos de demostración inventados para la prueba."""
 
+import base64
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import new_test_user, tagged
@@ -60,7 +61,7 @@ class TestProgressExceedApproval(TransactionCase):
         return self.env['construction.task.progress'].with_user(self.supervisor).create({
             'task_id': self.wall.task_id.id, 'activity_id': self.wall.activity_id.id,
             'qty': qty, 'attachment_ids': [Command.create({'name': 'avance.png',
-                                                           'datas': PHOTO})]})
+                                                           'raw': base64.b64decode(PHOTO)})]})
 
     def test_exceed_waits_for_the_head(self):
         within = self._progress(100.0)
@@ -108,7 +109,7 @@ class TestProgressExceedApproval(TransactionCase):
         rework = self.env['construction.task.progress'].with_user(self.supervisor).create({
             'task_id': self.wall.task_id.id, 'activity_id': self.wall.activity_id.id,
             'qty': 8.0, 'is_rework': True, 'rework_reason': 'bad_assembly',
-            'attachment_ids': [Command.create({'name': 'avance.png', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'avance.png', 'raw': base64.b64decode(PHOTO)})]})
         self.assertEqual(rework.exceed_state, 'ok')
 
     def test_warn_policy_validates(self):

@@ -275,7 +275,7 @@ class HrPayslip(models.Model):
         if bank_account:
             cuenta_abono = ' '.join(filter(None, [
                 bank_account.bank_id.name or '',
-                bank_account.acc_number or '']))
+                bank_account.account_number or '']))
 
         # Etiquetas de selección (el QWeb no resuelve selections crudas)
         regimen_laboral = dict(

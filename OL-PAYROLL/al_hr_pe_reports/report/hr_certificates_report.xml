@@ -20,8 +20,8 @@
                          alt="Firma"/>
                     <div class="pe-doc-sign-line">
                         <strong t-out="doc.main_parameter_id.reprentante_legal_id.name"/><br/>
-                        <t t-out="doc.main_parameter_id.reprentante_legal_id.l10n_latam_identification_type_id.name"/>
-                        N° <t t-out="doc.main_parameter_id.reprentante_legal_id.vat"/><br/>
+                        <t t-out="doc.main_parameter_id.reprentante_legal_id.l10n_pe_document_label"/>
+                        N° <t t-out="doc.main_parameter_id.reprentante_legal_id.l10n_pe_sunat_id_value"/><br/>
                         Representante legal
                     </div>
                 </td>
@@ -50,7 +50,7 @@
                     <p>
                         Que, <t t-out="doc.des_empl"/>
                         <strong t-field="doc.employee_id.name"/>, identificado con
-                        <t t-out="doc.employee_id.l10n_latam_identification_type_id.name or 'documento'"/>
+                        <t t-out="doc.employee_id.l10n_pe_document_type_id.name or 'documento'"/>
                         N° <t t-out="doc.employee_id.identification_id or ''"/>,
                         laboró en esta empresa desde el
                         <t t-out="doc.format_date_letters(doc.date_ini)"/> hasta el
@@ -103,14 +103,14 @@
                     <p>
                         Por la presente comunicamos que <t t-out="doc.des_empl"/>
                         <strong t-field="doc.employee_id.name"/>, identificado con
-                        <t t-out="doc.employee_id.l10n_latam_identification_type_id.name or 'documento'"/>
+                        <t t-out="doc.employee_id.l10n_pe_document_type_id.name or 'documento'"/>
                         N° <t t-out="doc.employee_id.identification_id or ''"/>,
                         ha dejado de laborar en nuestra empresa a partir del
                         <t t-out="doc.format_date_letters(doc.date_fin)"/>, por lo
                         que solicitamos se le haga entrega del total de la
                         Compensación por Tiempo de Servicios depositada en la
                         cuenta CTS N°
-                        <t t-out="doc.employee_id.cts_bank_account_id.acc_number or ''"/>
+                        <t t-out="doc.employee_id.cts_bank_account_id.account_number or ''"/>
                         de vuestra entidad.
                     </p>
 

@@ -30,12 +30,11 @@ cero códigos hardcodeados (ver plan §5).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_hr_pe/static/description/icon.png',
-    'version': '36.20261027',
+    'version': '37.20261029',
     'license': 'OPL-1',
     'depends': [
         'hr_payroll',
         'hr_payroll_account',
-        'l10n_latam_base',
         'l10n_pe',
     ],
     'data': [
@@ -46,7 +45,7 @@ cero códigos hardcodeados (ver plan §5).
         'data/hr_social_insurance.xml',
         'data/hr_contributions.xml',
         'data/hr_membership.xml',
-        'data/l10n_latam_identification_type_data.xml',
+        'data/l10n_pe_hr_document_type_data.xml',
         'data/hr_uit_data.xml',
         'data/hr_rmv_data.xml',
         'data/hr_salary_rule_category_data.xml',

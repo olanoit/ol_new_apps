@@ -295,7 +295,7 @@ def _attachment(attachment_id: str, env) -> str:
     is_text = rec.mimetype and any(rec.mimetype.startswith(m) for m in _TEXT_MIMES)
     size_ok = rec.file_size and rec.file_size < 50 * 1024  # límite de 50 KB
 
-    if is_text and size_ok and rec.datas:
+    if is_text and size_ok and rec.raw:
         try:
             raw = rec.raw.content.decode("utf-8", errors="replace")
             result["content_preview"] = raw[:5000]

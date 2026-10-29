@@ -16,7 +16,7 @@
         <field name="model">res.partner.bank</field>
         <field name="inherit_id" ref="base.view_partner_bank_form"/>
         <field name="arch" type="xml">
-            <field name="acc_number" position="after">
+            <field name="account_number" position="after">
                 <field name="l10n_pe_account_kind"/>
                 <field name="l10n_pe_cci" placeholder="20 dígitos"/>
             </field>
@@ -28,7 +28,7 @@
         <field name="model">res.partner.bank</field>
         <field name="inherit_id" ref="base.view_partner_bank_tree"/>
         <field name="arch" type="xml">
-            <field name="acc_number" position="after">
+            <field name="account_number" position="after">
                 <field name="l10n_pe_cci" optional="show"/>
             </field>
         </field>

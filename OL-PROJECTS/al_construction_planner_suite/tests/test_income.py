@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 from datetime import date, datetime
 
 from odoo import Command
@@ -132,7 +133,7 @@ class IncomeCommon(TransactionCase):
     def _progress(self, qty, day):
         progress = self.env['construction.task.progress'].create({
             'task_id': self.space.id, 'activity_id': self.activity.id, 'date': day, 'qty': qty,
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         progress.with_user(self.planner).action_validate()
         return progress
 
@@ -177,7 +178,7 @@ class IncomeCommon(TransactionCase):
             self.projects_user).with_context(default_valuation_id=valuation.id).create(dict({
                 'confirm_date': date(2026, 11, 18), 'confirm_name': 'Ing. Rosa Quispe',
                 'confirm_role': 'Residente de obra',
-                'attachment_ids': [Command.create({'name': 'conformidad.pdf', 'datas': PHOTO})],
+                'attachment_ids': [Command.create({'name': 'conformidad.pdf', 'raw': base64.b64decode(PHOTO)})],
             }, **vals))
         for line in wizard.line_ids:
             if amounts and line.sale_line_id in amounts:
@@ -309,7 +310,7 @@ class TestIncome(IncomeCommon):
             valuation._action_confirm({
                 'confirm_date': date(2026, 11, 18), 'confirm_name': 'Ing. Rosa Quispe',
                 'confirm_role': False, 'confirm_attachment_ids': [Command.create({
-                    'name': 'conformidad.pdf', 'datas': PHOTO})]}, {})
+                    'name': 'conformidad.pdf', 'raw': base64.b64decode(PHOTO)})]}, {})
         with self.assertRaises(ValidationError):
             valuation.state = 'confirmed'
         self.assertEqual(valuation.state, 'sent')

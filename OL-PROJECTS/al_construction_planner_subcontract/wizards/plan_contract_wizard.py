@@ -380,7 +380,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
                     'order_id': order_sudo.id,
                     'product_id': product.id,
                     'product_qty': row.qty,
-                    'product_uom_id': row.uom_id.id,
+                    'uom_id': row.uom_id.id,
                     'price_unit': row.price_unit,
                     'tax_ids': [Command.set(self._get_service_taxes(product).ids)],
                     'date_planned': self.date_start,

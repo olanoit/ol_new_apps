@@ -26,6 +26,7 @@ Asignar contrata con su OC de servicio, avance por driver, liquidación semanal 
         'data/ir_cron_data.xml',
         'data/tier_definition_data.xml',
         'data/construction_contract_data.xml',
+        'data/portal_entry_data.xml',
         'report/construction_valuation_report.xml',
         'wizards/plan_contract_wizard_views.xml',
         'views/construction_settlement_views.xml',

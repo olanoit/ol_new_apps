@@ -28,7 +28,7 @@ class ConstructionSpaceMeasuredWizard(models.TransientModel):
         for task in tasks.sudo():
             attachment = self.env['ir.attachment'].create({
                 'name': self.file_name or self.env._('Medición %s', task.display_name),
-                'datas': self.file,
+                'raw': self.file,
                 'res_model': 'project.task',
                 'res_id': task.id,
             })

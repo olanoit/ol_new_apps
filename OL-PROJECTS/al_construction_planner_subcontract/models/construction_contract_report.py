@@ -74,8 +74,8 @@ class ConstructionContractSummaryReport(models.Model):
                                        search='_search_payment_this_week')
 
     @property
-    def _table_query(self):
-        return SQL("""
+    def _table_sql(self):
+        query = SQL("""(
             SELECT po.id AS id, po.id AS order_id, po.partner_id AS partner_id,
                    po.construction_project_id AS project_id, po.company_id AS company_id,
                    po.currency_id AS currency_id, po.construction_specialty AS specialty,
@@ -150,7 +150,11 @@ class ConstructionContractSummaryReport(models.Model):
                      WHERE NOT COALESCE(construction_is_additional, FALSE)
                      GROUP BY order_id) l ON l.order_id = po.id
              WHERE po.construction_is_service_order AND po.state != 'cancel'
-        """)
+        )""")
+        # Como el _table_sql base: se escribe en la base lo que lee la consulta.
+        to_flush = [self.env[model]._fields[fname]
+                    for model, fnames in self._depends.items() for fname in fnames]
+        return SQL("%s", query, to_flush=to_flush)
 
     @api.model
     def _week_bounds(self):

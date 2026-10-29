@@ -151,8 +151,8 @@ class TestFase2Engine(TransactionCase):
     def test_plame_rem_export(self):
         slip = self._compute_slip()
         self.employee.write({
-            'l10n_latam_identification_type_id':
-                self.env.ref('l10n_pe.it_DNI').id,
+            'l10n_pe_document_type_id':
+                self.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni').id,
             'identification_id': '44556677',
         })
         run = self.env['hr.payslip.run'].create({
@@ -180,8 +180,8 @@ class TestFase2Engine(TransactionCase):
 
     def _set_dni(self):
         self.employee.write({
-            'l10n_latam_identification_type_id':
-                self.env.ref('l10n_pe.it_DNI').id,
+            'l10n_pe_document_type_id':
+                self.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni').id,
             'identification_id': '44556677',
         })
 
@@ -267,8 +267,8 @@ class TestFase2Engine(TransactionCase):
             'employee_id': self.employee.id,
             'type_id': self.env.ref('al_hr_pe.dependent_type_05').id,
             'last_name': 'Quispe', 'm_last_name': 'Rojas', 'names': 'Luz',
-            'l10n_latam_identification_type_id':
-                self.env.ref('l10n_pe.it_DNI').id,
+            'l10n_pe_document_type_id':
+                self.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni').id,
             'identification_id': '71234599',
             'birthday': date(2020, 5, 5),
             'date_start': date(2020, 5, 5),

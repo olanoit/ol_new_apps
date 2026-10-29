@@ -2,9 +2,9 @@
 """Importador de la proyección de materiales (v1.8, M17-18) y validación de
 códigos (M17-19), con libros armados en la prueba en el formato de las hojas
 de Allcenter (pestaña resumen «… POR PISO» y bloques «MODULO:»)."""
-import base64
 from io import BytesIO
 
+from odoo.tools import BinaryBytes
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -70,7 +70,7 @@ def kitchen_workbook(summary_code_override=None):
     workbook.create_sheet('codigos')
     output = BytesIO()
     workbook.save(output)
-    return base64.b64encode(output.getvalue())
+    return BinaryBytes(output.getvalue())
 
 
 @tagged('post_install', '-at_install')

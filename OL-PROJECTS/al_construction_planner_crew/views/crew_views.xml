@@ -50,7 +50,7 @@
         <field name="model">construction.execution.template</field>
         <field name="inherit_id" ref="al_construction_planner.construction_execution_template_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='line_ids']/list/field[@name='activity_id']" position="after">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='activity_id']" position="after">
                 <field name="role_id" optional="show" options="{'no_create': True}"/>
             </xpath>
         </field>

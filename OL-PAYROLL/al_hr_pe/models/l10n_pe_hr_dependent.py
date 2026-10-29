@@ -104,9 +104,8 @@ class L10nPeHrDependent(models.Model):
     last_name = fields.Char(string='Apellido paterno')
     m_last_name = fields.Char(string='Apellido materno')
     names = fields.Char(string='Nombres')
-    l10n_latam_identification_type_id = fields.Many2one(
-        'l10n_latam.identification.type', string='Tipo de documento',
-        domain="[('country_id.code', '=', 'PE')]")
+    l10n_pe_document_type_id = fields.Many2one(
+        'l10n_pe.hr.document.type', string='Tipo de documento')
     identification_id = fields.Char(string='N° de documento')
     country_id = fields.Many2one(
         'res.country', string='País emisor del documento',

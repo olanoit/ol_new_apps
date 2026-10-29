@@ -82,7 +82,7 @@ class L10nPeHrAttendanceMonitor(models.Model):
     # Documento de identidad: dato privado del trabajador (en hr.version
     # es de RR. HH.); el usuario de Planning no lo ve.
     identification_type_id = fields.Many2one(
-        'l10n_latam.identification.type', string='Tipo doc.',
+        'l10n_pe.hr.document.type', string='Tipo doc.',
         groups='hr.group_hr_user')
     identification_id = fields.Char(
         string='N° documento', groups='hr.group_hr_user')
@@ -215,7 +215,7 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
        he.user_id,
        b.company_id,
        ver.work_location_id,
-       he.l10n_latam_identification_type_id AS identification_type_id,
+       he.l10n_pe_document_type_id AS identification_type_id,
        ver.identification_id,
        b.fecha,
        EXTRACT(ISODOW FROM b.fecha)::text AS dia_semana,

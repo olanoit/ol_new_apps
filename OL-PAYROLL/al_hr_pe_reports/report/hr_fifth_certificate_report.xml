@@ -39,14 +39,14 @@
                             debidamente representada por
                             <t t-out="legal.name"/><t t-if="legal.function">,
                                 en calidad de <t t-out="legal.function"/></t>,
-                            identificado con documento N° <t t-out="legal.vat"/>,
+                            identificado con documento N° <t t-out="legal.l10n_pe_sunat_id_value"/>,
                         </p>
 
                         <p><strong>CERTIFICA:</strong></p>
 
                         <p>
                             Que a <strong t-out="emp.name"/>, identificado con
-                            <t t-out="emp.l10n_latam_identification_type_id.name or 'documento'"/>
+                            <t t-out="emp.l10n_pe_document_type_id.name or 'documento'"/>
                             N° <t t-out="emp.identification_id or ''"/>, con
                             domicilio en <t t-out="emp.private_street or ''"/>,
                             se le ha retenido por Impuesto a la Renta de
@@ -127,7 +127,7 @@
                                 <td>
                                     <div class="pe-doc-sign-line">
                                         <strong t-out="emp.name"/><br/>
-                                        <t t-out="emp.l10n_latam_identification_type_id.name"/>
+                                        <t t-out="emp.l10n_pe_document_type_id.name"/>
                                         N° <t t-out="emp.identification_id"/><br/>
                                         Trabajador(a)
                                     </div>
@@ -135,8 +135,8 @@
                                 <td>
                                     <div class="pe-doc-sign-line">
                                         <strong t-out="legal.name"/><br/>
-                                        <t t-out="legal.l10n_latam_identification_type_id.name"/>
-                                        N° <t t-out="legal.vat"/><br/>
+                                        <t t-out="legal.l10n_pe_document_label"/>
+                                        N° <t t-out="legal.l10n_pe_sunat_id_value"/><br/>
                                         Empleador
                                     </div>
                                 </td>

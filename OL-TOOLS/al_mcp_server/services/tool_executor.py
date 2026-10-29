@@ -531,7 +531,7 @@ def _create_attachment(env, args: dict):
 
     vals = {
         "name": name,
-        "datas": content_b64,
+        "raw": content_b64,
         "mimetype": mimetype,
     }
     if res_model:

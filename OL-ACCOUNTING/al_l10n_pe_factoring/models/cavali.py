@@ -279,7 +279,7 @@ class AccountMove(models.Model):
         xml = self._l10n_pe_cavali_xml()
         if xml:
             payload['xmlNombre'] = xml.name
-            payload['xmlComprobante'] = xml.datas.decode() if xml.datas else ''
+            payload['xmlComprobante'] = xml.raw.to_base64() if xml.raw else ''
         return payload
 
     def _l10n_pe_cavali_missing(self):

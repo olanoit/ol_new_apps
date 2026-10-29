@@ -3,6 +3,7 @@
 capítulo 12): re-trabajo en la valorización (CR-08), deductivos al
 actualizar (CR-09) y una sola semana para el avance y la valorización
 (CR-10). Datos ficticios."""
+import base64
 from datetime import date
 
 from odoo import Command
@@ -55,7 +56,7 @@ class TestCorrectionsCreval(ContractTermsCommon):
             'task_id': self.partida.id, 'activity_id': self.act_wall.id,
             'date': date(2026, 11, 4), 'qty': 6.0, 'is_rework': True,
             'rework_reason': 'bad_assembly',
-            'attachment_ids': [Command.create({'name': 'foto.jpg', 'datas': PHOTO})]})
+            'attachment_ids': [Command.create({'name': 'foto.jpg', 'raw': base64.b64decode(PHOTO)})]})
         rework.action_validate()
         settlement = self._prepare()
         line = settlement.line_ids.filtered('is_rework')

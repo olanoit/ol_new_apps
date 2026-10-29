@@ -6,7 +6,7 @@
         <field name="model">construction.execution.template</field>
         <field name="inherit_id" ref="construction_execution_template_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='line_ids']/list/field[@name='qty']" position="before">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='qty']" position="before">
                 <field name="calc_method" optional="show"/>
                 <field name="calc_pct" optional="show" invisible="calc_method not in ('pct_labor', 'pct_group')"/>
                 <field name="calc_scope" optional="hide" invisible="calc_method != 'pct_group'"/>
@@ -16,19 +16,19 @@
                        domain="[('project_id', '=', parent.project_id)]"/>
                 <field name="is_client_supply" optional="hide"/>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/list/field[@name='qty']" position="attributes">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='qty']" position="attributes">
                 <attribute name="readonly">calc_method != 'qty'</attribute>
                 <attribute name="force_save">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/list/field[@name='price_unit']" position="after">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='price_unit']" position="after">
                 <field name="line_currency_id" optional="hide" options="{'no_create': True}"
                        groups="base.group_multi_currency"/>
             </xpath>
             <!-- El % del costo directo de un grupo se calcula en el plan (CR-05). -->
-            <xpath expr="//field[@name='line_ids']/list/field[@name='amount_unit']" position="attributes">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='amount_unit']" position="attributes">
                 <attribute name="invisible">calc_method == 'pct_group'</attribute>
             </xpath>
-            <xpath expr="//field[@name='line_ids']/list/field[@name='amount_unit']" position="after">
+            <xpath expr="//field[@name='line_ids']/list//field[@name='amount_unit']" position="after">
                 <field name="amount_note" string="" class="text-muted fst-italic"
                        invisible="calc_method != 'pct_group'"/>
             </xpath>

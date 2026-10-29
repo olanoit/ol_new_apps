@@ -6,9 +6,9 @@ Item, con material, mano de obra y equipo, sin crear una tipología de
 mueble. El APU es el de ``construccion_dev_1``: 11 materiales, 3 líneas de
 mano de obra y 1 equipo por m².
 """
-import base64
 from io import BytesIO
 
+from odoo.tools import BinaryBytes
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tools import float_round
@@ -156,7 +156,7 @@ class TestRecipe(TestFreeLevels):
             sheet.append(row)
         output = BytesIO()
         workbook.save(output)
-        return base64.b64encode(output.getvalue())
+        return BinaryBytes(output.getvalue())
 
     def test_excel_recipes_and_levels(self):
         file = self._workbook(

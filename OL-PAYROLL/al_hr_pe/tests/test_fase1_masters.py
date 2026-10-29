@@ -28,7 +28,7 @@ class TestFase1Masters(TransactionCase):
                              '%s: los datos base deben ser globales' % model)
 
     def test_identification_types_extended(self):
-        dni = self.env.ref('l10n_pe.it_DNI')
+        dni = self.env.ref('al_hr_pe.l10n_pe_hr_document_type_dni')
         self.assertEqual(dni.l10n_pe_hr_sunat_code, '1')
 
     def test_catalog_global_or_own(self):

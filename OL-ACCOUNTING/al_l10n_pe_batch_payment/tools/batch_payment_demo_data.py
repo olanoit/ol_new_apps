@@ -23,7 +23,7 @@ ibk = bank('Interbank', 'interbank')
 journal = env['account.journal'].search([('code', '=', 'DBCP'), ('company_id', '=', company.id)])
 if not journal:
     account = env['res.partner.bank'].create({
-        'partner_id': company.partner_id.id, 'bank_id': bcp.id, 'acc_number': '191-2233445-0-66',
+        'partner_id': company.partner_id.id, 'bank_id': bcp.id, 'account_number': '191-2233445-0-66',
         'currency_id': pen.id})
     journal = env['account.journal'].create({
         'name': 'BCP soles', 'code': 'DBCP', 'type': 'bank', 'currency_id': pen.id,
@@ -40,7 +40,7 @@ for name, vat, b, acc, cci in (
         'name': name, 'is_company': True, 'vat': vat, 'country_id': env.ref('base.pe').id,
         'l10n_latam_identification_type_id': ruc.id})
     bank_account = partner.bank_ids[:1] or env['res.partner.bank'].create({
-        'partner_id': partner.id, 'bank_id': b.id, 'acc_number': acc, 'l10n_pe_cci': cci or False,
+        'partner_id': partner.id, 'bank_id': b.id, 'account_number': acc, 'l10n_pe_cci': cci or False,
         'allow_out_payment': True})
     bank_account.allow_out_payment = True  # cuenta de confianza: Odoo la exige para pagar
     suppliers.append((partner, bank_account))

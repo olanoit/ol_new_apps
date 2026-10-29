@@ -31,11 +31,11 @@
                        groups="al_construction_planner.group_planner_amounts"/>
                 <field name="construction_refuse_reason" invisible="not construction_refuse_reason"/>
             </xpath>
-            <xpath expr="//field[@name='approver_ids']/list/field[@name='user_id']" position="before">
+            <xpath expr="//field[@name='approver_ids']/list//field[@name='user_id']" position="before">
                 <field name="construction_step" string="Tramo"
                        column_invisible="not parent.construction_res_model"/>
             </xpath>
-            <xpath expr="//field[@name='approver_ids']/list/field[@name='required']" position="after">
+            <xpath expr="//field[@name='approver_ids']/list//field[@name='required']" position="after">
                 <field name="construction_route_id" column_invisible="not parent.construction_res_model"/>
             </xpath>
         </field>
