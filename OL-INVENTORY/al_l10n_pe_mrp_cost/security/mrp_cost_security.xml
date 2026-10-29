@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Multicompañía: cada registro solo se ve desde su compañía. -->
+    <record id="rule_l10n_pe_mrp_labor_rate_company" model="ir.rule">
+        <field name="name">l10n.pe.mrp.labor.rate: multicompañía</field>
+        <field name="model_id" ref="model_l10n_pe_mrp_labor_rate"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_l10n_pe_mrp_labor_rate_line_company" model="ir.rule">
+        <field name="name">l10n.pe.mrp.labor.rate.line: multicompañía</field>
+        <field name="model_id" ref="model_l10n_pe_mrp_labor_rate_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_l10n_pe_mrp_cost_pool_company" model="ir.rule">
+        <field name="name">l10n.pe.mrp.cost.pool: multicompañía</field>
+        <field name="model_id" ref="model_l10n_pe_mrp_cost_pool"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_l10n_pe_mrp_cost_close_company" model="ir.rule">
+        <field name="name">l10n.pe.mrp.cost.close: multicompañía</field>
+        <field name="model_id" ref="model_l10n_pe_mrp_cost_close"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_l10n_pe_mrp_cost_close_line_company" model="ir.rule">
+        <field name="name">l10n.pe.mrp.cost.close.line: multicompañía</field>
+        <field name="model_id" ref="model_l10n_pe_mrp_cost_close_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_l10n_pe_mrp_cost_analysis_company" model="ir.rule">
+        <field name="name">l10n.pe.mrp.cost.analysis: multicompañía</field>
+        <field name="model_id" ref="model_l10n_pe_mrp_cost_analysis"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

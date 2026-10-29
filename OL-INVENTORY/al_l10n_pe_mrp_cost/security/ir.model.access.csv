@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_labor_rate_mrp,l10n_pe.mrp.labor.rate mrp,model_l10n_pe_mrp_labor_rate,mrp.group_mrp_manager,1,0,0,0
+access_labor_rate_payroll,l10n_pe.mrp.labor.rate payroll,model_l10n_pe_mrp_labor_rate,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_labor_rate_line_mrp,l10n_pe.mrp.labor.rate.line mrp,model_l10n_pe_mrp_labor_rate_line,mrp.group_mrp_manager,1,0,0,0
+access_labor_rate_line_payroll,l10n_pe.mrp.labor.rate.line payroll,model_l10n_pe_mrp_labor_rate_line,hr_payroll.group_hr_payroll_user,1,1,1,1
+access_cost_pool_user,l10n_pe.mrp.cost.pool user,model_l10n_pe_mrp_cost_pool,mrp.group_mrp_user,1,0,0,0
+access_cost_pool_manager,l10n_pe.mrp.cost.pool manager,model_l10n_pe_mrp_cost_pool,mrp.group_mrp_manager,1,1,1,1
+access_cost_close_user,l10n_pe.mrp.cost.close user,model_l10n_pe_mrp_cost_close,mrp.group_mrp_user,1,0,0,0
+access_cost_close_manager,l10n_pe.mrp.cost.close manager,model_l10n_pe_mrp_cost_close,mrp.group_mrp_manager,1,1,1,1
+access_cost_close_line_user,l10n_pe.mrp.cost.close.line user,model_l10n_pe_mrp_cost_close_line,mrp.group_mrp_user,1,0,0,0
+access_cost_close_line_manager,l10n_pe.mrp.cost.close.line manager,model_l10n_pe_mrp_cost_close_line,mrp.group_mrp_manager,1,1,1,1
+access_cost_analysis_user,l10n_pe.mrp.cost.analysis user,model_l10n_pe_mrp_cost_analysis,mrp.group_mrp_user,1,0,0,0
+access_timesheet_import,l10n_pe.mrp.timesheet.import,model_l10n_pe_mrp_timesheet_import,mrp.group_mrp_user,1,1,1,1

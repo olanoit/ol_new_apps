@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_l10n_pe_mrp_cost" name="Costeo"
+              parent="mrp.menu_mrp_root" groups="mrp.group_mrp_manager" sequence="18"/>
+    <menuitem id="menu_l10n_pe_mrp_timesheet_import" name="Importar tareo"
+              parent="menu_l10n_pe_mrp_cost" action="action_l10n_pe_mrp_timesheet_import" sequence="10"/>
+    <menuitem id="menu_l10n_pe_mrp_labor_rate" name="Costo hora desde la planilla"
+              parent="menu_l10n_pe_mrp_cost" action="action_l10n_pe_mrp_labor_rate" sequence="20"/>
+    <menuitem id="menu_l10n_pe_mrp_cost_close" name="Cierres de costos"
+              parent="menu_l10n_pe_mrp_cost" action="action_l10n_pe_mrp_cost_close" sequence="30"/>
+    <menuitem id="menu_l10n_pe_mrp_cost_analysis" name="Costo por elemento"
+              parent="mrp.menu_mrp_reporting" action="action_l10n_pe_mrp_cost_analysis"
+              groups="mrp.group_mrp_user" sequence="40"/>
+    <menuitem id="menu_l10n_pe_mrp_cost_pool" name="Bolsas de CIF"
+              parent="mrp.menu_mrp_configuration" action="action_l10n_pe_mrp_cost_pool"
+              groups="mrp.group_mrp_manager" sequence="60"/>
+</odoo>

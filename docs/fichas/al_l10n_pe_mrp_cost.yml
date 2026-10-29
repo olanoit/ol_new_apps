@@ -1,0 +1,55 @@
+titulo: Costeo de órdenes de fabricación
+subtitulo: Costo hora desde la planilla, tareo por orden, cierre de costos del mes con ajuste de
+  mano de obra y prorrateo de CIF, y costo de cada orden por elemento.
+categoria: Localización Perú · Fabricación
+etiquetas:
+- Fabricación
+- Costeo
+- Planilla
+- CIF
+destacados:
+- icono: ⏱
+  titulo: Costo hora real
+  texto: Remuneración, aportes del empleador y provisiones de la planilla entre las horas laboradas de cada empleado.
+- icono: ⇪
+  titulo: Tareo por orden
+  texto: Un Excel con orden, operación, empleado, fecha y horas crea los registros de tiempo.
+- icono: ⚖
+  titulo: Cierre de costos
+  texto: Ajusta la mano de obra al costo real del mes y reparte los CIF publicados por horas, cantidad, peso, volumen o costo directo.
+- icono: ▦
+  titulo: Costo por elemento
+  texto: Material, máquina, mano de obra, ajuste y CIF de cada orden, por producto, centro de producción y mes.
+configuracion:
+- "En **Nómina ▸ Configuración ▸ Ajustes ▸ Perú** indique los **W.D. días laborados**: son las horas del costo hora."
+- "En **Fabricación ▸ Configuración ▸ Ajustes ▸ Costeo (Perú)** elija la contrapartida del ajuste de mano de obra (71 en el PCGE)."
+- "Cree las **bolsas de CIF** en **Fabricación ▸ Configuración ▸ Bolsas de CIF**: cuentas (por ejemplo 92), centros de costo opcionales, base de reparto y contrapartida."
+- "Los productos terminados deben usar costo promedio o PEPS (el cierre los ajusta con un costo en destino)."
+requisitos_nota: >-
+  Requiere Odoo Enterprise (órdenes de trabajo con costo del empleado,
+  `mrp_workorder`), costos en destino de fabricación (`mrp_landed_costs`) y la
+  planilla peruana (`al_hr_pe`; las provisiones, con `al_hr_pe_benefits`).
+faq:
+  - pregunta: ¿Qué cuenta como costo de la planilla?
+    respuesta: >-
+      Las líneas de la boleta de las categorías Ingresos y Aportes del
+      empleador, menos los Descuentos afectos, más las provisiones de CTS,
+      gratificación y vacaciones del lote si están calculadas. Se divide entre
+      las horas de los días laborados de las boletas del periodo.
+  - pregunta: ¿Por qué el ajuste de mano de obra?
+    respuesta: >-
+      Durante el mes las órdenes cargan la mano de obra con el costo hora que
+      tenía el empleado. Al cerrar la planilla se conoce el costo real del mes;
+      el cierre de costos carga a cada orden la diferencia por sus horas.
+  - pregunta: ¿Qué pasa con lo ya vendido?
+    respuesta: >-
+      El cierre usa un costo en destino sobre las órdenes: Odoo reparte el
+      cargo entre el inventario que queda y el costo de ventas de lo vendido.
+novedades:
+- version: '1.20261029'
+  fecha: 29/10/2026
+  cambios:
+  - "Primera versión: costo hora desde la planilla, importar tareo, cierre de costos del mes (ajuste de mano de obra y bolsas de CIF) y costo por elemento."
+relacionados:
+- al_mrp_piece_costing
+- al_hr_pe

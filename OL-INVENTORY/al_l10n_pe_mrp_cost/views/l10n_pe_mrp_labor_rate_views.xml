@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_pe_mrp_labor_rate_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.mrp.labor.rate.list</field>
+        <field name="model">l10n_pe.mrp.labor.rate</field>
+        <field name="arch" type="xml">
+            <list string="Costo hora desde la planilla">
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state" widget="badge" decoration-success="state == 'applied'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_mrp_labor_rate_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.mrp.labor.rate.form</field>
+        <field name="model">l10n_pe.mrp.labor.rate</field>
+        <field name="arch" type="xml">
+            <form string="Costo hora desde la planilla">
+                <header>
+                    <button name="action_compute" string="Calcular" type="object" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_apply" string="Aplicar a los empleados" type="object"
+                            invisible="state != 'draft' or not line_ids"
+                            confirm="El costo hora de cada empleado se reemplaza por el calculado. ¿Continuar?"/>
+                    <button name="action_draft" string="Volver a borrador" type="object" invisible="state != 'applied'"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        Costo del empleador (ingresos − descuentos afectos + aportes del empleador +
+                        provisiones de CTS, gratificación y vacaciones) entre las horas de los días
+                        laborados de las boletas del periodo. Al aplicarlo queda como costo hora de cada
+                        empleado y el cierre de costos lo usa como costo real del mes.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_from" readonly="state != 'draft'"/>
+                            <field name="date_to" readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="1">
+                        <list>
+                            <field name="employee_id"/>
+                            <field name="payroll_cost" sum="Total"/>
+                            <field name="provision_cost" sum="Total"/>
+                            <field name="hours" sum="Total"/>
+                            <field name="hourly_cost"/>
+                            <field name="previous_hourly_cost" optional="show"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_mrp_labor_rate" model="ir.actions.act_window">
+        <field name="name">Costo hora desde la planilla</field>
+        <field name="res_model">l10n_pe.mrp.labor.rate</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_pe_mrp_cost_pool_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.mrp.cost.pool.list</field>
+        <field name="model">l10n_pe.mrp.cost.pool</field>
+        <field name="arch" type="xml">
+            <list string="Bolsas de CIF">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="account_prefixes"/>
+                <field name="analytic_account_ids" widget="many2many_tags"/>
+                <field name="split_basis"/>
+                <field name="workcenter_ids" widget="many2many_tags" optional="show"/>
+                <field name="counterpart_account_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_mrp_cost_pool_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.mrp.cost.pool.form</field>
+        <field name="model">l10n_pe.mrp.cost.pool</field>
+        <field name="arch" type="xml">
+            <form string="Bolsa de CIF">
+                <sheet>
+                    <widget name="web_ribbon" title="Archivada" bg_color="text-bg-danger" invisible="active"/>
+                    <group>
+                        <group string="Qué gasto">
+                            <field name="name"/>
+                            <field name="account_prefixes" placeholder="92"/>
+                            <field name="analytic_account_ids" widget="many2many_tags"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Cómo se reparte">
+                            <field name="split_basis"/>
+                            <field name="workcenter_ids" widget="many2many_tags"/>
+                            <field name="counterpart_account_id" options="{'no_create': True}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_mrp_cost_pool" model="ir.actions.act_window">
+        <field name="name">Bolsas de CIF</field>
+        <field name="res_model">l10n_pe.mrp.cost.pool</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Defina los gastos indirectos de fabricación</p>
+            <p>Cada bolsa toma el saldo del mes de sus cuentas (por ejemplo la 92) y lo
+               reparte entre las órdenes terminadas en el cierre de costos.</p>
+        </field>
+    </record>
+</odoo>

@@ -5,3 +5,4 @@
     * [Traslados y bienes de terceros](inventory/stock_transfers.md)
 * Fabricación
     * [Costeo de piezas por medida](mrp/piece_costing.md)
+    * [Costeo de órdenes de fabricación](mrp/production_costing.md)
