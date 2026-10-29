@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_perception_user,l10n_pe.perception user,l10n_pe.perception,account.group_account_invoice,crud,
+access_perception_read,l10n_pe.perception readonly,l10n_pe.perception,account.group_account_readonly,r,
+rule_perception_company,Comprobantes de percepción: multicompañía,l10n_pe.perception,,crud,"[('company_id', 'in', company_ids)]"
+access_perception_line_user,l10n_pe.perception.line user,l10n_pe.perception.line,account.group_account_invoice,crud,
+access_perception_line_read,l10n_pe.perception.line readonly,l10n_pe.perception.line,account.group_account_readonly,r,
+rule_perception_line_company,Comprobantes de percepción (facturas): multicompañía,l10n_pe.perception.line,,crud,"[('company_id', 'in', company_ids)]"
+access_perception_received_user,l10n_pe.perception.received user,l10n_pe.perception.received,account.group_account_user,crud,
+access_perception_received_read,l10n_pe.perception.received readonly,l10n_pe.perception.received,account.group_account_readonly,r,
+rule_perception_received_company,Percepciones que nos cobran: multicompañía,l10n_pe.perception.received,,crud,"[('company_id', 'in', company_ids)]"
+access_perception_received_line_user,l10n_pe.perception.received.line user,l10n_pe.perception.received.line,account.group_account_user,crud,
+access_perception_received_line_read,l10n_pe.perception.received.line readonly,l10n_pe.perception.received.line,account.group_account_readonly,r,
+rule_perception_received_line_company,Percepciones que nos cobran (comprobantes): multicompañía,l10n_pe.perception.received.line,,crud,"[('company_id', 'in', company_ids)]"

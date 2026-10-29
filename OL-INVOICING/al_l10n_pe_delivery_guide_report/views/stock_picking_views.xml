@@ -10,7 +10,7 @@
                  tras un error de conexión. -->
             <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="after">
                 <button name="action_print_guia_remision"
-                        icon="fa-print"
+                        icon="print"
                         string="Guía de remisión"
                         invisible="state != 'done' or l10n_pe_edi_status != 'sent'"
                         type="object" groups="base.group_user" data-hotkey="p"/>

@@ -50,7 +50,6 @@ se usaban en la lógica del módulo).
     'data': [
         # Seguridad
         'security/security_group.xml',
-        'security/ir.model.access.csv',
         # Wizards
         'wizards/account_refinance_invoice_view.xml',
         'wizards/account_massive_refinance_view.xml',
@@ -70,6 +69,7 @@ se usaban en la lógica del módulo).
         # Datos
         'data/document_type_letter.xml',
         'data/ir_sequence_data.xml',
+        'security/ir.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).

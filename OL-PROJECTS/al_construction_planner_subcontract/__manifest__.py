@@ -22,8 +22,6 @@ Asignar contrata con su OC de servicio, avance por driver, liquidación semanal 
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'purchase', 'portal', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/tier_definition_data.xml',
@@ -45,6 +43,7 @@ Asignar contrata con su OC de servicio, avance por driver, liquidación semanal 
         'views/portal_templates.xml',
         'views/menus.xml',
         'views/construction_board_views.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         # Portal de obra: ubicación del celular al registrar el avance.

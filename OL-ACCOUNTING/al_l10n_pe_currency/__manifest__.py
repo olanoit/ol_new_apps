@@ -46,7 +46,6 @@ Tipo de cambio Perú — refactor Odoo 19
     'depends': ['account', 'al_account_base'],
     'external_dependencies': {'python': ['requests']},
     'data': [
-        'security/ir.model.access.csv',
         'data/decimal_precision.xml',
         'data/res_currency_data.xml',
         'data/cron_data.xml',
@@ -56,6 +55,7 @@ Tipo de cambio Perú — refactor Odoo 19
         'views/account_payment_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
     'installable': True,

@@ -5,26 +5,26 @@
         <aside class="algantt-ai-panel d-flex flex-column">
 
             <header class="algantt-ai-header d-flex align-items-center gap-2 p-2 border-bottom">
-                <i class="fa fa-magic text-primary"/>
+                <i class="oi text-primary" data-icon="wand_stars"/>
                 <div class="flex-grow-1">
                     <div class="fw-bold small">Asistente</div>
-                    <div class="text-muted algantt-ai-model" t-esc="modelLabel"/>
+                    <div class="text-muted algantt-ai-model" t-esc="this.modelLabel"/>
                 </div>
                 <button type="button" class="btn btn-sm btn-link text-muted p-1"
-                        t-if="state.messages.length"
+                        t-if="this.state.messages.length"
                         title="Vaciar la conversación"
                         t-on-click="() => this.clear()">
-                    <i class="fa fa-eraser"/>
+                    <i class="oi" data-icon="ink_eraser"/>
                 </button>
                 <button type="button" class="btn btn-sm btn-link text-muted p-1"
                         title="Cerrar" t-on-click="() => this.props.close()">
-                    <i class="fa fa-times"/>
+                    <i class="oi" data-icon="close"/>
                 </button>
             </header>
 
-            <div class="algantt-ai-scroll flex-grow-1 p-2" t-ref="scroll">
+            <div class="algantt-ai-scroll flex-grow-1 p-2" t-custom-ref="scroll">
 
-                <div class="algantt-ai-intro text-muted small" t-if="!state.messages.length">
+                <div class="algantt-ai-intro text-muted small" t-if="!this.state.messages.length">
                     <p class="mb-2">
                         Pregunte sobre las tareas que está viendo. El asistente puede
                         <b>proponer cambios</b>, pero no los aplica: usted los revisa y decide.
@@ -34,7 +34,7 @@
                         avance y dependencias). Nunca descripciones ni adjuntos.
                     </p>
                     <div class="d-flex flex-column gap-1">
-                        <t t-foreach="suggestions" t-as="suggestion" t-key="suggestion">
+                        <t t-foreach="this.suggestions" t-as="suggestion" t-key="suggestion">
                             <button type="button" class="btn btn-sm btn-outline-secondary text-start"
                                     t-on-click="() => this.useSuggestion(suggestion)"
                                     t-esc="suggestion"/>
@@ -42,7 +42,7 @@
                     </div>
                 </div>
 
-                <t t-foreach="state.messages" t-as="message" t-key="message_index">
+                <t t-foreach="this.state.messages" t-as="message" t-key="message_index">
                     <div class="algantt-ai-message mb-2"
                          t-att-class="message.role === 'user' ? 'algantt-ai-user' : 'algantt-ai-assistant'">
 
@@ -54,7 +54,7 @@
                         <t t-if="message.proposals and message.proposals.length">
                             <div class="algantt-ai-proposals mt-2">
                                 <div class="small fw-bold mb-1">
-                                    <i class="fa fa-lightbulb-o me-1"/>Cambios propuestos
+                                    <i class="oi me-1" data-icon="lightbulb"/>Cambios propuestos
                                 </div>
                                 <div class="small text-muted mb-2" t-if="message.summary"
                                      t-esc="message.summary"/>
@@ -81,17 +81,17 @@
 
                                 <div class="d-flex align-items-center gap-2 mt-2" t-if="!message.applied">
                                     <button type="button" class="btn btn-sm btn-primary"
-                                            t-att-disabled="state.loading"
+                                            t-att-disabled="this.state.loading"
                                             t-on-click="() => this.applySelected(message)">
-                                        <i class="fa fa-check me-1"/>Aplicar
-                                        (<t t-esc="selectedCount(message)"/>)
+                                        <i class="oi me-1" data-icon="check"/>Aplicar
+                                        (<t t-esc="this.selectedCount(message)"/>)
                                     </button>
                                     <span class="text-muted algantt-ai-reason">
                                         Se guardan como cualquier otro cambio del diagrama.
                                     </span>
                                 </div>
                                 <div class="text-success small mt-2" t-else="">
-                                    <i class="fa fa-check me-1"/>Aplicado.
+                                    <i class="oi me-1" data-icon="check"/>Aplicado.
                                 </div>
                             </div>
                         </t>
@@ -100,7 +100,7 @@
                             <div class="algantt-ai-warnings mt-2">
                                 <t t-foreach="message.warnings" t-as="warning" t-key="warning_index">
                                     <div class="small text-warning-emphasis">
-                                        <i class="fa fa-exclamation-triangle me-1"/><t t-esc="warning"/>
+                                        <i class="oi me-1" data-icon="warning"/><t t-esc="warning"/>
                                     </div>
                                 </t>
                             </div>
@@ -108,25 +108,25 @@
                     </div>
                 </t>
 
-                <div class="text-muted small" t-if="state.loading">
-                    <i class="fa fa-circle-o-notch fa-spin me-1"/>Pensando…
+                <div class="text-muted small" t-if="this.state.loading">
+                    <i class="oi oi-spin me-1" data-icon="autorenew"/>Pensando…
                 </div>
             </div>
 
             <footer class="algantt-ai-footer border-top p-2">
                 <textarea class="form-control form-control-sm" rows="2"
-                          t-ref="input"
+                          t-custom-ref="input"
                           placeholder="Pregunte algo sobre este cronograma…"
-                          t-att-value="state.input"
-                          t-att-disabled="state.loading"
-                          t-on-input="onInput"
-                          t-on-keydown="onKeydown"/>
+                          t-att-value="this.state.input"
+                          t-att-disabled="this.state.loading"
+                          t-on-input="this.onInput"
+                          t-on-keydown="this.onKeydown"/>
                 <div class="d-flex align-items-center justify-content-between mt-1">
                     <span class="text-muted algantt-ai-reason">Intro para enviar</span>
                     <button type="button" class="btn btn-sm btn-primary"
-                            t-att-disabled="state.loading or !state.input.trim()"
+                            t-att-disabled="this.state.loading or !this.state.input.trim()"
                             t-on-click="() => this.send()">
-                        <i class="fa fa-paper-plane me-1"/>Enviar
+                        <i class="oi oi-filled me-1" data-icon="send"/>Enviar
                     </button>
                 </div>
             </footer>

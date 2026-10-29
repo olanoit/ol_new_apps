@@ -26,12 +26,11 @@ Pago múltiple
     'countries': ['pe'],
     'depends': ['al_l10n_pe_payment_application'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/payment_multi_security.xml',
         'data/ir_sequence_data.xml',
         'views/payment_multi_views.xml',
         'views/account_payment_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

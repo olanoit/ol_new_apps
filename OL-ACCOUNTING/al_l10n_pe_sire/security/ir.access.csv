@@ -1,0 +1,25 @@
+id,name,model_id,group_id/id,operation,domain
+access_sire_rce_user,l10n_pe.sire.rce user,l10n_pe.sire.rce,account.group_account_user,crud,
+access_sire_rce_read,l10n_pe.sire.rce readonly,l10n_pe.sire.rce,account.group_account_readonly,r,
+sire_rce_company_rule,SIRE RCE: multicompañía,l10n_pe.sire.rce,,crud,"[('company_id', 'in', company_ids)]"
+access_sire_rce_line_user,l10n_pe.sire.rce.line user,l10n_pe.sire.rce.line,account.group_account_user,crud,
+access_sire_rce_line_read,l10n_pe.sire.rce.line readonly,l10n_pe.sire.rce.line,account.group_account_readonly,r,
+sire_rce_line_company_rule,SIRE RCE línea: multicompañía,l10n_pe.sire.rce.line,,crud,"[('company_id', 'in', company_ids)]"
+access_sire_rvie_user,l10n_pe.sire.rvie user,l10n_pe.sire.rvie,account.group_account_user,crud,
+access_sire_rvie_read,l10n_pe.sire.rvie readonly,l10n_pe.sire.rvie,account.group_account_readonly,r,
+sire_rvie_company_rule,SIRE RVIE: multicompañía,l10n_pe.sire.rvie,,crud,"[('company_id', 'in', company_ids)]"
+access_sire_rvie_line_user,l10n_pe.sire.rvie.line user,l10n_pe.sire.rvie.line,account.group_account_user,crud,
+access_sire_rvie_line_read,l10n_pe.sire.rvie.line readonly,l10n_pe.sire.rvie.line,account.group_account_readonly,r,
+sire_rvie_line_company_rule,SIRE RVIE línea: multicompañía,l10n_pe.sire.rvie.line,,crud,"[('company_id', 'in', company_ids)]"
+access_sire_compare_field_user,l10n_pe.sire.compare.field user,l10n_pe.sire.compare.field,account.group_account_user,r,
+access_sire_compare_field_manager,l10n_pe.sire.compare.field manager,l10n_pe.sire.compare.field,account.group_account_manager,crud,
+access_sire_operation_user,l10n_pe.sire.operation user,l10n_pe.sire.operation,account.group_account_user,ru,
+access_sire_operation_read,l10n_pe.sire.operation readonly,l10n_pe.sire.operation,account.group_account_readonly,r,
+sire_operation_company_rule,SIRE operación: multicompañía,l10n_pe.sire.operation,,crud,"[('company_id', 'in', company_ids)]"
+access_sire_action_wizard_user,l10n_pe.sire.action.wizard user,l10n_pe.sire.action.wizard,account.group_account_user,crud,
+access_sire_rce_nd_line_user,l10n_pe.sire.rce.nd.line user,l10n_pe.sire.rce.nd.line,account.group_account_user,crud,
+access_sire_rce_nd_line_read,l10n_pe.sire.rce.nd.line readonly,l10n_pe.sire.rce.nd.line,account.group_account_readonly,r,
+sire_rce_nd_line_company_rule,SIRE no domiciliados: multicompañía,l10n_pe.sire.rce.nd.line,,crud,"[('company_id', 'in', company_ids)]"
+access_sire_api_log_approver,l10n_pe.sire.api.log approver,l10n_pe.sire.api.log,al_l10n_pe_sire.group_sire_approver,r,
+sire_api_log_company_rule,SIRE bitácora de la API: multicompañía,l10n_pe.sire.api.log,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_sire_reopen_wizard_approver,l10n_pe.sire.reopen.wizard approver,l10n_pe.sire.reopen.wizard,al_l10n_pe_sire.group_sire_approver,cru,

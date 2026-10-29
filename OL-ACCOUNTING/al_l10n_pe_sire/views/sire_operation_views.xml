@@ -21,14 +21,14 @@
                 <field name="user_id" optional="hide"/>
                 <field name="poll_next_date" optional="hide"/>
                 <button name="action_check" type="object" string="Consultar"
-                        icon="fa-refresh" invisible="not ticket or state != 'sent'"
+                        icon="refresh" invisible="not ticket or state != 'sent'"
                         groups="account.group_account_user"/>
                 <button name="action_download_file" type="object" string="Archivo"
-                        icon="fa-download" invisible="not filename"/>
+                        icon="download" invisible="not filename"/>
                 <field name="filename" column_invisible="1"/>
                 <field name="can_send_adjustment" column_invisible="1"/>
                 <button name="action_send_adjustment" type="object" string="Enviar ajustes"
-                        icon="fa-paper-plane" invisible="not can_send_adjustment"
+                        icon="send" icon_class="oi-filled" invisible="not can_send_adjustment"
                         groups="account.group_account_user"/>
             </list>
         </field>

@@ -1,0 +1,22 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_category_user,category user,l10n_pe.hr.construction.category,hr_payroll.group_hr_payroll_user,r,
+access_construction_category_manager,category manager,l10n_pe.hr.construction.category,hr_payroll.group_hr_payroll_manager,crud,
+construction_category_company_rule,Categoría de construcción: global o de la compañía,l10n_pe.hr.construction.category,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_construction_wage_table_user,wage table user,l10n_pe.hr.construction.wage.table,hr_payroll.group_hr_payroll_user,r,
+access_construction_wage_table_manager,wage table manager,l10n_pe.hr.construction.wage.table,hr_payroll.group_hr_payroll_manager,crud,
+construction_wage_table_company_rule,Tabla salarial: global o de la compañía,l10n_pe.hr.construction.wage.table,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_construction_wage_line_user,wage line user,l10n_pe.hr.construction.wage.line,hr_payroll.group_hr_payroll_user,r,
+access_construction_wage_line_manager,wage line manager,l10n_pe.hr.construction.wage.line,hr_payroll.group_hr_payroll_manager,crud,
+construction_wage_line_company_rule,Jornal por categoría: global o de la compañía,l10n_pe.hr.construction.wage.line,,crud,"['|', ('table_id.company_id', '=', False), ('table_id.company_id', 'in', company_ids)]"
+access_construction_bonus_user,bonus user,l10n_pe.hr.construction.bonus,hr_payroll.group_hr_payroll_user,r,
+access_construction_bonus_manager,bonus manager,l10n_pe.hr.construction.bonus,hr_payroll.group_hr_payroll_manager,crud,
+construction_bonus_company_rule,Bonificación: global o de la compañía,l10n_pe.hr.construction.bonus,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_construction_site_user,site user,l10n_pe.hr.construction.site,hr_payroll.group_hr_payroll_user,r,
+access_construction_site_manager,site manager,l10n_pe.hr.construction.site,hr_payroll.group_hr_payroll_manager,crud,
+construction_site_company_rule,Obra: solo de la compañía,l10n_pe.hr.construction.site,,crud,"[('company_id', 'in', company_ids)]"
+access_conafovicer_user,conafovicer user,l10n_pe.hr.conafovicer,hr_payroll.group_hr_payroll_user,cru,
+access_conafovicer_manager,conafovicer manager,l10n_pe.hr.conafovicer,hr_payroll.group_hr_payroll_manager,crud,
+conafovicer_company_rule,CONAFOVICER: solo de la compañía,l10n_pe.hr.conafovicer,,crud,"[('company_id', 'in', company_ids)]"
+access_conafovicer_line_user,conafovicer line user,l10n_pe.hr.conafovicer.line,hr_payroll.group_hr_payroll_user,crud,
+conafovicer_line_company_rule,Detalle CONAFOVICER: solo de la compañía,l10n_pe.hr.conafovicer.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_wage_import_manager,wage import manager,l10n_pe.hr.construction.wage.import,hr_payroll.group_hr_payroll_manager,crud,

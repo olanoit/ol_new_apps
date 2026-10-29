@@ -1,8 +1,9 @@
 /** @odoo-module **/
 
-import { Component, useState, useRef, onMounted } from "@odoo/owl";
+import { Component, proxy, onMounted } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
+import { useRef } from "@web/owl2/utils";
 
 const AVATAR_COLORS = [
     "#4A90E2", "#7B68EE", "#50C878", "#FF7043",
@@ -29,7 +30,7 @@ export class SelectionPopupCustom extends Component {
     };
 
     setup() {
-        this.state = useState({
+        this.state = proxy({
             inputValue: "",
             filteredList: this.props.list,
             defaultId: this.props.defaultId,

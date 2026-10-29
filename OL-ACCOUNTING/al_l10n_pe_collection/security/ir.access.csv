@@ -1,0 +1,93 @@
+id,name,model_id,group_id/id,operation,domain
+access_zone_user,l10n_pe.collection.zone user,l10n_pe.collection.zone,al_l10n_pe_collection.group_collection_user,r,
+access_zone_manager,l10n_pe.collection.zone manager,l10n_pe.collection.zone,al_l10n_pe_collection.group_collection_manager,crud,
+access_zone_agency,l10n_pe.collection.zone agency,l10n_pe.collection.zone,al_l10n_pe_collection.group_collection_agency,r,
+access_bucket_user,l10n_pe.collection.bucket user,l10n_pe.collection.bucket,al_l10n_pe_collection.group_collection_user,r,
+access_bucket_manager,l10n_pe.collection.bucket manager,l10n_pe.collection.bucket,al_l10n_pe_collection.group_collection_manager,crud,
+access_bucket_agency,l10n_pe.collection.bucket agency,l10n_pe.collection.bucket,al_l10n_pe_collection.group_collection_agency,r,
+access_result_user,l10n_pe.collection.result user,l10n_pe.collection.result,al_l10n_pe_collection.group_collection_user,r,
+access_result_manager,l10n_pe.collection.result manager,l10n_pe.collection.result,al_l10n_pe_collection.group_collection_manager,crud,
+access_result_agency,l10n_pe.collection.result agency,l10n_pe.collection.result,al_l10n_pe_collection.group_collection_agency,r,
+collection_action_user_rule,Gestión de cobranza: solo las propias,l10n_pe.collection.action,al_l10n_pe_collection.group_collection_user,cru,"[('user_id', '=', user.id)]"
+collection_action_manager_rule,Gestión de cobranza: todas,l10n_pe.collection.action,al_l10n_pe_collection.group_collection_manager,crud,
+collection_action_agency_rule,Gestión de cobranza: clientes de la agencia,l10n_pe.collection.action,al_l10n_pe_collection.group_collection_agency,cru,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_action_company_rule,Gestión de cobranza: multicompañía,l10n_pe.collection.action,,crud,"[('company_id', 'in', company_ids)]"
+collection_promise_user_rule,Compromiso de pago: solo los propios,l10n_pe.collection.promise,al_l10n_pe_collection.group_collection_user,cru,"[('user_id', '=', user.id)]"
+collection_promise_manager_rule,Compromiso de pago: todos,l10n_pe.collection.promise,al_l10n_pe_collection.group_collection_manager,crud,
+collection_promise_agency_rule,Compromiso de pago: clientes de la agencia,l10n_pe.collection.promise,al_l10n_pe_collection.group_collection_agency,cru,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_promise_company_rule,Compromiso de pago: multicompañía,l10n_pe.collection.promise,,crud,"[('company_id', 'in', company_ids)]"
+collection_portfolio_user_rule,Cartera: solo la propia,l10n_pe.collection.portfolio,al_l10n_pe_collection.group_collection_user,r,"[('user_id', '=', user.id)]"
+collection_portfolio_manager_rule,Cartera: toda,l10n_pe.collection.portfolio,al_l10n_pe_collection.group_collection_manager,r,
+collection_portfolio_agency_rule,Cartera: la asignada a la agencia,l10n_pe.collection.portfolio,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_portfolio_company_rule,Cartera: multicompañía,l10n_pe.collection.portfolio,,crud,"[('company_id', 'in', company_ids)]"
+access_forecast_user,l10n_pe.collection.forecast user,l10n_pe.collection.forecast,al_l10n_pe_collection.group_collection_user,crud,
+collection_forecast_company_rule,Proyección de cobranza: multicompañía,l10n_pe.collection.forecast,,crud,"[('company_id', 'in', company_ids)]"
+access_forecast_period_user,l10n_pe.collection.forecast.period user,l10n_pe.collection.forecast.period,al_l10n_pe_collection.group_collection_user,crud,
+access_forecast_line_user,l10n_pe.collection.forecast.line user,l10n_pe.collection.forecast.line,al_l10n_pe_collection.group_collection_user,crud,
+collection_forecast_line_company_rule,Partida de la proyección de cobranza: multicompañía,l10n_pe.collection.forecast.line,,crud,"[('company_id', 'in', company_ids)]"
+collection_target_user_rule,Meta de cobranza: solo las propias,l10n_pe.collection.target,al_l10n_pe_collection.group_collection_user,r,"[('user_id', '=', user.id)]"
+collection_target_manager_rule,Meta de cobranza: todas,l10n_pe.collection.target,al_l10n_pe_collection.group_collection_manager,crud,
+collection_target_company_rule,Meta de cobranza: multicompañía,l10n_pe.collection.target,,crud,"[('company_id', 'in', company_ids)]"
+access_dashboard_user,l10n_pe.collection.dashboard user,l10n_pe.collection.dashboard,al_l10n_pe_collection.group_collection_user,crud,
+access_statement_send_user,l10n_pe.collection.statement.send user,l10n_pe.collection.statement.send,al_l10n_pe_collection.group_collection_user,crud,
+access_dispute_reason_user,l10n_pe.collection.dispute.reason user,l10n_pe.collection.dispute.reason,al_l10n_pe_collection.group_collection_user,r,
+access_dispute_reason_manager,l10n_pe.collection.dispute.reason manager,l10n_pe.collection.dispute.reason,al_l10n_pe_collection.group_collection_manager,crud,
+access_dispute_reason_agency,l10n_pe.collection.dispute.reason agency,l10n_pe.collection.dispute.reason,al_l10n_pe_collection.group_collection_agency,r,
+collection_dispute_user_rule,Reclamo de cobranza: solo los propios,l10n_pe.collection.dispute,al_l10n_pe_collection.group_collection_user,cru,"[('user_id', '=', user.id)]"
+collection_dispute_manager_rule,Reclamo de cobranza: todos,l10n_pe.collection.dispute,al_l10n_pe_collection.group_collection_manager,crud,
+collection_dispute_company_rule,Reclamo de cobranza: multicompañía,l10n_pe.collection.dispute,,crud,"[('company_id', 'in', company_ids)]"
+access_provision_manager,l10n_pe.collection.provision manager,l10n_pe.collection.provision,al_l10n_pe_collection.group_collection_manager,crud,
+collection_provision_company_rule,Provisión de cobranza dudosa: multicompañía,l10n_pe.collection.provision,,crud,"[('company_id', 'in', company_ids)]"
+access_provision_line_manager,l10n_pe.collection.provision.line manager,l10n_pe.collection.provision.line,al_l10n_pe_collection.group_collection_manager,crud,
+collection_provision_line_company_rule,Documento provisionado: multicompañía,l10n_pe.collection.provision.line,,crud,"[('company_id', 'in', company_ids)]"
+collection_bureau_user_rule,Reporte a central de riesgo: solo los propios,l10n_pe.collection.bureau,al_l10n_pe_collection.group_collection_user,r,"[('user_id', '=', user.id)]"
+collection_bureau_manager_rule,Reporte a central de riesgo: todos,l10n_pe.collection.bureau,al_l10n_pe_collection.group_collection_manager,crud,
+collection_bureau_company_rule,Reporte a central de riesgo: multicompañía,l10n_pe.collection.bureau,,crud,"[('company_id', 'in', company_ids)]"
+access_interest_wizard_user,l10n_pe.collection.interest.wizard user,l10n_pe.collection.interest.wizard,al_l10n_pe_collection.group_collection_user,crud,
+access_interest_wizard_line_user,l10n_pe.collection.interest.wizard.line user,l10n_pe.collection.interest.wizard.line,al_l10n_pe_collection.group_collection_user,crud,
+access_rate_cap_user,l10n_pe.collection.rate.cap user,l10n_pe.collection.rate.cap,al_l10n_pe_collection.group_collection_user,r,
+access_rate_cap_manager,l10n_pe.collection.rate.cap manager,l10n_pe.collection.rate.cap,al_l10n_pe_collection.group_collection_manager,crud,
+access_agency_user,l10n_pe.collection.agency user,l10n_pe.collection.agency,al_l10n_pe_collection.group_collection_user,r,
+access_agency_manager,l10n_pe.collection.agency manager,l10n_pe.collection.agency,al_l10n_pe_collection.group_collection_manager,crud,
+collection_agency_agency_rule,Agencia de cobranza: la propia,l10n_pe.collection.agency,al_l10n_pe_collection.group_collection_agency,r,"[('user_ids', 'in', [user.id])]"
+collection_agency_company_rule,Agencia de cobranza: multicompañía,l10n_pe.collection.agency,,crud,"[('company_id', 'in', company_ids)]"
+access_assignment_user,l10n_pe.collection.agency.assignment user,l10n_pe.collection.agency.assignment,al_l10n_pe_collection.group_collection_user,r,
+access_assignment_manager,l10n_pe.collection.agency.assignment manager,l10n_pe.collection.agency.assignment,al_l10n_pe_collection.group_collection_manager,crud,
+collection_assignment_agency_rule,Asignación a agencia: las de la agencia,l10n_pe.collection.agency.assignment,al_l10n_pe_collection.group_collection_agency,r,"[('agency_id.user_ids', 'in', [user.id])]"
+collection_assignment_company_rule,Asignación a agencia: multicompañía,l10n_pe.collection.agency.assignment,,crud,"[('company_id', 'in', company_ids)]"
+access_agency_assign_manager,l10n_pe.collection.agency.assign manager,l10n_pe.collection.agency.assign,al_l10n_pe_collection.group_collection_manager,crud,
+access_commission_plan_user,l10n_pe.collection.commission.plan user,l10n_pe.collection.commission.plan,al_l10n_pe_collection.group_collection_user,r,
+access_commission_plan_manager,l10n_pe.collection.commission.plan manager,l10n_pe.collection.commission.plan,al_l10n_pe_collection.group_collection_manager,crud,
+access_commission_plan_agency,l10n_pe.collection.commission.plan agency,l10n_pe.collection.commission.plan,al_l10n_pe_collection.group_collection_agency,r,
+collection_commission_plan_company_rule,Plan de comisión: multicompañía,l10n_pe.collection.commission.plan,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_commission_plan_line_user,l10n_pe.collection.commission.plan.line user,l10n_pe.collection.commission.plan.line,al_l10n_pe_collection.group_collection_user,r,
+access_commission_plan_line_manager,l10n_pe.collection.commission.plan.line manager,l10n_pe.collection.commission.plan.line,al_l10n_pe_collection.group_collection_manager,crud,
+access_commission_plan_line_agency,l10n_pe.collection.commission.plan.line agency,l10n_pe.collection.commission.plan.line,al_l10n_pe_collection.group_collection_agency,r,
+collection_commission_user_rule,Liquidación de comisiones: solo las propias,l10n_pe.collection.commission,al_l10n_pe_collection.group_collection_user,r,"[('beneficiary', '=', 'user'), ('user_id', '=', user.id)]"
+collection_commission_manager_rule,Liquidación de comisiones: todas,l10n_pe.collection.commission,al_l10n_pe_collection.group_collection_manager,crud,
+collection_commission_agency_rule,Liquidación de comisiones: las de la agencia,l10n_pe.collection.commission,al_l10n_pe_collection.group_collection_agency,r,"[('agency_id.user_ids', 'in', [user.id])]"
+collection_commission_company_rule,Liquidación de comisiones: multicompañía,l10n_pe.collection.commission,,crud,"[('company_id', 'in', company_ids)]"
+collection_commission_line_user_rule,Cobro de la liquidación: solo los propios,l10n_pe.collection.commission.line,al_l10n_pe_collection.group_collection_user,r,"[('commission_id.beneficiary', '=', 'user'), ('commission_id.user_id', '=', user.id)]"
+collection_commission_line_manager_rule,Cobro de la liquidación: todos,l10n_pe.collection.commission.line,al_l10n_pe_collection.group_collection_manager,crud,
+collection_commission_line_agency_rule,Cobro de la liquidación: los de la agencia,l10n_pe.collection.commission.line,al_l10n_pe_collection.group_collection_agency,r,"[('commission_id.agency_id.user_ids', 'in', [user.id])]"
+collection_commission_line_company_rule,Cobro de la liquidación de comisiones: multicompañía,l10n_pe.collection.commission.line,,crud,"[('company_id', 'in', company_ids)]"
+collection_account_move_agency_rule,Asientos: clientes de la agencia de cobranza,account.model_account_move,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_account_move_line_agency_rule,Apuntes: clientes de la agencia de cobranza,account.model_account_move_line,al_l10n_pe_collection.group_collection_agency,r,"[('partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+access_account_journal_agency,account.journal agency,account.model_account_journal,al_l10n_pe_collection.group_collection_agency,r,
+collection_partial_agency_rule,Conciliaciones: clientes de la agencia de cobranza,account.model_account_partial_reconcile,al_l10n_pe_collection.group_collection_agency,r,"[('debit_move_id.partner_id.commercial_partner_id.l10n_pe_collection_agency_id.user_ids', 'in', [user.id])]"
+collection_lawsuit_user_rule,Proceso judicial: solo los propios,l10n_pe.collection.lawsuit,al_l10n_pe_collection.group_collection_user,cru,"[('user_id', '=', user.id)]"
+collection_lawsuit_manager_rule,Proceso judicial: todos,l10n_pe.collection.lawsuit,al_l10n_pe_collection.group_collection_manager,crud,
+collection_lawsuit_agency_rule,Proceso judicial: los del estudio,l10n_pe.collection.lawsuit,al_l10n_pe_collection.group_collection_agency,ru,"[('agency_id.user_ids', 'in', [user.id])]"
+collection_lawsuit_company_rule,Proceso judicial: multicompañía,l10n_pe.collection.lawsuit,,crud,"[('company_id', 'in', company_ids)]"
+collection_lawsuit_event_user_rule,Actuación judicial: procesos propios,l10n_pe.collection.lawsuit.event,al_l10n_pe_collection.group_collection_user,crud,"[('lawsuit_id.user_id', '=', user.id)]"
+collection_lawsuit_event_manager_rule,Actuación judicial: todos,l10n_pe.collection.lawsuit.event,al_l10n_pe_collection.group_collection_manager,crud,
+collection_lawsuit_event_agency_rule,Actuación judicial: procesos del estudio,l10n_pe.collection.lawsuit.event,al_l10n_pe_collection.group_collection_agency,crud,"[('lawsuit_id.agency_id.user_ids', 'in', [user.id])]"
+collection_lawsuit_event_company_rule,Actuación judicial: multicompañía,l10n_pe.collection.lawsuit.event,,crud,"[('company_id', 'in', company_ids)]"
+collection_lawsuit_cost_user_rule,Gasto judicial: procesos propios,l10n_pe.collection.lawsuit.cost,al_l10n_pe_collection.group_collection_user,crud,"[('lawsuit_id.user_id', '=', user.id)]"
+collection_lawsuit_cost_manager_rule,Gasto judicial: todos,l10n_pe.collection.lawsuit.cost,al_l10n_pe_collection.group_collection_manager,crud,
+collection_lawsuit_cost_agency_rule,Gasto judicial: procesos del estudio,l10n_pe.collection.lawsuit.cost,al_l10n_pe_collection.group_collection_agency,crud,"[('lawsuit_id.agency_id.user_ids', 'in', [user.id])]"
+collection_lawsuit_cost_company_rule,Gasto judicial: multicompañía,l10n_pe.collection.lawsuit.cost,,crud,"[('company_id', 'in', company_ids)]"
+access_lawsuit_close_user,l10n_pe.collection.lawsuit.close user,l10n_pe.collection.lawsuit.close,al_l10n_pe_collection.group_collection_user,crud,
+access_lawsuit_close_agency,l10n_pe.collection.lawsuit.close agency,l10n_pe.collection.lawsuit.close,al_l10n_pe_collection.group_collection_agency,crud,
+access_prediction_user,l10n_pe.collection.prediction user,l10n_pe.collection.prediction,al_l10n_pe_collection.group_collection_user,r,
+collection_prediction_company_rule,Fecha prevista de pago: multicompañía,l10n_pe.collection.prediction,,crud,"[('company_id', 'in', company_ids)]"

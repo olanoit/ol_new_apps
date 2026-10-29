@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+access_pharmacy_presentation_user,pharmacy.presentation usuario,pharmacy.presentation,base.group_user,r,
+access_pharmacy_presentation_manager,pharmacy.presentation responsable de productos,pharmacy.presentation,product.group_product_manager,crud,
+pharmacy_presentation_comp_rule,Presentación de venta: multicompañía,pharmacy.presentation,,crud,"['|', ('company_id', 'parent_of', company_ids), ('company_id', '=', False)]"
+access_pharmacy_ingredient_user,pharmacy.ingredient usuario,pharmacy.ingredient,base.group_user,r,
+access_pharmacy_ingredient_manager,pharmacy.ingredient responsable de productos,pharmacy.ingredient,product.group_product_manager,cru,
+access_pharmacy_ingredient_admin,pharmacy.ingredient administrador,pharmacy.ingredient,al_pharmacy_base.group_pharmacy_manager,crud,
+access_pharmacy_dosage_form_user,pharmacy.dosage.form usuario,pharmacy.dosage.form,base.group_user,r,
+access_pharmacy_dosage_form_admin,pharmacy.dosage.form administrador,pharmacy.dosage.form,al_pharmacy_base.group_pharmacy_manager,crud,
+access_pharmacy_route_user,pharmacy.route usuario,pharmacy.route,base.group_user,r,
+access_pharmacy_route_admin,pharmacy.route administrador,pharmacy.route,al_pharmacy_base.group_pharmacy_manager,crud,
+access_pharmacy_product_ingredient_user,pharmacy.product.ingredient usuario,pharmacy.product.ingredient,base.group_user,r,
+access_pharmacy_product_ingredient_manager,pharmacy.product.ingredient responsable de productos,pharmacy.product.ingredient,product.group_product_manager,crud,
+access_pharmacy_shift_user,pharmacy.shift técnico,pharmacy.shift,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_shift_director,pharmacy.shift director técnico,pharmacy.shift,al_pharmacy_base.group_pharmacy_director,crud,
+pharmacy_shift_comp_rule,Turno de Q.F.: multicompañía,pharmacy.shift,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_logbook_entry_user,pharmacy.logbook.entry técnico,pharmacy.logbook.entry,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_logbook_entry_pharmacist,pharmacy.logbook.entry químico farmacéutico,pharmacy.logbook.entry,al_pharmacy_base.group_pharmacy_pharmacist,cr,
+pharmacy_logbook_entry_comp_rule,Libro de ocurrencias: multicompañía,pharmacy.logbook.entry,,crud,"[('company_id', 'in', company_ids)]"

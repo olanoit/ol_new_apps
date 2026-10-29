@@ -1,0 +1,52 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_contract_settlement_progress,construction.contract.settlement progress,construction.contract.settlement,al_construction_planner.group_planner_progress,r,
+access_construction_contract_settlement_plan_viewer,construction.contract.settlement plan_viewer,construction.contract.settlement,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_contract_settlement_exec_user,construction.contract.settlement exec_user,construction.contract.settlement,al_construction_planner.group_planner_user,crud,
+rule_construction_contract_settlement_company,Liquidación de contrata: compañías del usuario,construction.contract.settlement,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_settlement_line_progress,construction.contract.settlement.line progress,construction.contract.settlement.line,al_construction_planner.group_planner_progress,r,
+access_construction_contract_settlement_line_plan_viewer,construction.contract.settlement.line plan_viewer,construction.contract.settlement.line,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_contract_settlement_line_exec_user,construction.contract.settlement.line exec_user,construction.contract.settlement.line,al_construction_planner.group_planner_user,crud,
+rule_construction_contract_settlement_line_company,Línea de liquidación: compañías del usuario,construction.contract.settlement.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_plan_contract_wizard_exec_user,construction.plan.contract.wizard exec_user,construction.plan.contract.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_plan_contract_wizard_line_exec_user,construction.plan.contract.wizard.line exec_user,construction.plan.contract.wizard.line,al_construction_planner.group_planner_user,crud,
+access_construction_contract_condition_plan_viewer,construction.contract.condition plan_viewer,construction.contract.condition,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_contract_condition_user,construction.contract.condition user,construction.contract.condition,al_construction_planner.group_planner_user,cru,
+access_construction_contract_condition_manager,construction.contract.condition manager,construction.contract.condition,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_condition_purchase,construction.contract.condition purchase,construction.contract.condition,purchase.group_purchase_user,cru,
+rule_construction_condition_company,Condiciones de contrata: compañías del usuario,construction.contract.condition,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_construction_contract_scheme_line_plan_viewer,construction.contract.scheme.line plan_viewer,construction.contract.scheme.line,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_contract_scheme_line_user,construction.contract.scheme.line user,construction.contract.scheme.line,al_construction_planner.group_planner_user,crud,
+access_construction_contract_scheme_line_purchase,construction.contract.scheme.line purchase,construction.contract.scheme.line,purchase.group_purchase_user,crud,
+access_construction_contract_requirement_manager,construction.contract.requirement manager,construction.contract.requirement,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_requirement_internal,construction.contract.requirement internal,construction.contract.requirement,base.group_user,r,
+access_construction_contract_document_type_manager,construction.contract.document.type manager,construction.contract.document.type,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_document_type_internal,construction.contract.document.type internal,construction.contract.document.type,base.group_user,r,
+access_construction_contract_deduction_type_manager,construction.contract.deduction.type manager,construction.contract.deduction.type,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_deduction_type_internal,construction.contract.deduction.type internal,construction.contract.deduction.type,base.group_user,r,
+access_construction_contract_deduction_progress,construction.contract.deduction progress,construction.contract.deduction,al_construction_planner.group_planner_progress,r,
+access_construction_contract_deduction_user,construction.contract.deduction user,construction.contract.deduction,al_construction_planner.group_planner_user,crud,
+access_construction_contract_deduction_account,construction.contract.deduction account,construction.contract.deduction,account.group_account_invoice,r,
+rule_construction_deduction_company,Deductivo de contrata: compañías del usuario,construction.contract.deduction,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_guarantee_fund_user,construction.guarantee.fund user,construction.guarantee.fund,al_construction_planner.group_planner_user,r,
+access_construction_guarantee_fund_exec_approver,construction.guarantee.fund exec_approver,construction.guarantee.fund,al_construction_planner.group_planner_exec_approver,ru,
+access_construction_guarantee_fund_manager,construction.guarantee.fund manager,construction.guarantee.fund,al_construction_planner.group_planner_manager,crud,
+access_construction_guarantee_fund_account,construction.guarantee.fund account,construction.guarantee.fund,account.group_account_invoice,cru,
+rule_construction_guarantee_fund_company,Fondo de garantía: compañías del usuario,construction.guarantee.fund,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_order_requirement_user,construction.contract.order.requirement user,construction.contract.order.requirement,al_construction_planner.group_planner_user,cru,
+access_construction_contract_order_requirement_manager,construction.contract.order.requirement manager,construction.contract.order.requirement,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_order_requirement_account,construction.contract.order.requirement account,construction.contract.order.requirement,account.group_account_invoice,cru,
+access_construction_contract_order_requirement_purchase,construction.contract.order.requirement purchase,construction.contract.order.requirement,purchase.group_purchase_user,cru,
+rule_construction_order_requirement_company,Requisito de devolución del fondo: compañías del usuario,construction.contract.order.requirement,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_order_document_user,construction.contract.order.document user,construction.contract.order.document,al_construction_planner.group_planner_user,cru,
+access_construction_contract_order_document_manager,construction.contract.order.document manager,construction.contract.order.document,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_order_document_account,construction.contract.order.document account,construction.contract.order.document,account.group_account_invoice,cru,
+access_construction_contract_order_document_purchase,construction.contract.order.document purchase,construction.contract.order.document,purchase.group_purchase_user,cru,
+rule_construction_order_document_company,Documento requerido de la orden: compañías del usuario,construction.contract.order.document,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_settlement_summary_progress,construction.contract.settlement.summary progress,construction.contract.settlement.summary,al_construction_planner.group_planner_progress,r,
+access_construction_contract_settlement_summary_user,construction.contract.settlement.summary user,construction.contract.settlement.summary,al_construction_planner.group_planner_user,crud,
+rule_construction_settlement_summary_company,Resumen del valorizado: compañías del usuario,construction.contract.settlement.summary,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_settlement_prepare_wizard_user,construction.settlement.prepare.wizard user,construction.settlement.prepare.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_contract_opening_wizard_manager,construction.contract.opening.wizard manager,construction.contract.opening.wizard,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_summary_report_user,construction.contract.summary.report user,construction.contract.summary.report,al_construction_planner.group_planner_user,r,
+access_construction_contract_summary_report_account,construction.contract.summary.report account,construction.contract.summary.report,account.group_account_invoice,r,
+rule_construction_contract_summary_report_company,Resumen de valorizaciones: compañías del usuario,construction.contract.summary.report,,crud,"[('company_id', 'in', company_ids)]"

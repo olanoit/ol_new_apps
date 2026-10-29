@@ -840,7 +840,7 @@ class ConstructionResourcePlan(models.Model):
     def _get_to_validate_message(self):
         # El es.po de base_tier_validation no traduce este aviso: se da aquí
         # en español.
-        icon = Markup('<i class="fa fa-lg fa-info-circle"></i>')
+        icon = Markup('<i class="oi oi-lg oi-filled" data-icon="info"></i>')
         pending = self.review_ids.filtered(lambda r: r.status == 'pending')[:1]
         if pending and pending.todo_by:
             text = self.env._('Pendiente de aprobación por %s', pending.todo_by)

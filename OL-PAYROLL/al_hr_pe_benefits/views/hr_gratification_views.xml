@@ -120,7 +120,7 @@
                 <field name="total_grat" sum="Total" optional="show"/>
                 <field name="bonus_essalud" sum="Total" optional="show"/>
                 <field name="total" sum="Total" optional="show"/>
-                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="fa-list" type="object" title="Detalle histórico"/>
+                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="format_list_bulleted" type="object" title="Detalle histórico"/>
             </list>
         </field>
     </record>
@@ -139,7 +139,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_lines" class="oe_stat_button" icon="fa-file-text-o" type="object" help="Boletas de gratificación" invisible="grati_count == 0">
+                        <button name="action_open_lines" class="oe_stat_button" icon="article" type="object" help="Boletas de gratificación" invisible="grati_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="grati_count"/></span>
                                 <span class="o_stat_text">Boletas</span>

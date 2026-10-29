@@ -84,8 +84,6 @@ NO se reimplementan.
         'l10n_pe_reports_lib',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ple_security.xml',
         'views/account_asset_views.xml',
         'views/ple_withholding_views.xml',
         'views/ple_investment_views.xml',
@@ -97,6 +95,7 @@ NO se reimplementan.
         'wizards/ple_export_wizard_views.xml',
         'views/menu.xml',
         'data/ple_asset_report.xml',
+        'security/ir.access.csv',
     ],
     'external_dependencies': {
         'python': ['xlsxwriter'],

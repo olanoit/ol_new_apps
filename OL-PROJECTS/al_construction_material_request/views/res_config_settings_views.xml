@@ -47,7 +47,7 @@
                         <setting company_dependent="1" id="construction_setup" string="Configuración por defecto"
                                  help="Crea lo que falte (OBRAS, «Despacho a obra», y en cada almacén «Consumo interno») sin cambiar lo ya elegido.">
                             <button name="action_al_construction_setup" type="object"
-                                    string="Completar configuración" icon="oi-arrow-right"
+                                    string="Completar configuración" icon="east"
                                     class="btn-link"/>
                         </setting>
                     </block>
@@ -105,7 +105,7 @@
                         <setting id="construction_tiers" string="Reglas de aprobación"
                                  help="Quién aprueba cada requerimiento: jefe de proyecto, gerencia por monto, etc. Sin reglas que apliquen, se aprueba al solicitarlo.">
                             <button name="%(al_construction_material_request.action_construction_tier_definition)d"
-                                    type="action" string="Reglas de aprobación" icon="oi-arrow-right"
+                                    type="action" string="Reglas de aprobación" icon="east"
                                     class="btn-link"/>
                         </setting>
                     </block>

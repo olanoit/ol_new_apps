@@ -72,7 +72,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_photos" type="object" class="oe_stat_button"
-                                icon="fa-camera">
+                                icon="photo_camera">
                             <field name="photo_count" widget="statinfo" string="Fotos"/>
                         </button>
                     </div>

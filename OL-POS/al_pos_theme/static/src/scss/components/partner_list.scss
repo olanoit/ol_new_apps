@@ -119,7 +119,7 @@
 }
 
 // Estado vacío ("No se encontraron clientes").
-.pos .partner-list .text-muted .fa-users {
+.pos .partner-list .text-muted [data-icon='group'] {
     font-size: 32px !important; // `fa-3x` (!important)
     color: var(--alpt-primary);
     opacity: .6;

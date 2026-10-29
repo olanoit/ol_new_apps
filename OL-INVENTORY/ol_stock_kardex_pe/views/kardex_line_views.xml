@@ -35,7 +35,7 @@
                 <field name="balance_value_wh" string="C.T. saldo (alm.)"
                        column_invisible="context.get('kardex_physical') or not context.get('kardex_by_warehouse')"/>
                 <button name="action_open_origin" type="object"
-                        icon="fa-external-link" title="Abrir documento origen"/>
+                        icon="open_in_new" title="Abrir documento origen"/>
             </list>
         </field>
     </record>

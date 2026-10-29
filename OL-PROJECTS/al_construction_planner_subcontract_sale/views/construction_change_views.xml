@@ -14,7 +14,7 @@
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_purchase_order" type="object" class="oe_stat_button"
-                        icon="fa-file-text-o" string="Orden de contrata"
+                        icon="article" string="Orden de contrata"
                         invisible="not construction_purchase_order_id"
                         groups="purchase.group_purchase_user,al_construction_planner.group_planner_user"/>
             </xpath>

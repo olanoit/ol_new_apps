@@ -4,52 +4,52 @@
     <t t-name="al_construction_planner.IoMatrix">
         <div class="o_action o_cp_io d-flex flex-column h-100">
             <div class="o_cp_toolbar d-flex flex-wrap align-items-center gap-2 px-3 py-2 border-bottom">
-                <select class="form-select form-select-sm w-auto o_cp_io_plan" t-on-change="onPlanChange"
+                <select class="form-select form-select-sm w-auto o_cp_io_plan" t-on-change="this.onPlanChange"
                         aria-label="Plan de recursos">
-                    <t t-foreach="state.plans" t-as="plan" t-key="plan.id">
-                        <option t-att-value="plan.id" t-att-selected="plan.id === state.planId"
-                                t-esc="plan.display_name + ' · ' + plan.project_id[1]"/>
+                    <t t-foreach="this.state.plans" t-as="plan" t-key="plan.id">
+                        <option t-att-value="plan.id" t-att-selected="plan.id === this.state.planId"
+                                t-out="plan.display_name + ' · ' + plan.project_id[1]"/>
                     </t>
                 </select>
                 <label class="mb-0 small text-muted" for="o_cp_io_level">Filas:</label>
                 <select id="o_cp_io_level" class="form-select form-select-sm w-auto o_cp_io_level"
-                        t-on-change="onLevelChange">
-                    <t t-foreach="state.options.levels" t-as="level" t-key="level.field">
-                        <option t-att-value="level.field" t-att-selected="level.field === state.level"
-                                t-esc="level.name"/>
+                        t-on-change="this.onLevelChange">
+                    <t t-foreach="this.state.options.levels" t-as="level" t-key="level.field">
+                        <option t-att-value="level.field" t-att-selected="level.field === this.state.level"
+                                t-out="level.name"/>
                     </t>
                 </select>
-                <select class="form-select form-select-sm w-auto o_cp_io_value" t-on-change="onValueChange"
+                <select class="form-select form-select-sm w-auto o_cp_io_value" t-on-change="this.onValueChange"
                         aria-label="Qué se ve">
-                    <t t-foreach="state.options.values" t-as="value" t-key="value.key">
-                        <option t-att-value="value.key" t-att-selected="value.key === state.value"
-                                t-esc="value.name"/>
+                    <t t-foreach="this.state.options.values" t-as="value" t-key="value.key">
+                        <option t-att-value="value.key" t-att-selected="value.key === this.state.value"
+                                t-out="value.name"/>
                     </t>
                 </select>
                 <div class="btn-group btn-group-sm o_cp_io_measure" role="group" aria-label="Medida">
-                    <button t-if="state.options.show_amounts" class="btn" t-att-class="state.measure === 'amount' ? 'btn-primary' : 'btn-secondary'"
+                    <button t-if="this.state.options.show_amounts" class="btn" t-att-class="this.state.measure === 'amount' ? 'btn-primary' : 'btn-secondary'"
                             t-on-click="() => this.setMeasure('amount')">Soles</button>
-                    <button class="btn" t-att-class="state.measure === 'qty' ? 'btn-primary' : 'btn-secondary'"
+                    <button class="btn" t-att-class="this.state.measure === 'qty' ? 'btn-primary' : 'btn-secondary'"
                             t-on-click="() => this.setMeasure('qty')">Cantidad</button>
                 </div>
                 <div class="dropdown o_cp_stage_filter">
                     <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
                             data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                        <i class="fa fa-filter me-1"/><t t-esc="stageLabel"/>
+                        <i class="oi oi-filled me-1" data-icon="filter_alt"/><t t-out="this.stageLabel"/>
                     </button>
                     <div class="dropdown-menu p-2 o_cp_stage_tree">
                         <div class="dropdown-item" t-on-click.stop="() => this.clearStages()">
-                            <span t-att-class="'o_cp_check o_cp_' + (state.stages.length ? 'off' : 'on')"/>
+                            <span t-att-class="'o_cp_check o_cp_' + (this.state.stages.length ? 'off' : 'on')"/>
                             Todas las etapas
                         </div>
-                        <t t-foreach="state.options.stage_tree" t-as="node" t-key="node.code">
-                            <t t-set="ss" t-value="stageState(node)"/>
+                        <t t-foreach="this.state.options.stage_tree" t-as="node" t-key="node.code">
+                            <t t-set="ss" t-value="this.stageState(node)"/>
                             <div class="dropdown-item d-flex align-items-center o_cp_stage_node"
                                  t-att-data-code="node.code"
                                  t-att-style="'padding-left:' + (16 + node.depth * 16) + 'px'"
                                  t-on-click.stop="() => this.toggleStage(node)">
                                 <span t-att-class="'o_cp_check o_cp_' + ss" role="checkbox"/>
-                                <span t-att-class="node.leaf ? '' : 'fw-bold'" t-esc="node.label"/>
+                                <span t-att-class="node.leaf ? '' : 'fw-bold'" t-out="node.label"/>
                             </div>
                         </t>
                     </div>
@@ -62,72 +62,72 @@
                     <button class="btn btn-outline-secondary" title="Ver todos los insumos"
                             t-on-click="() => this.expandAll()">Insumos</button>
                 </div>
-                <button t-if="hasSelection" class="btn btn-sm btn-link" t-on-click="wholeProject">
+                <button t-if="this.hasSelection" class="btn btn-sm btn-link" t-on-click="this.wholeProject">
                     Toda la obra
                 </button>
-                <button class="btn btn-sm btn-secondary ms-auto o_cp_io_export" t-on-click="exportExcel">
-                    <i class="fa fa-file-excel-o me-1"/>Exportar a Excel
+                <button class="btn btn-sm btn-secondary ms-auto o_cp_io_export" t-on-click="this.exportExcel">
+                    <i class="oi me-1" data-icon="table_chart"/>Exportar a Excel
                 </button>
             </div>
 
-            <div t-if="!state.matrix or !state.matrix.rows.length" class="o_view_nocontent p-5 text-center">
+            <div t-if="!this.state.matrix or !this.state.matrix.rows.length" class="o_view_nocontent p-5 text-center">
                 <p class="o_view_nocontent_smiling_face">Sin recursos planificados</p>
                 <p>La selección no tiene líneas en el plan con estos filtros.</p>
             </div>
             <div t-else="" class="o_cp_io_wrap flex-grow-1 overflow-auto">
                 <table class="table table-sm table-bordered o_cp_io_table mb-0">
                     <thead>
-                        <t t-foreach="header" t-as="hrow" t-key="hrow.kind">
+                        <t t-foreach="this.header" t-as="hrow" t-key="hrow.kind">
                             <tr t-att-class="'o_cp_io_' + hrow.kind">
-                                <th t-if="hrow_first" t-att-rowspan="header.length + 1" class="o_cp_io_corner"
-                                    t-esc="state.matrix.level_name"/>
+                                <th t-if="hrow_first" t-att-rowspan="this.header.length + 1" class="o_cp_io_corner"
+                                    t-out="this.state.matrix.level_name"/>
                                 <t t-foreach="hrow.cells" t-as="hcell" t-key="hcell_index">
                                     <th t-att-colspan="hcell.span" class="text-center o_cp_io_group"
                                         t-att-class="{'o_cp_io_folded': hcell.folded}"
                                         t-att-title="hcell.group ? 'Plegar o desplegar' : ''"
                                         t-on-click="() => this.toggleGroup(hcell.key)">
                                         <t t-if="hcell.group">
-                                            <i t-att-class="'fa fa-fw ' + (state.collapsed[hcell.key] ? 'fa-plus-square-o' : 'fa-minus-square-o')"/>
-                                            <t t-esc="hcell.group.label"/>
+                                            <i t-att-class="'fa fa-fw ' + (this.state.collapsed[hcell.key] ? 'fa-plus-square-o' : 'fa-minus-square-o')"/>
+                                            <t t-out="hcell.group.label"/>
                                         </t>
                                     </th>
                                 </t>
-                                <th t-if="hrow_first" t-att-rowspan="header.length + 1" class="text-end">Total</th>
+                                <th t-if="hrow_first" t-att-rowspan="this.header.length + 1" class="text-end">Total</th>
                             </tr>
                         </t>
                         <tr class="o_cp_io_inputs">
-                            <t t-foreach="visible" t-as="entry" t-key="entry.key">
+                            <t t-foreach="this.visible" t-as="entry" t-key="entry.key">
                                 <th class="text-end" t-if="entry.kind === 'column'">
-                                    <div t-esc="entry.column.name"/>
-                                    <div class="text-muted small" t-esc="entry.column.uom"/>
+                                    <div t-out="entry.column.name"/>
+                                    <div class="text-muted small" t-out="entry.column.uom"/>
                                 </th>
                                 <th class="text-end o_cp_io_subtotal" t-else="">Subtotal</th>
                             </t>
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-foreach="state.matrix.rows" t-as="row" t-key="row.id">
+                        <t t-foreach="this.state.matrix.rows" t-as="row" t-key="row.id">
                             <tr class="o_cp_io_row" t-att-data-row="row.id">
                                 <td class="text-nowrap o_cp_io_rowname" t-att-title="row.path">
                                     <a t-if="row.id" href="#" t-on-click.prevent="() => this.openRow(row)"
-                                       t-esc="row.name"/>
-                                    <span t-else="" class="text-muted" t-esc="row.name"/>
+                                       t-out="row.name"/>
+                                    <span t-else="" class="text-muted" t-out="row.name"/>
                                 </td>
-                                <t t-foreach="visible" t-as="entry" t-key="entry.key">
+                                <t t-foreach="this.visible" t-as="entry" t-key="entry.key">
                                     <td class="text-end" t-att-class="{'o_cp_io_subtotal': entry.kind === 'group'}"
-                                        t-esc="fmt(cell(row, entry))"/>
+                                        t-out="this.fmt(this.cell(row, entry))"/>
                                 </t>
-                                <td class="text-end fw-bold" t-esc="fmt(rowTotal(row))"/>
+                                <td class="text-end fw-bold" t-out="this.fmt(this.rowTotal(row))"/>
                             </tr>
                         </t>
                     </tbody>
                     <tfoot>
                         <tr class="fw-bold">
                             <td>Total</td>
-                            <t t-foreach="visible" t-as="entry" t-key="entry.key">
-                                <td class="text-end" t-esc="fmt(columnTotal(entry))"/>
+                            <t t-foreach="this.visible" t-as="entry" t-key="entry.key">
+                                <td class="text-end" t-out="this.fmt(this.columnTotal(entry))"/>
                             </t>
-                            <td class="text-end o_cp_io_total" t-esc="fmt(state.matrix.total)"/>
+                            <td class="text-end o_cp_io_total" t-out="this.fmt(this.state.matrix.total)"/>
                         </tr>
                     </tfoot>
                 </table>

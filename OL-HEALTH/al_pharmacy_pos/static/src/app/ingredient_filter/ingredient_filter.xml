@@ -3,34 +3,34 @@
 
     <t t-name="al_pharmacy_pos.PharmacyIngredientSelector">
         <div class="alph-ingredient-filter d-flex flex-wrap align-items-center gap-2 px-2 pb-2">
-            <i class="fa fa-flask alph-ingredient-filter__icon" role="img" aria-label="Principio activo"
+            <i class="oi alph-ingredient-filter__icon" data-icon="science" role="img" aria-label="Principio activo"
                title="Principio activo"/>
-            <span t-foreach="selected" t-as="ingredient" t-key="ingredient.id"
+            <span t-foreach="this.selected" t-as="ingredient" t-key="ingredient.id"
                   class="alph-ingredient-chip d-inline-flex align-items-center gap-2">
                 <t t-esc="ingredient.name"/>
-                <i class="fa fa-times" role="button" aria-label="Quitar"
-                   t-on-click="() => pos.togglePharmacyIngredient(ingredient.id)"/>
+                <i class="oi" data-icon="close" role="button" aria-label="Quitar"
+                   t-on-click="() => this.pos.togglePharmacyIngredient(ingredient.id)"/>
             </span>
             <div class="alph-ingredient-search position-relative">
                 <input type="text" class="form-control form-control-sm"
                        placeholder="Filtrar por principio activo…"
-                       t-model="state.query"
-                       t-on-focus="() => state.open = true"
-                       t-on-blur="() => state.open = false"
-                       t-on-keydown="onKeydown"/>
-                <div t-if="state.open and options.length" class="alph-ingredient-dropdown">
-                    <button t-foreach="options" t-as="ingredient" t-key="ingredient.id" type="button"
+                       t-custom-model="this.state.query"
+                       t-on-focus="() => this.state.open = true"
+                       t-on-blur="() => this.state.open = false"
+                       t-on-keydown="this.onKeydown"/>
+                <div t-if="this.state.open and this.options.length" class="alph-ingredient-dropdown">
+                    <button t-foreach="this.options" t-as="ingredient" t-key="ingredient.id" type="button"
                             class="alph-ingredient-option d-flex justify-content-between align-items-center w-100"
                             t-on-mousedown.prevent="() => this.pick(ingredient)">
                         <span t-esc="ingredient.name"/>
-                        <span class="alph-ingredient-count" t-esc="count(ingredient)"/>
+                        <span class="alph-ingredient-count" t-esc="this.count(ingredient)"/>
                     </button>
                 </div>
             </div>
-            <button t-if="selected.length" type="button"
+            <button t-if="this.selected.length" type="button"
                     class="btn btn-sm btn-link text-muted text-decoration-none"
-                    t-on-click="() => pos.clearPharmacyIngredients()">
-                <i class="fa fa-times me-1"/>Limpiar
+                    t-on-click="() => this.pos.clearPharmacyIngredients()">
+                <i class="oi me-1" data-icon="close"/>Limpiar
             </button>
         </div>
     </t>

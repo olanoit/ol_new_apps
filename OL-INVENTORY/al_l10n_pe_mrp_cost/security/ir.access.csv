@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+access_labor_rate_mrp,l10n_pe.mrp.labor.rate mrp,l10n_pe.mrp.labor.rate,mrp.group_mrp_manager,r,
+access_labor_rate_payroll,l10n_pe.mrp.labor.rate payroll,l10n_pe.mrp.labor.rate,hr_payroll.group_hr_payroll_user,crud,
+rule_l10n_pe_mrp_labor_rate_company,l10n.pe.mrp.labor.rate: multicompañía,l10n_pe.mrp.labor.rate,,crud,"[('company_id', 'in', company_ids)]"
+access_labor_rate_line_mrp,l10n_pe.mrp.labor.rate.line mrp,l10n_pe.mrp.labor.rate.line,mrp.group_mrp_manager,r,
+access_labor_rate_line_payroll,l10n_pe.mrp.labor.rate.line payroll,l10n_pe.mrp.labor.rate.line,hr_payroll.group_hr_payroll_user,crud,
+rule_l10n_pe_mrp_labor_rate_line_company,l10n.pe.mrp.labor.rate.line: multicompañía,l10n_pe.mrp.labor.rate.line,,crud,"[('company_id', 'in', company_ids)]"
+access_cost_pool_user,l10n_pe.mrp.cost.pool user,l10n_pe.mrp.cost.pool,mrp.group_mrp_user,r,
+access_cost_pool_manager,l10n_pe.mrp.cost.pool manager,l10n_pe.mrp.cost.pool,mrp.group_mrp_manager,crud,
+rule_l10n_pe_mrp_cost_pool_company,l10n.pe.mrp.cost.pool: multicompañía,l10n_pe.mrp.cost.pool,,crud,"[('company_id', 'in', company_ids)]"
+access_cost_close_user,l10n_pe.mrp.cost.close user,l10n_pe.mrp.cost.close,mrp.group_mrp_user,r,
+access_cost_close_manager,l10n_pe.mrp.cost.close manager,l10n_pe.mrp.cost.close,mrp.group_mrp_manager,crud,
+rule_l10n_pe_mrp_cost_close_company,l10n.pe.mrp.cost.close: multicompañía,l10n_pe.mrp.cost.close,,crud,"[('company_id', 'in', company_ids)]"
+access_cost_close_line_user,l10n_pe.mrp.cost.close.line user,l10n_pe.mrp.cost.close.line,mrp.group_mrp_user,r,
+access_cost_close_line_manager,l10n_pe.mrp.cost.close.line manager,l10n_pe.mrp.cost.close.line,mrp.group_mrp_manager,crud,
+rule_l10n_pe_mrp_cost_close_line_company,l10n.pe.mrp.cost.close.line: multicompañía,l10n_pe.mrp.cost.close.line,,crud,"[('company_id', 'in', company_ids)]"
+access_cost_analysis_user,l10n_pe.mrp.cost.analysis user,l10n_pe.mrp.cost.analysis,mrp.group_mrp_user,r,
+rule_l10n_pe_mrp_cost_analysis_company,l10n.pe.mrp.cost.analysis: multicompañía,l10n_pe.mrp.cost.analysis,,crud,"[('company_id', 'in', company_ids)]"
+access_timesheet_import,l10n_pe.mrp.timesheet.import,l10n_pe.mrp.timesheet.import,mrp.group_mrp_user,crud,

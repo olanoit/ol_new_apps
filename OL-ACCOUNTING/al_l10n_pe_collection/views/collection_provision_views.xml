@@ -61,7 +61,7 @@
                             <field name="judicial_exhausted" string="Acc. agotadas" optional="show" readonly="state != 'posted' or write_off_move_id"/>
                             <field name="write_off_allowed" string="Deducible" optional="show"/>
                             <field name="write_off_move_id" string="Castigo" optional="hide"/>
-                            <button name="action_write_off" type="object" string="Castigar" icon="fa-gavel"
+                            <button name="action_write_off" type="object" string="Castigar" icon="gavel"
                                     invisible="state != 'posted' or write_off_move_id or not selected"/>
                         </list>
                     </field>

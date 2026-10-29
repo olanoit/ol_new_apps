@@ -1,0 +1,11 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_accessory_request_mrp,construction.accessory.request mrp,construction.accessory.request,mrp.group_mrp_user,cru,
+access_construction_accessory_request_manager,construction.accessory.request manager,construction.accessory.request,al_construction_planner.group_planner_manager,crud,
+access_construction_accessory_request_plan_viewer,construction.accessory.request plan_viewer,construction.accessory.request,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_accessory_request_company,Pedidos de accesorios: compañías del usuario,construction.accessory.request,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_accessory_request_line_mrp,construction.accessory.request.line mrp,construction.accessory.request.line,mrp.group_mrp_user,crud,
+access_construction_accessory_request_line_plan_viewer,construction.accessory.request.line plan_viewer,construction.accessory.request.line,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_accessory_request_line_company,Accesorios pedidos: compañías del usuario,construction.accessory.request.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_production_analysis_mrp,construction.production.analysis mrp,construction.production.analysis,mrp.group_mrp_user,r,
+access_construction_production_analysis_plan_viewer,construction.production.analysis plan_viewer,construction.production.analysis,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_production_analysis_company,Presupuestado frente a real de fabricación: compañías del usuario,construction.production.analysis,,crud,"[('company_id', 'in', company_ids)]"

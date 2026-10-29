@@ -12,7 +12,7 @@
                         <field name="construction_approval_engine" widget="radio"/>
                         <div class="mt8">
                             <button name="%(action_construction_approval_route)d" type="action"
-                                    string="Rutas de aprobación" icon="oi-arrow-right" class="btn-link"
+                                    string="Rutas de aprobación" icon="east" class="btn-link"
                                     invisible="construction_approval_engine != 'approvals'"/>
                         </div>
                     </setting>

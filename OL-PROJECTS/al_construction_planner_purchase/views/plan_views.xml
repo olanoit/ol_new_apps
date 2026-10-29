@@ -13,10 +13,10 @@
                         groups="al_construction_planner.group_planner_plan_planner,al_construction_planner.group_planner_user"/>
             </xpath>
             <xpath expr="//field[@name='price_unit_planned']" position="after">
-                <button name="action_open_purchase_prices" type="object" icon="fa-line-chart"
+                <button name="action_open_purchase_prices" type="object" icon="show_chart"
                         title="Precios de compra del producto" invisible="not product_id"
                         groups="al_construction_planner.group_planner_plan_planner,al_construction_planner.group_planner_user"/>
-                <button name="action_open_product_create" type="object" icon="fa-plus-square"
+                <button name="action_open_product_create" type="object" icon="add_box" icon_class="oi-filled"
                         title="Crear producto desde el plan"
                         invisible="product_id or plan_state != 'draft' or resource_type not in ('material', 'service', 'equipment')"
                         groups="al_construction_planner.group_planner_plan_planner"/>
@@ -68,7 +68,7 @@
             </xpath>
             <xpath expr="//button[@name='action_open_tree']" position="after">
                 <button name="action_open_supply_board" type="object"
-                        class="oe_stat_button" icon="fa-truck" string="Abastecimiento"
+                        class="oe_stat_button" icon="local_shipping" string="Abastecimiento"
                         groups="al_construction_planner.group_planner_plan_planner,al_construction_planner.group_planner_user"/>
             </xpath>
         </field>

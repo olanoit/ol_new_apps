@@ -1,4 +1,4 @@
-import { Component, useState } from "@odoo/owl";
+import { Component, proxy } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 /**
@@ -21,7 +21,7 @@ export class PrescriptionDialog extends Component {
     };
 
     setup() {
-        this.state = useState({
+        this.state = proxy({
             number: "",
             date: new Date().toISOString().slice(0, 10),
             prescriberName: "",

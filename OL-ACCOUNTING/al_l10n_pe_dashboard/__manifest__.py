@@ -27,11 +27,10 @@ o desinstalar módulos de la localización. Filtros por periodo y por cliente o 
     'countries': ['pe'],
     'depends': ['al_account_base', 'l10n_pe_edi', 'spreadsheet_dashboard'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/dashboard_security.xml',
         'data/dashboard_data.xml',
         'views/dashboard_tax_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
 }

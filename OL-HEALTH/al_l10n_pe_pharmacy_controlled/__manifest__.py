@@ -42,12 +42,11 @@ y sus modificatorias (actualizado por el DS 020-2024-SA):
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_stock', 'sale', 'l10n_pe', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/controlled_security.xml',
         'data/controlled_data.xml',
         'views/controlled_views.xml',
         'report/controlled_reports.xml',
         'views/controlled_compliance_views.xml',
+        'security/ir.access.csv',
     ],
     'demo': ['demo/controlled_demo.xml'],
     'installable': True,

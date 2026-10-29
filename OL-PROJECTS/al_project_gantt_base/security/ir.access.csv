@@ -1,0 +1,7 @@
+id,name,model_id,group_id/id,operation,domain
+access_gantt_state_color_user,al.gantt.state.color usuario,al.gantt.state.color,al_project_gantt_base.group_gantt_user,r,
+access_gantt_state_color_manager,al.gantt.state.color administrador,al.gantt.state.color,al_project_gantt_base.group_gantt_manager,crud,
+gantt_state_color_company_rule,Gantt: colores por compañía,al.gantt.state.color,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_gantt_baseline_manager,al.gantt.baseline administrador,al.gantt.baseline,al_project_gantt_base.group_gantt_manager,crud,
+gantt_baseline_company_rule,Gantt: líneas base por compañía,al.gantt.baseline,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_gantt_baseline_line_manager,al.gantt.baseline.line administrador,al.gantt.baseline.line,al_project_gantt_base.group_gantt_manager,crd,

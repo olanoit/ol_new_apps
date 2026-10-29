@@ -1,11 +1,12 @@
 /** @odoo-module **/
 // Botón «?» que abre la página de la documentación de la pantalla actual:
 // en la barra superior (pantallas) y en la cabecera de los asistentes.
-import { Component, onWillStart, onWillUpdateProps, useState } from "@odoo/owl";
+import { Component, onWillStart, onWillUpdateProps, proxy, usePlugin } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useBus, useService } from "@web/core/utils/hooks";
 import { ActionDialog } from "@web/webclient/actions/action_dialog";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 function openHelp(help) {
     window.open(help.url, "_blank", "noopener");
@@ -35,9 +36,9 @@ export class DocsHelpSystray extends Component {
     static props = {};
 
     setup() {
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
         this.docsHelp = useService("al_docs_help");
-        this.state = useState({ help: null });
+        this.state = proxy({ help: null });
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this.update());
         onWillStart(() => this.update());
     }
@@ -61,7 +62,7 @@ export class DocsHelpButton extends Component {
 
     setup() {
         this.docsHelp = useService("al_docs_help");
-        this.state = useState({ help: null });
+        this.state = proxy({ help: null });
         onWillStart(() => this.load(this.props.helpKey));
         onWillUpdateProps((next) => this.load(next.helpKey));
     }

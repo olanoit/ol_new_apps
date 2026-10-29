@@ -14,8 +14,8 @@
                     seguro)"</strong>.</li>
                 <li>Volvé a esta pestaña y presioná <strong>"Reintentar"</strong>.</li>
             </ol>
-            <div t-if="state.failed" class="alert alert-warning py-2 mb-0">
-                <i class="fa fa-exclamation-triangle me-1"/>
+            <div t-if="this.state.failed" class="alert alert-warning py-2 mb-0">
+                <i class="oi me-1" data-icon="warning"/>
                 Todavía no se pudo contactar al agente. Repetí los pasos de arriba, o avisale a
                 quien administra el sistema si el agente no está prendido.
             </div>
@@ -24,11 +24,11 @@
                     Cancelar
                 </button>
                 <button class="btn btn-secondary" t-on-click="() => this.onOpenAgent()">
-                    <i class="fa fa-external-link me-1"/>Abrir agente
+                    <i class="oi me-1" data-icon="open_in_new"/>Abrir agente
                 </button>
-                <button class="btn btn-primary" t-att-disabled="state.checking"
+                <button class="btn btn-primary" t-att-disabled="this.state.checking"
                         t-on-click="() => this.onRetry()">
-                    <t t-if="state.checking">Comprobando...</t>
+                    <t t-if="this.state.checking">Comprobando...</t>
                     <t t-else="">Reintentar</t>
                 </button>
             </t>

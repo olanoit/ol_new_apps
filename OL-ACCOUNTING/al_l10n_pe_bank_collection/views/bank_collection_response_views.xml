@@ -18,7 +18,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_payments" type="object" class="oe_stat_button" icon="fa-money"
+                        <button name="action_open_payments" type="object" class="oe_stat_button" icon="payments"
                                 invisible="not payment_ids">
                             <span class="o_stat_text">Pagos</span>
                         </button>
@@ -65,9 +65,9 @@
                             <field name="amount" sum="Total"/>
                             <field name="late_amount" optional="hide"/>
                             <field name="payment_id" optional="show"/>
-                            <button name="action_rematch" type="object" icon="fa-refresh" title="Identificar"
+                            <button name="action_rematch" type="object" icon="refresh" title="Identificar"
                                     invisible="state not in ('unmatched', 'partner')"/>
-                            <button name="action_skip" type="object" icon="fa-ban" title="Descartar"
+                            <button name="action_skip" type="object" icon="block" title="Descartar"
                                     invisible="state in ('done', 'skipped')"/>
                         </list>
                     </field>

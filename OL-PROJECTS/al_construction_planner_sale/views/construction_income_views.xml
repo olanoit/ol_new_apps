@@ -43,7 +43,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_progress" type="object" class="oe_stat_button"
-                                icon="fa-check-square-o">
+                                icon="check_box">
                             <field name="progress_count" widget="statinfo" string="Avances"/>
                         </button>
                     </div>
@@ -214,11 +214,11 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_deliveries" type="object" class="oe_stat_button"
-                                icon="fa-truck">
+                                icon="local_shipping">
                             <field name="delivery_count" widget="statinfo" string="Entregas"/>
                         </button>
                         <button name="action_view_invoice" type="object" class="oe_stat_button"
-                                icon="fa-file-text-o" string="Factura" invisible="not invoice_id"
+                                icon="article" string="Factura" invisible="not invoice_id"
                                 groups="account.group_account_invoice"/>
                     </div>
                     <div class="oe_title">
@@ -378,13 +378,13 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_deliveries" type="object"
-                        class="oe_stat_button" icon="fa-truck"
+                        class="oe_stat_button" icon="local_shipping"
                         invisible="not is_construction_site or not construction_delivery_count"
                         groups="al_construction_planner.group_planner_user">
                     <field name="construction_delivery_count" widget="statinfo" string="Entregas"/>
                 </button>
                 <button name="action_view_construction_valuations" type="object"
-                        class="oe_stat_button" icon="fa-handshake-o"
+                        class="oe_stat_button" icon="handshake"
                         invisible="not is_construction_site or not construction_valuation_count"
                         groups="al_construction_planner.group_planner_user">
                     <field name="construction_valuation_count" widget="statinfo" string="Valorizaciones"/>
@@ -439,7 +439,7 @@
                         <h5 class="mb-0">Valorizaciones previstas</h5>
                         <button name="action_construction_prepare_valuation" type="object"
                                 string="Preparar valorización" class="btn-secondary btn-sm"
-                                icon="fa-plus" invisible="not construction_sale_order_id"/>
+                                icon="add" invisible="not construction_sale_order_id"/>
                     </div>
                     <field name="construction_valuation_forecast_html" nolabel="1" readonly="1"/>
                 </page>

@@ -191,7 +191,7 @@
         color: var(--alpt-text);
     }
 
-    .oi-chevron-right {
+    [data-icon='chevron_forward'] {
         color: var(--alpt-text-muted);
     }
 }
@@ -258,7 +258,7 @@
 }
 
 // Ícono ✖ para limpiar campos (componente Input del PdV): atenuado.
-.pos .input-container .fa-times {
+.pos .input-container [data-icon='close'] {
     color: var(--alpt-text-muted);
     font-size: 13px;
     cursor: pointer;
@@ -349,7 +349,7 @@
     }
 
     // Flecha ← (cerrar): botón cuadrado suave, como "Volver" del pago.
-    .modal-header .oi-arrow-left {
+    .modal-header [data-icon='west'] {
         width: 36px;
         height: 36px;
         padding: 0;

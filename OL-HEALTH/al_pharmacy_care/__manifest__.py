@@ -33,10 +33,9 @@ Entrega E5 de las mejoras (docs/farmacia/MEJORAS_PROCESOS.md).
     'license': 'OPL-1',
     'depends': ['al_pharmacy_prescription', 'al_pharmacy_pos', 'sale'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/pharmacy_care_security.xml',
         'data/pharmacy_care_data.xml',
         'views/pharmacy_treatment_views.xml',
+        'security/ir.access.csv',
     ],
     'demo': ['demo/pharmacy_care_demo.xml'],
     'assets': {

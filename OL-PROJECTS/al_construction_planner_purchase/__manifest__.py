@@ -24,8 +24,6 @@ Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de comp
     'data': [
         'views/exceed_wizard_views.xml',
         'security/planner_groups.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'data/tier_definition_data.xml',
         'wizards/plan_price_wizard_views.xml',
         'wizards/plan_supply_wizard_views.xml',
@@ -36,6 +34,7 @@ Compra masiva, requerimiento de obra, abastecimiento de la obra, precios de comp
         'views/menus.xml',
         'views/material_request_scope_views.xml',
         'views/construction_board_views.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

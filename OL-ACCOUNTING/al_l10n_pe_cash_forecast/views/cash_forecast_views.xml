@@ -11,7 +11,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="fa-bar-chart"
+                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="bar_chart"
                                 string="Análisis"/>
                     </div>
                     <div class="oe_title"><h1><field name="name"/></h1></div>
@@ -71,7 +71,7 @@
                                     <field name="date_expected"/>
                                     <field name="amount" sum="Neto"/>
                                     <field name="is_edited" optional="show"/>
-                                    <button name="action_reset" type="object" icon="fa-undo" title="Quitar el ajuste"
+                                    <button name="action_reset" type="object" icon="undo" title="Quitar el ajuste"
                                             invisible="not is_edited or category == 'manual'"/>
                                 </list>
                             </field>

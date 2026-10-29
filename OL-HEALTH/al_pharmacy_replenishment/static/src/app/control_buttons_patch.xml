@@ -4,7 +4,7 @@
         <xpath expr="//div[hasclass('control-buttons-modal')]" position="inside">
             <button class="o_pharmacy_shortage_button" t-att-class="buttonClass"
                     t-on-click="() => this.clickPharmacyShortage()">
-                <i class="fa fa-question-circle me-1" role="img" aria-label="Faltante" title="Faltante"/>
+                <i class="oi oi-filled me-1" data-icon="help" role="img" aria-label="Faltante" title="Faltante"/>
                 Faltante
             </button>
         </xpath>

@@ -65,8 +65,6 @@ a PDF y XLSX con las herramientas estándar.
         'al_account_base',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/l10n_pe_closing_rule_security.xml',
         'data/l10n_pe_closing_rule_data.xml',
         'data/report_equity_changes.xml',
         'data/report_worksheet.xml',
@@ -75,6 +73,7 @@ a PDF y XLSX con las herramientas estándar.
         'views/l10n_pe_closing_rule_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

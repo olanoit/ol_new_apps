@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+access_exchange_closure_user,l10n_pe.exchange.closure user,l10n_pe.exchange.closure,account.group_account_user,cru,
+access_exchange_closure_manager,l10n_pe.exchange.closure manager,l10n_pe.exchange.closure,account.group_account_manager,crud,
+access_exchange_closure_readonly,l10n_pe.exchange.closure readonly,l10n_pe.exchange.closure,account.group_account_readonly,r,
+rule_exchange_closure_company,Cierre de tipo de cambio: multicompañía,l10n_pe.exchange.closure,,crud,"[('company_id', 'in', company_ids)]"
+access_exchange_closure_line_user,l10n_pe.exchange.closure.line user,l10n_pe.exchange.closure.line,account.group_account_user,crud,
+access_exchange_closure_line_readonly,l10n_pe.exchange.closure.line readonly,l10n_pe.exchange.closure.line,account.group_account_readonly,r,
+rule_exchange_closure_line_company,Detalle del cierre de tipo de cambio: multicompañía,l10n_pe.exchange.closure.line,,crud,"[('company_id', 'in', company_ids)]"

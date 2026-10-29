@@ -21,12 +21,12 @@
                 <t t-set="all_lines" t-value="o._notice_lines()"/>
                 <t t-foreach="all_lines.partner_id" t-as="customer">
                     <t t-set="lines" t-value="all_lines.filtered(lambda l: l.partner_id == customer)"/>
-                    <t t-call="al_report_base.report_pe_page">
-                        <t t-set="company" t-value="o.company_id"/>
-                        <t t-set="doc_title" t-value="'Notificación de transferencia'"/>
-                        <t t-set="doc_number" t-value="o.name"/>
-                        <t t-set="doc_extra" t-value="o.date.strftime('%d/%m/%Y')"/>
-                        <t t-set="page_class" t-value="'pe-doc-text'"/>
+                    <t t-call="al_report_base.report_pe_page"
+                        company="o.company_id"
+                        doc_title.f="Notificación de transferencia"
+                        doc_number="o.name"
+                        doc_extra="o.date.strftime('%d/%m/%Y')"
+                        page_class.f="pe-doc-text">
                         <table class="pe-doc-table mb-3">
                             <tr>
                                 <td class="pe-doc-label">Señores</td>

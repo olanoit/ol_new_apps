@@ -86,10 +86,10 @@
         <t t-set="project" t-value="o.project_id"/>
         <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
         <t t-set="money" t-value="{'widget': 'monetary', 'display_currency': cur}"/>
-        <t t-call="al_report_base.report_pe_page">
-            <t t-set="doc_title" t-value="o.title or o.name"/>
-            <t t-set="doc_number" t-value="o.name"/>
-            <t t-set="doc_extra" t-value="order.name"/>
+        <t t-call="al_report_base.report_pe_page"
+            doc_title="o.title or o.name"
+            doc_number="o.name"
+            doc_extra="order.name">
 
             <!-- Datos de la obra, del contratista y del periodo -->
             <t t-set="site" t-value="project.partner_id"/>
@@ -123,16 +123,14 @@
                 </tr>
             </table>
 
-            <t t-call="al_construction_planner_subcontract.report_contract_valuation_lines">
-                <t t-set="groups" t-value="o._report_groups()"/>
-            </t>
+            <t t-call="al_construction_planner_subcontract.report_contract_valuation_lines"
+                groups="o._report_groups()"/>
 
             <t t-set="additional_groups" t-value="o._report_groups(additional=True)"/>
             <t t-if="additional_groups">
                 <div class="pe-doc-section">Adicionales</div>
-                <t t-call="al_construction_planner_subcontract.report_contract_valuation_lines">
-                    <t t-set="groups" t-value="additional_groups"/>
-                </t>
+                <t t-call="al_construction_planner_subcontract.report_contract_valuation_lines"
+                    groups="additional_groups"/>
             </t>
 
             <!-- Resumen del periodo con el esquema de cálculo -->
@@ -192,9 +190,7 @@
                 </tbody>
             </table>
 
-            <t t-call="al_report_base.report_pe_sign_boxes">
-                <t t-set="sign_boxes" t-value="o._construction_sign_boxes()"/>
-            </t>
+            <t t-call="al_report_base.report_pe_sign_boxes" sign_boxes="o._construction_sign_boxes()"/>
         </t>
     </template>
 

@@ -34,11 +34,10 @@ Entrega E10 de las mejoras (docs/farmacia/MEJORAS_PROCESOS.md).
     'license': 'OPL-1',
     'depends': ['al_pharmacy_pos', 'account', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/pharmacy_insurance_security.xml',
         'data/pharmacy_insurance_data.xml',
         'report/liquidation_report.xml',
         'views/pharmacy_insurance_views.xml',
+        'security/ir.access.csv',
     ],
     'demo': ['demo/pharmacy_insurance_demo.xml'],
     'assets': {

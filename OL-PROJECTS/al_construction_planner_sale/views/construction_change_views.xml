@@ -35,7 +35,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_plan_lines" type="object" class="oe_stat_button" icon="fa-list" invisible="state != 'approved'" string="Líneas del plan"/>
+                        <button name="action_view_plan_lines" type="object" class="oe_stat_button" icon="format_list_bulleted" invisible="state != 'approved'" string="Líneas del plan"/>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>

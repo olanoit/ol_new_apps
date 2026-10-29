@@ -9,20 +9,20 @@
         <div class="o_cp_schedule_toolbar d-flex flex-wrap align-items-center gap-2">
             <label class="fw-bold mb-0" for="o_cp_schedule_plan">Plan:</label>
             <select id="o_cp_schedule_plan" class="form-select form-select-sm w-auto o_cp_schedule_plan"
-                    t-on-change="onPlanChange">
-                <option t-if="!schedule.plans.length" value="">Sin planes</option>
-                <t t-foreach="schedule.plans" t-as="plan" t-key="plan.id">
-                    <option t-att-value="plan.id" t-att-selected="plan.id === schedule.planId"
-                            t-esc="plan.display_name"/>
+                    t-on-change="this.onPlanChange">
+                <option t-if="!this.schedule.plans.length" value="">Sin planes</option>
+                <t t-foreach="this.schedule.plans" t-as="plan" t-key="plan.id">
+                    <option t-att-value="plan.id" t-att-selected="plan.id === this.schedule.planId"
+                            t-out="plan.display_name"/>
                 </t>
             </select>
             <div class="btn-group btn-group-sm" role="group">
                 <button type="button" class="btn btn-outline-secondary o_cp_rows_stages"
-                        t-att-class="schedule.rows === 'stages' ? 'active' : ''"
+                        t-att-class="this.schedule.rows === 'stages' ? 'active' : ''"
                         title="Pisos, departamentos y ambientes con sus etapas"
                         t-on-click="() => this.onRowsChange('stages')">Etapas</button>
                 <button type="button" class="btn btn-outline-secondary o_cp_rows_tasks"
-                        t-att-class="schedule.rows === 'tasks' ? 'active' : ''"
+                        t-att-class="this.schedule.rows === 'tasks' ? 'active' : ''"
                         title="Las tareas de la obra"
                         t-on-click="() => this.onRowsChange('tasks')">Tareas</button>
             </div>
@@ -30,64 +30,64 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
                         data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
                         title="Solo esas etapas: las filas, la selección y la carga semanal">
-                    <i class="fa fa-filter me-1"/><t t-esc="stageFilterLabel"/>
+                    <i class="oi oi-filled me-1" data-icon="filter_alt"/><t t-out="this.stageFilterLabel"/>
                 </button>
                 <div class="dropdown-menu p-2 o_cp_stage_tree">
                     <div class="dropdown-item o_cp_stage_all" t-on-click.stop="() => this.clearStages()">
-                        <span t-att-class="'o_cp_check o_cp_' + (schedule.stages.length ? 'off' : 'on')"/>
+                        <span t-att-class="'o_cp_check o_cp_' + (this.schedule.stages.length ? 'off' : 'on')"/>
                         Todas las etapas
                     </div>
-                    <t t-foreach="schedule.stageTree" t-as="node" t-key="node.code">
-                        <t t-set="ss" t-value="stageState(node)"/>
+                    <t t-foreach="this.schedule.stageTree" t-as="node" t-key="node.code">
+                        <t t-set="ss" t-value="this.stageState(node)"/>
                         <div class="dropdown-item d-flex align-items-center o_cp_stage_node"
                              t-att-data-code="node.code"
                              t-att-style="'padding-left:' + (16 + node.depth * 16) + 'px'"
                              t-on-click.stop="() => this.toggleStage(node)">
                             <span t-att-class="'o_cp_check o_cp_' + ss" role="checkbox"
                                   t-att-aria-checked="ss === 'on' ? 'true' : (ss === 'part' ? 'mixed' : 'false')"/>
-                            <span t-att-class="node.leaf ? '' : 'fw-bold'" t-esc="node.label"/>
+                            <span t-att-class="node.leaf ? '' : 'fw-bold'" t-out="node.label"/>
                         </div>
                     </t>
                 </div>
             </div>
             <div class="btn-group btn-group-sm">
                 <button type="button" class="btn btn-outline-secondary"
-                        t-att-class="schedule.showPanel ? 'active' : ''"
+                        t-att-class="this.schedule.showPanel ? 'active' : ''"
                         title="Recursos de la selección"
                         t-on-click="() => this.togglePanel()">
-                    <i class="fa fa-columns"/>
+                    <i class="oi" data-icon="view_column"/>
                 </button>
-                <button t-if="showAmounts" type="button" class="btn btn-outline-secondary"
-                        t-att-class="schedule.showLoad ? 'active' : ''"
+                <button t-if="this.showAmounts" type="button" class="btn btn-outline-secondary"
+                        t-att-class="this.schedule.showLoad ? 'active' : ''"
                         title="Carga semanal por contrata y etapa"
                         t-on-click="() => this.toggleLoad()">
-                    <i class="fa fa-bar-chart"/>
+                    <i class="oi" data-icon="bar_chart"/>
                 </button>
             </div>
         </div>
     </t>
 
     <t t-name="al_construction_planner.SchedulePanel">
-        <aside class="o_cp_schedule_panel border-start p-2" t-if="schedule.showPanel">
+        <aside class="o_cp_schedule_panel border-start p-2" t-if="this.schedule.showPanel">
             <h6 class="mb-2">Recursos de la selección</h6>
-            <p class="text-muted small" t-if="!schedule.planId">
+            <p class="text-muted small" t-if="!this.schedule.planId">
                 La obra no tiene plan de recursos: genérelo para ver sus etapas.
             </p>
-            <p class="text-muted small" t-elif="!schedule.summary">
+            <p class="text-muted small" t-elif="!this.schedule.summary">
                 Marque pisos, ambientes o etapas en la primera columna.
             </p>
             <t t-else="">
                 <div class="o_cp_schedule_summary small mb-2">
-                    <div><span class="o_cp_summary_modules" t-esc="schedule.summary.modules"/>
-                        <t t-esc="schedule.terms.details.toLowerCase()"/>
-                        <t t-if="schedule.terms.show_ml"> · <t t-esc="schedule.summary.ml"/> ML</t></div>
-                    <div t-if="showAmounts">Material S/ <t t-esc="fmt(schedule.summary.material)"/> ·
-                        contrata S/ <t t-esc="fmt(schedule.summary.contract)"/></div>
-                    <div>Avance <t t-esc="pct(schedule.summary.progress)"/></div>
+                    <div><span class="o_cp_summary_modules" t-out="this.schedule.summary.modules"/>
+                        <t t-out="this.schedule.terms.details.toLowerCase()"/>
+                        <t t-if="this.schedule.terms.show_ml"> · <t t-out="this.schedule.summary.ml"/> ML</t></div>
+                    <div t-if="this.showAmounts">Material S/ <t t-out="this.fmt(this.schedule.summary.material)"/> ·
+                        contrata S/ <t t-out="this.fmt(this.schedule.summary.contract)"/></div>
+                    <div>Avance <t t-out="this.pct(this.schedule.summary.progress)"/></div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button class="btn btn-link btn-sm p-0 o_cp_panel_by_stage" t-on-click="() => this.togglePanelByStage()">
-                        <t t-if="schedule.panelByStage">Sin etapas</t><t t-else="">Por etapa</t>
+                        <t t-if="this.schedule.panelByStage">Sin etapas</t><t t-else="">Por etapa</t>
                     </button>
                 </div>
                 <!-- Por tipo de recurso con subtotales (v1.8, M18-03). -->
@@ -95,33 +95,33 @@
                     <thead>
                         <tr>
                             <th>Recurso</th>
-                            <th t-if="showAmounts" class="text-end">Plan S/</th>
+                            <th t-if="this.showAmounts" class="text-end">Plan S/</th>
                             <th class="text-end">Avance</th>
                         </tr>
                     </thead>
-                    <t t-foreach="schedule.summary.groups" t-as="group" t-key="group.type_id or group_index">
+                    <t t-foreach="this.schedule.summary.groups" t-as="group" t-key="group.type_id or group_index">
                         <tbody class="o_cp_panel_group" t-att-data-type="group.resource_type">
                             <tr class="table-light fw-bold o_cp_panel_group_row">
-                                <td><t t-esc="group.name"/>
-                                    <span class="text-muted small fw-normal"> · <t t-esc="fmt(group.qty)"/></span></td>
-                                <td t-if="showAmounts" class="text-end o_cp_panel_group_total" t-esc="fmt(group.amount)"/>
+                                <td><t t-out="group.name"/>
+                                    <span class="text-muted small fw-normal"> · <t t-out="this.fmt(group.qty)"/></span></td>
+                                <td t-if="this.showAmounts" class="text-end o_cp_panel_group_total" t-out="this.fmt(group.amount)"/>
                                 <td/>
                             </tr>
-                            <t t-if="schedule.panelByStage">
+                            <t t-if="this.schedule.panelByStage">
                                 <t t-foreach="group.stages" t-as="stage" t-key="stage.stage or stage_index">
                                     <tr class="fw-bold text-muted">
-                                        <td class="ps-2" t-esc="stage.label"/>
-                                        <td t-if="showAmounts" class="text-end" t-esc="fmt(stage.amount)"/>
+                                        <td class="ps-2" t-out="stage.label"/>
+                                        <td t-if="this.showAmounts" class="text-end" t-out="this.fmt(stage.amount)"/>
                                         <td/>
                                     </tr>
                                     <t t-foreach="stage.resources" t-as="resource" t-key="resource_index">
                                         <tr>
                                             <td class="ps-3">
-                                                <div t-esc="resource.name"/>
-                                                <div class="text-muted small" t-if="resource.partners" t-esc="resource.partners"/>
+                                                <div t-out="resource.name"/>
+                                                <div class="text-muted small" t-if="resource.partners" t-out="resource.partners"/>
                                             </td>
-                                            <td t-if="showAmounts" class="text-end" t-esc="fmt(resource.amount)"/>
-                                            <td class="text-end" t-esc="resourceProgress(resource)"/>
+                                            <td t-if="this.showAmounts" class="text-end" t-out="this.fmt(resource.amount)"/>
+                                            <td class="text-end" t-out="this.resourceProgress(resource)"/>
                                         </tr>
                                     </t>
                                 </t>
@@ -130,11 +130,11 @@
                                 <t t-foreach="group.resources" t-as="resource" t-key="resource_index">
                                     <tr>
                                         <td class="ps-2">
-                                            <div t-esc="resource.name"/>
-                                            <div class="text-muted small" t-if="resource.partners" t-esc="resource.partners"/>
+                                            <div t-out="resource.name"/>
+                                            <div class="text-muted small" t-if="resource.partners" t-out="resource.partners"/>
                                         </td>
-                                        <td t-if="showAmounts" class="text-end" t-esc="fmt(resource.amount)"/>
-                                        <td class="text-end" t-esc="resourceProgress(resource)"/>
+                                        <td t-if="this.showAmounts" class="text-end" t-out="this.fmt(resource.amount)"/>
+                                        <td class="text-end" t-out="this.resourceProgress(resource)"/>
                                     </tr>
                                 </t>
                             </t>
@@ -143,7 +143,7 @@
                     <tfoot>
                         <tr>
                             <th>Total de la selección</th>
-                            <th t-if="showAmounts" class="text-end o_cp_schedule_total" t-esc="fmt(schedule.summary.total)"/>
+                            <th t-if="this.showAmounts" class="text-end o_cp_schedule_total" t-out="this.fmt(this.schedule.summary.total)"/>
                             <th/>
                         </tr>
                     </tfoot>
@@ -153,14 +153,14 @@
     </t>
 
     <t t-name="al_construction_planner.ScheduleLoad">
-        <div class="o_cp_schedule_load border-top" t-if="schedule.showLoad and schedule.load">
+        <div class="o_cp_schedule_load border-top" t-if="this.schedule.showLoad and this.schedule.load">
             <div class="d-flex flex-wrap align-items-baseline gap-2 px-2 pt-1">
                 <span class="fw-bold">Carga semanal</span>
                 <span class="text-muted small">
                     Contratas y personal propio por semana, repartidos entre los días hábiles de cada etapa.
                 </span>
             </div>
-            <p class="text-muted small px-2 mb-1" t-if="!schedule.load.rows.length">
+            <p class="text-muted small px-2 mb-1" t-if="!this.schedule.load.rows.length">
                 Sin montos de contratas ni personal propio en las etapas del cronograma.
             </p>
             <div class="table-responsive" t-else="">
@@ -168,32 +168,32 @@
                     <thead>
                         <tr>
                             <th>Contrata · etapa</th>
-                            <t t-foreach="schedule.load.weeks" t-as="week" t-key="week">
-                                <th class="text-end" t-esc="weekLabel(week)"/>
+                            <t t-foreach="this.schedule.load.weeks" t-as="week" t-key="week">
+                                <th class="text-end" t-out="this.weekLabel(week)"/>
                             </t>
                             <th class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-foreach="schedule.load.rows" t-as="row" t-key="row_index">
+                        <t t-foreach="this.schedule.load.rows" t-as="row" t-key="row_index">
                             <tr>
                                 <td t-att-class="row.unassigned ? 'text-warning' : ''">
-                                    <t t-esc="row.label"/> · <t t-esc="row.stage_label"/>
+                                    <t t-out="row.label"/> · <t t-out="row.stage_label"/>
                                 </td>
                                 <t t-foreach="row.values" t-as="value" t-key="value_index">
-                                    <td class="text-end" t-esc="value ? fmt(value) : '—'"/>
+                                    <td class="text-end" t-out="value ? this.fmt(value) : '—'"/>
                                 </t>
-                                <td class="text-end fw-bold" t-esc="fmt(row.total)"/>
+                                <td class="text-end fw-bold" t-out="this.fmt(row.total)"/>
                             </tr>
                         </t>
                     </tbody>
                     <tfoot>
                         <tr>
                             <th>Total</th>
-                            <t t-foreach="schedule.load.totals" t-as="value" t-key="value_index">
-                                <th class="text-end" t-esc="fmt(value)"/>
+                            <t t-foreach="this.schedule.load.totals" t-as="value" t-key="value_index">
+                                <th class="text-end" t-out="this.fmt(value)"/>
                             </t>
-                            <th class="text-end o_cp_load_total" t-esc="fmt(schedule.load.total)"/>
+                            <th class="text-end o_cp_load_total" t-out="this.fmt(this.schedule.load.total)"/>
                         </tr>
                     </tfoot>
                 </table>

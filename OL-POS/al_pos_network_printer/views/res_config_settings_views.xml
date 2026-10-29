@@ -47,7 +47,7 @@
                          usa el widget nativo, para que se vea igual. -->
                     <!--                    <a href="/al_pos_network_printer/static/description/index.html"-->
                     <!--                       title="Documentación" target="_blank" class="o_doc_link me-2">-->
-                    <!--                        <i class="fa fa-external-link" aria-hidden="true"/>-->
+                    <!--                        <i class="oi" data-icon="open_in_new" aria-hidden="true"/>-->
                     <!--                        <span>Ver documentación completa</span>-->
                     <!--                    </a>-->
                     <div class="content-group" invisible="not pos_escpos_network_printer_enabled">
@@ -100,7 +100,7 @@
                                         type="object"
                                         string="Probar impresora"
                                         class="btn-secondary w-100"
-                                        icon="fa-print"/>
+                                        icon="print"/>
                             </div>
                         </div>
 
@@ -204,7 +204,7 @@
                                             type="object"
                                             string="Regenerar canal"
                                             class="btn-link"
-                                            icon="fa-refresh"
+                                            icon="refresh"
                                             confirm="Cualquier agente conectado con el canal actual va a dejar de recibir los comprobantes del backend hasta que se reconfigure con el nuevo valor. ¿Continuar?"/>
                                 </div>
                             </div>

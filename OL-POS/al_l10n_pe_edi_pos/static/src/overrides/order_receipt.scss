@@ -194,8 +194,8 @@
 .alpe-serie-chip {
     white-space: nowrap;
 
-    .fa-star,
-    .fa-star-o {
+    [data-icon='star'].oi-filled,
+    [data-icon='star']:not(.oi-filled) {
         cursor: pointer;
     }
 }

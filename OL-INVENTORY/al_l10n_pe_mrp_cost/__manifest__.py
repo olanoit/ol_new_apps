@@ -28,8 +28,6 @@ Costeo de órdenes de fabricación (Perú)
     'depends': ['mrp_workorder', 'mrp_landed_costs', 'hr_hourly_cost', 'al_hr_pe'],
     'external_dependencies': {'python': ['openpyxl']},
     'data': [
-        'security/ir.model.access.csv',
-        'security/mrp_cost_security.xml',
         'data/product_data.xml',
         'views/l10n_pe_mrp_labor_rate_views.xml',
         'views/l10n_pe_mrp_cost_pool_views.xml',
@@ -38,6 +36,7 @@ Costeo de órdenes de fabricación (Perú)
         'wizards/l10n_pe_mrp_timesheet_import_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

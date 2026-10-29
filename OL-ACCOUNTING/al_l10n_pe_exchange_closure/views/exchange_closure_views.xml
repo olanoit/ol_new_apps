@@ -29,7 +29,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_move" type="object"
-                                class="oe_stat_button" icon="fa-book"
+                                class="oe_stat_button" icon="book"
                                 invisible="not move_id">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">Asiento</span>
@@ -121,7 +121,7 @@
                                            options="{'account_field': 'account_id'}"
                                            optional="show"/>
                                     <button name="action_open_move_lines"
-                                            type="object" icon="fa-search"
+                                            type="object" icon="search"
                                             title="Ver apuntes"/>
                                 </list>
                             </field>

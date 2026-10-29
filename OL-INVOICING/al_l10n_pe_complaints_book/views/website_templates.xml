@@ -3,8 +3,7 @@
 
     <!-- Ícono del Anexo III: libro abierto con el rótulo «Libro de Reclamaciones». -->
     <template id="complaint_book_icon">
-        <svg class="lr-icon" viewBox="0 0 64 48" width="40" height="30" aria-hidden="true"
-             xmlns="http://www.w3.org/2000/svg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="lr-icon" viewBox="0 0 64 48" width="40" height="30" aria-hidden="true">
             <path d="M32 9 C24 3 12 3 4 6 V44 C12 41 24 41 32 47 C40 41 52 41 60 44 V6 C52 3 40 3 32 9 Z"
                   fill="#fff" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
             <path d="M32 9 V47" stroke="currentColor" stroke-width="3"/>
@@ -32,8 +31,7 @@
     </template>
 
     <template id="complaint_form_page" name="Libro de reclamaciones">
-        <t t-call="website.layout">
-            <t t-set="additional_title">Libro de Reclamaciones</t>
+        <t t-call="website.layout" additional_title.translate="Libro de Reclamaciones">
             <div id="wrap" class="o_l10n_pe_complaints_book">
                 <div class="container py-4 lr-container">
                     <div class="d-flex align-items-center gap-3 mb-2">
@@ -82,7 +80,7 @@
                                     <input id="lr_name" name="consumer_name" required="required"
                                            t-att-value="values.get('consumer_name')" maxlength="150"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('consumer_name') else ''}"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_name'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="consumer_name"/>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label" for="lr_doc_type">Documento <span class="text-danger">*</span></label>
@@ -99,14 +97,14 @@
                                     <input id="lr_doc_number" name="consumer_doc_number" required="required" maxlength="20"
                                            t-att-value="values.get('consumer_doc_number')"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('consumer_doc_number') else ''}"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_doc_number'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="consumer_doc_number"/>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label" for="lr_address">Domicilio</label>
                                     <input id="lr_address" name="consumer_address" maxlength="200"
                                            t-att-value="values.get('consumer_address')"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('consumer_address') else ''}"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_address'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="consumer_address"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="lr_phone">Teléfono</label>
@@ -119,7 +117,7 @@
                                            t-att-value="values.get('consumer_email')"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('consumer_email') else ''}"/>
                                     <div class="form-text">Le enviaremos la constancia con la hoja de reclamación.</div>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_email'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="consumer_email"/>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-check">
@@ -135,7 +133,7 @@
                                     <input id="lr_guardian_name" name="guardian_name" maxlength="150"
                                            t-att-value="values.get('guardian_name')"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('guardian_name') else ''}"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'guardian_name'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="guardian_name"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="lr_guardian_doc">Documento del representante</label>
@@ -181,7 +179,7 @@
                                     <input id="lr_amount" name="amount_claimed" inputmode="decimal" maxlength="15"
                                            t-att-value="values.get('amount_claimed')"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('amount_claimed') else ''}"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'amount_claimed'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="amount_claimed"/>
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label" for="lr_good_description">Descripción</label>
@@ -219,14 +217,14 @@
                                     <textarea id="lr_detail" name="detail" rows="5" required="required" maxlength="4000"
                                               t-attf-class="form-control #{'is-invalid' if errors.get('detail') else ''}"
                                               t-out="values.get('detail') or ''"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'detail'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="detail"/>
                                 </div>
                                 <div class="col-md-12">
                                     <label class="form-label" for="lr_request">Pedido <span class="text-danger">*</span></label>
                                     <textarea id="lr_request" name="consumer_request" rows="3" maxlength="4000"
                                               t-attf-class="form-control #{'is-invalid' if errors.get('consumer_request') else ''}"
                                               t-out="values.get('consumer_request') or ''"/>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_request'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="consumer_request"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="lr_attachments">Adjuntos (opcional)</label>
@@ -234,7 +232,7 @@
                                            accept=".pdf,.jpg,.jpeg,.png"
                                            t-attf-class="form-control #{'is-invalid' if errors.get('attachments') else ''}"/>
                                     <div class="form-text">Hasta 3 archivos PDF, JPG o PNG de 5 MB.</div>
-                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'attachments'"/></t>
+                                    <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="attachments"/>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="lr_channel">Deseo la respuesta por</label>
@@ -251,7 +249,7 @@
                                    type="checkbox" id="lr_confirm" name="consumer_confirmed" required="required"/>
                             <label class="form-check-label" for="lr_confirm">
                                 Confirmo que los datos son correctos y presento esta hoja de reclamación.</label>
-                            <t t-call="al_l10n_pe_complaints_book.complaint_field_error"><t t-set="field" t-value="'consumer_confirmed'"/></t>
+                            <t t-call="al_l10n_pe_complaints_book.complaint_field_error" field.f="consumer_confirmed"/>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg">Enviar hoja de reclamación</button>
 
@@ -269,8 +267,7 @@
     </template>
 
     <template id="complaint_status_page" name="Hoja de reclamación">
-        <t t-call="website.layout">
-            <t t-set="additional_title">Hoja de reclamación</t>
+        <t t-call="website.layout" additional_title.translate="Hoja de reclamación">
             <div id="wrap" class="o_l10n_pe_complaints_book">
                 <div class="container py-4 lr-container">
                     <div class="d-flex align-items-center gap-3 mb-3">
@@ -305,7 +302,7 @@
                         <div class="border rounded p-3 lr-pre" t-out="complaint.provider_observations"/>
                     </div>
                     <a class="btn btn-primary" t-attf-href="/libro-reclamaciones/hoja/#{complaint.id}/pdf?access_token=#{access_token}">
-                        <i class="fa fa-download me-1" title="Descargar"/>Descargar o imprimir la hoja (PDF)
+                        <i class="oi me-1" data-icon="download" title="Descargar"/>Descargar o imprimir la hoja (PDF)
                     </a>
                     <p class="small text-muted mt-3">Guarde este enlace para consultar el estado de su hoja.</p>
                 </div>

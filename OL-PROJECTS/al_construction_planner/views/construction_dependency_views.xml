@@ -34,7 +34,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_stages" type="object" class="oe_stat_button" icon="fa-ban">
+                        <button name="action_view_stages" type="object" class="oe_stat_button" icon="block">
                             <field name="stage_count" widget="statinfo" string="Etapas bloqueadas"/>
                         </button>
                     </div>

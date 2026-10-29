@@ -28,12 +28,11 @@ planificados contra ejecutados por obra, etapa y sub etapa.
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'project_forecast', 'hr_timesheet'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'wizards/plan_crew_wizard_views.xml',
         'views/crew_views.xml',
         'views/crew_day_views.xml',
         'views/construction_board_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

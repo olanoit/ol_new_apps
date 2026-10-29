@@ -158,7 +158,7 @@
                             class="btn-primary" invisible="not plan_id or not product_id"
                             data-hotkey="q"/>
                     <button name="action_refresh" type="object" string="Actualizar"
-                            icon="fa-refresh"/>
+                            icon="refresh"/>
                     <button string="Cerrar" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
@@ -208,7 +208,7 @@
                         <field name="price_last"/>
                         <field name="currency_id" column_invisible="1"/>
                         <button name="action_use_product" type="object" string="Usar este"
-                                icon="fa-check" column_invisible="not parent.plan_line_id"/>
+                                icon="check" column_invisible="not parent.plan_line_id"/>
                     </list>
                 </field>
                 <p class="text-muted small">

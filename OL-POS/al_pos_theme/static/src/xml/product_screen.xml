@@ -41,7 +41,7 @@
             <attribute name="class" remove="object-fit-cover bg-200" add="object-fit-contain alpt-product-img" separator=" "/>
         </xpath>
         <xpath expr="//div[hasclass('product-name')]" position="after">
-            <span t-if="!props.isComboPopup and alptPriceLabel" class="alpt-product-price" t-esc="alptPriceLabel"/>
+            <span t-if="!props.isComboPopup and alptPriceLabel" class="alpt-product-price" t-out="alptPriceLabel"/>
         </xpath>
     </t>
 

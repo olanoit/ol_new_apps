@@ -1,8 +1,8 @@
 /** @odoo-module **/
 
-import { Component, useState } from "@odoo/owl";
+import { Component, proxy, usePlugin } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { useService } from "@web/core/utils/hooks";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { usePos } from "@point_of_sale/app/hooks/pos_hook";
 
 /**
@@ -25,8 +25,8 @@ export class PosTagSelector extends Component {
 
     setup() {
         this.pos = usePos();
-        this.notification = useService("notification");
-        this.state = useState({ refreshing: false });
+        this.notification = usePlugin(NotificationPlugin);
+        this.state = proxy({ refreshing: false });
         // Campo de instancia plano (los componentes no son deep-reactive):
         // solo caché.
         this._tagCache = { templateCount: -1, version: -1, tags: [] };

@@ -1,0 +1,10 @@
+id,name,model_id,group_id/id,operation,domain
+access_pharmacy_controlled_report_pharmacist,pharmacy.controlled.report químico farmacéutico,pharmacy.controlled.report,al_pharmacy_base.group_pharmacy_pharmacist,crud,
+access_pharmacy_controlled_book_register_pharmacist,pharmacy.controlled.book.register químico farmacéutico,pharmacy.controlled.book.register,al_pharmacy_base.group_pharmacy_pharmacist,r,
+access_pharmacy_controlled_book_register_director,pharmacy.controlled.book.register director técnico,pharmacy.controlled.book.register,al_pharmacy_base.group_pharmacy_director,crud,
+pharmacy_controlled_book_register_comp_rule,Libro oficial de controlados: multicompañía,pharmacy.controlled.book.register,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_controlled_balance_pharmacist,pharmacy.controlled.balance químico farmacéutico,pharmacy.controlled.balance,al_pharmacy_base.group_pharmacy_pharmacist,cru,
+access_pharmacy_controlled_balance_director,pharmacy.controlled.balance director técnico,pharmacy.controlled.balance,al_pharmacy_base.group_pharmacy_director,crud,
+pharmacy_controlled_balance_comp_rule,Balance de controlados: multicompañía,pharmacy.controlled.balance,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_controlled_balance_line_pharmacist,pharmacy.controlled.balance.line químico farmacéutico,pharmacy.controlled.balance.line,al_pharmacy_base.group_pharmacy_pharmacist,crud,
+pharmacy_controlled_balance_line_comp_rule,Producto del balance de controlados: multicompañía,pharmacy.controlled.balance.line,,crud,"[('company_id', 'in', company_ids)]"

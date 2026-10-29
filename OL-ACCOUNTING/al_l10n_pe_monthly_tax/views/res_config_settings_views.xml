@@ -28,7 +28,7 @@
                             <field name="l10n_pe_tax_uit_amount"/>
                         </div>
                         <div class="mt8">
-                            <button name="%(action_l10n_pe_tax_regime)d" type="action" icon="oi-arrow-right"
+                            <button name="%(action_l10n_pe_tax_regime)d" type="action" icon="east"
                                     string="Régimen tributario" class="btn-link p-0"/>
                         </div>
                     </setting>

@@ -40,8 +40,6 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     ],
     'data': [
         'security/construction_groups.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'data/mail_templates.xml',
         'data/tier_definition_data.xml',
@@ -53,6 +51,7 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
         'views/purchase_request_views.xml',
         'views/res_config_settings_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'demo': [
         'demo/construction_demo.xml',

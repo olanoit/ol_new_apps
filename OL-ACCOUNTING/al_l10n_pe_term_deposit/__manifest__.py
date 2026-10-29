@@ -41,8 +41,6 @@ moneda. Además:
     'countries': ['pe'],
     'depends': ['account', 'l10n_pe', 'al_account_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/term_deposit_security.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'views/term_deposit_views.xml',
@@ -51,6 +49,7 @@ moneda. Además:
         'views/res_config_settings_views.xml',
         'views/menu.xml',
         'data/term_deposit_data.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_term_deposit_demo.xml'],

@@ -22,7 +22,7 @@
                     <button name="action_open_letter"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-pencil-square-o"
+                            icon="edit_square"
                             invisible="l10n_pe_letter_redeemed_state == 'not_redeemed' or not l10n_pe_letter_id">
                         <field name="l10n_pe_letter_name" widget="statinfo" string="Canje"/>
                     </button>
@@ -31,7 +31,7 @@
                     <button name="action_open_letters"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-pencil-square-o"
+                            icon="edit_square"
                             invisible="not l10n_pe_letter_ids">
                         <field name="l10n_pe_letter_count" widget="statinfo" string="Canjes"/>
                     </button>

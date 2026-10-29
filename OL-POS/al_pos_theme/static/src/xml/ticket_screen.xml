@@ -17,10 +17,10 @@
         <!-- Total de cada orden: clase propia (escritorio y móvil) para
              darle su peso sin depender de la posición de la columna, que
              cambia según presets/direcciones. -->
-        <xpath expr="//table//div[hasclass('fw-bolder')][t[@t-esc='getTotal(order)']]" position="attributes">
+        <xpath expr="//table//div[hasclass('fw-bolder')][t[@t-out='getTotal(order)']]" position="attributes">
             <attribute name="class" add="alpt-order-total" separator=" "/>
         </xpath>
-        <xpath expr="//div[hasclass('mobileOrderList')]//div[hasclass('fw-bolder')][t[@t-esc='getTotal(order)']]" position="attributes">
+        <xpath expr="//div[hasclass('mobileOrderList')]//div[hasclass('fw-bolder')][t[@t-out='getTotal(order)']]" position="attributes">
             <attribute name="class" add="alpt-order-total" separator=" "/>
         </xpath>
     </t>

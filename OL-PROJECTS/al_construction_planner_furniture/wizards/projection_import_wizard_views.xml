@@ -45,7 +45,7 @@
                             <field name="auto_product_id" column_invisible="1"/>
                             <field name="auto_state" column_invisible="1"/>
                             <button name="action_accept" type="object" string="Aceptar"
-                                    icon="fa-check" invisible="state in ('ok', 'resolved') or not product_id"/>
+                                    icon="check" invisible="state in ('ok', 'resolved') or not product_id"/>
                         </list>
                     </field>
                 </div>

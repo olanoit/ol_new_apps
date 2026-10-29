@@ -41,11 +41,10 @@ Sugerido de compra por local:
     'license': 'OPL-1',
     'depends': ['al_pharmacy_pos', 'purchase_stock'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/pharmacy_replenishment_security.xml',
         'views/pharmacy_shortage_views.xml',
         'wizard/replenishment_wizard_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'demo': ['demo/pharmacy_replenishment_demo.xml'],
     'assets': {

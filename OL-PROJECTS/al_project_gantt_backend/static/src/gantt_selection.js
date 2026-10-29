@@ -163,7 +163,7 @@ export class GanttSelection {
                     return "";
                 }
                 const state = this.state(task.id);
-                const icon = { on: "fa-check-square", part: "fa-minus-square", off: "fa-square-o" }[state];
+                const icon = { on: "check_box", part: "indeterminate_check_box", off: "square" }[state];
                 return `<span class="algantt-check algantt-check-${state} fa ${icon}" ${CHECK_ATTR}="1" title="${_t("Marcar")}"></span>`;
             },
         };

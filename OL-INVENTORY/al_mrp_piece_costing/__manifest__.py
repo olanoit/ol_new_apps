@@ -35,12 +35,12 @@ piezas CNC v1.4, 20-set-2026) con la misma lógica.
     # al_stock_base: costo fijo de los retazos (paquete 1.11, M111-12).
     'depends': ['mrp_account', 'al_stock_base'],
     'data': [
-        'security/ir.model.access.csv',
         'wizards/piece_import_wizard_views.xml',
         'views/product_template_views.xml',
         'views/stock_picking_type_views.xml',
         'views/mrp_production_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'pre_init_hook': 'pre_init_hook',
     'installable': True,

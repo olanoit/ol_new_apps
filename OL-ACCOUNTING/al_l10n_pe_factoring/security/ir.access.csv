@@ -1,0 +1,24 @@
+id,name,model_id,group_id/id,operation,domain
+access_factoring_invoice,l10n_pe.factoring facturación,l10n_pe.factoring,account.group_account_invoice,crud,
+access_factoring_readonly,l10n_pe.factoring auditor,l10n_pe.factoring,account.group_account_readonly,r,
+factoring_company_rule,Factoring: multicompañía,l10n_pe.factoring,,crud,"[('company_id', 'in', company_ids)]"
+access_factoring_line_invoice,l10n_pe.factoring.line facturación,l10n_pe.factoring.line,account.group_account_invoice,crud,
+access_factoring_line_readonly,l10n_pe.factoring.line auditor,l10n_pe.factoring.line,account.group_account_readonly,r,
+factoring_line_company_rule,"Factoring, facturas cedidas: multicompañía",l10n_pe.factoring.line,,crud,"[('company_id', 'in', company_ids)]"
+access_factoring_config_invoice,l10n_pe.factoring.account.config facturación,l10n_pe.factoring.account.config,account.group_account_invoice,r,
+access_factoring_config_manager,l10n_pe.factoring.account.config administrador,l10n_pe.factoring.account.config,account.group_account_manager,crud,
+factoring_account_config_company_rule,"Factoring, cuentas: multicompañía",l10n_pe.factoring.account.config,,crud,"[('company_id', 'in', company_ids)]"
+access_factoring_wizard_invoice,l10n_pe.factoring.wizard facturación,l10n_pe.factoring.wizard,account.group_account_invoice,crud,
+access_factoring_contract_invoice,l10n_pe.factoring.contract facturación,l10n_pe.factoring.contract,account.group_account_invoice,r,
+access_factoring_contract_manager,l10n_pe.factoring.contract administrador,l10n_pe.factoring.contract,account.group_account_manager,crud,
+access_factoring_contract_readonly,l10n_pe.factoring.contract auditor,l10n_pe.factoring.contract,account.group_account_readonly,r,
+factoring_contract_company_rule,"Factoring, contratos: multicompañía",l10n_pe.factoring.contract,,crud,"[('company_id', 'in', company_ids)]"
+access_negotiable_event_invoice,l10n_pe.negotiable.event facturación,l10n_pe.negotiable.event,account.group_account_invoice,cru,
+access_negotiable_event_readonly,l10n_pe.negotiable.event auditor,l10n_pe.negotiable.event,account.group_account_readonly,r,
+negotiable_event_company_rule,"Factura negociable, eventos: multicompañía",l10n_pe.negotiable.event,,crud,"[('company_id', 'in', company_ids)]"
+access_negotiable_event_wizard,l10n_pe.negotiable.event.wizard facturación,l10n_pe.negotiable.event.wizard,account.group_account_invoice,crud,
+access_factoring_eligibility,l10n_pe.factoring.eligibility facturación,l10n_pe.factoring.eligibility,account.group_account_invoice,crud,
+access_factoring_eligibility_line,l10n_pe.factoring.eligibility.line facturación,l10n_pe.factoring.eligibility.line,account.group_account_invoice,crud,
+access_cavali_log_invoice,l10n_pe.cavali.log facturación,l10n_pe.cavali.log,account.group_account_invoice,r,
+cavali_log_company_rule,"CAVALI, envíos: multicompañía",l10n_pe.cavali.log,,crud,"[('company_id', 'in', company_ids)]"
+access_cavali_import,l10n_pe.cavali.import facturación,l10n_pe.cavali.import,account.group_account_invoice,crud,

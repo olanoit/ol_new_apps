@@ -17,7 +17,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_picking" type="object" class="oe_stat_button"
-                                icon="fa-truck" invisible="not picking_id"
+                                icon="local_shipping" invisible="not picking_id"
                                 groups="stock.group_stock_user">
                             <field name="picking_name" widget="statinfo" string="Despacho"/>
                         </button>

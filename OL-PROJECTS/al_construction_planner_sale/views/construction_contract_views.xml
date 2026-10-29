@@ -90,7 +90,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_milestones" type="object" class="oe_stat_button"
-                                icon="fa-flag-checkered">
+                                icon="sports_score">
                             <field name="milestone_count" widget="statinfo" string="Hitos"/>
                         </button>
                     </div>

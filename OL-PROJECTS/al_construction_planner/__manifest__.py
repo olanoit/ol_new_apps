@@ -282,8 +282,6 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     ],
     'data': [
         'security/planner_groups.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'data/construction_level_template_data.xml',
         'data/construction_stage_data.xml',
@@ -314,6 +312,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'views/menus.xml',
         'views/construction_board_views.xml',
         'views/construction_recipe_calc_views.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

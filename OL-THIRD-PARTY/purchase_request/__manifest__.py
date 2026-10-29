@@ -13,7 +13,6 @@
     "depends": ["purchase_stock"],
     "data": [
         "security/purchase_request.xml",
-        "security/ir.model.access.csv",
         "data/purchase_request_sequence.xml",
         "data/purchase_request_data.xml",
         "reports/report_purchase_request.xml",
@@ -24,6 +23,7 @@
         "views/product_template.xml",
         "views/purchase_order_view.xml",
         "views/stock_move_views.xml",
+        'security/ir.access.csv',
     ],
     "demo": ["demo/purchase_request_demo.xml"],
     "license": "LGPL-3",

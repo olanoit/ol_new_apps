@@ -24,7 +24,7 @@
                 <field name="rate" optional="hide"/>
                 <field name="balance_company" sum="Saldo (S/)" optional="show"/>
                 <field name="available_company" sum="Disponible (S/)"/>
-                <button name="action_open_journal_items" type="object" icon="fa-list" title="Apuntes"/>
+                <button name="action_open_journal_items" type="object" icon="format_list_bulleted" title="Apuntes"/>
             </list>
         </field>
     </record>
@@ -109,7 +109,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="fa-bar-chart"
+                        <button name="action_open_lines" type="object" class="oe_stat_button" icon="bar_chart"
                                 string="Análisis"/>
                     </div>
                     <div class="oe_title">

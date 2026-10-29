@@ -70,11 +70,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_invoices" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                        <button name="action_open_invoices" type="object" class="oe_stat_button" icon="article"
                                 invisible="not line_count">
                             <field name="line_count" widget="statinfo" string="Facturas"/>
                         </button>
-                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-bars"
+                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="menu"
                                 invisible="not move_count">
                             <field name="move_count" widget="statinfo" string="Asientos"/>
                         </button>

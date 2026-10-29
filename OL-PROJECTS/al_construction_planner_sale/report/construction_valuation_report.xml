@@ -28,10 +28,10 @@
         <t t-set="cur" t-value="o.currency_id"/>
         <t t-set="state_label" t-value="dict(o._fields['state']._description_selection(o.env)).get(o.state)"/>
         <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-        <t t-call="al_report_base.report_pe_page">
-            <t t-set="doc_title" t-value="'Valorización %s' % o.sequence_number"/>
-            <t t-set="doc_number" t-value="o.name"/>
-            <t t-set="doc_extra" t-value="'Estado: %s' % state_label"/>
+        <t t-call="al_report_base.report_pe_page"
+            doc_title="'Valorización %s' % o.sequence_number"
+            doc_number="o.name"
+            doc_extra="'Estado: %s' % state_label">
 
             <!-- Datos de la obra y del contrato -->
             <table class="pe-doc-table mb-3">

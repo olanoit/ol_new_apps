@@ -27,11 +27,11 @@
 
                 <!-- ENCABEZADO: logo | compañía | recuadro RUC/documento
                      (estilo común de los comprobantes PE, al_account_base) -->
-                <t t-call="al_account_base.report_pe_document_header">
-                    <t t-set="company" t-value="o.company_id"/>
-                    <t t-set="doc_title" t-value="o.l10n_latam_document_type_id.report_name"/>
-                    <t t-set="doc_number" t-value="o.l10n_latam_document_number or o.name"/>
-                    <t t-set="doc_address" t-value="o._l10n_pe_report_company_address()"/>
+                <t t-call="al_account_base.report_pe_document_header"
+                    company="o.company_id"
+                    doc_title="o.l10n_latam_document_type_id.report_name"
+                    doc_number="o.l10n_latam_document_number or o.name"
+                    doc_address="o._l10n_pe_report_company_address()">
                     <li t-if="o.company_id.active_fep_signatures and o.company_id.company_eslogan_pdf">
                         <em><span t-field="o.company_id.company_eslogan_pdf"/></em>
                     </li>
@@ -291,7 +291,7 @@
                             </div>
                         </td>
                         <td>
-                            <div style="margin-bottom: 26px;">&#160;</div>
+                            <div style="margin-bottom: 26px;"> </div>
                             <div class="cpe-signature-line"/>
                             <strong>Recibido conforme</strong>
                             <div class="cpe-muted">Nombre: ______________________</div>
@@ -320,9 +320,7 @@
                     </tbody>
                 </table>
             </div>
-            <t t-call="al_account_base.report_pe_document_footer">
-                <t t-set="company" t-value="o.company_id"/>
-            </t>
+            <t t-call="al_account_base.report_pe_document_footer" company="o.company_id"/>
         </template>
 
         <record id="report_cpe_invoice_a4" model="ir.actions.report">

@@ -385,7 +385,7 @@
                                 <field name="l10n_pe_cavali_password" password="True"/>
                             </div>
                             <button name="action_l10n_pe_cavali_test" type="object" string="Probar conexión"
-                                    icon="oi-arrow-right" class="btn-link"/>
+                                    icon="east" class="btn-link"/>
                         </div>
                     </setting>
                     <setting company_dependent="1" string="Cuenta en CAVALI"

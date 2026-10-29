@@ -49,7 +49,7 @@ class TestExecutionEntries(TransactionCase):
             # Quien ya lo tenía por implicación lo pierde al quitar la
             # implicación (como lo hace el ajuste).
             group.user_ids = [(5, 0, 0)]
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
 
     def _menu_children(self, menus, xmlid):
         menu_id = self.env.ref(xmlid).id

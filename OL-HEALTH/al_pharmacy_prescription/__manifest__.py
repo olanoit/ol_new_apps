@@ -29,11 +29,10 @@ Entrega E2 del plan (docs/farmacia/PLAN_FARMACIA.md), según el Manual BPOF
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'contacts', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/pharmacy_prescription_security.xml',
         'data/pharmacy_prescription_data.xml',
         'views/pharmacy_prescription_views.xml',
         'report/pharmacy_prescription_reports.xml',
+        'security/ir.access.csv',
     ],
     'demo': ['demo/pharmacy_prescription_demo.xml'],
     'installable': True,

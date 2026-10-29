@@ -74,7 +74,7 @@
                     <a class="btn btn-secondary" role="button"
                        href="/al_hr_pe_import/template/al.import.vacation.rest.wizard"
                        target="_blank">
-                        <i class="fa fa-download me-1"/>Descargar plantilla
+                        <i class="oi me-1" data-icon="download"/>Descargar plantilla
                     </a>
                     <button string="Cerrar" class="btn-secondary"
                             special="cancel"/>

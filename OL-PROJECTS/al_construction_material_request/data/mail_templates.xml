@@ -35,7 +35,7 @@
                 <a href="#" data-oe-model="purchase.request" t-att-data-oe-id="one_request.id" t-out="one_request.name"/>
             </div>
             <div t-if="shortages" class="mt-2 text-warning">
-                <i class="fa fa-exclamation-triangle"/>
+                <i class="oi" data-icon="warning"/>
                 Otro documento reservó stock antes que este requerimiento; pasó a compra:
                 <t t-out="shortages"/>.
             </div>

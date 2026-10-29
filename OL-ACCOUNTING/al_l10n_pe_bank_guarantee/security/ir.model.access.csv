@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_bank_guarantee_user,l10n_pe.bank.guarantee usuario,model_l10n_pe_bank_guarantee,al_l10n_pe_treasury.group_treasury_user,1,1,1,1
-access_bank_guarantee_readonly,l10n_pe.bank.guarantee auditor,model_l10n_pe_bank_guarantee,account.group_account_readonly,1,0,0,0
-access_bank_guarantee_wizard_user,l10n_pe.bank.guarantee.wizard usuario,model_l10n_pe_bank_guarantee_wizard,al_l10n_pe_treasury.group_treasury_user,1,1,1,1

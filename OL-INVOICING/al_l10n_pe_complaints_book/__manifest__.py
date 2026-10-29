@@ -42,7 +42,6 @@ las leyes 31435 y 32495, D.S. 011-2011-PCM y modificatorias hasta el D.S.
     'depends': ['mail', 'portal', 'website', 'resource', 'al_report_base'],
     'data': [
         'security/complaints_book_security.xml',
-        'security/ir.model.access.csv',
         'data/ir_cron.xml',
         'data/mail_templates.xml',
         'report/complaint_report.xml',
@@ -54,6 +53,7 @@ las leyes 31435 y 32495, D.S. 011-2011-PCM y modificatorias hasta el D.S.
         'wizard/complaint_settlement_wizard_views.xml',
         'views/menus.xml',
         'views/website_templates.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_frontend': [

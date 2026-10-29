@@ -33,10 +33,10 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_affiliates" type="object" class="oe_stat_button" icon="fa-users">
+                        <button name="action_open_affiliates" type="object" class="oe_stat_button" icon="group" icon_class="oi-filled">
                             <field name="affiliate_count" widget="statinfo" string="Afiliados"/>
                         </button>
-                        <button name="action_open_liquidations" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                        <button name="action_open_liquidations" type="object" class="oe_stat_button" icon="article">
                             <field name="liquidation_count" widget="statinfo" string="Liquidaciones"/>
                         </button>
                     </div>
@@ -184,9 +184,9 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_invoice" type="object" class="oe_stat_button"
-                                icon="fa-pencil-square-o" invisible="not invoice_id" string="Factura"/>
+                                icon="edit_square" invisible="not invoice_id" string="Factura"/>
                         <button name="action_open_refunds" type="object" class="oe_stat_button"
-                                icon="fa-undo" invisible="not refund_invoice_ids" string="Notas de crédito"/>
+                                icon="undo" invisible="not refund_invoice_ids" string="Notas de crédito"/>
                     </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>

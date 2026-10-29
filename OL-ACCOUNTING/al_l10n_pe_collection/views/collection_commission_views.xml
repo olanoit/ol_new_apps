@@ -75,7 +75,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_bill" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                        <button name="action_open_bill" type="object" class="oe_stat_button" icon="article"
                                 invisible="not invoice_id">
                             <div class="o_stat_info"><span class="o_stat_text">Factura</span></div>
                         </button>

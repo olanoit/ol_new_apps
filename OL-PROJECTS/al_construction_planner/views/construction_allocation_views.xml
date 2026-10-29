@@ -22,7 +22,7 @@
                 <field name="product_uom_id" groups="uom.group_uom"/>
                 <field name="state" widget="badge" decoration-info="state == 'open'" decoration-success="state == 'done'"/>
                 <field name="company_id" column_invisible="1"/>
-                <button name="action_open_document" type="object" icon="fa-external-link" title="Abrir el documento"/>
+                <button name="action_open_document" type="object" icon="open_in_new" title="Abrir el documento"/>
             </list>
         </field>
     </record>

@@ -1,0 +1,14 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_plan_production_wizard_exec_user,construction.plan.production.wizard exec_user,construction.plan.production.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_plan_production_wizard_line_exec_user,construction.plan.production.wizard.line exec_user,construction.plan.production.wizard.line,al_construction_planner.group_planner_user,crud,
+access_construction_production_reason_user,construction.production.reason user,construction.production.reason,mrp.group_mrp_user,r,
+access_construction_production_reason_manager,construction.production.reason manager,construction.production.reason,mrp.group_mrp_manager,crud,
+construction_production_reason_company_rule,Motivo de fabricación: multicompañía,construction.production.reason,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_construction_cut_closing_line_stock,construction.cut.closing.line stock,construction.cut.closing.line,stock.group_stock_user,r,
+access_construction_cut_closing_line_manager,construction.cut.closing.line manager,construction.cut.closing.line,mrp.group_mrp_manager,crud,
+construction_cut_closing_line_company_rule,Sobrantes del corte: multicompañía,construction.cut.closing.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_remnant_cover_wizard_stock,construction.remnant.cover.wizard stock,construction.remnant.cover.wizard,stock.group_stock_user,crud,
+access_construction_remnant_cover_wizard_line_stock,construction.remnant.cover.wizard.line stock,construction.remnant.cover.wizard.line,stock.group_stock_user,crud,
+access_construction_cut_closing_wizard_mrp,construction.cut.closing.wizard mrp,construction.cut.closing.wizard,mrp.group_mrp_user,crud,
+access_construction_cut_closing_wizard_line_mrp,construction.cut.closing.wizard.line mrp,construction.cut.closing.wizard.line,mrp.group_mrp_user,crud,
+access_construction_cut_closing_remnant_mrp,construction.cut.closing.remnant mrp,construction.cut.closing.remnant,mrp.group_mrp_user,crud,

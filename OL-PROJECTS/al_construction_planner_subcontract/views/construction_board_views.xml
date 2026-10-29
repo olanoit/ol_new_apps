@@ -8,25 +8,25 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='board_execute']" position="inside">
                 <button name="action_construction_assign_contract" type="object" class="oe_stat_button"
-                        icon="fa-handshake-o" string="Asignar contrata"
+                        icon="handshake" string="Asignar contrata"
                         invisible="not construction_board_plan_id"
                         groups="al_construction_planner.group_planner_user"/>
                 <button name="action_construction_view_contract_orders" type="object" class="oe_stat_button"
-                        icon="fa-file-text-o" groups="al_construction_planner.group_planner_user">
+                        icon="article" groups="al_construction_planner.group_planner_user">
                     <field name="construction_open_order_count" widget="statinfo" string="Órdenes de contrata"/>
                 </button>
                 <button name="action_construction_view_settlements_to_approve" type="object" class="oe_stat_button"
-                        icon="fa-calendar-check-o" groups="al_construction_planner.group_planner_progress">
+                        icon="event_available" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_settlement_to_approve_count" widget="statinfo" string="Valorizaciones de contrata"/>
                 </button>
                 <button name="action_construction_view_deductions" type="object" class="oe_stat_button"
-                        icon="fa-minus-circle" groups="al_construction_planner.group_planner_user">
+                        icon="remove_circle" icon_class="oi-filled" groups="al_construction_planner.group_planner_user">
                     <field name="construction_deduction_pending_count" widget="statinfo" string="Deductivos"/>
                 </button>
             </xpath>
             <xpath expr="//div[@name='board_control']" position="inside">
                 <button name="action_construction_view_contract_summary" type="object" class="oe_stat_button"
-                        icon="fa-table" string="Resumen de valorizaciones"
+                        icon="table_chart" string="Resumen de valorizaciones"
                         groups="al_construction_planner.group_planner_user"/>
             </xpath>
         </field>
@@ -39,10 +39,10 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='execute_actions']" position="inside">
                 <button name="action_assign_contract" type="object" string="Asignar contrata"
-                        class="btn btn-secondary" icon="fa-handshake-o"
+                        class="btn btn-secondary" icon="handshake"
                         groups="al_construction_planner.group_planner_user"/>
                 <button name="action_register_deduction" type="object" string="Registrar deductivo"
-                        class="btn btn-secondary" icon="fa-minus-circle"
+                        class="btn btn-secondary" icon="remove_circle" icon_class="oi-filled"
                         groups="al_construction_planner.group_planner_user"/>
             </xpath>
         </field>

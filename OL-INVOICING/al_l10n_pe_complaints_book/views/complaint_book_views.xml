@@ -29,7 +29,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_complaints" type="object" class="oe_stat_button"
-                                icon="fa-book">
+                                icon="book">
                             <field name="complaint_count" widget="statinfo" string="Hojas"/>
                         </button>
                     </div>

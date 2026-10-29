@@ -29,7 +29,7 @@ class TestVerticalTerms(TransactionCase):
         profile.with_context(construction_profile_no_install=True).action_apply()
 
     def _menus(self):
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
         return self.env['ir.ui.menu'].with_user(self.user)._visible_menu_ids()
 
     def test_construction_hides_measurement(self):

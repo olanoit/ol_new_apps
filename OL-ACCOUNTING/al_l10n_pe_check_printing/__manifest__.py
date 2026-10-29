@@ -26,12 +26,11 @@ adapta al_l10n_pe_check.
     'depends': ['al_l10n_pe_check'],
     'external_dependencies': {'python': ['num2words']},
     'data': [
-        'security/ir.model.access.csv',
-        'security/check_printing_security.xml',
         'report/check_report.xml',
         'views/check_layout_views.xml',
         'views/account_journal_views.xml',
         'views/l10n_latam_check_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

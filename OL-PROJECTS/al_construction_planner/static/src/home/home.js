@@ -8,10 +8,11 @@
  * trae su acción con el filtro ya armado por el servidor
  * (`construction.planner.home.get_home_data`).
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 const HOME = "construction.planner.home";
 const STATE_BADGES = {
@@ -28,8 +29,8 @@ export class ConstructionPlannerHome extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
-        this.state = useState({ data: null, loading: false });
+        this.action = usePlugin(ActionManagerPlugin);
+        this.state = proxy({ data: null, loading: false });
         onWillStart(() => this.load());
     }
 

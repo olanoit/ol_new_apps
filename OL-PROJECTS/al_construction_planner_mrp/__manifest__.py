@@ -25,8 +25,6 @@ Odoo vive en su puente y se activa desde Ajustes.
     'data': [
         'views/exceed_wizard_views.xml',
         'security/planner_groups.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'wizards/plan_production_wizard_views.xml',
         'views/construction_stage_views.xml',
         'views/construction_production_reason_views.xml',
@@ -38,6 +36,7 @@ Odoo vive en su puente y se activa desde Ajustes.
         'views/remnant_views.xml',
         'views/plan_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

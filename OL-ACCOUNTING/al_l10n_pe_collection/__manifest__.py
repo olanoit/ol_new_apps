@@ -58,7 +58,6 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
                 'spreadsheet_dashboard'],
     'data': [
         'security/collection_security.xml',
-        'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'data/collection_bucket_data.xml',
         'data/collection_result_data.xml',
@@ -89,6 +88,7 @@ Excluye de la cartera los anticipos (122) y las detracciones por cobrar.
         'wizard/interest_invoice_views.xml',
         'views/menus.xml',
         'data/collection_dashboard_data.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': True,

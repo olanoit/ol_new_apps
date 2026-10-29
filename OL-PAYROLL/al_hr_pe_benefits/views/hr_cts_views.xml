@@ -140,7 +140,7 @@
                 <field name="total_cts" sum="Total" optional="show" force_save="1"/>
                 <field name="cts_soles" sum="Total" optional="show"/>
                 <field name="cts_dollars" sum="Total" optional="hide" force_save="1"/>
-                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="fa-list" type="object" title="Detalle histórico"/>
+                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="format_list_bulleted" type="object" title="Detalle histórico"/>
             </list>
         </field>
     </record>
@@ -159,7 +159,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_lines" class="oe_stat_button" icon="fa-file-text-o" type="object" help="Certificados CTS" invisible="cts_count == 0">
+                        <button name="action_open_lines" class="oe_stat_button" icon="article" type="object" help="Certificados CTS" invisible="cts_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="cts_count"/></span>
                                 <span class="o_stat_text">Certificados</span>

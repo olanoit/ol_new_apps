@@ -1,0 +1,10 @@
+id,name,model_id,group_id/id,operation,domain
+access_hr_payslip_run_move_wizard_manager,hr.payslip.run.move.wizard manager,hr.payslip.run.move.wizard,hr_payroll.group_hr_payroll_manager,crud,
+access_hr_payslip_run_move_wizard_line_manager,hr.payslip.run.move.wizard.line manager,hr.payslip.run.move.wizard.line,hr_payroll.group_hr_payroll_manager,crud,
+access_hr_liquidation_move_user,hr.liquidation.move user,hr.liquidation.move,hr_payroll.group_hr_payroll_user,r,
+access_hr_liquidation_move_manager,hr.liquidation.move manager,hr.liquidation.move,hr_payroll.group_hr_payroll_manager,crud,
+hr_liquidation_move_company_rule,Asiento de liquidación: multicompañía,hr.liquidation.move,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_benefits_move_wizard_manager,hr.benefits.move.wizard manager,hr.benefits.move.wizard,hr_payroll.group_hr_payroll_manager,crud,
+access_l10n_pe_hr_salary_rule_account_user,l10n_pe.hr.salary.rule.account user,l10n_pe.hr.salary.rule.account,hr_payroll.group_hr_payroll_user,r,
+access_l10n_pe_hr_salary_rule_account_manager,l10n_pe.hr.salary.rule.account manager,l10n_pe.hr.salary.rule.account,hr_payroll.group_hr_payroll_manager,crud,
+l10n_pe_hr_salary_rule_account_company_rule,Cuentas de regla por condición: multicompañía,l10n_pe.hr.salary.rule.account,,crud,"[('company_id', 'in', company_ids)]"

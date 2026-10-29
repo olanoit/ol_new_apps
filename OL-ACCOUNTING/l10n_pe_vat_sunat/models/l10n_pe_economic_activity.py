@@ -17,7 +17,7 @@ class L10nPeEconomicActivity(models.Model):
     _name = 'l10n_pe.economic.activity'
     _description = 'Actividad económica (CIIU)'
     _order = 'code'
-    _rec_names_search = ['code', 'name']
+    _rec_names_search = ('code', 'name')
 
     code = fields.Char(string='Código', required=True, index=True,
                        help='Clase CIIU de cuatro dígitos (Rev. 4) o cinco (Rev. 3).')

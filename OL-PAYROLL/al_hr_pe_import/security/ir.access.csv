@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_al_import_payroll_sheet_payroll_user,al.import.payroll.sheet.payroll.user,al.import.payroll.sheet,hr_payroll.group_hr_payroll_user,crud,
+access_al_import_payroll_sheet_attendance_officer,al.import.payroll.sheet.attendance.officer,al.import.payroll.sheet,hr_attendance.group_hr_attendance_officer,crud,
+access_al_import_payroll_progress_payroll_user,al.import.payroll.progress.payroll.user,al.import.payroll.progress,hr_payroll.group_hr_payroll_user,crud,
+access_al_import_payroll_progress_attendance_officer,al.import.payroll.progress.attendance.officer,al.import.payroll.progress,hr_attendance.group_hr_attendance_officer,crud,
+al_import_payroll_progress_company_rule,Progreso de importación: multicompañía,al.import.payroll.progress,,crud,"[('company_id', 'in', company_ids)]"
+access_al_import_hr_attendance_wizard_officer,al.import.hr.attendance.wizard.officer,al.import.hr.attendance.wizard,hr_attendance.group_hr_attendance_officer,crud,
+access_al_import_hr_attendance_wizard_payroll_user,al.import.hr.attendance.wizard.payroll.user,al.import.hr.attendance.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_al_import_hr_salary_rule_wizard_manager,al.import.hr.salary.rule.wizard.manager,al.import.hr.salary.rule.wizard,hr_payroll.group_hr_payroll_manager,crud,
+access_al_import_payslip_input_wizard_payroll_user,al.import.payslip.input.wizard.payroll.user,al.import.payslip.input.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_al_import_vacation_rest_wizard_payroll_user,al.import.vacation.rest.wizard.payroll.user,al.import.vacation.rest.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_al_import_hr_advance_wizard_payroll_user,al.import.hr.advance.wizard.payroll.user,al.import.hr.advance.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_al_import_hr_version_wizard_manager,al.import.hr.version.wizard.manager,al.import.hr.version.wizard,hr_payroll.group_hr_payroll_manager,crud,

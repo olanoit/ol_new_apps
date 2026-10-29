@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+rule_replacement_requester,Reposición a planta: propias y de mis obras,construction.replacement.request,al_construction_material_request.group_construction_requester,cru,"['|', '|',
+                ('requested_by', '=', user.id),
+                ('project_id.user_id', '=', user.id),
+                ('project_id.message_partner_ids', 'in', [user.partner_id.id])]"
+rule_replacement_all,Reposición a planta: todas,construction.replacement.request,al_construction_material_request.group_construction_logistics,crud,
+rule_replacement_all_1,Reposición a planta: todas,construction.replacement.request,mrp.group_mrp_user,ru,
+rule_replacement_company,Reposición a planta: multicompañía,construction.replacement.request,,crud,"[('company_id', 'in', company_ids)]"

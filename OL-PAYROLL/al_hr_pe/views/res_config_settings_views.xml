@@ -48,7 +48,7 @@
                     <setting id="l10n_pe_payroll_main_parameter" company_dependent="1" string="Configuración principal"
                              help="Reglas, entradas y tipos de trabajo que usan la boleta, los beneficios sociales y los asientos.">
                         <button name="action_l10n_pe_open_main_parameter" type="object"
-                                string="Abrir configuración principal" class="btn-link" icon="oi-arrow-right"/>
+                                string="Abrir configuración principal" class="btn-link" icon="east"/>
                     </setting>
                 </block>
             </xpath>

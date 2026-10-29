@@ -9,10 +9,10 @@
                      el div.article lo pone report_pe_page, con el encabezado
                      (recuadro R.U.C./formato/periodo) y el pie con la numeración. -->
                 <t t-set="company" t-value="o.company_id"/>
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="doc_title" t-value="'Inventario permanente'"/>
-                    <t t-set="doc_number" t-value="'Formato %s' % ('13.1' if valued else '12.1')"/>
-                    <t t-set="doc_extra" t-value="'Período %s' % header['period']"/>
+                <t t-call="al_report_base.report_pe_page"
+                    doc_title.f="Inventario permanente"
+                    doc_number="'Formato %s' % ('13.1' if valued else '12.1')"
+                    doc_extra="'Período %s' % header['period']">
                     <t t-foreach="o._get_report_data()" t-as="scope">
                         <t t-foreach="scope['products']" t-as="block">
                             <div t-attf-class="pe-doc-keep pe-doc-fs-11"

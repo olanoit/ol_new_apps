@@ -1,0 +1,9 @@
+id,name,model_id,group_id/id,operation,domain
+access_complaint_book_user,l10n_pe.complaint.book user,l10n_pe.complaint.book,al_l10n_pe_complaints_book.group_complaint_user,r,
+access_complaint_book_manager,l10n_pe.complaint.book manager,l10n_pe.complaint.book,al_l10n_pe_complaints_book.group_complaint_manager,crud,
+complaint_book_company_rule,Libro de reclamaciones: multicompañía,l10n_pe.complaint.book,,crud,"[('company_id', 'in', company_ids)]"
+access_complaint_user,l10n_pe.complaint user,l10n_pe.complaint,al_l10n_pe_complaints_book.group_complaint_user,cru,
+access_complaint_manager,l10n_pe.complaint manager,l10n_pe.complaint,al_l10n_pe_complaints_book.group_complaint_manager,crud,
+complaint_company_rule,Hoja de reclamación: multicompañía,l10n_pe.complaint,,crud,"[('company_id', 'in', company_ids)]"
+access_complaint_sirec_wizard,l10n_pe.complaint.sirec.wizard,l10n_pe.complaint.sirec.wizard,al_l10n_pe_complaints_book.group_complaint_manager,crud,
+access_complaint_settlement_wizard,l10n_pe.complaint.settlement.wizard,l10n_pe.complaint.settlement.wizard,al_l10n_pe_complaints_book.group_complaint_user,crud,

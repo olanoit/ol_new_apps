@@ -57,11 +57,11 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_payments" type="object" class="oe_stat_button"
-                                icon="fa-money" invisible="not payment_count">
+                                icon="payments" invisible="not payment_count">
                             <field name="payment_count" widget="statinfo" string="Pagos"/>
                         </button>
                         <button name="action_view_settlements" type="object" class="oe_stat_button"
-                                icon="fa-file-text-o" invisible="not settlement_count">
+                                icon="article" invisible="not settlement_count">
                             <field name="settlement_count" widget="statinfo" string="Rendiciones"/>
                         </button>
                     </div>

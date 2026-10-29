@@ -10,10 +10,11 @@
  * Hace polling cada segundo via ORM hasta que status === 'done' | 'error'.
  * (Port v18 → v19: la API de useService("orm")/doAction no cambió.)
  */
-import { Component, useState, onMounted, onWillUnmount } from "@odoo/owl";
+import { Component, onMounted, onWillUnmount, proxy, usePlugin } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 // Tope de consultas (1 por segundo): pasado ese tiempo se deja de
 // consultar aunque el servidor no haya cerrado la importación. El
@@ -29,9 +30,9 @@ export class ImportPayrollProgressWidget extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
 
-        this.state = useState({
+        this.state = proxy({
             total: 0,
             current: 0,
             created: 0,

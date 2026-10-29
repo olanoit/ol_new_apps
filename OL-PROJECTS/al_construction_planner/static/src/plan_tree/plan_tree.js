@@ -8,13 +8,14 @@
  * Todo lo acumulado lo calcula el servidor
  * (`construction.resource.plan.get_tree_nodes` y `get_selection_summary`).
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
 import { _t } from "@web/core/l10n/translation";
 import { checkState, effectiveSelection, toggleNode } from "./selection";
 import { stageNodeState, toggleStageNode } from "../stage_filter/stage_filter";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 const PLAN = "construction.resource.plan";
 const ROOT_KEY = "p";
@@ -25,8 +26,8 @@ export class ConstructionPlanTree extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
-        this.state = useState({
+        this.action = usePlugin(ActionManagerPlugin);
+        this.state = proxy({
             plans: [],
             planId: false,
             options: { stages: [], stage_tree: [], resource_types: [], unit_states: [], levels: {} },

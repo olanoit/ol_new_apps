@@ -73,13 +73,12 @@ Diferencias frente al módulo v18 ``al_exchange_rate_closure``
         'al_l10n_pe_currency',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'views/account_account_views.xml',
         'views/account_move_views.xml',
         'views/exchange_closure_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_exchange_closure_demo.xml'],

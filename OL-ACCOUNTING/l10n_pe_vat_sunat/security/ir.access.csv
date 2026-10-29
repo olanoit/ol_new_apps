@@ -1,0 +1,12 @@
+id,name,model_id,group_id/id,operation,domain
+access_l10n_pe_sunat_padron_user,l10n.pe.sunat.padron.user,l10n_pe.sunat.padron,base.group_user,r,
+access_l10n_pe_sunat_padron_admin,l10n.pe.sunat.padron.admin,l10n_pe.sunat.padron,base.group_system,crud,
+access_l10n_pe_api_connection_user,l10n.pe.api.connection.user,l10n_pe.api.connection,base.group_user,r,
+access_l10n_pe_api_connection_admin,l10n.pe.api.connection.admin,l10n_pe.api.connection,base.group_system,crud,
+l10n_pe_api_connection_company_rule,Conexión RUC/DNI: multicompañía,l10n_pe.api.connection,,crud,"[('company_id', 'parent_of', company_ids)]"
+access_l10n_pe_api_field_mapping_user,l10n.pe.api.field.mapping.user,l10n_pe.api.field.mapping,base.group_user,r,
+access_l10n_pe_api_field_mapping_admin,l10n.pe.api.field.mapping.admin,l10n_pe.api.field.mapping,base.group_system,crud,
+l10n_pe_api_field_mapping_company_rule,Mapeo de campos RUC/DNI: multicompañía,l10n_pe.api.field.mapping,,crud,"[('connection_id.company_id', 'parent_of', company_ids)]"
+access_l10n_pe_economic_activity_user,l10n.pe.economic.activity.user,l10n_pe.economic.activity,base.group_user,r,
+access_l10n_pe_economic_activity_manager,l10n.pe.economic.activity.manager,l10n_pe.economic.activity,base.group_partner_manager,crud,
+access_l10n_pe_partner_economic_activity_user,l10n.pe.partner.economic.activity.user,l10n_pe.partner.economic.activity,base.group_user,crud,

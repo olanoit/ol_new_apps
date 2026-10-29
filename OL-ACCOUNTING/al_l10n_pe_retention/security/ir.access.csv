@@ -1,0 +1,17 @@
+id,name,model_id,group_id/id,operation,domain
+access_retention_received_user,l10n_pe.retention.received user,l10n_pe.retention.received,account.group_account_user,crud,
+access_retention_received_read,l10n_pe.retention.received readonly,l10n_pe.retention.received,account.group_account_readonly,r,
+rule_retention_received_company,Retenciones sufridas: multicompañía,l10n_pe.retention.received,,crud,"[('company_id', 'in', company_ids)]"
+access_retention_summary_wizard,l10n_pe.retention.summary.wizard,l10n_pe.retention.summary.wizard,account.group_account_user,crud,
+access_retention_received_line_user,l10n_pe.retention.received.line user,l10n_pe.retention.received.line,account.group_account_user,crud,
+access_retention_received_line_read,l10n_pe.retention.received.line readonly,l10n_pe.retention.received.line,account.group_account_readonly,r,
+rule_retention_received_line_company,Retenciones sufridas (facturas): multicompañía,l10n_pe.retention.received.line,,crud,"[('company_id', 'in', company_ids)]"
+access_retention_document_user,l10n_pe.retention.document user,l10n_pe.retention.document,account.group_account_user,crud,
+access_retention_document_read,l10n_pe.retention.document readonly,l10n_pe.retention.document,account.group_account_readonly,r,
+rule_retention_document_company,CRE sin pago: multicompañía,l10n_pe.retention.document,,crud,"[('company_id', 'in', company_ids)]"
+access_retention_document_line_user,l10n_pe.retention.document.line user,l10n_pe.retention.document.line,account.group_account_user,crud,
+access_retention_document_line_read,l10n_pe.retention.document.line readonly,l10n_pe.retention.document.line,account.group_account_readonly,r,
+rule_retention_document_line_company,CRE sin pago (facturas): multicompañía,l10n_pe.retention.document.line,,crud,"[('company_id', 'in', company_ids)]"
+access_retention_credit_deduction_user,l10n_pe.retention.credit.deduction user,l10n_pe.retention.credit.deduction,account.group_account_user,crud,
+access_retention_credit_deduction_read,l10n_pe.retention.credit.deduction readonly,l10n_pe.retention.credit.deduction,account.group_account_readonly,r,
+rule_retention_credit_deduction_company,Notas de crédito descontadas en CRE: multicompañía,l10n_pe.retention.credit.deduction,,crud,"[('company_id', 'in', company_ids)]"

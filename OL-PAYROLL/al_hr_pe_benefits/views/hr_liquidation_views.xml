@@ -189,7 +189,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_add_employees" class="oe_stat_button" icon="fa-users" type="object" help="Trabajadores a liquidar" invisible="employee_count == 0">
+                        <button name="action_add_employees" class="oe_stat_button" icon="group" icon_class="oi-filled" type="object" help="Trabajadores a liquidar" invisible="employee_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="employee_count"/></span>
                                 <span class="o_stat_text">Cesados</span>

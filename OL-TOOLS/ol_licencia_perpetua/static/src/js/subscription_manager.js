@@ -7,7 +7,7 @@ import {useService} from "@web/core/utils/hooks";
 import {_t} from "@web/core/l10n/translation";
 
 const {DateTime} = luxon;
-import {Component, xml, useState, reactive} from "@odoo/owl";
+import { Component, proxy, useState, xml } from "@odoo/owl";
 
 export class SubscriptionManager {
     constructor(env, {orm, notification}) {
@@ -81,11 +81,11 @@ class ExpiredSubscriptionBlockUI extends Component {
     static template = xml`
         <t>
             <!-- Renderizado condicional basado en el template original -->
-            <t t-if="subscription.daysLeft &lt;= 0">
+            <t t-if="this.subscription.daysLeft &lt;= 0">
                 <div class="o_blockUI"/>
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 1100" class="d-flex align-items-center justify-content-center">
                     <!-- Solo mostrar si hay mensaje sysadmin y es tipo admin -->
-                    <t t-if="subscription.sysadmin.message and subscription.warningType === 'admin'">
+                    <t t-if="this.subscription.sysadmin.message and this.subscription.warningType === 'admin'">
                         <!-- Aquí iría el componente SysAdminPanel si existiera -->
                     </t>
                 </div>
@@ -108,7 +108,7 @@ export const enterpriseSubscriptionService = {
 
         console.log("✅ Licencia Perpetua Activada");
 
-        return reactive(new SubscriptionManager(env, {orm, notification}));
+        return proxy(new SubscriptionManager(env, {orm, notification}));
     },
 };
 

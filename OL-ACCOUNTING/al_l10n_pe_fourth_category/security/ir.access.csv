@@ -1,0 +1,9 @@
+id,name,model_id,group_id/id,operation,domain
+access_fourth_category_suspension_user,fourth.category.suspension.user,l10n_pe.fourth.category.suspension,account.group_account_invoice,r,
+access_fourth_category_suspension_manager,fourth.category.suspension.manager,l10n_pe.fourth.category.suspension,account.group_account_user,crud,
+rule_fourth_category_suspension_company,Suspensiones de 4.ª: compañías permitidas,l10n_pe.fourth.category.suspension,,crud,"[('company_id', 'in', company_ids)]"
+access_fourth_category_report,fourth.category.report,l10n_pe.fourth.category.report,account.group_account_user,crud,
+rule_fourth_category_report_company,Reporte de 4.ª: compañías permitidas,l10n_pe.fourth.category.report,,crud,"[('company_id', 'in', company_ids)]"
+access_fourth_category_report_line,fourth.category.report.line,l10n_pe.fourth.category.report.line,account.group_account_user,crud,
+access_fourth_category_certificate,fourth.category.certificate,l10n_pe.fourth.category.certificate,account.group_account_user,crud,
+rule_fourth_category_certificate_company,Certificado de 4.ª: compañías permitidas,l10n_pe.fourth.category.certificate,,crud,"[('company_id', 'in', company_ids)]"

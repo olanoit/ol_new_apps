@@ -3,9 +3,9 @@
     <template id="report_price_list">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="company" t-value="o"/>
-                    <t t-set="doc_title" t-value="'Precios por principio activo'"/>
+                <t t-call="al_report_base.report_pe_page"
+                    company="o"
+                    doc_title.f="Precios por principio activo">
                     <p class="pe-doc-text">Precios de venta al público ordenados por denominación común
                         internacional (DCI) y, en cada una, de menor a mayor (Ley 29459, art. 39.3).
                         Pida el genérico en DCI: el químico farmacéutico debe ofrecerle primero las
@@ -41,9 +41,9 @@
     <template id="report_linked_poster">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="company" t-value="o"/>
-                    <t t-set="doc_title" t-value="'Productos de empresas vinculadas'"/>
+                <t t-call="al_report_base.report_pe_page"
+                    company="o"
+                    doc_title.f="Productos de empresas vinculadas">
                     <p style="font-size: 20px; font-weight: bold; margin: 8px 0 14px;">
                         Este establecimiento vende productos fabricados o distribuidos por empresas
                         vinculadas a él.</p>

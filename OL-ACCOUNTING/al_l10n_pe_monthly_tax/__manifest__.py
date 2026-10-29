@@ -35,11 +35,10 @@ Un documento por compañía y periodo con todo lo que se declara en el 621:
         'l10n_pe',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'views/l10n_pe_monthly_tax_views.xml',
         'views/res_config_settings_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_monthly_tax_demo.xml'],

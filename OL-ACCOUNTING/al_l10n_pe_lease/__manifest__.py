@@ -41,13 +41,12 @@ Requiere Odoo Enterprise (``account_asset`` y ``account_loans``).
     'countries': ['pe'],
     'depends': ['account_asset', 'account_loans', 'al_account_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/lease_security.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'views/lease_views.xml',
         'views/account_move_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_lease_demo.xml'],

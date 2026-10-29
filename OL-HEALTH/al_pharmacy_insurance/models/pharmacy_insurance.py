@@ -349,7 +349,7 @@ class PharmacyInsuranceAffiliate(models.Model):
     _name = 'pharmacy.insurance.affiliate'
     _description = 'Afiliado a un convenio'
     _order = 'partner_id, agreement_id'
-    _rec_names_search = ['number', 'partner_id']
+    _rec_names_search = ('number', 'partner_id')
     _check_company_auto = True
 
     agreement_id = fields.Many2one('pharmacy.insurance.agreement', string='Convenio', required=True,

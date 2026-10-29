@@ -41,8 +41,6 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
     # Formato común de los documentos impresos (el del comprobante A4).
     'depends': ['al_hr_pe_benefits', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/security.xml',
         'data/bank_codes_data.xml',
         'report/hr_payslip_voucher_report.xml',
         'data/payroll_structure_report_data.xml',
@@ -56,6 +54,7 @@ Sustituye a ``hr_voucher``, ``hr_certificate_letter``,
         'views/hr_multipayment_views.xml',
         'views/res_config_settings_views.xml',
         'data/contract_template_data.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.report_assets_common': [

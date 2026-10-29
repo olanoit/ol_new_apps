@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="al_pharmacy_pos.PrescriptionDialog">
-        <Dialog size="'md'" title="props.controlled ? 'Receta especial' : 'Receta médica'">
+        <Dialog size="'md'" title="this.props.controlled ? 'Receta especial' : 'Receta médica'">
             <div class="o_pharmacy_prescription_dialog">
                 <p class="mb-3">
-                    <strong t-esc="props.productName"/> se vende con
-                    <t t-if="props.controlled">receta especial (producto controlado).</t>
+                    <strong t-esc="this.props.productName"/> se vende con
+                    <t t-if="this.props.controlled">receta especial (producto controlado).</t>
                     <t t-else="">receta médica.</t>
                 </p>
                 <div class="row g-2">
                     <div class="col-6">
                         <label class="form-label" for="rx_number">N.º de receta</label>
-                        <input id="rx_number" class="form-control" t-model="state.number"/>
+                        <input id="rx_number" class="form-control" t-custom-model="this.state.number"/>
                     </div>
                     <div class="col-6">
                         <label class="form-label" for="rx_date">Fecha</label>
-                        <input id="rx_date" type="date" class="form-control" t-model="state.date"/>
+                        <input id="rx_date" type="date" class="form-control" t-custom-model="this.state.date"/>
                     </div>
                     <div class="col-8">
                         <label class="form-label" for="rx_prescriber">Prescriptor</label>
-                        <input id="rx_prescriber" class="form-control" t-model="state.prescriberName"/>
+                        <input id="rx_prescriber" class="form-control" t-custom-model="this.state.prescriberName"/>
                     </div>
                     <div class="col-4">
                         <label class="form-label" for="rx_license">Colegiatura</label>
-                        <input id="rx_license" class="form-control" t-model="state.license"/>
+                        <input id="rx_license" class="form-control" t-custom-model="this.state.license"/>
                     </div>
-                    <div class="col-12" t-if="props.needsPatient">
+                    <div class="col-12" t-if="this.props.needsPatient">
                         <label class="form-label" for="rx_patient">Paciente</label>
-                        <input id="rx_patient" class="form-control" t-model="state.patientName"/>
+                        <input id="rx_patient" class="form-control" t-custom-model="this.state.patientName"/>
                     </div>
                 </div>
             </div>
             <t t-set-slot="footer">
-                <button class="btn btn-primary btn-lg" t-att-disabled="!canRegister" t-on-click="register">Registrar receta</button>
-                <button t-if="props.allowException" class="btn btn-warning btn-lg" t-on-click="exception">Autorizar sin receta (Q.F.)</button>
-                <button t-if="props.allowContinue" class="btn btn-secondary btn-lg" t-on-click="continueWithout">Continuar sin receta</button>
-                <button class="btn btn-secondary btn-lg" t-on-click="props.close">Cancelar</button>
+                <button class="btn btn-primary btn-lg" t-att-disabled="!this.canRegister" t-on-click="this.register">Registrar receta</button>
+                <button t-if="this.props.allowException" class="btn btn-warning btn-lg" t-on-click="this.exception">Autorizar sin receta (Q.F.)</button>
+                <button t-if="this.props.allowContinue" class="btn btn-secondary btn-lg" t-on-click="this.continueWithout">Continuar sin receta</button>
+                <button class="btn btn-secondary btn-lg" t-on-click="this.props.close">Cancelar</button>
             </t>
         </Dialog>
     </t>

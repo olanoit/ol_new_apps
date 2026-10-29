@@ -183,7 +183,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Dolor leve a moderado y fiebre.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_paracetamol.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_paracetamol.jpg"/>
         </record>
         <record id="product_paracetamol_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_paracetamol"/>
@@ -216,7 +216,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_rimac"/>
             <field name="pharmacy_indications">Dolor leve a moderado y fiebre.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_dolofen.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_dolofen.jpg"/>
         </record>
         <record id="product_dolofen_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_dolofen"/>
@@ -248,7 +248,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 120, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Fiebre y dolor en niños, según peso.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_paracetamol_syrup.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_paracetamol_syrup.jpg"/>
         </record>
         <record id="product_ibuprofen" model="product.template">
             <field name="name">Ibuprofeno 400 mg tableta</field>
@@ -268,7 +268,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ibuprofeno'), 'strength': 400, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Dolor, inflamación y fiebre.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ibuprofen.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ibuprofen.jpg"/>
         </record>
         <record id="product_ibuprofen_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_ibuprofen"/>
@@ -301,7 +301,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ibuprofeno'), 'strength': 400, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_sol"/>
             <field name="pharmacy_indications">Dolor, inflamación y fiebre.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ibuflam.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ibuflam.jpg"/>
         </record>
         <record id="product_ibuflam_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_ibuflam"/>
@@ -327,7 +327,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ibuprofeno'), 'strength': 100, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Fiebre y dolor en niños mayores de 6 meses.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ibuprofen_suspension.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ibuprofen_suspension.jpg"/>
         </record>
         <record id="product_naproxen" model="product.template">
             <field name="name">Naproxeno sódico 550 mg tableta</field>
@@ -347,7 +347,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_naproxeno'), 'strength': 550, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Dolor e inflamación.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_naproxen.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_naproxen.jpg"/>
         </record>
         <record id="product_naproxen_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_naproxen"/>
@@ -379,7 +379,7 @@
             <field name="pharmacy_route_id" ref="route_topical"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_diclofenaco'), 'strength': 1, 'strength_unit': 'percent'})]"/>
             <field name="pharmacy_indications">Dolor muscular y articular localizado.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_diclofenac_gel.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_diclofenac_gel.jpg"/>
         </record>
         <record id="product_aspirin" model="product.template">
             <field name="name">Ácido acetilsalicílico 100 mg tableta</field>
@@ -399,7 +399,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_acido_acetilsalicilico'), 'strength': 100, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Prevención cardiovascular, por indicación médica.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_aspirin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_aspirin.jpg"/>
         </record>
         <record id="product_aspirin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_aspirin"/>
@@ -432,7 +432,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_paracetamol'), 'strength': 500, 'strength_unit': 'mg'}), Command.create({'ingredient_id': ref('ingredient_fenilefrina'), 'strength': 10, 'strength_unit': 'mg'}), Command.create({'ingredient_id': ref('ingredient_clorfenamina'), 'strength': 4, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_andino"/>
             <field name="pharmacy_indications">Síntomas del resfrío común y la gripe.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_antiflu.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_antiflu.jpg"/>
         </record>
         <record id="product_antiflu_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_antiflu"/>
@@ -464,7 +464,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_loratadina'), 'strength': 10, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Rinitis alérgica y urticaria.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_loratadine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_loratadine.jpg"/>
         </record>
         <record id="product_loratadine_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_loratadine"/>
@@ -490,7 +490,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_cetirizina'), 'strength': 10, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Rinitis alérgica y urticaria.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_cetirizine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_cetirizine.jpg"/>
         </record>
         <record id="product_cetirizine_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_cetirizine"/>
@@ -516,7 +516,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_clorfenamina'), 'strength': 4, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Alergias y picaduras.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_chlorphenamine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_chlorphenamine.jpg"/>
         </record>
         <record id="product_chlorphenamine_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_chlorphenamine"/>
@@ -542,7 +542,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ambroxol'), 'strength': 30, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Tos con flema.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ambroxol_syrup.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ambroxol_syrup.jpg"/>
         </record>
         <record id="product_dextromethorphan_syrup" model="product.template">
             <field name="name">Dextrometorfano 15 mg/5 mL jarabe frasco 120 mL</field>
@@ -562,7 +562,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_dextrometorfano'), 'strength': 15, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Tos seca.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_dextromethorphan_syrup.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_dextromethorphan_syrup.jpg"/>
         </record>
         <record id="product_saline_nasal" model="product.template">
             <field name="name">Cloruro de sodio 0,9 % gotas nasales frasco 30 mL</field>
@@ -582,7 +582,7 @@
             <field name="pharmacy_route_id" ref="route_nasal"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_cloruro_sodio'), 'strength': 0.9, 'strength_unit': 'percent'})]"/>
             <field name="pharmacy_indications">Limpieza y descongestión nasal.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_saline_nasal.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_saline_nasal.jpg"/>
         </record>
         <record id="product_omeprazole" model="product.template">
             <field name="name">Omeprazol 20 mg cápsula</field>
@@ -602,7 +602,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_omeprazol'), 'strength': 20, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Acidez y gastritis.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_omeprazole.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_omeprazole.jpg"/>
         </record>
         <record id="product_omeprazole_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_omeprazole"/>
@@ -634,7 +634,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_hidroxido_aluminio'), 'strength': 200, 'strength_unit': 'mg_5ml'}), Command.create({'ingredient_id': ref('ingredient_hidroxido_magnesio'), 'strength': 200, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Acidez estomacal.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_antacid.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_antacid.jpg"/>
         </record>
         <record id="product_simethicone" model="product.template">
             <field name="name">Simeticona 80 mg tableta masticable</field>
@@ -654,7 +654,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_simeticona'), 'strength': 80, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Gases y distensión abdominal.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_simethicone.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_simethicone.jpg"/>
         </record>
         <record id="product_simethicone_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_simethicone"/>
@@ -680,7 +680,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_loperamida'), 'strength': 2, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Diarrea aguda en adultos.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_loperamide.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_loperamide.jpg"/>
         </record>
         <record id="product_loperamide_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_loperamide"/>
@@ -706,7 +706,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_sales_rehidratacion'), 'strength': 27.9, 'strength_unit': 'g'})]"/>
             <field name="pharmacy_indications">Deshidratación por diarrea.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ors.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ors.jpg"/>
         </record>
         <record id="product_ors_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_ors"/>
@@ -732,7 +732,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_mebendazol'), 'strength': 100, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Parásitos intestinales.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_mebendazole.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_mebendazole.jpg"/>
         </record>
         <record id="product_albendazole" model="product.template">
             <field name="name">Albendazol 400 mg tableta</field>
@@ -752,7 +752,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_albendazol'), 'strength': 400, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Parásitos intestinales.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_albendazole.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_albendazole.jpg"/>
         </record>
         <record id="product_albendazole_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_albendazole"/>
@@ -778,7 +778,7 @@
             <field name="pharmacy_route_id" ref="route_topical"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_clotrimazol'), 'strength': 1, 'strength_unit': 'percent'})]"/>
             <field name="pharmacy_indications">Infecciones de la piel por hongos.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_clotrimazole_cream.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_clotrimazole_cream.jpg"/>
         </record>
         <record id="product_artificial_tears" model="product.template">
             <field name="name">Hipromelosa 0,3 % lágrimas artificiales frasco 15 mL</field>
@@ -798,7 +798,7 @@
             <field name="pharmacy_route_id" ref="route_ophthalmic"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_hipromelosa'), 'strength': 0.3, 'strength_unit': 'percent'})]"/>
             <field name="pharmacy_indications">Sequedad e irritación ocular.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_artificial_tears.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_artificial_tears.jpg"/>
         </record>
         <record id="product_vitamin_c" model="product.template">
             <field name="name">Vitamina C 1 g tableta efervescente</field>
@@ -818,7 +818,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_acido_ascorbico'), 'strength': 1, 'strength_unit': 'g'})]"/>
             <field name="pharmacy_indications">Suplemento de vitamina C.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_vitamin_c.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_vitamin_c.jpg"/>
         </record>
         <record id="product_vitamin_c_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_vitamin_c"/>
@@ -844,7 +844,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_sulfato_ferroso'), 'strength': 300, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Anemia por falta de hierro.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ferrous_sulfate.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ferrous_sulfate.jpg"/>
         </record>
         <record id="product_ferrous_sulfate_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_ferrous_sulfate"/>
@@ -877,7 +877,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones bacterianas.</field>
             <field name="pharmacy_bioequivalent" eval="True"/>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_amoxicillin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_amoxicillin.jpg"/>
         </record>
         <record id="product_amoxicillin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_amoxicillin"/>
@@ -910,7 +910,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_andino"/>
             <field name="pharmacy_indications">Infecciones bacterianas.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_amoxival.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_amoxival.jpg"/>
         </record>
         <record id="product_amoxival_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_amoxival"/>
@@ -936,7 +936,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 250, 'strength_unit': 'mg_5ml'})]"/>
             <field name="pharmacy_indications">Infecciones bacterianas en niños.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_amoxicillin_suspension.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_amoxicillin_suspension.jpg"/>
         </record>
         <record id="product_amoxicillin_clavulanate" model="product.template">
             <field name="name">Amoxicilina + ácido clavulánico 875/125 mg tableta</field>
@@ -956,7 +956,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amoxicilina'), 'strength': 875, 'strength_unit': 'mg'}), Command.create({'ingredient_id': ref('ingredient_acido_clavulanico'), 'strength': 125, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones bacterianas resistentes.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_amoxicillin_clavulanate.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_amoxicillin_clavulanate.jpg"/>
         </record>
         <record id="product_amoxicillin_clavulanate_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_amoxicillin_clavulanate"/>
@@ -982,7 +982,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_azitromicina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones respiratorias.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_azithromycin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_azithromycin.jpg"/>
         </record>
         <record id="product_azithromycin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_azithromycin"/>
@@ -1008,7 +1008,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_cefalexina'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones de piel y vías urinarias.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_cephalexin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_cephalexin.jpg"/>
         </record>
         <record id="product_cephalexin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_cephalexin"/>
@@ -1034,7 +1034,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_ciprofloxacino'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones urinarias.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_ciprofloxacin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_ciprofloxacin.jpg"/>
         </record>
         <record id="product_ciprofloxacin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_ciprofloxacin"/>
@@ -1060,7 +1060,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_metronidazol'), 'strength': 500, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Infecciones por parásitos y bacterias anaerobias.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_metronidazole.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_metronidazole.jpg"/>
         </record>
         <record id="product_metronidazole_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_metronidazole"/>
@@ -1087,7 +1087,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_losartan'), 'strength': 50, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Hipertensión arterial.</field>
             <field name="pharmacy_bioequivalent" eval="True"/>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_losartan.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_losartan.jpg"/>
         </record>
         <record id="product_losartan_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_losartan"/>
@@ -1121,7 +1121,7 @@
             <field name="pharmacy_laboratory_id" ref="lab_huascaran"/>
             <field name="pharmacy_indications">Hipertensión arterial.</field>
             <field name="pharmacy_bioequivalent" eval="True"/>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_tensiloz.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_tensiloz.jpg"/>
         </record>
         <record id="product_tensiloz_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_tensiloz"/>
@@ -1147,7 +1147,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_enalapril'), 'strength': 10, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Hipertensión arterial.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_enalapril.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_enalapril.jpg"/>
         </record>
         <record id="product_enalapril_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_enalapril"/>
@@ -1179,7 +1179,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_amlodipino'), 'strength': 5, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Hipertensión arterial.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_amlodipine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_amlodipine.jpg"/>
         </record>
         <record id="product_amlodipine_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_amlodipine"/>
@@ -1212,7 +1212,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_atorvastatina'), 'strength': 20, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Colesterol alto.</field>
             <field name="pharmacy_bioequivalent" eval="True"/>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_atorvastatin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_atorvastatin.jpg"/>
         </record>
         <record id="product_atorvastatin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_atorvastatin"/>
@@ -1245,7 +1245,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_atorvastatina'), 'strength': 20, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_chavin"/>
             <field name="pharmacy_indications">Colesterol alto.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_colestrina.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_colestrina.jpg"/>
         </record>
         <record id="product_colestrina_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_colestrina"/>
@@ -1271,7 +1271,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_metformina'), 'strength': 850, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Diabetes tipo 2.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_metformin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_metformin.jpg"/>
         </record>
         <record id="product_metformin_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_metformin"/>
@@ -1303,7 +1303,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_glibenclamida'), 'strength': 5, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Diabetes tipo 2.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_glibenclamide.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_glibenclamide.jpg"/>
         </record>
         <record id="product_glibenclamide_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_glibenclamide"/>
@@ -1329,7 +1329,7 @@
             <field name="pharmacy_route_id" ref="route_sc"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_insulina_humana'), 'strength': 100, 'strength_unit': 'ui'})]"/>
             <field name="pharmacy_indications">Diabetes que requiere insulina.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_insulin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_insulin.jpg"/>
             <field name="pharmacy_cold_chain" eval="True"/>
             <field name="pharmacy_storage_conditions">Refrigerar entre 2 °C y 8 °C. No congelar.</field>
         </record>
@@ -1352,7 +1352,7 @@
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_insulina_glargina'), 'strength': 100, 'strength_unit': 'ui'})]"/>
             <field name="pharmacy_laboratory_id" ref="lab_rimac"/>
             <field name="pharmacy_indications">Diabetes tipo 1 y 2.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_insulin_glargine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_insulin_glargine.jpg"/>
             <field name="pharmacy_cold_chain" eval="True"/>
             <field name="pharmacy_storage_conditions">Refrigerar entre 2 °C y 8 °C. No congelar.</field>
         </record>
@@ -1380,7 +1380,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_levotiroxina'), 'strength': 100, 'strength_unit': 'mcg'})]"/>
             <field name="pharmacy_indications">Hipotiroidismo.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_levothyroxine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_levothyroxine.jpg"/>
         </record>
         <record id="product_levothyroxine_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_levothyroxine"/>
@@ -1406,7 +1406,7 @@
             <field name="pharmacy_route_id" ref="route_inhalation"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_salbutamol'), 'strength': 100, 'strength_unit': 'mcg'})]"/>
             <field name="pharmacy_indications">Asma y broncoespasmo.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_salbutamol.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_salbutamol.jpg"/>
         </record>
         <record id="product_prednisone" model="product.template">
             <field name="name">Prednisona 20 mg tableta</field>
@@ -1426,7 +1426,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_prednisona'), 'strength': 20, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Procesos inflamatorios y alérgicos.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_prednisone.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_prednisone.jpg"/>
         </record>
         <record id="product_prednisone_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_prednisone"/>
@@ -1452,7 +1452,7 @@
             <field name="pharmacy_route_id" ref="route_im"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_dexametasona'), 'strength': 4, 'strength_unit': 'mg_ml'})]"/>
             <field name="pharmacy_indications">Inflamación y alergias graves.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_dexamethasone.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_dexamethasone.jpg"/>
         </record>
         <record id="product_dexamethasone_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_dexamethasone"/>
@@ -1478,7 +1478,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_sertralina'), 'strength': 50, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Depresión y ansiedad.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_sertraline.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_sertraline.jpg"/>
         </record>
         <record id="product_sertraline_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_sertraline"/>
@@ -1504,7 +1504,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_tamoxifeno'), 'strength': 20, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Tratamiento del cáncer de mama.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_tamoxifen.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_tamoxifen.jpg"/>
         </record>
         <record id="product_tamoxifen_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_tamoxifen"/>
@@ -1530,7 +1530,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_clonazepam'), 'strength': 2, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Trastornos de ansiedad.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_clonazepam.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_clonazepam.jpg"/>
         </record>
         <record id="product_clonazepam_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_clonazepam"/>
@@ -1556,7 +1556,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_alprazolam'), 'strength': 0.5, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Trastornos de ansiedad.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_alprazolam.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_alprazolam.jpg"/>
         </record>
         <record id="product_alprazolam_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_alprazolam"/>
@@ -1582,7 +1582,7 @@
             <field name="pharmacy_route_id" ref="route_oral"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_diazepam'), 'strength': 10, 'strength_unit': 'mg'})]"/>
             <field name="pharmacy_indications">Ansiedad y espasmos musculares.</field>
-            <field name="image_1920" type="base64" file="al_pharmacy_base/static/img/demo/product_diazepam.jpg"/>
+            <field name="image_1920" type="bytes" file="al_pharmacy_base/static/img/demo/product_diazepam.jpg"/>
         </record>
         <record id="product_diazepam_presentation_1" model="pharmacy.presentation">
             <field name="product_tmpl_id" ref="product_diazepam"/>

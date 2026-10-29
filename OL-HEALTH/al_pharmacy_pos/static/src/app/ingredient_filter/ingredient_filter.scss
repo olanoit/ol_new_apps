@@ -10,7 +10,7 @@
         padding: 0.3rem 0.75rem;
         font-weight: 600;
         font-size: 0.9rem;
-        .fa-times {
+        [data-icon='close'] {
             cursor: pointer;
             opacity: 0.85;
         }

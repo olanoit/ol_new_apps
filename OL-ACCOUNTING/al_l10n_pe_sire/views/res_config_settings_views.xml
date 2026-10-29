@@ -34,7 +34,7 @@
                                 <field name="l10n_pe_sire_client_secret" password="True"/>
                             </div>
                             <button name="action_l10n_pe_sire_test_connection" type="object"
-                                    string="Probar conexión" icon="fa-plug" class="btn-link"/>
+                                    string="Probar conexión" icon="power" class="btn-link"/>
                         </div>
                     </setting>
                     <setting string="API SIRE (SUNAT)" invisible="is_root_company"

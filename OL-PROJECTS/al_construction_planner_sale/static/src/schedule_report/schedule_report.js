@@ -9,10 +9,11 @@
  * (`construction.schedule.report.get_schedule`), que recalcula la obra al
  * abrirla; el pivote y el gráfico nativos leen las mismas filas.
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 const REPORT = "construction.schedule.report";
 const CHART = { width: 900, height: 260, left: 70, right: 16, top: 12, bottom: 28 };
@@ -32,9 +33,9 @@ export class ConstructionScheduleReport extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
         this.chart = CHART;
-        this.state = useState({
+        this.state = proxy({
             projects: [],
             projectId: false,
             scenario: "plan",

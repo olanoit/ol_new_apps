@@ -52,7 +52,7 @@
                     <separator string="Ejecutar"/>
                     <div class="oe_button_box d-flex flex-wrap justify-content-start" name="board_execute">
                         <button name="action_construction_view_progress_to_validate" type="object"
-                                class="oe_stat_button" icon="fa-check-square-o"
+                                class="oe_stat_button" icon="check_box"
                                 groups="al_construction_planner.group_planner_exec_validator">
                             <field name="construction_progress_to_validate_count" widget="statinfo" string="Avances por validar"/>
                         </button>
@@ -60,15 +60,15 @@
                     <separator string="Controlar"/>
                     <div class="oe_button_box d-flex flex-wrap justify-content-start" name="board_control">
                         <button name="action_construction_view_current_plan" type="object"
-                                class="oe_stat_button" icon="fa-sitemap"
+                                class="oe_stat_button" icon="account_tree"
                                 groups="al_construction_planner.group_planner_plan_viewer">
                             <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
                         </button>
                         <button name="action_construction_view_control" type="object"
-                                class="oe_stat_button" icon="fa-balance-scale" string="Control de saldo"
+                                class="oe_stat_button" icon="balance" string="Control de saldo"
                                 groups="al_construction_planner.group_planner_feature_control"/>
                         <button name="action_construction_view_exceeds" type="object"
-                                class="oe_stat_button" icon="fa-exclamation-triangle"
+                                class="oe_stat_button" icon="warning"
                                 groups="al_construction_planner.group_planner_feature_control">
                             <field name="construction_exceed_count" widget="statinfo" string="Excesos autorizados"/>
                         </button>
@@ -187,7 +187,7 @@
                 </group>
                 <div class="d-grid gap-2" name="execute_actions">
                     <button name="action_register_progress" type="object" string="Registrar avance"
-                            class="btn btn-secondary" icon="fa-camera"
+                            class="btn btn-secondary" icon="photo_camera"
                             groups="al_construction_planner.group_planner_feature_progress"/>
                 </div>
                 <footer>

@@ -27,11 +27,10 @@ Flujo de caja proyectado
     'countries': ['pe'],
     'depends': ['al_account_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/cash_forecast_security.xml',
         'views/cash_forecast_views.xml',
         'views/account_journal_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

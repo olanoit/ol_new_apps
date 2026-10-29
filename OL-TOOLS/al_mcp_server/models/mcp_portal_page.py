@@ -27,7 +27,7 @@ Formato de la especificación
           "aggregate": "sum",
           "format": "currency",
           "currency": "USD",
-          "icon": "fa-money",
+          "icon": "payments",
           "color": "#10b981"
         },
         {

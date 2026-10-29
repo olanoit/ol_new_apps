@@ -41,11 +41,10 @@ globalmente el mecanismo nativo; aquí cada diario decide.
         'al_account_base',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/edi_invoice_series_security.xml',
         'views/edi_invoice_series_views.xml',
         'views/account_journal_views.xml',
         'views/account_move_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

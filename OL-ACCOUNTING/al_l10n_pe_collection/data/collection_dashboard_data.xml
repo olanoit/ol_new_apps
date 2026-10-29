@@ -5,7 +5,7 @@
          Respeta las reglas de registro: el gestor ve solo su cartera. -->
     <record id="dashboard_collection" model="spreadsheet.dashboard">
         <field name="name">Cobranza</field>
-        <field name="spreadsheet_binary_data" type="base64" file="al_l10n_pe_collection/data/files/collection_dashboard.json"/>
+        <field name="spreadsheet_binary_data" type="bytes" file="al_l10n_pe_collection/data/files/collection_dashboard.json"/>
         <field name="main_data_model_ids" eval="[Command.link(ref('al_l10n_pe_collection.model_l10n_pe_collection_portfolio'))]"/>
         <field name="dashboard_group_id" ref="spreadsheet_dashboard.spreadsheet_dashboard_group_finance"/>
         <field name="group_ids" eval="[Command.set([ref('al_l10n_pe_collection.group_collection_user')])]"/>

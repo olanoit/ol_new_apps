@@ -38,7 +38,6 @@ dependencia muerta de ``al_account_dua``.
         'al_account_base',
     ],
     'data': [
-        'security/ir.model.access.csv',
         'views/account_payment_views.xml',
         'views/pe_catalog_payment_views.xml',
         'wizards/account_payment_register_views.xml',
@@ -46,6 +45,7 @@ dependencia muerta de ``al_account_dua``.
         'views/account_journal_views.xml',
         'data/pe_catalog_payment.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

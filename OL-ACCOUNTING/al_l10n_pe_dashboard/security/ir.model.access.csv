@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_l10n_pe_dashboard_tax_user,l10n_pe.dashboard.tax contable,model_l10n_pe_dashboard_tax,account.group_account_user,1,0,0,0
-access_l10n_pe_dashboard_tax_readonly,l10n_pe.dashboard.tax auditor,model_l10n_pe_dashboard_tax,account.group_account_readonly,1,0,0,0

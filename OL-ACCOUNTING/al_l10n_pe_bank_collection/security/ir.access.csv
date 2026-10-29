@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+access_layout_user,l10n_pe.bank.collection.layout user,l10n_pe.bank.collection.layout,al_l10n_pe_collection.group_collection_user,r,
+access_layout_manager,l10n_pe.bank.collection.layout manager,l10n_pe.bank.collection.layout,al_l10n_pe_collection.group_collection_manager,crud,
+access_layout_field_user,l10n_pe.bank.collection.layout.field user,l10n_pe.bank.collection.layout.field,al_l10n_pe_collection.group_collection_user,r,
+access_layout_field_manager,l10n_pe.bank.collection.layout.field manager,l10n_pe.bank.collection.layout.field,al_l10n_pe_collection.group_collection_manager,crud,
+access_agreement_user,l10n_pe.bank.collection.agreement user,l10n_pe.bank.collection.agreement,al_l10n_pe_collection.group_collection_user,r,
+access_agreement_manager,l10n_pe.bank.collection.agreement manager,l10n_pe.bank.collection.agreement,al_l10n_pe_collection.group_collection_manager,crud,
+bank_collection_agreement_company_rule,Convenio de recaudación: multicompañía,l10n_pe.bank.collection.agreement,,crud,"[('company_id', 'in', company_ids)]"
+access_batch_manager,l10n_pe.bank.collection.batch manager,l10n_pe.bank.collection.batch,al_l10n_pe_collection.group_collection_manager,crud,
+bank_collection_batch_company_rule,Archivo de deudores: multicompañía,l10n_pe.bank.collection.batch,,crud,"[('company_id', 'in', company_ids)]"
+access_batch_line_manager,l10n_pe.bank.collection.batch.line manager,l10n_pe.bank.collection.batch.line,al_l10n_pe_collection.group_collection_manager,crud,
+bank_collection_batch_line_company_rule,Cuota del archivo de deudores: multicompañía,l10n_pe.bank.collection.batch.line,,crud,"[('company_id', 'in', company_ids)]"
+access_response_manager,l10n_pe.bank.collection.response manager,l10n_pe.bank.collection.response,al_l10n_pe_collection.group_collection_manager,crud,
+bank_collection_response_company_rule,Respuesta de recaudación: multicompañía,l10n_pe.bank.collection.response,,crud,"[('company_id', 'in', company_ids)]"
+access_response_line_manager,l10n_pe.bank.collection.response.line manager,l10n_pe.bank.collection.response.line,al_l10n_pe_collection.group_collection_manager,crud,
+bank_collection_response_line_company_rule,Cobro de recaudación: multicompañía,l10n_pe.bank.collection.response.line,,crud,"[('company_id', 'in', company_ids)]"
+access_payment_type_user,l10n_pe.bank.collection.payment.type user,l10n_pe.bank.collection.payment.type,al_l10n_pe_collection.group_collection_user,r,
+access_payment_type_manager,l10n_pe.bank.collection.payment.type manager,l10n_pe.bank.collection.payment.type,al_l10n_pe_collection.group_collection_manager,crud,
+bank_collection_payment_type_company_rule,Tipo de pago de recaudación: multicompañía,l10n_pe.bank.collection.payment.type,,crud,"[('company_id', 'in', company_ids)]"

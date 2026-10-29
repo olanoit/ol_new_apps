@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_l10n_pe_closing_rule_readonly,l10n_pe.closing.rule readonly,l10n_pe.closing.rule,account.group_account_readonly,r,
+access_l10n_pe_closing_rule_manager,l10n_pe.closing.rule manager,l10n_pe.closing.rule,account.group_account_manager,crud,
+l10n_pe_closing_rule_company_rule,Reglas del cierre del ejercicio: multicompañía,l10n_pe.closing.rule,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_l10n_pe_year_closing_wizard_manager,l10n_pe.year.closing.wizard manager,l10n_pe.year.closing.wizard,account.group_account_manager,crud,

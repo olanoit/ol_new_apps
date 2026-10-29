@@ -1,0 +1,25 @@
+id,name,model_id,group_id/id,operation,domain
+access_pharmacy_environment_point_user,pharmacy.environment.point técnico,pharmacy.environment.point,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_environment_point_director,pharmacy.environment.point director técnico,pharmacy.environment.point,al_pharmacy_base.group_pharmacy_director,crud,
+pharmacy_environment_point_comp_rule,Punto de control ambiental: multicompañía,pharmacy.environment.point,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_environment_reading_user,pharmacy.environment.reading técnico,pharmacy.environment.reading,al_pharmacy_base.group_pharmacy_technician,cru,
+pharmacy_environment_reading_comp_rule,Lectura ambiental: multicompañía,pharmacy.environment.reading,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_alert_user,pharmacy.alert técnico,pharmacy.alert,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_alert_pharmacist,pharmacy.alert químico farmacéutico,pharmacy.alert,al_pharmacy_base.group_pharmacy_pharmacist,cru,
+pharmacy_alert_comp_rule,Alerta sanitaria: multicompañía,pharmacy.alert,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_alert_line_user,pharmacy.alert.line técnico,pharmacy.alert.line,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_alert_line_pharmacist,pharmacy.alert.line químico farmacéutico,pharmacy.alert.line,al_pharmacy_base.group_pharmacy_pharmacist,crud,
+access_pharmacy_destruction_user,pharmacy.destruction técnico,pharmacy.destruction,al_pharmacy_base.group_pharmacy_technician,cru,
+pharmacy_destruction_comp_rule,Acta de baja: multicompañía,pharmacy.destruction,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_destruction_line_user,pharmacy.destruction.line técnico,pharmacy.destruction.line,al_pharmacy_base.group_pharmacy_technician,crud,
+pharmacy_destruction_line_comp_rule,Línea de acta de baja: multicompañía,pharmacy.destruction.line,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_expiry_discount_user,pharmacy.expiry.discount usuario,pharmacy.expiry.discount,base.group_user,r,
+access_pharmacy_expiry_discount_manager,pharmacy.expiry.discount administrador,pharmacy.expiry.discount,al_pharmacy_base.group_pharmacy_manager,crud,
+access_pharmacy_expiry_discount_stock_manager,pharmacy.expiry.discount responsable de inventario,pharmacy.expiry.discount,stock.group_stock_manager,crud,
+pharmacy_expiry_discount_comp_rule,Escala de descuento por vencer: multicompañía,pharmacy.expiry.discount,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_supplier_return_user,pharmacy.supplier.return técnico,pharmacy.supplier.return,al_pharmacy_base.group_pharmacy_technician,cru,
+access_pharmacy_supplier_return_pharmacist,pharmacy.supplier.return químico farmacéutico,pharmacy.supplier.return,al_pharmacy_base.group_pharmacy_pharmacist,crud,
+pharmacy_supplier_return_comp_rule,Canje con la droguería: multicompañía,pharmacy.supplier.return,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_supplier_return_line_user,pharmacy.supplier.return.line técnico,pharmacy.supplier.return.line,al_pharmacy_base.group_pharmacy_technician,crud,
+pharmacy_supplier_return_line_comp_rule,Lote del canje: multicompañía,pharmacy.supplier.return.line,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_supplier_return_load_user,pharmacy.supplier.return.load técnico,pharmacy.supplier.return.load,al_pharmacy_base.group_pharmacy_technician,crud,

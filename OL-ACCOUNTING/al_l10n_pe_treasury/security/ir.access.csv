@@ -1,0 +1,21 @@
+id,name,model_id,group_id/id,operation,domain
+access_treasury_position_user,l10n_pe.treasury.position usuario,l10n_pe.treasury.position,al_l10n_pe_treasury.group_treasury_user,crud,
+access_treasury_position_readonly,l10n_pe.treasury.position auditor,l10n_pe.treasury.position,account.group_account_readonly,r,
+treasury_position_company_rule,Posición de tesorería: multicompañía,l10n_pe.treasury.position,,crud,"[('company_id', 'in', company_ids)]"
+access_treasury_position_line_user,l10n_pe.treasury.position.line usuario,l10n_pe.treasury.position.line,al_l10n_pe_treasury.group_treasury_user,crud,
+access_treasury_position_line_readonly,l10n_pe.treasury.position.line auditor,l10n_pe.treasury.position.line,account.group_account_readonly,r,
+treasury_position_line_company_rule,Línea de la posición de tesorería: multicompañía,l10n_pe.treasury.position.line,,crud,"[('company_id', 'in', company_ids)]"
+access_treasury_transfer_user,l10n_pe.treasury.transfer usuario,l10n_pe.treasury.transfer,al_l10n_pe_treasury.group_treasury_user,crud,
+access_treasury_transfer_readonly,l10n_pe.treasury.transfer auditor,l10n_pe.treasury.transfer,account.group_account_readonly,r,
+treasury_transfer_company_rule,Transferencia de tesorería: multicompañía,l10n_pe.treasury.transfer,,crud,"[('company_id', 'in', company_ids)]"
+access_treasury_payment_plan_user,l10n_pe.treasury.payment.plan usuario,l10n_pe.treasury.payment.plan,al_l10n_pe_treasury.group_treasury_user,crud,
+access_treasury_payment_plan_readonly,l10n_pe.treasury.payment.plan auditor,l10n_pe.treasury.payment.plan,account.group_account_readonly,r,
+treasury_payment_plan_company_rule,Programación de pagos: multicompañía,l10n_pe.treasury.payment.plan,,crud,"[('company_id', 'in', company_ids)]"
+access_treasury_payment_plan_line_user,l10n_pe.treasury.payment.plan.line usuario,l10n_pe.treasury.payment.plan.line,al_l10n_pe_treasury.group_treasury_user,crud,
+access_treasury_payment_plan_line_readonly,l10n_pe.treasury.payment.plan.line auditor,l10n_pe.treasury.payment.plan.line,account.group_account_readonly,r,
+treasury_payment_plan_line_company_rule,Documento programado: multicompañía,l10n_pe.treasury.payment.plan.line,,crud,"[('company_id', 'in', company_ids)]"
+access_treasury_credit_line_user,l10n_pe.treasury.credit.line usuario,l10n_pe.treasury.credit.line,al_l10n_pe_treasury.group_treasury_user,r,
+access_treasury_credit_line_manager,l10n_pe.treasury.credit.line administrador,l10n_pe.treasury.credit.line,al_l10n_pe_treasury.group_treasury_manager,crud,
+access_treasury_credit_line_readonly,l10n_pe.treasury.credit.line auditor,l10n_pe.treasury.credit.line,account.group_account_readonly,r,
+treasury_credit_line_company_rule,Línea de crédito: multicompañía,l10n_pe.treasury.credit.line,,crud,"[('company_id', 'in', company_ids)]"
+access_treasury_payment_plan_propose_user,l10n_pe.treasury.payment.plan.propose usuario,l10n_pe.treasury.payment.plan.propose,al_l10n_pe_treasury.group_treasury_user,crud,

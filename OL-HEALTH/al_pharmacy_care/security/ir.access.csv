@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_pharmacy_treatment_technician,pharmacy.treatment técnico,pharmacy.treatment,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_treatment_pharmacist,pharmacy.treatment químico farmacéutico,pharmacy.treatment,al_pharmacy_base.group_pharmacy_pharmacist,cru,
+access_pharmacy_treatment_manager,pharmacy.treatment administrador,pharmacy.treatment,al_pharmacy_base.group_pharmacy_manager,crud,
+pharmacy_treatment_comp_rule,Tratamiento crónico: multicompañía,pharmacy.treatment,,crud,"[('company_id', 'in', company_ids)]"

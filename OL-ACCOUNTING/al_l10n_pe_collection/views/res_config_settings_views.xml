@@ -21,19 +21,19 @@
                                  documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#configuración">
                             <div class="mt8">
                                 <button name="%(action_collection_zone)d" type="action" string="Zonas"
-                                        class="btn-link" icon="oi-arrow-right"/>
+                                        class="btn-link" icon="east"/>
                             </div>
                             <div>
                                 <button name="%(action_collection_bucket)d" type="action" string="Tramos de antigüedad"
-                                        class="btn-link" icon="oi-arrow-right"/>
+                                        class="btn-link" icon="east"/>
                             </div>
                             <div>
                                 <button name="%(action_collection_result)d" type="action" string="Resultados de gestión"
-                                        class="btn-link" icon="oi-arrow-right"/>
+                                        class="btn-link" icon="east"/>
                             </div>
                             <div>
                                 <button name="%(action_collection_dispute_reason)d" type="action" string="Motivos de reclamo"
-                                        class="btn-link" icon="oi-arrow-right"/>
+                                        class="btn-link" icon="east"/>
                             </div>
                         </setting>
                         <setting id="collection_promises" string="Compromisos de pago" company_dependent="1"
@@ -70,11 +70,11 @@
                             </div>
                             <div class="mt8">
                                 <button name="action_l10n_pe_collection_prediction_backtest" type="object"
-                                        string="Medir la precisión" class="btn-link" icon="fa-bullseye"/>
+                                        string="Medir la precisión" class="btn-link" icon="crisis_alert"/>
                             </div>
                             <div>
                                 <button name="action_l10n_pe_collection_prediction_refresh" type="object"
-                                        string="Recalcular ahora" class="btn-link" icon="fa-refresh"/>
+                                        string="Recalcular ahora" class="btn-link" icon="refresh"/>
                             </div>
                         </setting>
                         <setting id="collection_digest" company_dependent="1"
@@ -87,11 +87,11 @@
                                  documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#configuración">
                             <div class="mt8">
                                 <button name="action_l10n_pe_collection_load_followup_levels" type="object"
-                                        string="Cargar niveles" class="btn-link" icon="fa-download"/>
+                                        string="Cargar niveles" class="btn-link" icon="download"/>
                             </div>
                             <div>
                                 <button name="%(account_followup.action_account_followup_line_definition_form)d"
-                                        type="action" string="Niveles de seguimiento" class="btn-link" icon="oi-arrow-right"/>
+                                        type="action" string="Niveles de seguimiento" class="btn-link" icon="east"/>
                             </div>
                         </setting>
                     </block>
@@ -149,7 +149,7 @@
                                 </div>
                                 <div class="mt8">
                                     <button name="%(action_collection_rate_cap)d" type="action" string="Tasas máximas del BCRP"
-                                            class="btn-link" icon="oi-arrow-right"/>
+                                            class="btn-link" icon="east"/>
                                 </div>
                             </div>
                         </setting>
@@ -198,7 +198,7 @@
                             <field name="l10n_pe_collection_online_payment"/>
                             <div class="mt8">
                                 <button name="%(payment.action_payment_provider)d" type="action"
-                                        string="Proveedores de pago" class="btn-link" icon="oi-arrow-right"/>
+                                        string="Proveedores de pago" class="btn-link" icon="east"/>
                             </div>
                         </setting>
                         <setting id="collection_commissions" string="Comisiones" company_dependent="1"
@@ -215,7 +215,7 @@
                                 </div>
                                 <div class="mt8">
                                     <button name="%(action_collection_commission_plan)d" type="action"
-                                            string="Planes de comisión" class="btn-link" icon="oi-arrow-right"/>
+                                            string="Planes de comisión" class="btn-link" icon="east"/>
                                 </div>
                             </div>
                         </setting>
@@ -224,7 +224,7 @@
                                  documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#agencias-externas">
                             <div class="mt8">
                                 <button name="%(action_collection_agency)d" type="action"
-                                        string="Agencias externas" class="btn-link" icon="oi-arrow-right"/>
+                                        string="Agencias externas" class="btn-link" icon="east"/>
                             </div>
                         </setting>
                     </block>

@@ -1,0 +1,17 @@
+id,name,model_id,group_id/id,operation,domain
+rule_mcp_session_admin_all,Sesión MCP: el administrador ve todas,mcp.session,base.group_system,crud,
+rule_mcp_session_user_own,Sesión MCP: los usuarios solo ven sus propias sesiones,mcp.session,base.group_user,r,"[('user_id', '=', user.id)]"
+rule_mcp_session_log_admin_all,Registro MCP: el administrador ve todos,mcp.session.log,base.group_system,crud,
+rule_mcp_session_log_user_own,Registro MCP: los usuarios solo ven sus propias llamadas,mcp.session.log,base.group_user,r,"[('user_id', '=', user.id)]"
+rule_mcp_token_admin_all,Token MCP: el administrador ve todos,mcp.token,base.group_system,crud,
+rule_mcp_token_user_own,Token MCP: los usuarios solo ven sus propios tokens,mcp.token,base.group_user,rud,"[('user_id', '=', user.id)]"
+access_mcp_auth_code_admin,Código de autorización OAuth MCP: administrador,mcp.auth.code,base.group_system,crud,
+access_mcp_pat_wizard_user,Asistente PAT MCP: usuario,mcp.pat.wizard,base.group_user,crud,
+rule_mcp_job_user_own,Trabajo MCP: los usuarios solo ven sus propios trabajos,mcp.job,base.group_user,ru,"[('user_id', '=', user.id)]"
+rule_mcp_job_admin_all,Trabajo MCP: el administrador ve todos,mcp.job,base.group_system,crud,
+rule_mcp_portal_page_user_own,Página de portal MCP: los usuarios solo ven sus propias páginas,mcp.portal.page,base.group_user,cru,"[('created_by', '=', user.id)]"
+rule_mcp_portal_page_admin_all,Página de portal MCP: el administrador ve todas,mcp.portal.page,base.group_system,crud,
+rule_mcp_html_artifact_user_own,Artefacto HTML MCP: los usuarios solo ven sus propios artefactos,mcp.html.artifact,base.group_user,cru,"[('created_by', '=', user.id)]"
+rule_mcp_html_artifact_admin_all,Artefacto HTML MCP: el administrador ve todos,mcp.html.artifact,base.group_system,crud,
+access_mcp_generated_module_admin,Módulo generado MCP: administrador,mcp.generated.module,base.group_system,crud,
+access_mcp_oauth_client_admin,Cliente OAuth MCP: administrador,mcp.oauth.client,base.group_system,crud,

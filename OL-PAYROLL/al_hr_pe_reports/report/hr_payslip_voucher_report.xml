@@ -28,11 +28,11 @@
             <t t-set="v" t-value="o.version_id"/>
             <t t-set="emp" t-value="o.employee_id"/>
             <t t-set="fmt" t-value="lambda amount: '{:,.2f}'.format(amount or 0.0)"/>
-            <t t-call="al_report_base.report_pe_page">
-                <t t-set="company" t-value="o.company_id"/>
-                <t t-set="doc_title" t-value="'Boleta de pago'"/>
-                <t t-set="doc_extra" t-value="'%s – %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
-                <t t-set="page_class" t-value="'pe-boleta'"/>
+            <t t-call="al_report_base.report_pe_page"
+                company="o.company_id"
+                doc_title.f="Boleta de pago"
+                doc_extra="'%s – %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"
+                page_class.f="pe-boleta">
 
                 <div class="pe-doc-fs-11">
 

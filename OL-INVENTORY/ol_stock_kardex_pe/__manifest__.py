@@ -39,8 +39,6 @@ Kardex SUNAT para la localización peruana
     'external_dependencies': {'python': ['xlsxwriter']},
     'data': [
         'security/kardex_security.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rules.xml',
         'data/ir_cron_data.xml',
         'views/kardex_line_views.xml',
         'views/kardex_report_views.xml',
@@ -52,6 +50,7 @@ Kardex SUNAT para la localización peruana
         'views/menu_views.xml',
         'views/product_views.xml',
         'views/stock_move_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

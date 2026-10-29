@@ -1,4 +1,4 @@
-import { Component, useState } from "@odoo/owl";
+import { Component, proxy } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 export const SHORTAGE_REASONS = [
@@ -24,7 +24,7 @@ export class ShortageDialog extends Component {
 
     setup() {
         this.reasons = SHORTAGE_REASONS;
-        this.state = useState({
+        this.state = proxy({
             useProduct: Boolean(this.props.productId),
             description: "",
             quantity: 1,

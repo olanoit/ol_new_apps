@@ -60,8 +60,6 @@ y regla de registro por compañía en el historial.
         'python': ['openpyxl'],
     },
     'data': [
-        'security/ir.model.access.csv',
-        'security/security.xml',
         'views/import_payroll_progress_views.xml',
         'wizards/hr_attendance_import_wizard_views.xml',
         'wizards/hr_salary_rule_import_wizard_views.xml',
@@ -72,6 +70,7 @@ y regla de registro por compañía en el historial.
         'views/hr_attendance_views.xml',
         'views/hr_salary_rule_views.xml',
         'views/import_menu.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

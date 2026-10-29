@@ -31,7 +31,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_whatsapp" type="object" string="WhatsApp" icon="fa-whatsapp"
+                    <button name="action_whatsapp" type="object" string="WhatsApp" icon="oi_whatsapp"
                             class="btn-primary" invisible="not whatsapp_url or state != 'active'"/>
                     <button name="action_update_coverage" type="object" string="Recalcular"
                             invisible="state != 'active'"/>
@@ -49,7 +49,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_purchases" type="object" class="oe_stat_button"
-                                icon="fa-shopping-basket" string="Compras en caja"/>
+                                icon="shopping_basket" string="Compras en caja"/>
                     </div>
                     <widget name="web_ribbon" title="Atrasado" bg_color="text-bg-danger"
                             invisible="refill_state != 'late' or state != 'active'"/>
@@ -148,7 +148,7 @@
             <xpath expr="//div[hasclass('oe_title')]" position="before">
                 <div class="oe_button_box" name="button_box">
                     <button name="action_view_treatments" type="object" class="oe_stat_button"
-                            icon="fa-heartbeat" invisible="not treatment_count">
+                            icon="cardiology" invisible="not treatment_count">
                         <field name="treatment_count" widget="statinfo" string="Tratamientos"/>
                     </button>
                 </div>
@@ -164,7 +164,7 @@
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <button name="action_view_pharmacy_treatments" type="object" class="oe_stat_button"
-                        icon="fa-heartbeat" groups="al_pharmacy_base.group_pharmacy_technician"
+                        icon="cardiology" groups="al_pharmacy_base.group_pharmacy_technician"
                         invisible="not pharmacy_treatment_count">
                     <field name="pharmacy_treatment_count" widget="statinfo" string="Tratamientos"
                            groups="al_pharmacy_base.group_pharmacy_technician"/>

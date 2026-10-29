@@ -1,12 +1,15 @@
 /* @odoo-module */
 /* global vis */
 
+import { usePlugin } from "@odoo/owl";
 import {loadCSS, loadJS} from "@web/core/assets";
 import {registry} from "@web/core/registry";
+import { useLayoutEffect, useRef } from "@web/owl2/utils";
 import {standardFieldProps} from "@web/views/fields/standard_field_props";
 import {useService} from "@web/core/utils/hooks";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
-const {Component, onWillStart, useEffect, useRef} = owl;
+const {Component, onWillStart, useLayoutEffect, useRef} = owl;
 
 const {document} = globalThis;
 
@@ -16,7 +19,7 @@ class JobDirectGraph extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
         this.rootRef = useRef("root_vis");
         this.network = null;
         this.forceRender = false;
@@ -24,7 +27,7 @@ class JobDirectGraph extends Component {
             await loadJS("/queue_job/static/lib/vis/vis-network.min.js");
             loadCSS("/queue_job/static/lib/vis/vis-network.min.css");
         });
-        useEffect(
+        useLayoutEffect(
             () => {
                 this.renderNetwork();
                 this._fitNetwork();

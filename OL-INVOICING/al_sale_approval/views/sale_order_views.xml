@@ -12,7 +12,7 @@
             </xpath>
             <div name="button_box" position="inside">
                 <button name="action_view_sale_approvals" type="object" class="oe_stat_button"
-                        icon="fa-check-square-o" invisible="not sale_approval_request_count">
+                        icon="check_box" invisible="not sale_approval_request_count">
                     <field name="sale_approval_request_count" widget="statinfo" string="Aprobaciones"/>
                 </button>
             </div>

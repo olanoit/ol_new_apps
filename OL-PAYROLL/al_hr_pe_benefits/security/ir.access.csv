@@ -1,0 +1,100 @@
+id,name,model_id,group_id/id,operation,domain
+access_hr_cts_user,hr.cts user,hr.cts,hr_payroll.group_hr_payroll_user,r,
+access_hr_cts_manager,hr.cts manager,hr.cts,hr_payroll.group_hr_payroll_manager,crud,
+hr_cts_company_rule,CTS: multicompañía,hr.cts,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_cts_line_user,hr.cts.line user,hr.cts.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_cts_line_manager,hr.cts.line manager,hr.cts.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_cts_line_company_rule,Línea de CTS: multicompañía,hr.cts.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_cts_line_detalle_user,hr.cts.line.detalle user,hr.cts.line.detalle,hr_payroll.group_hr_payroll_user,r,
+access_hr_cts_line_detalle_manager,hr.cts.line.detalle manager,hr.cts.line.detalle,hr_payroll.group_hr_payroll_manager,crud,
+hr_cts_line_detalle_company_rule,Detalle de línea de CTS: multicompañía,hr.cts.line.detalle,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_gratification_user,hr.gratification user,hr.gratification,hr_payroll.group_hr_payroll_user,r,
+access_hr_gratification_manager,hr.gratification manager,hr.gratification,hr_payroll.group_hr_payroll_manager,crud,
+hr_gratification_company_rule,Gratificación: multicompañía,hr.gratification,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_gratification_line_user,hr.gratification.line user,hr.gratification.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_gratification_line_manager,hr.gratification.line manager,hr.gratification.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_gratification_line_company_rule,Línea de gratificación: multicompañía,hr.gratification.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_gratification_line_detalle_user,hr.gratification.line.detalle user,hr.gratification.line.detalle,hr_payroll.group_hr_payroll_user,r,
+access_hr_gratification_line_detalle_manager,hr.gratification.line.detalle manager,hr.gratification.line.detalle,hr_payroll.group_hr_payroll_manager,crud,
+hr_gratification_line_detalle_company_rule,Detalle de línea de gratificación: multicompañía,hr.gratification.line.detalle,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_vacation_rest_user,hr.vacation.rest user,hr.vacation.rest,hr_payroll.group_hr_payroll_user,crud,
+hr_vacation_rest_company_rule,Saldos de vacaciones: multicompañía,hr.vacation.rest,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_accrual_vacation_user,hr.accrual.vacation user,hr.accrual.vacation,hr_payroll.group_hr_payroll_user,crud,
+hr_accrual_vacation_company_rule,Devengue de vacaciones: multicompañía,hr.accrual.vacation,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_vacation_rest_wizard_user,hr.vacation.rest.wizard user,hr.vacation.rest.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_hr_vacation_user,hr.vacation user,hr.vacation,hr_payroll.group_hr_payroll_user,crud,
+hr_vacation_company_rule,Liquidación vacacional: multicompañía,hr.vacation,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_vacation_line_user,hr.vacation.line user,hr.vacation.line,hr_payroll.group_hr_payroll_user,crud,
+hr_vacation_line_company_rule,Línea de liquidación vacacional: multicompañía,hr.vacation.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_leave_vacation_line_user,hr.leave.vacation.line user,hr.leave.vacation.line,hr_payroll.group_hr_payroll_user,crud,
+hr_leave_vacation_line_company_rule,Detalle de periodo de vacaciones: multicompañía,hr.leave.vacation.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_fifth_category_user,hr.fifth.category user,hr.fifth.category,hr_payroll.group_hr_payroll_user,r,
+access_hr_fifth_category_manager,hr.fifth.category manager,hr.fifth.category,hr_payroll.group_hr_payroll_manager,crud,
+hr_fifth_category_company_rule,Renta de 5ta: multicompañía,hr.fifth.category,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_fifth_category_line_user,hr.fifth.category.line user,hr.fifth.category.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_fifth_category_line_manager,hr.fifth.category.line manager,hr.fifth.category.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_fifth_category_line_company_rule,Línea de renta de 5ta: multicompañía,hr.fifth.category.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_fifth_category_line_excluidos_user,hr.fifth.category.line.excluidos user,hr.fifth.category.line.excluidos,hr_payroll.group_hr_payroll_user,r,
+access_hr_fifth_category_line_excluidos_manager,hr.fifth.category.line.excluidos manager,hr.fifth.category.line.excluidos,hr_payroll.group_hr_payroll_manager,crud,
+hr_fifth_category_line_excluidos_company_rule,Línea de excluidos de 5ta: multicompañía,hr.fifth.category.line.excluidos,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_rate_limit_user,hr.rate.limit user,hr.rate.limit,hr_payroll.group_hr_payroll_user,r,
+access_hr_rate_limit_manager,hr.rate.limit manager,hr.rate.limit,hr_payroll.group_hr_payroll_manager,crud,
+hr_rate_limit_company_rule,Tramos de 5ta: multicompañía,hr.rate.limit,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_employee_excluidos_wizard_manager,hr.employee.excluidos.wizard manager,hr.employee.excluidos.wizard,hr_payroll.group_hr_payroll_manager,crud,
+access_hr_liquidation_user,hr.liquidation user,hr.liquidation,hr_payroll.group_hr_payroll_user,r,
+access_hr_liquidation_manager,hr.liquidation manager,hr.liquidation,hr_payroll.group_hr_payroll_manager,crud,
+hr_liquidation_company_rule,Liquidación de cese: multicompañía,hr.liquidation,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_liquidation_vacation_line_user,hr.liquidation.vacation.line user,hr.liquidation.vacation.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_liquidation_vacation_line_manager,hr.liquidation.vacation.line manager,hr.liquidation.vacation.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_liquidation_vacation_line_company_rule,Línea vacacional de liquidación: multicompañía,hr.liquidation.vacation.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_liquidation_extra_concepts_user,hr.liquidation.extra_concepts user,hr.liquidation.extra_concepts,hr_payroll.group_hr_payroll_user,r,
+access_hr_liquidation_extra_concepts_manager,hr.liquidation.extra_concepts manager,hr.liquidation.extra_concepts,hr_payroll.group_hr_payroll_manager,crud,
+hr_liquidation_extra_concepts_company_rule,Conceptos extra de liquidación: multicompañía,hr.liquidation.extra_concepts,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_extra_concept_line_user,hr.extra.concept.line user,hr.extra.concept.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_extra_concept_line_manager,hr.extra.concept.line manager,hr.extra.concept.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_extra_concept_line_company_rule,Línea de concepto extra: multicompañía,hr.extra.concept.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_provisiones_user,hr.provisiones user,hr.provisiones,hr_payroll.group_hr_payroll_user,r,
+access_hr_provisiones_manager,hr.provisiones manager,hr.provisiones,hr_payroll.group_hr_payroll_manager,crud,
+hr_provisiones_company_rule,Provisiones: multicompañía,hr.provisiones,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_provisiones_cts_line_user,hr.provisiones.cts.line user,hr.provisiones.cts.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_provisiones_cts_line_manager,hr.provisiones.cts.line manager,hr.provisiones.cts.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_provisiones_cts_line_company_rule,Provisión CTS: multicompañía,hr.provisiones.cts.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_provisiones_grati_line_user,hr.provisiones.grati.line user,hr.provisiones.grati.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_provisiones_grati_line_manager,hr.provisiones.grati.line manager,hr.provisiones.grati.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_provisiones_grati_line_company_rule,Provisión gratificación: multicompañía,hr.provisiones.grati.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_provisiones_vaca_line_user,hr.provisiones.vaca.line user,hr.provisiones.vaca.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_provisiones_vaca_line_manager,hr.provisiones.vaca.line manager,hr.provisiones.vaca.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_provisiones_vaca_line_company_rule,Provisión vacaciones: multicompañía,hr.provisiones.vaca.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_provisiones_concepto_user,hr.provisiones.concepto user,hr.provisiones.concepto,hr_payroll.group_hr_payroll_user,r,
+access_hr_provisiones_concepto_manager,hr.provisiones.concepto manager,hr.provisiones.concepto,hr_payroll.group_hr_payroll_manager,crud,
+hr_provisiones_concepto_company_rule,Concepto de provisión: multicompañía,hr.provisiones.concepto,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_subsidies_lot_user,hr.subsidies.lot user,hr.subsidies.lot,hr_payroll.group_hr_payroll_user,crud,
+hr_subsidies_lot_company_rule,Lote de subsidios: multicompañía,hr.subsidies.lot,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_subsidies_user,hr.subsidies user,hr.subsidies,hr_payroll.group_hr_payroll_user,crud,
+hr_subsidies_company_rule,Subsidio: multicompañía,hr.subsidies,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_subsidies_line_user,hr.subsidies.line user,hr.subsidies.line,hr_payroll.group_hr_payroll_user,crud,
+hr_subsidies_line_company_rule,Línea de subsidio: multicompañía,hr.subsidies.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_subsidies_total_user,hr.subsidies.total user,hr.subsidies.total,hr_payroll.group_hr_payroll_user,crud,
+hr_subsidies_total_company_rule,Total de subsidio: multicompañía,hr.subsidies.total,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_subsidies_periodo_user,hr.subsidies.periodo user,hr.subsidies.periodo,hr_payroll.group_hr_payroll_user,crud,
+hr_subsidies_periodo_company_rule,Periodo de subsidio: multicompañía,hr.subsidies.periodo,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_utilities_user,hr.utilities user,hr.utilities,hr_payroll.group_hr_payroll_user,r,
+access_hr_utilities_manager,hr.utilities manager,hr.utilities,hr_payroll.group_hr_payroll_manager,crud,
+hr_utilities_company_rule,Utilidades: multicompañía,hr.utilities,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_utilities_line_user,hr.utilities.line user,hr.utilities.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_utilities_line_manager,hr.utilities.line manager,hr.utilities.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_utilities_line_company_rule,Línea de utilidades: multicompañía,hr.utilities.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_advance_type_user,hr.advance.type user,hr.advance.type,hr_payroll.group_hr_payroll_user,r,
+access_hr_advance_type_manager,hr.advance.type manager,hr.advance.type,hr_payroll.group_hr_payroll_manager,crud,
+hr_advance_type_company_rule,Tipo de adelanto: multicompañía,hr.advance.type,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_advance_user,hr.advance user,hr.advance,hr_payroll.group_hr_payroll_user,crud,
+hr_advance_company_rule,Adelanto: multicompañía,hr.advance,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_loan_type_user,hr.loan.type user,hr.loan.type,hr_payroll.group_hr_payroll_user,r,
+access_hr_loan_type_manager,hr.loan.type manager,hr.loan.type,hr_payroll.group_hr_payroll_manager,crud,
+hr_loan_type_company_rule,Tipo de préstamo: multicompañía,hr.loan.type,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_loan_user,hr.loan user,hr.loan,hr_payroll.group_hr_payroll_user,crud,
+hr_loan_company_rule,Préstamo: multicompañía,hr.loan,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_loan_line_user,hr.loan.line user,hr.loan.line,hr_payroll.group_hr_payroll_user,crud,
+hr_loan_line_company_rule,Cuota de préstamo: multicompañía,hr.loan.line,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_fortnightly_user,hr.fortnightly user,hr.fortnightly,hr_payroll.group_hr_payroll_user,crud,
+hr_fortnightly_company_rule,Quincena: multicompañía,hr.fortnightly,,crud,"[('company_id', 'in', company_ids)]"

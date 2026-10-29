@@ -12,7 +12,7 @@
                 <field name="section"/>
                 <field name="path" optional="hide"/>
                 <field name="active" column_invisible="True"/>
-                <button name="action_open" type="object" icon="fa-external-link"
+                <button name="action_open" type="object" icon="open_in_new"
                         title="Abrir la página"/>
             </list>
         </field>

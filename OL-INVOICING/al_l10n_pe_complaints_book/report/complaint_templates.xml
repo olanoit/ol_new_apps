@@ -11,10 +11,10 @@
         <t t-set="local_dt" t-value="o._local_datetime()"/>
         <!-- Casilla de marca: recuadro con una X si está marcada. -->
         <t t-set="check_style" t-value="'display: inline-block; width: 11px; height: 11px; border: 1px solid #000; text-align: center; line-height: 10px; font-size: 10px; margin-right: 4px;'"/>
-        <t t-call="al_report_base.report_pe_page">
-            <t t-set="doc_title" t-value="'HOJA DE RECLAMACIÓN'"/>
-            <t t-set="doc_number" t-value="o.name"/>
-            <t t-set="doc_extra" t-value="'Libro %s' % o.book_id.code"/>
+        <t t-call="al_report_base.report_pe_page"
+            doc_title.f="HOJA DE RECLAMACIÓN"
+            doc_number="o.name"
+            doc_extra="'Libro %s' % o.book_id.code">
 
             <div class="pe-doc-title">LIBRO DE RECLAMACIONES</div>
 
@@ -85,7 +85,7 @@
             <div class="pe-doc-section">3. DETALLE DE LA RECLAMACIÓN Y PEDIDO DEL CONSUMIDOR
                 <span style="float: right;">
                     <span t-att-style="check_style + ' background-color: #fff; color: #000;'"><t t-if="o.claim_type == 'claim'">X</t></span>RECLAMO¹
-                    &#160;&#160;<span t-att-style="check_style + ' background-color: #fff; color: #000;'"><t t-if="o.claim_type == 'complaint'">X</t></span>QUEJA²
+                      <span t-att-style="check_style + ' background-color: #fff; color: #000;'"><t t-if="o.claim_type == 'complaint'">X</t></span>QUEJA²
                 </span>
             </div>
             <table class="pe-doc-table pe-doc-lines pe-doc-keep">
@@ -145,10 +145,10 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-set="company" t-value="o.company_id"/>
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="doc_title" t-value="'Aviso del libro de reclamaciones'"/>
-                    <t t-set="doc_number" t-value="o.code"/>
-                    <t t-set="doc_extra" t-value="'Libro %s' % ('virtual' if o.book_type == 'virtual' else 'físico')"/>
+                <t t-call="al_report_base.report_pe_page"
+                    doc_title.f="Aviso del libro de reclamaciones"
+                    doc_number="o.code"
+                    doc_extra="'Libro %s' % ('virtual' if o.book_type == 'virtual' else 'físico')">
                     <div class="text-center" style="border: 3px solid #000; border-radius: 5px; padding: 36px 30px; margin-top: 10px;">
                         <div style="font-size: 54px; font-weight: bold; line-height: 1.15;">Libro de Reclamaciones</div>
                         <div style="font-size: 26px; line-height: 1.45; margin-top: 36px;">

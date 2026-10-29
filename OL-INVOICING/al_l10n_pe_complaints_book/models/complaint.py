@@ -33,7 +33,7 @@ class L10nPeComplaint(models.Model):
     _description = 'Hoja de reclamación'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _order = 'date_submitted desc, id desc'
-    _rec_names_search = ['name', 'consumer_name', 'consumer_doc_number']
+    _rec_names_search = ('name', 'consumer_name', 'consumer_doc_number')
     _check_company_auto = True
 
     # ------------------------------------------------------------------

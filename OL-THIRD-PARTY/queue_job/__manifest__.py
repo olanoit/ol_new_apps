@@ -11,7 +11,6 @@
     "external_dependencies": {"python": ["requests", "openupgradelib"]},
     "data": [
         "security/security.xml",
-        "security/ir.model.access.csv",
         "views/queue_job_views.xml",
         "views/queue_job_channel_views.xml",
         "views/queue_job_function_views.xml",
@@ -21,6 +20,7 @@
         "views/queue_job_menus.xml",
         "data/queue_data.xml",
         "data/queue_job_function_data.xml",
+        'security/ir.access.csv',
     ],
     "assets": {
         "web.assets_backend": [

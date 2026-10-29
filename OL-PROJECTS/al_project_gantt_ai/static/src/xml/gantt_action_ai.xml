@@ -11,20 +11,20 @@
 
         <xpath expr="//label[@for='algantt_zoom']" position="before">
             <button type="button" class="btn btn-sm algantt-ai-toggle"
-                    t-if="state.aiStatus.enabled"
-                    t-att-class="state.showAi ? 'btn-primary' : 'btn-outline-primary'"
+                    t-if="this.state.aiStatus.enabled"
+                    t-att-class="this.state.showAi ? 'btn-primary' : 'btn-outline-primary'"
                     title="Consultar el cronograma con el asistente de IA"
                     t-on-click="() => this.toggleAiPanel()">
-                <i class="fa fa-magic me-1"/>Asistente
+                <i class="oi me-1" data-icon="wand_stars"/>Asistente
             </button>
         </xpath>
 
         <xpath expr="//div[hasclass('algantt-container')]" position="after">
-            <GanttAiPanel t-if="state.showAi and state.aiStatus.enabled"
-                          status="state.aiStatus"
-                          getContext.bind="aiContext"
-                          applyProposals.bind="applyAiProposals"
-                          close.bind="toggleAiPanel"/>
+            <GanttAiPanel t-if="this.state.showAi and this.state.aiStatus.enabled"
+                          status="this.state.aiStatus"
+                          getContext.bind="this.aiContext"
+                          applyProposals.bind="this.applyAiProposals"
+                          close.bind="this.toggleAiPanel"/>
         </xpath>
 
     </t>

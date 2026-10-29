@@ -23,15 +23,15 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="construction_uses_terms" invisible="1"/>
                 <button name="action_view_construction_advances" type="object" class="oe_stat_button"
-                        icon="fa-money" invisible="not construction_advance_count">
+                        icon="payments" invisible="not construction_advance_count">
                     <field name="construction_advance_count" widget="statinfo" string="Adelantos"/>
                 </button>
                 <button name="action_view_construction_deductions" type="object" class="oe_stat_button"
-                        icon="fa-minus-circle" invisible="not construction_uses_terms">
+                        icon="remove_circle" icon_class="oi-filled" invisible="not construction_uses_terms">
                     <field name="construction_deduction_count" widget="statinfo" string="Deductivos"/>
                 </button>
                 <button name="action_view_construction_payments" type="object" class="oe_stat_button"
-                        icon="fa-list-alt" string="Pagos de la orden" invisible="not construction_uses_terms"
+                        icon="list_alt" string="Pagos de la orden" invisible="not construction_uses_terms"
                         groups="account.group_account_invoice"/>
             </xpath>
             <xpath expr="//field[@name='construction_project_id']" position="after">

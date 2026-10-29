@@ -245,7 +245,7 @@
                             <div class="mcp-kpi">
                                 <div class="mcp-kpi-icon"
                                      t-attf-style="background: #{w.get('color', '#6366f1')}1a; color: #{w.get('color', '#6366f1')};">
-                                    <i t-attf-class="fa #{w.get('icon', 'fa-bar-chart')}"/>
+                                    <i t-attf-class="oi #{w.get('icon', 'fa-bar-chart')}"/>
                                 </div>
                                 <div class="mcp-kpi-body">
                                     <div class="mcp-kpi-value"

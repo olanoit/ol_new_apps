@@ -15,7 +15,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_subsidies" class="oe_stat_button" icon="fa-list" type="object" help="Subsidios" invisible="subsidies_count == 0">
+                        <button name="action_open_subsidies" class="oe_stat_button" icon="format_list_bulleted" type="object" help="Subsidios" invisible="subsidies_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="subsidies_count"/></span>
                                 <span class="o_stat_text">Subsidios</span>
@@ -136,7 +136,7 @@
                                 <field name="sub_dia" optional="show"/>
                                 <field name="total_sub" sum="Total" optional="show"/>
                                 <field name="validation" readonly="1" optional="show"/>
-                                <button name="action_set_unpaid" type="object" icon="fa-undo"
+                                <button name="action_set_unpaid" type="object" icon="undo"
                                         invisible="validation != 'paid out'" string="Cambiar a no pagado"
                                         help="Cambiar a no pagado"
                                         confirm="¿Está seguro de que desea cambiar el estado de este subsidio a no pagado?"/>

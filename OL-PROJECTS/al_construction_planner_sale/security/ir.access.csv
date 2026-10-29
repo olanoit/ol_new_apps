@@ -1,0 +1,51 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_valuation_cutoff_plan_viewer,construction.valuation.cutoff plan_viewer,construction.valuation.cutoff,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_valuation_cutoff_exec_validator,construction.valuation.cutoff exec_validator,construction.valuation.cutoff,al_construction_planner.group_planner_exec_validator,crud,
+rule_construction_valuation_cutoff_company,Corte de valorización: compañías del usuario,construction.valuation.cutoff,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_construction_weekly_delivery_revenue,construction.weekly.delivery revenue,construction.weekly.delivery,al_construction_planner.group_planner_revenue,ru,
+access_construction_weekly_delivery_plan_viewer,construction.weekly.delivery plan_viewer,construction.weekly.delivery,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_weekly_delivery_exec_validator,construction.weekly.delivery exec_validator,construction.weekly.delivery,al_construction_planner.group_planner_exec_validator,crud,
+rule_construction_weekly_delivery_company,Entrega semanal: compañías del usuario,construction.weekly.delivery,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_weekly_delivery_line_plan_viewer,construction.weekly.delivery.line plan_viewer,construction.weekly.delivery.line,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_weekly_delivery_line_exec_validator,construction.weekly.delivery.line exec_validator,construction.weekly.delivery.line,al_construction_planner.group_planner_exec_validator,crud,
+rule_construction_weekly_delivery_line_company,Línea de la entrega semanal: compañías del usuario,construction.weekly.delivery.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_valuation_user,construction.valuation user,construction.valuation,al_construction_planner.group_planner_user,cru,
+access_construction_valuation_manager,construction.valuation manager,construction.valuation,al_construction_planner.group_planner_manager,crud,
+rule_construction_valuation_company,Valorización: compañías del usuario,construction.valuation,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_valuation_line_user,construction.valuation.line user,construction.valuation.line,al_construction_planner.group_planner_user,crud,
+rule_construction_valuation_line_company,Línea de la valorización: compañías del usuario,construction.valuation.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_valuation_prepare_wizard_user,construction.valuation.prepare.wizard user,construction.valuation.prepare.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_valuation_prepare_wizard_line_user,construction.valuation.prepare.wizard.line user,construction.valuation.prepare.wizard.line,al_construction_planner.group_planner_user,crud,
+access_construction_valuation_confirm_wizard_user,construction.valuation.confirm.wizard user,construction.valuation.confirm.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_valuation_confirm_wizard_line_user,construction.valuation.confirm.wizard.line user,construction.valuation.confirm.wizard.line,al_construction_planner.group_planner_user,crud,
+access_construction_schedule_report_plan_viewer,construction.schedule.report plan_viewer,construction.schedule.report,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_schedule_report_company,Cronograma valorizado: compañías del usuario,construction.schedule.report,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_milestone_template_manager,construction.milestone.template manager,construction.milestone.template,al_construction_planner.group_planner_manager,crud,
+access_construction_milestone_template_plan_viewer,construction.milestone.template plan_viewer,construction.milestone.template,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_milestone_template_line_manager,construction.milestone.template.line manager,construction.milestone.template.line,al_construction_planner.group_planner_manager,crud,
+access_construction_milestone_template_line_plan_viewer,construction.milestone.template.line plan_viewer,construction.milestone.template.line,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_contract_revenue,construction.contract revenue,construction.contract,al_construction_planner.group_planner_revenue,crud,
+access_construction_contract_plan_viewer,construction.contract plan_viewer,construction.contract,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_contract_company,Contrato de obra: compañías del usuario,construction.contract,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_price_revenue,construction.contract.price revenue,construction.contract.price,al_construction_planner.group_planner_revenue,crud,
+access_construction_contract_price_plan_viewer,construction.contract.price plan_viewer,construction.contract.price,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_contract_price_company,Precio del contrato: compañías del usuario,construction.contract.price,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_document_revenue,construction.contract.document revenue,construction.contract.document,al_construction_planner.group_planner_revenue,crud,
+access_construction_contract_document_plan_viewer,construction.contract.document plan_viewer,construction.contract.document,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_contract_document_company,Documento del contrato: compañías del usuario,construction.contract.document,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_unit_milestone_revenue,construction.unit.milestone revenue,construction.unit.milestone,al_construction_planner.group_planner_revenue,crud,
+access_construction_unit_milestone_plan_viewer,construction.unit.milestone plan_viewer,construction.unit.milestone,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_unit_milestone_company,Hito por unidad: compañías del usuario,construction.unit.milestone,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_valuation_milestone_user,construction.valuation.milestone user,construction.valuation.milestone,al_construction_planner.group_planner_user,crud,
+rule_construction_valuation_milestone_company,Hito de la valorización: compañías del usuario,construction.valuation.milestone,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_unit_wizard_revenue,construction.contract.unit.wizard revenue,construction.contract.unit.wizard,al_construction_planner.group_planner_revenue,crud,
+access_construction_change_order_progress,construction.change.order progress,construction.change.order,al_construction_planner.group_planner_progress,r,
+access_construction_change_order_plan_viewer,construction.change.order plan_viewer,construction.change.order,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_change_order_exec_user,construction.change.order exec_user,construction.change.order,al_construction_planner.group_planner_user,crud,
+rule_construction_change_order_company,Cambio de obra: compañías del usuario,construction.change.order,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_change_order_line_progress,construction.change.order.line progress,construction.change.order.line,al_construction_planner.group_planner_progress,r,
+access_construction_change_order_line_plan_viewer,construction.change.order.line plan_viewer,construction.change.order.line,al_construction_planner.group_planner_plan_viewer,r,
+access_construction_change_order_line_exec_user,construction.change.order.line exec_user,construction.change.order.line,al_construction_planner.group_planner_user,crud,
+rule_construction_change_order_line_company,Línea del cambio de obra: compañías del usuario,construction.change.order.line,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_budget_import_wizard_planner,construction.budget.import.wizard planner,construction.budget.import.wizard,al_construction_planner.group_planner_plan_planner,crud,
+access_construction_budget_book_wizard_planner,construction.budget.book.wizard planner,construction.budget.book.wizard,al_construction_planner.group_planner_plan_planner,crud,

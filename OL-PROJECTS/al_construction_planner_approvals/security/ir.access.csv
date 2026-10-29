@@ -1,0 +1,10 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_approval_route_user,construction.approval.route user,construction.approval.route,base.group_user,r,
+access_construction_approval_route_manager,construction.approval.route manager,construction.approval.route,al_construction_planner.group_planner_manager,crud,
+rule_construction_approval_route_company,Rutas de aprobación de obra: compañías del usuario,construction.approval.route,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_approval_route_approver_user,construction.approval.route.approver user,construction.approval.route.approver,base.group_user,r,
+access_construction_approval_route_approver_manager,construction.approval.route.approver manager,construction.approval.route.approver,al_construction_planner.group_planner_manager,crud,
+rule_construction_approval_route_approver_company,Aprobadores de las rutas de obra: compañías del usuario,construction.approval.route.approver,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_approval_refuse_wizard_user,construction.approval.refuse.wizard user,construction.approval.refuse.wizard,base.group_user,crud,
+rule_construction_request_approval_approver,Requerimiento de obra: aprobador en Aprobaciones,construction.material.request,al_construction_material_request.group_construction_approver,crud,"[('construction_approval_user_ids', 'in', [user.id])]"
+rule_construction_request_line_approval_approver,Línea de requerimiento de obra: aprobador en Aprobaciones,construction.material.request.line,al_construction_material_request.group_construction_approver,crud,"[('request_id.construction_approval_user_ids', 'in', [user.id])]"

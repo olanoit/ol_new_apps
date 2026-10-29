@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_requests" type="object"
-                        class="oe_stat_button" icon="fa-cubes"
+                        class="oe_stat_button" icon="inventory_2"
                         invisible="not is_construction_site"
                         groups="al_construction_material_request.group_construction_requester">
                     <field name="construction_request_count" widget="statinfo" string="Req. de obra"/>
@@ -38,7 +38,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_requests" type="object"
-                        class="oe_stat_button" icon="fa-cubes"
+                        class="oe_stat_button" icon="inventory_2"
                         invisible="not construction_request_count"
                         groups="al_construction_material_request.group_construction_requester">
                     <field name="construction_request_count" widget="statinfo" string="Req. de obra"/>

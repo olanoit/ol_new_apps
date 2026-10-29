@@ -9,7 +9,7 @@
                     class="btn btn-primary btn-lg mt-2 o_l10n_pe_create_from_document"
                     t-att-disabled="state.loading"
                     t-on-click="() => this.l10nPeCreateFromDocument()">
-                <i class="fa fa-search me-2"/>
+                <i class="oi me-2" data-icon="search"/>
                 Crear cliente <t t-out="l10nPeDocument"/> desde SUNAT
             </button>
         </xpath>

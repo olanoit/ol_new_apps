@@ -44,11 +44,10 @@ Entrega E3 del plan (docs/farmacia/PLAN_FARMACIA.md):
     # resource: feriados del calendario laboral para el plazo de rectificación.
     'depends': ['al_pharmacy_stock', 'l10n_pe', 'account', 'resource', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/digemid_security.xml',
         'data/digemid_data.xml',
         'views/digemid_views.xml',
         'report/price_list_report.xml',
+        'security/ir.access.csv',
     ],
     'demo': ['demo/digemid_demo.xml'],
     'installable': True,

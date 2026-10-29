@@ -16,12 +16,12 @@
                 <t t-foreach="doc.employee_ids" t-as="emp">
                     <t t-set="vals" t-value="doc._get_certificate_values(emp)"/>
                     <t t-set="legal" t-value="doc.main_parameter_id.reprentante_legal_id"/>
-                    <t t-call="al_report_base.report_pe_page">
-                        <t t-set="o" t-value="doc"/>
-                        <t t-set="company" t-value="doc.company_id"/>
-                        <t t-set="doc_title" t-value="'Certificado de rentas y retenciones'"/>
-                        <t t-set="doc_extra" t-value="'Ejercicio gravable %s' % doc.year"/>
-                        <t t-set="page_class" t-value="'pe-doc-text'"/>
+                    <t t-call="al_report_base.report_pe_page"
+                        o="doc"
+                        company="doc.company_id"
+                        doc_title.f="Certificado de rentas y retenciones"
+                        doc_extra="'Ejercicio gravable %s' % doc.year"
+                        page_class.f="pe-doc-text">
 
                         <div class="pe-doc-title" style="margin-bottom: 4px;">
                             Certificado de rentas y retenciones por rentas de quinta categoría

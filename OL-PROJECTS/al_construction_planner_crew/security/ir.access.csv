@@ -1,0 +1,7 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_plan_crew_wizard_exec_user,construction.plan.crew.wizard exec_user,construction.plan.crew.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_plan_crew_wizard_line_exec_user,construction.plan.crew.wizard.line exec_user,construction.plan.crew.wizard.line,al_construction_planner.group_planner_user,crud,
+access_construction_plan_crew_wizard_member_exec_user,construction.plan.crew.wizard.member exec_user,construction.plan.crew.wizard.member,al_construction_planner.group_planner_user,crud,
+access_construction_crew_day_manager,construction.crew.day manager,construction.crew.day,al_construction_planner.group_planner_manager,crud,
+access_construction_crew_day_plan_viewer,construction.crew.day plan_viewer,construction.crew.day,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_crew_day_company,Jornales de las cuadrillas: compañías del usuario,construction.crew.day,,crud,"[('company_id', 'in', company_ids)]"

@@ -44,7 +44,7 @@
                         <field name="name_sequence_id" class="oe_inline"/>
                         <button name="action_al_generate_name_sequence" type="object"
                                 string="Generar" class="btn btn-link p-0"
-                                icon="fa-magic"
+                                icon="wand_stars"
                                 invisible="name_sequence_id"
                                 help="Crea la secuencia en la compañía del diario con el prefijo indicado (relleno 8, sin huecos)."/>
                     </div>
@@ -58,7 +58,7 @@
                         <field name="refund_name_sequence_id" class="oe_inline"/>
                         <button name="action_al_generate_refund_name_sequence" type="object"
                                 string="Generar" class="btn btn-link p-0"
-                                icon="fa-magic"
+                                icon="wand_stars"
                                 invisible="refund_name_sequence_id"
                                 help="Crea la secuencia de notas de crédito con el prefijo NC indicado."/>
                     </div>

@@ -35,10 +35,10 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     # de trabajo con el que la nómina computa el feriado.
     'depends': ['hr_holidays', 'hr_work_entry'],
     'data': [
-        'security/ir.model.access.csv',
         'views/holidays_views.xml',
         'data/holidays_data.xml',
         'data/ir_cron.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

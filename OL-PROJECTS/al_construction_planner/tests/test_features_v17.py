@@ -35,7 +35,7 @@ class TestFeatures(TransactionCase):
         self.assertTrue(settings.group_construction_progress)
         settings.group_construction_progress = False
         settings.set_values()
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
         self.assertFalse(self.user.has_group(
             'al_construction_planner.group_planner_feature_progress'))
         self.assertFalse(self._visible('al_construction_planner.menu_planner_progress'))

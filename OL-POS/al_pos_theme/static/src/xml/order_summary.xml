@@ -11,7 +11,7 @@
             <t t-set-slot="emptyCart">
                 <div class="alpt-empty-cart d-flex flex-column align-items-center justify-content-center flex-grow-1 text-center gap-2 p-4">
                     <span class="alpt-empty-cart__icon d-flex align-items-center justify-content-center rounded-circle">
-                        <i class="fa fa-shopping-basket" aria-hidden="true"/>
+                        <i class="oi" data-icon="shopping_basket" aria-hidden="true"/>
                     </span>
                     <span class="alpt-empty-cart__title">La orden está vacía</span>
                     <span class="alpt-empty-cart__hint">Toque un producto o escanee un código de barras para comenzar.</span>

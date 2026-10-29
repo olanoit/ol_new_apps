@@ -68,7 +68,7 @@
                     <field name="code">SCEP_OPENING</field>
                     <field name="hierarchy_level" eval="1"/>
                     <field name="sequence" eval="10"/>
-                    <field name="foldable" eval="True"/>
+                    <field name="foldability">foldable</field>
                     <field name="expression_ids">
                         <record id="pe_scep_expr_opening_history" model="account.report.expression">
                             <field name="label">opening_history</field>

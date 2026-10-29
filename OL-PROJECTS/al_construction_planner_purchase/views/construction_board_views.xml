@@ -8,11 +8,11 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='board_execute']" position="inside">
                 <button name="action_construction_request_material" type="object" class="oe_stat_button"
-                        icon="fa-cubes" string="Pedir material"
+                        icon="inventory_2" string="Pedir material"
                         invisible="not construction_board_plan_id"
                         groups="al_construction_planner.group_planner_user"/>
                 <button name="action_view_construction_requests" type="object" class="oe_stat_button"
-                        icon="fa-truck" groups="al_construction_material_request.group_construction_requester">
+                        icon="local_shipping" groups="al_construction_material_request.group_construction_requester">
                     <field name="construction_request_count" widget="statinfo" string="Requerimientos de obra"/>
                 </button>
             </xpath>
@@ -26,7 +26,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='execute_actions']" position="inside">
                 <button name="action_request_material" type="object" string="Pedir material"
-                        class="btn btn-secondary" icon="fa-cubes"
+                        class="btn btn-secondary" icon="inventory_2"
                         groups="al_construction_planner.group_planner_user"/>
             </xpath>
         </field>

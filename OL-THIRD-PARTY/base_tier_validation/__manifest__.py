@@ -15,8 +15,6 @@
     "depends": ["mail"],
     "data": [
         # Security
-        "security/ir.model.access.csv",
-        "security/tier_validation_security.xml",
         # Data
         "data/cron_data.xml",
         "data/mail_data.xml",
@@ -28,6 +26,7 @@
         "wizard/comment_wizard_view.xml",
         # Templates
         "templates/tier_validation_templates.xml",
+        'security/ir.access.csv',
     ],
     "assets": {
         "web.assets_backend": [

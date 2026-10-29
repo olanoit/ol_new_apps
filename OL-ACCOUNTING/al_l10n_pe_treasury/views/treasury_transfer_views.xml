@@ -53,7 +53,7 @@
                 </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_payments" type="object" class="oe_stat_button" icon="fa-money"
+                        <button name="action_open_payments" type="object" class="oe_stat_button" icon="payments"
                                 string="Pagos" invisible="not payment_from_id"/>
                     </div>
                     <div class="oe_title">

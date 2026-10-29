@@ -32,8 +32,8 @@ demás con el botón «Aplicar a la compañía activa».
         'al_l10n_pe_invoice',
     ],
     'data': [
-        'security/ir.model.access.csv',
         'views/al_industry_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

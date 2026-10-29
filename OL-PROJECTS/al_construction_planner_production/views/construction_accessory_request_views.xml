@@ -22,16 +22,16 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_production" type="object" class="oe_stat_button"
-                                icon="fa-wrench" string="Orden de fabricación"/>
+                                icon="build" string="Orden de fabricación"/>
                         <button name="action_view_construction_approvals" type="object"
-                                class="oe_stat_button" icon="fa-check-square-o"
+                                class="oe_stat_button" icon="check_box"
                                 invisible="not construction_approval_count">
                             <field name="construction_approval_count" widget="statinfo" string="Aprobaciones"/>
                         </button>
                     </div>
                     <div class="alert alert-info d-flex align-items-center gap-2" role="status"
                          invisible="not construction_approval_todo">
-                        <i class="fa fa-hourglass-half" title="Pendiente de aprobación"/>
+                        <i class="oi" data-icon="hourglass_bottom" title="Pendiente de aprobación"/>
                         <span>Pendiente de aprobación · <field name="construction_approval_todo" class="d-inline"/></span>
                     </div>
                     <div class="alert alert-warning" role="alert" invisible="not has_changes or state != 'draft'">

@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_payment_multi_user,l10n_pe.payment.multi user,model_l10n_pe_payment_multi,account.group_account_user,1,1,1,1
-access_payment_multi_read,l10n_pe.payment.multi readonly,model_l10n_pe_payment_multi,account.group_account_readonly,1,0,0,0
-access_payment_multi_line_user,l10n_pe.payment.multi.line user,model_l10n_pe_payment_multi_line,account.group_account_user,1,1,1,1
-access_payment_multi_line_read,l10n_pe.payment.multi.line readonly,model_l10n_pe_payment_multi_line,account.group_account_readonly,1,0,0,0

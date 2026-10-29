@@ -9,11 +9,12 @@
  * abre sus precios de compra (P-16). Todo lo calcula el servidor
  * (`construction.supply.board.get_board`).
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
 import { formatDate, parseDate } from "@web/core/l10n/dates";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 const BOARD = "construction.supply.board";
 const WEEK_OPTIONS = [2, 3, 4, 6, 8, 12];
@@ -28,9 +29,9 @@ export class ConstructionSupplyBoard extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
         this.weekOptions = WEEK_OPTIONS;
-        this.state = useState({
+        this.state = proxy({
             projects: [],
             projectId: false,
             weeks: 4,

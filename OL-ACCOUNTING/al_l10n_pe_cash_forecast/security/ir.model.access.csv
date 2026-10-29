@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_cash_forecast_user,l10n_pe.cash.forecast user,model_l10n_pe_cash_forecast,account.group_account_user,1,1,1,1
-access_cash_forecast_read,l10n_pe.cash.forecast readonly,model_l10n_pe_cash_forecast,account.group_account_readonly,1,0,0,0
-access_cash_forecast_period_user,l10n_pe.cash.forecast.period user,model_l10n_pe_cash_forecast_period,account.group_account_user,1,1,1,1
-access_cash_forecast_period_read,l10n_pe.cash.forecast.period readonly,model_l10n_pe_cash_forecast_period,account.group_account_readonly,1,0,0,0
-access_cash_forecast_line_user,l10n_pe.cash.forecast.line user,model_l10n_pe_cash_forecast_line,account.group_account_user,1,1,1,1
-access_cash_forecast_line_read,l10n_pe.cash.forecast.line readonly,model_l10n_pe_cash_forecast_line,account.group_account_readonly,1,0,0,0

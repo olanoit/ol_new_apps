@@ -15,29 +15,29 @@
             recargar el TPV.
         -->
         <div class="alpv-tag-selector d-flex flex-wrap align-items-center gap-1 px-2 pb-2">
-            <i class="fa fa-tags text-muted flex-shrink-0 me-1" role="img" aria-label="Etiquetas" title="Etiquetas"/>
-            <button t-foreach="availableTags" t-as="tag" t-key="tag.id"
+            <i class="oi text-muted flex-shrink-0 me-1" data-icon="sell" role="img" aria-label="Etiquetas" title="Etiquetas"/>
+            <button t-foreach="this.availableTags" t-as="tag" t-key="tag.id"
                     type="button"
                     class="alpv-tag-chip btn btn-sm rounded-pill border d-flex align-items-center gap-1"
-                    t-att-class="pos.isPosTagSelected(tag.id) ? 'btn-primary active' : 'btn-light'"
-                    t-on-click="() => pos.togglePosTag(tag.id)">
+                    t-att-class="this.pos.isPosTagSelected(tag.id) ? 'btn-primary active' : 'btn-light'"
+                    t-on-click="() => this.pos.togglePosTag(tag.id)">
                 <span class="alpv-tag-chip__dot rounded-circle d-inline-block"
-                      t-att-style="dotStyle(tag)"/>
-                <span t-esc="tag.name"/>
+                      t-att-style="this.dotStyle(tag)"/>
+                <span t-out="tag.name"/>
             </button>
-            <button t-if="pos.selectedPosTagIds.length"
+            <button t-if="this.pos.selectedPosTagIds.length"
                     type="button"
                     class="btn btn-sm btn-link text-muted flex-shrink-0 text-decoration-none"
-                    t-on-click="() => pos.clearPosTagFilter()">
-                <i class="fa fa-times me-1"/>Limpiar
+                    t-on-click="() => this.pos.clearPosTagFilter()">
+                <i class="oi me-1" data-icon="close"/>Limpiar
             </button>
             <button type="button"
                     class="alpv-tag-refresh btn btn-sm btn-light border rounded-pill flex-shrink-0"
-                    t-att-disabled="state.refreshing"
-                    t-att-title="refreshLabel"
-                    t-att-aria-label="refreshLabel"
-                    t-on-click="onRefreshTags">
-                <i t-attf-class="fa fa-refresh {{ state.refreshing ? 'fa-spin' : '' }}"/>
+                    t-att-disabled="this.state.refreshing"
+                    t-att-title="this.refreshLabel"
+                    t-att-aria-label="this.refreshLabel"
+                    t-on-click="this.onRefreshTags">
+                <i t-attf-class="oi {{ this.state.refreshing ? 'oi-spin' : '' }}" data-icon="refresh"/>
             </button>
         </div>
     </t>

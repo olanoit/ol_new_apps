@@ -26,7 +26,7 @@
         font-size: $alpt-font-size-md !important; // `fs-3` (!important)
 
         // Ícono de éxito en círculo, tamaño contenido (el core usa fa-2x).
-        > .fa-check-circle {
+        > [data-icon='check_circle'].oi-filled {
             display: flex;
             align-items: center;
             justify-content: center;

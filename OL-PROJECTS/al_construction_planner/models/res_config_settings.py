@@ -92,4 +92,4 @@ class ResConfigSettings(models.TransientModel):
         super().set_values()
         # El menú por momento se arma al cargar el menú (ir.ui.menu.load_menus,
         # en caché): un cambio del ajuste se ve en la siguiente carga.
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()

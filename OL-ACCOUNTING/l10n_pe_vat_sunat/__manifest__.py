@@ -55,8 +55,6 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
         'python': ['requests', 'beautifulsoup4'],
     },
     'data': [
-        'security/ir.model.access.csv',
-        'security/l10n_pe_vat_sunat_security.xml',
         'data/ir_cron.xml',
         'data/l10n_pe.economic.activity.csv',
         'views/l10n_pe_api_connection_views.xml',
@@ -65,6 +63,7 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
         'views/res_config_settings_views.xml',
         'views/l10n_pe_economic_activity_views.xml',
         'views/res_partner_view.xml',
+        'security/ir.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
     'installable': True,

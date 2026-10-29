@@ -52,7 +52,6 @@ cheques, los cierres de caja y las entregas a rendir de la suite.
     ],
     'data': [
         'security/treasury_security.xml',
-        'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'views/account_journal_views.xml',
@@ -64,6 +63,7 @@ cheques, los cierres de caja y las entregas a rendir de la suite.
         'views/res_config_settings_views.xml',
         'wizards/payment_plan_propose_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': True,

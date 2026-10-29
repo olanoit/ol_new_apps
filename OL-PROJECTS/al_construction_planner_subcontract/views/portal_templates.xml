@@ -6,13 +6,12 @@
             <t t-set="portal_service_category_enable" t-value="True"/>
         </xpath>
         <div id="portal_service_category" position="inside">
-            <t t-call="portal.portal_docs_entry">
-                <t t-set="icon" t-value="'/al_construction_planner/static/src/img/portal_icon.png'"/>
-                <t t-set="title">Mis obras</t>
-                <t t-set="url" t-value="'/my/obra'"/>
-                <t t-set="text">Lo asignado a su empresa y el registro de avance</t>
-                <t t-set="placeholder_count" t-value="'construction_line_count'"/>
-            </t>
+            <t t-call="portal.portal_docs_entry"
+                icon.f="/al_construction_planner/static/src/img/portal_icon.png"
+                title.translate="Mis obras"
+                url.f="/my/obra"
+                text.translate="Lo asignado a su empresa y el registro de avance"
+                placeholder_count.f="construction_line_count"/>
         </div>
     </template>
 
@@ -31,8 +30,7 @@
 
     <!-- P-23 · Mis obras y tareas -->
     <template id="portal_my_construction" name="Mis obras">
-        <t t-call="portal.portal_layout">
-            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <t t-call="portal.portal_layout" breadcrumbs_searchbar="True">
             <div class="d-flex justify-content-between align-items-center my-3 flex-wrap gap-2">
                 <h3 class="mb-0">Mis obras · <t t-out="partner.name"/></h3>
                 <div class="d-flex gap-2">

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_pharmacy_logbook">
-        <t t-call="web.html_container">
-            <t t-set="o" t-value="docs[:1]"/>
-            <t t-call="al_report_base.report_pe_page">
-                <t t-set="company" t-value="o.company_id"/>
-                <t t-set="doc_title" t-value="'Libro de ocurrencias'"/>
-                <t t-set="doc_extra" t-value="o.warehouse_id.name or ''"/>
+        <t t-set="o" t-value="docs[:1]"/>
+        <t t-call="web.html_container" o="o">
+            <t t-call="al_report_base.report_pe_page"
+                company="o.company_id"
+                doc_title.f="Libro de ocurrencias"
+                doc_extra="o.warehouse_id.name or ''">
                 <table class="pe-doc-table pe-doc-lines mb-3">
                     <thead>
                         <tr class="pe-doc-thead">

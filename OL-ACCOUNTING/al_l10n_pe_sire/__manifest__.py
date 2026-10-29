@@ -39,7 +39,6 @@ trabajo (XLSX).
     },
     'data': [
         'security/sire_security.xml',
-        'security/ir.model.access.csv',
         'data/sire_compare_fields.xml',
         'data/sire_cron.xml',
         'data/res_country_sire.xml',
@@ -55,6 +54,7 @@ trabajo (XLSX).
         'wizard/sire_reopen_wizard_views.xml',
         'views/res_config_settings_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

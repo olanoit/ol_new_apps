@@ -33,7 +33,7 @@
                     <button name="action_preview"
                             string="Vista previa de la página"
                             type="object"
-                            icon="fa-external-link"
+                            icon="open_in_new"
                             class="oe_highlight"/>
                 </header>
                 <sheet>

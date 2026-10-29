@@ -167,9 +167,9 @@
                 <t t-set="company" t-value="o.company_id"/>
                 <t t-set="cur" t-value="o.currency_id"/>
                 <t t-set="money" t-value="{'widget': 'monetary', 'display_currency': cur}"/>
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="doc_title" t-value="'Resumen de valorizaciones de contratas'"/>
-                    <t t-set="doc_number" t-value="project.display_name"/>
+                <t t-call="al_report_base.report_pe_page"
+                    doc_title.f="Resumen de valorizaciones de contratas"
+                    doc_number="project.display_name">
                     <t t-set="rate" t-value="o._report_usd_rate()"/>
                     <table class="pe-doc-table mb-3">
                         <tr>
@@ -256,9 +256,7 @@
                             </tbody>
                         </table>
                     </t>
-                    <t t-call="al_report_base.report_pe_sign_boxes">
-                        <t t-set="sign_boxes" t-value="o._report_sign_boxes()"/>
-                    </t>
+                    <t t-call="al_report_base.report_pe_sign_boxes" sign_boxes="o._report_sign_boxes()"/>
                 </t>
             </t>
         </t>

@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_check_layout_invoice,l10n_pe.check.layout invoice,l10n_pe.check.layout,account.group_account_invoice,r,
+access_check_layout_readonly,l10n_pe.check.layout readonly,l10n_pe.check.layout,account.group_account_readonly,r,
+access_check_layout_manager,l10n_pe.check.layout manager,l10n_pe.check.layout,account.group_account_manager,crud,
+check_layout_company_rule,Formato de cheque: multicompañía,l10n_pe.check.layout,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"

@@ -106,8 +106,6 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     # fija el centro de costo con el que la planilla reparte el costo.
     'depends': ['al_hr_pe_benefits', 'al_hr_pe_reports', 'al_hr_pe_attendance', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/security.xml',
         'data/hr_construction_category_data.xml',
         'data/hr_construction_bonus_data.xml',
         'data/hr_construction_wage_table_data.xml',
@@ -124,6 +122,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
         'views/hr_conafovicer_views.xml',
         'wizards/wage_table_import_views.xml',
         'report/hr_construction_voucher_report.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

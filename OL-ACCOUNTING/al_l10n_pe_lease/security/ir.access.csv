@@ -1,0 +1,17 @@
+id,name,model_id,group_id/id,operation,domain
+access_lease_user,l10n_pe.lease contabilidad,l10n_pe.lease,account.group_account_user,crud,
+access_lease_readonly,l10n_pe.lease auditor,l10n_pe.lease,account.group_account_readonly,r,
+lease_company_rule,Arrendamientos: multicompañía,l10n_pe.lease,,crud,"[('company_id', 'in', company_ids)]"
+access_lease_line_user,l10n_pe.lease.line contabilidad,l10n_pe.lease.line,account.group_account_user,crud,
+access_lease_line_readonly,l10n_pe.lease.line auditor,l10n_pe.lease.line,account.group_account_readonly,r,
+lease_line_company_rule,"Arrendamientos, tabla: multicompañía",l10n_pe.lease.line,,crud,"[('company_id', 'in', company_ids)]"
+access_lease_event_user,l10n_pe.lease.event contabilidad,l10n_pe.lease.event,account.group_account_user,crud,
+access_lease_event_readonly,l10n_pe.lease.event auditor,l10n_pe.lease.event,account.group_account_readonly,r,
+lease_event_company_rule,"Arrendamientos, historial: multicompañía",l10n_pe.lease.event,,crud,"[('company_id', 'in', company_ids)]"
+access_lease_remeasure_user,l10n_pe.lease.remeasure contabilidad,l10n_pe.lease.remeasure,account.group_account_user,crud,
+access_lease_terminate_user,l10n_pe.lease.terminate contabilidad,l10n_pe.lease.terminate,account.group_account_user,crud,
+access_lease_exchange_user,l10n_pe.lease.exchange contabilidad,l10n_pe.lease.exchange,account.group_account_user,crud,
+access_lease_tax_report_user,l10n_pe.lease.tax.report contabilidad,l10n_pe.lease.tax.report,account.group_account_user,crud,
+access_lease_tax_report_readonly,l10n_pe.lease.tax.report auditor,l10n_pe.lease.tax.report,account.group_account_readonly,cru,
+access_lease_tax_report_line_user,l10n_pe.lease.tax.report.line contabilidad,l10n_pe.lease.tax.report.line,account.group_account_user,crud,
+access_lease_tax_report_line_readonly,l10n_pe.lease.tax.report.line auditor,l10n_pe.lease.tax.report.line,account.group_account_readonly,cru,

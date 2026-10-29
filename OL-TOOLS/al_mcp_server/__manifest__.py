@@ -79,8 +79,6 @@ bandera de función de forma predeterminada. Aislado a la ruta de addons configu
     'license': 'OPL-1',
     'depends': ['base', 'web', 'mail'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/mcp_security.xml',
         'data/mcp_cron.xml',
         'views/mcp_session_views.xml',
         'views/mcp_token_views.xml',
@@ -93,6 +91,7 @@ bandera de función de forma predeterminada. Aislado a la ruta de addons configu
         'views/res_users_views.xml',
         'views/res_config_settings_views.xml',
         'views/mcp_menus.xml',
+        'security/ir.access.csv',
     ],
     'external_dependencies': {
         'python': [],

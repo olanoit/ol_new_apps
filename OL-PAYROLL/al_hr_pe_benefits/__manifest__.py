@@ -51,8 +51,6 @@ Fase 7.
     'license': 'OPL-1',
     'depends': ['al_hr_pe', 'hr_holidays'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/security.xml',
         'views/hr_main_parameter_views.xml',
         'views/res_config_settings_views.xml',
         'views/hr_cts_views.xml',
@@ -68,6 +66,7 @@ Fase 7.
         'views/hr_advances_loans_views.xml',
         'views/hr_fortnightly_views.xml',
         'data/hr_fortnightly_structure_data.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

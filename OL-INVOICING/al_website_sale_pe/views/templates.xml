@@ -28,7 +28,7 @@
         <xpath expr="//input[@id='o_vat']" position="after">
             <t t-if="l10n_pe_receipt and is_commercial_address and can_edit_vat">
                 <button type="button" class="btn btn-link px-0 o_l10n_pe_document_lookup">
-                    <i class="fa fa-search me-1"/>Consultar en SUNAT
+                    <i class="oi me-1" data-icon="search"/>Consultar en SUNAT
                 </button>
                 <small class="o_l10n_pe_document_lookup_message form-text text-muted d-block"/>
             </t>

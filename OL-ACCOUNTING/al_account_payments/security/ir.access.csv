@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+access_pe_catalog_payment,al_account_payments.pe_catalog_payment,pe.catalog.payment,base.group_user,r,
+access_pe_catalog_payment_manager,al_account_payments.pe_catalog_payment manager,pe.catalog.payment,account.group_account_manager,crud,
+access_currency_exchange_wizard,l10n_pe.currency.exchange.wizard,l10n_pe.currency.exchange.wizard,account.group_account_user,crud,

@@ -11,31 +11,31 @@
         <div class="payment-screen alpt-inline-payment d-flex flex-column h-100">
             <div class="alpt-inline-payment__header d-flex align-items-center gap-2">
                 <button type="button" class="btn btn-light alpt-inline-payment__back"
-                        t-on-click="alptClose" title="Volver a la orden" aria-label="Volver a la orden">
-                    <i class="oi oi-chevron-left" aria-hidden="true"/>
+                        t-on-click="this.alptClose" title="Volver a la orden" aria-label="Volver a la orden">
+                    <i class="oi" data-icon="chevron_backward" aria-hidden="true"/>
                 </button>
                 <span class="alpt-inline-payment__title">Pago</span>
-                <span class="alpt-inline-payment__order ms-auto" t-esc="currentOrder.getName()"/>
+                <span class="alpt-inline-payment__order ms-auto" t-out="this.currentOrder.getName()"/>
             </div>
             <div class="alpt-inline-payment__body d-flex flex-column flex-grow-1 overflow-y-auto">
                 <t t-call="point_of_sale.PaymentScreenDue"/>
                 <t t-call="point_of_sale.PaymentScreenMethods"/>
                 <PaymentScreenPaymentLines
-                    t-if="paymentLines.length"
-                    paymentLines="paymentLines"
-                    deleteLine.bind="deletePaymentLine"
-                    sendForceDone.bind="sendForceDone"
-                    sendPaymentReverse.bind="sendPaymentReverse"
-                    sendPaymentCancel.bind="sendPaymentCancel"
-                    sendPaymentRequest.bind="sendPaymentRequest"
-                    selectLine.bind="selectPaymentLine"
-                    updateSelectedPaymentline.bind="updateSelectedPaymentline"
-                    isRefundOrder="isRefundOrder"/>
-                <PaymentScreenStatus t-if="paymentLines.length" order="currentOrder"/>
+                    t-if="this.paymentLines.length"
+                    paymentLines="this.paymentLines"
+                    deleteLine.bind="this.deletePaymentLine"
+                    sendForceDone.bind="this.sendForceDone"
+                    sendPaymentReverse.bind="this.sendPaymentReverse"
+                    sendPaymentCancel.bind="this.sendPaymentCancel"
+                    sendPaymentRequest.bind="this.sendPaymentRequest"
+                    selectLine.bind="this.selectPaymentLine"
+                    updateSelectedPaymentline.bind="this.updateSelectedPaymentline"
+                    isRefundOrder="this.isRefundOrder"/>
+                <PaymentScreenStatus t-if="this.paymentLines.length" order="this.currentOrder"/>
                 <t t-call="point_of_sale.PaymentScreenButtons"/>
             </div>
             <div class="alpt-inline-payment__footer d-flex flex-column">
-                <Numpad buttons="getNumpadButtons()"/>
+                <Numpad buttons="this.getNumpadButtons()"/>
                 <t t-call="point_of_sale.PaymentScreenValidate"/>
             </div>
         </div>

@@ -65,7 +65,7 @@
                         <button name="action_open_pe_api_connections"
                                 type="object" class="btn-link"
                                 string="Configurar conexiones RUC/DNI"
-                                icon="fa-arrow-right"/>
+                                icon="arrow_forward"/>
                     </setting>
                 </block>
             </xpath>

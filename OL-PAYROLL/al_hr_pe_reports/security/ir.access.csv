@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_hr_certificate_wizard_user,hr.certificate.wizard user,hr.certificate.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_hr_letter_wizard_user,hr.letter.wizard user,hr.letter.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_hr_fifth_certificate_wizard_user,hr.fifth.certificate.wizard user,hr.fifth.certificate.wizard,hr_payroll.group_hr_payroll_user,crud,
+access_l10n_pe_hr_contract_template_user,l10n_pe.hr.contract.template user,l10n_pe.hr.contract.template,hr_payroll.group_hr_payroll_user,r,
+access_l10n_pe_hr_contract_template_manager,l10n_pe.hr.contract.template manager,l10n_pe.hr.contract.template,hr_payroll.group_hr_payroll_manager,crud,
+l10n_pe_hr_contract_template_company_rule,Plantillas de contrato: global o de la compañía,l10n_pe.hr.contract.template,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
+access_hr_automate_multipayment_user,hr.automate.multipayment user,hr.automate.multipayment,hr_payroll.group_hr_payroll_user,r,
+access_hr_automate_multipayment_manager,hr.automate.multipayment manager,hr.automate.multipayment,hr_payroll.group_hr_payroll_manager,crud,
+hr_automate_multipayment_company_rule,Pago masivo bancario: multicompañía,hr.automate.multipayment,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_automate_multipayment_line_user,hr.automate.multipayment.line user,hr.automate.multipayment.line,hr_payroll.group_hr_payroll_user,r,
+access_hr_automate_multipayment_line_manager,hr.automate.multipayment.line manager,hr.automate.multipayment.line,hr_payroll.group_hr_payroll_manager,crud,
+hr_automate_multipayment_line_company_rule,Línea de pago masivo: multicompañía,hr.automate.multipayment.line,,crud,"[('company_id', 'in', company_ids)]"

@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+access_edi_invoice_series_user,edi.invoice.series user,edi.invoice.series,base.group_user,r,
+access_edi_invoice_series_manager,edi.invoice.series manager,edi.invoice.series,account.group_account_manager,crud,
+edi_invoice_series_comp_rule,Series CPE: multicompañía,edi.invoice.series,,crud,"[('company_id', 'in', company_ids)]"

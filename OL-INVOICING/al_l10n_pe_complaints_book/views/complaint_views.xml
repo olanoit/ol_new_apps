@@ -48,7 +48,7 @@
                         <field name="book_id" class="text-muted small"/>
                         <footer>
                             <span t-att-class="record.is_overdue.raw_value ? 'text-danger fw-bold' : 'text-muted'">
-                                <i class="fa fa-clock-o me-1" title="Vence"/>
+                                <i class="oi me-1" data-icon="schedule" title="Vence"/>
                                 <field name="deadline_date"/>
                             </span>
                             <field name="responsible_user_id" widget="many2one_avatar_user" class="ms-auto"/>

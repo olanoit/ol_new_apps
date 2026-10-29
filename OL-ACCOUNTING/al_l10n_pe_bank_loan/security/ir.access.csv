@@ -1,0 +1,11 @@
+id,name,model_id,group_id/id,operation,domain
+access_bank_loan_user,l10n_pe.bank.loan usuario,l10n_pe.bank.loan,al_l10n_pe_treasury.group_treasury_user,crud,
+access_bank_loan_readonly,l10n_pe.bank.loan auditor,l10n_pe.bank.loan,account.group_account_readonly,r,
+bank_loan_company_rule,Préstamo bancario: multicompañía,l10n_pe.bank.loan,,crud,"[('company_id', 'in', company_ids)]"
+access_bank_loan_line_user,l10n_pe.bank.loan.line usuario,l10n_pe.bank.loan.line,al_l10n_pe_treasury.group_treasury_user,crud,
+access_bank_loan_line_readonly,l10n_pe.bank.loan.line auditor,l10n_pe.bank.loan.line,account.group_account_readonly,r,
+bank_loan_line_company_rule,Cuota de préstamo: multicompañía,l10n_pe.bank.loan.line,,crud,"[('company_id', 'in', company_ids)]"
+access_bank_loan_config_user,l10n_pe.bank.loan.account.config usuario,l10n_pe.bank.loan.account.config,al_l10n_pe_treasury.group_treasury_user,r,
+access_bank_loan_config_manager,l10n_pe.bank.loan.account.config administrador,l10n_pe.bank.loan.account.config,account.group_account_manager,crud,
+bank_loan_account_config_company_rule,Cuentas de préstamos: multicompañía,l10n_pe.bank.loan.account.config,,crud,"[('company_id', 'in', company_ids)]"
+access_bank_loan_payment_user,l10n_pe.bank.loan.payment usuario,l10n_pe.bank.loan.payment,al_l10n_pe_treasury.group_treasury_user,crud,

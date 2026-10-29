@@ -4,24 +4,24 @@
         <Dialog size="'md'" title="'Tratamientos por reponer'">
             <div class="o_pharmacy_treatment_dialog">
                 <p class="mb-2">
-                    A <strong t-esc="props.partnerName"/> le toca reponer:
+                    A <strong t-out="this.props.partnerName"/> le toca reponer:
                 </p>
                 <ul class="list-group mb-2">
-                    <li t-foreach="props.treatments" t-as="treatment" t-key="treatment.id"
+                    <li t-foreach="this.props.treatments" t-as="treatment" t-key="treatment.id"
                         class="list-group-item d-flex justify-content-between align-items-center o_pharmacy_treatment_item">
-                        <span t-esc="treatment.product_name"/>
+                        <span t-out="treatment.product_name"/>
                         <span t-if="treatment.refill_state === 'late'" class="badge text-bg-danger">
-                            Se terminó el <t t-esc="formatDate(treatment.covered_until)"/>
+                            Se terminó el <t t-out="this.formatDate(treatment.covered_until)"/>
                         </span>
                         <span t-else="" class="badge text-bg-warning">
-                            Le alcanza hasta el <t t-esc="formatDate(treatment.covered_until)"/>
+                            Le alcanza hasta el <t t-out="this.formatDate(treatment.covered_until)"/>
                         </span>
                     </li>
                 </ul>
             </div>
             <t t-set-slot="footer">
-                <button class="btn btn-primary o_pharmacy_treatment_add" t-on-click="add">Agregar al pedido</button>
-                <button class="btn btn-secondary" t-on-click="skip">Ahora no</button>
+                <button class="btn btn-primary o_pharmacy_treatment_add" t-on-click="this.add">Agregar al pedido</button>
+                <button class="btn btn-secondary" t-on-click="this.skip">Ahora no</button>
             </t>
         </Dialog>
     </t>

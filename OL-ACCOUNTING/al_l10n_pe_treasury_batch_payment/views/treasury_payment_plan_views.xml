@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="batch_payment_id" invisible="1"/>
-                <button name="action_open_batch_payment" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                <button name="action_open_batch_payment" type="object" class="oe_stat_button" icon="article"
                         string="Lote bancario" invisible="not batch_payment_id"/>
             </xpath>
         </field>

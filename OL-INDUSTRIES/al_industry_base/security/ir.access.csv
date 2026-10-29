@@ -1,0 +1,3 @@
+id,name,model_id,group_id/id,operation,domain
+access_al_industry_user,al.industry usuario,al.industry,base.group_user,r,
+access_al_industry_system,al.industry administrador,al.industry,base.group_system,ru,

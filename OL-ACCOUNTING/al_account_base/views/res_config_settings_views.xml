@@ -32,26 +32,26 @@
                              help="Cómo configurar y usar cada funcionalidad de la suite, instalación y mantenimiento y referencia técnica, por área de negocio y versión de Odoo.">
                         <field name="al_docs_url" placeholder="https://docs.ejemplo.pe/19.0/"/>
                         <div class="mt8" invisible="not al_docs_url">
-                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                            <button name="action_al_docs_open" type="object" icon="east"
                                     string="Abrir documentación" class="btn-link p-0"/>
                         </div>
                     </setting>
                     <setting string="Accesos directos" id="al_docs_links" invisible="not al_docs_url"
                              help="Secciones más consultadas del sitio.">
                         <div class="d-flex flex-column align-items-start gap-1 mt8">
-                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                            <button name="action_al_docs_open" type="object" icon="east"
                                     string="Documentación para usuarios" class="btn-link p-0"
                                     context="{'al_docs_page': 'guides'}"/>
-                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                            <button name="action_al_docs_open" type="object" icon="east"
                                     string="Novedades de la suite" class="btn-link p-0"
                                     context="{'al_docs_page': 'news'}"/>
-                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                            <button name="action_al_docs_open" type="object" icon="east"
                                     string="Localización peruana" class="btn-link p-0"
                                     context="{'al_docs_page': 'accounting'}"/>
-                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                            <button name="action_al_docs_open" type="object" icon="east"
                                     string="Nómina peruana" class="btn-link p-0"
                                     context="{'al_docs_page': 'payroll'}"/>
-                            <button name="action_al_docs_open" type="object" icon="oi-arrow-right"
+                            <button name="action_al_docs_open" type="object" icon="east"
                                     string="Desarrollador" class="btn-link p-0"
                                     context="{'al_docs_page': 'technical'}"/>
                         </div>

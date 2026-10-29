@@ -25,7 +25,7 @@
                     t-on-click="onInfoClick"
                     t-att-title="infoLabel"
                     t-att-aria-label="infoLabel">
-                <i class="fa fa-info"/>
+                <i class="oi" data-icon="info"/>
             </button>
         </xpath>
 

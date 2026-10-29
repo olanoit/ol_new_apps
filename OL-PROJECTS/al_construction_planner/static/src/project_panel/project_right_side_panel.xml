@@ -25,8 +25,8 @@
                             >
                                 <t t-set-slot="contents">
                                     <div class="o_field_widget o_stat_info">
-                                        <span class="o_stat_value"><t t-esc="button.number"/></span>
-                                        <span class="o_stat_text text-break text-wrap"><t t-esc="button.text"/></span>
+                                        <span class="o_stat_value"><t t-out="button.number"/></span>
+                                        <span class="o_stat_text text-break text-wrap"><t t-out="button.text"/></span>
                                     </div>
                                 </t>
                             </ViewButton>

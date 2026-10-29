@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, useState } from "@odoo/owl";
+import { Component, proxy } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 /**
@@ -28,7 +28,7 @@ export class AgentAuthorizationDialog extends Component {
     };
 
     setup() {
-        this.state = useState({ checking: false, failed: false });
+        this.state = proxy({ checking: false, failed: false });
     }
 
     onOpenAgent() {

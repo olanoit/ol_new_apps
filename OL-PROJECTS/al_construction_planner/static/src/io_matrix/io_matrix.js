@@ -8,12 +8,13 @@
  * pliega y despliega; un grupo plegado es una sola columna con su subtotal.
  * Todo lo calcula `construction.resource.plan.get_io_matrix`.
  */
-import { Component, onWillStart, useState } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
 import { _t } from "@web/core/l10n/translation";
 import { stageFilterLabel, stageNodeState, toggleStageNode } from "../stage_filter/stage_filter";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 const PLAN = "construction.resource.plan";
 const KINDS = ["parent", "stage", "type"];
@@ -75,10 +76,10 @@ export class ConstructionIoMatrix extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
+        this.action = usePlugin(ActionManagerPlugin);
         const context = this.props.action?.context || {};
         this.keys = context.construction_selection_keys || ["p"];
-        this.state = useState({
+        this.state = proxy({
             plans: [],
             planId: context.construction_plan_id || context.active_id || false,
             options: { levels: [], values: [], stage_tree: [], show_amounts: false },

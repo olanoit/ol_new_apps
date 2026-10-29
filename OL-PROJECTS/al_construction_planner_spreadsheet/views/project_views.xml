@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <button name="action_construction_open_schedule" position="after">
                 <button name="action_construction_open_spreadsheet" type="object"
-                        string="Hoja de trabajo" icon="fa-table" class="btn-secondary"
+                        string="Hoja de trabajo" icon="table_chart" class="btn-secondary"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </button>
         </field>

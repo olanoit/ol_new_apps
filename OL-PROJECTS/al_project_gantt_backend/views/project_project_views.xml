@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
                 <button class="oe_stat_button" type="object" name="action_open_gantt"
-                        icon="fa-bars fa-rotate-90"
+                        icon="menu" icon_class="oi-rotate-90"
                         groups="al_project_gantt_base.group_gantt_user"
                         invisible="is_template">
                     <div class="o_field_widget o_stat_info">

@@ -9,9 +9,9 @@
     </template>
 
     <template id="landing_page" name="Pago con Niubiz">
-        <t t-call="portal.frontend_layout">
-            <t t-set="page_title">Pago con Niubiz</t>
-            <t t-set="additional_title">Pago con Niubiz</t>
+        <t t-call="portal.frontend_layout"
+            page_title.translate="Pago con Niubiz"
+            additional_title.translate="Pago con Niubiz">
 
             <style>
                 .o-niubiz-wrap {
@@ -328,9 +328,9 @@
     </template>
 
     <template id="pagoefectivo_result" name="Niubiz PagoEfectivo CIP">
-        <t t-call="portal.frontend_layout">
-            <t t-set="page_title">Código de Pago - PagoEfectivo</t>
-            <t t-set="additional_title">PagoEfectivo - Niubiz</t>
+        <t t-call="portal.frontend_layout"
+            page_title.translate="Código de Pago - PagoEfectivo"
+            additional_title.translate="PagoEfectivo - Niubiz">
             <style>
                 .o-pe-wrap { background: #f0f4f8; min-height: 80vh; display: flex; align-items: center; }
                 .o-pe-card { background: #fff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.10); padding: 2rem 2.25rem; max-width: 460px; width: 100%; margin: 2rem auto; text-align: center; }
@@ -373,9 +373,9 @@
     </template>
 
     <template id="landing_error" name="Niubiz Error">
-        <t t-call="portal.frontend_layout">
-            <t t-set="page_title">Error de Pago</t>
-            <t t-set="additional_title">Error de Pago - Niubiz</t>
+        <t t-call="portal.frontend_layout"
+            page_title.translate="Error de Pago"
+            additional_title.translate="Error de Pago - Niubiz">
             <div class="wrap">
                 <div class="container py-5">
                     <div class="row justify-content-center">

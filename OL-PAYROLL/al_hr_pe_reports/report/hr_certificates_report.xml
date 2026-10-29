@@ -33,12 +33,12 @@
     <template id="report_certificate">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="o" t-value="doc"/>
-                    <t t-set="company" t-value="doc.company_id"/>
-                    <t t-set="doc_title" t-value="'Certificado de trabajo'"/>
-                    <t t-set="doc_extra" t-value="'D.S. N° 001-96-TR, art. 42'"/>
-                    <t t-set="page_class" t-value="'pe-doc-text'"/>
+                <t t-call="al_report_base.report_pe_page"
+                    o="doc"
+                    company="doc.company_id"
+                    doc_title.f="Certificado de trabajo"
+                    doc_extra.f="D.S. N° 001-96-TR, art. 42"
+                    page_class.f="pe-doc-text">
 
                     <div class="pe-doc-title">Certificado de trabajo</div>
 
@@ -80,12 +80,12 @@
     <template id="report_letter">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="o" t-value="doc"/>
-                    <t t-set="company" t-value="doc.company_id"/>
-                    <t t-set="doc_title" t-value="'Carta de retiro CTS'"/>
-                    <t t-set="doc_extra" t-value="'D.S. N° 001-97-TR'"/>
-                    <t t-set="page_class" t-value="'pe-doc-text'"/>
+                <t t-call="al_report_base.report_pe_page"
+                    o="doc"
+                    company="doc.company_id"
+                    doc_title.f="Carta de retiro CTS"
+                    doc_extra.f="D.S. N° 001-97-TR"
+                    page_class.f="pe-doc-text">
 
                     <p class="text-end">
                         <t t-out="doc.city"/>,

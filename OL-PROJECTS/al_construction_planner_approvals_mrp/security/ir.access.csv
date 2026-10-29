@@ -1,0 +1,5 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_production_versus_mrp,construction.production.versus mrp,construction.production.versus,mrp.group_mrp_user,r,
+access_construction_production_versus_plan_viewer,construction.production.versus plan_viewer,construction.production.versus,al_construction_planner.group_planner_plan_viewer,r,
+rule_construction_production_versus_company,Presupuestado frente a requerido: compañías del usuario,construction.production.versus,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_excess_approve_wizard_head,construction.excess.approve.wizard head,construction.excess.approve.wizard,al_construction_planner_approvals_mrp.group_planner_production_head,crud,

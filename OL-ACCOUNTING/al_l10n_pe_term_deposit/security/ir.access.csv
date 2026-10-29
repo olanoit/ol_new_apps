@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+access_term_deposit_user,l10n_pe.term.deposit contable,l10n_pe.term.deposit,account.group_account_user,crud,
+access_term_deposit_readonly,l10n_pe.term.deposit auditor,l10n_pe.term.deposit,account.group_account_readonly,r,
+term_deposit_company_rule,Depósitos y garantías: multicompañía,l10n_pe.term.deposit,,crud,"[('company_id', 'in', company_ids)]"
+access_term_deposit_config_user,l10n_pe.term.deposit.account.config contable,l10n_pe.term.deposit.account.config,account.group_account_user,r,
+access_term_deposit_config_manager,l10n_pe.term.deposit.account.config administrador,l10n_pe.term.deposit.account.config,account.group_account_manager,crud,
+term_deposit_account_config_company_rule,"Depósitos y garantías, cuentas: multicompañía",l10n_pe.term.deposit.account.config,,crud,"[('company_id', 'in', company_ids)]"
+access_term_deposit_wizard_user,l10n_pe.term.deposit.wizard contable,l10n_pe.term.deposit.wizard,account.group_account_user,crud,

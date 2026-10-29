@@ -232,7 +232,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_sunscreen.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_sunscreen.jpg"/>
         </record>
         <record id="product_moisturizer" model="product.template">
             <field name="name">Crema hidratante corporal x 400 mL</field>
@@ -243,7 +243,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_02')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_moisturizer.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_moisturizer.jpg"/>
         </record>
         <record id="product_toothpaste" model="product.template">
             <field name="name">Pasta dental con flúor x 90 g</field>
@@ -254,7 +254,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_toothpaste.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_toothpaste.jpg"/>
         </record>
         <record id="product_hand_gel" model="product.template">
             <field name="name">Alcohol en gel antibacterial x 500 mL</field>
@@ -265,7 +265,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_hand_gel.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_hand_gel.jpg"/>
         </record>
         <record id="product_alcohol" model="product.template">
             <field name="name">Alcohol medicinal 70° x 250 mL</field>
@@ -276,7 +276,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_03')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_alcohol.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_alcohol.jpg"/>
         </record>
         <record id="product_diapers" model="product.template">
             <field name="name">Pañales para bebé talla M x 30</field>
@@ -287,7 +287,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_04')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_diapers.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_diapers.jpg"/>
         </record>
         <record id="product_baby_wipes" model="product.template">
             <field name="name">Toallitas húmedas para bebé x 80</field>
@@ -298,7 +298,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_04')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_baby_wipes.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_baby_wipes.jpg"/>
         </record>
         <record id="product_multivitamin" model="product.template">
             <field name="name">Multivitamínico adultos x 30 tabletas</field>
@@ -309,7 +309,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_05')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_multivitamin.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_multivitamin.jpg"/>
         </record>
         <record id="product_nutritional_shake" model="product.template">
             <field name="name">Suplemento nutricional en polvo sabor vainilla x 400 g</field>
@@ -320,7 +320,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_05')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_nutritional_shake.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_nutritional_shake.jpg"/>
         </record>
         <record id="product_thermometer" model="product.template">
             <field name="name">Termómetro digital</field>
@@ -331,7 +331,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_thermometer.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_thermometer.jpg"/>
         </record>
         <record id="product_bp_monitor" model="product.template">
             <field name="name">Tensiómetro digital de brazo</field>
@@ -342,7 +342,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_bp_monitor.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_bp_monitor.jpg"/>
         </record>
         <record id="product_glucose_strips" model="product.template">
             <field name="name">Tiras reactivas para glucómetro x 50</field>
@@ -353,7 +353,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_glucose_strips.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_glucose_strips.jpg"/>
         </record>
         <record id="product_face_masks" model="product.template">
             <field name="name">Mascarillas quirúrgicas descartables x 50</field>
@@ -364,7 +364,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_face_masks.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_face_masks.jpg"/>
         </record>
         <record id="product_gauze" model="product.template">
             <field name="name">Gasa estéril 10 x 10 cm x 10 unidades</field>
@@ -375,7 +375,7 @@
             <field name="is_storable" eval="True"/>
             <field name="available_in_pos" eval="True"/>
             <field name="pos_categ_ids" eval="[Command.set([ref('pos_category_06')])]"/>
-            <field name="image_1920" type="base64" file="al_industry_pharmacy/static/img/demo/product_gauze.jpg"/>
+            <field name="image_1920" type="bytes" file="al_industry_pharmacy/static/img/demo/product_gauze.jpg"/>
         </record>
         <!-- Existencias de los productos no farmacéuticos -->
         <record id="product_sunscreen_quant" model="stock.quant">

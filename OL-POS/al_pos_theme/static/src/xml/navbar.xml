@@ -47,7 +47,7 @@
                     t-att-aria-pressed="pos.alptCategoriesHidden ? 'false' : 'true'"
                     t-att-title="pos.alptCategoriesHidden ? 'Mostrar categorías' : 'Ocultar categorías'"
                     t-on-click="() => pos.toggleAlptCategories()">
-                <i t-attf-class="fa fa-fw {{ pos.alptCategoriesHidden ? 'fa-eye' : 'fa-eye-slash' }}"/>
+                <i t-attf-class="oi oi-fw {{ pos.alptCategoriesHidden ? '' : '' }}" t-attf-data-icon="{{ pos.alptCategoriesHidden ? 'visibility' : 'visibility_off' }}"/>
                 <span t-if="!ui.isSmall">Categorías</span>
             </button>
         </xpath>

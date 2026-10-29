@@ -32,11 +32,10 @@ el puente de producción.
     'depends': ['al_construction_planner_approvals', 'al_construction_planner_mrp'],
     'data': [
         'security/production_groups.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'wizards/excess_approve_wizard_views.xml',
         'views/mrp_production_views.xml',
         'views/res_config_settings_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

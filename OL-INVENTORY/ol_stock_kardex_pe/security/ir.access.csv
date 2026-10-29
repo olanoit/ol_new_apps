@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_l10n_pe_kardex_report_wizard_user,l10n_pe.kardex.report.wizard user,l10n_pe.kardex.report.wizard,stock.group_stock_user,crud,
+access_l10n_pe_kardex_line_user,l10n_pe.kardex.line user,l10n_pe.kardex.line,stock.group_stock_user,r,
+rule_l10n_pe_kardex_line_company,Kardex SUNAT (línea): multicompañía,l10n_pe.kardex.line,,crud,"[('company_id', 'in', company_ids)]"
+access_l10n_pe_kardex_report_user,l10n_pe.kardex.report user,l10n_pe.kardex.report,stock.group_stock_user,crud,
+rule_l10n_pe_kardex_report_company,Kardex SUNAT generado: multicompañía,l10n_pe.kardex.report,,crud,"[('company_id', 'in', company_ids)]"
+access_l10n_pe_kardex_document_wizard,l10n_pe.kardex.document.wizard,l10n_pe.kardex.document.wizard,stock.group_stock_user,crud,
+access_l10n_pe_kardex_wh_cost_user,l10n_pe.kardex.wh.cost user,l10n_pe.kardex.wh.cost,stock.group_stock_user,r,
+rule_l10n_pe_kardex_wh_cost_company,Costo por almacén: multicompañía,l10n_pe.kardex.wh.cost,,crud,"[('company_id', 'in', company_ids)]"
+access_l10n_pe_stock_cost_close_user,l10n_pe.stock.cost.close user,l10n_pe.stock.cost.close,stock.group_stock_user,r,
+access_l10n_pe_stock_cost_close_manager,l10n_pe.stock.cost.close manager,l10n_pe.stock.cost.close,account.group_account_manager,crud,
+rule_l10n_pe_stock_cost_close_company,Cierre de almacén: multicompañía,l10n_pe.stock.cost.close,,crud,"[('company_id', 'in', company_ids)]"
+access_l10n_pe_wh_cost_recompute_wizard,l10n_pe.wh.cost.recompute.wizard,l10n_pe.wh.cost.recompute.wizard,ol_stock_kardex_pe.group_l10n_pe_wh_cost_revaluation,crud,

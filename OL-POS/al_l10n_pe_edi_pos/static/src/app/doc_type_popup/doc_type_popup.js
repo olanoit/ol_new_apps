@@ -1,4 +1,4 @@
-import { Component, useState } from "@odoo/owl";
+import { Component, proxy } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 
@@ -41,19 +41,19 @@ export class DocTypePopup extends Component {
             {
                 code: "recibo",
                 label: _t("Recibo"),
-                icon: "fa-print",
+                icon: "print",
                 hint: _t("Ticket simple, sin comprobante electrónico"),
             },
             {
                 code: "boleta",
                 label: _t("Boleta electrónica"),
-                icon: "fa-file-text-o",
+                icon: "article",
                 hint: _t("Consumidor final (DNI opcional)"),
             },
             {
                 code: "factura",
                 label: _t("Factura electrónica"),
-                icon: "fa-building-o",
+                icon: "business",
                 hint: _t("Requiere cliente con RUC"),
             },
         ];
@@ -61,7 +61,7 @@ export class DocTypePopup extends Component {
 
     setup() {
         this.types = this.constructor.TYPES;
-        this.state = useState({
+        this.state = proxy({
             type: this.props.currentType,
             serieId: this.props.currentSerieId || false,
             send: this.props.currentSend,

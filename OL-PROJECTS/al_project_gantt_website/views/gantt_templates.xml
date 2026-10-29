@@ -23,7 +23,7 @@
                             </div>
                             <div class="algantt-zoom-wrapper d-flex flex-wrap align-items-center gap-2 ms-auto">
                                 <div class="input-group input-group-sm" style="width: 200px;">
-                                    <span class="input-group-text"><i class="fa fa-search"/></span>
+                                    <span class="input-group-text"><i class="oi" data-icon="search"/></span>
                                     <input type="text" class="algantt-search form-control form-control-sm"
                                            placeholder="Buscar tarea…"/>
                                 </div>
@@ -31,18 +31,18 @@
                                     <button type="button" class="algantt-wbs btn btn-outline-secondary"
                                             title="Mostrar el código EDT">EDT</button>
                                     <button type="button" class="algantt-expand btn btn-outline-secondary"
-                                            title="Expandir o contraer todo"><i class="fa fa-compress"/></button>
+                                            title="Expandir o contraer todo"><i class="oi" data-icon="close_fullscreen"/></button>
                                     <button type="button" class="algantt-hide-done btn btn-outline-secondary"
-                                            title="Ocultar tareas terminadas"><i class="fa fa-check-square-o"/></button>
+                                            title="Ocultar tareas terminadas"><i class="oi" data-icon="check_box"/></button>
                                     <button type="button" class="algantt-fullscreen btn btn-outline-secondary"
-                                            title="Pantalla completa"><i class="fa fa-arrows-alt"/></button>
+                                            title="Pantalla completa"><i class="oi" data-icon="open_with"/></button>
                                 </div>
                                 <button type="button" class="algantt-add-task btn btn-sm btn-outline-primary d-none">
-                                    <i class="fa fa-plus me-1"/>Tarea
+                                    <i class="oi me-1" data-icon="add"/>Tarea
                                 </button>
                                 <button type="button" class="algantt-critical-toggle btn btn-sm btn-outline-secondary"
                                         title="Resalta las tareas sin holgura">
-                                    <i class="fa fa-bolt me-1"/>Ruta crítica
+                                    <i class="oi me-1" data-icon="flash_on"/>Ruta crítica
                                     <span class="algantt-critical-count badge text-bg-light ms-1 d-none"/>
                                 </button>
                                 <div class="algantt-chain-wrapper form-check form-switch mb-0 d-none">
@@ -56,17 +56,17 @@
                                 </select>
                                 <button type="button" class="algantt-baseline-capture btn btn-sm btn-outline-secondary"
                                         title="Guardar una foto del plan actual">
-                                    <i class="fa fa-camera"/>
+                                    <i class="oi" data-icon="photo_camera"/>
                                 </button>
                                 <div class="btn-group btn-group-sm">
                                     <button type="button" class="algantt-export-xlsx btn btn-outline-secondary"
-                                            title="Descargar en Excel"><i class="fa fa-file-excel-o"/></button>
+                                            title="Descargar en Excel"><i class="oi" data-icon="table_chart"/></button>
                                     <button type="button" class="algantt-export-pdf btn btn-outline-secondary"
-                                            title="Descargar en PDF"><i class="fa fa-file-pdf-o"/></button>
+                                            title="Descargar en PDF"><i class="oi" data-icon="picture_as_pdf"/></button>
                                 </div>
                                 <span class="algantt-save-state small text-muted"/>
                                 <button type="button" class="algantt-filters-toggle btn btn-sm btn-outline-secondary">
-                                    <i class="fa fa-filter me-1"/>Filtros
+                                    <i class="oi oi-filled me-1" data-icon="filter_alt"/>Filtros
                                     <span class="algantt-filters-count badge text-bg-primary ms-1 d-none"/>
                                 </button>
                                 <label class="mb-0" for="algantt_zoom_web">Escala:</label>
@@ -121,7 +121,7 @@
 
                         <div class="algantt-body border border-top-0 rounded-bottom position-relative">
                             <div class="algantt-loading position-absolute top-50 start-50 translate-middle text-muted">
-                                <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+                                <i class="oi oi-spin oi-2x" data-icon="autorenew"/>
                             </div>
                             <div class="algantt-container"/>
                         </div>

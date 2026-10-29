@@ -29,7 +29,7 @@ class ConstructionExecutionTemplate(models.Model):
     _inherit = ['mail.thread']
     _order = 'code, name, id'
     _check_company_auto = True
-    _rec_names_search = ['code', 'name']
+    _rec_names_search = ('code', 'name')
 
     code = fields.Char(string='Código', required=True, tracking=True,
                        help='El de la partida (ARQ-03.02.01) o del spool.')

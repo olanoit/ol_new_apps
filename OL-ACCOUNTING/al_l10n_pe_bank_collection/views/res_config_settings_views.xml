@@ -12,11 +12,11 @@
                          documentation="https://docs.altalatam.com/latest/applications/finance/accounting/collection/#recaudación-bancaria">
                     <div class="mt8">
                         <button name="%(action_bank_collection_agreement)d" type="action"
-                                string="Convenios de recaudación" class="btn-link" icon="oi-arrow-right"/>
+                                string="Convenios de recaudación" class="btn-link" icon="east"/>
                     </div>
                     <div>
                         <button name="%(action_bank_collection_layout)d" type="action"
-                                string="Formatos de recaudación" class="btn-link" icon="oi-arrow-right"/>
+                                string="Formatos de recaudación" class="btn-link" icon="east"/>
                     </div>
                 </setting>
             </block>

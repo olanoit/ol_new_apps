@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='board_execute']" position="inside">
                 <button name="action_construction_view_changes" type="object" class="oe_stat_button"
-                        icon="fa-exchange" groups="al_construction_planner.group_planner_progress">
+                        icon="swap_horiz" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_change_draft_count" widget="statinfo" string="Cambios de obra"/>
                 </button>
             </xpath>
@@ -18,13 +18,13 @@
             </xpath>
             <xpath expr="//div[@name='board_collect']" position="inside">
                 <button name="action_construction_view_contracts" type="object" class="oe_stat_button"
-                        icon="fa-file-o" string="Contrato de obra"
+                        icon="description" string="Contrato de obra"
                         groups="al_construction_planner.group_planner_revenue"/>
                 <button name="action_construction_prepare_valuation" type="object" class="oe_stat_button"
-                        icon="fa-calculator" string="Preparar valorización"
+                        icon="calculate" string="Preparar valorización"
                         groups="al_construction_planner.group_planner_revenue"/>
                 <button name="action_view_construction_valuations" type="object" class="oe_stat_button"
-                        icon="fa-handshake-o" groups="al_construction_planner.group_planner_revenue">
+                        icon="handshake" groups="al_construction_planner.group_planner_revenue">
                     <field name="construction_valuation_count" widget="statinfo" string="Valorizaciones al cliente"/>
                 </button>
             </xpath>
@@ -38,7 +38,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='execute_actions']" position="inside">
                 <button name="action_register_change" type="object" string="Registrar cambio"
-                        class="btn btn-secondary" icon="fa-exchange"
+                        class="btn btn-secondary" icon="swap_horiz"
                         groups="al_construction_planner.group_planner_user"/>
             </xpath>
         </field>

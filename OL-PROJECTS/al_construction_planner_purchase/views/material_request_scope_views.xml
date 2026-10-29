@@ -110,7 +110,7 @@
                     </div>
                     <button name="action_construction_fetch_plan" type="object"
                             string="Traer materiales del plan" class="btn-primary mt-2"
-                            icon="fa-download" invisible="not construction_plan_id"/>
+                            icon="download" invisible="not construction_plan_id"/>
                     <div class="text-muted small mt-2" invisible="construction_plan_id">
                         La obra no tiene plan de recursos vigente: agregue los materiales a mano.
                     </div>

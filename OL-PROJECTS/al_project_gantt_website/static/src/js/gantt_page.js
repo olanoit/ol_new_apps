@@ -464,14 +464,14 @@ export class GanttPage extends Interaction {
         if (isRealTask) {
             actions.push({
                 label: _t("Abrir en Odoo"),
-                icon: "fa-external-link",
+                icon: "open_in_new",
                 run: () => window.open(`/odoo/project.task/${taskId}`, "_blank"),
             });
         }
         if (isRealTask) {
             actions.push({
                 label: _t("Planificar actividad"),
-                icon: "fa-clock-o",
+                icon: "schedule",
                 // En el sitio no hay webclient: se abre el asistente en Odoo.
                 run: () => window.open(`/odoo/project.task/${taskId}`, "_blank"),
             });
@@ -479,19 +479,19 @@ export class GanttPage extends Interaction {
         if (isRealTask && editable) {
             actions.push({
                 label: _t("Indentar"),
-                icon: "fa-indent",
+                icon: "format_indent_increase",
                 disabled: !indentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(indentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Desindentar"),
-                icon: "fa-outdent",
+                icon: "format_indent_decrease",
                 disabled: !outdentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(outdentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Eliminar"),
-                icon: "fa-trash",
+                icon: "delete",
                 run: () => this.gantt.deleteTask(taskId),
             });
         }

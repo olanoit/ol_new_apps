@@ -1,0 +1,20 @@
+id,name,model_id,group_id/id,operation,domain
+rule_construction_request_own_sites,Requerimiento de obra: propios y de mis obras,construction.material.request,al_construction_material_request.group_construction_requester,crud,"['|', '|',
+                ('requested_by', '=', user.id),
+                ('project_id.user_id', '=', user.id),
+                ('project_id.message_partner_ids', 'in', [user.partner_id.id])]"
+rule_construction_request_internal_own,Requerimiento de obra: mis internos,construction.material.request,al_construction_material_request.group_construction_requester,crud,"[('request_type', '=', 'internal'), ('requested_by', '=', user.id)]"
+rule_construction_request_reviewer,Requerimiento de obra: por revisar,construction.material.request,al_construction_material_request.group_construction_approver,crud,"[('review_ids.reviewer_ids', 'in', [user.id])]"
+rule_construction_request_all,Requerimiento de obra: todos,construction.material.request,al_construction_material_request.group_construction_logistics,crud,
+rule_construction_request_internal_own_1,Requerimiento de obra: mis internos,construction.material.request,al_construction_material_request.group_construction_internal_requester,cru,"[('request_type', '=', 'internal'), ('requested_by', '=', user.id)]"
+rule_construction_request_company,Requerimiento de obra: multicompañía,construction.material.request,,crud,"[('company_id', 'in', company_ids)]"
+rule_construction_request_line_own_sites,Línea de requerimiento de obra: propios y de mis obras,construction.material.request.line,al_construction_material_request.group_construction_requester,crud,"['|', '|',
+                ('request_id.requested_by', '=', user.id),
+                ('request_id.project_id.user_id', '=', user.id),
+                ('request_id.project_id.message_partner_ids', 'in', [user.partner_id.id])]"
+rule_construction_request_line_internal_own,Línea de requerimiento de obra: mis internos,construction.material.request.line,al_construction_material_request.group_construction_requester,crud,"[('request_id.request_type', '=', 'internal'), ('request_id.requested_by', '=', user.id)]"
+rule_construction_request_line_reviewer,Línea de requerimiento de obra: por revisar,construction.material.request.line,al_construction_material_request.group_construction_approver,crud,"[('request_id.review_ids.reviewer_ids', 'in', [user.id])]"
+rule_construction_request_line_all,Línea de requerimiento de obra: todas,construction.material.request.line,al_construction_material_request.group_construction_logistics,crud,
+rule_construction_request_line_internal_own_1,Línea de requerimiento de obra: mis internos,construction.material.request.line,al_construction_material_request.group_construction_internal_requester,cru,"[('request_id.request_type', '=', 'internal'), ('request_id.requested_by', '=', user.id)]"
+rule_construction_request_line_company,Línea de requerimiento de obra: multicompañía,construction.material.request.line,,crud,"[('company_id', 'in', company_ids)]"
+access_account_analytic_account_construction_internal,account.analytic.account construction internal requester (áreas),analytic.model_account_analytic_account,al_construction_material_request.group_construction_internal_requester,r,

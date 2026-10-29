@@ -10,7 +10,7 @@
                             data-toggle="state.collapse"
                             href="#"
                             data-target="#collapse1"
-                            t-on-click="onToggleCollapse"
+                            t-on-click="this.onToggleCollapse"
                         >
                             Reviews
                         </a>
@@ -45,7 +45,7 @@
                             </thead>
                             <tbody class="sale_tbody">
                                 <t
-                                    t-foreach="_getReviewData()"
+                                    t-foreach="this._getReviewData()"
                                     t-as="review"
                                     t-key="review.id"
                                 >

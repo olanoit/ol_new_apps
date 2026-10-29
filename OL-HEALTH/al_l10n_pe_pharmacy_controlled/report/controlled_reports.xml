@@ -3,10 +3,10 @@
     <template id="report_controlled_book">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="company" t-value="o.company_id"/>
-                    <t t-set="doc_title" t-value="books[o.book]"/>
-                    <t t-set="doc_extra" t-value="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
+                <t t-call="al_report_base.report_pe_page"
+                    company="o.company_id"
+                    doc_title="books[o.book]"
+                    doc_extra="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))">
                     <p>Establecimiento: <t t-out="o.warehouse_id.name"/>
                         <t t-if="o.warehouse_id.pharmacy_establishment_code"> (código <t t-out="o.warehouse_id.pharmacy_establishment_code"/>)</t>
                         · Director técnico: <t t-out="o.warehouse_id.pharmacy_director_id.name or '-'"/></p>
@@ -49,10 +49,10 @@
     <template id="report_controlled_balance">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="company" t-value="o.company_id"/>
-                    <t t-set="doc_title" t-value="'Balance trimestral'"/>
-                    <t t-set="doc_extra" t-value="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
+                <t t-call="al_report_base.report_pe_page"
+                    company="o.company_id"
+                    doc_title.f="Balance trimestral"
+                    doc_extra="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))">
                     <p class="pe-doc-text">Declaración jurada del movimiento de
                         <t t-out="books[o.book].replace('Libro de ', '').replace('Registro de ', '')"/>
                         del establecimiento <t t-out="o.warehouse_id.name"/>
@@ -105,10 +105,10 @@
     <template id="report_controlled_balance_record">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="company" t-value="o.company_id"/>
-                    <t t-set="doc_title" t-value="'Balance trimestral' + (' · %s' % o.form_code if o.form_code else '')"/>
-                    <t t-set="doc_extra" t-value="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))"/>
+                <t t-call="al_report_base.report_pe_page"
+                    company="o.company_id"
+                    doc_title="'Balance trimestral' + (' · %s' % o.form_code if o.form_code else '')"
+                    doc_extra="'%s al %s' % (o.date_from.strftime('%d/%m/%Y'), o.date_to.strftime('%d/%m/%Y'))">
                     <p class="pe-doc-text">Declaración jurada del movimiento de
                         <t t-out="'estupefacientes' if o.book == 'narcotic' else 'psicotrópicos'"/>
                         (listas IIA, IIIA, IIIB y IIIC) del establecimiento <t t-out="o.warehouse_id.name"/>

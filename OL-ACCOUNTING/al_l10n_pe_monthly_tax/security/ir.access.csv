@@ -1,0 +1,8 @@
+id,name,model_id,group_id/id,operation,domain
+access_l10n_pe_monthly_tax_user,l10n_pe.monthly.tax.user,l10n_pe.monthly.tax,account.group_account_user,cru,
+access_l10n_pe_monthly_tax_manager,l10n_pe.monthly.tax.manager,l10n_pe.monthly.tax,account.group_account_manager,crud,
+access_l10n_pe_monthly_tax_readonly,l10n_pe.monthly.tax.readonly,l10n_pe.monthly.tax,account.group_account_readonly,r,
+rule_l10n_pe_monthly_tax_company,Declaración mensual 621: compañías permitidas,l10n_pe.monthly.tax,,crud,"[('company_id', 'in', company_ids)]"
+access_l10n_pe_tax_regime_manager,l10n_pe.tax.regime.manager,l10n_pe.tax.regime,account.group_account_manager,crud,
+access_l10n_pe_tax_regime_readonly,l10n_pe.tax.regime.readonly,l10n_pe.tax.regime,account.group_account_readonly,r,
+rule_l10n_pe_tax_regime_company,Régimen tributario: compañías permitidas,l10n_pe.tax.regime,,crud,"[('company_id', 'in', company_ids)]"

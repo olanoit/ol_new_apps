@@ -12,12 +12,12 @@
     <template id="report_contract">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="o" t-value="doc"/>
-                    <t t-set="company" t-value="doc.company_id"/>
-                    <t t-set="doc_title" t-value="'Contrato de trabajo'"/>
-                    <t t-set="doc_extra" t-value="doc.employee_id.name"/>
-                    <t t-set="page_class" t-value="'pe-doc-text'"/>
+                <t t-call="al_report_base.report_pe_page"
+                    o="doc"
+                    company="doc.company_id"
+                    doc_title.f="Contrato de trabajo"
+                    doc_extra="doc.employee_id.name"
+                    page_class.f="pe-doc-text">
 
                     <div class="pe-contract-body" t-out="doc.l10n_pe_contract_template_id._render_body(doc)"/>
                 </t>

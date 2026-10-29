@@ -22,8 +22,6 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'sale_project', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'data/mail_message_subtype_data.xml',
@@ -41,6 +39,7 @@ Calendario e ingresos, contratos de obra con hitos, entrega semanal, valorizaci√
         'views/construction_board_views.xml',
         'views/budget_import_views.xml',
         'wizards/budget_book_wizard_views.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

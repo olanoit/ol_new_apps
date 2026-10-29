@@ -11,12 +11,11 @@
          ============================================================= -->
 
     <template id="report_gantt">
-        <t t-call="web.html_container">
-            <t t-set="o" t-value="docs[:1]"/>
-            <t t-set="company" t-value="o.company_id or docs.env.company"/>
-            <t t-call="al_report_base.report_pe_page">
-                <t t-set="doc_title" t-value="'Diagrama de Gantt'"/>
-                <t t-set="doc_extra" t-value="'Escala %s · %s' % (matrix['scale'], generated_on.strftime('%d/%m/%Y'))"/>
+        <t t-set="o" t-value="docs[:1]"/>
+        <t t-call="web.html_container" o="o" company="o.company_id or docs.env.company">
+            <t t-call="al_report_base.report_pe_page"
+                doc_title.f="Diagrama de Gantt"
+                doc_extra="'Escala %s · %s' % (matrix['scale'], generated_on.strftime('%d/%m/%Y'))">
 
                 <div class="pe-doc-title" t-esc="title"/>
                 <p class="pe-doc-fs-11 text-center" style="color: #595959; margin: -12px 0 8px;">

@@ -37,8 +37,6 @@ cuenta») hasta que lo rinde:
     'countries': ['pe'],
     'depends': ['account', 'analytic', 'l10n_pe', 'al_account_base', 'al_report_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/cash_fund_security.xml',
         'data/ir_sequence_data.xml',
         'views/cash_fund_views.xml',
         'views/cash_settlement_views.xml',
@@ -46,6 +44,7 @@ cuenta») hasta que lo rinde:
         'views/res_config_settings_views.xml',
         'reports/cash_fund_reports.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

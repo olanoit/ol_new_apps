@@ -8,9 +8,11 @@
  * datos, prompt y validación está en el servidor (`al.gantt.ai`); aquí solo hay
  * conversación y revisión de propuestas.
  */
-import { Component, onPatched, useRef, useState } from "@odoo/owl";
+import { Component, onPatched, proxy, usePlugin } from "@odoo/owl";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
+import { useRef } from "@web/owl2/utils";
 
 export class GanttAiPanel extends Component {
     static template = "al_project_gantt_ai.GanttAiPanel";
@@ -25,11 +27,11 @@ export class GanttAiPanel extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.notification = useService("notification");
+        this.notification = usePlugin(NotificationPlugin);
         this.scrollRef = useRef("scroll");
         this.inputRef = useRef("input");
 
-        this.state = useState({
+        this.state = proxy({
             messages: [],
             input: "",
             loading: false,

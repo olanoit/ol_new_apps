@@ -24,7 +24,7 @@
  * `g<ambiente>_<etapa>` para las etapas padre (v1.8, M18-02): barras resumen
  * de sus sub etapas en el ambiente.
  */
-import { useState } from "@odoo/owl";
+import { proxy } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { _t } from "@web/core/l10n/translation";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -199,7 +199,7 @@ export class ConstructionScheduleAction extends GanttAction {
     setup() {
         super.setup();
         const context = this.props.action?.context || {};
-        this.schedule = useState({
+        this.schedule = proxy({
             plans: [],
             plansLoaded: false,
             planId: context.construction_plan_id || null,
@@ -364,7 +364,7 @@ export class ConstructionScheduleAction extends GanttAction {
                 template: (task) => {
                     const alerts = task.cp_alerts || [];
                     const icon = alerts.length
-                        ? `<i class="fa fa-exclamation-triangle text-warning me-1" title="${escapeText(alerts.join(" · "))}"></i>`
+                        ? `<i class="oi text-warning me-1" data-icon="warning" title="${escapeText(alerts.join(" · "))}"></i>`
                         : "";
                     if (task.cp_stage && task.cp_unassigned) {
                         return `${icon}<span class="text-muted">${escapeText(_t("Sin asignar"))}</span>`;
@@ -530,7 +530,7 @@ export class ConstructionScheduleAction extends GanttAction {
             return [
                 {
                     label: _t("Abrir etapa"),
-                    icon: "fa-external-link",
+                    icon: "open_in_new",
                     run: () => this.openRow(taskId),
                 },
             ];
@@ -539,7 +539,7 @@ export class ConstructionScheduleAction extends GanttAction {
             return [
                 {
                     label: _t("Abrir en Odoo"),
-                    icon: "fa-external-link",
+                    icon: "open_in_new",
                     run: () => this.openRow(taskId),
                 },
             ];
@@ -624,7 +624,7 @@ export class ConstructionScheduleAction extends GanttAction {
         const matrix = {
             key: "io_matrix",
             label: _t("Insumo-producto"),
-            icon: "fa-table",
+            icon: "table_chart",
             disabled: !this.schedule.planId,
             title: _t("Recursos de la selección (o de la obra) como tabla insumo-producto"),
             run: () => this.openIoMatrix(),

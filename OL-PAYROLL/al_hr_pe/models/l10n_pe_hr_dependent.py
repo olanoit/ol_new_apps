@@ -78,7 +78,7 @@ class L10nPeHrDependent(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'employee_id, date_start desc, id desc'
     _check_company_auto = True
-    _rec_names_search = ['name', 'identification_id']
+    _rec_names_search = ('name', 'identification_id')
 
     # ------------------------------------------------------------------
     # Vínculo

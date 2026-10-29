@@ -1,0 +1,7 @@
+id,name,model_id,group_id/id,operation,domain
+access_payment_multi_user,l10n_pe.payment.multi user,l10n_pe.payment.multi,account.group_account_user,crud,
+access_payment_multi_read,l10n_pe.payment.multi readonly,l10n_pe.payment.multi,account.group_account_readonly,r,
+payment_multi_company_rule,Pago múltiple: multicompañía,l10n_pe.payment.multi,,crud,"[('company_id', 'in', company_ids)]"
+access_payment_multi_line_user,l10n_pe.payment.multi.line user,l10n_pe.payment.multi.line,account.group_account_user,crud,
+access_payment_multi_line_read,l10n_pe.payment.multi.line readonly,l10n_pe.payment.multi.line,account.group_account_readonly,r,
+payment_multi_line_company_rule,Línea de pago múltiple: multicompañía,l10n_pe.payment.multi.line,,crud,"[('company_id', 'in', company_ids)]"

@@ -1,0 +1,6 @@
+id,name,model_id,group_id/id,operation,domain
+access_l10n_pe_account_destiny,l10n_pe.account.destiny user,l10n_pe.account.destiny,account.group_account_user,crud,
+access_l10n_pe_account_destiny_invoice,l10n_pe.account.destiny invoice,l10n_pe.account.destiny,account.group_account_invoice,r,
+access_l10n_pe_account_destiny_readonly,l10n_pe.account.destiny readonly,l10n_pe.account.destiny,account.group_account_readonly,r,
+account_destiny_rule_company,Destinos por cuenta multi-company,l10n_pe.account.destiny,,crud,"[('company_id', 'parent_of', company_ids)]"
+access_l10n_pe_destination_period_wizard,l10n_pe.destination.period.wizard manager,l10n_pe.destination.period.wizard,account.group_account_manager,crud,

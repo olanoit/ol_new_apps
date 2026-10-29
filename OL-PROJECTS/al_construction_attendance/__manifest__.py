@@ -50,8 +50,6 @@ y 18):
     'depends': ['al_construction_planner_subcontract', 'al_construction_planner_crew', 'al_hr_pe_construction', 'hr_attendance',
                 'hr_hourly_cost'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'views/construction_site_views.xml',
         'views/contractor_views.xml',
         'views/hr_attendance_views.xml',
@@ -60,6 +58,7 @@ y 18):
         'views/res_config_settings_views.xml',
         'views/labor_cost_allocation_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

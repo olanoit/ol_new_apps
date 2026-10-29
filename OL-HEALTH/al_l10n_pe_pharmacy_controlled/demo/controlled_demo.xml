@@ -33,7 +33,7 @@
             <field name="pharmacy_dosage_form_id" ref="al_pharmacy_base.dosage_form_injection"/>
             <field name="pharmacy_route_id" ref="al_pharmacy_base.route_im"/>
             <field name="pharmacy_ingredient_line_ids" eval="[Command.create({'ingredient_id': ref('ingredient_morphine'), 'strength': 10, 'strength_unit': 'mg'})]"/>
-            <field name="image_1920" type="base64" file="al_l10n_pe_pharmacy_controlled/static/img/demo/product_morphine.jpg"/>
+            <field name="image_1920" type="bytes" file="al_l10n_pe_pharmacy_controlled/static/img/demo/product_morphine.jpg"/>
         </record>
         <record id="product_morphine_lot" model="stock.lot">
             <field name="name">MOR2611</field>

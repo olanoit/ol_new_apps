@@ -37,8 +37,6 @@ servicios independientes al pagar sus recibos por honorarios:
         'l10n_pe',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'views/res_config_settings_views.xml',
         'views/fourth_category_suspension_views.xml',
         'views/res_partner_views.xml',
@@ -46,6 +44,7 @@ servicios independientes al pagar sus recibos por honorarios:
         'views/fourth_category_report_views.xml',
         'reports/fourth_category_certificate_report.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_fourth_category_demo.xml'],

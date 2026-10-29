@@ -7,8 +7,10 @@
  * tipo de vista de Odoo. Los datos vienen siempre del módulo base a través de
  * `project.project.get_gantt_data()`.
  */
-import { Component, onMounted, onWillStart, onWillUnmount, useRef, useState } from "@odoo/owl";
+import { Component, onMounted, onWillStart, onWillUnmount, proxy, usePlugin } from "@odoo/owl";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
+import { useRef } from "@web/owl2/utils";
 import { Layout } from "@web/search/layout";
 import { useService } from "@web/core/utils/hooks";
 import { loadCSS, loadJS } from "@web/core/assets";
@@ -42,6 +44,7 @@ import {
     selectedValues,
 } from "@al_project_gantt_base/js/gantt_filters";
 import { GanttSelection } from "./gantt_selection";
+import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 /**
  * Puntos de extensión para pantallas que reutilizan este componente
@@ -74,8 +77,8 @@ export class GanttAction extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = useService("action");
-        this.notification = useService("notification");
+        this.action = usePlugin(ActionManagerPlugin);
+        this.notification = usePlugin(NotificationPlugin);
         this.containerRef = useRef("ganttContainer");
         this.gantt = null;
         this.selection = this.selectionEnabled
@@ -91,7 +94,7 @@ export class GanttAction extends Component {
         // el proyecto ya acotado (`action_open_gantt`).
         const contextProjectIds = this.props.action?.context?.gantt_project_ids || [];
 
-        this.state = useState({
+        this.state = proxy({
             loading: true,
             error: null,
             projects: [],
@@ -694,40 +697,40 @@ export class GanttAction extends Component {
         if (isRealTask) {
             actions.push({
                 label: _t("Abrir en Odoo"),
-                icon: "fa-external-link",
+                icon: "open_in_new",
                 run: () => this.openTaskForm(taskId),
             });
         }
         if (isRealTask) {
             actions.push({
                 label: _t("Planificar actividad"),
-                icon: "fa-clock-o",
+                icon: "schedule",
                 run: () => this.scheduleActivity(taskId),
             });
         }
         if (isRealTask && editable && this.state.meta.can_create) {
             actions.push({
                 label: _t("Añadir subtarea"),
-                icon: "fa-level-down",
+                icon: "subdirectory_arrow_right",
                 run: () => this.addSubtask(taskId, task),
             });
         }
         if (isRealTask && editable) {
             actions.push({
                 label: _t("Indentar"),
-                icon: "fa-indent",
+                icon: "format_indent_increase",
                 disabled: !indentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(indentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Desindentar"),
-                icon: "fa-outdent",
+                icon: "format_indent_decrease",
                 disabled: !outdentTask(this.gantt, taskId),
                 run: () => this.applyStructureChange(outdentTask(this.gantt, taskId)),
             });
             actions.push({
                 label: _t("Eliminar"),
-                icon: "fa-trash",
+                icon: "delete",
                 run: () => this.gantt.deleteTask(taskId),
             });
         }

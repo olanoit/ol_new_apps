@@ -55,10 +55,10 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_assignments" type="object" class="oe_stat_button" icon="fa-users">
+                        <button name="action_open_assignments" type="object" class="oe_stat_button" icon="group" icon_class="oi-filled">
                             <field name="partner_count" widget="statinfo" string="Clientes"/>
                         </button>
-                        <button name="action_open_commissions" type="object" class="oe_stat_button" icon="fa-money">
+                        <button name="action_open_commissions" type="object" class="oe_stat_button" icon="payments">
                             <field name="commission_count" widget="statinfo" string="Liquidaciones"/>
                         </button>
                     </div>
@@ -131,7 +131,7 @@
                 <field name="amount_residual"/>
                 <field name="amount_recovered"/>
                 <field name="state" widget="badge" decoration-success="state == 'active'"/>
-                <button name="action_recall" type="object" string="Retirar" icon="fa-undo"
+                <button name="action_recall" type="object" string="Retirar" icon="undo"
                         invisible="state != 'active'" groups="al_l10n_pe_collection.group_collection_manager"/>
             </list>
         </field>

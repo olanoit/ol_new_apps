@@ -1,0 +1,14 @@
+id,name,model_id,group_id/id,operation,domain
+access_cash_fund_invoice,l10n_pe.cash.fund facturación,l10n_pe.cash.fund,account.group_account_invoice,cru,
+access_cash_fund_user,l10n_pe.cash.fund contable,l10n_pe.cash.fund,account.group_account_user,crud,
+access_cash_fund_readonly,l10n_pe.cash.fund auditor,l10n_pe.cash.fund,account.group_account_readonly,r,
+cash_fund_company_rule,Entregas a rendir y caja chica: multicompañía,l10n_pe.cash.fund,,crud,"[('company_id', 'in', company_ids)]"
+access_cash_settlement_invoice,l10n_pe.cash.settlement facturación,l10n_pe.cash.settlement,account.group_account_invoice,crud,
+access_cash_settlement_readonly,l10n_pe.cash.settlement auditor,l10n_pe.cash.settlement,account.group_account_readonly,r,
+cash_settlement_company_rule,Rendiciones de fondos: multicompañía,l10n_pe.cash.settlement,,crud,"[('company_id', 'in', company_ids)]"
+access_cash_settlement_document_invoice,l10n_pe.cash.settlement.document facturación,l10n_pe.cash.settlement.document,account.group_account_invoice,crud,
+access_cash_settlement_document_readonly,l10n_pe.cash.settlement.document auditor,l10n_pe.cash.settlement.document,account.group_account_readonly,r,
+cash_settlement_document_company_rule,Comprobantes rendidos: multicompañía,l10n_pe.cash.settlement.document,,crud,"[('company_id', 'in', company_ids)]"
+access_cash_settlement_mobility_invoice,l10n_pe.cash.settlement.mobility facturación,l10n_pe.cash.settlement.mobility,account.group_account_invoice,crud,
+access_cash_settlement_mobility_readonly,l10n_pe.cash.settlement.mobility auditor,l10n_pe.cash.settlement.mobility,account.group_account_readonly,r,
+cash_settlement_mobility_company_rule,Gastos de movilidad: multicompañía,l10n_pe.cash.settlement.mobility,,crud,"[('company_id', 'in', company_ids)]"

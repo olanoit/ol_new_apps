@@ -48,12 +48,11 @@ y PDF.
     ],
     'data': [
         'security/gantt_groups.xml',
-        'security/ir.model.access.csv',
-        'security/gantt_rules.xml',
         'data/gantt_state_color_data.xml',
         'report/gantt_report.xml',
         'report/gantt_report_templates.xml',
         'views/gantt_state_color_views.xml',
+        'security/ir.access.csv',
     ],
     'external_dependencies': {
         # Exportación a Excel (viene con los requisitos de Odoo).

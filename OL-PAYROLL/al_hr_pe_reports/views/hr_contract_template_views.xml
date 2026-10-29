@@ -128,7 +128,7 @@
                     <group>
                         <button name="action_print_pe_contract" type="object"
                                 string="Imprimir contrato"
-                                icon="fa-print" class="btn-secondary"
+                                icon="print" class="btn-secondary"
                                 colspan="2"/>
                     </group>
                 </group>

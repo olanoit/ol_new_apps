@@ -54,7 +54,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_payslips" class="oe_stat_button" icon="fa-book" type="object" help="Boletas generadas" invisible="payslip_count == 0">
+                        <button name="action_open_payslips" class="oe_stat_button" icon="book" type="object" help="Boletas generadas" invisible="payslip_count == 0">
                             <div class="o_field_widget o_stat_info">
                                 <span class="o_stat_value"><field name="payslip_count"/></span>
                                 <span class="o_stat_text">Boletas</span>

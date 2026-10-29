@@ -1,9 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_perception_user,l10n_pe.perception user,model_l10n_pe_perception,account.group_account_invoice,1,1,1,1
-access_perception_read,l10n_pe.perception readonly,model_l10n_pe_perception,account.group_account_readonly,1,0,0,0
-access_perception_line_user,l10n_pe.perception.line user,model_l10n_pe_perception_line,account.group_account_invoice,1,1,1,1
-access_perception_line_read,l10n_pe.perception.line readonly,model_l10n_pe_perception_line,account.group_account_readonly,1,0,0,0
-access_perception_received_user,l10n_pe.perception.received user,model_l10n_pe_perception_received,account.group_account_user,1,1,1,1
-access_perception_received_read,l10n_pe.perception.received readonly,model_l10n_pe_perception_received,account.group_account_readonly,1,0,0,0
-access_perception_received_line_user,l10n_pe.perception.received.line user,model_l10n_pe_perception_received_line,account.group_account_user,1,1,1,1
-access_perception_received_line_read,l10n_pe.perception.received.line readonly,model_l10n_pe_perception_received_line,account.group_account_readonly,1,0,0,0

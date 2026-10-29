@@ -21,7 +21,7 @@ class PharmacyIngredient(models.Model):
     _name = 'pharmacy.ingredient'
     _description = 'Principio activo (DCI)'
     _order = 'name'
-    _rec_names_search = ['name', 'synonyms', 'atc_code']
+    _rec_names_search = ('name', 'synonyms', 'atc_code')
 
     name = fields.Char(string='Denominación común (DCI)', required=True, index='trigram')
     atc_code = fields.Char(string='Código ATC', help='Clasificación anatómica, terapéutica y química de la OMS.')

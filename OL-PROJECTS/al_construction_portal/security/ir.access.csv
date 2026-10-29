@@ -1,0 +1,19 @@
+id,name,model_id,group_id/id,operation,domain
+access_construction_portal_member_user,construction.portal.member user,construction.portal.member,al_construction_planner.group_planner_user,cru,
+access_construction_portal_member_validator,construction.portal.member validator,construction.portal.member,al_construction_planner.group_planner_exec_validator,crud,
+rule_construction_portal_member_company,Personal del portal: compañías permitidas,construction.portal.member,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_construction_portal_token_system,construction.portal.token system,construction.portal.token,base.group_system,rd,
+access_construction_portal_submission_manager,construction.portal.submission manager,construction.portal.submission,al_construction_planner.group_planner_manager,rd,
+access_construction_daily_report_user,construction.daily.report user,construction.daily.report,al_construction_planner.group_planner_user,cru,
+access_construction_daily_report_manager,construction.daily.report manager,construction.daily.report,al_construction_planner.group_planner_manager,crud,
+rule_construction_daily_report_company,Partes diarios: compañías permitidas,construction.daily.report,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_construction_daily_report_staff_user,construction.daily.report.staff user,construction.daily.report.staff,al_construction_planner.group_planner_user,crud,
+access_construction_portal_kit_user,construction.portal.kit user,construction.portal.kit,al_construction_planner.group_planner_user,r,
+access_construction_portal_kit_manager,construction.portal.kit manager,construction.portal.kit,al_construction_planner.group_planner_manager,crud,
+rule_construction_portal_kit_company,Kits del portal: compañías permitidas,construction.portal.kit,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_construction_portal_kit_line_user,construction.portal.kit.line user,construction.portal.kit.line,al_construction_planner.group_planner_user,r,
+access_construction_portal_kit_line_manager,construction.portal.kit.line manager,construction.portal.kit.line,al_construction_planner.group_planner_manager,crud,
+access_construction_portal_tareo_user,construction.portal.tareo user,construction.portal.tareo,al_construction_planner.group_planner_user,r,
+access_construction_portal_tareo_manager,construction.portal.tareo manager,construction.portal.tareo,al_construction_planner.group_planner_manager,crud,
+rule_construction_portal_tareo_company,Tareo: compañías permitidas,construction.portal.tareo,,crud,"[('company_id', 'in', company_ids + [False])]"
+access_construction_portal_pin_wizard_user,construction.portal.pin.wizard user,construction.portal.pin.wizard,al_construction_planner.group_planner_user,cru,

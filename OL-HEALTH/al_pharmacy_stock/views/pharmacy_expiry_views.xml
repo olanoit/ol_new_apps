@@ -96,9 +96,9 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_picking" type="object" class="oe_stat_button"
-                                icon="fa-truck" invisible="not picking_id" string="Devolución"/>
+                                icon="local_shipping" invisible="not picking_id" string="Devolución"/>
                         <button name="action_view_refund" type="object" class="oe_stat_button"
-                                icon="fa-file-text-o" invisible="not refund_id" string="Nota de crédito"
+                                icon="article" invisible="not refund_id" string="Nota de crédito"
                                 groups="account.group_account_invoice"/>
                     </div>
                     <div class="oe_title"><h1><field name="name"/></h1></div>

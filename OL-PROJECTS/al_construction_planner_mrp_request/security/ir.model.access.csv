@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_replacement_requester,Reposición a planta: solicitante,model_construction_replacement_request,al_construction_material_request.group_construction_requester,1,1,1,0
-access_replacement_logistics,Reposición a planta: logística,model_construction_replacement_request,al_construction_material_request.group_construction_logistics,1,1,1,1
-access_replacement_mrp_user,Reposición a planta: fabricación,model_construction_replacement_request,mrp.group_mrp_user,1,1,0,0

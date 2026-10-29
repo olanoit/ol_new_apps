@@ -281,7 +281,7 @@ class ConstructionStage(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
         return super().create(vals_list)
 
     def write(self, vals):
@@ -290,7 +290,7 @@ class ConstructionStage(models.Model):
             raise UserError(self.env._(
                 'El código de la etapa ya está en uso: cree otra etapa y archive esta.'))
         if {'code', 'name', 'active', 'sequence', 'number', 'parent_id'} & set(vals):
-            self.env.registry.clear_cache()
+            self.env.transaction.invalidate_ormcache()
         res = super().write(vals)
         if 'parent_id' in vals:
             self._recompute_stage_parent()
@@ -311,7 +311,7 @@ class ConstructionStage(models.Model):
                 'La etapa ya se usa en planes o actividades: archívela en lugar de borrarla.'))
 
     def unlink(self):
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
         return super().unlink()
 
     def _is_used(self):

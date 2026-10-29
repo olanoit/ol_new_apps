@@ -54,7 +54,6 @@ asientos por su complejidad y riesgo contable.
         'l10n_pe_reports',
     ],
     'data': [
-        'security/ir.model.access.csv',
         'data/detraction_type_data.xml',
         'views/detraction_type_views.xml',
         'views/detraction_check_views.xml',
@@ -67,6 +66,7 @@ asientos por su complejidad y riesgo contable.
         'wizards/detraction_import_wizard_views.xml',
         'views/detraction_menu_views.xml',
         'views/menu.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

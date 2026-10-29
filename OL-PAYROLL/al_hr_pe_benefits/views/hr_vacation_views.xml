@@ -81,7 +81,7 @@
                 <field name="date_aplication" optional="hide"/>
                 <field name="internal_motive" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
-                <button name="action_show_details" icon="fa-list" string="Ver detalle" type="object"/>
+                <button name="action_show_details" icon="format_list_bulleted" string="Ver detalle" type="object"/>
             </list>
         </field>
     </record>
@@ -282,7 +282,7 @@
                 <field name="neto_total" sum="Total" optional="show" force_save="1"/>
                 <field name="quinta" sum="Total" optional="show" force_save="1"/>
                 <field name="total" sum="Total" optional="show" force_save="1"/>
-                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="fa-list" type="object" title="Ver detalle"/>
+                <button name="action_show_details" invisible="not l10n_pe_has_history" icon="format_list_bulleted" type="object" title="Ver detalle"/>
             </list>
         </field>
     </record>

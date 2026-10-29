@@ -58,8 +58,6 @@ Percepciones que nos cobran:
         'al_report_base',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'reports/perception_report.xml',
         'views/res_config_settings_views.xml',
         'views/product_views.xml',
@@ -68,6 +66,7 @@ Percepciones que nos cobran:
         'views/perception_views.xml',
         'views/perception_received_views.xml',
         'views/perception_menus.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_perception_demo.xml'],

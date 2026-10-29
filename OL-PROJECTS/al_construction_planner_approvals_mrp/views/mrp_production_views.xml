@@ -22,7 +22,7 @@
                 <div class="alert alert-warning d-flex align-items-center gap-2" role="alert"
                      invisible="construction_exceed_state != 'exceeded' or construction_approval_engine != 'approvals'">
                     <field name="construction_approval_engine" invisible="1"/>
-                    <i class="fa fa-exclamation-triangle" title="Exceso"/>
+                    <i class="oi" data-icon="warning" title="Exceso"/>
                     <span>Excede lo presupuestado: no empieza hasta que se apruebe el exceso.
                         <field name="construction_approval_todo" class="d-inline" invisible="not construction_approval_todo"/></span>
                     <button name="action_view_construction_approvals" type="object"
@@ -47,7 +47,7 @@
                         </group>
                     </group>
                     <button name="action_construction_refresh_versus" type="object" string="Actualizar comparación"
-                            class="btn-secondary btn-sm mb-2" icon="fa-refresh" invisible="state in ('done', 'cancel')"/>
+                            class="btn-secondary btn-sm mb-2" icon="refresh" invisible="state in ('done', 'cancel')"/>
                     <field name="construction_versus_ids">
                         <list decoration-danger="change_type" decoration-muted="not change_type and qty_diff == 0">
                             <field name="product_id"/>

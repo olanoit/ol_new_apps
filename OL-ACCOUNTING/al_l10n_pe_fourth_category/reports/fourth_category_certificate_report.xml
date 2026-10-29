@@ -16,9 +16,9 @@
                 <t t-set="lines" t-value="rows.get(o.commercial_partner_id, [])"/>
                 <t t-set="cur" t-value="company.currency_id"/>
                 <t t-set="date_fmt" t-value="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/>
-                <t t-call="al_report_base.report_pe_page">
-                    <t t-set="doc_title" t-value="'Certificado de rentas y retenciones'"/>
-                    <t t-set="doc_extra" t-value="'Rentas de cuarta categoría · Ejercicio %s' % year"/>
+                <t t-call="al_report_base.report_pe_page"
+                    doc_title.f="Certificado de rentas y retenciones"
+                    doc_extra="'Rentas de cuarta categoría · Ejercicio %s' % year">
 
                     <table class="pe-doc-table mb-3">
                         <tr>

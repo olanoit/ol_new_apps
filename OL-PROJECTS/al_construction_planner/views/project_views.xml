@@ -7,10 +7,10 @@
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button name="action_view_construction_plans" type="object" class="oe_stat_button" icon="fa-sitemap" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
+                <button name="action_view_construction_plans" type="object" class="oe_stat_button" icon="account_tree" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_plan_count" widget="statinfo" string="Plan de recursos"/>
                 </button>
-                <button name="action_view_construction_typologies" type="object" class="oe_stat_button" icon="fa-th" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
+                <button name="action_view_construction_typologies" type="object" class="oe_stat_button" icon="grid_view" invisible="not is_construction_site" groups="al_construction_planner.group_planner_progress">
                     <field name="construction_typology_count" widget="statinfo" string="Tipologías"/>
                 </button>
             </xpath>
@@ -18,9 +18,9 @@
                 <page string="Planificación" name="construction_planning" invisible="not is_construction_site" groups="al_construction_planner.group_planner_user">
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <field name="construction_current_plan_id" invisible="1"/>
-                        <button name="action_construction_open_tree" type="object" string="Árbol de recursos" icon="fa-sitemap" class="btn-secondary" invisible="not construction_current_plan_id"/>
-                        <button name="action_construction_open_schedule" type="object" string="Cronograma" icon="fa-tasks" class="btn-secondary" invisible="not construction_current_plan_id"/>
-                        <button name="action_view_construction_plans" type="object" string="Planes de recursos" icon="fa-list" class="btn-link"/>
+                        <button name="action_construction_open_tree" type="object" string="Árbol de recursos" icon="account_tree" class="btn-secondary" invisible="not construction_current_plan_id"/>
+                        <button name="action_construction_open_schedule" type="object" string="Cronograma" icon="checklist" class="btn-secondary" invisible="not construction_current_plan_id"/>
+                        <button name="action_view_construction_plans" type="object" string="Planes de recursos" icon="format_list_bulleted" class="btn-link"/>
                         <span class="text-muted align-self-center" invisible="construction_current_plan_id">
                             La obra aún no tiene plan de recursos.
                         </span>
@@ -135,7 +135,7 @@
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <span class="fw-bold">Avance valorizado:</span>
                         <field name="construction_progress_pct" widget="percentage" class="oe_inline"/>
-                        <button name="action_construction_register_progress" type="object" string="Registrar avance" class="btn-secondary btn-sm" icon="fa-check-square-o" invisible="construction_level not in ('floor', 'apartment', 'space', 'module')"/>
+                        <button name="action_construction_register_progress" type="object" string="Registrar avance" class="btn-secondary btn-sm" icon="check_box" invisible="construction_level not in ('floor', 'apartment', 'space', 'module')"/>
                     </div>
                     <field name="construction_current_line_ids" readonly="1" context="{'list_view_ref': 'al_construction_planner.construction_resource_plan_line_view_list_progress'}"/>
                     <field name="construction_progress_ids" readonly="1" invisible="not construction_progress_ids" context="{'list_view_ref': 'al_construction_planner.construction_task_progress_view_list'}"/>

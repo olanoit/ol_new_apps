@@ -31,7 +31,7 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_space_tasks" type="object"
-                                class="oe_stat_button" icon="fa-th-large">
+                                class="oe_stat_button" icon="view_module">
                             <field name="space_task_count" widget="statinfo" string="Ambientes"/>
                         </button>
                     </div>

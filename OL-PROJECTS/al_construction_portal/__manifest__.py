@@ -41,10 +41,9 @@ por WhatsApp:
         'stock',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/portal_security.xml',
         'views/portal_app_templates.xml',
         'views/portal_views.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

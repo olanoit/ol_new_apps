@@ -5,9 +5,9 @@
         <t t-set="company" t-value="res_company"/>
         <t t-set="data" t-value="o._l10n_pe_collection_statement_values(company)"/>
         <t t-set="cur" t-value="data['currency']"/>
-        <t t-call="al_report_base.report_pe_page">
-            <t t-set="doc_title" t-value="'Estado de cuenta'"/>
-            <t t-set="doc_extra" t-value="'Al %s' % data['today'].strftime('%d/%m/%Y')"/>
+        <t t-call="al_report_base.report_pe_page"
+            doc_title.f="Estado de cuenta"
+            doc_extra="'Al %s' % data['today'].strftime('%d/%m/%Y')">
             <table class="pe-doc-table mb-3">
                 <tr>
                     <td class="pe-doc-label" style="width: 15%;">Cliente</td>

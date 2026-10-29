@@ -8,10 +8,10 @@
             <button class="button seller-button btn btn-secondary btn-lg w-100 w-md-50 lh-lg text-truncate"
                 t-if="pos.config.authorized_seller"
                 t-on-click="() => this.addVendedor()">
-                <i class="fa fa-user-o me-2" role="img" aria-label="Vendedor" title="Vendedor"/>
+                <i class="oi me-2" data-icon="person" role="img" aria-label="Vendedor" title="Vendedor"/>
                 <span class="seller-name">
                     <t t-if="this.getVendedorName()">
-                        <t t-esc="this.getVendedorName()"/>
+                        <t t-out="this.getVendedorName()"/>
                     </t>
                     <t t-else="">
                         Vendedor

@@ -13,7 +13,7 @@ class PeCatalogPayment(models.Model):
     _name = 'pe.catalog.payment'
     _description = 'PE: Catálogo de medios de pago'
     _order = 'code'
-    _rec_names_search = ['name', 'code']
+    _rec_names_search = ('name', 'code')
 
     active = fields.Boolean(string='Activo', default=True)
     code = fields.Char(string='Código', size=4, index=True, required=True)

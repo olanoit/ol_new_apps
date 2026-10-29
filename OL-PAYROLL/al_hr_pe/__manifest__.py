@@ -39,8 +39,6 @@ cero códigos hardcodeados (ver plan §5).
         'l10n_pe',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'security/security.xml',
         'data/hr_worker_type.xml',
         'data/hr_situation.xml',
         'data/hr_reasons_leave.xml',
@@ -79,6 +77,7 @@ cero códigos hardcodeados (ver plan §5).
         'views/hr_main_parameter_views.xml',
         'views/res_config_settings_views.xml',
         'views/hr_payslip_views.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

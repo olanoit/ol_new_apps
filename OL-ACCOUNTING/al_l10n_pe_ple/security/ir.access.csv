@@ -1,0 +1,23 @@
+id,name,model_id,group_id/id,operation,domain
+access_ple_export_wizard,l10n_pe.ple.export.wizard,l10n_pe.ple.export.wizard,account.group_account_user,crud,
+access_ple_withholding_user,l10n_pe.ple.withholding user,l10n_pe.ple.withholding,account.group_account_user,crud,
+access_ple_withholding_read,l10n_pe.ple.withholding readonly,l10n_pe.ple.withholding,account.group_account_readonly,r,
+ple_withholding_company_rule,PLE 4.1 retenciones: multicompañía,l10n_pe.ple.withholding,,crud,"[('company_id', 'in', company_ids)]"
+access_ple_investment_user,l10n_pe.ple.investment user,l10n_pe.ple.investment,account.group_account_user,crud,
+access_ple_investment_read,l10n_pe.ple.investment readonly,l10n_pe.ple.investment,account.group_account_readonly,r,
+ple_investment_company_rule,PLE 3.8 inversiones: multicompañía,l10n_pe.ple.investment,,crud,"[('company_id', 'in', company_ids)]"
+access_ple_equity_user,l10n_pe.ple.equity user,l10n_pe.ple.equity,account.group_account_user,crud,
+access_ple_equity_read,l10n_pe.ple.equity readonly,l10n_pe.ple.equity,account.group_account_readonly,r,
+ple_equity_company_rule,PLE 3.19 patrimonio: multicompañía,l10n_pe.ple.equity,,crud,"[('company_id', 'in', company_ids)]"
+access_ple_cost_sales_user,l10n_pe.ple.cost.sales user,l10n_pe.ple.cost.sales,account.group_account_user,crud,
+access_ple_cost_sales_read,l10n_pe.ple.cost.sales readonly,l10n_pe.ple.cost.sales,account.group_account_readonly,r,
+ple_cost_sales_company_rule,PLE 10.1 costo de ventas: multicompañía,l10n_pe.ple.cost.sales,,crud,"[('company_id', 'in', company_ids)]"
+access_ple_cost_element_user,l10n_pe.ple.cost.element user,l10n_pe.ple.cost.element,account.group_account_user,crud,
+access_ple_cost_element_read,l10n_pe.ple.cost.element readonly,l10n_pe.ple.cost.element,account.group_account_readonly,r,
+ple_cost_element_company_rule,PLE 10.2 elementos del costo: multicompañía,l10n_pe.ple.cost.element,,crud,"[('company_id', 'in', company_ids)]"
+access_ple_cost_production_user,l10n_pe.ple.cost.production user,l10n_pe.ple.cost.production,account.group_account_user,crud,
+access_ple_cost_production_read,l10n_pe.ple.cost.production readonly,l10n_pe.ple.cost.production,account.group_account_readonly,r,
+ple_cost_production_company_rule,PLE 10.3 costo de producción: multicompañía,l10n_pe.ple.cost.production,,crud,"[('company_id', 'in', company_ids)]"
+access_ple_cost_center_user,l10n_pe.ple.cost.center user,l10n_pe.ple.cost.center,account.group_account_user,crud,
+access_ple_cost_center_read,l10n_pe.ple.cost.center readonly,l10n_pe.ple.cost.center,account.group_account_readonly,r,
+ple_cost_center_company_rule,PLE 10.4 centros de costos: multicompañía,l10n_pe.ple.cost.center,,crud,"[('company_id', 'in', company_ids)]"

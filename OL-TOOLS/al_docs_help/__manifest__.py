@@ -35,9 +35,9 @@ módulo y las páginas de la documentación que lo declaran (``modulos:``);
     'license': 'OPL-1',
     'depends': ['web'],
     'data': [
-        'security/ir.model.access.csv',
         'data/al_docs_help_data.xml',
         'views/al_docs_help_views.xml',
+        'security/ir.access.csv',
     ],
     'assets': {
         'web.assets_backend': [

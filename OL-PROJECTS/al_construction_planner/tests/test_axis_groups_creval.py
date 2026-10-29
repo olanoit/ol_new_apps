@@ -153,14 +153,14 @@ class TestAxisGroups(TransactionCase):
         internal = self.env.ref('base.group_user')
         feature = self.env.ref(G + 'feature_exec_planner')
         internal.implied_ids = [Command.unlink(feature.id)]
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
         before = {login: self._snapshot(user) for login, user in users.items()}
         tier = self.env['tier.definition'].create({
             'name': 'Plan (test)', 'model_id': self.env.ref(
                 'al_construction_planner.model_construction_resource_plan').id,
             'review_type': 'group', 'reviewer_group_id': self.env.ref(G + 'project_head').id})
         migrate_axis_groups(self.env)
-        self.env.registry.clear_cache()
+        self.env.transaction.invalidate_ormcache()
         for login, user in users.items():
             user.invalidate_recordset()
             perms, menus = self._snapshot(user)

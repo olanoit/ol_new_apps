@@ -1,0 +1,9 @@
+id,name,model_id,group_id/id,operation,domain
+access_pharmacy_prescription_user,pharmacy.prescription técnico,pharmacy.prescription,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_prescription_pharmacist,pharmacy.prescription químico farmacéutico,pharmacy.prescription,al_pharmacy_base.group_pharmacy_pharmacist,cru,
+pharmacy_prescription_comp_rule,Receta: multicompañía,pharmacy.prescription,,crud,"[('company_id', 'in', company_ids)]"
+access_pharmacy_prescription_line_user,pharmacy.prescription.line técnico,pharmacy.prescription.line,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_prescription_line_pharmacist,pharmacy.prescription.line químico farmacéutico,pharmacy.prescription.line,al_pharmacy_base.group_pharmacy_pharmacist,crud,
+access_pharmacy_dispensation_user,pharmacy.dispensation técnico,pharmacy.dispensation,al_pharmacy_base.group_pharmacy_technician,r,
+access_pharmacy_dispensation_pharmacist,pharmacy.dispensation químico farmacéutico,pharmacy.dispensation,al_pharmacy_base.group_pharmacy_pharmacist,cr,
+pharmacy_dispensation_comp_rule,Dispensación: multicompañía,pharmacy.dispensation,,crud,"[('company_id', 'in', company_ids)]"

@@ -63,11 +63,11 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_progress" type="object" class="oe_stat_button"
-                                icon="fa-check-square-o">
+                                icon="check_box">
                             <field name="progress_count" widget="statinfo" string="Avances"/>
                         </button>
                         <button name="action_view_invoice" type="object" class="oe_stat_button"
-                                icon="fa-file-text-o" string="Factura" invisible="not invoice_id"
+                                icon="article" string="Factura" invisible="not invoice_id"
                                 groups="account.group_account_invoice"/>
                     </div>
                     <div class="alert alert-warning mb-2" role="alert" invisible="not needs_head_authorization">
@@ -134,7 +134,7 @@
                                            groups="al_construction_planner.group_planner_exec_validator"/>
                                     <field name="decision_warning" optional="show" readonly="1"/>
                                     <field name="no_progress" column_invisible="True"/>
-                                    <button name="action_confirm_decision" type="object" icon="fa-check"
+                                    <button name="action_confirm_decision" type="object" icon="check"
                                             title="Confirmar la decisión con el avance actual"
                                             invisible="not decision_warning or no_progress"
                                             groups="al_construction_planner.group_planner_exec_validator"/>
@@ -222,7 +222,7 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_construction_settlements" type="object"
-                        class="oe_stat_button" icon="fa-calendar-check-o"
+                        class="oe_stat_button" icon="event_available"
                         invisible="not construction_settlement_count"
                         groups="al_construction_planner.group_planner_progress">
                     <field name="construction_settlement_count" widget="statinfo" string="Valorizaciones"/>

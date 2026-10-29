@@ -22,15 +22,15 @@
                                  help="Sin clave, el panel del asistente no aparece en el diagrama.">
                             <field name="al_gantt_ai_api_key" password="True" placeholder="sk-…"/>
                             <div class="mt8">
-                                <widget name="documentation_link" icon="fa-key"
+                                <widget name="documentation_link" icon="key"
                                         label="Crear una clave en la consola de Anthropic"
                                         path="https://console.anthropic.com/settings/keys"
                                         invisible="al_gantt_ai_provider != 'anthropic'"/>
-                                <widget name="documentation_link" icon="fa-key"
+                                <widget name="documentation_link" icon="key"
                                         label="Crear una clave en la plataforma de OpenAI"
                                         path="https://platform.openai.com/api-keys"
                                         invisible="al_gantt_ai_provider != 'openai'"/>
-                                <widget name="documentation_link" icon="fa-key"
+                                <widget name="documentation_link" icon="key"
                                         label="Crear una clave en la plataforma de DeepSeek"
                                         path="https://platform.deepseek.com/api_keys"
                                         invisible="al_gantt_ai_provider != 'deepseek'"/>
@@ -41,15 +41,15 @@
                                  help="Debe admitir «function calling»: es como el asistente devuelve las propuestas.">
                             <field name="al_gantt_ai_model" placeholder="claude-opus-5-5"/>
                             <div class="mt8">
-                                <widget name="documentation_link" icon="fa-list"
+                                <widget name="documentation_link" icon="format_list_bulleted"
                                         label="Modelos de Anthropic"
                                         path="https://docs.claude.com/en/docs/about-claude/models/overview"
                                         invisible="al_gantt_ai_provider != 'anthropic'"/>
-                                <widget name="documentation_link" icon="fa-list"
+                                <widget name="documentation_link" icon="format_list_bulleted"
                                         label="Modelos de OpenAI"
                                         path="https://platform.openai.com/docs/models"
                                         invisible="al_gantt_ai_provider != 'openai'"/>
-                                <widget name="documentation_link" icon="fa-list"
+                                <widget name="documentation_link" icon="format_list_bulleted"
                                         label="Modelos de DeepSeek"
                                         path="https://api-docs.deepseek.com/quick_start/pricing"
                                         invisible="al_gantt_ai_provider != 'deepseek'"/>

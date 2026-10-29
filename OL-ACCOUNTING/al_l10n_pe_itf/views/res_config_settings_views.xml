@@ -21,7 +21,7 @@
                             </div>
                         </div>
                         <button name="action_l10n_pe_itf_reconcile_model" type="object" class="btn-link"
-                                icon="oi-arrow-right" string="Regla de conciliación del extracto"/>
+                                icon="east" string="Regla de conciliación del extracto"/>
                     </setting>
                 </block>
             </xpath>

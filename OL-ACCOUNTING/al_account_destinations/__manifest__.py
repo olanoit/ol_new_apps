@@ -29,8 +29,6 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
     'license': 'OPL-1',
     'depends': ['account', 'analytic', 'l10n_pe', 'al_account_base'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/destination_security.xml',
         'views/res_config_settings_views.xml',
         'views/res_company_views.xml',
         'views/account_account_views.xml',
@@ -39,6 +37,7 @@ utilidades genéricas viven en el módulo base ``al_account_base``.
         'views/account_analytic_account_views.xml',
         'wizards/destination_period_wizard_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_contractor_worker_user,construction.contractor.worker user,construction.contractor.worker,al_construction_planner.group_planner_user,cru,
+access_contractor_worker_manager,construction.contractor.worker manager,construction.contractor.worker,al_construction_planner.group_planner_manager,crud,
+rule_contractor_worker_company,Personal de contrata: compañías del usuario,construction.contractor.worker,,crud,"[('company_id', 'in', company_ids)]"
+access_contractor_attendance_user,construction.contractor.attendance user,construction.contractor.attendance,al_construction_planner.group_planner_user,cru,
+access_contractor_attendance_manager,construction.contractor.attendance manager,construction.contractor.attendance,al_construction_planner.group_planner_manager,crud,
+rule_contractor_attendance_company,Marcación de contrata: compañías del usuario,construction.contractor.attendance,,crud,"[('company_id', 'in', company_ids)]"
+access_labor_cost_allocation_manager,construction.labor.cost.allocation manager,construction.labor.cost.allocation,al_construction_planner.group_planner_manager,crud,
+access_labor_cost_allocation_plan_viewer,construction.labor.cost.allocation plan_viewer,construction.labor.cost.allocation,al_construction_planner.group_planner_plan_viewer,r,
+rule_labor_cost_allocation_company,Cierre de costo de personal: compañías del usuario,construction.labor.cost.allocation,,crud,"[('company_id', 'in', company_ids)]"
+access_labor_cost_allocation_line_manager,construction.labor.cost.allocation.line manager,construction.labor.cost.allocation.line,al_construction_planner.group_planner_manager,crud,
+access_labor_cost_allocation_line_plan_viewer,construction.labor.cost.allocation.line plan_viewer,construction.labor.cost.allocation.line,al_construction_planner.group_planner_plan_viewer,r,
+rule_labor_cost_allocation_line_company,Línea del cierre de costo de personal: compañías del usuario,construction.labor.cost.allocation.line,,crud,"[('company_id', 'in', company_ids)]"

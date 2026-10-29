@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
     <record id="res_groups_privilege_sire" model="res.groups.privilege">
@@ -11,7 +10,7 @@
          aprobador. Lo tienen los administradores de contabilidad. -->
     <record id="group_sire_approver" model="res.groups">
         <field name="name">Aprobador SIRE</field>
-        <field name="comment">Envía a SUNAT (aceptación, reemplazo, preliminar, ajustes), cierra y reabre los periodos y ve la bitácora de la API.</field>
+        <field name="comment">Env&#237;a a SUNAT (aceptaci&#243;n, reemplazo, preliminar, ajustes), cierra y reabre los periodos y ve la bit&#225;cora de la API.</field>
         <field name="sequence">20</field>
         <field name="privilege_id" ref="res_groups_privilege_sire"/>
         <field name="implied_ids" eval="[(4, ref('account.group_account_user'))]"/>
@@ -22,47 +21,4 @@
         <field name="implied_ids" eval="[(4, ref('group_sire_approver'))]"/>
     </record>
 
-    <data noupdate="1">
-
-        <!-- Multicompañía: cada periodo SIRE (y sus líneas) solo es visible
-             desde su compañía; con él se lanzan llamadas a SUNAT con las
-             credenciales de esa compañía. -->
-        <record id="sire_rce_company_rule" model="ir.rule">
-            <field name="name">SIRE RCE: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_rce"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-        <record id="sire_rce_line_company_rule" model="ir.rule">
-            <field name="name">SIRE RCE línea: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_rce_line"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-        <record id="sire_rvie_company_rule" model="ir.rule">
-            <field name="name">SIRE RVIE: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_rvie"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-        <record id="sire_rvie_line_company_rule" model="ir.rule">
-            <field name="name">SIRE RVIE línea: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_rvie_line"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-        <record id="sire_rce_nd_line_company_rule" model="ir.rule">
-            <field name="name">SIRE no domiciliados: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_rce_nd_line"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-        <record id="sire_operation_company_rule" model="ir.rule">
-            <field name="name">SIRE operación: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_operation"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
-        </record>
-
-        <record id="sire_api_log_company_rule" model="ir.rule">
-            <field name="name">SIRE bitácora de la API: multicompañía</field>
-            <field name="model_id" ref="model_l10n_pe_sire_api_log"/>
-            <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
-        </record>
-
-    </data>
-</odoo>
+    </odoo>

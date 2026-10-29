@@ -50,8 +50,6 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
         'al_hr_pe_public_holidays',
     ],
     'data': [
-        'security/security.xml',
-        'security/ir.model.access.csv',
         'data/planning_role_data.xml',
         'views/hr_shift_pe_views.xml',
         'views/hr_attendance_monitor_views.xml',
@@ -61,6 +59,7 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
         'views/res_config_settings_views.xml',
         'views/hr_attendance_register_views.xml',
         'report/hr_employee_badge.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

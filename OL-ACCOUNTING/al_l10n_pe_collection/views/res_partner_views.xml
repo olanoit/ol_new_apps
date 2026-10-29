@@ -65,22 +65,22 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <div name="button_box" position="inside">
-                <button name="action_l10n_pe_collection_actions" type="object" class="oe_stat_button" icon="fa-phone"
+                <button name="action_l10n_pe_collection_actions" type="object" class="oe_stat_button" icon="phone" icon_class="oi-filled"
                         groups="al_l10n_pe_collection.group_collection_user"
                         invisible="not l10n_pe_collection_action_count">
                     <field name="l10n_pe_collection_action_count" widget="statinfo" string="Gestiones"/>
                 </button>
-                <button name="action_l10n_pe_collection_disputes" type="object" class="oe_stat_button" icon="fa-exclamation-triangle"
+                <button name="action_l10n_pe_collection_disputes" type="object" class="oe_stat_button" icon="warning"
                         groups="al_l10n_pe_collection.group_collection_user"
                         invisible="not l10n_pe_collection_dispute_count">
                     <field name="l10n_pe_collection_dispute_count" widget="statinfo" string="Reclamos"/>
                 </button>
-                <button name="action_l10n_pe_collection_lawsuits" type="object" class="oe_stat_button" icon="fa-gavel"
+                <button name="action_l10n_pe_collection_lawsuits" type="object" class="oe_stat_button" icon="gavel"
                         groups="al_l10n_pe_collection.group_collection_user"
                         invisible="not l10n_pe_collection_lawsuit_count">
                     <field name="l10n_pe_collection_lawsuit_count" widget="statinfo" string="Judicial"/>
                 </button>
-                <button name="action_l10n_pe_collection_promises" type="object" class="oe_stat_button" icon="fa-handshake-o"
+                <button name="action_l10n_pe_collection_promises" type="object" class="oe_stat_button" icon="handshake"
                         groups="al_l10n_pe_collection.group_collection_user"
                         invisible="not l10n_pe_collection_promise_count">
                     <field name="l10n_pe_collection_promise_count" widget="statinfo" string="Compromisos"/>
@@ -143,7 +143,7 @@
                 <field name="l10n_pe_collection_hold" optional="show"/>
                 <field name="phone" optional="show"/>
                 <field name="email" optional="hide"/>
-                <button name="action_l10n_pe_collection_new_action" type="object" string="Gestionar" icon="fa-phone"/>
+                <button name="action_l10n_pe_collection_new_action" type="object" string="Gestionar" icon="phone" icon_class="oi-filled"/>
             </list>
         </field>
     </record>

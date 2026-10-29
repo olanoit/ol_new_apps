@@ -34,8 +34,6 @@ Préstamos y pagarés bancarios
     'countries': ['pe'],
     'depends': ['al_l10n_pe_treasury'],
     'data': [
-        'security/ir.model.access.csv',
-        'security/bank_loan_security.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'views/bank_loan_views.xml',
@@ -43,6 +41,7 @@ Préstamos y pagarés bancarios
         'wizards/bank_loan_payment_views.xml',
         'views/menus.xml',
         'data/bank_loan_data.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

@@ -6,11 +6,11 @@
             <t t-set="pharmacy_restriction" t-value="product._pharmacy_online_restriction()"/>
             <div t-if="product.pharmacy_ok" class="o_pharmacy_product_info mb-4">
                 <div t-if="pharmacy_restriction == 'controlled'" class="alert alert-warning o_pharmacy_controlled" role="alert">
-                    <i class="fa fa-ban me-1"/>Medicamento controlado: solo se vende en el local, con la
+                    <i class="oi me-1" data-icon="block"/>Medicamento controlado: solo se vende en el local, con la
                     receta especial.
                 </div>
                 <div t-elif="pharmacy_restriction == 'prescription'" class="alert alert-info o_pharmacy_prescription" role="alert">
-                    <i class="fa fa-file-text-o me-1"/>Venta con receta médica: la subirá antes de pagar y un
+                    <i class="oi me-1" data-icon="article"/>Venta con receta médica: la subirá antes de pagar y un
                     químico farmacéutico la valida antes del envío.
                 </div>
                 <div t-if="product.pharmacy_linked_company" class="alert alert-light border o_pharmacy_linked" role="alert">

@@ -6,7 +6,7 @@
                 class="btn btn-secondary"
                 data-tooltip="Probar agente"
                 aria-label="Probar agente"
-                t-on-click.stop="onClick">
+                t-on-click.stop="this.onClick">
             Probar agente
         </button>
     </t>

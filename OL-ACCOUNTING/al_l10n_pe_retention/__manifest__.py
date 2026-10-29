@@ -46,14 +46,13 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'data': [
         'data/ir_sequence_data.xml',
         'data/cre_reversal_templates.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'views/res_config_settings_views.xml',
         'views/account_move_views.xml',
         'views/retention_menu_views.xml',
         'views/retention_document_views.xml',
         'views/retention_views.xml',
         'reports/retention_report.xml',
+        'security/ir.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).

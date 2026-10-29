@@ -33,8 +33,8 @@
                             <field name="employee_id" options="{'no_create': True}" optional="show"/>
                             <field name="has_pin" optional="show"/>
                             <field name="pin_locked" optional="show"/>
-                            <button name="action_open_pin_wizard" type="object" string="PIN" icon="fa-key"/>
-                            <button name="action_unlock" type="object" string="Desbloquear" icon="fa-unlock"
+                            <button name="action_open_pin_wizard" type="object" string="PIN" icon="key"/>
+                            <button name="action_unlock" type="object" string="Desbloquear" icon="lock_open"
                                     invisible="not pin_locked"/>
                         </list>
                     </field>

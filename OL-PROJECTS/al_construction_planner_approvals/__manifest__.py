@@ -33,8 +33,6 @@ por niveles termina con ese flujo.
     'depends': ['al_construction_planner_purchase', 'approvals'],
     'data': [
         'security/approval_groups.xml',
-        'security/ir.model.access.csv',
-        'security/ir_rule.xml',
         'wizards/approval_refuse_wizard_views.xml',
         'views/construction_approval_route_views.xml',
         'views/approval_request_views.xml',
@@ -42,6 +40,7 @@ por niveles termina con ese flujo.
         'views/material_request_views.xml',
         'views/res_config_settings_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'post_init_hook': 'post_init_hook',
     'installable': True,

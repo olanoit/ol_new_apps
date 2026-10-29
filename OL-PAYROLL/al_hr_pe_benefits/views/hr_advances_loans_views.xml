@@ -184,7 +184,7 @@
                                    decoration-success="validation == 'paid out'"
                                    decoration-info="validation == 'not payed'"/>
                             <button name="action_set_unpaid" type="object" invisible="validation != 'paid out'"
-                                    icon="fa-undo" string="Cambiar a no pagado" help="Cambiar a no pagado"
+                                    icon="undo" string="Cambiar a no pagado" help="Cambiar a no pagado"
                                     confirm="¿Está seguro de que desea cambiar el estado de esta cuota a no pagada?"/>
                         </list>
                     </field>

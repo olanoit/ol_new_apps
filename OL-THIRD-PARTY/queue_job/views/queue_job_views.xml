@@ -44,7 +44,7 @@
                             name="open_graph_jobs"
                             type="object"
                             class="oe_stat_button"
-                            icon="fa-sitemap"
+                            icon="account_tree"
                             invisible="graph_uuid == False"
                         >
                             <field

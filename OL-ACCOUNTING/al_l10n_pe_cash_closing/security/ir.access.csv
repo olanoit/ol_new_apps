@@ -1,0 +1,13 @@
+id,name,model_id,group_id/id,operation,domain
+access_cash_closing_invoice,l10n_pe.cash.closing invoice,l10n_pe.cash.closing,account.group_account_invoice,crud,
+access_cash_closing_read,l10n_pe.cash.closing readonly,l10n_pe.cash.closing,account.group_account_readonly,r,
+cash_closing_company_rule,Cierre de caja: multicompañía,l10n_pe.cash.closing,,crud,"[('company_id', 'in', company_ids)]"
+access_cash_closing_line_invoice,l10n_pe.cash.closing.line invoice,l10n_pe.cash.closing.line,account.group_account_invoice,crud,
+access_cash_closing_line_read,l10n_pe.cash.closing.line readonly,l10n_pe.cash.closing.line,account.group_account_readonly,r,
+cash_closing_line_company_rule,Movimiento del cierre de caja: multicompañía,l10n_pe.cash.closing.line,,crud,"[('company_id', 'in', company_ids)]"
+access_cash_closing_count_invoice,l10n_pe.cash.closing.count invoice,l10n_pe.cash.closing.count,account.group_account_invoice,crud,
+access_cash_closing_count_read,l10n_pe.cash.closing.count readonly,l10n_pe.cash.closing.count,account.group_account_readonly,r,
+cash_closing_count_company_rule,Arqueo: multicompañía,l10n_pe.cash.closing.count,,crud,"[('company_id', 'in', company_ids)]"
+access_cash_denomination_read,l10n_pe.cash.denomination read,l10n_pe.cash.denomination,account.group_account_invoice,r,
+access_cash_denomination_readonly,l10n_pe.cash.denomination readonly,l10n_pe.cash.denomination,account.group_account_readonly,r,
+access_cash_denomination_manager,l10n_pe.cash.denomination manager,l10n_pe.cash.denomination,account.group_account_manager,crud,

@@ -60,7 +60,7 @@
                                 type="object"
                                 string="Vincular asientos"
                                 class="btn btn-primary"
-                                icon="fa-link"
+                                icon="link"
                                 help="Vincula los asientos contables por referencia para los canjes seleccionados."/>
                     </header>
                     <field name="name"/>
@@ -93,7 +93,7 @@
                                 type="object"
                                 string="Vincular asientos"
                                 class="btn btn-primary"
-                                icon="fa-link"
+                                icon="link"
                                 help="Vincula los asientos contables por referencia para los canjes seleccionados."/>
                     </header>
                     <field name="name"/>
@@ -130,7 +130,7 @@
                                 invisible="is_all_paid == True or state != 'redeemed' or canje_move_id != False"/>
                         <button name="action_link_account_move_by_ref" string="Vincular asiento" type="object"
                                 class="btn btn-primary oe_highlight"
-                                icon="fa-link"
+                                icon="link"
                                 invisible="state != 'redeemed' or account_id != False"/>
 
                         <button name="action_bank_settle_discount" string="Liquidar descuento" type="object"
@@ -151,21 +151,21 @@
                             <button name="action_open_related_invoices"
                                     type="object"
                                     class="oe_stat_button"
-                                    icon="fa-pencil-square-o"
+                                    icon="edit_square"
                                     invisible="related_invoice_count == 0">
                                 <field name="related_invoice_count" widget="statinfo" string="Facturas"/>
                             </button>
                             <button name="action_open_related_payments"
                                     type="object"
                                     class="oe_stat_button"
-                                    icon="fa-pencil-square-o"
+                                    icon="edit_square"
                                     invisible="related_payment_count == 0">
                                 <field name="related_payment_count" widget="statinfo" string="Pagos"/>
                             </button>
                             <button name="action_link_account_move_by_ref"
                                     type="object"
                                     class="oe_stat_button bg-primary text-white"
-                                    icon="fa-link"
+                                    icon="link"
                                     invisible="state != 'redeemed' or account_id != False">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_text">Vincular asiento</span>
@@ -173,13 +173,13 @@
                                 </div>
                             </button>
                             <button name="action_open_bank_moves" type="object" class="oe_stat_button"
-                                    icon="fa-university" invisible="bank_move_count == 0">
+                                    icon="account_balance" invisible="bank_move_count == 0">
                                 <field name="bank_move_count" string="Banco" widget="statinfo"/>
                             </button>
                             <button name="action_open_account_move"
                                     type="object"
                                     class="oe_stat_button"
-                                    icon="fa-book"
+                                    icon="book"
                                     invisible="not account_id">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_text">Asiento</span>

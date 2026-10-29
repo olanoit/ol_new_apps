@@ -1,9 +1,10 @@
 import { registries } from "@odoo/o-spreadsheet";
-import { useSubEnv } from "@odoo/owl";
 import { SpreadsheetAction } from "@documents_spreadsheet/bundle/actions/spreadsheet_action";
+import { usePlugin } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { useService } from "@web/core/utils/hooks";
+import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { patch } from "@web/core/utils/patch";
+import { useSubEnv } from "@web/owl2/utils";
 
 const { topbarMenuRegistry } = registries;
 
@@ -79,7 +80,7 @@ function clearData(model, sheetId) {
 patch(SpreadsheetAction.prototype, {
     setup() {
         super.setup(...arguments);
-        const notification = useService("notification");
+        const notification = usePlugin(NotificationPlugin);
         useSubEnv({
             constructionSheetKind: () =>
                 this.data?.construction_project_id || this.data?.construction_sheet_kind

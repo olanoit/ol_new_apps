@@ -27,7 +27,7 @@
         transform: scale(1.1);
     }
 
-    i.fa-info {
+    i[data-icon='info']:not(.oi-filled) {
         font-size: 0.7rem;
         line-height: 1;
     }

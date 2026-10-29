@@ -47,8 +47,6 @@ la factura ni el cobro:
     'depends': ['account', 'l10n_pe', 'al_account_base', 'al_report_base'],
     'external_dependencies': {'python': ['xlsxwriter', 'openpyxl', 'requests']},
     'data': [
-        'security/ir.model.access.csv',
-        'security/factoring_security.xml',
         'data/ir_sequence_data.xml',
         'views/factoring_views.xml',
         'views/factoring_contract_views.xml',
@@ -58,6 +56,7 @@ la factura ni el cobro:
         'views/account_move_views.xml',
         'views/menu.xml',
         'data/factoring_data.xml',
+        'security/ir.access.csv',
     ],
     # Solo en bases con datos de demostración, en «PE Company» (l10n_pe).
     'demo': ['demo/al_l10n_pe_factoring_demo.xml'],

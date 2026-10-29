@@ -32,8 +32,6 @@ propio) y devuelve un archivo con lo cobrado:
     'countries': ['pe'],
     'depends': ['al_l10n_pe_collection'],
     'data': [
-        'security/bank_collection_security.xml',
-        'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'data/bcp_layout_data.xml',
         'data/bbva_layout_data.xml',
@@ -45,6 +43,7 @@ propio) y devuelve un archivo con lo cobrado:
         'views/res_partner_views.xml',
         'views/res_config_settings_views.xml',
         'views/menus.xml',
+        'security/ir.access.csv',
     ],
     'installable': True,
     'application': False,

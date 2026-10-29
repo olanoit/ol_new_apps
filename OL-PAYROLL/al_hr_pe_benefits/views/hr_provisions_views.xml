@@ -127,7 +127,7 @@
                                     <field name="tasa" optional="hide"/>
                                     <field name="boni_grati" sum="Total" optional="show"/>
                                     <field name="total" sum="Total" class="fw-bold"/>
-                                    <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
+                                    <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="article" title="Conceptos adicionales"/>
                                     <field name="prov_acumulado" sum="Total" optional="show"/>
                                 </list>
                             </field>
@@ -150,7 +150,7 @@
                                     <field name="un_sexto_grati" sum="Total" optional="show"/>
                                     <field name="total_cts" sum="Total" optional="hide"/>
                                     <field name="provisiones_cts" sum="Total" class="fw-bold"/>
-                                    <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
+                                    <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="article" title="Conceptos adicionales"/>
                                     <field name="prov_acumulado" sum="Total" optional="show"/>
                                 </list>
                             </field>
@@ -172,7 +172,7 @@
                                     <field name="extra_hours" sum="Total" optional="hide"/>
                                     <field name="total_vaca" sum="Total" optional="hide"/>
                                     <field name="provisiones_vaca" sum="Total" class="fw-bold"/>
-                                    <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="fa-file-text-o" title="Conceptos adicionales"/>
+                                    <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="article" title="Conceptos adicionales"/>
                                     <field name="prov_acumulado" sum="Total" optional="show"/>
                                 </list>
                             </field>

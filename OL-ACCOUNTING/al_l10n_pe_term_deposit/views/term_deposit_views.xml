@@ -55,7 +55,7 @@
                 </div>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="fa-bars"
+                        <button name="action_open_moves" type="object" class="oe_stat_button" icon="menu"
                                 invisible="not move_count">
                             <field name="move_count" widget="statinfo" string="Asientos"/>
                         </button>

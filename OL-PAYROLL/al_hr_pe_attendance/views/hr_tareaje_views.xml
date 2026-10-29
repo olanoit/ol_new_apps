@@ -99,7 +99,7 @@
                                     <field name="he100" optional="hide" sum="Total" widget="float_time"/>
                                     <field name="company_id" column_invisible="1"/>
                                     <field name="attendance_line_ids" column_invisible="1"/>
-                                    <button name="action_show_details" icon="fa-list" title="Ver detalle diario" type="object"
+                                    <button name="action_show_details" icon="format_list_bulleted" title="Ver detalle diario" type="object"
                                             invisible="not attendance_line_ids"/>
                                 </list>
                             </field>

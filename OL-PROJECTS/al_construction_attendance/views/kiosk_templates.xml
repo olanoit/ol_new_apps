@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="kiosk_page" name="Quiosco de la sede">
-        <t t-call="web.frontend_layout">
-            <t t-set="no_header" t-value="True"/>
-            <t t-set="no_footer" t-value="True"/>
+        <t t-call="web.frontend_layout" no_header="True" no_footer="True">
             <div class="container py-4" style="max-width: 32rem;">
                 <h2 class="text-center mb-1" t-out="site.name"/>
                 <p class="text-center text-muted">Marque su ingreso o su salida</p>

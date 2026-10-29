@@ -28,7 +28,7 @@
                         </setting>
                         <setting string="Libros" help="Un libro por establecimiento o canal, con su código y su numeración.">
                             <button name="%(al_l10n_pe_complaints_book.action_complaint_book)d" type="action"
-                                    string="Configurar libros" class="btn-link" icon="oi-arrow-right"/>
+                                    string="Configurar libros" class="btn-link" icon="east"/>
                         </setting>
                     </block>
                 </app>
