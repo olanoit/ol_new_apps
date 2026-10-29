@@ -148,7 +148,12 @@ de cada tipología de la obra:
   variantes), la ruta de fabricación y seguimiento por lote;
 - su lista de materiales sale de los materiales del módulo, con su etapa de
   consumo;
-- no se vende ni se compra.
+- no se vende ni se compra;
+- toma la categoría de **Ajustes ‣ Fabricación ‣ Órdenes del plan de obra ‣
+  Categoría de los productos de módulo**: de ella salen su método de costo y
+  sus cuentas. Para costear las órdenes por elemento (mano de obra real y CIF)
+  la categoría debe usar costo promedio o PEPS. Sin categoría, el producto usa
+  el método de costo de la compañía.
 
 El historial del plan dice cuántos productos se crearon. Al cerrar el plan,
 los productos de módulo de la obra se archivan.

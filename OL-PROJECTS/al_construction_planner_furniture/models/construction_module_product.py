@@ -32,6 +32,22 @@ SHIPMENT_STATES = [
 ]
 
 
+class ResCompany(models.Model):
+    _inherit = 'res.company'
+
+    construction_module_categ_id = fields.Many2one(
+        'product.category', string='Categoría de los productos de módulo',
+        help='Categoría con la que se crean los productos de los módulos: su método de costo y '
+             'sus cuentas. Sin ella, el producto usa el método de costo de la compañía.')
+
+
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    construction_module_categ_id = fields.Many2one(
+        related='company_id.construction_module_categ_id', readonly=False)
+
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -102,6 +118,7 @@ class ConstructionTypologyModule(models.Model):
                 'sale_ok': False, 'purchase_ok': False,
                 'company_id': typology.company_id.id,
                 'construction_project_id': typology.project_id.id,
+                'categ_id': company.construction_module_categ_id.id,
                 'attribute_line_ids': [Command.create({
                     'attribute_id': value.attribute_id.id,
                     'value_ids': [Command.set(value.ids)]}) for value in values],

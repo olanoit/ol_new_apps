@@ -29,6 +29,10 @@ configuracion:
 requisitos_nota: Requiere el puente de producción (`al_construction_planner_mrp`). Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '15.20261029'
+  fecha: 29/10/2026
+  cambios:
+    - "Ajuste «Categoría de los productos de módulo» (Fabricación ‣ Órdenes del plan de obra): los productos de módulo se crean con esa categoría y toman de ella su método de costo; con costo promedio, sus órdenes admiten el cierre de costos de fabricación."
 - version: '14.20261027'
   fecha: 27/10/2026
   cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 15.20261029 — 29/10/2026
+
+- Ajuste «Categoría de los productos de módulo» (Fabricación ‣ Órdenes del plan de obra): los productos de módulo se crean con esa categoría y toman de ella su método de costo; con costo promedio, sus órdenes admiten el cierre de costos de fabricación.
+
 ## 14.20261027 — 27/10/2026
 
 - Paquete 1.12, M112-04: «Generar plan» crea cada actividad como personal propio o como contrata según la modalidad del ambiente, de la actividad o de su etapa; personal propio por defecto. «Contrata a todo costo» sale como contrata y se avisa.

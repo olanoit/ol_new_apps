@@ -74,6 +74,24 @@ class TestModuleProductsV18(PlannerCommon):
                          '%s %s' % (self.project.name, self.apt_502.name))
         self.assertEqual(production.construction_module_task_ids, self._module_task())
 
+    def test_module_product_category(self):
+        """El producto del módulo se crea con la categoría de los Ajustes (su
+        método de costo); sin ella, queda sin categoría como antes."""
+        self.assertFalse(self.typology_p.module_line_ids.product_id.categ_id)
+        categ = self.env['product.category'].create({
+            'name': 'Producto terminado (test)', 'property_cost_method': 'average'})
+        self.plan.company_id.construction_module_categ_id = categ
+        typology = self.env['construction.typology'].create({
+            'project_id': self.project.id, 'code': 'C11', 'name': 'COCINA 11 (test)',
+            'family': 'kitchen', 'module_line_ids': [Command.create({
+                'code': 'MB2', 'name': 'MOD BAJO 800', 'module_type': 'low', 'width_mm': 800,
+                'ml_group': 'low', 'assembly_activity_id': self.act_screw.id,
+                'material_ids': [Command.create({'product_id': self.board.id, 'qty': 1.0,
+                                                 'stage': 'production'})]})]})
+        product = typology.module_line_ids._ensure_product()
+        self.assertEqual(product.categ_id, categ)
+        self.assertEqual(product.cost_method, 'average')
+
     def test_shipment_to_site(self):
         """Criterio M18-16: el envío de los módulos de un departamento genera su
         transferencia; al recibirla, los módulos pasan a «En obra»."""
