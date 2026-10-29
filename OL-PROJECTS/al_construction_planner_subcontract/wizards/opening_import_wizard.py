@@ -5,7 +5,6 @@ con sus condiciones y una valorización de apertura sin efecto contable: guarda
 por línea la cantidad acumulada valorizada y, en la orden, lo valorizado,
 facturado y pagado, el adelanto otorgado y amortizado y el fondo retenido con
 sus vencimientos. Las valorizaciones siguientes parten de ella."""
-import base64
 import io
 from collections import defaultdict
 from datetime import date, datetime, timedelta
@@ -52,7 +51,7 @@ class ConstructionContractOpeningWizard(models.TransientModel):
             import openpyxl
         except ImportError as error:
             raise UserError(self.env._('Falta la librería openpyxl en el servidor.')) from error
-        book = openpyxl.load_workbook(io.BytesIO(base64.b64decode(self.file)), data_only=True)
+        book = openpyxl.load_workbook(io.BytesIO(self.file.content), data_only=True)
         sheets = {norm(name): book[name] for name in book.sheetnames}
         data = {}
         for sheet, columns in SHEETS.items():
@@ -256,7 +255,7 @@ class ConstructionContractOpeningWizard(models.TransientModel):
         book.save(buffer)
         attachment = self.env['ir.attachment'].create({
             'name': 'carga_inicial_ordenes_de_contrata.xlsx',
-            'datas': base64.b64encode(buffer.getvalue()),
+            'raw': buffer.getvalue(),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
         return {'type': 'ir.actions.act_url', 'target': 'self',

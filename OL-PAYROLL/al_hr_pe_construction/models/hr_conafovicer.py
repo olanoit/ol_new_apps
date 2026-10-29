@@ -6,7 +6,6 @@ Banco de la Nación es **mensual y hasta el día 15 del mes siguiente**.
 Este modelo consolida las boletas del mes —incluidas las de todas sus
 semanas— y deja el detalle por trabajador que exige la entidad.
 """
-import base64
 import io
 
 from dateutil.relativedelta import relativedelta
@@ -208,7 +207,7 @@ class L10nPeHrConafovicer(models.Model):
                 self.company_id.vat or self.company_id.id,
                 self.period_id.code or ''),
             'type': 'binary',
-            'datas': base64.b64encode(stream.getvalue()),
+            'raw': stream.getvalue(),
             'res_model': self._name,
             'res_id': self.id,
         })

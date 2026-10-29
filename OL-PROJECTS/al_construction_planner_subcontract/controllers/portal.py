@@ -8,7 +8,6 @@ controlador lee con sudo solo lo de la empresa del usuario (las líneas del
 plan vigente asignadas a ella) y crea el avance a su nombre, con origen
 «Portal de obra». Lo que no es suyo no aparece y no se puede reportar.
 """
-import base64
 
 from odoo import _, fields, http
 from odoo.exceptions import UserError, ValidationError
@@ -161,7 +160,7 @@ class ConstructionPortal(CustomerPortal):
         for line, qty in quantities.items():
             # Cada avance es dueño de sus fotos (como el asistente interno).
             attachments = Attachment_sudo.create([{
-                'name': name, 'datas': base64.b64encode(content), 'mimetype': mimetype,
+                'name': name, 'raw': content, 'mimetype': mimetype,
                 'res_model': 'construction.task.progress', 'res_id': 0,
             } for name, content, mimetype in photos])
             progress = Progress_sudo.create({

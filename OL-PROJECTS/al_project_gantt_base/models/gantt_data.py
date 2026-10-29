@@ -68,7 +68,7 @@ class GanttData(models.AbstractModel):
     def _get_task_limit(self, options):
         limit = (options or {}).get('limit')
         if not limit:
-            raw = self.env['ir.config_parameter'].sudo().get_param(TASK_LIMIT_PARAM)
+            raw = self.env['ir.config_parameter'].sudo().get_str(TASK_LIMIT_PARAM)
             try:
                 limit = int(raw) if raw else DEFAULT_TASK_LIMIT
             except (TypeError, ValueError):

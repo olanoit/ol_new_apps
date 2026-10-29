@@ -10,6 +10,7 @@ from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
+from odoo.tools import BinaryBytes
 from odoo.addons.al_account_base.tests.common import use_pe_company
 
 RUC_TEST = '20512528458'
@@ -248,7 +249,7 @@ class TestSire(TransactionCase):
         self.assertEqual(line.estado_cp, '1')
 
     def test_parse_rejects_short_rows(self):
-        self.rvie.proposal_file = base64.b64encode(b'CABECERA\na|b|c')
+        self.rvie.proposal_file = BinaryBytes(b'CABECERA\na|b|c')
         with self.assertRaises(UserError):
             self.rvie.action_load_sire()
 
@@ -363,7 +364,7 @@ class TestSire(TransactionCase):
     # ------------------------------------------------------------------
 
     def _read_zip_txt(self, record):
-        payload = base64.b64decode(record.export_file)
+        payload = record.export_file.content
         archive = zipfile.ZipFile(io.BytesIO(payload))
         name = archive.namelist()[0]
         return name, archive.read(name).decode('utf-8')
@@ -583,7 +584,7 @@ class TestSire(TransactionCase):
     def test_manual_latin1_proposal_loads(self):
         """El TXT exportado a mano desde SOL en latin-1 se despliega."""
         row = _rvie_row().replace('CLIENTE SA', 'ÑANDÚ S.A.C.')
-        self.rvie.proposal_file = base64.b64encode(
+        self.rvie.proposal_file = BinaryBytes(
             ('CABECERA\n' + row).encode('latin-1'))
         self.rvie.action_load_sire()
         self.assertEqual(self.rvie.sire_line_ids.razon_social, 'ÑANDÚ S.A.C.')

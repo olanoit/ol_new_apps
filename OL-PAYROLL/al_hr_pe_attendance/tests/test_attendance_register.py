@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Registro de control de asistencia (D.S. 004-2006-TR)."""
-import base64
 import io
 from datetime import date, datetime
 
@@ -61,7 +60,7 @@ class TestAttendanceRegister(TransactionCase):
         action = self._wizard().action_export()
         attachment = self.env['ir.attachment'].browse(
             int(action['url'].split('/')[3].split('?')[0]))
-        sheet = load_workbook(io.BytesIO(base64.b64decode(attachment.datas))).active
+        sheet = load_workbook(io.BytesIO(attachment.raw.content)).active
         self.assertIn('004-2006-TR', sheet['A1'].value)
         self.assertEqual(sheet['A2'].value, 'Empleador')
         self.assertEqual(sheet['A3'].value, 'RUC')

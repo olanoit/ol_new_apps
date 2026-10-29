@@ -7,7 +7,6 @@ Crea el escenario de detracción (idempotente) y valida: cálculo en factura,
 bloque spot del XML nativo, depósito con constancia, y su llegada a los
 reportes PLE 8.3 y 14.2.
 """
-import base64
 from datetime import date
 
 YEAR, MONTH = 2026, '07'
@@ -154,7 +153,7 @@ for label, flag, code, move, checks in (
         'year': YEAR, 'month': MONTH, 'generate_xlsx': False,
         'export_71': False, flag: True})
     wizard.action_export()
-    content = base64.b64decode(wizard.file_data).decode()
+    content = wizard.file_data.content.decode()
     row = next((l.split('|') for l in content.split('\r\n')
                 if l and l.split('|')[1] == str(move.id)), None)
     log(label, bool(row) and checks(row),

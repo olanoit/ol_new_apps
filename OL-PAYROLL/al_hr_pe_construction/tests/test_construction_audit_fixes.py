@@ -313,7 +313,7 @@ class TestConstructionAuditFixes(TransactionCase):
                 check(url)
 
     def test_admin_can_allow_another_host(self):
-        self.env['ir.config_parameter'].sudo().set_param(
+        self.env['ir.config_parameter'].sudo().set_str(
             'al_hr_pe_construction.wage_table_hosts', 'sindicato.example.pe')
         self.assertTrue(self.Table._l10n_pe_check_url(
             'https://descargas.sindicato.example.pe/tabla.pdf'))

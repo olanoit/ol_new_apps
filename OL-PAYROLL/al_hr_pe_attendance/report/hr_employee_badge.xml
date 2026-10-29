@@ -11,7 +11,6 @@
         <field name="model">hr.employee</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_hr_pe_attendance.report_hr_employee_fotocheck</field>
-        <field name="report_file">al_hr_pe_attendance.report_hr_employee_fotocheck</field>
         <field name="paperformat_id" ref="hr.paperformat_hr_employee_badge"/>
         <field name="print_report_name">'Fotocheck - %s' % (object.name or '').replace('/', '')</field>
         <field name="binding_model_id" ref="hr.model_hr_employee"/>

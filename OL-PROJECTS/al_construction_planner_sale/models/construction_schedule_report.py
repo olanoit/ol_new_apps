@@ -21,7 +21,6 @@ No es una vista SQL: el reparto por días hábiles y el calendario del ingreso
 salen de la lógica de las fases 8 y 10 (feriados, días hábiles, partidas).
 Las filas se recalculan al abrir P-22 y con la acción programada diaria; el
 pivote y el gráfico leen la tabla."""
-import base64
 import io
 import logging
 from collections import defaultdict
@@ -397,7 +396,7 @@ class ConstructionScheduleReport(models.Model):
         # a la obra exigiría poder editarla).
         attachment = self.env['ir.attachment'].create({
             'name': self.env._('Cronograma valorizado %s.xlsx', project.name),
-            'datas': base64.b64encode(output.getvalue()),
+            'raw': output.getvalue(),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
         return {

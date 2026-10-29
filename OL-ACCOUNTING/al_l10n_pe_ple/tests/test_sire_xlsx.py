@@ -93,7 +93,6 @@ class TestSireXlsx(AccountTestInvoicingCommon):
             'name': 'PROVEEDOR XLSX S.A.C.',
             'vat': '20601034809',
             'country_id': self.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
         })
         bill = self.env['account.move'].with_company(self.company).create({
             'move_type': 'in_invoice',

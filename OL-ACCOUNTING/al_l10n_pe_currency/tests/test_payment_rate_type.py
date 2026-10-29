@@ -28,7 +28,6 @@ class TestPaymentRateType(AccountTestInvoicingCommon):
             'name': 'CLIENTE USD S.A.C.',
             'vat': '20601034809',
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.env['res.currency.rate'].search([
             ('currency_id', '=', cls.usd.id),

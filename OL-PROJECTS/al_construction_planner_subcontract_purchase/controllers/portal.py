@@ -2,7 +2,6 @@
 """Material extra desde el portal de obra (v1.6, M16-06): el capataz de la
 contrata pide material de su obra; queda un requerimiento de obra en
 borrador para la jefatura."""
-import base64
 
 from markupsafe import Markup
 
@@ -110,7 +109,7 @@ class ConstructionPortalExtra(ConstructionPortal):
         })
         if photo:
             request.env['ir.attachment'].sudo().create({
-                'name': photo[0], 'datas': base64.b64encode(photo[1]), 'mimetype': photo[2],
+                'name': photo[0], 'raw': photo[1], 'mimetype': photo[2],
                 'res_model': 'construction.material.request', 'res_id': extra_sudo.id,
             })
         extra_sudo.message_post(body=_(

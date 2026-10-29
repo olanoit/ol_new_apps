@@ -235,7 +235,7 @@ class TestDependents(TransactionCase):
             attachment.with_user(intern).read(['datas'])
 
         import base64
-        workbook = load_workbook(io.BytesIO(base64.b64decode(attachment.datas)))
+        workbook = load_workbook(io.BytesIO(attachment.raw.content))
         self.assertEqual(workbook.sheetnames, ['Altas', 'Bajas'])
 
         altas = list(workbook['Altas'].values)

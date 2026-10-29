@@ -8,13 +8,13 @@ como **adquiriente** (deposito en las cuentas de mis proveedores) o como
 
 Estructura en ``services/bn_txt.py``.
 """
-import base64
 import re
 
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import BinaryBytes
 
 from ..services import bn_txt
 
@@ -242,7 +242,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
                 '\n'.join(problems)))
 
         self.write({
-            'file_data': base64.b64encode(content.encode('latin-1', 'replace')),
+            'file_data': BinaryBytes(content.encode('latin-1', 'replace')),
             'file_name': 'D%s%s.txt' % (
                 (depositor.vat or '').strip(), self.batch_number),
             'excluded_html': self._excluded_html(excluded),

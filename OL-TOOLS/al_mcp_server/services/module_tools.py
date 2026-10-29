@@ -159,7 +159,7 @@ def execute_module_tool(env, tool_name: str, args: dict):
 
 
 def _feature_enabled(env) -> bool:
-    param = env["ir.config_parameter"].sudo().get_param(
+    param = env["ir.config_parameter"].sudo().get_str(
         "mcp_server.enable_module_generator", "False"
     )
     return param in ("True", "1", "true", "yes")

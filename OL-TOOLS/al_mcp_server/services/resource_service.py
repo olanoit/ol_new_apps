@@ -12,7 +12,6 @@ Recursos:
   odoo://attachment/{id}      metadatos del adjunto y vista previa del contenido
 """
 
-import base64
 import json
 import logging
 import re
@@ -298,7 +297,7 @@ def _attachment(attachment_id: str, env) -> str:
 
     if is_text and size_ok and rec.datas:
         try:
-            raw = base64.b64decode(rec.datas).decode("utf-8", errors="replace")
+            raw = rec.raw.content.decode("utf-8", errors="replace")
             result["content_preview"] = raw[:5000]
             if len(raw) > 5000:
                 result["content_truncated"] = True

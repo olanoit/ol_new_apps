@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import base64
 
 from markupsafe import Markup
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 from ..models.hr_construction_wage_import import URLS_PARAM
 
@@ -66,7 +66,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
                 if line.strip()]
         if extra and extra not in urls:
             urls.append(extra)
-        self.env['ir.config_parameter'].sudo().set_param(URLS_PARAM, '\n'.join(urls))
+        self.env['ir.config_parameter'].sudo().set_str(URLS_PARAM, '\n'.join(urls))
 
     def _read_source(self):
         """Contenido del PDF y cómo se cita en el historial."""
@@ -78,7 +78,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
             return Table._l10n_pe_download_pdf(url), url
         if not self.pdf_file:
             raise UserError(_('Adjunte el PDF del convenio.'))
-        return (base64.b64decode(self.pdf_file),
+        return (self.pdf_file.content,
                 self.pdf_filename or _('archivo subido'))
 
     @staticmethod
@@ -129,7 +129,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
         changes = existing._l10n_pe_diff(data)
         self.write({
             'state': 'confirm',
-            'pdf_content': base64.b64encode(content),
+            'pdf_content': BinaryBytes(content),
             'source_label': source,
             'existing_table_id': existing.id,
             'has_changes': bool(changes),
@@ -142,7 +142,7 @@ class L10nPeHrConstructionWageImport(models.TransientModel):
         Table = self.env['l10n_pe.hr.construction.wage.table']
         if not (self.existing_table_id and self.pdf_content):
             raise UserError(_('Vuelva a importar el PDF.'))
-        data = Table._l10n_pe_read_pdf(base64.b64decode(self.pdf_content),
+        data = Table._l10n_pe_read_pdf(self.pdf_content.content,
                                        self.source_label)
         table = self.existing_table_id
         if Table._l10n_pe_find_existing(data) != table:

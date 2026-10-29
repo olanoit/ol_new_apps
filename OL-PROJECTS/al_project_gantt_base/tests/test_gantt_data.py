@@ -140,7 +140,7 @@ class TestGanttData(GanttCommon):
 
     def test_mode_none_draws_nothing(self):
         """Sin campo de fin no hay barras; las tareas solo salen si se piden."""
-        self.env['ir.config_parameter'].sudo().set_param(CONFIG_PARAM, '{"date_end": null}')
+        self.env['ir.config_parameter'].sudo().set_str(CONFIG_PARAM, '{"date_end": null}')
         payload = self._get_data(user=self.gantt_user, project_ids=[self.project.id])
         self.assertEqual(payload['field_map']['mode'], 'none')
         self.assertEqual(payload['tasks'], [])

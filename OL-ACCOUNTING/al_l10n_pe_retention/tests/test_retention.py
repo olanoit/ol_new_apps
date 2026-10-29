@@ -398,7 +398,7 @@ class TestRetentionApplies(TransactionCase):
             'year': 2025, 'month': '06'})
         summary.action_export()
         import base64
-        content = base64.b64decode(summary.file_data).decode()
+        content = summary.file_data.content.decode()
         row = next(l.split('|') for l in content.split('\r\n')
                    if self.partner.vat in l)
         self.assertEqual(len(row), 7)

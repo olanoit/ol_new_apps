@@ -4,7 +4,6 @@ factura negociable (conformidad presunta, eventos y orden), desembolso
 parcial, cobro recibido por la empresa y transferencia, prórroga,
 notificación, archivo para el factor y CAVALI (servicios web, Factrack e
 importación de estados)."""
-import base64
 import io
 import json
 import zipfile
@@ -14,6 +13,7 @@ from unittest.mock import patch
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.tests import tagged
+from odoo.tools import BinaryBytes
 
 from .common import FactoringCommon
 
@@ -296,7 +296,7 @@ class TestFactoringV8(FactoringCommon):
         self.assertEqual(message[0].attachment_ids.mimetype, 'application/pdf')
         self.assertIn('notified', invoice.l10n_pe_negotiable_event_ids.mapped('event_type'))
         attachment = operation._export_attachment()
-        book = openpyxl.load_workbook(io.BytesIO(base64.b64decode(attachment.datas)))
+        book = openpyxl.load_workbook(io.BytesIO(attachment.raw.content))
         sheet = book.worksheets[0]
         self.assertEqual(sheet['B1'].value, operation.name)
         self.assertEqual(sheet['H5'].value, 1000.0)
@@ -374,18 +374,18 @@ class TestFactoringV8(FactoringCommon):
         invoice = self._invoice(1000.0, name='F001-00000123')
         invoice._l10n_pe_add_negotiable_event('accepted')
         attachment = invoice._l10n_pe_factrack_attachment()
-        with zipfile.ZipFile(io.BytesIO(base64.b64decode(attachment.datas))) as archive:
+        with zipfile.ZipFile(io.BytesIO(attachment.raw.content)) as archive:
             self.assertIn('informacion_adicional.xlsx', archive.namelist())
         content = 'Serie;Número;Estado;Fecha;Código anotación\nF001;123;Anotada;%s;AN-9\n' % (
             fields.Date.to_string(self.today))
         wizard = self.env['l10n_pe.cavali.import'].create({
-            'file': base64.b64encode(content.encode()), 'filename': 'factrack.csv'})
+            'file': BinaryBytes(content.encode()), 'filename': 'factrack.csv'})
         wizard.action_import()
         self.assertEqual((invoice.l10n_pe_negotiable_state, invoice.l10n_pe_cavali_number),
                          ('registered', 'AN-9'))
         self.assertIn('Actualizadas: 1', wizard.result)
         wizard2 = self.env['l10n_pe.cavali.import'].create({
-            'file': base64.b64encode('Serie;Número;Estado\nF001;999;Anotada\n'.encode()),
+            'file': BinaryBytes('Serie;Número;Estado\nF001;999;Anotada\n'.encode()),
             'filename': 'factrack.csv'})
         wizard2.action_import()
         self.assertIn('no encontrada', wizard2.result)

@@ -23,7 +23,6 @@ class TestKardexReport(TestSaleCommon):
         cls.partner_a.write({
             'country_id': cls.env.ref('base.pe').id,
             'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.categ_avco = cls.env['product.category'].create({
             'name': 'AVCO Kardex',

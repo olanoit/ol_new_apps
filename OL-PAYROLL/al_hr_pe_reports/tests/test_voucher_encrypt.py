@@ -22,7 +22,7 @@ class TestVoucherEncrypt(TransactionCase, _PayslipCase):
         # base nueva nadie responde ahí y se quedaba esperando sin límite: un
         # puerto cerrado falla al instante y el PDF se genera igual (solo se
         # comprueba el cifrado, no el aspecto).
-        cls.env['ir.config_parameter'].sudo().set_param('report.url', 'http://127.0.0.1:9')
+        cls.env['ir.config_parameter'].sudo().set_str('report.url', 'http://127.0.0.1:9')
 
     def _render(self, **context):
         Report = self.env['ir.actions.report'].with_context(

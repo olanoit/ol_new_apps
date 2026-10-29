@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Obra desde la venta con código de obra y foto de evidencia por etapa
 (lo que hacían las automatizaciones manuales «Alta de obra» y «Tareo de obra»)."""
-import base64
 
 from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
@@ -52,7 +51,7 @@ class TestSiteFromSaleCode(TransactionCase):
         with self.assertRaises(UserError):
             task.stage_id = done
         self.env['ir.attachment'].create({
-            'name': 'mb01.jpg', 'datas': base64.b64encode(b'foto'),
+            'name': 'mb01.jpg', 'raw': b'foto',
             'res_model': 'project.task', 'res_id': task.id})
         task.invalidate_recordset(['message_attachment_count'])
         task.stage_id = done

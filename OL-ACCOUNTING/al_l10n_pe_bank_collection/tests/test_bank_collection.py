@@ -8,6 +8,7 @@ from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tools import mute_logger
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_l10n_pe_collection.tests.common import CollectionCommon
 
@@ -65,7 +66,7 @@ class TestBankCollection(CollectionCommon):
         batch.action_generate()
         self.assertEqual(batch.state, 'generated')
         self.assertTrue(batch.filename.startswith('CREP_0_'))
-        lines = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        lines = batch.file.content.decode('ascii').split('\r\n')
         self.assertEqual(len(lines), 3)
         self.assertTrue(all(len(line) == 250 for line in lines))
         header, first = lines[0], lines[1]
@@ -168,7 +169,7 @@ class TestBankCollection(CollectionCommon):
 
     def test_parse_rejects_foreign_lines(self):
         response = self.env['l10n_pe.bank.collection.response'].create({
-            'agreement_id': self.agreement.id, 'file': base64.b64encode(b'XX esto no es un CREP\r\n')})
+            'agreement_id': self.agreement.id, 'file': BinaryBytes(b'XX esto no es un CREP\r\n')})
         with self.assertRaises(UserError):
             response.action_import()
 
@@ -228,7 +229,7 @@ class TestBankCollectionBBVA(CollectionCommon):
         self._invoice(99.75, -2)
         batch = self._batch()
         self.assertEqual(batch.filename, 'RC_123_%s.TXT' % batch.date.strftime('%Y%m%d'))
-        lines = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        lines = batch.file.content.decode('ascii').split('\r\n')
         self.assertEqual(len(lines), 4)
         self.assertTrue(all(len(line) == 360 for line in lines))
         header, first, footer = lines[0], lines[1], lines[-1]
@@ -263,7 +264,7 @@ class TestBankCollectionBBVA(CollectionCommon):
         self._invoice(100, -1)
         self._batch()
         second = self._batch(mode='update')
-        header = base64.b64decode(second.file).decode('ascii')[:38]
+        header = second.file.content.decode('ascii')[:38]
         self.assertEqual(header[27:30], '001')
         self.assertEqual(header[37], 'P')
 
@@ -279,7 +280,7 @@ class TestBankCollectionBBVA(CollectionCommon):
         footer = '03' + '000000001' + '000000000504543' + '000000000504543' + '000000000000000'
         content = '\r\n'.join(line.ljust(152) for line in (header, detail, footer)).encode('ascii')
         response = self.env['l10n_pe.bank.collection.response'].create({
-            'agreement_id': self.agreement.id, 'file': base64.b64encode(content), 'filename': 'recaudos.txt'})
+            'agreement_id': self.agreement.id, 'file': BinaryBytes(content), 'filename': 'recaudos.txt'})
         response.action_import()
         line = response.line_ids
         self.assertEqual(len(line), 1)
@@ -317,7 +318,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
         batch.action_load()
         batch.action_generate()
         self.assertEqual(batch.filename, 'RECAUDAC.TXT')
-        header, detail = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        header, detail = batch.file.content.decode('ascii').split('\r\n')
         self.assertEqual((len(header), len(detail)), (200, 200))
         self.assertEqual(header[0:14], 'CC' + '000' + '0' + '7654321' + 'C')
         self.assertEqual(header[14:54].rstrip(), 'MI EMPRESA SAC')
@@ -346,7 +347,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
                   + ' ' * 10 + '00' + '0' * 15)
         content = (header + '\r\n' + detail).encode('ascii')
         response = self.env['l10n_pe.bank.collection.response'].create({
-            'agreement_id': self.agreement.id, 'file': base64.b64encode(content)})
+            'agreement_id': self.agreement.id, 'file': BinaryBytes(content)})
         response.action_import()
         line = response.line_ids
         self.assertEqual((line.state, line.partner_id), ('matched', self.customer))
@@ -374,7 +375,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
         self.assertEqual(len(batch.line_ids), 1)
         self.assertAlmostEqual(batch.line_ids.amount, 150.0)
         batch.action_generate()
-        header, detail = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        header, detail = batch.file.content.decode('ascii').split('\r\n')
         self.assertEqual((len(header), len(detail)), (200, 200))
         self.assertEqual(header[13], 'P')
         self.assertEqual(header[62:71], '000000001')
@@ -395,7 +396,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
                   + '000000000012000' + ' ' * 30 + '193' + '000000777' + ' ' * 22 + 'T001'
                   + 'BANCA INTERN' + '090000')
         response = self.env['l10n_pe.bank.collection.response'].create({
-            'agreement_id': self.agreement.id, 'file': base64.b64encode((header + '\r\n' + detail).encode())})
+            'agreement_id': self.agreement.id, 'file': BinaryBytes((header + '\r\n' + detail).encode())})
         response.action_import()
         line = response.line_ids
         self.assertEqual((line.state, line.partner_id), ('partner', self.customer))
@@ -422,7 +423,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
         batch.action_load()
         self.assertEqual(len(batch.line_ids), 2)
         batch.action_generate()
-        header, first, second = base64.b64decode(batch.file).decode('ascii').split('\r\n')
+        header, first, second = batch.file.content.decode('ascii').split('\r\n')
         self.assertTrue(all(len(line) == 200 for line in (header, first, second)))
         self.assertEqual(header[13], '7')
         self.assertEqual(header[62:71], '000000002')
@@ -443,7 +444,7 @@ class TestBankCollectionScotiabank(CollectionCommon):
         unknown = payer.replace('20100047218', '99999999   ').replace('000000888', '000000889')
         response = self.env['l10n_pe.bank.collection.response'].create({
             'agreement_id': self.agreement.id,
-            'file': base64.b64encode((header + '\r\n' + payer + '\r\n' + unknown).encode())})
+            'file': BinaryBytes((header + '\r\n' + payer + '\r\n' + unknown).encode())})
         response.action_import()
         known, other = response.line_ids.sorted('line_number')
         self.assertEqual((known.state, known.partner_id), ('partner', self.customer))

@@ -7,7 +7,6 @@ expectativas se derivan de las TASAS de los datos maestros (no números
 mágicos): si la SBS cambia la tasa en data, el test sigue validando la
 FÓRMULA.
 """
-import base64
 from datetime import date
 from unittest.mock import patch
 
@@ -177,7 +176,7 @@ class TestFase2Engine(TransactionCase):
     def _attachment_text(self, action):
         attachment_id = int(action['url'].split('/')[3].split('?')[0])
         attachment = self.env['ir.attachment'].browse(attachment_id)
-        return base64.b64decode(attachment.datas).decode('utf-8')
+        return attachment.raw.content.decode('utf-8')
 
     def _set_dni(self):
         self.employee.write({

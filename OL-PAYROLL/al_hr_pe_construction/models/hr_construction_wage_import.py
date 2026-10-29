@@ -59,7 +59,7 @@ class L10nPeHrConstructionWageTable(models.Model):
     @api.model
     def _l10n_pe_watched_urls(self):
         """Direcciones que revisa la acción planificada, una por línea."""
-        value = self.env['ir.config_parameter'].sudo().get_param(URLS_PARAM)
+        value = self.env['ir.config_parameter'].sudo().get_str(URLS_PARAM)
         if value is False:
             # Nunca configurado: las direcciones conocidas. Un valor vacío,
             # en cambio, es que el usuario las quitó todas.
@@ -70,7 +70,7 @@ class L10nPeHrConstructionWageTable(models.Model):
     @api.model
     def _l10n_pe_allowed_hosts(self):
         """Dominios de los que se acepta descargar la tabla."""
-        extra = self.env['ir.config_parameter'].sudo().get_param(
+        extra = self.env['ir.config_parameter'].sudo().get_str(
             ALLOWED_HOSTS_PARAM) or ''
         hosts = {host.strip().lower().lstrip('.')
                  for host in extra.replace(',', '\n').splitlines()

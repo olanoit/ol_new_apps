@@ -1,4 +1,3 @@
-import base64
 import io
 from datetime import timedelta
 
@@ -247,7 +246,7 @@ class L10nPeCollectionBureau(models.Model):
         workbook.close()
         attachment = self.env['ir.attachment'].create({
             'name': _('Centrales de riesgo %s.xlsx', today.strftime('%Y-%m-%d')),
-            'datas': base64.b64encode(output.getvalue()),
+            'raw': output.getvalue(),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
         return {'type': 'ir.actions.act_url', 'url': '/web/content/%s?download=true' % attachment.id,

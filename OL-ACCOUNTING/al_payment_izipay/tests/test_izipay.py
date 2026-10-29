@@ -47,7 +47,7 @@ class TestIzipay(IzipayCommon, PaymentHttpCommon):
         self.assertTrue(self.provider.izipay_webhook_url.endswith('/payment/izipay/webhook'))
 
     def test_webhook_url_without_double_slash(self):
-        self.env['ir.config_parameter'].set_param('web.base.url', 'https://tienda.example.com/')
+        self.env['ir.config_parameter'].set_str('web.base.url', 'https://tienda.example.com/')
         self.assertEqual(self.provider._izipay_get_webhook_url(),
                          'https://tienda.example.com/payment/izipay/webhook')
 

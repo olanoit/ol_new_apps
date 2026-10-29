@@ -665,7 +665,7 @@ class TierTierValidation(CommonTierValidation):
         test_record.with_user(self.test_user_1).request_validation()
         self.assertTrue(self.test_user_2.review_ids)
         # Revoke read access on the validated model for non-superadmin users.
-        self.env["ir.model.access"].search(
+        self.env["ir.access"].search(
             Domain("model_id", "=", self.tester_model.id)
         ).unlink()
         # Sanity check: a direct search now raises AccessError.
@@ -679,10 +679,10 @@ class TierTierValidation(CommonTierValidation):
         """Make the tester model unreadable for non-admin users by
         unlinking its public ACL and clearing the ACL cache so the next
         check_access actually re-evaluates against the new state."""
-        self.env["ir.model.access"].search(
+        self.env["ir.access"].search(
             Domain("model_id", "=", self.tester_model.id)
         ).unlink()
-        self.env["ir.model.access"].call_cache_clearing_methods()
+        self.env.registry.clear_cache()
 
     def test_definition_onchange_warns_when_reviewer_lacks_access(self):
         """Setting an individual reviewer with no read access on the target
@@ -1770,7 +1770,7 @@ class TierTierValidation(CommonTierValidation):
         self.assertFalse(new_user.review_ids.ids)
 
 
-@tagged("at_install")
+@tagged("post_install", "-at_install")
 class TierTierValidationView(CommonTierValidation):
     def test_view_manual(self):
         view = self.env[self.test_record._name].get_view(False, "form")

@@ -35,7 +35,7 @@ class ResConfigSettings(models.TransientModel):
     def action_al_docs_open(self):
         """Abre el sitio de documentación (o una de sus secciones, indicada en
         el contexto con ``al_docs_page``) en una pestaña nueva."""
-        url = (self.env['ir.config_parameter'].sudo().get_param('al_account_base.docs_url')
+        url = (self.env['ir.config_parameter'].sudo().get_str('al_account_base.docs_url')
                or '').strip()
         if not url:
             raise UserError(self.env._(

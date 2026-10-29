@@ -23,7 +23,6 @@ Solo para la vertical Mobiliario (puente de al_construction_planner_spreadsheet
 desde el requerimiento CREVAL v1.0, 6.7): en construcción, la hoja es la del
 presupuesto y el plan del módulo genérico.
 """
-import base64
 import json
 
 from odoo import models

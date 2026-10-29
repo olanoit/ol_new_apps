@@ -7,7 +7,7 @@
                title="Principio activo"/>
             <span t-foreach="this.selected" t-as="ingredient" t-key="ingredient.id"
                   class="alph-ingredient-chip d-inline-flex align-items-center gap-2">
-                <t t-esc="ingredient.name"/>
+                <t t-out="ingredient.name"/>
                 <i class="oi" data-icon="close" role="button" aria-label="Quitar"
                    t-on-click="() => this.pos.togglePharmacyIngredient(ingredient.id)"/>
             </span>
@@ -22,8 +22,8 @@
                     <button t-foreach="this.options" t-as="ingredient" t-key="ingredient.id" type="button"
                             class="alph-ingredient-option d-flex justify-content-between align-items-center w-100"
                             t-on-mousedown.prevent="() => this.pick(ingredient)">
-                        <span t-esc="ingredient.name"/>
-                        <span class="alph-ingredient-count" t-esc="this.count(ingredient)"/>
+                        <span t-out="ingredient.name"/>
+                        <span class="alph-ingredient-count" t-out="this.count(ingredient)"/>
                     </button>
                 </div>
             </div>

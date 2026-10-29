@@ -8,7 +8,6 @@
         <field name="model">stock.picking</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_construction_material_request.report_dispatch_slip_picking</field>
-        <field name="report_file">al_construction_material_request.report_dispatch_slip_picking</field>
         <field name="print_report_name">'Vale de despacho %s' % object.name.replace('/', '-')</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="stock.model_stock_picking"/>
@@ -22,7 +21,6 @@
         <field name="model">construction.material.request</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_construction_material_request.report_dispatch_slip_request</field>
-        <field name="report_file">al_construction_material_request.report_dispatch_slip_request</field>
         <field name="print_report_name">'Vale de despacho %s' % object.name.replace('/', '-')</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
@@ -34,7 +32,6 @@
         <field name="model">stock.move</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_construction_material_request.report_dispatch_slip_move</field>
-        <field name="report_file">al_construction_material_request.report_dispatch_slip_move</field>
         <field name="print_report_name">'Vale de despacho'</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="stock.model_stock_move"/>

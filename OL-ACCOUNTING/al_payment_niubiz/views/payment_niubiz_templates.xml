@@ -170,7 +170,7 @@
                         <!-- Previous decline error shown on retry -->
                         <t t-if="payment_error">
                             <div class="o-niubiz-errors" style="display:block">
-                                <t t-esc="payment_error"/>
+                                <t t-out="payment_error"/>
                             </div>
                         </t>
 
@@ -347,16 +347,16 @@
                         <div class="o-pe-header">Niubiz · <span style="color:#f5a623">PagoEfectivo</span></div>
                         <div class="o-pe-badge">PAGO EN EFECTIVO</div>
                         <div class="o-pe-cip-label">Tu código CIP de pago</div>
-                        <div class="o-pe-cip"><t t-esc="cip"/></div>
+                        <div class="o-pe-cip"><t t-out="cip"/></div>
                         <div class="o-pe-info">
                             <strong>¿Cómo pagar?</strong><br/>
                             1. Ve a cualquier agente o banco de la red PagoEfectivo.<br/>
                             2. Indica el código CIP de arriba.<br/>
-                            3. Paga el monto exacto: <strong><t t-esc="currency"/> <t t-esc="'%.2f' % amount"/></strong>.<br/>
+                            3. Paga el monto exacto: <strong><t t-out="currency"/> <t t-out="'%.2f' % amount"/></strong>.<br/>
                             4. Guarda tu constancia de pago.
                         </div>
                         <t t-if="expiry_date">
-                            <div class="o-pe-expiry">Válido hasta: <strong><t t-esc="expiry_date"/></strong></div>
+                            <div class="o-pe-expiry">Válido hasta: <strong><t t-out="expiry_date"/></strong></div>
                         </t>
                         <t t-if="cip_url">
                             <a t-att-href="cip_url" target="_blank" class="btn btn-warning btn-sm mb-3">
@@ -382,7 +382,7 @@
                         <div class="col-md-6 text-center">
                             <div class="alert alert-danger" role="alert">
                                 <h4 class="alert-heading">Error al iniciar el pago</h4>
-                                <p><t t-esc="error_message"/></p>
+                                <p><t t-out="error_message"/></p>
                             </div>
                             <a t-att-href="back_url" class="btn btn-primary">
                                 Volver al carrito

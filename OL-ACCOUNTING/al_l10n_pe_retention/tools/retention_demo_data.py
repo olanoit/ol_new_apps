@@ -3,7 +3,6 @@
 
 Ejecutar con:  odoo-bin shell -c cfg/my/pe.cfg -d ol_pe_v19 --no-http < retention_demo_data.py
 """
-import base64
 from datetime import date
 
 YEAR, MONTH = 2026, '07'
@@ -154,7 +153,7 @@ print('=== 4. Reportes ===')
 summary = env['l10n_pe.retention.summary.wizard'].create(
     {'year': YEAR, 'month': MONTH})
 summary.action_export()
-content = base64.b64decode(summary.file_data).decode()
+content = summary.file_data.content.decode()
 log('resumen 626', partner.vat in content and '70.80' in content,
     summary.file_name)
 company.l10n_pe_ple_simplified = True
@@ -162,7 +161,7 @@ ple = env['l10n_pe.ple.export.wizard'].create({
     'year': YEAR, 'month': MONTH, 'generate_xlsx': False,
     'export_71': False, 'export_83': True})
 ple.action_export()
-ple_content = base64.b64decode(ple.file_data).decode()
+ple_content = ple.file_data.content.decode()
 row = next((l.split('|') for l in ple_content.split('\r\n')
             if l and l.split('|')[1] == str(bill.id)), None)
 log('marca retención en PLE 8.3', bool(row) and row[25] == '1',

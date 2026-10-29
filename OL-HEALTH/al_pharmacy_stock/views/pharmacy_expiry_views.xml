@@ -182,7 +182,6 @@
         <field name="model">pharmacy.supplier.return</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_pharmacy_stock.report_pharmacy_supplier_return</field>
-        <field name="report_file">al_pharmacy_stock.report_pharmacy_supplier_return</field>
         <field name="print_report_name">'Acta de canje %s' % object.name</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="model_pharmacy_supplier_return"/>

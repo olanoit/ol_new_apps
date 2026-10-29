@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import base64
 from io import BytesIO
 
 from odoo import models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import sheet_key
 
@@ -31,7 +31,7 @@ class DocumentsDocument(models.Model):
         workbook.save(output)
         wizard = self.env['construction.master.import.wizard'].create({
             'project_id': project.id,
-            'file': base64.b64encode(output.getvalue()),
+            'file': BinaryBytes(output.getvalue()),
             'filename': '%s.xlsx' % self.name,
             # Los productos nuevos de la hoja (PRODUCTOS NUEVOS) se crean.
             'create_missing_products': True,

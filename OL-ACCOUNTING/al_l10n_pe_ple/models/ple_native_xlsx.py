@@ -8,7 +8,6 @@ las mismas líneas: se llama a la exportación oficial y su TXT se vuelca en la
 hoja con el formato del módulo v18 y los encabezados del Anexo 2 de SUNAT.
 Así el Excel nunca puede decir algo distinto del archivo que se presenta.
 """
-import base64
 import io
 import re
 import zipfile
@@ -16,6 +15,7 @@ import zipfile
 from werkzeug.urls import url_encode
 
 from odoo import _, api, fields, models
+from odoo.tools import BinaryBytes
 
 # Nombre de cada TXT del Libro 3 dentro del ZIP: LE + RUC + AAAAMMDD + código.
 LIB_FILENAME = re.compile(r'^LE\d{11}\d{8}(\d{6})')
@@ -139,7 +139,7 @@ class L10nPeStockPleWizardXlsx(models.TransientModel):
             book_code, Mixin._ple_txt_rows(content), self.env.company,
             self.date_from.year, '%02d' % self.date_from.month)
         self.write({
-            'report_data': base64.b64encode(xlsx),
+            'report_data': BinaryBytes(xlsx),
             'report_filename': 'LE%s%s%02d00%s00001%s11.xlsx' % (
                 self.env.company.root_id.vat, self.date_from.year, self.date_from.month,
                 report_number, has_data),

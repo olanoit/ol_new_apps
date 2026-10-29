@@ -153,7 +153,6 @@
         <field name="model">construction.contract.summary.report</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_construction_planner_subcontract.report_contract_summary</field>
-        <field name="report_file">al_construction_planner_subcontract.report_contract_summary</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
         <field name="binding_model_id" ref="model_construction_contract_summary_report"/>
         <field name="binding_type">report</field>

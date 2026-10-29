@@ -43,7 +43,6 @@ class TestPosPeEdi(TestPoSCommon):
         cls.partner_ruc = cls.env['res.partner'].create({
             'name': 'Cliente con RUC',
             'vat': '20512528458',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.partner_dni = cls.env['res.partner'].create({
             'name': 'Cliente con DNI',

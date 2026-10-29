@@ -210,7 +210,6 @@
         <field name="model">pharmacy.controlled.balance</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_pharmacy_controlled.report_controlled_balance_record</field>
-        <field name="report_file">al_l10n_pe_pharmacy_controlled.report_controlled_balance_record</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
         <field name="binding_model_id" ref="model_pharmacy_controlled_balance"/>
         <field name="binding_type">report</field>

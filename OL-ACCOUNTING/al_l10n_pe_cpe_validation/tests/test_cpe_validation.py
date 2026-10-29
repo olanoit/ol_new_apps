@@ -43,7 +43,6 @@ class TestCpeValidation(TransactionCase):
         cls.company.l10n_pe_cpe_post_mode = 'none'
         cls.vendor = cls.env['res.partner'].create({
             'name': 'PROVEEDOR CPE (test)', 'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'vat': _ruc('2060112233'),
         })
         cls.journal = cls.env['account.journal'].search([

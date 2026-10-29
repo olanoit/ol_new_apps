@@ -13,13 +13,13 @@ local); las siguientes, solo los precios que cambiaron desde la última carga.
 
 Las columnas están en OBSERVATORY_COLUMNS para ajustarlas a la plantilla que
 descarga el aplicativo: confírmela antes de la primera carga."""
-import base64
 import io
 
 import xlsxwriter
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 from ..models.product_template import OBSERVATORY_CLASSES
 
@@ -164,7 +164,7 @@ class PharmacyObservatoryExport(models.TransientModel):
             'date_sent': now, 'user_id': self.env.uid, 'line_count': len(rows),
             'rectification_deadline': self.company_id._pharmacy_add_business_days(
                 today, RECTIFICATION_BUSINESS_DAYS),
-            'file_data': base64.b64encode(buffer.getvalue()), 'file_name': file_name,
+            'file_data': BinaryBytes(buffer.getvalue()), 'file_name': file_name,
         }
         if submission:
             submission.write(values)

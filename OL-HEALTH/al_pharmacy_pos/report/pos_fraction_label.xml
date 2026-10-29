@@ -38,7 +38,6 @@
         <field name="model">pos.order</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_pharmacy_pos.report_pos_fraction_label</field>
-        <field name="report_file">al_pharmacy_pos.report_pos_fraction_label</field>
         <field name="paperformat_id" ref="al_pharmacy_prescription.paperformat_pharmacy_label"/>
         <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
         <field name="binding_type">report</field>

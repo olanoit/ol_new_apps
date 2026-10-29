@@ -68,7 +68,7 @@ class L10nPeDetractionCheck(models.Model):
     def _l10n_pe_source_url(self):
         # sudo(): los parámetros del sistema solo los lee el administrador;
         # aquí se lee una URL pública configurable, no un secreto.
-        return (self.env['ir.config_parameter'].sudo().get_param(URL_PARAM)
+        return (self.env['ir.config_parameter'].sudo().get_str(URL_PARAM)
                 or DEFAULT_URL)
 
     @api.model

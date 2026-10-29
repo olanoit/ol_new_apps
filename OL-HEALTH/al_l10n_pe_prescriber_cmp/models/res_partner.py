@@ -26,7 +26,7 @@ class ResPartner(models.Model):
         # Parámetro técnico (URL del portal): lo lee cualquiera que consulte,
         # aunque solo el administrador pueda leer ir.config_parameter.
         config_sudo = self.env['ir.config_parameter'].sudo()
-        url = config_sudo.get_param('al_l10n_pe_prescriber_cmp.portal_url', DEFAULT_PORTAL_URL)
+        url = config_sudo.get_str('al_l10n_pe_prescriber_cmp.portal_url', DEFAULT_PORTAL_URL)
         return {'type': 'ir.actions.act_url', 'url': url, 'target': 'new'}
 
     def _pharmacy_set_cmp_status(self, status):

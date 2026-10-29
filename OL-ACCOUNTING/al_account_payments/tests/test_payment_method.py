@@ -33,7 +33,6 @@ class TestPePaymentMethod(TransactionCase):
         cls.partner = cls.env['res.partner'].create({
             'name': 'CLIENTE PRUEBA SAC',
             'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'country_id': cls.env.ref('base.pe').id,
         })
         cls.sale_journal = cls.env['account.journal'].search(

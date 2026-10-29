@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import base64
 import calendar
 from datetime import date
 
 from odoo import _, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 
 def _previous_month(today):
@@ -123,7 +123,7 @@ class L10nPeRetentionSummaryWizard(models.TransientModel):
         self.write({
             'file_name': 'retenciones_626_%04d%s.txt' % (
                 self.year, self.month),
-            'file_data': base64.b64encode(content.encode()),
+            'file_data': BinaryBytes(content.encode()),
             'retention_count': len(rows),
             'retention_total': total,
         })

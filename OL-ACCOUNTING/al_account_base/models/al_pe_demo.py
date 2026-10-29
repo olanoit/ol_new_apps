@@ -98,9 +98,8 @@ class AlPeDemo(models.AbstractModel):
         """Contacto peruano (con RUC si ``vat`` tiene 11 dígitos, DNI si 8)."""
         values = {'name': name, 'country_id': env.ref('base.pe').id, 'is_company': bool(vat and len(vat) == 11)}
         if vat:
-            values['vat'] = vat
-            values['l10n_latam_identification_type_id'] = env.ref(
-                'l10n_pe.it_RUC' if len(vat) == 11 else 'l10n_pe.it_DNI').id
+            values.update(env['res.partner']._l10n_pe_identification_vals(
+                '6' if len(vat) == 11 else '1', vat))
         values.update(vals)
         return self._demo_record(xmlid, env['res.partner'], values)
 

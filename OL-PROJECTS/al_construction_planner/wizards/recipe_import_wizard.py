@@ -15,7 +15,6 @@ naturaleza de costo, la mano de obra como personal propio o como contrata.
 Ambos son idempotentes: la receta se reconoce por su código y queda como en
 el origen; las tareas, por su nombre bajo su nivel superior.
 """
-import base64
 import logging
 from io import BytesIO
 
@@ -150,10 +149,10 @@ class ConstructionRecipeImportWizard(models.TransientModel):
 
     def _read_workbook(self):
         self.ensure_one()
-        content = self.with_context(bin_size=False).file
+        content = self.file.content
         try:
             from openpyxl import load_workbook
-            workbook = load_workbook(BytesIO(base64.b64decode(content)), read_only=True,
+            workbook = load_workbook(BytesIO(content), read_only=True,
                                      data_only=True)
         except Exception as exc:  # noqa: BLE001 - cualquier archivo que no sea un libro
             _logger.info('Libro de recetas no válido: %s', exc)
@@ -585,7 +584,7 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         output = BytesIO()
         workbook.save(output)
         attachment = self.env['ir.attachment'].create({
-            'name': 'recetas_y_niveles.xlsx', 'datas': base64.b64encode(output.getvalue()),
+            'name': 'recetas_y_niveles.xlsx', 'raw': output.getvalue(),
             'res_model': self._name, 'res_id': self.id,
         })
         return {'type': 'ir.actions.act_url', 'url': '/web/content/%s?download=true'

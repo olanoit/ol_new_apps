@@ -66,7 +66,7 @@ class GanttFieldMap(models.AbstractModel):
     @api.model
     def _get_override(self):
         """Sobreescritura manual vía parámetro de sistema (JSON)."""
-        raw = self.env['ir.config_parameter'].sudo().get_param(CONFIG_PARAM)
+        raw = self.env['ir.config_parameter'].sudo().get_str(CONFIG_PARAM)
         if not raw:
             return {}
         try:
@@ -160,7 +160,7 @@ class GanttFieldMap(models.AbstractModel):
     @api.model
     def get_default_duration_hours(self):
         """Duración de la barra cuando la tarea solo tiene fecha de fin."""
-        raw = self.env['ir.config_parameter'].sudo().get_param(DEFAULT_DURATION_PARAM)
+        raw = self.env['ir.config_parameter'].sudo().get_str(DEFAULT_DURATION_PARAM)
         try:
             value = float(raw) if raw else DEFAULT_DURATION_HOURS
         except (TypeError, ValueError):

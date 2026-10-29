@@ -629,7 +629,7 @@ class L10nPeFactoring(models.Model):
         book.close()
         return self.env['ir.attachment'].create({
             'name': '%s.xlsx' % self.name.replace('/', '-'),
-            'datas': base64.b64encode(buffer.getvalue()),
+            'raw': buffer.getvalue(),
             'res_model': self._name, 'res_id': self.id,
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })

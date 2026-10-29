@@ -6,7 +6,6 @@
         <field name="model">construction.valuation</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_construction_planner_sale.report_construction_valuation</field>
-        <field name="report_file">al_construction_planner_sale.report_construction_valuation</field>
         <field name="print_report_name">'Valorización %s - %s' % (object.sequence_number, object.name)</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="model_construction_valuation"/>

@@ -26,7 +26,6 @@ El mixin se encarga de:
     sustituye a los generadores xlsxwriter-a-directorio de
     ``hr_importers``/``hr_vacation_import`` v18).
 """
-import base64
 import io
 import logging
 import math
@@ -36,6 +35,7 @@ from collections import OrderedDict
 from odoo import api, fields, models, modules
 from odoo.exceptions import UserError, ValidationError
 from odoo.modules.registry import Registry
+from odoo.tools import BinaryBytes
 
 _logger = logging.getLogger(__name__)
 
@@ -111,7 +111,7 @@ def _run_import_thread(dbname, uid, wizard_model, wizard_id, progress_id,
                                counts['skipped'], counts['error'],
                            ),
                 'log': '\n'.join(log_lines),
-                'report_file': base64.b64encode(report_bytes)
+                'report_file': BinaryBytes(report_bytes)
                 if report_bytes else False,
                 'report_filename': filename,
                 'created_res_ids_csv': ','.join(
@@ -355,7 +355,7 @@ class ImportPayrollMixin(models.AbstractModel):
                 'entorno del servidor: pip install openpyxl')) from exc
         if not self.file_data:
             raise UserError(self.env._('Cargue primero un archivo Excel.'))
-        raw = base64.b64decode(self.file_data)
+        raw = self.file_data.content
         if len(raw) > MAX_FILE_SIZE_MB * 1024 * 1024:
             raise UserError(self.env._(
                 'El archivo supera el tamaño máximo de %s MB. Divídalo en '
@@ -930,7 +930,7 @@ class ImportPayrollMixin(models.AbstractModel):
         self.ensure_one()
         data, filename = self._build_xlsx_template()
         self.write({
-            'template_file': base64.b64encode(data),
+            'template_file': BinaryBytes(data),
             'template_filename': filename,
         })
         return {

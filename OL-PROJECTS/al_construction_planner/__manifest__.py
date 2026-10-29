@@ -321,7 +321,6 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
             'al_construction_planner/static/src/plan_tree/*',
             'al_construction_planner/static/src/schedule/*',
             'al_construction_planner/static/src/home/*',
-            'al_construction_planner/static/src/project_panel/*',
             ('remove', 'al_construction_planner/static/src/**/*.dark.scss'),
         ],
         # Modo oscuro: se compila con las variables oscuras de Odoo.

@@ -37,13 +37,13 @@ _misses = 0
 
 def _cache_enabled(env) -> bool:
     ICP = env["ir.config_parameter"].sudo()
-    return ICP.get_param("mcp_server.enable_schema_cache", "True").lower() in ("1", "true", "yes")
+    return ICP.get_str("mcp_server.enable_schema_cache", "True").lower() in ("1", "true", "yes")
 
 
 def _cache_ttl(env) -> int:
     ICP = env["ir.config_parameter"].sudo()
     try:
-        return int(ICP.get_param("mcp_server.schema_cache_ttl_seconds", 300) or 300)
+        return int(ICP.get_str("mcp_server.schema_cache_ttl_seconds", 300) or 300)
     except (ValueError, TypeError):
         return 300
 

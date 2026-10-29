@@ -8,7 +8,7 @@
                     <input id="shortage_use_product" type="checkbox" class="form-check-input"
                            t-custom-model="this.state.useProduct"/>
                     <label class="form-check-label" for="shortage_use_product">
-                        Producto: <strong t-esc="this.props.productName"/>
+                        Producto: <strong t-out="this.props.productName"/>
                     </label>
                 </div>
                 <div class="row g-2">
@@ -27,7 +27,7 @@
                         <label class="form-label" for="shortage_reason">Motivo</label>
                         <select id="shortage_reason" class="form-select" t-custom-model="this.state.reason">
                             <t t-foreach="this.reasons" t-as="reason" t-key="reason[0]">
-                                <option t-att-value="reason[0]" t-esc="reason[1]"/>
+                                <option t-att-value="reason[0]" t-out="reason[1]"/>
                             </t>
                         </select>
                     </div>

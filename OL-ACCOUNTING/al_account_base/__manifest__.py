@@ -34,7 +34,7 @@ campos sin uso.
     # comprobante A4) vive en al_report_base, común a toda la suite.
     # l10n_latam_invoice_document: tipo de documento del comprobante modificado
     # de las notas cuyo original no está en Odoo (PLE y SIRE).
-    'depends': ['account', 'al_report_base', 'l10n_latam_invoice_document'],
+    'depends': ['account', 'al_report_base', 'l10n_latam_invoice_document', 'l10n_pe'],
     'data': [
         'views/res_company_views.xml',
         'views/res_config_settings_views.xml',

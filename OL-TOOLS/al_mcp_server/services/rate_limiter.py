@@ -122,11 +122,11 @@ def get_rate_limiter(env=None):
 
     try:
         ICP = env["ir.config_parameter"].sudo()
-        redis_enabled = ICP.get_param("mcp_server.enable_redis_rate_limit", "False")
+        redis_enabled = ICP.get_str("mcp_server.enable_redis_rate_limit", "False")
         if redis_enabled.lower() not in ("1", "true", "yes"):
             return rate_limiter
 
-        redis_url = ICP.get_param("mcp_server.redis_url", "") or ""
+        redis_url = ICP.get_str("mcp_server.redis_url", "") or ""
         if not redis_url:
             _logger.warning(
                 "Servidor MCP: la limitación con Redis está activada pero mcp_server.redis_url no está definido. "
@@ -134,8 +134,8 @@ def get_rate_limiter(env=None):
             )
             return rate_limiter
 
-        max_req = int(ICP.get_param("mcp_server.rate_limit_per_minute", _DEFAULT_MAX) or _DEFAULT_MAX)
-        window = int(ICP.get_param("mcp_server.rate_limit_window_seconds", _DEFAULT_WINDOW) or _DEFAULT_WINDOW)
+        max_req = int(ICP.get_str("mcp_server.rate_limit_per_minute", _DEFAULT_MAX) or _DEFAULT_MAX)
+        window = int(ICP.get_str("mcp_server.rate_limit_window_seconds", _DEFAULT_WINDOW) or _DEFAULT_WINDOW)
 
         with _redis_cache_lock:
             cached = _redis_limiter_cache.get(redis_url)

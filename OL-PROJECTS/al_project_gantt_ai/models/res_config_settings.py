@@ -102,7 +102,7 @@ class ResConfigSettings(models.TransientModel):
         super().set_values()
         # Se guarda siempre como texto explícito: un parámetro ausente
         # significa «por defecto» (True), no «desactivado».
-        self.env['ir.config_parameter'].sudo().set_param(
+        self.env['ir.config_parameter'].sudo().set_str(
             SHARE_ASSIGNEES_PARAM, 'True' if self.al_gantt_ai_share_assignees else 'False',
         )
 

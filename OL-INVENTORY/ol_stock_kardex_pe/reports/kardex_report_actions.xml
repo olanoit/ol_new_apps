@@ -5,7 +5,6 @@
         <field name="model">l10n_pe.kardex.report.wizard</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">ol_stock_kardex_pe.report_kardex</field>
-        <field name="report_file">ol_stock_kardex_pe.report_kardex</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
         <field name="print_report_name">object._get_export_filename('pdf')</field>
     </record>

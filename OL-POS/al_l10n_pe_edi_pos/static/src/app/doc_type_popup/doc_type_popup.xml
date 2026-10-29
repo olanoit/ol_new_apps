@@ -10,8 +10,8 @@
                             t-att-class="{ 'alpe-selected': this.state.type === docType.code }"
                             t-on-click="() => this.selectType(docType.code)">
                         <i t-att-class="'fa fa-2x mb-2 ' + docType.icon" role="img"/>
-                        <div class="alpe-doctype-label" t-esc="docType.label"/>
-                        <div class="alpe-doctype-hint text-muted" t-esc="docType.hint"/>
+                        <div class="alpe-doctype-label" t-out="docType.label"/>
+                        <div class="alpe-doctype-hint text-muted" t-out="docType.hint"/>
                         <i t-if="this.state.type === docType.code"
                            class="oi oi-filled alpe-check" data-icon="check_circle" role="img"/>
                     </button>
@@ -26,7 +26,7 @@
                             class="alpe-serie-chip btn btn-sm rounded-pill border d-flex align-items-center gap-2"
                             t-att-class="this.state.serieId === serie.id ? 'btn-primary' : 'btn-light'"
                             t-on-click="() => this.selectSerie(serie)">
-                        <span t-esc="serie.name"/>
+                        <span t-out="serie.name"/>
                         <i t-att-class="'fa ' + (this.state.fixedIds[this.state.type] === serie.id ? 'fa-star text-warning' : 'fa-star-o')"
                            t-att-title="this.state.fixedIds[this.state.type] === serie.id ? 'Quitar serie fija' : 'Fijar como serie de esta caja'"
                            role="img"
@@ -45,7 +45,7 @@
                        id="alpe-send-switch" t-custom-model="this.state.send"/>
                 <label class="form-check-label" for="alpe-send-switch">
                     Emitir a SUNAT
-                    <span class="fw-bold" t-esc="this.state.send ? 'Sí' : 'No'"/>
+                    <span class="fw-bold" t-out="this.state.send ? 'Sí' : 'No'"/>
                 </label>
                 <div t-if="!this.state.send" class="text-muted" style="font-size: 85%;">
                     El comprobante se genera pero queda retenido: otro

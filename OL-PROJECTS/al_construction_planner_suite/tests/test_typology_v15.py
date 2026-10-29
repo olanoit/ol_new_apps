@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """v1.5, fase 13: tipologías completas (familia, variantes, otros nombres,
 muebles y variantes por unidad)."""
-import base64
 
 from odoo.exceptions import ValidationError
 from odoo.tests import new_test_user, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import build_workbook
 
@@ -132,7 +132,7 @@ class TestTypologyV15(PlannerCommon):
                            'note': 'Rovere'}],
         }
         wizard = self.env['construction.master.import.wizard'].with_user(manager).create({
-            'project_id': site.id, 'file': base64.b64encode(build_workbook(rows)),
+            'project_id': site.id, 'file': BinaryBytes(build_workbook(rows)),
             'filename': 'maestro.xlsx'})
         data = wizard._analyze()
         self.assertFalse(data['errors'])

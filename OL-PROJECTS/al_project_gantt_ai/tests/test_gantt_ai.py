@@ -34,7 +34,7 @@ class TestGanttAi(GanttCommon):
 
     @classmethod
     def _set_param(cls, key, value):
-        cls.env['ir.config_parameter'].sudo().set_param('al_gantt_ai.' + key, value)
+        cls.env['ir.config_parameter'].sudo().set_str('al_gantt_ai.' + key, value)
 
     @classmethod
     def _set_key(cls, value):

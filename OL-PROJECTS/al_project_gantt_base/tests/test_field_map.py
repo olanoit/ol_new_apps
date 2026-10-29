@@ -14,7 +14,7 @@ class TestGanttFieldMap(GanttCommon):
         self.task_fields = self.env['project.task']._fields
 
     def _set_param(self, value):
-        self.env['ir.config_parameter'].sudo().set_param(CONFIG_PARAM, value)
+        self.env['ir.config_parameter'].sudo().set_str(CONFIG_PARAM, value)
 
     def test_auto_detection_matches_registry(self):
         """La detección automática elige el primer candidato que exista."""
@@ -66,9 +66,9 @@ class TestGanttFieldMap(GanttCommon):
 
     def test_default_duration(self):
         self.assertEqual(self.FieldMap.get_default_duration_hours(), DEFAULT_DURATION_HOURS)
-        self.env['ir.config_parameter'].sudo().set_param(DEFAULT_DURATION_PARAM, '4')
+        self.env['ir.config_parameter'].sudo().set_str(DEFAULT_DURATION_PARAM, '4')
         self.assertEqual(self.FieldMap.get_default_duration_hours(), 4.0)
-        self.env['ir.config_parameter'].sudo().set_param(DEFAULT_DURATION_PARAM, 'x')
+        self.env['ir.config_parameter'].sudo().set_str(DEFAULT_DURATION_PARAM, 'x')
         self.assertEqual(self.FieldMap.get_default_duration_hours(), DEFAULT_DURATION_HOURS)
-        self.env['ir.config_parameter'].sudo().set_param(DEFAULT_DURATION_PARAM, '-3')
+        self.env['ir.config_parameter'].sudo().set_str(DEFAULT_DURATION_PARAM, '-3')
         self.assertEqual(self.FieldMap.get_default_duration_hours(), DEFAULT_DURATION_HOURS)

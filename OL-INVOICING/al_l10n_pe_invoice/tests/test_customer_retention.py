@@ -27,7 +27,6 @@ class TestCustomerRetention(AccountTestInvoicingCommon):
             cls.company.l10n_pe_retention_agent = False
         cls.partner_a.write({
             'name': 'CLIENTE AGENTE SAC', 'is_company': True, 'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'is_retention_agent': True,
         })
         cls.igv = cls.env['account.tax'].search([

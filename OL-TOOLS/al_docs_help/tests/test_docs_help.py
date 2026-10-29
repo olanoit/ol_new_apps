@@ -22,10 +22,10 @@ class TestDocsHelp(TransactionCase):
 
     def test_base_url_from_settings_or_default(self):
         params = self.env['ir.config_parameter'].sudo()
-        params.set_param(DOCS_URL_PARAM, False)
+        params.set_str(DOCS_URL_PARAM, False)
         help_map = self.Help.get_help_map()
         self.assertTrue(help_map['al.docs.help']['url'].startswith(DOCS_URL_DEFAULT))
-        params.set_param(DOCS_URL_PARAM, 'https://docs.ejemplo.pe/19.0')
+        params.set_str(DOCS_URL_PARAM, 'https://docs.ejemplo.pe/19.0')
         help_map = self.Help.get_help_map()
         own = self.Help.search([('key', '=', 'al.docs.help')])
         self.assertEqual(help_map['al.docs.help']['url'], 'https://docs.ejemplo.pe/19.0/' + own.path)

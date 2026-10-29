@@ -52,7 +52,6 @@ class TestExchangeDifference(AccountTestInvoicingCommon):
             'name': 'CLIENTE USD S.A.C.',
             'vat': '20601034809',
             'country_id': cls.pe.id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.sale_journal = cls.env['account.journal'].search([
             ('company_id', '=', cls.company.id),

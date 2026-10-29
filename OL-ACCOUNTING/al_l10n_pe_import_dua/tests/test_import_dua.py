@@ -19,7 +19,6 @@ class TestImportDua(TransactionCase):
         cls.customs = cls.env['res.partner'].create({
             'name': 'SUNAT - Aduanas (test)', 'is_company': True,
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'vat': '20131312955'})
         # Código propio de la prueba (la demo ya crea la 609190 en la base).
         cls.offset = cls.env['account.account'].create({

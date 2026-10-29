@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Asistente de depósito masivo de detracciones."""
-import base64
 from datetime import date
 
 from odoo.exceptions import UserError
@@ -32,7 +31,6 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
             'name': 'PROVEEDOR SPOT S.A.C.',
             'vat': RUC_SUPPLIER,
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'l10n_pe_detraction_account': BN_ACCOUNT,
         })
         cls.product = cls.env['product.product'].create({'name': 'Servicio SPOT'})
@@ -83,7 +81,7 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
             self.company).create(values)
 
     def _content(self, wizard):
-        return base64.b64decode(wizard.file_data).decode('latin-1')
+        return wizard.file_data.content.decode('latin-1')
 
     # ------------------------------------------------------------------
     # Generación
@@ -169,7 +167,6 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
             'name': 'CLIENTE ADQUIRIENTE S.A.C.',
             'vat': RUC_CUSTOMER,
             'country_id': self.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
         })
         invoice = self._create_invoice()
         self.assertTrue(invoice.l10n_pe_detraction_applies)
@@ -190,7 +187,6 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
             'name': 'CLIENTE SIN CUENTA S.A.C.',
             'vat': RUC_CUSTOMER,
             'country_id': self.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
         })
         self._create_invoice()
         self.company.partner_id.l10n_pe_detraction_account = False
@@ -231,7 +227,6 @@ class TestDetractionTxtWizard(AccountTestInvoicingCommon):
             'name': 'PROVEEDOR SIN CUENTA S.A.C.',
             'vat': '20100070970',
             'country_id': self.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
         })
         bill = self._create_bill()
         bill.button_draft()

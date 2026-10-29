@@ -25,8 +25,8 @@ def migrate(cr, version):
         'apis.net.pe': ('api_net.url', 'api_net.token'),
     }
     for name, (url_key, token_key) in token_map.items():
-        url = params.get_param(url_key)
-        token = params.get_param(token_key)
+        url = params.get_str(url_key)
+        token = params.get_str(token_key)
         if not (url or token):
             continue
         conns = env['l10n_pe.api.connection'].search([('name', '=', name)])

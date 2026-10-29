@@ -29,11 +29,11 @@
                         <div class="alv-current-info">
                             <div class="alv-current-avatar"
                                  t-att-style="'background:' + this.getAvatarColor(this.currentSelection.label)">
-                                <t t-esc="this.getInitials(this.currentSelection.label)"/>
+                                <t t-out="this.getInitials(this.currentSelection.label)"/>
                             </div>
                             <div class="alv-current-text">
                                 <span class="alv-current-label">Vendedor actual</span>
-                                <span class="alv-current-name" t-esc="this.currentSelection.label"/>
+                                <span class="alv-current-name" t-out="this.currentSelection.label"/>
                             </div>
                         </div>
                         <button class="alv-deselect-btn" t-on-click="this.clearSelection">
@@ -69,12 +69,12 @@
                             <!-- Avatar -->
                             <div class="alv-avatar"
                                  t-att-style="'background:' + this.getAvatarColor(item.label)">
-                                <t t-esc="this.getInitials(item.label)"/>
+                                <t t-out="this.getInitials(item.label)"/>
                                 <i t-if="item.isSelected" class="oi alv-avatar-check" data-icon="check"/>
                             </div>
 
                             <!-- Nombre -->
-                            <span class="alv-card-name" t-esc="item.label"/>
+                            <span class="alv-card-name" t-out="item.label"/>
 
                         </button>
                     </t>
@@ -90,7 +90,7 @@
                 <!-- Pie: cantidad + cancelar -->
                 <div class="alv-footer">
                     <span class="alv-count">
-                        <t t-esc="this.state.filteredList.length"/>
+                        <t t-out="this.state.filteredList.length"/>
                         <t t-if="this.state.filteredList.length === 1"> vendedor</t>
                         <t t-else=""> vendedores</t>
                     </span>

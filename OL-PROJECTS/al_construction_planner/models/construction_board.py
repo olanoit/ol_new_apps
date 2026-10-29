@@ -147,8 +147,11 @@ class ProjectProject(models.Model):
         ]
         return buttons
 
-    def _get_stat_buttons(self):
-        buttons = super()._get_stat_buttons()
+    def _get_construction_stat_buttons(self):
+        """Botones de la obra visibles para el usuario. Odoo 20 retiró el
+        panel lateral del proyecto (``_get_stat_buttons``), donde se mostraban
+        bajo su propia sección."""
+        buttons = []
         if not self.is_construction_site or not self.env.user.has_group(FEATURE_EXEC_PROJECT):
             return buttons
         for sequence, group, button in self._construction_stat_buttons():

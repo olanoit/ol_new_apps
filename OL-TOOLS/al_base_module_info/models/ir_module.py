@@ -25,7 +25,7 @@ class IrModuleModule(models.Model):
                 self._al_ficha_url(module.name) if module.name else False)
 
     @api.model
-    @tools.ormcache('name')
+    @api.ormcache('name')
     def _al_ficha_url(self, name):
         """URL de la ficha, o False. En caché: el kanban la pide por cada
         tarjeta y la ficha solo cambia con el código del módulo."""

@@ -5,11 +5,11 @@ Dos plantas de prueba: el corte (producción de piezas) entrega un paquete de
 piezas al armado. La cocina C07 tiene dos módulos con materiales de
 producción de piezas, armado e instalación; el tornillo está en armado y en
 instalación. El closet CL01B solo tiene corte."""
-import base64
 
 from odoo import Command
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import new_test_user, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import (
     build_workbook)
@@ -94,7 +94,7 @@ class TestStageChainV110(PlannerCommon):
     def _import(self, site=None):
         wizard = self.env['construction.master.import.wizard'].create({
             'project_id': (site or self.site).id,
-            'file': base64.b64encode(build_workbook(self._rows())), 'filename': 'maestro.xlsx'})
+            'file': BinaryBytes(build_workbook(self._rows())), 'filename': 'maestro.xlsx'})
         data = wizard._analyze()
         self.assertFalse(data['errors'])
         wizard.action_import()

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 import calendar
 import io
 import re
@@ -10,6 +9,7 @@ import pytz
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 
 
@@ -157,7 +157,7 @@ class L10nPePleExportWizard(models.TransientModel):
         if self.notes_pdf:
             exports.append((
                 self._lib_filename('032300', True, extension='.pdf'),
-                base64.b64decode(self.notes_pdf)))
+                self.notes_pdf.content))
         if not exports:
             raise UserError(_('Seleccione al menos un formato a generar.'))
 
@@ -174,7 +174,7 @@ class L10nPePleExportWizard(models.TransientModel):
 
         self.write({
             'file_name': file_name,
-            'file_data': base64.b64encode(content),
+            'file_data': BinaryBytes(content),
         })
         return {
             'type': 'ir.actions.act_window',

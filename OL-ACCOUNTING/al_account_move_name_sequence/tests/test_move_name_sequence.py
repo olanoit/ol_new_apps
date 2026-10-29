@@ -16,7 +16,6 @@ class TestMoveNameSequence(AccountTestInvoicingCommon):
         cls.company_data['company'].vat = '20512528458'
         cls.partner_a.write({
             'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.journal_seq = cls.company_data['default_journal_sale'].copy({
             'name': 'Ventas por secuencia', 'code': 'VSEQ',

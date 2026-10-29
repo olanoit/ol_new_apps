@@ -4,7 +4,7 @@
         <Dialog size="'md'" title="this.props.controlled ? 'Receta especial' : 'Receta médica'">
             <div class="o_pharmacy_prescription_dialog">
                 <p class="mb-3">
-                    <strong t-esc="this.props.productName"/> se vende con
+                    <strong t-out="this.props.productName"/> se vende con
                     <t t-if="this.props.controlled">receta especial (producto controlado).</t>
                     <t t-else="">receta médica.</t>
                 </p>

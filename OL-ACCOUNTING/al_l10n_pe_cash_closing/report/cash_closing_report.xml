@@ -131,7 +131,6 @@
         <field name="model">l10n_pe.cash.closing</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_cash_closing.report_cash_closing</field>
-        <field name="report_file">al_l10n_pe_cash_closing.report_cash_closing</field>
         <field name="print_report_name">'Cierre de caja %s' % object.name</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="model_l10n_pe_cash_closing"/>

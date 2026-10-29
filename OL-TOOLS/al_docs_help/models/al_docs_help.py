@@ -44,7 +44,7 @@ class AlDocsHelp(models.Model):
         # sudo: el parámetro del sistema lo leen todos los usuarios internos que
         # ven el botón «?»; solo es la URL pública del sitio, no un secreto.
         params_sudo = self.env['ir.config_parameter'].sudo()
-        url = (params_sudo.get_param(DOCS_URL_PARAM) or DOCS_URL_DEFAULT).strip()
+        url = (params_sudo.get_str(DOCS_URL_PARAM) or DOCS_URL_DEFAULT).strip()
         return url.rstrip('/') + '/'
 
     @api.depends('path')

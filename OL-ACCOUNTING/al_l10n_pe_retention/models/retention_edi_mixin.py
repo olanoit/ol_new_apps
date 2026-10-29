@@ -16,7 +16,6 @@ enviado por ``sendSummary``; el resultado se consulta con el ticket
 Digiflow) lo hacen con sus servicios de baja; otros operadores (Factory HKA)
 extienden ``_l10n_pe_edi_reversal_send`` y ``_l10n_pe_edi_reversal_status``.
 """
-import base64
 from datetime import datetime
 
 from lxml import etree, objectify
@@ -372,7 +371,7 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
             attachment = self.env['ir.attachment'].create({
                 'name': 'CDR-%s.xml' % document.l10n_pe_edi_reversal_filename,
                 'res_model': document._name, 'res_id': document.id,
-                'type': 'binary', 'datas': base64.b64encode(res['cdr']),
+                'type': 'binary', 'raw': res['cdr'],
                 'mimetype': 'application/xml'})
             document.write({
                 'l10n_pe_edi_status': 'cancelled',

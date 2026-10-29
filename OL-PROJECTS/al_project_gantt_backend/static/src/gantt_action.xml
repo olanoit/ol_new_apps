@@ -19,8 +19,8 @@
                                     class="btn btn-sm"
                                     t-att-class="this.isSelected(project.id) ? 'btn-primary' : 'btn-outline-secondary'"
                                     t-on-click="() => this.onProjectToggle(project.id)">
-                                <t t-esc="project.name"/>
-                                <span class="badge text-bg-light ms-1" t-esc="project.task_count"/>
+                                <t t-out="project.name"/>
+                                <span class="badge text-bg-light ms-1" t-out="project.task_count"/>
                             </button>
                         </t>
                         <button type="button" class="btn btn-sm btn-link"
@@ -47,7 +47,7 @@
                                     t-if="this.state.search"
                                     t-on-click="() => this.clearSearch()">×</button>
                         </div>
-                        <span class="small text-muted" t-if="this.searchLabel" t-esc="this.searchLabel"/>
+                        <span class="small text-muted" t-if="this.searchLabel" t-out="this.searchLabel"/>
 
                         <div class="btn-group btn-group-sm">
                             <button type="button" class="btn btn-outline-secondary"
@@ -84,7 +84,7 @@
                                 title="Resalta las tareas sin holgura (calculado en el servidor)">
                             <i class="oi me-1" data-icon="flash_on"/>Ruta crítica
                             <span class="badge text-bg-light ms-1"
-                                  t-if="this.criticalLabel !== null" t-esc="this.criticalLabel"/>
+                                  t-if="this.criticalLabel !== null" t-out="this.criticalLabel"/>
                         </button>
 
                         <div class="form-check form-switch mb-0" t-if="this.state.meta.can_reschedule_chain and this.state.meta.editable">
@@ -105,7 +105,7 @@
                                 <t t-foreach="this.baselineOptions" t-as="baseline" t-key="baseline.id">
                                     <option t-att-value="baseline.id"
                                             t-att-selected="baseline.selected"
-                                            t-esc="baseline.name"/>
+                                            t-out="baseline.name"/>
                                 </t>
                             </select>
                             <button type="button" class="btn btn-sm btn-outline-secondary"
@@ -130,7 +130,7 @@
 
                         <span class="small text-muted" t-if="this.state.saving">Guardando…</span>
                         <span class="small text-success" t-elif="this.state.lastSavedAt">
-                            <i class="oi me-1" data-icon="check"/><t t-esc="this.state.lastSavedAt"/>
+                            <i class="oi me-1" data-icon="check"/><t t-out="this.state.lastSavedAt"/>
                         </span>
 
                         <button type="button" class="btn btn-sm"
@@ -139,7 +139,7 @@
                             <i class="oi oi-filled me-1" data-icon="filter_alt"/>Filtros
                             <span class="badge text-bg-primary ms-1"
                                   t-if="this.activeFilterCount"
-                                  t-esc="this.activeFilterCount"/>
+                                  t-out="this.activeFilterCount"/>
                         </button>
                         <label class="mb-0" for="algantt_zoom">Escala:</label>
                         <select id="algantt_zoom" class="form-select form-select-sm w-auto"
@@ -147,7 +147,7 @@
                             <t t-foreach="this.zoomLevels" t-as="level" t-key="level.key">
                                 <option t-att-value="level.key"
                                         t-att-selected="level.key === this.state.zoom"
-                                        t-esc="level.label"/>
+                                        t-out="level.label"/>
                             </t>
                         </select>
                     </div>
@@ -160,7 +160,7 @@
                     <t t-if="this.selection">
                         <span class="small" t-if="this.state.selectionCount">
                             <i class="oi oi-filled me-1" data-icon="check_box"/>
-                            <span class="algantt-selection-count" t-esc="this.state.selectionCount"/> fila(s) marcada(s)
+                            <span class="algantt-selection-count" t-out="this.state.selectionCount"/> fila(s) marcada(s)
                         </span>
                         <span class="small text-muted" t-else="">Marque filas en la primera columna</span>
                         <button type="button" class="btn btn-sm btn-link algantt-selection-clear"
@@ -175,7 +175,7 @@
                                     t-att-title="button.title or button.label"
                                     t-on-click="() => button.run()">
                                 <i t-if="button.icon" t-att-class="'fa ' + button.icon + ' me-1'"/>
-                                <t t-esc="button.label"/>
+                                <t t-out="button.label"/>
                             </button>
                         </t>
                     </div>
@@ -190,7 +190,7 @@
                                     t-on-change="(ev) => this.onDraftSelectChange('userIds', ev)">
                                 <t t-foreach="this.userOptions" t-as="option" t-key="option.id">
                                     <option t-att-value="option.id" t-att-selected="option.selected">
-                                        <t t-esc="option.name"/> (<t t-esc="option.task_count"/>)
+                                        <t t-out="option.name"/> (<t t-out="option.task_count"/>)
                                     </option>
                                 </t>
                             </select>
@@ -203,7 +203,7 @@
                                 <t t-foreach="this.stateOptions" t-as="option" t-key="option.value">
                                     <option t-att-value="option.value"
                                             t-att-selected="option.selected"
-                                            t-esc="option.label"/>
+                                            t-out="option.label"/>
                                 </t>
                             </select>
                         </div>
@@ -245,12 +245,12 @@
                 <div class="algantt-notices px-2 pt-2"
                      t-if="this.state.meta.truncated or this.state.meta.undated_count">
                     <div class="alert alert-warning py-1 px-2 mb-1" t-if="this.state.meta.truncated">
-                        Se muestran <t t-esc="this.state.meta.count"/> de
-                        <t t-esc="this.state.meta.total"/> tareas (límite de
-                        <t t-esc="this.state.meta.limit"/>). Filtre por proyecto o por fechas para ver el resto.
+                        Se muestran <t t-out="this.state.meta.count"/> de
+                        <t t-out="this.state.meta.total"/> tareas (límite de
+                        <t t-out="this.state.meta.limit"/>). Filtre por proyecto o por fechas para ver el resto.
                     </div>
                     <div class="alert alert-info py-1 px-2 mb-1" t-if="this.state.meta.undated_count">
-                        <t t-esc="this.state.meta.undated_count"/> tarea(s) sin fecha límite
+                        <t t-out="this.state.meta.undated_count"/> tarea(s) sin fecha límite
                         <t t-if="this.state.filters.includeUndated">
                             se listan en la rejilla, sin barra en el diagrama.
                         </t>

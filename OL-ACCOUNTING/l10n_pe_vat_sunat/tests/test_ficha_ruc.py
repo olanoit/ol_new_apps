@@ -314,7 +314,6 @@ class TestFichaRucCompletion(TransactionCase):
         cls.company_pe.write({'l10n_pe_ruc_validation': True, 'l10n_pe_dni_validation': True})
         cls.partner = cls.env['res.partner'].with_company(cls.company_pe).create({
             'name': 'AGROLIGHT PERU S.A.C.', 'is_company': True, 'country_id': pe.id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'vat': '20100070970'})
 
     def _run(self, ficha_ok):

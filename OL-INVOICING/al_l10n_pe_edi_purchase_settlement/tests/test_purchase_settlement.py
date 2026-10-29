@@ -200,7 +200,6 @@ class TestPurchaseSettlement(TransactionCase):
     def test_seller_with_ruc_is_rejected(self):
         company_seller = self.env['res.partner'].create({
             'name': 'Agro SAC', 'vat': '20131312955',
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id,
             'street': 'Av. 1', 'l10n_pe_district': self.district.id})
         move = self._settlement(partner=company_seller)
         with self.assertRaisesRegex(UserError, 'persona natural sin RUC'):

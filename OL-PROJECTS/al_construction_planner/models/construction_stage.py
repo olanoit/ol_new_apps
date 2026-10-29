@@ -121,7 +121,7 @@ class ConstructionStage(models.Model):
         return stages.sorted(lambda stage: stage._tree_key())
 
     @api.model
-    @tools.ormcache('self.env.lang')
+    @api.ormcache('self.env.lang')
     def _get_selection(self):
         # Con las archivadas: lo ya registrado con ellas se sigue leyendo. Las
         # etapas padre no llevan recursos: no están en la lista.
@@ -129,7 +129,7 @@ class ConstructionStage(models.Model):
         return [(stage.code, stage._label()) for stage in stages]
 
     @api.model
-    @tools.ormcache('self.env.lang')
+    @api.ormcache('self.env.lang')
     def _get_group_selection(self):
         stages = self._tree_sorted().filtered(lambda stage: not stage.parent_id)
         return [(stage.code, stage._label()) for stage in stages]

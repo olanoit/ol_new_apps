@@ -4,7 +4,6 @@
 El Excel se arma con el TXT oficial: los tests comprueban que cada línea del
 TXT quede en su fila, con los encabezados del Anexo 2 de SUNAT.
 """
-import base64
 import io
 import subprocess
 import sys
@@ -195,7 +194,7 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
             action = wizard.action_export_xlsx_13_1()
         self.assertEqual(action['type'], 'ir.actions.act_url')
         self.assertEqual(wizard.report_filename, 'LE2051252845820260300130100001111.xlsx')
-        content = base64.b64decode(wizard.report_data)
+        content = wizard.report_data.content
         rows = self._sheet_rows(content, 'PLE 13.1 Inventario valorizado')
         # Los encabezados largos del Anexo 2 caben: la fila crece sobre los 40
         # puntos del formato v18.

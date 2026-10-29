@@ -248,7 +248,7 @@ class TestComplaintsBook(TransactionCase):
             'book_ids': [(6, 0, self.book.ids)]})
         wizard.action_export()
         import base64
-        rows = base64.b64decode(wizard.file).decode().split('\r\n')
+        rows = wizard.file.content.decode().split('\r\n')
         self.assertEqual(len(rows), 1)
         fields_ = rows[0].split('|')
         self.assertEqual(len(fields_), 18)

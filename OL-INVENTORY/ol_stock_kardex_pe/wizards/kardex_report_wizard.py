@@ -1,4 +1,3 @@
-import base64
 import calendar
 from datetime import date, datetime, time
 from types import SimpleNamespace
@@ -11,6 +10,7 @@ from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Date, Domain
 from odoo.tools import SQL, float_is_zero
+from odoo.tools import BinaryBytes
 
 from ..reports.kardex_xlsx import build_kardex_xlsx
 
@@ -209,7 +209,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
         self._check_has_data()
         content = build_kardex_xlsx(self)
         self.write({
-            'report_data': base64.b64encode(content),
+            'report_data': BinaryBytes(content),
             'report_filename': self._get_export_filename('xlsx'),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })

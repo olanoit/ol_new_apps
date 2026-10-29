@@ -124,10 +124,9 @@ class TestAxisGroups(TransactionCase):
     def _snapshot(self, user):
         """Permisos efectivos del usuario en los modelos de la vertical y
         los menús que ve."""
-        Access = self.env['ir.model.access'].with_user(user)
         models = [name for name in self.env if name.startswith('construction.')]
         perms = {(model, mode) for model in models for mode in ('read', 'write', 'create', 'unlink')
-                 if Access.check(model, mode, raise_exception=False)}
+                 if self.env[model].with_user(user).has_access(mode)}
         menus = set(self.env['ir.ui.menu'].with_user(user)._visible_menu_ids())
         return perms, menus
 

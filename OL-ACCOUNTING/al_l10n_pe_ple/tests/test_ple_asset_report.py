@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Libro 7 en pantalla: informe «Registro de Activos Fijos (PLE 7.1)»."""
-import base64
 import zipfile
 from datetime import date
 from io import BytesIO
@@ -155,7 +154,7 @@ class TestPleAssetReport(TransactionCase):
         wizard.action_export()
         self.assertEqual(result['file_name'], wizard.file_name)
         self.assertEqual(result['file_content'],
-                         base64.b64decode(wizard.file_data))
+                         wizard.file_data.content)
 
     def test_xlsx_export_is_valid_workbook(self):
         self._asset('Laptop informe', 'AF-REP-004', 3000.0, date(2025, 5, 1))

@@ -231,7 +231,7 @@ class McpGeneratedModule(models.Model):
             raise UserError(_("No se encontró archivo ZIP. Genere el módulo primero."))
 
         IrParam = self.env["ir.config_parameter"].sudo()
-        base_path = IrParam.get_param("mcp_server.generated_modules_path", "").strip()
+        base_path = IrParam.get_str("mcp_server.generated_modules_path", "").strip()
         if not base_path:
             raise UserError(_(
                 "La ruta de módulos generados no está configurada. "
@@ -245,7 +245,7 @@ class McpGeneratedModule(models.Model):
 
         # Obtiene los bytes del ZIP
         att_sudo = self.attachment_id.sudo()  # sudo: adjunto interno del registro
-        zip_bytes = base64.b64decode(att_sudo.datas)
+        zip_bytes = att_sudo.raw.content
         with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
             prefix = f"{self.technical_name}/"
             for member in zf.namelist():

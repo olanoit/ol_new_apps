@@ -225,5 +225,5 @@ class ComplaintsBookController(CustomerPortal):
         filename = 'Hoja de reclamacion %s.pdf' % complaint_sudo.name
         return request.make_response(pdf, headers=[
             ('Content-Type', 'application/pdf'),
-            ('Content-Disposition', http.content_disposition(filename)),
+            ('Content-Disposition', content_disposition(filename)),
         ])

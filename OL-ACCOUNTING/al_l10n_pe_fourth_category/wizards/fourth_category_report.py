@@ -9,12 +9,12 @@ servicios con rentas de cuarta categoría – Detalle de comprobantes» del anex
 ampliada por la R.S. 028-2018/SUNAT): campos separados por «|», fechas
 dd/mm/aaaa y montos con punto decimal y dos decimales.
 """
-import base64
 import calendar
 from datetime import date
 
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 MONTHS = [(str(m), name) for m, name in enumerate(
     ('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto',
@@ -131,7 +131,7 @@ class FourthCategoryReport(models.TransientModel):
                 ', '.join(missing.mapped('partner_id.display_name'))))
         ruc = (self.company_id.vat or '').strip()
         self.filename = '0601%04d%02d%s.4ta' % (self.year, int(self.month), ruc)
-        self.file = base64.b64encode(('\r\n'.join(self._txt_lines()) + '\r\n').encode('utf-8'))
+        self.file = BinaryBytes(('\r\n'.join(self._txt_lines()) + '\r\n').encode('utf-8'))
         return self._reopen()
 
     def action_view_moves(self):

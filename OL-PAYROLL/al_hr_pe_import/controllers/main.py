@@ -11,7 +11,8 @@ se sirve por una ruta HTTP que no depende de ningún registro guardado.
 import logging
 
 from odoo import http
-from odoo.http import content_disposition, request
+from odoo.http import request
+from odoo.http.stream import content_disposition
 
 _logger = logging.getLogger(__name__)
 

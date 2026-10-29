@@ -73,7 +73,7 @@ class TestGanttReviewFixes(GanttCommon):
         self.assertFalse(derived)
 
     def test_progress_scale_can_be_forced(self):
-        self.env['ir.config_parameter'].sudo().set_param(
+        self.env['ir.config_parameter'].sudo().set_str(
             CONFIG_PARAM, json.dumps({'progress_scale': 1}),
         )
         self.assertEqual(
@@ -99,7 +99,7 @@ class TestGanttReviewFixes(GanttCommon):
     # Sin campo de inicio (Community): se guarda el fin y no falla
     # ------------------------------------------------------------------
     def test_deadline_only_saves_the_end_and_ignores_the_start(self):
-        self.env['ir.config_parameter'].sudo().set_param(
+        self.env['ir.config_parameter'].sudo().set_str(
             CONFIG_PARAM, json.dumps({'date_start': None}),
         )
         field_map = self.env['al.gantt.field.map'].get_map()

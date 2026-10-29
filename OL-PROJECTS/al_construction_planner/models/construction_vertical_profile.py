@@ -8,7 +8,6 @@ registro de datos, no código: se elige en Ajustes, se aplica (crea lo que
 falta sin borrar nada y se puede volver a aplicar), muestra en qué se aparta
 la compañía de su definición y se exporta e importa entre bases como JSON.
 """
-import base64
 import json
 
 from markupsafe import Markup
@@ -329,7 +328,7 @@ class ConstructionVerticalProfile(models.Model):
         content = json.dumps(self._export_data(), ensure_ascii=False, indent=2)
         attachment = self.env['ir.attachment'].create({
             'name': 'perfil_%s.json' % self.code,
-            'datas': base64.b64encode(content.encode()),
+            'raw': content.encode(),
             'mimetype': 'application/json',
             'res_model': self._name, 'res_id': self.id,
         })
@@ -500,7 +499,7 @@ class ConstructionProfileImportWizard(models.TransientModel):
     def action_import(self):
         self.ensure_one()
         try:
-            data = json.loads(base64.b64decode(self.with_context(bin_size=False).file))
+            data = json.loads(self.file.content)
         except ValueError as exc:
             raise UserError(self.env._('El archivo no es un JSON válido.')) from exc
         profile = self.env['construction.vertical.profile']._import_data(data)

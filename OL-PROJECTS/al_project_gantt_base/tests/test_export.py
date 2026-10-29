@@ -46,7 +46,11 @@ class TestGanttExport(GanttCommon):
         self.assertTrue(matrix['periods'])
         first = matrix['periods'][0]['start']
         last = matrix['periods'][-1]['end']
-        self.assertLessEqual(first, self.base_date.date())
+        # Sin project_enterprise no hay fecha de inicio (modo «solo fecha
+        # límite»): se comparan las fechas que realmente tiene el plan.
+        Data = self.env['al.gantt.data']
+        starts = [Data._to_date(row['start']) for row in matrix['rows'] if row['start']]
+        self.assertLessEqual(first, min(starts))
         self.assertGreaterEqual(last, (self.base_date + timedelta(days=30)).date())
 
     def test_cells_mark_the_bar_span(self):

@@ -26,7 +26,7 @@ class TestDocsSettings(TransactionCase):
         self.assertEqual(action['url'], 'https://docs.ejemplo.pe/19.0/')
 
     def test_url_required_and_valid(self):
-        self.env['ir.config_parameter'].sudo().set_param('al_account_base.docs_url', False)
+        self.env['ir.config_parameter'].sudo().set_str('al_account_base.docs_url', False)
         with self.assertRaises(UserError):
             self.env['res.config.settings'].create({}).action_al_docs_open()
         with self.assertRaises(ValidationError):

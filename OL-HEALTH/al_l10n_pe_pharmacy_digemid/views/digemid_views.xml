@@ -334,7 +334,6 @@
         <field name="model">res.company</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_pharmacy_digemid.report_price_list</field>
-        <field name="report_file">al_l10n_pe_pharmacy_digemid.report_price_list</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
     <record id="action_server_price_list" model="ir.actions.server">
@@ -350,7 +349,6 @@
         <field name="model">res.company</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_pharmacy_digemid.report_linked_poster</field>
-        <field name="report_file">al_l10n_pe_pharmacy_digemid.report_linked_poster</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
     <record id="action_server_linked_poster" model="ir.actions.server">

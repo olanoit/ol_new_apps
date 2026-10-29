@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Panel de recursos por tipo (v1.8, M18-03) y tabla insumo-producto
 (M18-04) sobre el piso 05 del demo."""
-import base64
 import io
 
 from odoo.tests import tagged
@@ -81,7 +80,7 @@ class TestIoMatrixV18(TestSchedule):
         action = self.plan.action_export_io_matrix(
             [str(self.floor.id)], {}, {'level': 'space_task_id'})
         attachment = self.env['ir.attachment'].browse(int(action['url'].split('/')[-1].split('?')[0]))
-        book = openpyxl.load_workbook(io.BytesIO(base64.b64decode(attachment.datas)))
+        book = openpyxl.load_workbook(io.BytesIO(attachment.raw.content))
         sheet = book.active
         values = [cell.value for cell in sheet[1]]
         self.assertIn('1 Producción', values)

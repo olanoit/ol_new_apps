@@ -1,4 +1,3 @@
-import base64
 import io
 import logging
 import zipfile
@@ -9,6 +8,7 @@ from werkzeug.urls import url_encode
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_compare
+from odoo.tools import BinaryBytes
 
 from .sire_validation import (
     CURRENCY_RE, DOC_TYPES_TABLE_10, GENERIC_NUMBER_RE, GENERIC_SERIE_RE,
@@ -415,7 +415,7 @@ class L10nPeSireMixin(models.AbstractModel):
         # El TXT exportado a mano desde SOL puede venir en latin-1, y el
         # portal lo entrega comprimido.
         content = self._sire_decode(
-            self._sire_unzip_proposal(base64.b64decode(self.proposal_file))).strip('\n')
+            self._sire_unzip_proposal(self.proposal_file.content)).strip('\n')
         commands = [(5, 0, 0)]
         min_cols = self._sire_min_columns()
         for index, row in enumerate(content.split('\n')[1:], start=2):
@@ -810,7 +810,7 @@ class L10nPeSireMixin(models.AbstractModel):
         self._sire_check_replacement_lines()
         txt_name, payload = self._sire_replacement_zip()
         self.write({
-            'export_file': base64.b64encode(payload),
+            'export_file': BinaryBytes(payload),
             'export_filename': txt_name.replace('.txt', '.zip'),
         })
         return self._sire_download_export()
@@ -846,7 +846,7 @@ class L10nPeSireMixin(models.AbstractModel):
         write_sheet('Sistema', self.system_line_ids, style_system)
         workbook.close()
         self.write({
-            'export_file': base64.b64encode(buffer.getvalue()),
+            'export_file': BinaryBytes(buffer.getvalue()),
             'export_filename': '%s_%s_%s.xlsx' % (self._sire_book_label(), self.month, self.year),
         })
         return self._sire_download_export()
@@ -920,7 +920,7 @@ class L10nPeSireMixin(models.AbstractModel):
             'codLibro': self._sire_upload_book_code(),
         })
         self.write({
-            'export_file': base64.b64encode(payload),
+            'export_file': BinaryBytes(payload),
             'export_filename': zip_name,
             'submission_type': 'replace',
             'submission_ticket': ticket,
@@ -1193,7 +1193,7 @@ class L10nPeSireMixin(models.AbstractModel):
             'ticket': ticket or False,
             'ticket_state': '01' if ticket else False,
             'state': 'sent' if ticket else 'done',
-            'file': base64.b64encode(content) if content else False,
+            'file': BinaryBytes(content) if content else False,
             'filename': filename,
             'detail': detail,
         })

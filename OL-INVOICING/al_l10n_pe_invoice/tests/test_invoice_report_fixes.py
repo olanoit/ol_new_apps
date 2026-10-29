@@ -28,7 +28,6 @@ class TestInvoiceReportFixes(AccountTestInvoicingCommon):
         cls.company_data['default_journal_sale'].l10n_latam_use_documents = True
         cls.partner_a.write({
             'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.a4 = 'al_l10n_pe_invoice.report_cpe_invoice_a4_main'
         cls.ticket = 'al_l10n_pe_invoice.report_cpe_ticket_main'

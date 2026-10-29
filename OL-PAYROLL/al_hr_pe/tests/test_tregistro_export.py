@@ -217,7 +217,7 @@ class TestTregistroExport(TransactionCase):
         with self.assertRaises(AccessError):
             attachment.with_user(intern).read(['datas'])
         import base64
-        archive = zipfile.ZipFile(io.BytesIO(base64.b64decode(attachment.datas)))
+        archive = zipfile.ZipFile(io.BytesIO(attachment.raw.content))
         self.assertEqual(len(archive.namelist()), 4)
         contenido = archive.read('RP_20512528458.tra').decode('latin-1')
         self.assertTrue(contenido.endswith('|'))

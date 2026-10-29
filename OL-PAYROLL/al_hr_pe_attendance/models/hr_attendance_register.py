@@ -13,7 +13,6 @@ años. Este asistente lo genera en Excel a partir de las marcaciones
 (``hr.attendance``), con la misma consolidación y el mismo cálculo de
 sobretiempo que el tareaje, para que el registro cuadre con la boleta.
 """
-import base64
 import io
 
 from odoo import _, api, fields, models
@@ -184,7 +183,7 @@ class HrAttendanceRegisterWizard(models.TransientModel):
         attachment = self.env['ir.attachment'].create({
             'name': filename,
             'type': 'binary',
-            'datas': base64.b64encode(stream.getvalue()),
+            'raw': stream.getvalue(),
             # Sin res_model/res_id: lleva documentos de identidad y horarios;
             # solo lo descarga quien lo generó.
         })

@@ -16,6 +16,7 @@ from datetime import date, datetime
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
+from odoo.tools import BinaryBytes
 
 
 def _xlsx(sheets):
@@ -121,7 +122,7 @@ class TestFase8Import(TransactionCase):
         # Extensión inválida: la constraint rechaza el archivo.
         with self.assertRaises(ValidationError):
             self.env['al.import.hr.attendance.wizard'].create({
-                'file_data': base64.b64encode(b'no es excel'),
+                'file_data': BinaryBytes(b'no es excel'),
                 'file_name': 'archivo.txt',
                 'company_id': self.company.id,
             })

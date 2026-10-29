@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 from datetime import date
 
 from odoo.exceptions import UserError
@@ -63,7 +62,7 @@ class TestPleExport(TransactionCase):
         return self.env['l10n_pe.ple.export.wizard'].create(values)
 
     def _get_lines(self, wizard):
-        content = base64.b64decode(wizard.file_data).decode()
+        content = wizard.file_data.content.decode()
         return [line for line in content.split('\r\n') if line]
 
     # ------------------------------------------------------------------
@@ -457,7 +456,7 @@ class TestPleExport(TransactionCase):
         import io
         import zipfile
         archive = zipfile.ZipFile(
-            io.BytesIO(base64.b64decode(wizard.file_data)))
+            io.BytesIO(wizard.file_data.content))
         names = archive.namelist()
         content_103 = next(archive.read(n).decode() for n in names
                            if '100300' in n)
@@ -630,7 +629,7 @@ class TestPleExport(TransactionCase):
         import io
         import zipfile
         archive = zipfile.ZipFile(
-            io.BytesIO(base64.b64decode(wizard.file_data)))
+            io.BytesIO(wizard.file_data.content))
         names = archive.namelist()
         content_52 = next(archive.read(n).decode() for n in names
                           if '050200' in n)
@@ -685,7 +684,7 @@ class TestPleExport(TransactionCase):
         # TXT + XLSX del mismo formato → ZIP
         self.assertTrue(wizard.file_name.endswith('.zip'))
         archive = zipfile.ZipFile(
-            io.BytesIO(base64.b64decode(wizard.file_data)))
+            io.BytesIO(wizard.file_data.content))
         names = archive.namelist()
         self.assertTrue(any(n.endswith('070100001111.txt') for n in names))
         xlsx_name = next(n for n in names if n.endswith('.xlsx'))

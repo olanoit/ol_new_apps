@@ -24,7 +24,8 @@ from typing import Any
 from werkzeug.wrappers import Response
 
 from odoo import http
-from odoo.http import content_disposition, request, route
+from odoo.http import request, route
+from odoo.http.stream import content_disposition
 from odoo.tools.safe_eval import safe_eval
 from odoo.tools.safe_eval import time as safe_time
 

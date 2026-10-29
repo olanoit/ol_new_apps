@@ -4,7 +4,6 @@ v1.0, 6.7): las pestañas del libro de carga (6.6) con sus columnas, fórmulas
 grises para los costos y listas vivas de Odoo en REFERENCIAS. Se abre desde
 la cotización (carpeta Presupuestos › cotización de Documentos) o desde la
 obra; la obra que viene de una cotización con hoja usa la misma."""
-import base64
 import json
 
 from odoo import api, fields, models
@@ -189,7 +188,7 @@ class ProjectProject(models.Model):
             data, name = self._construction_spreadsheet_template(kind)
             vals = {
                 'name': name, 'mimetype': 'application/o-spreadsheet', 'handler': 'spreadsheet',
-                'datas': base64.b64encode(json.dumps(data).encode()),
+                'raw': json.dumps(data).encode(),
                 'construction_project_id': self.id, 'construction_sheet_kind': kind,
                 'construction_sale_order_id': self.construction_sale_order_id.id
                 if kind == 'budget' else False,
@@ -546,7 +545,7 @@ class SaleOrder(models.Model):
             document = Document.create({
                 'name': self.env._('Presupuesto y plan · %s', self.name),
                 'mimetype': 'application/o-spreadsheet', 'handler': 'spreadsheet',
-                'datas': base64.b64encode(json.dumps(data).encode()),
+                'raw': json.dumps(data).encode(),
                 'folder_id': self._construction_spreadsheet_folder().id,
                 'construction_sale_order_id': self.id,
                 'construction_project_id': project.id,

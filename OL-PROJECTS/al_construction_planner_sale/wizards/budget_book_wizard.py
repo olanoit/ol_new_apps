@@ -20,7 +20,6 @@ generales, imprevistos, utilidad y descuento); con destino Plan, además, los
 niveles de la obra, la receta, la modalidad y el metrado real de cada
 partida, y genera el plan. Volver a importar actualiza sin duplicar. La hoja
 de trabajo en Hojas de cálculo (6.7) usa las mismas hojas y columnas."""
-import base64
 import io
 from collections import defaultdict
 
@@ -268,7 +267,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         ``(book, errors, warnings)``; cada error es (hoja, fila, columna,
         mensaje)."""
         self.ensure_one()
-        sheets = self._load_book(content or base64.b64decode(self.file))
+        sheets = self._load_book(content or self.file.content)
         errors, warnings = [], []
         for name in ('INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO'):
             if name not in sheets:

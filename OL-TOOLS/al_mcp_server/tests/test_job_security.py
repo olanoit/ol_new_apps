@@ -30,7 +30,7 @@ class TestMcpJobSecurity(TransactionCase):
 
     def test_job_runs_as_submitter_not_cron_user(self):
         ICP = self.env["ir.config_parameter"].sudo()
-        ICP.set_param("mcp_test.secret", "original")
+        ICP.set_str("mcp_test.secret", "original")
         job = self._job("bulk_update", {
             "model": "ir.config_parameter",
             "domain": [("key", "=", "mcp_test.secret")],
@@ -38,7 +38,7 @@ class TestMcpJobSecurity(TransactionCase):
         }, scope="admin")
         job.action_run()
         self.assertEqual(job.state, "failed")
-        self.assertEqual(ICP.get_param("mcp_test.secret"), "original")
+        self.assertEqual(ICP.get_str("mcp_test.secret"), "original")
 
     def test_write_scope_cannot_bulk_unlink(self):
         job = self._job("bulk_unlink", {"model": "res.partner", "domain": [("id", "=", self.partner.id)]})

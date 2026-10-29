@@ -11,7 +11,8 @@ from datetime import datetime
 
 from odoo import _, http
 from odoo.exceptions import UserError
-from odoo.http import content_disposition, request
+from odoo.http import request
+from odoo.http.stream import content_disposition
 
 
 class GanttExportController(http.Controller):

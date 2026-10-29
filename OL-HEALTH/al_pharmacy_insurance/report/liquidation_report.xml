@@ -48,7 +48,6 @@
         <field name="model">pharmacy.insurance.liquidation</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_pharmacy_insurance.report_pharmacy_insurance_liquidation</field>
-        <field name="report_file">al_pharmacy_insurance.report_pharmacy_insurance_liquidation</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="model_pharmacy_insurance_liquidation"/>
         <field name="binding_type">report</field>

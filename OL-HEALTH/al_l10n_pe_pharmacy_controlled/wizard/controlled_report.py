@@ -9,7 +9,6 @@ producto el saldo inicial, las entradas, las salidas y el saldo final, con
 las recetas del periodo (formato de declaración jurada ante la DIRIS,
 DIRESA o GERESA).
 """
-import base64
 import io
 from collections import defaultdict
 from datetime import date, datetime, time
@@ -18,6 +17,7 @@ import xlsxwriter
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 from ..models.controlled_compliance import BALANCE_LISTS, BOOKS, QUARTERS
 
@@ -214,7 +214,7 @@ class PharmacyControlledReport(models.TransientModel):
                     sheet.write(row_index, col, value)
         workbook.close()
         self.write({
-            'file_data': base64.b64encode(buffer.getvalue()),
+            'file_data': BinaryBytes(buffer.getvalue()),
             'file_name': '%s_%s_%s.xlsx' % (
                 'balance' if self.report_type == 'balance' else 'libro', self.book, self.date_from),
         })

@@ -220,7 +220,7 @@ def _handle_create_portal_page(env, args: dict) -> dict:
 
     page = Page.create(vals)
 
-    base = env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+    base = env["ir.config_parameter"].sudo().get_str("web.base.url", "")
     return {
         "id": page.id,
         "name": page.name,
@@ -246,7 +246,7 @@ def _handle_list_portal_pages(env, args: dict) -> dict:
         domain.append(("enabled", "=", True))
 
     pages = env["mcp.portal.page"].search(domain, limit=limit, order="create_date desc")
-    base = env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+    base = env["ir.config_parameter"].sudo().get_str("web.base.url", "")
 
     result = []
     for p in pages:
@@ -302,7 +302,7 @@ def _handle_update_portal_page(env, args: dict) -> dict:
 
     page.write(vals)
 
-    base = env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+    base = env["ir.config_parameter"].sudo().get_str("web.base.url", "")
     return {
         "id": page.id,
         "name": page.name,

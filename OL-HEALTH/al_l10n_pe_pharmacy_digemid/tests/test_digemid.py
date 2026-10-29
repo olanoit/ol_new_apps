@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 import io
 from datetime import date, datetime, timedelta
 
@@ -127,7 +126,7 @@ class TestDigemid(TransactionCase):
 
     # Envíos al Observatorio ----------------------------------------------
     def _rows_of(self, wizard):
-        workbook = openpyxl.load_workbook(io.BytesIO(base64.b64decode(wizard.file_data)))
+        workbook = openpyxl.load_workbook(io.BytesIO(wizard.file_data.content))
         sheet = workbook['Hoja1']
         return [[cell.value for cell in row] for row in sheet.iter_rows()]
 

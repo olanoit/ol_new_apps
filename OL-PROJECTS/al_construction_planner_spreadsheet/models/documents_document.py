@@ -15,6 +15,7 @@ from markupsafe import Markup
 
 from odoo import fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 from .project_project import PRESUPUESTO_HEADERS, cell_text, presupuesto_row
 
@@ -93,7 +94,7 @@ class DocumentsDocument(models.Model):
             'sale_order_id': order.id,
             'project_id': (self.construction_project_id or order.project_id).id,
             'target': target,
-            'file': base64.b64encode(self._construction_book(sheets)),
+            'file': BinaryBytes(self._construction_book(sheets)),
             'filename': '%s.xlsx' % self.name,
             'spreadsheet_id': self.id,
         })

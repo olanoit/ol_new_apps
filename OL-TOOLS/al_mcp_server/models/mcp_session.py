@@ -46,12 +46,12 @@ class McpSession(models.Model):
         ICP = self.env["ir.config_parameter"].sudo()
 
         try:
-            session_days = int(ICP.get_param("mcp_server.session_retention_days", 7))
+            session_days = int(ICP.get_str("mcp_server.session_retention_days", 7))
         except (ValueError, TypeError):
             session_days = 7
 
         try:
-            log_days = int(ICP.get_param("mcp_server.log_retention_days", 30))
+            log_days = int(ICP.get_str("mcp_server.log_retention_days", 30))
         except (ValueError, TypeError):
             log_days = 30
 

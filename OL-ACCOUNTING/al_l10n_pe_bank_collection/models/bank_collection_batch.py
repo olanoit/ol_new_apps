@@ -1,7 +1,7 @@
-import base64
 
 from odoo import Command, _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 
 class L10nPeBankCollectionBatch(models.Model):
@@ -160,7 +160,7 @@ class L10nPeBankCollectionBatch(models.Model):
         filename = (layout.filename or 'recaudacion_%(date)s.txt') % {
             'date': self.date.strftime('%Y%m%d'), 'currency': layout._currency_code(agreement.currency_id),
             'service': agreement.service_code or ''}
-        self.write({'file': base64.b64encode(content), 'filename': filename, 'state': 'generated'})
+        self.write({'file': BinaryBytes(content), 'filename': filename, 'state': 'generated'})
         self.line_ids.move_line_id.filtered(lambda l: not l.reconciled).write(
             {'l10n_pe_bank_collection_batch_id': self.id})
         return True

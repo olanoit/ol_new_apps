@@ -70,7 +70,7 @@ class GanttAi(models.AbstractModel):
     def _get_param(self, key, default=None):
         # sudo() acotado: los parámetros del sistema no son legibles por un
         # empleado normal, y la clave nunca sale de este proceso.
-        value = self.env['ir.config_parameter'].sudo().get_param(PARAM_PREFIX + key)
+        value = self.env['ir.config_parameter'].sudo().get_str(PARAM_PREFIX + key)
         return value if value not in (None, '', False) else default
 
     @api.model

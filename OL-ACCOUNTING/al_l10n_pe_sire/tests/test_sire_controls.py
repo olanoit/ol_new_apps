@@ -1,5 +1,4 @@
 """Controles del SIRE: reglas al publicar, roles, bitácora de la API y avisos."""
-import base64
 import io
 import zipfile
 from datetime import timedelta
@@ -8,6 +7,7 @@ from unittest.mock import MagicMock, patch
 from odoo import fields
 from odoo.exceptions import AccessError, UserError
 from odoo.tests import new_test_user, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_l10n_pe_sire.models.sire_validation import is_anonymous, months_between
 
@@ -80,14 +80,14 @@ class TestSireControls(TestSire):
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, 'w') as archive:
             archive.writestr('LE2051252845820260700140400021112.txt', content)
-        self.rvie.proposal_file = base64.b64encode(buffer.getvalue())
+        self.rvie.proposal_file = BinaryBytes(buffer.getvalue())
         self.rvie.action_load_sire()
         self.assertEqual(len(self.rvie.sire_line_ids), 1)
 
         empty = io.BytesIO()
         with zipfile.ZipFile(empty, 'w') as archive:
             archive.writestr('leame.pdf', b'x')
-        self.rvie.proposal_file = base64.b64encode(empty.getvalue())
+        self.rvie.proposal_file = BinaryBytes(empty.getvalue())
         with self.assertRaisesRegex(UserError, 'ningún TXT'):
             self.rvie.action_load_sire()
 

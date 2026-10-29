@@ -143,7 +143,7 @@ class McpHtmlArtifact(models.Model):
 
     @api.depends("slug", "access_token")
     def _compute_urls(self):
-        base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+        base = self.env["ir.config_parameter"].sudo().get_str("web.base.url", "")
         for rec in self:
             rec.artifact_url = f"{base}/mcp-artifact/{rec.slug}" if rec.slug else ""
             rec.embed_url = (
@@ -154,7 +154,7 @@ class McpHtmlArtifact(models.Model):
 
     def action_preview(self):
         self.ensure_one()
-        base = self.env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+        base = self.env["ir.config_parameter"].sudo().get_str("web.base.url", "")
         return {
             "type": "ir.actions.act_url",
             "url": f"{base}/mcp-artifact/{self.slug}",

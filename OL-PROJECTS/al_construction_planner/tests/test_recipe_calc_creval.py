@@ -2,7 +2,6 @@
 """Receta y plan (requerimiento CREVAL v1.0, 6.1, 6.2, 6.3 y 6.5) con la
 receta de demostración de la figura 20: mano de obra S/ 6.46 por m²,
 herramientas 3 % = S/ 0.19 por m² y costo unitario S/ 43.78 por m²."""
-import base64
 from datetime import date
 from io import BytesIO
 
@@ -10,6 +9,7 @@ from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import BinaryBytes
 
 
 @tagged('post_install', '-at_install')
@@ -187,7 +187,7 @@ class TestRecipeCalc(TransactionCase):
             sheet.append(row)
         output = BytesIO()
         book.save(output)
-        return base64.b64encode(output.getvalue())
+        return BinaryBytes(output.getvalue())
 
     def test_import_resolves_activity_and_product(self):
         Product = self.env['product.product']
@@ -438,7 +438,7 @@ class TestRecipeCalc(TransactionCase):
         book.save(output)
         wizard = self.env['construction.recipe.import.wizard'].create({
             'source': 'excel', 'project_id': project.id,
-            'file': base64.b64encode(output.getvalue()), 'filename': 'recetas.xlsx'})
+            'file': BinaryBytes(output.getvalue()), 'filename': 'recetas.xlsx'})
         wizard.action_import()
         recipe = self.env['construction.execution.template'].search([('code', '=', 'CALC-R15')])
         first, second = recipe.line_ids.sorted('id')

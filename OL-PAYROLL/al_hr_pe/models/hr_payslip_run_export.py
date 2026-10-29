@@ -36,7 +36,6 @@ El FORMATO DE SALIDA (separador ``|``, orden de columnas, fin de línea
 se conserva idéntico al v18: es el formato oficial de importación de
 PLAME/AFPNet.
 """
-import base64
 import io
 from math import modf
 
@@ -89,7 +88,7 @@ class HrPayslipRun(models.Model):
         attachment = self.env['ir.attachment'].create({
             'name': filename,
             'type': 'binary',
-            'datas': base64.b64encode(content),
+            'raw': content,
             'res_model': 'hr.payslip.run',
             'res_id': self.id,
         })

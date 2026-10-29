@@ -56,7 +56,7 @@ class TestPharmacyLoyalty(TransactionCase):
         self.assertEqual(reward.discount_applicability, 'specific')
         products = self.otc | self.prescription | self.controlled
         self.assertEqual(products.filtered_domain(reward._get_discount_product_domain()), self.otc)
-        self.env['ir.config_parameter'].set_param('loyalty.compute_all_discount_product_ids', 'enabled')
+        self.env['ir.config_parameter'].set_str('loyalty.compute_all_discount_product_ids', 'enabled')
         reward.invalidate_recordset(['all_discount_product_ids'])
         self.assertIn(self.otc, reward.all_discount_product_ids)
         self.assertNotIn(self.prescription, reward.all_discount_product_ids)

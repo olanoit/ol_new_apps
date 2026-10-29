@@ -22,7 +22,6 @@ class TestDeliveryGuideReport(TransactionCase):
         cls.partner = cls.env['res.partner'].create({
             'name': 'Cliente Guía SAC',
             'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'l10n_pe_district': cls.district.id,
             'street': 'Av. Prueba 123',
         })

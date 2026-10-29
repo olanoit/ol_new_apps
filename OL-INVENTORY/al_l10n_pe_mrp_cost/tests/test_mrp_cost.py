@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 import io
 from datetime import date, datetime, timedelta
 
@@ -10,6 +9,7 @@ from odoo import Command, fields
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
+from odoo.tools import BinaryBytes
 
 
 @tagged('post_install', 'post_install_l10n', '-at_install')
@@ -189,7 +189,7 @@ class TestMrpCost(AccountTestInvoicingCommon):
         buffer = io.BytesIO()
         workbook.save(buffer)
         wizard = self.env['l10n_pe.mrp.timesheet.import'].create({
-            'file': base64.b64encode(buffer.getvalue()),
+            'file': BinaryBytes(buffer.getvalue()),
         })
         wizard.action_import()
         log = production.workorder_ids.time_ids
@@ -201,7 +201,7 @@ class TestMrpCost(AccountTestInvoicingCommon):
         sheet.append(['NO-EXISTE', '', '45678912', '15/01/2026', '', 1])
         buffer = io.BytesIO()
         workbook.save(buffer)
-        wizard.file = base64.b64encode(buffer.getvalue())
+        wizard.file = BinaryBytes(buffer.getvalue())
         with self.assertRaisesRegex(UserError, 'Fila 3'):
             wizard.action_import()
 

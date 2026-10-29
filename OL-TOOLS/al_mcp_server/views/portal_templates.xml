@@ -10,7 +10,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="robots" content="noindex, nofollow"/>
-    <title><t t-esc="page.name"/> &#8212; Portal MCP</title>
+    <title><t t-out="page.name"/> &#8212; Portal MCP</title>
     <style>
         /* ---- Reinicio y base ---- */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -192,15 +192,15 @@
     <header class="mcp-header">
         <div class="mcp-wrapper">
             <div class="mcp-title-block">
-                <h1 t-esc="spec_title"/>
-                <p t-if="spec_subtitle" t-esc="spec_subtitle"/>
+                <h1 t-out="spec_title"/>
+                <p t-if="spec_subtitle" t-out="spec_subtitle"/>
             </div>
             <!-- Barra de filtros (solo si hay filtros definidos) -->
             <t t-if="spec_filters">
                 <form class="mcp-filter-bar" method="GET" id="mcp-filter-form">
                     <t t-foreach="spec_filters" t-as="flt" t-key="flt.get('name', flt_index)">
                         <div class="mcp-filter-item">
-                            <label t-esc="flt.get('label') or flt.get('name', '')"/>
+                            <label t-out="flt.get('label') or flt.get('name', '')"/>
                             <t t-if="flt.get('type') == 'date'">
                                 <input type="date"
                                        t-att-name="flt.get('name')"
@@ -209,7 +209,7 @@
                             <t t-elif="flt.get('type') == 'select'">
                                 <select t-att-name="flt.get('name')">
                                     <t t-foreach="flt.get('options') or []" t-as="opt" t-key="opt_index">
-                                        <option t-att-value="opt.get('value', opt)" t-esc="opt.get('label', opt)"/>
+                                        <option t-att-value="opt.get('value', opt)" t-out="opt.get('label', opt)"/>
                                     </t>
                                 </select>
                             </t>
@@ -237,9 +237,9 @@
                 <!-- Widget KPI -->
                 <t t-if="w.get('type') == 'kpi'">
                     <div class="mcp-widget">
-                        <div class="mcp-widget-header" t-esc="w.get('title', '')"/>
+                        <div class="mcp-widget-header" t-out="w.get('title', '')"/>
                         <t t-if="w.get('error')">
-                            <div class="mcp-error-banner" t-esc="w['error']"/>
+                            <div class="mcp-error-banner" t-out="w['error']"/>
                         </t>
                         <t t-else="">
                             <div class="mcp-kpi">
@@ -250,8 +250,8 @@
                                 <div class="mcp-kpi-body">
                                     <div class="mcp-kpi-value"
                                          t-attf-style="color: #{w.get('color', 'var(--text)')}"
-                                         t-esc="w.get('formatted', '0')"/>
-                                    <div class="mcp-kpi-label" t-esc="w.get('title', '')"/>
+                                         t-out="w.get('formatted', '0')"/>
+                                    <div class="mcp-kpi-label" t-out="w.get('title', '')"/>
                                 </div>
                             </div>
                         </t>
@@ -261,9 +261,9 @@
                 <!-- Widget de gráfico -->
                 <t t-elif="w.get('type') == 'chart'">
                     <div class="mcp-widget mcp-widget-half">
-                        <div class="mcp-widget-header" t-esc="w.get('title', '')"/>
+                        <div class="mcp-widget-header" t-out="w.get('title', '')"/>
                         <t t-if="w.get('error')">
-                            <div class="mcp-error-banner" t-esc="w['error']"/>
+                            <div class="mcp-error-banner" t-out="w['error']"/>
                         </t>
                         <t t-else="">
                             <div class="mcp-chart-container">
@@ -276,9 +276,9 @@
                 <!-- Widget de tabla -->
                 <t t-elif="w.get('type') == 'table'">
                     <div class="mcp-widget mcp-widget-full">
-                        <div class="mcp-widget-header" t-esc="w.get('title', '')"/>
+                        <div class="mcp-widget-header" t-out="w.get('title', '')"/>
                         <t t-if="w.get('error')">
-                            <div class="mcp-error-banner" t-esc="w['error']"/>
+                            <div class="mcp-error-banner" t-out="w['error']"/>
                         </t>
                         <t t-else="">
                             <div class="mcp-table-outer">
@@ -286,7 +286,7 @@
                                     <thead>
                                         <tr>
                                             <t t-foreach="w.get('headers') or []" t-as="hdr" t-key="hdr_index">
-                                                <th t-att-data-col="hdr_index" t-esc="hdr"/>
+                                                <th t-att-data-col="hdr_index" t-out="hdr"/>
                                             </t>
                                         </tr>
                                     </thead>
@@ -294,7 +294,7 @@
                                         <t t-foreach="w.get('rows') or []" t-as="row" t-key="row_index">
                                             <tr>
                                                 <t t-foreach="row" t-as="cell" t-key="cell_index">
-                                                    <td t-esc="cell"/>
+                                                    <td t-out="cell"/>
                                                 </t>
                                             </tr>
                                         </t>
@@ -316,9 +316,9 @@
                 <!-- Respaldo para tipos de widget desconocidos -->
                 <t t-else="">
                     <div class="mcp-widget">
-                        <div class="mcp-widget-header" t-esc="w.get('title', 'Widget')"/>
+                        <div class="mcp-widget-header" t-out="w.get('title', 'Widget')"/>
                         <div class="mcp-error-banner">
-                            Tipo de widget no admitido: <t t-esc="w.get('type', '(desconocido)')"/>
+                            Tipo de widget no admitido: <t t-out="w.get('type', '(desconocido)')"/>
                         </div>
                     </div>
                 </t>
@@ -330,7 +330,7 @@
     <footer class="mcp-footer">
         <div class="mcp-wrapper">
             <t t-if="page.last_viewed">
-                Última actualización: <t t-esc="page.last_viewed"/>  &#183;
+                Última actualización: <t t-out="page.last_viewed"/>  &#183;
             </t>
             Desarrollado con <a href="https://www.altabpo.com" target="_blank" rel="noopener">Servidor MCP para Odoo</a>
         </div>

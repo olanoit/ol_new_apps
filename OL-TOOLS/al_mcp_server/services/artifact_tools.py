@@ -158,7 +158,7 @@ def _check_scope(env, tool_name: str) -> None:
 
 
 def _base_url(env) -> str:
-    return env["ir.config_parameter"].sudo().get_param("web.base.url", "")
+    return env["ir.config_parameter"].sudo().get_str("web.base.url", "")
 
 
 def _serialize(env, art) -> dict:

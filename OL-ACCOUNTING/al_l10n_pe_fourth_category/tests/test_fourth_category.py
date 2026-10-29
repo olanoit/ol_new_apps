@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Retención de renta de 4.ª categoría en recibos por honorarios."""
-import base64
 from datetime import timedelta
 
 from stdnum.pe import ruc as stdnum_ruc
@@ -30,7 +29,6 @@ class TestFourthCategory(TransactionCase):
         cls.receipt_type = cls.env.ref('l10n_pe.document_type03')
         cls.provider = cls.env['res.partner'].create({
             'name': 'QUISPE ROJAS ANA (test 4ta)', 'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'vat': _ruc('1047382956'),
         })
         cls.journal = cls.env['account.journal'].search([
@@ -158,7 +156,7 @@ class TestFourthCategory(TransactionCase):
         report.action_export_txt()
         self.assertEqual(report.filename, '0601%04d%02d%s.4ta' % (
             self.today.year, self.today.month, self.company.vat))
-        lines = base64.b64decode(report.file).decode().splitlines()
+        lines = report.file.content.decode().splitlines()
         first = [l for l in lines if '|45|' in l][0].split('|')
         self.assertEqual(first[:5], ['06', self.provider.vat, 'R', 'E001', '45'])
         self.assertEqual(first[5], '2000.00')

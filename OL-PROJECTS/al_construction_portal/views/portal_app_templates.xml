@@ -10,11 +10,11 @@
                 <meta name="apple-mobile-web-app-capable" content="yes"/>
                 <meta name="mobile-web-app-capable" content="yes"/>
                 <meta name="apple-mobile-web-app-title" content="Obra"/>
-                <title t-esc="'%s · Portal de obra' % company_name"/>
+                <title t-out="'%s · Portal de obra' % company_name"/>
                 <link rel="manifest" href="/obra/app/manifest.webmanifest"/>
                 <link rel="apple-touch-icon" t-att-href="static + 'icon-192.png'"/>
                 <link rel="stylesheet" t-att-href="static + 'app.css'"/>
-                <style t-esc="':root { --brand: %s; }' % color"/>
+                <style t-out="':root { --brand: %s; }' % color"/>
             </head>
             <body>
                 <div id="app" t-att-data-company="company_name" t-att-data-initials="initials"><p style="padding: 16px">Cargando el portal de obra…</p></div>

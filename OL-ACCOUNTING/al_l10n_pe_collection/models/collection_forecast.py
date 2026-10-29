@@ -1,4 +1,3 @@
-import base64
 import io
 from collections import defaultdict
 from datetime import timedelta
@@ -332,7 +331,7 @@ class L10nPeCollectionForecast(models.Model):
         workbook.close()
         attachment = self.env['ir.attachment'].create({
             'name': '%s %s.xlsx' % (self.name, self.date_from.strftime('%Y-%m-%d')),
-            'datas': base64.b64encode(output.getvalue()),
+            'raw': output.getvalue(),
             'res_model': self._name, 'res_id': self.id,
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })

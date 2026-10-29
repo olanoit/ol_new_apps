@@ -32,7 +32,6 @@ class TestPaymentApplication(TransactionCase):
         cls.acc_422 = root.l10n_pe_advance_supplier_account_id
         cls.partner = cls.env['res.partner'].create({
             'name': 'SOCIO ANTICIPOS SAC', 'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'country_id': cls.env.ref('base.pe').id,
         })
         cls.other = cls.env['res.partner'].create({'name': 'OTRO SOCIO SAC'})

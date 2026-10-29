@@ -6,7 +6,6 @@
         <field name="model">l10n_pe.complaint</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_complaints_book.report_complaint</field>
-        <field name="report_file">al_l10n_pe_complaints_book.report_complaint</field>
         <field name="print_report_name">'Hoja de reclamación %s' % object.name</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="model_l10n_pe_complaint"/>
@@ -18,7 +17,6 @@
         <field name="model">l10n_pe.complaint.book</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_complaints_book.report_book_notice</field>
-        <field name="report_file">al_l10n_pe_complaints_book.report_book_notice</field>
         <field name="print_report_name">'Aviso libro de reclamaciones %s' % object.code</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
         <field name="binding_model_id" ref="model_l10n_pe_complaint_book"/>

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 from datetime import date
 
 from odoo import Command
@@ -78,7 +77,7 @@ class TestBatchPayment(TransactionCase):
     def _export(self, batch):
         batch.validate_batch()
         self.assertTrue(batch.export_file)
-        return base64.b64decode(batch.export_file).decode('latin-1').split('\r\n')[:-1]
+        return batch.export_file.content.decode('latin-1').split('\r\n')[:-1]
 
     def test_bcp_file_with_three_suppliers_in_three_banks(self):
         batch = self._batch(self.j_bcp, self._payments(self.j_bcp))

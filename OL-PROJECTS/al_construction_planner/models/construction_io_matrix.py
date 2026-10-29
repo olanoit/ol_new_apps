@@ -11,7 +11,6 @@ de etapas, y se exporta a Excel con la misma agrupación.
 
 Todo sale de las líneas del plan: una consulta por pedido, sin recorrer el
 árbol."""
-import base64
 import io
 from collections import defaultdict
 
@@ -301,7 +300,7 @@ class ConstructionResourcePlan(models.Model):
         workbook.close()
         attachment = self.env['ir.attachment'].create({
             'name': 'insumo_producto_%s.xlsx' % (self.name or self.id),
-            'datas': base64.b64encode(output.getvalue()),
+            'raw': output.getvalue(),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'res_model': self._name, 'res_id': self.id,
         })

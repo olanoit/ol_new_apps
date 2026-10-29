@@ -9,7 +9,7 @@
             <head>
                 <meta charset="utf-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-                <title t-esc="artifact.name"/>
+                <title t-out="artifact.name"/>
                 <style>
                     html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
                     body.theme-light{background:#f5f7fa;color:#111;}
@@ -31,8 +31,8 @@
             <body t-attf-class="theme-#{artifact.theme} #{'mcp-art-embed' if embed else ''}">
                 <div class="mcp-art-host">
                     <header class="mcp-art-header" t-if="not embed">
-                        <h1 class="mcp-art-title"><t t-esc="artifact.name"/></h1>
-                        <span class="mcp-art-meta" t-if="artifact.description"><t t-esc="artifact.description"/></span>
+                        <h1 class="mcp-art-title"><t t-out="artifact.name"/></h1>
+                        <span class="mcp-art-meta" t-if="artifact.description"><t t-out="artifact.description"/></span>
                     </header>
                     <div class="mcp-art-frame-wrap">
                         <iframe class="mcp-art-frame"

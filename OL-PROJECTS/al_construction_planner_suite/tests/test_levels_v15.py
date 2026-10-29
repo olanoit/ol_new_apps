@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """v1.5, fase 12: plantilla de niveles, tipos de unidad, mueble, ritmo de
 programación y fechas del árbol."""
-import base64
 from datetime import date, datetime, timedelta
 
 from odoo.exceptions import ValidationError
 from odoo.tests import new_test_user, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import build_workbook
 
@@ -213,7 +213,7 @@ class TestLevelsV15(PlannerCommon):
              'unit_type': 'Estacionamiento'},
         ]}
         wizard = self.env['construction.master.import.wizard'].with_user(manager).create({
-            'project_id': site.id, 'file': base64.b64encode(build_workbook(rows)),
+            'project_id': site.id, 'file': BinaryBytes(build_workbook(rows)),
             'filename': 'maestro.xlsx'})
         data = wizard._analyze()
         self.assertFalse(data['errors'])
@@ -228,7 +228,7 @@ class TestLevelsV15(PlannerCommon):
         self.assertEqual(parking.construction_level_line_id, self.lines['Departamento'])
         # Reimportar no duplica.
         wizard2 = self.env['construction.master.import.wizard'].with_user(manager).create({
-            'project_id': site.id, 'file': base64.b64encode(build_workbook(rows)),
+            'project_id': site.id, 'file': BinaryBytes(build_workbook(rows)),
             'filename': 'maestro.xlsx'})
         wizard2._analyze()
         wizard2.action_import()

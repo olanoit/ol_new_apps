@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """Fase 12: «Importar maestro y ETO» (W-15)."""
-import base64
 import importlib.util
 from collections import defaultdict
 from pathlib import Path
 
 from odoo.exceptions import AccessError
 from odoo.tests import new_test_user, tagged
+from odoo.tools import BinaryBytes
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import build_workbook
 
@@ -44,7 +44,7 @@ class TestMasterImport(PlannerCommon):
     def _wizard(self, content, user=None, project=None, **vals):
         return self.env['construction.master.import.wizard'].with_user(
             user or self.manager).create(dict({
-                'project_id': (project or self.site).id, 'file': base64.b64encode(content),
+                'project_id': (project or self.site).id, 'file': BinaryBytes(content),
                 'filename': 'maestro.xlsx'}, **vals))
 
     def _example(self, name):
@@ -348,7 +348,7 @@ class TestMasterImport(PlannerCommon):
         }
         wizard = self.env['construction.master.import.wizard'].with_user(self.manager) \
             .with_company(other).create({
-                'project_id': site.id, 'file': base64.b64encode(build_workbook(rows)),
+                'project_id': site.id, 'file': BinaryBytes(build_workbook(rows)),
                 'create_missing_products': True})
         data = wizard._analyze()
         self.assertEqual(data['warnings']['unknown_activity'], ['MODULOS · ARM-TOR'])

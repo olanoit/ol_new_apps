@@ -58,8 +58,8 @@ class TestMulticompany(TransactionCase):
                 yield name, model
 
     def test_company_models_have_rule_and_check(self):
-        rules = self.env['ir.rule'].sudo().search([])
-        with_rule = {rule.model_id.model for rule in rules if 'company' in (rule.domain_force or '')}
+        rules = self.env['ir.access'].sudo().search([])
+        with_rule = {rule.model_id.model for rule in rules if 'company' in (rule.domain or '')}
         missing_rule, missing_auto = [], []
         for name, model in self._own_models():
             if 'company_id' not in model._fields:

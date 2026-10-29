@@ -1,4 +1,3 @@
-import base64
 import logging
 from datetime import timedelta
 
@@ -6,6 +5,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.modules import module as module_registry
 from odoo.tools import config
+from odoo.tools import BinaryBytes
 
 _logger = logging.getLogger(__name__)
 
@@ -144,7 +144,7 @@ class L10nPeKardexReport(models.Model):
                     continue
                 rec.write({
                     'state': 'done',
-                    'output_file': base64.b64encode(content),
+                    'output_file': BinaryBytes(content),
                     'output_filename': 'KARDEX_%s_%s%02d.%s' % (
                         rec.report_type, rec.date_from.year, rec.date_from.month, ext),
                     'error_message': False,

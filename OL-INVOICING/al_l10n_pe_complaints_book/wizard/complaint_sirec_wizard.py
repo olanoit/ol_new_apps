@@ -1,9 +1,9 @@
-import base64
 
 from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import BinaryBytes
 
 
 class L10nPeComplaintSirecWizard(models.TransientModel):
@@ -60,7 +60,7 @@ class L10nPeComplaintSirecWizard(models.TransientModel):
                               ', '.join(without_code.mapped('name'))))
         content = '\r\n'.join('|'.join(c._sirec_row()) for c in complaints)
         self.write({
-            'file': base64.b64encode(content.encode('utf-8')),
+            'file': BinaryBytes(content.encode('utf-8')),
             'filename': 'SIREC_%s_%s_%s.txt' % (self.company_id.vat or '', self.date_from.strftime('%Y%m%d'),
                                                 self.date_to.strftime('%Y%m%d')),
             'count': len(complaints),

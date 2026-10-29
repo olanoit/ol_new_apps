@@ -226,7 +226,7 @@ class TestConafovicer(TransactionCase):
             [('res_model', '=', summary._name), ('res_id', '=', summary.id)],
             limit=1)
         sheet = load_workbook(
-            io.BytesIO(base64.b64decode(attachment.datas))).active
+            io.BytesIO(attachment.raw.content)).active
         rows = list(sheet.values)
         self.assertEqual(rows[0][:2], ('Empleador', self.company.name))
         self.assertEqual(rows[1][:2], ('RUC', '20512528458'))

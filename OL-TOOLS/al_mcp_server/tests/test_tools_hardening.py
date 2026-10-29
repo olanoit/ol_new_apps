@@ -114,7 +114,7 @@ class TestMcpToolsHardening(TransactionCase):
             rec.action_generate()
 
     def test_module_tools_require_system_group(self):
-        self.env["ir.config_parameter"].sudo().set_param("mcp_server.enable_module_generator", "True")
+        self.env["ir.config_parameter"].sudo().set_str("mcp_server.enable_module_generator", "True")
         env = self.env(user=self.user.id, context=dict(self.env.context, mcp_scope="admin"))
         with self.assertRaises(PermissionError):
             tool_executor.execute_tool(env, "odoo_install_generated_module", {"module_id": 1, "confirm": True})

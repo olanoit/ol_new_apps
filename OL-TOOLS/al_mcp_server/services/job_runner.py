@@ -223,7 +223,7 @@ def run_export_csv(env, args: dict, job) -> dict:
 
     attachment = env["ir.attachment"].sudo().create({
         "name": filename,
-        "datas": base64.b64encode(csv_bytes).decode(),
+        "raw": csv_bytes.decode(),
         "mimetype": "text/csv",
         "res_model": "mcp.job",
         "res_id": job.id,
@@ -311,7 +311,7 @@ def _export_xlsx_native(env, args: dict, job) -> dict:
 
     attachment = env["ir.attachment"].sudo().create({
         "name": filename,
-        "datas": base64.b64encode(xlsx_bytes).decode(),
+        "raw": xlsx_bytes.decode(),
         "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "res_model": "mcp.job",
         "res_id": job.id,

@@ -1033,7 +1033,7 @@ class ConstructionMasterImportWizard(models.TransientModel):
         """Plantilla vacía con todas las hojas y la hoja LEEME."""
         attachment = self.env['ir.attachment'].create({
             'name': self.env._('Plantilla del maestro de planificación.xlsx'),
-            'datas': base64.b64encode(build_workbook()),
+            'raw': build_workbook(),
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         })
         return {

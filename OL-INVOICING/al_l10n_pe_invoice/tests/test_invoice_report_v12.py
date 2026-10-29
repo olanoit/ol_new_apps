@@ -30,7 +30,6 @@ class TestInvoiceReportV12(AccountTestInvoicingCommon):
         cls.partner_a.write({
             'name': 'EMPRESA CLIENTE SAC', 'is_company': True,
             'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
         })
         cls.contact = cls.env['res.partner'].create({
             'name': 'Juana Compras', 'parent_id': cls.partner_a.id, 'type': 'invoice'})

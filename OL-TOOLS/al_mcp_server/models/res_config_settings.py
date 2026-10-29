@@ -88,11 +88,11 @@ class ResConfigSettings(models.TransientModel):
     def action_test_redis(self):
         """Hace ping al servidor Redis configurado y devuelve una notificación al cliente."""
         ICP = self.env["ir.config_parameter"].sudo()
-        redis_enabled = ICP.get_param("mcp_server.enable_redis_rate_limit", "False")
+        redis_enabled = ICP.get_str("mcp_server.enable_redis_rate_limit", "False")
         if redis_enabled.lower() not in ("1", "true", "yes"):
             raise UserError(_("El límite de tasa con Redis no está activado. Actívelo primero."))
 
-        redis_url = ICP.get_param("mcp_server.redis_url", "") or ""
+        redis_url = ICP.get_str("mcp_server.redis_url", "") or ""
         if not redis_url:
             raise UserError(_("La URL de Redis no está configurada."))
 

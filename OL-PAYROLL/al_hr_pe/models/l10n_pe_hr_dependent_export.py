@@ -11,7 +11,6 @@ Las columnas siguen el orden del formulario de SUNAT: primero el
 trabajador que genera el vínculo, luego el derechohabiente y por último
 la vigencia. Cada fila es un alta o una baja según la hoja.
 """
-import base64
 import io
 
 from odoo import _, fields, models
@@ -186,7 +185,7 @@ class L10nPeHrDependent(models.Model):
         attachment = self.env['ir.attachment'].create({
             'name': filename,
             'type': 'binary',
-            'datas': base64.b64encode(content),
+            'raw': content,
             # Sin res_model/res_id a propósito: colgado de res.company lo
             # podía descargar cualquier usuario interno (el acceso al
             # adjunto se delega en la lectura de la compañía) y lleva DNI,

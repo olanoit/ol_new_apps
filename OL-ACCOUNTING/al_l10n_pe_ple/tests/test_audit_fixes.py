@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Correcciones de la auditoría del 27/09/2026 (PLE y RCE/RVIE)."""
-import base64
 from datetime import date
 from types import SimpleNamespace
 
@@ -143,7 +142,7 @@ class TestPleWizardFixes(TransactionCase):
         return self.env['l10n_pe.ple.export.wizard'].create(values)
 
     def _rows(self, wizard, move):
-        content = base64.b64decode(wizard.file_data).decode()
+        content = wizard.file_data.content.decode()
         return [line[:-1].split('|') for line in content.split('\r\n')
                 if line and (str(move.id) in line.split('|')
                              or 'M%d' % move.id in line.split('|'))]

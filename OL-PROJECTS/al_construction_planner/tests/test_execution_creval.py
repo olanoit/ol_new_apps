@@ -103,16 +103,16 @@ class TestExecutionEntries(TransactionCase):
             'project.task')
 
     def test_project_panel_section(self):
-        buttons = self.project.with_user(self.executor)._get_stat_buttons()
+        buttons = self.project.with_user(self.executor)._get_construction_stat_buttons()
         obra = [b for b in buttons if b.get('construction_section')]
         self.assertTrue(obra)
         self.assertIn('action_construction_view_current_plan', [b['action'] for b in obra])
         # Un proyecto que no es obra conserva el tablero nativo.
         other = self.env['project.project'].create({'name': 'Proyecto común (test)'})
-        self.assertFalse([b for b in other._get_stat_buttons() if b.get('construction_section')])
+        self.assertFalse([b for b in other._get_construction_stat_buttons() if b.get('construction_section')])
         # Con «Ejecución desde Proyectos» apagado, el tablero se ve como antes.
         self._feature(G + 'feature_exec_project', False)
-        buttons = self.project.with_user(self.executor)._get_stat_buttons()
+        buttons = self.project.with_user(self.executor)._get_construction_stat_buttons()
         self.assertFalse([b for b in buttons if b.get('construction_section')])
         # La tarea de obra de la vertical sigue con su menú Ejecutar.
         self.task.invalidate_recordset()

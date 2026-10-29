@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Importación masiva de constancias de depósito de detracciones."""
-import base64
 from datetime import date
 
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import BinaryBytes
 from odoo.addons.al_account_base.tests.common import use_pe_company
 
 HEADER = ('Tipo de Cuenta,Numero de Cuenta,Numero Constancia,Periodo Tributario,RUC Proveedor,'
@@ -54,7 +54,7 @@ class TestDetractionImport(TransactionCase):
     def _wizard(self, rows, **vals):
         content = '\n'.join([HEADER] + rows).encode()
         return self.env['l10n_pe.detraction.import.wizard'].create(dict({
-            'file': base64.b64encode(content), 'filename': 'constancias.csv'}, **vals))
+            'file': BinaryBytes(content), 'filename': 'constancias.csv'}, **vals))
 
     def _row(self, constancy, supplier, buyer, serie, number, amount=120):
         return ('D,00-000-123456,%s,202506,%s,PROVEEDOR,6,%s,ADQUIRIENTE,15/06/2025,%s,037,01,01,%s,%s,'
@@ -88,5 +88,5 @@ class TestDetractionImport(TransactionCase):
         wizard = self._wizard([self._row('231234569', '20100070970', self.company.vat, 'F009', '1')])
         self.assertIn('No encontrado', wizard.preview_html)
         bad = self.env['l10n_pe.detraction.import.wizard'].create({
-            'file': base64.b64encode(b'a,b,c\n1,2,3')})
+            'file': BinaryBytes(b'a,b,c\n1,2,3')})
         self.assertIn('alert-danger', bad.preview_html)

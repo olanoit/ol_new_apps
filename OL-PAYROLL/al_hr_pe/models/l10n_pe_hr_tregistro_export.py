@@ -26,7 +26,6 @@ carga si uno improvisa:
 Los archivos salen como adjuntos en un ZIP, que es lo que el PVS espera
 antes de subirlos a SOL.
 """
-import base64
 import io
 import re
 import unicodedata
@@ -354,7 +353,7 @@ class HrEmployee(models.Model):
         attachment = self.env['ir.attachment'].create({
             'name': name,
             'type': 'binary',
-            'datas': base64.b64encode(stream.getvalue()),
+            'raw': stream.getvalue(),
             # Sin res_model/res_id a propósito: colgado de res.company lo
             # podía descargar cualquier usuario interno (el acceso al
             # adjunto se delega en la lectura de la compañía) y lleva DNI,

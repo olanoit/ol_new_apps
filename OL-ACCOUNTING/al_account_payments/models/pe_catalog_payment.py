@@ -17,7 +17,7 @@ class PeCatalogPayment(models.Model):
 
     active = fields.Boolean(string='Activo', default=True)
     code = fields.Char(string='Código', size=4, index=True, required=True)
-    name = fields.Char(string='Descripción', size=128, index=True, required=True)
+    name = fields.Char(string='Descripción', index=True, required=True)
     pse_code = fields.Char(string='Código de facturador', size=5)
     is_detraction = fields.Boolean(
         string='Para detracción',

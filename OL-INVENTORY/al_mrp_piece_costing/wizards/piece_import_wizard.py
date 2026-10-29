@@ -3,7 +3,6 @@
 §5.2): crea o actualiza los productos-pieza desde un XLSX plano con una fila
 por pieza. La orden de corte se arma aparte. Todo o nada: con un error no se
 importa ninguna fila."""
-import base64
 import io
 
 from odoo import fields, models
@@ -47,7 +46,7 @@ class MrpPieceImportWizard(models.TransientModel):
 
         try:
             workbook = openpyxl.load_workbook(
-                io.BytesIO(base64.b64decode(self.file)), read_only=True, data_only=True)
+                io.BytesIO(self.file.content), read_only=True, data_only=True)
         except Exception as error:  # noqa: BLE001 - cualquier archivo ilegible
             raise UserError(self.env._('No se pudo leer el archivo como XLSX: %s', error))
         raw_rows = workbook.worksheets[0].iter_rows(values_only=True)

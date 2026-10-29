@@ -241,11 +241,19 @@ def migrate_axis_groups(env):
         news = [env.ref(ref + xmlid) for xmlid in new_xmlids]
         for model, fname in (('ir.ui.menu', 'group_ids'), ('ir.actions.act_window', 'group_ids'),
                              ('ir.actions.server', 'group_ids'),
-                             ('ir.actions.report', 'group_ids'), ('ir.rule', 'groups')):
+                             ('ir.actions.report', 'group_ids')):
             records = env[model].with_context(active_test=False).search([(fname, 'in', old.ids)])
             for group in news:
                 records.filtered(lambda r: group not in r[fname]).write(
                     {fname: [Command.link(group.id)]})
+        # En Odoo 20 cada ir.access tiene un solo grupo: se duplica por grupo nuevo.
+        Access = env['ir.access'].with_context(active_test=False)
+        for access in Access.search([('group_id', 'in', old.ids)]):
+            for group in news:
+                if not Access.search_count([
+                        ('model_id', '=', access.model_id.id), ('group_id', '=', group.id),
+                        ('operation', '=', access.operation), ('domain', '=', access.domain)]):
+                    access.copy({'group_id': group.id, 'name': access.name})
     # Las entradas a la ejecución (capítulo 4) quedan activas, como en una
     # instalación nueva (el usuario interno está en un bloque noupdate).
     internal = env.ref('base.group_user')

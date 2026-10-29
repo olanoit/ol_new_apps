@@ -7,7 +7,6 @@ los niveles del plan de la obra. Las unidades escritas de varias formas
 («UND», «Und»; «GLB»; «M», «ML») se leen con la tabla de equivalencias; los
 ítems pueden tener cualquier formato, faltar o repetirse: los duplicados se
 avisan antes de crear."""
-import base64
 import io
 from collections import Counter
 
@@ -80,7 +79,7 @@ class ConstructionBudgetImportWizard(models.TransientModel):
             import openpyxl
         except ImportError as error:
             raise UserError(self.env._('Falta la librería openpyxl en el servidor.')) from error
-        book = openpyxl.load_workbook(io.BytesIO(base64.b64decode(self.file)), data_only=True)
+        book = openpyxl.load_workbook(io.BytesIO(self.file.content), data_only=True)
         sheet = book.worksheets[0]
         rows = list(sheet.iter_rows(values_only=True))
         header_index, index = None, {}

@@ -1,4 +1,3 @@
-import base64
 import re
 import unicodedata
 
@@ -84,7 +83,7 @@ class L10nPeBankCollectionResponse(models.Model):
         if self.state == 'done' or self.line_ids.filtered(lambda l: l.state == 'done'):
             raise UserError(_('La respuesta ya tiene pagos creados: importe el archivo en una respuesta nueva.'))
         layout = self.agreement_id.response_layout_id
-        header, details = layout._parse_file(base64.b64decode(self.file))
+        header, details = layout._parse_file(self.file.content)
         commands = [Command.clear()]
         for values in details:
             commands.append(Command.create(self._line_values(values)))

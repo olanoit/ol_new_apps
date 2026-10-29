@@ -8,7 +8,6 @@ importes semanales cuadran con las fórmulas del módulo:
     oficial  72.00 → CONAF 10.08, ONP  82.37, neto 595.15
     peón     64.50 → CONAF  9.03, ONP  73.79, neto 538.78
 """
-import base64
 import io
 from datetime import date
 from unittest.mock import patch
@@ -18,6 +17,7 @@ from reportlab.pdfgen import canvas
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests import Form, TransactionCase
+from odoo.tools import BinaryBytes
 
 from ..models.hr_construction_wage_import import L10nPeHrConstructionWageTable
 from ..tools import wage_table_pdf
@@ -169,7 +169,7 @@ class TestWageTableImport(TransactionCase):
 
     def test_wizard_file_opens_the_new_table(self):
         wizard = self._wizard(source='file', pdf_filename='tabla2027.pdf',
-                              pdf_file=base64.b64encode(build_pdf()))
+                              pdf_file=BinaryBytes(build_pdf()))
         action = wizard.action_import()
         table = self._find_2027()
         self.assertEqual(action['res_id'], table.id)
@@ -188,7 +188,7 @@ class TestWageTableImport(TransactionCase):
         operario.write({'daily_wage': 90.0, 'mobility_amount': 8.0})
         table.resolution = False
         wizard = self._wizard(source='file', pdf_filename='nuevo.pdf',
-                              pdf_file=base64.b64encode(build_pdf()))
+                              pdf_file=BinaryBytes(build_pdf()))
         action = wizard.action_import()
         self.assertEqual(action['res_model'], wizard._name)
         self.assertEqual(wizard.state, 'confirm')
@@ -209,7 +209,7 @@ class TestWageTableImport(TransactionCase):
 
     def test_update_without_changes_only_logs(self):
         table, _created = self.Table._l10n_pe_create_from_pdf(build_pdf(), URL)
-        wizard = self._wizard(source='file', pdf_file=base64.b64encode(build_pdf()))
+        wizard = self._wizard(source='file', pdf_file=BinaryBytes(build_pdf()))
         wizard.action_import()
         self.assertFalse(wizard.has_changes)
         wizard.action_update_existing()
@@ -226,7 +226,7 @@ class TestWageTableImport(TransactionCase):
 
     def test_wizard_back_returns_to_upload(self):
         self.Table._l10n_pe_create_from_pdf(build_pdf(), URL)
-        wizard = self._wizard(source='file', pdf_file=base64.b64encode(build_pdf()))
+        wizard = self._wizard(source='file', pdf_file=BinaryBytes(build_pdf()))
         wizard.action_import()
         wizard.action_back()
         self.assertEqual(wizard.state, 'upload')
@@ -248,7 +248,7 @@ class TestWageTableImport(TransactionCase):
             'name': 'Jefe de planillas', 'login': 'jefe.planillas.cc',
             'group_ids': [(4, self.env.ref('hr_payroll.group_hr_payroll_manager').id)],
         })
-        self.env['ir.config_parameter'].set_param(
+        self.env['ir.config_parameter'].set_str(
             'al_hr_pe_construction.wage_table_urls',
             '# comentario\n%s\nhttps://example.com/roto.pdf' % URL)
 

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """v1.5, fase 19: adicionales, deductivos y dependencias de terceros."""
-import base64
 from datetime import timedelta
 
 from odoo import Command, fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import new_test_user, tagged
+from odoo.tools import BinaryBytes
 
 from .common import PlannerCommon
 
@@ -102,7 +102,7 @@ class TestChangeV15(PlannerCommon):
         line = self.plan.line_ids.filtered(
             lambda l: l.resource_type == 'contract' and l.stage == 'assembly'
             and l.space_task_id == self.space_501)[0]
-        photo = self.env['ir.attachment'].create({'name': 'f.png', 'datas': base64.b64encode(b'x')})
+        photo = self.env['ir.attachment'].create({'name': 'f.png', 'raw': b'x'})
         progress_vals = {'task_id': line.task_id.id, 'activity_id': line.activity_id.id,
                          'plan_line_id': line.id, 'qty': 1,
                          'attachment_ids': [Command.set(photo.ids)]}
@@ -153,7 +153,7 @@ class TestDataValidationV15(PlannerCommon):
                       {'floor': 'Piso 1', 'apartment': 'D201', 'space': 'Cocina', 'typology': 'C1'}],
         }
         wizard = self.env['construction.master.import.wizard'].create({
-            'project_id': site.id, 'file': base64.b64encode(build_workbook(rows)),
+            'project_id': site.id, 'file': BinaryBytes(build_workbook(rows)),
             'filename': 'maestro.xlsx'})
         warnings = wizard._analyze()['warnings']
         self.assertEqual(len(warnings['typology_duplicate']), 1)
@@ -168,7 +168,7 @@ class TestDataValidationV15(PlannerCommon):
 
         def report():
             photo = self.env['ir.attachment'].create(
-                {'name': 'f.png', 'datas': base64.b64encode(b'x')})
+                {'name': 'f.png', 'raw': b'x'})
             return Progress.create({
                 'task_id': line.task_id.id, 'activity_id': line.activity_id.id,
                 'plan_line_id': line.id, 'qty': line.qty_planned / 4,

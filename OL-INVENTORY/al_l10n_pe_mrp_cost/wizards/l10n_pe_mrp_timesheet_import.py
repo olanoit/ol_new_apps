@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 import io
 from datetime import date, datetime, time, timedelta
 
@@ -62,7 +61,7 @@ class L10nPeMrpTimesheetImport(models.TransientModel):
     def _l10n_pe_read_rows(self):
         from openpyxl import load_workbook
         try:
-            workbook = load_workbook(io.BytesIO(base64.b64decode(self.file)), read_only=True, data_only=True)
+            workbook = load_workbook(io.BytesIO(self.file.content), read_only=True, data_only=True)
         except Exception as error:
             raise UserError(_('No se pudo leer el Excel: %s', error)) from error
         sheet = workbook.worksheets[0]

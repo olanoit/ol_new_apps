@@ -19,7 +19,6 @@ class TestPaymentReceipt(TransactionCase):
             cls.company.external_report_layout_id = cls.env.ref('web.external_layout_standard')
         cls.partner = cls.env['res.partner'].create({
             'name': 'CLIENTE RECIBO SAC', 'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'country_id': cls.env.ref('base.pe').id,
         })
         cls.bank = cls.env['account.journal'].create({

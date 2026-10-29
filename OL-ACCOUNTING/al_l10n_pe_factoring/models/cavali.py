@@ -19,7 +19,6 @@ cuenta, transferencia al factor, redención y pago, reprogramación (nueva fecha
 mayor y monto no mayor), conformidad o disconformidad del adquirente y
 consulta del estado.
 """
-import base64
 import io
 import json
 import logging
@@ -156,7 +155,7 @@ class L10nPeCavaliLog(models.Model):
 
     @api.model
     def _path(self, operation):
-        return self.env['ir.config_parameter'].sudo().get_param(
+        return self.env['ir.config_parameter'].sudo().get_str(
             'l10n_pe_cavali.path.%s' % operation, DEFAULT_PATHS[operation])
 
     @api.model
@@ -457,7 +456,7 @@ class AccountMove(models.Model):
             archive.writestr('informacion_adicional.xlsx', book_buffer.getvalue())
         return self.env['ir.attachment'].create({
             'name': 'factrack_%s.zip' % fields.Date.context_today(self),
-            'datas': base64.b64encode(archive_buffer.getvalue()),
+            'raw': archive_buffer.getvalue(),
             'mimetype': 'application/zip',
             'res_model': 'res.company', 'res_id': self[:1].company_id.id,
         })
@@ -485,7 +484,7 @@ class L10nPeCavaliImport(models.TransientModel):
     def _rows(self):
         import csv
 
-        content = base64.b64decode(self.file)
+        content = self.file.content
         name = (self.filename or '').lower()
         if name.endswith('.csv') or name.endswith('.txt'):
             text = content.decode('utf-8-sig', errors='replace')

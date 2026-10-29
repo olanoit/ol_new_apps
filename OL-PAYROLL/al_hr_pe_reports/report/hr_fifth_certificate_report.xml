@@ -153,7 +153,6 @@
         <field name="model">hr.fifth.certificate.wizard</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_hr_pe_reports.report_fifth_certificate</field>
-        <field name="report_file">al_hr_pe_reports.report_fifth_certificate</field>
         <field name="print_report_name">'Certificado 5ta %s' % (object.year)</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>

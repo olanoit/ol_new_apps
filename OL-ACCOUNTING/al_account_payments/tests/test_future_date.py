@@ -17,7 +17,6 @@ class TestFutureDatePayment(TransactionCase):
         company = cls.env.company
         cls.partner = cls.env['res.partner'].create({
             'name': 'CLIENTE FECHA FUTURA SAC', 'vat': '20557912879',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id,
             'country_id': cls.env.ref('base.pe').id})
         cls.bank_journal = cls.env['account.journal'].search(
             [('type', '=', 'bank'), ('company_id', '=', company.id)], limit=1)

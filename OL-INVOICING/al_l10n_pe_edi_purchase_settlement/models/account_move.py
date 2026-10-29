@@ -13,7 +13,6 @@ anexo 17), que SUNAT recibe en el servicio de retenciones y percepciones
 ``l10n_pe_edi`` solo emite comprobantes de venta (``account_edi``): la
 liquidación lleva su propio ciclo de estados en la factura.
 """
-import base64
 from datetime import datetime, timedelta
 
 from lxml import etree, objectify
@@ -806,7 +805,7 @@ class AccountMove(models.Model):
             attachment = self.env['ir.attachment'].create({
                 'name': 'R-%s.xml' % move.l10n_pe_lce_reversal_filename,
                 'res_model': move._name, 'res_id': move.id, 'type': 'binary',
-                'datas': base64.b64encode(result['cdr']), 'mimetype': 'application/xml'})
+                'raw': result['cdr'], 'mimetype': 'application/xml'})
             move.write({'l10n_pe_lce_status': 'reversed', 'l10n_pe_lce_message': False})
             body = self.env._('SUNAT aceptó la reversión de la liquidación de compra %s.',
                               move._l10n_pe_lce_number())

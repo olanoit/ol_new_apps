@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """v1.5, fase 15: producto de servicio por actividad, tramos de pago,
 reglas analíticas y presupuesto por obra › etapa › partida."""
-import base64
 
 from odoo import Command
 from odoo.exceptions import UserError, ValidationError
@@ -109,7 +108,7 @@ class TestAnalyticV15(PlannerCommon):
         self.plan.exceed_policy = 'block'
         line = self.plan.line_ids.filtered(lambda l: l.activity_id == delivery)[0]
         cleaning = delivery.tranche_ids[0]
-        photo = self.env['ir.attachment'].create({'name': 'foto.png', 'datas': base64.b64encode(b'x')})
+        photo = self.env['ir.attachment'].create({'name': 'foto.png', 'raw': b'x'})
 
         def progress_vals(qty, tranche):
             return {'task_id': line.task_id.id, 'activity_id': delivery.id, 'plan_line_id': line.id,

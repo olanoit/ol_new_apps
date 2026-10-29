@@ -89,7 +89,7 @@
                         <td class="pe-doc-value">
                             <!-- v19: wage vive en hr.version (el payslip ya no
                                  tiene campo wage propio) -->
-                            S/ <span t-esc="'{:,.2f}'.format(v.wage or 0.0)"/>
+                            S/ <span t-out="'{:,.2f}'.format(v.wage or 0.0)"/>
                         </td>
                         <td class="pe-doc-label">Cuenta de abono</td>
                         <td class="pe-doc-value">
@@ -330,7 +330,6 @@
             <field name="model">hr.payslip</field>
             <field name="report_type">qweb-pdf</field>
             <field name="report_name">al_hr_pe_reports.report_l10n_pe_boleta_pago_document</field>
-            <field name="report_file">al_hr_pe_reports.report_l10n_pe_boleta_pago_document</field>
             <field name="print_report_name">'Boleta de pago - %s - %s' % (
                 object.employee_id.name or '', object.date_from)</field>
             <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>

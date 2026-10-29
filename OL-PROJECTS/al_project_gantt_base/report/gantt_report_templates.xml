@@ -17,18 +17,18 @@
                 doc_title.f="Diagrama de Gantt"
                 doc_extra="'Escala %s · %s' % (matrix['scale'], generated_on.strftime('%d/%m/%Y'))">
 
-                <div class="pe-doc-title" t-esc="title"/>
+                <div class="pe-doc-title" t-out="title"/>
                 <p class="pe-doc-fs-11 text-center" style="color: #595959; margin: -12px 0 8px;">
-                    <t t-esc="len(rows)"/> fila(s)
+                    <t t-out="len(rows)"/> fila(s)
                     <t t-if="payload['meta'].get('truncated')">
                         · <strong style="color: #c0392b;">
-                            se muestran <t t-esc="payload['meta']['count']"/>
-                            de <t t-esc="payload['meta']['total']"/> tareas
+                            se muestran <t t-out="payload['meta']['count']"/>
+                            de <t t-out="payload['meta']['total']"/> tareas
                         </strong>
                     </t>
                     <t t-if="payload['meta'].get('critical_path', {}).get('computed')">
                         · <strong style="color: #c0392b;">
-                            <t t-esc="payload['meta']['critical_path']['critical_count']"/> en ruta crítica
+                            <t t-out="payload['meta']['critical_path']['critical_count']"/> en ruta crítica
                         </strong>
                     </t>
                 </p>
@@ -50,28 +50,28 @@
                             <td rowspan="2" class="align-middle">Tarea</td>
                             <td rowspan="2" class="align-middle">Inicio / Fin</td>
                             <t t-foreach="period_groups" t-as="group">
-                                <td t-att-colspan="group['count']" style="padding: 2px; font-size: 9px; white-space: nowrap; overflow: hidden;" t-esc="group['label']"/>
+                                <td t-att-colspan="group['count']" style="padding: 2px; font-size: 9px; white-space: nowrap; overflow: hidden;" t-out="group['label']"/>
                             </t>
                         </tr>
                         <tr class="pe-doc-thead text-center">
                             <t t-foreach="periods" t-as="period">
-                                <td style="padding: 2px; font-size: 9px;" t-esc="period['label']"/>
+                                <td style="padding: 2px; font-size: 9px;" t-out="period['label']"/>
                             </t>
                         </tr>
                     </thead>
                     <tbody>
                         <t t-foreach="rows" t-as="row">
                             <tr t-att-style="'font-weight: bold;' if row['is_project'] else None">
-                                <td class="text-center" style="padding: 2px 4px; color: #595959;" t-esc="row['code']"/>
+                                <td class="text-center" style="padding: 2px 4px; color: #595959;" t-out="row['code']"/>
                                 <td t-att-style="'padding: 2px 4px 2px %spx; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;' % (4 + row['level'] * 9)">
-                                    <t t-esc="row['name']"/>
+                                    <t t-out="row['name']"/>
                                     <t t-if="row['critical']">
                                         <strong style="color: #c0392b;"> ▲</strong>
                                     </t>
                                 </td>
                                 <td class="text-center" style="padding: 2px 4px; white-space: nowrap; color: #595959;">
                                     <!-- Días ya pasados a la zona del usuario en build_matrix. -->
-                                    <t t-esc="row['dates_label']"/>
+                                    <t t-out="row['dates_label']"/>
                                 </td>
                                 <t t-foreach="row['cells']" t-as="cell">
                                     <td style="padding: 3px 1px; vertical-align: middle;">
@@ -89,7 +89,7 @@
                     <t t-foreach="legend" t-as="entry">
                         <span style="margin-right: 14px;">
                             <span t-att-style="'display: inline-block; width: 9px; height: 9px; border-radius: 2px; vertical-align: -1px; margin-right: 3px; background-color: %s' % entry['color']"/>
-                            <t t-esc="entry['label']"/>
+                            <t t-out="entry['label']"/>
                         </span>
                     </t>
                     <span><strong style="color: #c0392b;">▲</strong> ruta crítica</span>

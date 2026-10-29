@@ -39,18 +39,17 @@ class TestPeBaseFields(TransactionCase):
     # Código SUNAT del banco
     # ------------------------------------------------------------------
     def test_bank_code_accepts_two_digits(self):
-        bank = self.env['res.bank'].create({'name': 'BANCO DEMO'})
         account = self.env['res.partner.bank'].create({
-            'acc_number': '00123456789',
+            'account_number': '00123456789',
             'partner_id': self.partner.id,
-            'bank_id': bank.id,
+            'bank_name': 'BANCO DEMO',
             'l10n_pe_bank_code': '02',
         })
         self.assertEqual(account.l10n_pe_bank_code, '02')
 
     def test_bank_code_rejects_wrong_format(self):
         account = self.env['res.partner.bank'].create({
-            'acc_number': '00987654321',
+            'account_number': '00987654321',
             'partner_id': self.partner.id,
         })
         for wrong in ('2', 'AB', '123'):

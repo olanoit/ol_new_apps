@@ -8,6 +8,7 @@ from io import BytesIO
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 from odoo.tests.common import TransactionCase
+from odoo.tools import BinaryBytes
 
 
 @tagged('post_install', '-at_install')
@@ -137,7 +138,7 @@ class TestBudgetBook(TransactionCase):
 
     def test_errors_block(self):
         wizard = self._wizard()
-        content = base64.b64decode(wizard.file)
+        content = wizard.file.content
         from openpyxl import load_workbook
         book = load_workbook(BytesIO(content))
         book['APU_DETALLE'].append(['BK-R01', 'NO-EXISTE', None, None, 1, None])
@@ -145,7 +146,7 @@ class TestBudgetBook(TransactionCase):
                                 self.env.company.currency_id.name])
         output = BytesIO()
         book.save(output)
-        wizard.file = base64.b64encode(output.getvalue())
+        wizard.file = BinaryBytes(output.getvalue())
         wizard.action_preview()
         self.assertIn('NO-EXISTE no existe en la hoja INSUMOS', wizard.preview_html)
         self.assertIn('BK-LAD está repetido', wizard.preview_html)

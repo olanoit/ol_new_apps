@@ -74,7 +74,6 @@
         <field name="model">pharmacy.controlled.report</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_pharmacy_controlled.report_controlled_book</field>
-        <field name="report_file">al_l10n_pe_pharmacy_controlled.report_controlled_book</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4_landscape"/>
     </record>
     <record id="action_report_controlled_balance" model="ir.actions.report">
@@ -82,7 +81,6 @@
         <field name="model">pharmacy.controlled.report</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">al_l10n_pe_pharmacy_controlled.report_controlled_balance</field>
-        <field name="report_file">al_l10n_pe_pharmacy_controlled.report_controlled_balance</field>
         <field name="paperformat_id" ref="al_report_base.paperformat_pe_a4"/>
     </record>
 
