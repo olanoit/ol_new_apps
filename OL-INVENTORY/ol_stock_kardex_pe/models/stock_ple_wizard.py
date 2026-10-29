@@ -6,7 +6,7 @@ import pytz
 from dateutil.relativedelta import relativedelta
 
 from odoo import api, models
-from odoo.tools import float_repr
+from odoo.tools import SQL, float_repr
 
 PE_TZ = pytz.timezone('America/Lima')
 #: Texto del PLE: la norma prohíbe «|», «/» y «\» (y el «"» hacía que el CSV
@@ -86,6 +86,9 @@ class L10nPeStockPleWizard(models.TransientModel):
             for product, uom, value, qty in groups:
                 balances[product][0] += sign * uom._compute_quantity(qty, product.uom_id)
                 balances[product][1] += sign * value
+        for product, balance in self._l10n_pe_kardex_wh_cost_balances(dt_from).items():
+            if products is None or (product.id in products) != exclude:
+                balances[product] = balance
         # El valor del movimiento ya incluye los costos en destino validados
         # después: los fechados en este periodo o en uno posterior no son
         # saldo inicial (van como fila en su periodo).
@@ -187,7 +190,115 @@ class L10nPeStockPleWizard(models.TransientModel):
             content = self._l10n_pe_kardex_apply_documents(content)
             if report == '1301':
                 content = self._l10n_pe_kardex_landed_by_period(content)
+                content = self._l10n_pe_kardex_wh_cost(content)
         return content
+
+    # ------------------------------------------------------------------
+    # Costo por almacén
+    # ------------------------------------------------------------------
+    def _l10n_pe_kardex_wh_companies(self):
+        """Compañías del RUC con el costo por almacén activo, ya al día."""
+        companies = self.env['res.company'].search([
+            ('id', 'child_of', self.env.company.root_id.id), ('l10n_pe_wh_cost', '=', True)])
+        companies._l10n_pe_wh_cost_refresh()
+        return companies
+
+    def _l10n_pe_kardex_wh_cost_balances(self, dt_from):
+        """``{producto: [cantidad, valor]}`` antes de ``dt_from`` según el costo
+        por almacén, para los productos que lo usan (suma de las compañías)."""
+        Cost = self.env['l10n_pe.kardex.wh.cost']
+        balances = {}
+        for company in self._l10n_pe_kardex_wh_companies():
+            products = Cost._l10n_pe_products(company)
+            for product in products:
+                balances.setdefault(product, [0.0, 0.0])
+            if not products:
+                continue
+            self.env.cr.execute(SQL(
+                """
+                SELECT DISTINCT ON (product_id) product_id, balance_qty, balance_value
+                  FROM %s
+                 WHERE company_id = %s AND product_id IN %s AND date < %s
+              ORDER BY product_id, date DESC, line_key DESC
+                """, SQL.identifier(Cost._table), company.id, tuple(products.ids), dt_from))
+            for product_id, qty, value in self.env.cr.fetchall():
+                balance = balances[self.env['product.product'].browse(product_id)]
+                balance[0] += qty
+                balance[1] += value
+        return balances
+
+    def _l10n_pe_kardex_wh_cost(self, content):
+        """Valor de cada movimiento según el costo por almacén.
+
+        Enterprise valoriza la fila con ``stock.move.value`` (el promedio de la
+        compañía en Odoo). Con el costo por almacén, la salida va al promedio
+        de su almacén y la devolución de cliente vuelve a su costo de salida;
+        luego se rehace el saldo corrido de esos productos. Los costos en
+        destino siguen en su propia fila, como ya los separa Enterprise.
+        """
+        if not self._l10n_pe_kardex_wh_companies():
+            return content
+        i_value_in = self._l10n_pe_kardex_columns()[3] + 7
+        lines = content.split('\n')
+        rows = [line.split('|') if line and '"' not in line else None for line in lines]
+        move_ids = [int(cols[1]) for cols in rows
+                    if cols and len(cols) > i_value_in + 7 and cols[2] == 'M1' and cols[1].isdigit()]
+        costs = self.env['l10n_pe.kardex.wh.cost'].search_fetch(
+            [('line_key', 'in', [move_id * 3 for move_id in move_ids])], ['move_id', 'value'])
+        cost_by_cuo = {str(cost.move_id.id).zfill(6): cost for cost in costs}
+        if not cost_by_cuo:
+            return content
+        touched = set()
+        for cols in rows:
+            cost = cols and cols[2] == 'M1' and cost_by_cuo.get(cols[1])
+            if not cost:
+                continue
+            move = cost.move_id
+            if move.is_in:
+                # El valor de Enterprise ya descuenta los costos en destino de
+                # la fila del movimiento: solo se suma la diferencia.
+                value = float(cols[i_value_in] or 0) + cost.value - move.value
+                qty = float(cols[i_value_in - 2] or 0)
+                cols[i_value_in - 1] = self._l10n_pe_kardex_amount(abs(value / qty) if qty else 0)
+                cols[i_value_in] = self._l10n_pe_kardex_amount(value)
+            else:
+                qty = float(cols[i_value_in + 1] or 0)
+                cols[i_value_in + 2] = self._l10n_pe_kardex_amount(abs(cost.value / qty) if qty else 0)
+                cols[i_value_in + 3] = self._l10n_pe_kardex_amount(cost.value)
+            touched.add(self._l10n_pe_kardex_product_key(cols))
+        return self._l10n_pe_kardex_running(zip(lines, rows), touched)
+
+    @api.model
+    def _l10n_pe_kardex_amount(self, amount):
+        return float_repr(round(amount, 2), precision_digits=2)
+
+    def _l10n_pe_kardex_product_key(self, cols):
+        return tuple(cols[4:self._l10n_pe_kardex_columns()[0]])
+
+    def _l10n_pe_kardex_running(self, pairs, touched):
+        """Rehace el saldo acumulado (cantidad, costo unitario y valor) de los
+        productos ``touched``, desde su fila de saldo inicial (A1)."""
+        i_value_in = self._l10n_pe_kardex_columns()[3] + 7
+        running = {}
+        result = []
+        for line, cols in pairs:
+            if cols and len(cols) > i_value_in + 7 and self._l10n_pe_kardex_product_key(cols) in touched:
+                key = self._l10n_pe_kardex_product_key(cols)
+                qty_in, value_in = float(cols[i_value_in - 2] or 0), float(cols[i_value_in] or 0)
+                qty_out, value_out = float(cols[i_value_in + 1] or 0), float(cols[i_value_in + 3] or 0)
+                if cols[2] == 'A1':
+                    qty, value = float(cols[i_value_in + 4] or 0), float(cols[i_value_in + 6] or 0)
+                else:
+                    qty, value = running.get(key, (0.0, 0.0))
+                    qty += qty_in + qty_out
+                    value += value_in + value_out
+                running[key] = (qty, value)
+                cols[i_value_in + 4] = self._l10n_pe_kardex_amount(qty)
+                cols[i_value_in + 5] = self._l10n_pe_kardex_amount(abs(value / (qty or 1)))
+                cols[i_value_in + 6] = self._l10n_pe_kardex_amount(value)
+                line = '|'.join(cols)
+            result.append(line)
+        return '\n'.join(result)
 
     # ------------------------------------------------------------------
     # Costos en destino por periodo
@@ -238,9 +349,7 @@ class L10nPeStockPleWizard(models.TransientModel):
         if not later and not earlier:
             return content
 
-        def product_key(cols):
-            return tuple(cols[4:i_date])
-
+        product_key = self._l10n_pe_kardex_product_key
         touched = set()
         keep = []
         for line, cols in zip(lines, rows):
@@ -285,26 +394,7 @@ class L10nPeStockPleWizard(models.TransientModel):
                 position = len(keep)
             keep.insert(position, ('|'.join(cols), cols))
         # Saldo acumulado de los productos tocados.
-        running = {}
-        result = []
-        for line, cols in keep:
-            if cols and len(cols) > i_value_in + 7 and product_key(cols) in touched:
-                key = product_key(cols)
-                qty_in, value_in = float(cols[i_value_in - 2] or 0), float(cols[i_value_in] or 0)
-                qty_out, value_out = float(cols[i_value_in + 1] or 0), float(cols[i_value_in + 3] or 0)
-                if cols[2] == 'A1':
-                    qty, value = float(cols[i_value_in + 4] or 0), float(cols[i_value_in + 6] or 0)
-                else:
-                    qty, value = running.get(key, (0.0, 0.0))
-                    qty += qty_in + qty_out
-                    value += value_in + value_out
-                running[key] = (qty, value)
-                cols[i_value_in + 4] = float_repr(round(qty, 2), precision_digits=2)
-                cols[i_value_in + 5] = float_repr(round(abs(value / (qty or 1)), 2), precision_digits=2)
-                cols[i_value_in + 6] = float_repr(round(value, 2), precision_digits=2)
-                line = '|'.join(cols)
-            result.append(line)
-        return '\n'.join(result)
+        return self._l10n_pe_kardex_running(keep, touched)
 
     @api.model
     def _l10n_pe_kardex_date(self, text):

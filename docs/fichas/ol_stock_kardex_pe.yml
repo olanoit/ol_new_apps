@@ -142,7 +142,7 @@ funcionalidades:
       - "Opcional: cada almacén lleva su propio costo promedio ponderado."
       - "Las salidas y los traslados salen al costo del almacén de origen; el traslado entra al destino con ese mismo valor y las ubicaciones de tránsito llevan el valor en camino."
       - "Las devoluciones de clientes vuelven al costo con que salieron."
-      - "El kardex en pantalla, el Excel y el PDF del 13.1 muestran ese costo, en el consolidado y por almacén."
+      - "El kardex en pantalla, el Excel, el PDF y el TXT del PLE 13.1 muestran ese costo (el TXT, consolidado por producto)."
       - "Revalorizar desde una fecha (permiso propio) tras una factura de compra tardía, un costo en destino o un costo de producción corregido; los cambios de valor se recalculan solos cada noche y antes de cada kardex."
   - grupo: Cierre mensual de almacén
     items:
@@ -229,8 +229,10 @@ faq:
       compañía). La diferencia la ajusta el cierre mensual de almacén.
   - pregunta: ¿Y el TXT del PLE 13.1?
     respuesta: >-
-      Por ahora sigue con el costo de Odoo; el costo por almacén está en el
-      kardex en pantalla, el Excel y el PDF.
+      También usa el costo por almacén: el saldo inicial y el valor de cada
+      salida y devolución salen del promedio de su almacén, con el saldo
+      corrido consolidado por producto como pide el formato. Los costos en
+      destino siguen en su propia fila y en el periodo de su fecha.
   - pregunta: ¿Qué fecha aparece en la columna Fecha?
     respuesta: >-
       La del movimiento de inventario, en hora de Lima. El tipo, la serie y el
@@ -248,6 +250,10 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: '17.20261029'
+    fecha: 29/10/2026
+    cambios:
+      - "El TXT del PLE 13.1 usa el costo por almacén: saldo inicial, salidas y devoluciones de cliente al promedio de su almacén."
   - version: '16.20261028'
     fecha: 28/10/2026
     cambios:

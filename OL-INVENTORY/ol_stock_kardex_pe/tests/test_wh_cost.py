@@ -224,3 +224,32 @@ class TestWarehouseCost(TestSaleCommon):
         self.assertFalse(self.Cost.search_count([('company_id', '=', self.company.id)]))
         line = self.env['l10n_pe.kardex.line'].browse(self.delivery.move_ids.id * 3)
         self.assertAlmostEqual(line.cost_total_out, 45.0, places=2)
+
+    def _ple_rows(self, date_from, date_to):
+        wizard = self.env['l10n_pe.stock.ple.wizard'].create({'date_from': date_from, 'date_to': date_to})
+        content = wizard._get_ple_report_content('1301')
+        i_value_in = wizard._l10n_pe_kardex_columns()[3] + 7
+        rows = [line.split('|') for line in content.split('\n') if line]
+        product_rows = [r for r in rows if self.product.name in r]
+        self.assertTrue(product_rows, content)
+        return product_rows, i_value_in
+
+    def test_ple_131_uses_warehouse_cost(self):
+        self._scenario()
+        rows, i_value_in = self._ple_rows('2024-01-01', '2024-01-31')
+        sale = next(r for r in rows if r[1] == str(self.delivery.move_ids.id).zfill(6))
+        self.assertEqual(sale[i_value_in + 3], '-50.00')
+        self.assertEqual(sale[i_value_in + 2], '16.67')
+        # Saldo final: 17 por 250 (Odoo: 255).
+        self.assertEqual(rows[-1][i_value_in + 4], '17.00')
+        self.assertEqual(rows[-1][i_value_in + 6], '250.00')
+
+        # Febrero abre con el saldo por almacén.
+        with freeze_time('2024-02-10 15:00'):
+            self._sell(self.wh_main, 1)
+        rows, i_value_in = self._ple_rows('2024-02-01', '2024-02-29')
+        opening = next(r for r in rows if r[2] == 'A1')
+        self.assertEqual(opening[i_value_in + 4], '17.00')
+        self.assertEqual(opening[i_value_in + 6], '250.00')
+        # Sale del principal a su promedio (10), no al de la compañía.
+        self.assertEqual(rows[-1][i_value_in + 6], '240.00')

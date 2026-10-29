@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261029 — 29/10/2026
+
+- El TXT del PLE 13.1 usa el costo por almacén: saldo inicial, salidas y devoluciones de cliente al promedio de su almacén.
+
 ## 16.20261028 — 28/10/2026
 
 - Costo promedio por almacén (opcional): salidas y traslados al costo del almacén de origen, en el kardex en pantalla, el Excel y el PDF.

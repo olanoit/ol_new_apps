@@ -25,6 +25,10 @@ PLE): reutiliza sus campos SUNAT y añade la capa visual que falta.
   sobrescrito (la 20 queda con el valor por almacén contra la variación, 69
   en el PCGE) y fija `l10n_pe_stock_lock_date`, que bloquea movimientos,
   `product.value` y la revalorización del periodo.
+- **TXT del PLE 13.1 con costo por almacén**: el saldo inicial sale de la
+  tabla de costos y el valor de cada fila de movimiento se reemplaza por el
+  suyo; el saldo corrido se rehace con `_l10n_pe_kardex_running`, la misma
+  función del ajuste de costos en destino por periodo.
 - **Revalorizar desde una fecha** (grupo `group_l10n_pe_wh_cost_revaluation`,
   implícito en el administrador de contabilidad).
 

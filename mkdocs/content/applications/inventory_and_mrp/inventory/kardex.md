@@ -145,8 +145,8 @@ inventario en S/ 255,00 en lugar de S/ 250,00.
 !!! note "Qué no cambia"
     El costo del producto, el informe de valorización de Inventario y el costo
     de cada venta siguen siendo los de Odoo. La diferencia con la contabilidad
-    la ajusta el cierre mensual de almacén. El TXT del PLE 13.1 aún sale con el
-    costo de Odoo.
+    la ajusta el cierre mensual de almacén. El TXT del PLE 13.1 sí usa el costo
+    por almacén, consolidado por producto como pide el formato.
 
 ### Revalorizar desde una fecha
 
