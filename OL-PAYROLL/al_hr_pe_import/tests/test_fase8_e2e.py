@@ -73,7 +73,7 @@ class TestFase8E2EMulticompania(TransactionCase):
         def _regla(code):
             return Rule.search([
                 ('code', '=', code),
-                ('struct_id', '=', cls.structure.id)], limit=1)
+                ('struct_ids', 'in', cls.structure.ids)], limit=1)
 
         cls.rule_bas = _regla('BAS')
         cls.rule_neto = _regla('NETO')
@@ -112,8 +112,8 @@ class TestFase8E2EMulticompania(TransactionCase):
         })
         return cls.env['hr.salary.rule'].create({
             'name': code, 'code': code,
-            'category_id': cls.env.ref('al_hr_pe.ING').id,
-            'struct_id': struct.id, 'sequence': 5,
+            'category_ids': [(6, 0, cls.env.ref('al_hr_pe.ING').ids)],
+            'struct_ids': [(6, 0, struct.ids)], 'sequence': 5,
             'amount_select': 'fix', 'amount_fix': 0.0,
         })
 
@@ -229,7 +229,7 @@ class TestFase8E2EMulticompania(TransactionCase):
                 vals = {
                     'name': 'Boleta %s %s-%02d' % (emp.names, year, month),
                     'employee_id': emp.id,
-                    'struct_id': cls.structure.id,
+                    'struct_ids': [(6, 0, cls.structure.ids)],
                     'date_from': date(year, month, 1),
                     'date_to': date(year, month, last),
                     'payslip_run_id': lote.id,
@@ -283,7 +283,7 @@ class TestFase8E2EMulticompania(TransactionCase):
                 self.assertGreater(neto.total, 0.0)
                 # Totales PLAME por categoría (aportes reales)
                 self.assertGreater(slip.worker_contributions, 0.0)
-                categorias = set(slip.line_ids.mapped('category_id.code'))
+                categorias = set(slip.line_ids.mapped('category_ids.code'))
                 self.assertIn('ING', categorias)
                 self.assertIn('APOR_TRA', categorias)
             # Todas las boletas del semestre pertenecen a SU compañía
@@ -298,7 +298,7 @@ class TestFase8E2EMulticompania(TransactionCase):
         self.assertAlmostEqual(
             abs(linea_rj.total), IMPORTE_RET_JUD, places=2)
         self.assertIn(
-            'DES_NET', set(slip_rj.line_ids.mapped('category_id.code')))
+            'DES_NET', set(slip_rj.line_ids.mapped('category_ids.code')))
         wage_rj = self.a['wages'][slip_rj.employee_id.id]
         self.assertAlmostEqual(
             self._linea(slip_rj, 'NETO').total,

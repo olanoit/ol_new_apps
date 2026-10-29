@@ -5,9 +5,8 @@ from lxml import etree
 from markupsafe import Markup
 from pytz import timezone
 
-from odoo import models
+from odoo import api, models
 from odoo.tools import float_repr
-from odoo.tools.zeep.wsse.username import UsernameToken
 
 # Plazo máximo de envío de la factura y sus notas a SUNAT o al OSE: hasta el
 # tercer día calendario siguiente a la emisión (R.S. 000003-2023/SUNAT). Fuera
@@ -18,58 +17,57 @@ SUMMARY_TAXES = {'IGV': ('1000', 'IGV', 'VAT'), 'ISC': ('2000', 'ISC', 'EXC'),
                  'OTROS': ('9999', 'OTROS', 'OTH')}
 
 
-class AccountEdiFormat(models.Model):
-    _inherit = 'account.edi.format'
+class AccountMove(models.Model):
+    _inherit = 'account.move'
 
     # Factory HKA expone el mismo billService de SUNAT (sendBill, getStatus,
-    # sendSummary, getStatusCdr): basta con sus credenciales y su WSDL, y el
-    # resto lo hacen los servicios comunes de l10n_pe_edi, que ``getattr``
-    # elige por el nombre del proveedor.
+    # sendSummary, getStatusCdr). En Odoo 20 todo operador distinto de IAP va
+    # por los servicios SOAP de l10n_pe_edi (``…_sunat_estela``) con las
+    # credenciales de ``res.company._l10n_pe_edi_get_credentials``: aquí solo
+    # va lo propio del operador.
 
-    def _l10n_pe_edi_get_factory_hka_credentials(self, company):
-        """Credenciales con la forma de las nativas, o ``{'error': …}`` si
-        falta configuración (sin excepción, para no cortar el cron del EDI)."""
+    def _l10n_pe_edi_is_factory_hka(self):
         self.ensure_one()
-        company_sudo = company.sudo()  # credenciales con groups=base.group_system
-        username = company_sudo.l10n_pe_edi_factory_hka_username
-        password = company_sudo.l10n_pe_edi_factory_hka_password
-        if not username or not password:
-            return {'error': self.env._(
-                'Faltan el usuario o la contraseña de Factory HKA de %(company)s. '
-                'Configúrelos en Ajustes ▸ Contabilidad ▸ Facturación electrónica peruana.',
-                company=company.display_name), 'blocking_level': 'error'}
-        wsdl = company._l10n_pe_edi_factory_hka_wsdl()
-        if not wsdl:
-            return {'error': self.env._(
-                'Falta el WSDL de producción de Factory HKA de %(company)s. '
-                'Configúrelo en Ajustes o active «Entorno de prueba».',
-                company=company.display_name), 'blocking_level': 'error'}
-        return {'fault_ns': 'S', 'wsdl': wsdl, 'token': UsernameToken(username, password)}
+        return self.company_id.l10n_pe_edi_provider == 'factory_hka'
 
-    def _l10n_pe_edi_factory_hka_filename(self, edi_filename):
+    def _l10n_pe_edi_factory_hka_credentials_error(self):
+        """``{'message', 'level'}`` si faltan las credenciales de HKA."""
+        credentials = self.company_id._l10n_pe_edi_get_credentials()
+        if credentials.get('error'):
+            return {'message': credentials['error'], 'level': 'danger'}
+        return None
+
+    def _l10n_pe_edi_generate_edi_filename(self):
         """``RUC-TT-SERIE-NUMERO`` con el número en 8 dígitos, como exige HKA
         (``20524531861-01-F001-11`` → ``20524531861-01-F001-00000011``)."""
-        prefix, sep, number = edi_filename.rpartition('-')
+        filename = super()._l10n_pe_edi_generate_edi_filename()
+        if not self._l10n_pe_edi_is_factory_hka():
+            return filename
+        prefix, sep, number = filename.rpartition('-')
         if not sep or not number.isdigit():
-            return edi_filename
+            return filename
         return '%s-%s' % (prefix, number.zfill(8))
 
     # -------------------------------------------------------------------------
     # Envío
     # -------------------------------------------------------------------------
 
-    def _l10n_pe_edi_sign_invoices_factory_hka(self, invoice, edi_filename, edi_str):
-        self._l10n_pe_edi_factory_hka_check_deadline(invoice)
-        res = self._l10n_pe_edi_sign_service_factory_hka(
-            invoice.company_id, edi_filename, edi_str, invoice.l10n_latam_document_type_id.code)
+    def _l10n_pe_edi_sign_invoices_sunat_estela(self, edi_str):
+        if not self._l10n_pe_edi_is_factory_hka():
+            return super()._l10n_pe_edi_sign_invoices_sunat_estela(edi_str)
+        if error := self._l10n_pe_edi_factory_hka_credentials_error():
+            return error
+        self._l10n_pe_edi_factory_hka_check_deadline()
+        res = super()._l10n_pe_edi_sign_invoices_sunat_estela(edi_str)
         if res.get('success') and res.get('cdr'):
-            self._l10n_pe_edi_factory_hka_post_cdr_notes(invoice, res['cdr'])
+            self._l10n_pe_edi_factory_hka_post_cdr_notes(res['cdr'])
         return res
 
-    def _l10n_pe_edi_factory_hka_check_deadline(self, invoice):
+    def _l10n_pe_edi_factory_hka_check_deadline(self):
         """Avisa en el historial si una factura (o su nota) se envía después
         del plazo de SUNAT. No bloquea: el OSE decide, y el usuario debe saber
         que ese número ya no vale como factura."""
+        invoice = self
         number = invoice.name.replace(' ', '')
         if not invoice.invoice_date or not number.startswith('F'):
             return
@@ -83,7 +81,7 @@ class AccountEdiFormat(models.Model):
                 date=invoice.invoice_date.strftime('%d/%m/%Y'),
                 deadline=deadline.strftime('%d/%m/%Y')))
 
-    def _l10n_pe_edi_factory_hka_post_cdr_notes(self, invoice, cdr):
+    def _l10n_pe_edi_factory_hka_post_cdr_notes(self, cdr):
         """Un CDR aceptado puede traer observaciones (``cbc:Note``): el
         comprobante es válido, pero conviene corregir el dato en los siguientes."""
         try:
@@ -91,60 +89,43 @@ class AccountEdiFormat(models.Model):
         except etree.LxmlError:
             return
         if notes:
-            invoice.message_post(body=Markup('%s<ul>%s</ul>') % (
+            self.message_post(body=Markup('%s<ul>%s</ul>') % (
                 self.env._('SUNAT aceptó el comprobante con observaciones:'),
                 Markup('').join(Markup('<li>%s</li>') % note for note in notes)))
-
-    def _l10n_pe_edi_sign_service_factory_hka(self, company, edi_filename, edi_str, latam_document_type):
-        """Mismo contrato que ``_l10n_pe_edi_sign_service_sunat``: lo usan
-        también otros documentos (p. ej. el comprobante de retención)."""
-        credentials = self._l10n_pe_edi_get_factory_hka_credentials(company)
-        if credentials.get('error'):
-            return credentials
-        return self._l10n_pe_edi_sign_service_sunat_digiflow_common(
-            company, self._l10n_pe_edi_factory_hka_filename(edi_filename), edi_str,
-            credentials, latam_document_type)
 
     # -------------------------------------------------------------------------
     # Consulta del CDR
     # -------------------------------------------------------------------------
 
-    def _l10n_pe_edi_get_status_cdr_factory_hka_service(self, company, serie_folio, latam_document_type):
-        credentials = self._l10n_pe_edi_get_factory_hka_credentials(company)
-        if credentials.get('error'):
-            return credentials
-        return self._l10n_pe_edi_get_status_cdr_sunat_digiflow_service_common(
-            credentials, company.vat, serie_folio, latam_document_type)
+    def _l10n_pe_edi_get_status_cdr_sunat_estela(self):
+        if self._l10n_pe_edi_is_factory_hka():
+            if error := self._l10n_pe_edi_factory_hka_credentials_error():
+                return error
+        return super()._l10n_pe_edi_get_status_cdr_sunat_estela()
 
     # -------------------------------------------------------------------------
     # Comunicación de baja
     # -------------------------------------------------------------------------
 
-    def _l10n_pe_edi_cancel_invoices_step_1_factory_hka(self, company, invoices, void_filename, void_str):
-        credentials = self._l10n_pe_edi_get_factory_hka_credentials(company)
-        if credentials.get('error'):
-            return credentials
-        # La reversión del CRE también usa este paso, con pagos: solo los
-        # comprobantes (account.move) pueden ir en un resumen diario.
-        summary = (invoices.filtered(self._l10n_pe_edi_factory_hka_goes_in_summary)
-                   if invoices._name == 'account.move' else invoices.browse())
-        if summary:
+    def _l10n_pe_edi_cancel_invoice_step_1_sunat_estela(self, void_filename, void_str):
+        if self._l10n_pe_edi_is_factory_hka():
+            if error := self._l10n_pe_edi_factory_hka_credentials_error():
+                return error
             # Las boletas (y sus notas) no van en la comunicación de baja (RA):
             # se informan en un resumen diario con estado 3.
-            if summary != invoices:
-                return {'error': self.env._(
-                    'Las boletas y sus notas se dan de baja con un resumen diario y las facturas con '
-                    'una comunicación de baja: solicite su anulación por separado.'),
-                    'blocking_level': 'error'}
-            if len(set(invoices.mapped('invoice_date'))) > 1:
-                return {'error': self.env._(
-                    'Un resumen diario solo informa comprobantes de una misma fecha de emisión: '
-                    'solicite la baja de cada fecha por separado.'), 'blocking_level': 'error'}
-            void_filename, void_str = self._l10n_pe_edi_factory_hka_boleta_summary(company, invoices)
-        return self._l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common(
-            company, invoices, void_filename, void_str, credentials)
+            if self._l10n_pe_edi_factory_hka_goes_in_summary():
+                void_filename, void_str = self._l10n_pe_edi_factory_hka_boleta_summary(
+                    self.company_id, self)
+        return super()._l10n_pe_edi_cancel_invoice_step_1_sunat_estela(void_filename, void_str)
 
-    def _l10n_pe_edi_factory_hka_goes_in_summary(self, move):
+    def _l10n_pe_edi_cancel_invoice_step_2_sunat_estela(self):
+        if self._l10n_pe_edi_is_factory_hka():
+            if error := self._l10n_pe_edi_factory_hka_credentials_error():
+                return error
+        return super()._l10n_pe_edi_cancel_invoice_step_2_sunat_estela()
+
+    def _l10n_pe_edi_factory_hka_goes_in_summary(self):
+        move = self
         """Boleta (03) o nota de crédito/débito vinculada a una boleta."""
         code = move.l10n_latam_document_type_id.code
         if code == '03':
@@ -156,6 +137,7 @@ class AccountEdiFormat(models.Model):
             return move.name.replace(' ', '').startswith('B')
         return False
 
+    @api.model
     def _l10n_pe_edi_factory_hka_summary_line(self, move):
         """Importes de un comprobante para su línea del resumen diario, en su
         moneda: valor de venta por tipo de operación (01 gravadas, 02
@@ -191,6 +173,7 @@ class AccountEdiFormat(models.Model):
                       if key == 'IGV' or amount],
         }
 
+    @api.model
     def _l10n_pe_edi_factory_hka_boleta_summary(self, company, moves):
         """Resumen diario RC-AAAAMMDD-N (fecha de emisión de los comprobantes)
         que da de baja las boletas y notas indicadas."""
@@ -205,10 +188,3 @@ class AccountEdiFormat(models.Model):
             'lines': [self._l10n_pe_edi_factory_hka_summary_line(move) for move in moves],
         }).encode()
         return '%s-%s' % (company.vat, number), summary_str
-
-    def _l10n_pe_edi_cancel_invoices_step_2_factory_hka(self, company, edi_values, cdr_number):
-        credentials = self._l10n_pe_edi_get_factory_hka_credentials(company)
-        if credentials.get('error'):
-            return credentials
-        return self._l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common(
-            company, edi_values, cdr_number, credentials)

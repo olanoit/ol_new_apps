@@ -248,8 +248,8 @@ class TestFase8Import(TransactionCase):
 
         regla = self.env['hr.salary.rule'].browse(created_ids[0])
         self.assertEqual(regla.code, 'F8BONO')
-        self.assertEqual(regla.struct_id, struct)
-        self.assertEqual(regla.category_id,
+        self.assertEqual(regla.struct_ids, struct)
+        self.assertEqual(regla.category_ids,
                          self.env.ref('al_hr_pe.ING'))
         self.assertEqual(regla.amount_select, 'code')
         self.assertEqual(regla.amount_python_compute, 'result = 100.0')

@@ -67,14 +67,14 @@
         <!-- ===== 1. Banner superior: stock por almacén ===== -->
         <xpath expr="//div[hasclass('section-public-description')]" position="before">
             <div class="pos-info-banner rounded-3 p-3 mb-3 text-start"
-                 t-if="props.info?.productInfo?.warehouses?.length > 0">
+                 t-if="this.props.info?.productInfo?.warehouses?.length > 0">
                 <span class="pos-info-panel__title">
                     <i class="oi me-1" data-icon="inventory_2"/>
                     Inventario
-                    <t t-if="pos.session.update_stock_at_closing">(al momento de apertura)</t>
+                    <t t-if="this.pos.session.update_stock_at_closing">(al momento de apertura)</t>
                 </span>
                 <div class="d-flex flex-wrap gap-2">
-                    <span t-foreach="props.info.productInfo.warehouses" t-as="warehouse" t-key="warehouse.name"
+                    <span t-foreach="this.props.info.productInfo.warehouses" t-as="warehouse" t-key="warehouse.name"
                           class="pos-info-banner__stock-chip badge rounded-pill text-bg-light border">
                         <t t-out="warehouse.name"/>:
                         <b><t t-out="warehouse.free_qty"/> <t t-out="warehouse.uom"/></b>
@@ -120,18 +120,18 @@
                 al pedido).
             -->
             <div class="mt-3"
-                 t-if="props.productTemplate.pos_optional_product_ids and props.productTemplate.pos_optional_product_ids.length">
+                 t-if="this.props.productTemplate.pos_optional_product_ids and this.props.productTemplate.pos_optional_product_ids.length">
                 <h3 class="pos-info-panel__title">
                     <i class="oi oi-filled me-1" data-icon="add_circle"/>
                     Productos opcionales
                 </h3>
                 <div class="pos-info-optional-grid d-flex flex-wrap gap-2">
-                    <article t-foreach="props.productTemplate.pos_optional_product_ids" t-as="optional" t-key="optional.id"
+                    <article t-foreach="this.props.productTemplate.pos_optional_product_ids" t-as="optional" t-key="optional.id"
                              tabindex="0"
                              role="button"
                              class="pos-info-optional-card rounded-3 overflow-hidden border cursor-pointer"
                              t-on-click="() => this.searchProduct(optional.name)">
-                        <div t-if="pos.config.show_product_images" class="pos-info-optional-card__img ratio ratio-4x3">
+                        <div t-if="this.pos.config.show_product_images" class="pos-info-optional-card__img ratio ratio-4x3">
                             <img class="w-100 h-100 object-fit-cover pe-none"
                                  t-att-src="optional.getImageUrl()"
                                  t-att-alt="optional.name"
@@ -139,13 +139,13 @@
                         </div>
                         <div class="pos-info-optional-card__name px-2 pt-1 text-truncate" t-out="optional.name"/>
                         <div class="pos-info-optional-card__price px-2 pb-2 fw-bold"
-                             t-out="getDisplayPrice(optional)"/>
+                             t-out="this.getDisplayPrice(optional)"/>
                     </article>
                 </div>
             </div>
 
             <div class="pos-info-general mt-3 text-start"
-                 t-if="props.productTemplate">
+                 t-if="this.props.productTemplate">
                 <h3 class="pos-info-panel__title">
                     <i class="oi me-1" data-icon="list_alt"/>
                     Información General
@@ -158,24 +158,24 @@
                         <div class="pos-info-grid d-grid gap-2"
                              style="grid-template-columns: max-content 1fr;">
 
-                            <t t-if="props.productTemplate.categ_id">
+                            <t t-if="this.props.productTemplate.categ_id">
                                 <label class="fw-bold text-muted">Categoría interna:</label>
-                                <span t-out="props.productTemplate.categ_id.display_name || props.productTemplate.categ_id.name"/>
+                                <span t-out="this.props.productTemplate.categ_id.display_name || this.props.productTemplate.categ_id.name"/>
                             </t>
-                            <t t-if="props.productTemplate.pos_categ_ids and props.productTemplate.pos_categ_ids.length">
+                            <t t-if="this.props.productTemplate.pos_categ_ids and this.props.productTemplate.pos_categ_ids.length">
                                 <label class="fw-bold text-muted">Categorías del TPV:</label>
                                 <span class="d-flex flex-wrap gap-1">
-                                    <span t-foreach="props.productTemplate.pos_categ_ids" t-as="cat" t-key="cat.id"
+                                    <span t-foreach="this.props.productTemplate.pos_categ_ids" t-as="cat" t-key="cat.id"
                                           class="badge rounded-pill bg-secondary"
                                           t-out="cat.name"/>
                                 </span>
                             </t>
-                            <t t-if="props.productTemplate.product_tag_ids and props.productTemplate.product_tag_ids.length">
+                            <t t-if="this.props.productTemplate.product_tag_ids and this.props.productTemplate.product_tag_ids.length">
                                 <label class="fw-bold text-muted">Etiquetas:</label>
                                 <span class="d-flex flex-wrap gap-1">
                                     <!-- `color` es un Char HEX (p.ej. "#3C3C3C"), renderizado como
                                          punto inline — misma convención que los chips de las filas. -->
-                                    <span t-foreach="props.productTemplate.product_tag_ids" t-as="ingredient" t-key="ingredient.id"
+                                    <span t-foreach="this.props.productTemplate.product_tag_ids" t-as="ingredient" t-key="ingredient.id"
                                           class="badge rounded-pill pos-info-tag-badge bg-light text-dark border d-inline-flex align-items-center gap-1">
                                         <span class="rounded-circle d-inline-block"
                                               t-attf-style="width: 0.6em; height: 0.6em; background-color: {{ ingredient.color or '#3C3C3C' }};"/>
@@ -183,40 +183,40 @@
                                     </span>
                                 </span>
                             </t>
-                            <t t-if="props.productTemplate.default_code">
+                            <t t-if="this.props.productTemplate.default_code">
                                 <label class="fw-bold text-muted">SKU:</label>
-                                <span class="font-monospace" t-out="props.productTemplate.default_code"/>
+                                <span class="font-monospace" t-out="this.props.productTemplate.default_code"/>
                             </t>
-                            <t t-if="props.productTemplate.barcode">
+                            <t t-if="this.props.productTemplate.barcode">
                                 <label class="fw-bold text-muted">Código de barras:</label>
                                 <span class="font-monospace">
                                     <i class="oi me-1 text-muted" data-icon="barcode"/>
-                                    <t t-out="props.productTemplate.barcode"/>
+                                    <t t-out="this.props.productTemplate.barcode"/>
                                 </span>
                             </t>
-                            <t t-if="props.productTemplate.uom_id">
+                            <t t-if="this.props.productTemplate.uom_id">
                                 <label class="fw-bold text-muted">Unidad de medida:</label>
-                                <span t-out="props.productTemplate.uom_id.name"/>
+                                <span t-out="this.props.productTemplate.uom_id.name"/>
                             </t>
-                            <t t-if="props.productTemplate.type">
+                            <t t-if="this.props.productTemplate.type">
                                 <label class="fw-bold text-muted">Tipo:</label>
                                 <span>
-                                    <t t-if="props.productTemplate.type === 'service'">Servicio</t>
-                                    <t t-elif="props.productTemplate.type === 'consu' and props.productTemplate.is_storable">Almacenable</t>
-                                    <t t-elif="props.productTemplate.type === 'consu'">Consumible</t>
-                                    <t t-else=""><t t-out="props.productTemplate.type"/></t>
+                                    <t t-if="this.props.productTemplate.type === 'service'">Servicio</t>
+                                    <t t-elif="this.props.productTemplate.type === 'consu' and this.props.productTemplate.is_storable">Almacenable</t>
+                                    <t t-elif="this.props.productTemplate.type === 'consu'">Consumible</t>
+                                    <t t-else=""><t t-out="this.props.productTemplate.type"/></t>
                                 </span>
                             </t>
-                            <t t-if="props.productTemplate.to_weight">
+                            <t t-if="this.props.productTemplate.to_weight">
                                 <label class="fw-bold text-muted">Se vende por:</label>
                                 <span>
                                     <i class="oi me-1 text-muted" data-icon="balance"/>
                                     Peso
                                 </span>
                             </t>
-                            <t t-if="props.productTemplate.tracking and props.productTemplate.tracking !== 'none'">
+                            <t t-if="this.props.productTemplate.tracking and this.props.productTemplate.tracking !== 'none'">
                                 <label class="fw-bold text-muted">Trazabilidad:</label>
-                                <span class="text-capitalize" t-out="props.productTemplate.tracking"/>
+                                <span class="text-capitalize" t-out="this.props.productTemplate.tracking"/>
                             </t>
                         </div>
                     </div>
@@ -225,41 +225,41 @@
                          Mismo criterio que pos_hr aplica al bloque nativo
                          .financials-order (su t-if cae ahora en el marcador
                          vacío): oculta para el rol mínimo. -->
-                    <div class="pos-info-general__col" t-if="alShowFinancials">
+                    <div class="pos-info-general__col" t-if="this.alShowFinancials">
                         <div class="pos-info-grid d-grid gap-2"
                              style="grid-template-columns: max-content 1fr;">
 
                             <label class="fw-bold text-muted">Precio sin impuestos:</label>
-                            <span t-out="env.utils.formatCurrency(props.info.productInfo.all_prices.price_without_tax)"/>
-                            <label class="fw-bold text-muted"><t t-out="vatLabel"/></label>
+                            <span t-out="this.env.utils.formatCurrency(this.props.info.productInfo.all_prices.price_without_tax)"/>
+                            <label class="fw-bold text-muted"><t t-out="this.vatLabel"/></label>
                             <span>
-                                <t t-out="props.info.taxAmount"/>
-                                (<t t-out="props.info.taxName"/>)
+                                <t t-out="this.props.info.taxAmount"/>
+                                (<t t-out="this.props.info.taxName"/>)
                             </span>
                             <label class="fw-bold text-muted">Precio con impuestos:</label>
-                            <span t-out="env.utils.formatCurrency(props.info.productInfo.all_prices.price_with_tax)"/>
-                            <t t-if="_hasMarginsCostsAccessRights()">
+                            <span t-out="this.env.utils.formatCurrency(this.props.info.productInfo.all_prices.price_with_tax)"/>
+                            <t t-if="this._hasMarginsCostsAccessRights()">
                                 <label class="fw-bold text-muted">Costo:</label>
-                                <span t-out="props.info.costCurrency"/>
+                                <span t-out="this.props.info.costCurrency"/>
                                 <label class="fw-bold text-muted">Margen:</label>
-                                <span><t t-out="props.info.marginCurrency"/> (<t t-out="props.info.marginPercent"/>%)</span>
+                                <span><t t-out="this.props.info.marginCurrency"/> (<t t-out="this.props.info.marginPercent"/>%)</span>
                             </t>
-                            <t t-foreach="props.info.productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
+                            <t t-foreach="this.props.info.productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
                                 <label class="fw-bold text-muted" t-out="pricelist.name"/>
-                                <span t-out="env.utils.formatCurrency(pricelist.price)"/>
+                                <span t-out="this.env.utils.formatCurrency(pricelist.price)"/>
                             </t>
 
                             <label class="fw-bold text-muted">Precio total sin impuestos:</label>
-                            <span t-out="props.info.orderPriceWithoutTaxCurrency"/>
-                            <label class="fw-bold text-muted"><t t-out="totalVatLabel"/></label>
-                            <span t-out="props.info.orderTaxTotalCurrency"/>
+                            <span t-out="this.props.info.orderPriceWithoutTaxCurrency"/>
+                            <label class="fw-bold text-muted"><t t-out="this.totalVatLabel"/></label>
+                            <span t-out="this.props.info.orderTaxTotalCurrency"/>
                             <label class="fw-bold text-muted">Precio total con impuestos:</label>
-                            <span t-out="props.info.orderPriceWithTaxCurrency"/>
-                            <t t-if="_hasMarginsCostsAccessRights()">
+                            <span t-out="this.props.info.orderPriceWithTaxCurrency"/>
+                            <t t-if="this._hasMarginsCostsAccessRights()">
                                 <label class="fw-bold text-muted">Costo total:</label>
-                                <span t-out="props.info.orderCostCurrency"/>
+                                <span t-out="this.props.info.orderCostCurrency"/>
                                 <label class="fw-bold text-muted">Margen total:</label>
-                                <span><t t-out="props.info.orderMarginCurrency"/> (<t t-out="props.info.orderMarginPercent"/>%)</span>
+                                <span><t t-out="this.props.info.orderMarginCurrency"/> (<t t-out="this.props.info.orderMarginPercent"/>%)</span>
                             </t>
                         </div>
                     </div>

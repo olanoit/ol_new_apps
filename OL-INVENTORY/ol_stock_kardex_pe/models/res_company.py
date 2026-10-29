@@ -92,7 +92,7 @@ class ResCompany(models.Model):
             Cost._l10n_pe_recompute(company, date_from)
             company.sudo().l10n_pe_wh_cost_dirty_date = False
 
-    def stock_value(self, accounts_by_product=None, at_date=None):
+    def get_inventory_value(self, at_date=None):
         """Valor del inventario con el costo por almacén.
 
         El cierre de valorización de Odoo lleva la cuenta de existencias a este
@@ -100,12 +100,11 @@ class ResCompany(models.Model):
         entre el promedio de la compañía y el de cada almacén lo hace el propio
         cierre, sin un asiento aparte que el siguiente cierre desharía.
         """
-        value_by_account = super().stock_value(accounts_by_product, at_date)
+        value_by_account = super().get_inventory_value(at_date)
         if not self.l10n_pe_wh_cost:
             return value_by_account
         self._l10n_pe_wh_cost_refresh()
-        if not accounts_by_product:
-            accounts_by_product = self.with_context(prefetch_fields=False)._get_accounts_by_product()
+        accounts_by_product = self.with_context(prefetch_fields=False)._get_accounts_by_product(at_date)
         wh_values = self.env['l10n_pe.kardex.wh.cost']._l10n_pe_values_at(self, at_date)
         for product, value in wh_values.items():
             accounts = accounts_by_product.get(product)

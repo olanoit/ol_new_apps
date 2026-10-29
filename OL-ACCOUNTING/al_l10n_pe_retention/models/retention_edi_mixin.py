@@ -216,42 +216,26 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
         oficial, ``{'success': True, 'zip_document': …}`` o
         ``{'message': …, 'level': …}``."""
         self.ensure_one()
-        # el formato UBL peruano: sus métodos de credenciales piden un registro
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         filename = self._l10n_pe_edi_generate_retention_filename()
-        result = self._l10n_pe_edi_sign_retention(edi_format, filename, edi_str)
+        result = self._l10n_pe_edi_sign_retention(filename, edi_str)
         if not result.get('success'):
             return {'message': result.get('error') or self.env._('Error desconocido'),
                     'level': 'warning' if result.get('blocking_level') == 'warning' else 'danger'}
-        zip_document = edi_format._l10n_pe_edi_zip_edi_document([
+        zip_document = self.env['account.move']._l10n_pe_edi_zip_edi_document([
             ('%s.xml' % filename, result['xml_document']),
             ('R-%s.xml' % filename, result['cdr']),
         ])
         return {'success': True, 'zip_document': zip_document}
 
-    def _l10n_pe_edi_sign_retention(self, edi_format, filename, edi_str):
-        """Firma y envía el CRE (tipo 20) por el operador de la compañía.
-        Devuelve el resultado de los servicios de ``l10n_pe_edi``; los
-        módulos de otros operadores (p. ej. Factory HKA) lo extienden."""
+    def _l10n_pe_edi_sign_retention(self, filename, edi_str):
+        """Firma y envía el CRE (tipo 20) por el operador de la compañía
+        (``l10n_pe.edi.cpe.service``); los módulos de otros operadores (p. ej.
+        Factory HKA) lo extienden. SUNAT lo recibe en su servicio de
+        retenciones y percepciones; Estela, en el habitual."""
         self.ensure_one()
-        company = self.company_id
-        cpe_type = self._l10n_pe_edi_cpe_type()
-        if company.l10n_pe_edi_provider == 'iap':
-            return edi_format._l10n_pe_edi_sign_service_iap(company, filename, edi_str, cpe_type)
-        return edi_format._l10n_pe_edi_sign_service_sunat_digiflow_common(
-            company, filename, edi_str, self._l10n_pe_edi_retention_credentials(edi_format),
-            cpe_type)
-
-    def _l10n_pe_edi_retention_credentials(self, edi_format):
-        """Credenciales del servicio de retenciones: Digiflow recibe el CRE en
-        su servicio habitual; SUNAT, en el de retenciones y percepciones."""
-        self.ensure_one()
-        company = self.company_id
-        if company.l10n_pe_edi_provider == 'digiflow':
-            return edi_format._l10n_pe_edi_get_digiflow_credentials(company)
-        credentials = edi_format._l10n_pe_edi_get_sunat_credentials(company)
-        credentials['wsdl'] = self._l10n_pe_edi_get_retention_sunat_wsdl()
-        return credentials
+        return self.env['l10n_pe.edi.cpe.service']._send_bill(
+            self.company_id, filename, edi_str, self._l10n_pe_edi_cpe_type(),
+            self._l10n_pe_edi_get_retention_sunat_wsdl())
 
     def _l10n_pe_edi_get_retention_sunat_wsdl(self):
         self.ensure_one()
@@ -298,31 +282,22 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
             'folio': int(folio) if folio.isdigit() else folio,
         }).encode()
 
-    def _l10n_pe_edi_reversal_send(self, edi_format, filename, edi_str):
-        """Paso 1: envía el resumen RR. Devuelve, como los servicios de baja de
-        ``l10n_pe_edi``, ``{'xml_document', 'cdr', 'cdr_number'}`` o
-        ``{'error', 'blocking_level'}``."""
+    def _l10n_pe_edi_reversal_send(self, filename, edi_str):
+        """Paso 1: envía el resumen RR. ``{'xml_document', 'cdr', 'cdr_number'}``
+        o ``{'error', 'blocking_level'}``."""
         self.ensure_one()
-        company = self.company_id
-        if company.l10n_pe_edi_provider == 'iap':
-            return edi_format._l10n_pe_edi_cancel_invoices_step_1_iap(
-                company, self, filename, edi_str)
-        return edi_format._l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common(
-            company, self, filename, edi_str, self._l10n_pe_edi_retention_credentials(edi_format))
+        return self.env['l10n_pe.edi.cpe.service']._send_summary(
+            self.company_id, filename, edi_str, self._l10n_pe_edi_get_retention_sunat_wsdl())
 
-    def _l10n_pe_edi_reversal_status(self, edi_format, ticket):
+    def _l10n_pe_edi_reversal_status(self, ticket):
         """Paso 2: consulta el ticket. ``{'success': True, 'cdr': …}`` o
         ``{'error', 'blocking_level'}`` (``info``: SUNAT aún procesa)."""
         self.ensure_one()
-        company = self.company_id
-        if company.l10n_pe_edi_provider == 'iap':
-            return edi_format._l10n_pe_edi_cancel_invoices_step_2_iap(company, [], ticket)
-        return edi_format._l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common(
-            company, [], ticket, self._l10n_pe_edi_retention_credentials(edi_format))
+        return self.env['l10n_pe.edi.cpe.service']._get_status(
+            self.company_id, ticket, self._l10n_pe_edi_get_retention_sunat_wsdl())
 
     def action_l10n_pe_edi_reverse_retention(self):
         """Paso 1: envía el resumen de reversiones (sendSummary) y guarda el ticket."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         for document in self:
             if not document.l10n_pe_edi_reversal_available:
                 raise UserError(self.env._(
@@ -335,7 +310,7 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
                 raise UserError(self.env._('Indique el motivo de la reversión.'))
             values = document._l10n_pe_edi_reversal_values()
             res = document._l10n_pe_edi_reversal_send(
-                edi_format, values['filename'], document._l10n_pe_edi_generate_reversal_bstr(values))
+                values['filename'], document._l10n_pe_edi_generate_reversal_bstr(values))
             if res.get('error'):
                 document.l10n_pe_edi_reversal_message = res['error']
                 continue
@@ -357,13 +332,11 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
 
     def action_l10n_pe_edi_check_reversal(self):
         """Paso 2: consulta el ticket (getStatus) hasta que SUNAT acepta la reversión."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         for document in self:
             if document.l10n_pe_edi_status != 'reversing' or not document.l10n_pe_edi_reversal_ticket:
                 raise UserError(self.env._(
                     'Este documento no tiene una reversión del CRE en proceso.'))
-            res = document._l10n_pe_edi_reversal_status(
-                edi_format, document.l10n_pe_edi_reversal_ticket)
+            res = document._l10n_pe_edi_reversal_status(document.l10n_pe_edi_reversal_ticket)
             if res.get('error'):
                 # 'info': SUNAT aún procesa (código 98), se vuelve a consultar.
                 document.l10n_pe_edi_reversal_message = res['error']

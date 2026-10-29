@@ -15,14 +15,14 @@
             <attribute name="t-if">!peActive</attribute>
         </xpath>
         <xpath expr="//div[hasclass('pos-receipt')]" position="after">
-            <div class="pos-receipt alpe-receipt p-2" t-if="peActive">
-                    <t t-set="company" t-value="order.company"/>
-                    <t t-set="amounts" t-value="peAmounts"/>
+            <div class="pos-receipt alpe-receipt p-2" t-if="this.peActive">
+                    <t t-set="company" t-value="this.order.company"/>
+                    <t t-set="amounts" t-value="this.peAmounts"/>
 
                     <!-- ENCABEZADO -->
                     <div class="alpe-center alpe-header">
-                        <img t-if="order.config.receiptLogoUrl"
-                             t-att-src="order.config.receiptLogoUrl" alt="Logo"/>
+                        <img t-if="this.order.config.receiptLogoUrl"
+                             t-att-src="this.order.config.receiptLogoUrl" alt="Logo"/>
                         <div><strong t-out="company.name"/></div>
                         <div><strong>RUC: <t t-out="company.vat"/></strong></div>
                         <div t-if="company.street" t-out="company.street"/>
@@ -30,9 +30,9 @@
                     </div>
 
                     <!-- TIPO Y NÚMERO DE DOCUMENTO -->
-                    <div class="alpe-doc" t-if="peIssued">
-                        <t t-out="order.peDocTypeLabel"/><br/>
-                        <t t-out="peDocNumber"/>
+                    <div class="alpe-doc" t-if="this.peIssued">
+                        <t t-out="this.order.peDocTypeLabel"/><br/>
+                        <t t-out="this.peDocNumber"/>
                     </div>
                     <div class="alpe-doc" t-else="">
                         COMPROBANTE ELECTRÓNICO PENDIENTE<br/>
@@ -44,23 +44,23 @@
                     <ul class="alpe-info">
                         <li>
                             <strong>Señor(es):</strong>
-                            <t t-out="order.partner_id?.name || 'CLIENTE VARIOS'"/>
+                            <t t-out="this.order.partner_id?.name || 'CLIENTE VARIOS'"/>
                         </li>
-                        <li t-if="order.partner_id?.vat">
-                            <strong><t t-out="order.peVatLabel"/>:</strong>
-                            <t t-out="order.partner_id.vat"/>
+                        <li t-if="this.order.partner_id?.vat">
+                            <strong><t t-out="this.order.peVatLabel"/>:</strong>
+                            <t t-out="this.order.partner_id.vat"/>
                         </li>
-                        <li t-if="order.partner_id?.street">
+                        <li t-if="this.order.partner_id?.street">
                             <strong>Dirección:</strong>
-                            <t t-out="order.partner_id.street"/>
+                            <t t-out="this.order.partner_id.street"/>
                         </li>
                         <li>
                             <strong>Emisión:</strong>
-                            <t t-out="order.formatDateOrTime('date_order')"/>
+                            <t t-out="this.order.formatDateOrTime('date_order')"/>
                         </li>
                         <li>
                             <strong>Moneda:</strong>
-                            <t t-out="order.currency?.name === 'USD' ? 'DÓLARES AMERICANOS' : 'SOLES'"/>
+                            <t t-out="this.order.currency?.name === 'USD' ? 'DÓLARES AMERICANOS' : 'SOLES'"/>
                         </li>
                     </ul>
 
@@ -75,7 +75,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr t-foreach="peReceiptLines" t-as="line" t-key="line.uuid">
+                            <tr t-foreach="this.peReceiptLines" t-as="line" t-key="line.uuid">
                                 <td class="alpe-ctr" t-out="line.qty"/>
                                 <td>
                                     <t t-out="line.getFullProductName()"/>
@@ -85,8 +85,8 @@
                                     <div t-if="line.customerNote" class="alpe-discount"
                                          t-out="line.customerNote"/>
                                 </td>
-                                <td class="alpe-num" t-out="formatCurrency(line.unitPrices.total_included)"/>
-                                <td class="alpe-num" t-out="formatCurrency(line.priceIncl)"/>
+                                <td class="alpe-num" t-out="this.formatCurrency(line.unitPrices.total_included)"/>
+                                <td class="alpe-num" t-out="this.formatCurrency(line.priceIncl)"/>
                             </tr>
                         </tbody>
                     </table>
@@ -95,59 +95,59 @@
                     <table class="alpe-totals">
                         <tr t-if="amounts.base">
                             <td class="alpe-label">Op. gravadas</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.base)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.base)"/>
                         </tr>
                         <tr t-if="amounts.exonerated">
                             <td class="alpe-label">Op. exoneradas</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.exonerated)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.exonerated)"/>
                         </tr>
                         <tr t-if="amounts.unaffected">
                             <td class="alpe-label">Op. inafectas</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.unaffected)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.unaffected)"/>
                         </tr>
                         <tr t-if="amounts.export">
                             <td class="alpe-label">Op. exportación</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.export)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.export)"/>
                         </tr>
                         <tr t-if="amounts.free">
                             <td class="alpe-label">Op. gratuitas</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.free)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.free)"/>
                         </tr>
                         <tr t-if="amounts.isc">
                             <td class="alpe-label">ISC</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.isc)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.isc)"/>
                         </tr>
                         <tr t-if="amounts.ivap">
                             <td class="alpe-label">IVAP</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.ivap)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.ivap)"/>
                         </tr>
                         <tr t-if="amounts.icbper">
                             <td class="alpe-label">ICBPER</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.icbper)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.icbper)"/>
                         </tr>
                         <tr t-if="amounts.others">
                             <td class="alpe-label">Otros tributos</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.others)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.others)"/>
                         </tr>
                         <tr>
                             <td class="alpe-label" t-out="amounts.igvLabel"/>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.igv)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.igv)"/>
                         </tr>
                         <tr class="alpe-total-row">
                             <td class="alpe-label">IMPORTE TOTAL</td>
-                            <td class="alpe-num" t-out="formatCurrency(amounts.total)"/>
+                            <td class="alpe-num" t-out="this.formatCurrency(amounts.total)"/>
                         </tr>
                         <!-- Redondeo de efectivo: el total del comprobante
                              publicado ya lo incluye; solo se muestra en la
                              aproximación desde los totales del TPV. -->
-                        <t t-if="!amounts.fromMove and order.appliedRounding">
+                        <t t-if="!amounts.fromMove and this.order.appliedRounding">
                             <tr>
                                 <td class="alpe-label">Redondeo</td>
-                                <td class="alpe-num" t-out="formatCurrency(order.appliedRounding)"/>
+                                <td class="alpe-num" t-out="this.formatCurrency(this.order.appliedRounding)"/>
                             </tr>
                             <tr>
                                 <td class="alpe-label">Total a pagar</td>
-                                <td class="alpe-num" t-out="formatCurrency(order.roundedPriceIncl)"/>
+                                <td class="alpe-num" t-out="this.formatCurrency(this.order.roundedPriceIncl)"/>
                             </tr>
                         </t>
                     </table>
@@ -159,47 +159,47 @@
 
                     <!-- PAGOS -->
                     <ul class="alpe-info">
-                        <li t-foreach="paymentLines" t-as="line" t-key="line_index">
+                        <li t-foreach="this.paymentLines" t-as="line" t-key="line_index">
                             <strong><t t-out="line.payment_method_id.name"/>:</strong>
-                            <t t-out="formatCurrency(line.getAmount())"/>
+                            <t t-out="this.formatCurrency(line.getAmount())"/>
                         </li>
-                        <li t-foreach="peExtraPayments" t-as="payment" t-key="payment_index">
+                        <li t-foreach="this.peExtraPayments" t-as="payment" t-key="payment_index">
                             <strong><t t-out="payment.name"/>:</strong>
-                            <t t-out="formatCurrency(payment.amount)"/>
+                            <t t-out="this.formatCurrency(payment.amount)"/>
                         </li>
-                        <li t-if="order.showChange">
+                        <li t-if="this.order.showChange">
                             <strong>Vuelto:</strong>
-                            <t t-out="formatCurrency(order.change)"/>
+                            <t t-out="this.formatCurrency(this.order.change)"/>
                         </li>
-                        <li t-if="order.getCashierName()">
+                        <li t-if="this.order.getCashierName()">
                             <strong>Usuario:</strong>
-                            <t t-out="order.getCashierName()"/>
+                            <t t-out="this.order.getCashierName()"/>
                         </li>
                         <!-- Vendedor de al_pos_vendedor (si está instalado). -->
-                        <li t-if="order.seller_id?.name">
+                        <li t-if="this.order.seller_id?.name">
                             <strong>Vendedor:</strong>
-                            <t t-out="order.seller_id.name"/>
+                            <t t-out="this.order.seller_id.name"/>
                         </li>
                     </ul>
 
-                    <div class="alpe-words" t-foreach="peNotes" t-as="note" t-key="note_index"
+                    <div class="alpe-words" t-foreach="this.peNotes" t-as="note" t-key="note_index"
                          t-out="note"/>
 
                     <!-- QR DE REPRESENTACIÓN IMPRESA -->
-                    <div class="alpe-qr" t-if="peQrUrl">
-                        <img t-att-src="peQrUrl" alt="QR SUNAT"/>
+                    <div class="alpe-qr" t-if="this.peQrUrl">
+                        <img t-att-src="this.peQrUrl" alt="QR SUNAT"/>
                     </div>
 
                     <div class="alpe-footer">
-                        <t t-if="peIssued">
+                        <t t-if="this.peIssued">
                             <div>Representación impresa de la
-                                <t t-out="order.peDocTypeLabel.toLowerCase()"/>.</div>
+                                <t t-out="this.order.peDocTypeLabel.toLowerCase()"/>.</div>
                             <div>Consulte en www.sunat.gob.pe</div>
                         </t>
                         <div>Gracias por su preferencia.</div>
-                        <div t-if="order.config.receipt_footer"
+                        <div t-if="this.order.config.receipt_footer"
                              style="white-space:pre-line"
-                             t-out="order.config.receipt_footer"/>
+                             t-out="this.order.config.receipt_footer"/>
                     </div>
             </div>
         </xpath>

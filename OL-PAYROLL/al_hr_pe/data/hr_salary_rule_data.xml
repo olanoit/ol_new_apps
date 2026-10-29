@@ -36,8 +36,8 @@ else:
     else:
         result = dias_lab * (version.wage/30)
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_FER">
             <field name="name">Feriado/Descanso Laborado</field>
@@ -53,8 +53,8 @@ else:
 # paga ADEMÁS con una sobretasa del 100 %, es decir, doble.
 result = worked_days['FER'].number_of_days * (version.wage/30) * 2
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_FAL">
             <field name="name">Faltas</field>
@@ -76,8 +76,8 @@ if version.wage_type == 'hourly':
 else:
     result = worked_days['FAL'].number_of_days * (version.wage/30)
             </field>
-            <field name="category_id" ref="DES_AFE"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_AFE')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_TAR">
             <field name="name">Tardanzas</field>
@@ -90,8 +90,8 @@ else:
             <field name="amount_python_compute">
 result = worked_days['TAR'].number_of_hours * (version.wage/30/8)
             </field>
-            <field name="category_id" ref="DES_AFE"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_AFE')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_DMED">
             <field name="name">Descanso Médico</field>
@@ -104,8 +104,8 @@ result = worked_days['TAR'].number_of_hours * (version.wage/30/8)
             <field name="amount_python_compute">
 result = worked_days['DMED'].number_of_days * (version.wage/30)
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_DPAT">
             <field name="name">Descanso Paternidad</field>
@@ -118,8 +118,8 @@ result = worked_days['DMED'].number_of_days * (version.wage/30)
             <field name="amount_python_compute">
 result = worked_days['DPAT'].number_of_days * (version.wage/30)
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_LCGH">
             <field name="name">Licencia con Goce de Haber</field>
@@ -132,8 +132,8 @@ result = worked_days['DPAT'].number_of_days * (version.wage/30)
             <field name="amount_python_compute">
 result = worked_days['LCGH'].number_of_days * (version.wage/30)
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_LSGH">
             <field name="name">Licencia sin Goce de Haber</field>
@@ -146,8 +146,8 @@ result = worked_days['LCGH'].number_of_days * (version.wage/30)
             <field name="amount_python_compute">
 result = worked_days['LSGH'].number_of_days * (version.wage/30)
             </field>
-            <field name="category_id" ref="DES_AFE"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_AFE')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_NOCT">
             <field name="name">Sobretasa nocturna (RMV + 35 %)</field>
@@ -168,8 +168,8 @@ if night and total and version.wage_type != 'hourly' and version.l10n_pe_labor_r
 else:
     result = 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_BAS_M">
             <field name="name">Basico del mes</field>
@@ -181,8 +181,8 @@ else:
             <field name="amount_python_compute">
 result = BAS + FER + NOCT - FAL - TAR + DMED + DPAT + LCGH - LSGH
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_AF">
@@ -209,8 +209,8 @@ if payslip.l10n_pe_family_allowance_ok and version.l10n_pe_labor_regime != 'prac
 else:
     result = 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_HE25">
             <field name="name">Horas extras 25%</field>
@@ -223,8 +223,8 @@ else:
             <field name="amount_python_compute">
 result = (((version.wage+AF)/30/8) * (1+25/100)) * worked_days['HE25'].number_of_hours
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_HE35">
             <field name="name">Horas extras 35%</field>
@@ -237,8 +237,8 @@ result = (((version.wage+AF)/30/8) * (1+25/100)) * worked_days['HE25'].number_of
             <field name="amount_python_compute">
 result = (((version.wage+AF)/30/8) * (1+35/100)) * worked_days['HE35'].number_of_hours
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_HE100">
             <field name="name">Horas extras 100%</field>
@@ -251,8 +251,8 @@ result = (((version.wage+AF)/30/8) * (1+35/100)) * worked_days['HE35'].number_of
             <field name="amount_python_compute">
 result = (((version.wage+AF)/30/8) * (1+100/100)) * worked_days['HE100'].number_of_hours
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_TOT_EXT">
             <field name="name">Total Horas Extras</field>
@@ -264,8 +264,8 @@ result = (((version.wage+AF)/30/8) * (1+100/100)) * worked_days['HE100'].number_
             <field name="amount_python_compute">
 result = HE25 + HE35 + HE100
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_BONR">
@@ -279,8 +279,8 @@ result = HE25 + HE35 + HE100
             <field name="amount_python_compute">
 result = inputs['BONRER'].amount if inputs['BONRER'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_BONI_EX">
             <field name="name">Bonificacion Extraordinaria</field>
@@ -293,8 +293,8 @@ result = inputs['BONRER'].amount if inputs['BONRER'] else 0
             <field name="amount_python_compute">
 result = inputs['BONI_EX'].amount if inputs['BONI_EX'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_SMAR">
             <field name="name">Subsidio por Maternidad</field>
@@ -307,8 +307,8 @@ result = inputs['BONI_EX'].amount if inputs['BONI_EX'] else 0
             <field name="amount_python_compute">
 result = inputs['SMAR'].amount if inputs['SMAR'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_SENF">
             <field name="name">Subsidio por Enfermedad</field>
@@ -321,8 +321,8 @@ result = inputs['SMAR'].amount if inputs['SMAR'] else 0
             <field name="amount_python_compute">
 result = inputs['SENF'].amount if inputs['SENF'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_COMP_VAC">
             <field name="name">Compensacion Vacacional</field>
@@ -335,8 +335,8 @@ result = inputs['SENF'].amount if inputs['SENF'] else 0
             <field name="amount_python_compute">
 result = inputs['COMP_VAC'].amount if inputs['COMP_VAC'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_VAC">
             <field name="name">Vacaciones</field>
@@ -352,8 +352,8 @@ if inputs['VAC'].amount >0:
 else:
     result = (worked_days['DVAC'].number_of_days) * (version.wage/30)
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_VATRU">
             <field name="name">Vacaciones Truncas</field>
@@ -366,8 +366,8 @@ else:
             <field name="amount_python_compute">
 result = inputs['VAC_TRU'].amount if inputs['VAC_TRU'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_GRA">
             <field name="name">Gratificaciones de fiestas patrias y navidad</field>
@@ -380,8 +380,8 @@ result = inputs['VAC_TRU'].amount if inputs['VAC_TRU'] else 0
             <field name="amount_python_compute">
 result = inputs['GRA'].amount if inputs['GRA'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_BON9">
@@ -395,8 +395,8 @@ result = inputs['GRA'].amount if inputs['GRA'] else 0
             <field name="amount_python_compute">
 result = inputs['BON9'].amount if inputs['BON9'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_GRA_TRU">
             <field name="name">Gratificación Trunca</field>
@@ -409,8 +409,8 @@ result = inputs['BON9'].amount if inputs['BON9'] else 0
             <field name="amount_python_compute">
 result = inputs['GRA_TRU'].amount if inputs['GRA_TRU'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_BON9_TRU">
             <field name="name">Bonificacion 9% Trunca</field>
@@ -423,8 +423,8 @@ result = inputs['GRA_TRU'].amount if inputs['GRA_TRU'] else 0
             <field name="amount_python_compute">
 result = inputs['BON9_TRU'].amount if inputs['BON9_TRU'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_CTS">
             <field name="name">Compensación por tiempo de servicios</field>
@@ -437,8 +437,8 @@ result = inputs['BON9_TRU'].amount if inputs['BON9_TRU'] else 0
             <field name="amount_python_compute">
 result = inputs['CTS'].amount if inputs['CTS'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_CTS_TRU">
             <field name="name">CTS Trunca</field>
@@ -451,8 +451,8 @@ result = inputs['CTS'].amount if inputs['CTS'] else 0
             <field name="amount_python_compute">
 result = inputs['CTS_TRU'].amount if inputs['CTS_TRU'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_INDEM">
             <field name="name">Indemnizacion</field>
@@ -465,8 +465,8 @@ result = inputs['CTS_TRU'].amount if inputs['CTS_TRU'] else 0
             <field name="amount_python_compute">
 result = inputs['INDEM'].amount if inputs['INDEM'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <!-- D.Leg. 713, art. 23: una remuneración por cada período de
              vacaciones no gozado dentro del año siguiente. No paga aportes;
@@ -482,8 +482,8 @@ result = inputs['INDEM'].amount if inputs['INDEM'] else 0
             <field name="amount_python_compute">
 result = inputs['INDVAC'].amount if inputs['INDVAC'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_COMI">
             <field name="name">Comisiones</field>
@@ -496,8 +496,8 @@ result = inputs['INDVAC'].amount if inputs['INDVAC'] else 0
             <field name="amount_python_compute">
 result = inputs['COMI'].amount if inputs['COMI'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_UTIL">
             <field name="name">Utilidades</field>
@@ -510,8 +510,8 @@ result = inputs['COMI'].amount if inputs['COMI'] else 0
             <field name="amount_python_compute">
 result = inputs['UTIL'].amount if inputs['UTIL'] else 0
             </field>
-            <field name="category_id" ref="ING"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_TINGR">
@@ -524,8 +524,8 @@ result = inputs['UTIL'].amount if inputs['UTIL'] else 0
             <field name="amount_python_compute">
 result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM+INDVAC
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_AONP">
             <field name="name">Ingresos Afectos ONP</field>
@@ -537,8 +537,8 @@ result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+
             <field name="amount_python_compute">
 result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_AAFP">
             <field name="name">Ingresos Afectos AFP</field>
@@ -553,8 +553,8 @@ if version.l10n_pe_exception in ('I','J','O'):
 else:
     result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_ONP">
             <field name="name">ONP</field>
@@ -572,8 +572,8 @@ if payslip.membership_id and not payslip.membership_id.is_afp:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="APOR_TRA"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_A_JUB">
             <field name="name">AFP Aporte Fondo de Pensiones</field>
@@ -589,8 +589,8 @@ if payslip.membership_id.is_afp:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="APOR_TRA"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_COMFI">
             <field name="name">AFP Comisión Sobre Flujo</field>
@@ -606,8 +606,8 @@ if version.l10n_pe_commission_type == 'flow' and payslip.membership_id.is_afp:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="APOR_TRA"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_COMMIX">
             <field name="name">AFP Comisión Mixta</field>
@@ -623,8 +623,8 @@ if version.l10n_pe_commission_type == 'mixed' and payslip.membership_id.is_afp:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="APOR_TRA"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_SEGI">
             <field name="name">AFP Prima de Seguros</field>
@@ -645,8 +645,8 @@ elif AAFP &lt; payslip.l10n_pe_insurable_remuneration:
 else:
     result = round((payslip.l10n_pe_prima_insurance/100) * payslip.l10n_pe_insurable_remuneration, 2)
             </field>
-            <field name="category_id" ref="APOR_TRA"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_QUINTA">
             <field name="name">Quinta Categoría</field>
@@ -659,8 +659,8 @@ else:
             <field name="amount_python_compute">
 result = inputs['QUINTA'].amount if inputs['QUINTA'] else 0
             </field>
-            <field name="category_id" ref="APOR_TRA"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_TAT">
             <field name="name">Total Aportes Trabajador</field>
@@ -672,8 +672,8 @@ result = inputs['QUINTA'].amount if inputs['QUINTA'] else 0
             <field name="amount_python_compute">
 result = ONP+A_JUB+COMFI+COMMIX+SEGI+QUINTA
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_ADELANTO">
@@ -687,8 +687,8 @@ result = ONP+A_JUB+COMFI+COMMIX+SEGI+QUINTA
             <field name="amount_python_compute">
 result = inputs['ADELANTO'].amount if inputs['ADELANTO'] else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_ADE_QUIN">
             <field name="name">Adelanto Quincenal</field>
@@ -701,8 +701,8 @@ result = inputs['ADELANTO'].amount if inputs['ADELANTO'] else 0
             <field name="amount_python_compute">
 result = inputs['ADE_QUIN'].amount if inputs['ADE_QUIN'] else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_RET_JUD">
             <field name="name">Retención Judicial</field>
@@ -715,8 +715,8 @@ result = inputs['ADE_QUIN'].amount if inputs['ADE_QUIN'] else 0
             <field name="amount_python_compute">
 result = inputs['RET_JUD'].amount if inputs['RET_JUD'] else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_ADE_GRA">
             <field name="name">Adelanto de Gratificacion</field>
@@ -732,8 +732,8 @@ if inputs['ADE_GRA'].amount >0:
 else:
     result = (GRA+BON9-inputs['DES_BBSS'].amount) if (GRA+BON9)>0 else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_ADE_CTS">
             <field name="name">Adelanto de CTS</field>
@@ -749,8 +749,8 @@ if inputs['ADE_CTS'].amount >0:
 else:
     result = (CTS-inputs['DES_BBSS'].amount) if CTS>0 else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_ADE_VAC">
             <field name="name">Adelanto de Vacaciones</field>
@@ -766,8 +766,8 @@ if inputs['ADE_VAC'].amount >0:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_PREST">
             <field name="name">Prestamos al Personal</field>
@@ -780,8 +780,8 @@ else:
             <field name="amount_python_compute">
 result = inputs['PREST'].amount if inputs['PREST'] else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_DES_BBSS">
             <field name="name">Descuentos en BBSS</field>
@@ -793,8 +793,8 @@ result = inputs['PREST'].amount if inputs['PREST'] else 0
             <field name="amount_python_compute">
 result = inputs['DES_BBSS'].amount if inputs['DES_BBSS'] else 0
             </field>
-            <field name="category_id" ref="DES_NET"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_TDESN">
             <field name="name">Total Descuentos al Neto</field>
@@ -806,8 +806,8 @@ result = inputs['DES_BBSS'].amount if inputs['DES_BBSS'] else 0
             <field name="amount_python_compute">
 result = ADELANTO+ADE_QUIN+RET_JUD+ADE_GRA+ADE_CTS+ADE_VAC+PREST+DES_BBSS
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_TDES">
@@ -820,8 +820,8 @@ result = ADELANTO+ADE_QUIN+RET_JUD+ADE_GRA+ADE_CTS+ADE_VAC+PREST+DES_BBSS
             <field name="amount_python_compute">
 result = TAT + TDESN
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_NETO">
             <field name="name">Neto a pagar</field>
@@ -833,8 +833,8 @@ result = TAT + TDESN
             <field name="amount_python_compute">
 result = TINGR - TDES
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_AESSALUD">
@@ -847,8 +847,8 @@ result = TINGR - TDES
             <field name="amount_python_compute">
 result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_ESSALUD">
             <field name="name">EsSalud</field>
@@ -871,8 +871,8 @@ if version.l10n_pe_labor_regime != 'practicante':
 else:
     result = 0
             </field>
-            <field name="category_id" ref="APOR_EMP"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_EPS225">
             <field name="name">Eps 2.25%</field>
@@ -888,8 +888,8 @@ if version.social_insurance_id.name == 'EPS':
 else:
     result = 0
             </field>
-            <field name="category_id" ref="APOR_EMP"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_SVLEY">
             <field name="name">Seguro Vida Ley</field>
@@ -908,8 +908,8 @@ for aporte in version.contributions_ids:
         elif aporte.type == 'percentage':
             result = aporte.tasa * AESSALUD
             </field>
-            <field name="category_id" ref="APOR_EMP"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <!-- SCTR (D.S. 003-98-SA): solo para quien tiene la cobertura
              marcada; base = remuneración asegurable. El código PLAME
@@ -926,8 +926,8 @@ for aporte in version.contributions_ids:
             <field name="amount_python_compute">
 result = payslip._l10n_pe_sctr('health', AESSALUD)
             </field>
-            <field name="category_id" ref="APOR_EMP"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_SCTRP">
             <field name="name">SCTR pensión</field>
@@ -940,8 +940,8 @@ result = payslip._l10n_pe_sctr('health', AESSALUD)
             <field name="amount_python_compute">
 result = payslip._l10n_pe_sctr('pension', AESSALUD)
             </field>
-            <field name="category_id" ref="APOR_EMP"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_AEM">
             <field name="name">Total Aportes Empleador</field>
@@ -953,8 +953,8 @@ result = payslip._l10n_pe_sctr('pension', AESSALUD)
             <field name="amount_python_compute">
 result = ESSALUD + EPS225 + SVLEY
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_REMAFE">
@@ -970,8 +970,8 @@ if payslip.membership_id.is_afp:
 else:
     result =(AONP-VAC-VATRU)/(AONP if AONP>0 else 1)
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_VACAFE">
             <field name="name">Vacaciones afectas</field>
@@ -986,8 +986,8 @@ if payslip.membership_id.is_afp:
 else:
     result =(VAC+VATRU)/(AONP if AONP>0 else 1)
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_NETREMU">
             <field name="name">Neto Remuneraciones</field>
@@ -1003,8 +1003,8 @@ if net_rem &lt; 0:
 else:
     result = net_rem
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_NETVACA">
             <field name="name">Neto Vacaciones</field>
@@ -1023,8 +1023,8 @@ if net_rem &lt; 0:
 else:
     result = (net_vac - ADE_VAC) if abs(net_vac - ADE_VAC) >0.1 else 0
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
 
         <record model="hr.salary.rule" id="salary_rule_ROAQ">
@@ -1037,8 +1037,8 @@ else:
             <field name="amount_python_compute">
 result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_REAQ">
             <field name="name">Remuneracion Extra Afecta Quinta</field>
@@ -1050,8 +1050,8 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
             <field name="amount_python_compute">
 result = BONI_EX+UTIL+INDVAC
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_PIAQ">
             <field name="name">Proyeccion Ingresos Afectos Quinta</field>
@@ -1063,8 +1063,8 @@ result = BONI_EX+UTIL+INDVAC
             <field name="amount_python_compute">
 result = version.wage+AF+TOT_EXT+BONR+COMI
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
         <record model="hr.salary.rule" id="salary_rule_RAU">
             <field name="name">Remuneracion Afecta Utilidades</field>
@@ -1076,8 +1076,8 @@ result = version.wage+AF+TOT_EXT+BONR+COMI
             <field name="amount_python_compute">
 result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+COMP_VAC+VAC+VATRU+GRA+BON9+GRA_TRU+BON9_TRU+COMI
             </field>
-            <field name="category_id" ref="SUB"/>
-            <field name="struct_id" ref="base_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
     </data>
 </odoo>

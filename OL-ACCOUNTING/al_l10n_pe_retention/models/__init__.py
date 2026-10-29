@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import l10n_pe_edi_cpe_service
 from . import retention_edi_mixin
 from . import res_company
 from . import account_tax

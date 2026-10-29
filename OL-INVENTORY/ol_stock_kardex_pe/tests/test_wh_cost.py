@@ -167,7 +167,7 @@ class TestWarehouseCost(TestSaleCommon):
         valuation_account = self.product.categ_id.property_stock_valuation_account_id \
             or self.company.account_stock_valuation_id
         with freeze_time('2024-02-05'):
-            values = self.company.stock_value(at_date=date(2024, 1, 31))
+            values = self.company.get_inventory_value(at_date=date(2024, 1, 31))
             self.assertAlmostEqual(values[valuation_account], 250.0, places=2)
             close = self.env['l10n_pe.stock.cost.close'].create({'date': date(2024, 1, 31)})
             close.action_close()

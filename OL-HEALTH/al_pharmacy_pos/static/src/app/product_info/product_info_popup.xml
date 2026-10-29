@@ -6,7 +6,7 @@
     <t t-name="al_pharmacy_pos.ProductInfoPopup" t-inherit="point_of_sale.ProductInfoPopup"
        t-inherit-mode="extension">
         <xpath expr="//t[@t-set-slot='header']" position="after">
-            <t t-set="ph" t-value="props.info.productInfo?.pharmacy"/>
+            <t t-set="ph" t-value="this.props.info.productInfo?.pharmacy"/>
             <div t-if="ph" class="alph-info text-start mt-2 mb-4 pb-3 border-bottom">
                 <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                     <h3 class="section-title mb-0 me-2">Información farmacéutica</h3>
@@ -26,7 +26,7 @@
                         <span t-foreach="ph.presentations" t-as="presentation" t-key="presentation_index"
                               class="alph-pill">
                             <strong t-out="presentation.name"/> x <t t-out="presentation.factor"/>
-                            · <t t-out="env.utils.formatCurrency(presentation.price)"/>
+                            · <t t-out="this.env.utils.formatCurrency(presentation.price)"/>
                         </span>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                                 <span class="text-muted" t-out="equivalent.type"/>
                                 <span t-if="equivalent.bioequivalent" class="alph-badge alph-badge--bioequivalent">Bioequivalente</span>
                             </span>
-                            <span class="alph-equivalent__price" t-out="env.utils.formatCurrency(equivalent.price)"/>
+                            <span class="alph-equivalent__price" t-out="this.env.utils.formatCurrency(equivalent.price)"/>
                             <span t-attf-class="small {{ equivalent.qty > 0 ? 'text-success' : 'text-danger' }}">
                                 <t t-if="equivalent.qty > 0"><t t-out="equivalent.qty"/> en stock</t>
                                 <t t-else="">Sin stock</t>

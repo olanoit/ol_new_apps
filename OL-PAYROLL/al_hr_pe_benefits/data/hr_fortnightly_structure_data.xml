@@ -26,8 +26,8 @@
             <field name="amount_python_compute">
 result = payslip._l10n_pe_fortnightly_basic()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="fortnightly_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('fortnightly_structure')])]"/>
         </record>
         <record id="rule_AF_AQ" model="hr.salary.rule">
             <field name="name">Adelanto de asignación familiar</field>
@@ -39,8 +39,8 @@ result = payslip._l10n_pe_fortnightly_basic()
             <field name="amount_python_compute">
 result = payslip._l10n_pe_fortnightly_family_allowance()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="fortnightly_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('fortnightly_structure')])]"/>
         </record>
         <record id="rule_TINGR_AQ" model="hr.salary.rule">
             <field name="name">Total adelanto</field>
@@ -52,8 +52,8 @@ result = payslip._l10n_pe_fortnightly_family_allowance()
             <field name="amount_python_compute">
 result = BAS_AQ + AF_AQ
             </field>
-            <field name="category_id" ref="al_hr_pe.SUB"/>
-            <field name="struct_id" ref="fortnightly_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('fortnightly_structure')])]"/>
         </record>
         <record id="rule_TAT_AQ" model="hr.salary.rule">
             <field name="name">Aportes previsionales a cuenta</field>
@@ -65,8 +65,8 @@ result = BAS_AQ + AF_AQ
             <field name="amount_python_compute">
 result = payslip._l10n_pe_fortnightly_pension(TINGR_AQ)
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="fortnightly_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('fortnightly_structure')])]"/>
         </record>
         <record id="rule_TDESN_AQ" model="hr.salary.rule">
             <field name="name">Adelantos y préstamos de quincena</field>
@@ -78,8 +78,8 @@ result = payslip._l10n_pe_fortnightly_pension(TINGR_AQ)
             <field name="amount_python_compute">
 result = payslip._l10n_pe_fortnightly_discounts()
             </field>
-            <field name="category_id" ref="al_hr_pe.DES_NET"/>
-            <field name="struct_id" ref="fortnightly_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.DES_NET')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('fortnightly_structure')])]"/>
         </record>
         <record id="rule_NETO_AQ" model="hr.salary.rule">
             <field name="name">Neto quincenal</field>
@@ -91,8 +91,8 @@ result = payslip._l10n_pe_fortnightly_discounts()
             <field name="amount_python_compute">
 result = TINGR_AQ - TAT_AQ - TDESN_AQ
             </field>
-            <field name="category_id" ref="al_hr_pe.SUB"/>
-            <field name="struct_id" ref="fortnightly_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('fortnightly_structure')])]"/>
         </record>
     </data>
     <!-- Neto quincenal e input del mensual por defecto (sin pisar lo que

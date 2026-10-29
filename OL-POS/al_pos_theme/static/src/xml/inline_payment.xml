@@ -53,7 +53,7 @@
             <attribute name="t-if">!alptInlinePayment</attribute>
         </xpath>
         <xpath expr="//div[hasclass('pads')]" position="after">
-            <AlptInlinePayment t-if="alptInlinePayment" t-key="currentOrder.uuid" orderUuid="currentOrder.uuid"/>
+            <AlptInlinePayment t-if="this.alptInlinePayment" t-key="this.currentOrder.uuid" orderUuid="currentOrder.uuid"/>
         </xpath>
     </t>
 

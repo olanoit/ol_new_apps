@@ -29,21 +29,23 @@ class ConstructionPortal(CustomerPortal):
     def _construction_partner(self):
         return request.env.user.partner_id.commercial_partner_id
 
-    def _construction_lines(self, extra_domain=None):
+    def _construction_lines_domain(self):
         """Líneas del plan vigente asignadas a la empresa del usuario."""
-        # sudo: el usuario portal no lee el plan; el dominio lo limita a sus
-        # líneas (contrata = su empresa) en planes vigentes.
-        Line_sudo = request.env['construction.resource.plan.line'].sudo()
         # Solo las etapas de campo y los niveles que reciben avance en la
         # plantilla de la obra (v1.7, M17-17).
         field_stages = list(request.env['construction.stage'].sudo()._field_codes())
-        domain = [('partner_id', 'child_of', self._construction_partner().id),
-                  ('resource_type', 'in', DRIVER_TYPES), ('activity_id', '!=', False),
-                  ('task_id', '!=', False), ('plan_id.state', 'in', OPEN_STATES),
-                  ('stage', 'in', field_stages + [False]),
-                  '|', ('task_id.construction_level_line_id', '=', False),
-                  ('task_id.construction_level_line_id.receives_progress', '=', True)]
-        return Line_sudo.search(domain + (extra_domain or []))
+        return [('partner_id', 'child_of', self._construction_partner().id),
+                ('resource_type', 'in', DRIVER_TYPES), ('activity_id', '!=', False),
+                ('task_id', '!=', False), ('plan_id.state', 'in', OPEN_STATES),
+                ('stage', 'in', field_stages + [False]),
+                '|', ('task_id.construction_level_line_id', '=', False),
+                ('task_id.construction_level_line_id.receives_progress', '=', True)]
+
+    def _construction_lines(self, extra_domain=None):
+        # sudo: el usuario portal no lee el plan; el dominio lo limita a sus
+        # líneas (contrata = su empresa) en planes vigentes.
+        Line_sudo = request.env['construction.resource.plan.line'].sudo()
+        return Line_sudo.search(self._construction_lines_domain() + (extra_domain or []))
 
     def _construction_progress(self):
         # sudo: solo los avances de las líneas de la empresa del usuario.
@@ -51,12 +53,12 @@ class ConstructionPortal(CustomerPortal):
             ('partner_id', 'child_of', self._construction_partner().id)],
             order='date desc, id desc', limit=200)
 
-    def _prepare_home_portal_values(self, counters):
-        values = super()._prepare_home_portal_values(counters)
-        if 'construction_line_count' in counters:
-            values['construction_line_count'] = len(self._construction_lines()) \
-                if not request.env.user._is_public() else 0
-        return values
+    def _prepare_portal_counter_values(self, counter):
+        # Odoo 20: los contadores de «Mi cuenta» se piden con
+        # (modelo, dominio, acceso); sudo, como _construction_lines.
+        if counter == 'construction_line_count' and not request.env.user._is_public():
+            return 'construction.resource.plan.line', self._construction_lines_domain(), 'sudo'
+        return super()._prepare_portal_counter_values(counter)
 
     # ------------------------------------------------------------------
     # P-23 · Mis obras y tareas

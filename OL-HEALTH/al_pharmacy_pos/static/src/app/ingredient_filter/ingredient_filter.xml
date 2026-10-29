@@ -38,7 +38,7 @@
     <t t-name="al_pharmacy_pos.ProductScreenIngredientFilter" t-inherit="point_of_sale.ProductScreen"
        t-inherit-mode="extension">
         <xpath expr="//CategorySelector" position="after">
-            <PharmacyIngredientSelector t-if="pos.config.pharmacy_ingredient_filter and !ui.isSmall"/>
+            <PharmacyIngredientSelector t-if="this.pos.config.pharmacy_ingredient_filter and !this.ui.isSmall"/>
         </xpath>
     </t>
 

@@ -30,9 +30,10 @@ class L10nPeLetterAccountConfig(models.Model):
         string='Tipo de letra',
         default='portfolio',
     )
+    # Odoo 20 retiró account.group: los grupos son cuentas padre.
     group_id = fields.Many2one(
-        'account.group',
-        string='Grupo',
+        'account.account',
+        string='Cuenta padre',
         check_company=True)
     account_id = fields.Many2one(
         'account.account',

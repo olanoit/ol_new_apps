@@ -103,7 +103,7 @@ class HrPayslip(models.Model):
         self.ensure_one()
         result = []
         for line in self.line_ids:
-            if line.category_id not in categories or not line.total:
+            if not (line.category_ids & categories) or not line.total:
                 continue
             result.append({
                 'codigo': line.salary_rule_id.sunat_code or '',

@@ -19,12 +19,12 @@
                 que muestran la píldora de precio extra para evitar que se
                 superpongan.
             -->
-            <button t-if="!props.isComboPopup and !props.comboExtraPrice"
+            <button t-if="!this.props.isComboPopup and !this.props.comboExtraPrice"
                     type="button"
                     class="pos-card-info-btn btn btn-light rounded-circle position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
-                    t-on-click="onInfoClick"
-                    t-att-title="infoLabel"
-                    t-att-aria-label="infoLabel">
+                    t-on-click="this.onInfoClick"
+                    t-att-title="this.infoLabel"
+                    t-att-aria-label="this.infoLabel">
                 <i class="oi" data-icon="info"/>
             </button>
         </xpath>

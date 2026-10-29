@@ -22,7 +22,7 @@
        t-inherit-mode="extension">
 
         <xpath expr="//CategorySelector" position="after">
-            <PosTagSelector t-if="pos.config.iface_filter_products_by_tag and !ui.isSmall"/>
+            <PosTagSelector t-if="this.pos.config.iface_filter_products_by_tag and !this.ui.isSmall"/>
         </xpath>
 
     </t>

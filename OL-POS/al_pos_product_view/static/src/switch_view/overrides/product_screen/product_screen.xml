@@ -17,15 +17,15 @@
                 separado de la lista de productos / filas que siguen.
             -->
             <div class="pos-view-switch d-flex justify-content-end align-items-center px-2 py-2 mb-2 mb-md-3 border-bottom"
-                 t-if="!pos.scanning">
+                 t-if="!this.pos.scanning">
                 <button type="button"
                         class="btn btn-sm btn-light pos-view-switch__btn d-flex align-items-center gap-2"
-                        t-on-click="toggleProductView"
-                        t-att-title="switchViewLabel"
-                        t-att-aria-label="switchViewLabel">
-                    <i t-attf-class="oi oi-fw {{ state.viewMode === 'list' ? 'fa-th-large' : 'fa-list' }}"/>
+                        t-on-click="this.toggleProductView"
+                        t-att-title="this.switchViewLabel"
+                        t-att-aria-label="this.switchViewLabel">
+                    <i t-attf-class="oi oi-fw {{ this.state.viewMode === 'list' ? 'fa-th-large' : 'fa-list' }}"/>
                     <span class="d-none d-md-inline">
-                        <t t-if="state.viewMode === 'list'">Cuadrícula</t>
+                        <t t-if="this.state.viewMode === 'list'">Cuadrícula</t>
                         <t t-else="">Lista</t>
                     </span>
                 </button>
@@ -69,7 +69,7 @@
         -->
         <xpath expr="//ProductCard" position="after">
             <ProductListRow
-                t-if="state.viewMode === 'list'"
+                t-if="this.state.viewMode === 'list'"
                 t-foreach="productCateg[1]" t-as="product" t-key="'list-' + product.id"
                 product="product"
                 name="getProductName(product)"

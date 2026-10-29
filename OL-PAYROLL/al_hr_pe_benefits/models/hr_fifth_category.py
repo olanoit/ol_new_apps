@@ -502,7 +502,7 @@ class HrFifthCategoryLine(models.Model):
         # código QUINTA en al_hr_pe.base_structure.
         struct = self.env.ref('al_hr_pe.base_structure')
         return self.env['hr.salary.rule'].search([
-            ('struct_id', '=', struct.id),
+            ('struct_ids', 'in', struct.ids),
             ('code', '=', 'QUINTA'),
         ], limit=1)
 

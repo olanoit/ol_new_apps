@@ -508,8 +508,8 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         })
         regla_neto = self.env['hr.salary.rule'].create({
             'name': 'Neto a pagar', 'code': 'NETO',
-            'category_id': self.env.ref('al_hr_pe.ING').id,
-            'struct_id': estructura.id, 'sequence': 500,
+            'category_ids': [(6, 0, self.env.ref('al_hr_pe.ING').ids)],
+            'struct_ids': [(6, 0, estructura.ids)], 'sequence': 500,
             'amount_select': 'fix', 'amount_fix': 1234.56,
         })
         self.env['hr.main.parameter'].create({

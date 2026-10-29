@@ -41,8 +41,8 @@ class TestVersionPoc(TestPayslipBase):
         self.env['hr.salary.rule'].create({
             'name': 'Divisor por régimen (PoC)',
             'code': 'PE_POC',
-            'category_id': self.env.ref('hr_payroll.ALW').id,
-            'struct_id': structure.id,
+            'category_ids': [(6, 0, self.env.ref('hr_payroll.ALW').ids)],
+            'struct_ids': [(6, 0, structure.ids)],
             'sequence': 6,
             'amount_select': 'code',
             'amount_python_compute': (
@@ -55,7 +55,7 @@ class TestVersionPoc(TestPayslipBase):
         payslip = self.env['hr.payslip'].create({
             'name': 'PoC PE',
             'employee_id': emp.id,
-            'struct_id': structure.id,
+            'struct_ids': [(6, 0, structure.ids)],
             'date_from': date(2023, 1, 1),
             'date_to': date(2023, 1, 31),
         })

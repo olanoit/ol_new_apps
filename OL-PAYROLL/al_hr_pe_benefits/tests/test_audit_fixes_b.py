@@ -44,7 +44,7 @@ class TestAuditFixesB(BenefitsCaseBase):
     def _configure_fifth(self):
         Rule = self.env['hr.salary.rule']
         struct = self.structure
-        rule = {code: Rule.search([('struct_id', '=', struct.id),
+        rule = {code: Rule.search([('struct_ids', 'in', struct.ids),
                                    ('code', '=', code)], limit=1)
                 for code in ('BAS', 'REAQ')}
         quinta_input = self.env['hr.payslip.input.type'].search(

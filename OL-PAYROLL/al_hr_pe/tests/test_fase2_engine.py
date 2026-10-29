@@ -141,7 +141,7 @@ class TestFase2Engine(TransactionCase):
         neto = self._line(slip, 'NETO')
         if neto:
             ing = sum(slip.line_ids.filtered(
-                lambda l: l.category_id == self.env.ref('al_hr_pe.ING')
+                lambda l: self.env.ref('al_hr_pe.ING') in l.category_ids
             ).mapped('total'))
             self.assertAlmostEqual(
                 neto.total,

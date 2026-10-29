@@ -91,7 +91,7 @@ class BenefitsCaseBase(TransactionCase):
             slip = cls.env['hr.payslip'].create({
                 'name': 'Boleta %s-%02d' % (year, month),
                 'employee_id': cls.employee.id,
-                'struct_id': cls.structure.id,
+                'struct_ids': [(6, 0, cls.structure.ids)],
                 'date_from': date(year, month, 1),
                 'date_to': date(year, month, last),
                 'payslip_run_id': run.id,
@@ -110,8 +110,8 @@ class BenefitsCaseBase(TransactionCase):
         })
         return cls.env['hr.salary.rule'].create({
             'name': code, 'code': code,
-            'category_id': cls.env.ref('al_hr_pe.ING').id,
-            'struct_id': struct.id, 'sequence': 5,
+            'category_ids': [(6, 0, cls.env.ref('al_hr_pe.ING').ids)],
+            'struct_ids': [(6, 0, struct.ids)], 'sequence': 5,
             'amount_select': 'fix', 'amount_fix': 0.0,
         })
 

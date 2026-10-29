@@ -132,7 +132,7 @@ class HrPayslipRun(models.Model):
             for line in slip.line_ids:
                 # Igual que el flujo nativo, solo cuentan las líneas con
                 # categoría (resultados de reglas reales).
-                if not line.category_id or not line.total:
+                if not line.category_ids or not line.total:
                     continue
                 # with_company: account_debit/account_credit son
                 # company_dependent en v19 (la regla ya no tiene

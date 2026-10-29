@@ -38,7 +38,7 @@ se usaban en la lógica del módulo).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_account_letter/static/description/icon.png',
-    'version': '23.20261027',
+    'version': '24.20261029',
     'license': 'OPL-1',
     'depends': [
         'mail',

@@ -10,12 +10,12 @@
     -->
     <t t-name="al_pos_theme.Navbar" t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('navbar-menu')]" position="before">
-            <div t-if="!ui.isSmall" class="alpt-navbar-brand pos-logo flex-shrink-0" role="img"
-                 t-att-aria-label="pos.config.name"/>
+            <div t-if="!this.ui.isSmall" class="alpt-navbar-brand pos-logo flex-shrink-0" role="img"
+                 t-att-aria-label="this.pos.config.name"/>
             <!-- Teléfono: sin espacio para el logo completo, va sólo el
                  isotipo (favicon de la caja, o el icono del módulo). -->
-            <div t-if="ui.isSmall" class="alpt-navbar-brand-icon flex-shrink-0" role="img"
-                 t-att-aria-label="pos.config.name"/>
+            <div t-if="this.ui.isSmall" class="alpt-navbar-brand-icon flex-shrink-0" role="img"
+                 t-att-aria-label="this.pos.config.name"/>
         </xpath>
         <xpath expr="//div[hasclass('pos-centerheader')]" position="replace"/>
 
@@ -30,7 +30,7 @@
             copias (`ui.isSmall`); ambas escriben en `pos.searchProductWord`.
         -->
         <xpath expr="//div[hasclass('pos-leftheader')]" position="inside">
-            <Input t-if="!ui.isSmall and pos.showSearchButton()"
+            <Input t-if="!this.ui.isSmall and this.pos.showSearchButton()"
                    tModel="[pos, 'searchProductWord']"
                    class="'alpt-navbar-search'"
                    isSmall="false"
@@ -42,13 +42,13 @@
         <!-- Botón «Categorías»: solo con «Mostrar u ocultar categorías» activo
              en la caja y en la pantalla de productos. -->
         <xpath expr="//div[hasclass('pos-leftheader')]" position="inside">
-            <button t-if="pos.config.al_theme_category_toggle and pos.showSearchButton()" type="button"
-                    t-attf-class="btn btn-light alpt-category-toggle d-flex align-items-center gap-2 flex-shrink-0 {{ pos.alptCategoriesHidden ? '' : 'active' }}"
-                    t-att-aria-pressed="pos.alptCategoriesHidden ? 'false' : 'true'"
-                    t-att-title="pos.alptCategoriesHidden ? 'Mostrar categorías' : 'Ocultar categorías'"
-                    t-on-click="() => pos.toggleAlptCategories()">
-                <i t-attf-class="oi oi-fw {{ pos.alptCategoriesHidden ? '' : '' }}" t-attf-data-icon="{{ pos.alptCategoriesHidden ? 'visibility' : 'visibility_off' }}"/>
-                <span t-if="!ui.isSmall">Categorías</span>
+            <button t-if="this.pos.config.al_theme_category_toggle and this.pos.showSearchButton()" type="button"
+                    t-attf-class="btn btn-light alpt-category-toggle d-flex align-items-center gap-2 flex-shrink-0 {{ this.pos.alptCategoriesHidden ? '' : 'active' }}"
+                    t-att-aria-pressed="this.pos.alptCategoriesHidden ? 'false' : 'true'"
+                    t-att-title="this.pos.alptCategoriesHidden ? 'Mostrar categorías' : 'Ocultar categorías'"
+                    t-on-click="() => this.pos.toggleAlptCategories()">
+                <i t-attf-class="oi oi-fw {{ this.pos.alptCategoriesHidden ? '' : '' }}" t-attf-data-icon="{{ this.pos.alptCategoriesHidden ? 'visibility' : 'visibility_off' }}"/>
+                <span t-if="!this.ui.isSmall">Categorías</span>
             </button>
         </xpath>
         <xpath expr="//div[hasclass('pos-rightheader')]//Input" position="attributes">

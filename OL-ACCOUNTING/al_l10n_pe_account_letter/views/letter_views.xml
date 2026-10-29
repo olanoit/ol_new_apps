@@ -419,48 +419,48 @@
             </field>
         </record>
 
-        <record id="account_letter_rule_company" model="ir.rule">
+        <record id="account_letter_rule_company" model="ir.access">
             <field name="name">Letra de cambio multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="operation">crud</field>
+            <field name="domain">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
         <!-- El canje masivo es un modelo aparte (herencia por prototipo): la
              regla del canje no le alcanza. -->
-        <record id="account_letter_massive_rule_company" model="ir.rule">
+        <record id="account_letter_massive_rule_company" model="ir.access">
             <field name="name">Canje masivo multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter_massive"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="operation">crud</field>
+            <field name="domain">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
-        <record id="account_letter_line_rule_company" model="ir.rule">
+        <record id="account_letter_line_rule_company" model="ir.access">
             <field name="name">Letras multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter_line"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="operation">crud</field>
+            <field name="domain">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
-        <record id="account_letter_invoice_line_rule_company" model="ir.rule">
+        <record id="account_letter_invoice_line_rule_company" model="ir.access">
             <field name="name">Documentos del canje multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter_invoice_line"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="operation">crud</field>
+            <field name="domain">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
-        <record id="account_letter_residual_rule_company" model="ir.rule">
+        <record id="account_letter_residual_rule_company" model="ir.access">
             <field name="name">Redondeo del canje multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter_residual"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+            <field name="operation">crud</field>
+            <field name="domain">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
-        <record id="account_letter_account_config_rule_company" model="ir.rule">
+        <record id="account_letter_account_config_rule_company" model="ir.access">
             <field name="name">Cuentas de letras multi-company</field>
             <field name="model_id" ref="model_l10n_pe_letter_account_config"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+            <field name="operation">crud</field>
+            <field name="domain">[('company_id', 'in', company_ids)]</field>
         </record>
 
         <record id="view_account_letter_link_summary" model="ir.ui.view">

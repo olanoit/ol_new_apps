@@ -13,13 +13,23 @@ from odoo import models
 class L10nPeRetentionEdiMixin(models.AbstractModel):
     _inherit = 'l10n_pe.retention.edi.mixin'
 
-    def _l10n_pe_edi_sign_retention(self, edi_format, filename, edi_str):
+    def _l10n_pe_edi_hka_context(self, function):
+        """Por HKA si la compañía lo usa para esta función; si no, directo a
+        SUNAT con la clave SOL."""
+        if self.company_id._l10n_pe_edi_factory_hka_uses(function):
+            return self
+        return self.with_context(l10n_pe_edi_direct_sunat=True)
+
+    def _l10n_pe_edi_sign_retention(self, filename, edi_str):
         # Factory HKA recibe el CRE en el mismo billService que las facturas
-        # (y el comprobante de percepción, tipo 40, de al_l10n_pe_perception).
+        # (y el comprobante de percepción, tipo 40, de al_l10n_pe_perception),
+        # con el número en 8 dígitos.
         if self.company_id._l10n_pe_edi_factory_hka_uses('retention'):
-            return edi_format._l10n_pe_edi_sign_service_factory_hka(
-                self.company_id, filename, edi_str, self._l10n_pe_edi_cpe_type())
-        return super()._l10n_pe_edi_sign_retention(edi_format, filename, edi_str)
+            prefix, sep, number = filename.rpartition('-')
+            if sep and number.isdigit():
+                filename = '%s-%s' % (prefix, number.zfill(8))
+        return super(L10nPeRetentionEdiMixin, self._l10n_pe_edi_hka_context('retention')) \
+            ._l10n_pe_edi_sign_retention(filename, edi_str)
 
     def _l10n_pe_edi_reversal_supported(self):
         """Con Factory HKA, la reversión es una función que se activa en los
@@ -38,14 +48,12 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
         return (company._l10n_pe_edi_factory_hka_uses('retention')
                 and company._l10n_pe_edi_factory_hka_uses('reversal'))
 
-    def _l10n_pe_edi_reversal_send(self, edi_format, filename, edi_str):
-        if self._l10n_pe_edi_reversal_by_factory_hka():
-            return edi_format._l10n_pe_edi_cancel_invoices_step_1_factory_hka(
-                self.company_id, self, filename, edi_str)
-        return super()._l10n_pe_edi_reversal_send(edi_format, filename, edi_str)
+    def _l10n_pe_edi_reversal_send(self, filename, edi_str):
+        records = self if self._l10n_pe_edi_reversal_by_factory_hka() \
+            else self.with_context(l10n_pe_edi_direct_sunat=True)
+        return super(L10nPeRetentionEdiMixin, records)._l10n_pe_edi_reversal_send(filename, edi_str)
 
-    def _l10n_pe_edi_reversal_status(self, edi_format, ticket):
-        if self._l10n_pe_edi_reversal_by_factory_hka():
-            return edi_format._l10n_pe_edi_cancel_invoices_step_2_factory_hka(
-                self.company_id, [], ticket)
-        return super()._l10n_pe_edi_reversal_status(edi_format, ticket)
+    def _l10n_pe_edi_reversal_status(self, ticket):
+        records = self if self._l10n_pe_edi_reversal_by_factory_hka() \
+            else self.with_context(l10n_pe_edi_direct_sunat=True)
+        return super(L10nPeRetentionEdiMixin, records)._l10n_pe_edi_reversal_status(ticket)

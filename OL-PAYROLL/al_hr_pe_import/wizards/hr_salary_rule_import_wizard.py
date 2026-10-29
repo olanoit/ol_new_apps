@@ -25,7 +25,7 @@ v19: ``hr.salary.rule`` mantiene ``amount_python_compute`` /
 import logging
 import re
 
-from odoo import fields, models
+from odoo import Command, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -231,8 +231,8 @@ class AlImportHrSalaryRuleWizard(models.TransientModel):
             'code': code,
             'name': name,
             'sequence': self._to_int(row.get('sequence')),
-            'category_id': category.id,
-            'struct_id': self.struct_id.id,
+            'category_ids': [Command.set(category.ids)],
+            'struct_ids': [Command.set(self.struct_id.ids)],
             'amount_select': 'code',
         }
         if amount_python:
@@ -250,7 +250,7 @@ class AlImportHrSalaryRuleWizard(models.TransientModel):
         # recuperar también reglas archivadas con el mismo código.
         existing = Rule.with_context(active_test=False).search([
             ('code', '=', code),
-            ('struct_id', '=', self.struct_id.id),
+            ('struct_ids', 'in', self.struct_id.ids),
         ], limit=1)
 
         suffix = ' [%s]' % '; '.join(notes) if notes else ''

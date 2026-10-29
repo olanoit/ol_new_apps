@@ -59,7 +59,7 @@ class AccountCaseBase(BenefitsCaseBase):
 
         def _rule(code):
             return Rule.search([
-                ('code', '=', code), ('struct_id', '=', struct.id)],
+                ('code', '=', code), ('struct_ids', 'in', struct.ids)],
                 limit=1)
 
         cls.rule_bas = _rule('BAS')

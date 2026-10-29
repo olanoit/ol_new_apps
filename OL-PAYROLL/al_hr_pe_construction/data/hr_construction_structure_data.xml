@@ -46,8 +46,8 @@
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_amount('jornal')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_DSO" model="hr.salary.rule">
@@ -63,8 +63,8 @@ result = payslip._l10n_pe_construction_amount('jornal')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_amount('dso')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_BUC" model="hr.salary.rule">
@@ -78,8 +78,8 @@ result = payslip._l10n_pe_construction_amount('dso')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_amount('buc')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_MOV" model="hr.salary.rule">
@@ -93,8 +93,8 @@ result = payslip._l10n_pe_construction_amount('buc')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_amount('movilidad')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_BAE" model="hr.salary.rule">
@@ -108,8 +108,8 @@ result = payslip._l10n_pe_construction_amount('movilidad')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_bonus('BAE')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <!-- Bonificaciones por condiciones de trabajo. Cada regla suma
@@ -131,8 +131,8 @@ result = payslip._l10n_pe_construction_bonus('BAE')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_bonus('BALTI')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_BAGUA" model="hr.salary.rule">
@@ -146,8 +146,8 @@ result = payslip._l10n_pe_construction_bonus('BALTI')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_bonus('BAGUA')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_BCOTA" model="hr.salary.rule">
@@ -161,8 +161,8 @@ result = payslip._l10n_pe_construction_bonus('BAGUA')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_bonus('BCOTA')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_BALTU" model="hr.salary.rule">
@@ -176,8 +176,8 @@ result = payslip._l10n_pe_construction_bonus('BCOTA')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_bonus('BALTU')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <!-- Sobretiempo: 60 % las dos primeras horas, 100 % el resto
@@ -193,8 +193,8 @@ result = payslip._l10n_pe_construction_bonus('BALTU')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_overtime('HE60', 1.6)
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_HE100" model="hr.salary.rule">
@@ -208,8 +208,8 @@ result = payslip._l10n_pe_construction_overtime('HE60', 1.6)
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <!-- Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9):
@@ -228,8 +228,8 @@ result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_rest_work_surcharge()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
 
@@ -250,8 +250,8 @@ result = payslip._l10n_pe_construction_rest_work_surcharge()
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_cts()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_VAC10" model="hr.salary.rule">
@@ -265,8 +265,8 @@ result = payslip._l10n_pe_construction_cts()
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_amount('vacaciones')
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_GRAT" model="hr.salary.rule">
@@ -282,8 +282,8 @@ result = payslip._l10n_pe_construction_amount('vacaciones')
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_gratification()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_BEXT" model="hr.salary.rule">
@@ -297,8 +297,8 @@ result = payslip._l10n_pe_construction_gratification()
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_extra_bonus()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_AESC" model="hr.salary.rule">
@@ -314,8 +314,8 @@ result = payslip._l10n_pe_construction_extra_bonus()
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_school()
             </field>
-            <field name="category_id" ref="al_hr_pe.ING"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <!-- ============ DESCUENTOS ============ -->
@@ -334,8 +334,8 @@ result = payslip._l10n_pe_construction_school()
             <field name="amount_python_compute">
 result = -payslip._l10n_pe_construction_conafovicer()
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <!-- ============ APORTES DEL EMPLEADOR ============
@@ -354,8 +354,8 @@ result = -payslip._l10n_pe_construction_conafovicer()
 result = payslip._l10n_pe_construction_employer_rate(
     'l10n_pe_construction_essalud_rate', TREM)
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_EMP"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_SCTRS" model="hr.salary.rule">
@@ -369,8 +369,8 @@ result = payslip._l10n_pe_construction_employer_rate(
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_sctr('health', TREM)
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_EMP"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_SCTRP" model="hr.salary.rule">
@@ -384,8 +384,8 @@ result = payslip._l10n_pe_construction_sctr('health', TREM)
             <field name="amount_python_compute">
 result = payslip._l10n_pe_construction_sctr('pension', TREM)
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_EMP"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_EMP')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_TREM" model="hr.salary.rule">
@@ -404,8 +404,8 @@ result = payslip._l10n_pe_construction_sctr('pension', TREM)
 result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
           + HE60 + HE100 + FER100 + AESC)
             </field>
-            <field name="category_id" ref="al_hr_pe.SUB"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <!-- Pensiones del trabajador sobre TREM. Mismos códigos y códigos
@@ -431,8 +431,8 @@ if payslip.membership_id and not payslip.membership_id.is_afp:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_A_JUB" model="hr.salary.rule">
@@ -450,8 +450,8 @@ if payslip.membership_id.is_afp:
 else:
     result = 0
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_COMFI" model="hr.salary.rule">
@@ -470,8 +470,8 @@ if (version.l10n_pe_commission_type == 'flow'
 else:
     result = 0
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_COMMIX" model="hr.salary.rule">
@@ -490,8 +490,8 @@ if (version.l10n_pe_commission_type == 'mixed'
 else:
     result = 0
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_SEGI" model="hr.salary.rule">
@@ -514,8 +514,8 @@ if (not version.l10n_pe_is_older
 else:
     result = 0
             </field>
-            <field name="category_id" ref="al_hr_pe.APOR_TRA"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_TINGR" model="hr.salary.rule">
@@ -528,8 +528,8 @@ else:
             <field name="amount_python_compute">
 result = categories['ING']
             </field>
-            <field name="category_id" ref="al_hr_pe.POR"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.POR')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_TDES" model="hr.salary.rule">
@@ -545,8 +545,8 @@ result = categories['ING']
             <field name="amount_python_compute">
 result = -(categories['APOR_TRA'] + categories['DES_NET'])
             </field>
-            <field name="category_id" ref="al_hr_pe.SUB"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
         <record id="rule_NETO" model="hr.salary.rule">
@@ -562,8 +562,8 @@ result = -(categories['APOR_TRA'] + categories['DES_NET'])
             <field name="amount_python_compute">
 result = TINGR - TDES
             </field>
-            <field name="category_id" ref="al_hr_pe.SUB"/>
-            <field name="struct_id" ref="construction_structure"/>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
     </data>

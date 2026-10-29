@@ -242,7 +242,7 @@ class HrPayslip(models.Model):
                         0.0, period_days - other_days)
         return res
 
-    @api.depends('line_ids.total', 'line_ids.category_id')
+    @api.depends('line_ids.total', 'line_ids.category_ids')
     def _compute_l10n_pe_totals(self):
         """Totales PLAME sumando por categoría (sin códigos de regla
         hardcodeados — plan §5.2)."""
@@ -256,9 +256,10 @@ class HrPayslip(models.Model):
         }
         for slip in self:
             by_cat = {}
+            # Odoo 20: una regla puede tener varias categorías.
             for line in slip.line_ids:
-                by_cat.setdefault(line.category_id, 0.0)
-                by_cat[line.category_id] += line.total
+                for category in line.category_ids:
+                    by_cat[category] = by_cat.get(category, 0.0) + line.total
             slip.worker_contributions = abs(by_cat.get(categ['worker'], 0.0))
             slip.net_discounts = abs(by_cat.get(categ['net'], 0.0))
             slip.employer_contributions = abs(

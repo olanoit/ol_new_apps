@@ -745,7 +745,7 @@ class HrPayslipRun(models.Model):
             amounts = [totals.get((slip.id, rule.id), 0.0) for slip in slips]
             by_rule.append([
                 rule.code, rule.name, rule.sunat_code or '',
-                rule.category_id.name or '',
+                ', '.join(rule.category_ids.mapped('name')),
                 sum(1 for amount in amounts if amount), sum(amounts)])
             by_rule.cell(row=by_rule.max_row, column=6).number_format = '#,##0.00'
         for index, width in enumerate((12, 40, 14, 26, 13, 15), start=1):
