@@ -16,9 +16,9 @@ class TestPlanBatch(TransactionCase):
         use_pe_company(cls)
         cls.company = cls.env.company
         pen = cls.env.ref('base.PEN')
-        bcp = cls.env['res.bank'].create({'name': 'BCP (prueba lote)', 'l10n_pe_batch_format': 'bcp'})
+        bcp = cls.env['l10n_pe.bank'].create({'name': 'BCP (prueba lote)', 'l10n_pe_batch_format': 'bcp'})
         account = cls.env['res.partner.bank'].create({
-            'partner_id': cls.company.partner_id.id, 'bank_id': bcp.id, 'account_number': '191-7654321-0-99',
+            'partner_id': cls.company.partner_id.id, 'l10n_pe_bank_id': bcp.id, 'account_number': '191-7654321-0-99',
             'currency_id': pen.id})
         cls.journal = cls.env['account.journal'].create({
             'name': 'BCP lote (prueba)', 'code': 'TBLT', 'type': 'bank', 'currency_id': pen.id,
@@ -26,14 +26,13 @@ class TestPlanBatch(TransactionCase):
         cls.method_line = cls.journal.outbound_payment_method_line_ids.filtered(lambda l: l.code == 'pe_bank_txt')
         purchase = cls.env['account.journal'].create({
             'name': 'Compras lote', 'code': 'TCLT', 'type': 'purchase', 'l10n_latam_use_documents': False})
-        ruc = cls.env.ref('l10n_pe.it_RUC')
         cls.bills = cls.env['account.move']
         for name, vat, number, amount in (('Proveedor lote uno', '20100070970', '193-1111111-0-11', 800.0),
                                           ('Proveedor lote dos', '20131312955', '193-2222222-0-22', 450.0)):
             partner = cls.env['res.partner'].create({
-                'name': name, 'is_company': True, 'vat': vat, 'l10n_latam_identification_type_id': ruc.id,
+                'name': name, 'is_company': True, 'vat': vat,
                 'country_id': cls.env.ref('base.pe').id})
-            cls.env['res.partner.bank'].create({'partner_id': partner.id, 'bank_id': bcp.id, 'account_number': number,
+            cls.env['res.partner.bank'].create({'partner_id': partner.id, 'l10n_pe_bank_id': bcp.id, 'account_number': number,
                                                 'allow_out_payment': True})
             bill = cls.env['account.move'].create({
                 'move_type': 'in_invoice', 'partner_id': partner.id, 'journal_id': purchase.id,

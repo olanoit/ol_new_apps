@@ -126,7 +126,7 @@ class L10nPeTreasuryPosition(models.Model):
             'position_id': self.id,
             'journal_id': journal.id,
             'kind': journal.l10n_pe_treasury_kind or ('cash' if journal.type == 'cash' else 'checking'),
-            'bank_id': journal.bank_id.id,
+            'bank_id': journal.bank_account_id.l10n_pe_bank_id.id,
             'currency_id': currency.id,
             'restricted': journal.l10n_pe_forecast_exclude,
             'balance': currency.round(self._l10n_pe_book_balance(journal)),
@@ -198,7 +198,7 @@ class L10nPeTreasuryPositionLine(models.Model):
     company_currency_id = fields.Many2one(related='company_id.currency_id', string='Moneda de la compañía')
     journal_id = fields.Many2one('account.journal', string='Banco o caja', required=True, check_company=True)
     kind = fields.Selection(ACCOUNT_KINDS, string='Tipo de cuenta')
-    bank_id = fields.Many2one('res.bank', string='Banco')
+    bank_id = fields.Many2one('l10n_pe.bank', string='Banco')
     currency_id = fields.Many2one('res.currency', string='Moneda', required=True)
     restricted = fields.Boolean(string='Restringida')
     has_statement = fields.Boolean(string='Con extracto')

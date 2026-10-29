@@ -20,7 +20,7 @@ class TestLookupDocument(TransactionCase):
         cls.connection = cls.env['l10n_pe.api.connection'].create({
             'name': 'API consulta test', 'engine': 'rest_json', 'auth_type': 'none',
             'base_url': 'https://api.example.test', 'endpoint_ruc': '/ruc/{doc}'})
-        cls.ruc_type = cls.env.ref('l10n_pe.it_RUC')
+        cls.ruc_type = '6'  # catálogo 06 de SUNAT
         cls.district = cls.env['l10n_pe.res.city.district'].search([('city_id', '!=', False)], limit=1)
         cls.Partner = cls.env['res.partner']
 
@@ -59,8 +59,6 @@ class TestLookupDocument(TransactionCase):
         self.assertEqual(result, {})
 
     def test_other_document_types_are_not_queried(self):
-        passport = self.env['l10n_latam.identification.type'].search(
-            [('l10n_pe_vat_code', 'not in', ('1', '6'))], limit=1)
-        result, run = self._lookup('AB123456', passport)
+        result, run = self._lookup('AB123456', '7')  # pasaporte
         run.assert_not_called()
         self.assertEqual(result, {})

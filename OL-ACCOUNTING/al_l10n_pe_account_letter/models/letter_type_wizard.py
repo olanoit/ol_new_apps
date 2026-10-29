@@ -20,7 +20,7 @@ class L10nPeLetterTypeWizard(models.TransientModel):
     )
     date_canje = fields.Date(
         string='Fecha de canje', required=True, default=fields.Date.context_today)
-    bank_id = fields.Many2one('res.bank', string='Banco', required=True)
+    bank_id = fields.Many2one('l10n_pe.bank', string='Banco', required=True)
     code = fields.Char(string='Código', required=True)
     letter_id = fields.Many2one(
         'l10n_pe.letter',

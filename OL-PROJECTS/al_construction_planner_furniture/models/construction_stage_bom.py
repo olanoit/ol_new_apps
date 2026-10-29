@@ -86,7 +86,7 @@ class ConstructionTypology(models.Model):
         for line in bom_sudo.bom_line_ids:
             stage = line.construction_consumption_stage
             if stage in codes:
-                result[(line.product_id, line.product_uom_id, stage)] += line.product_qty * factor
+                result[(line.product_id, line.uom_id, stage)] += line.product_qty * factor
         return result
 
     def _construction_intermediate_product(self, stage, company):
@@ -102,7 +102,7 @@ class ConstructionTypology(models.Model):
             values = {
                 'name': '%s · %s · %s' % (stage.name, self.code, self.project_id.name),
                 'default_code': code, 'type': 'consu', 'is_storable': True,
-                'tracking': 'none', 'sale_ok': False, 'purchase_ok': False,
+                'tracking': False, 'sale_ok': False, 'purchase_ok': False,
                 'company_id': company.id,
                 'construction_project_id': self.project_id.id,
             }

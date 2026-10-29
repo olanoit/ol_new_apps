@@ -41,8 +41,8 @@ class PosOrder(models.Model):
         journal = (config.l10n_pe_factura_journal_id if doc_type == 'factura'
                    else config.l10n_pe_boleta_journal_id)
         if doc_type == 'factura':
-            vat = (self.partner_id.vat or '').strip()
-            is_ruc = self.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code == '6'
+            vat = (self.partner_id.l10n_pe_sunat_id_value or '').strip()
+            is_ruc = self.partner_id.l10n_pe_sunat_id_code == '6'
             if not self.partner_id or not is_ruc or len(vat) != 11 or not vat.isdigit():
                 raise UserError(_(
                     'La factura electrónica requiere un cliente con RUC (tipo de '

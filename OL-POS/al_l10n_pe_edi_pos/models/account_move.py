@@ -72,8 +72,8 @@ class AccountMove(models.Model):
                 f'{move.amount_total:.2f}',
                 move.invoice_date.strftime('%Y-%m-%d') if move.invoice_date else '',
                 # el adquirente es la entidad comercial, como en el XML
-                move.commercial_partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
-                move.commercial_partner_id.vat or '',
+                move.commercial_partner_id.l10n_pe_sunat_id_code or '',
+                move.commercial_partner_id.l10n_pe_sunat_id_value or '',
             ])
 
     @api.model

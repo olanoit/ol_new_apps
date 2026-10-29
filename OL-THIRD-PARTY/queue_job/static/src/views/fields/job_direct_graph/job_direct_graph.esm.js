@@ -1,7 +1,7 @@
 /* @odoo-module */
 /* global vis */
 
-import { usePlugin } from "@odoo/owl";
+import { Component, onWillStart, usePlugin, useProps } from "@odoo/owl";
 import {loadCSS, loadJS} from "@web/core/assets";
 import {registry} from "@web/core/registry";
 import { useLayoutEffect, useRef } from "@web/owl2/utils";
@@ -9,12 +9,13 @@ import {standardFieldProps} from "@web/views/fields/standard_field_props";
 import {useService} from "@web/core/utils/hooks";
 import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
-const {Component, onWillStart, useLayoutEffect, useRef} = owl;
 
 const {document} = globalThis;
 
 class JobDirectGraph extends Component {
-    static props = {...standardFieldProps};
+    props = useProps({
+        ...standardFieldProps,
+    });
     static template = "queue.JobDirectGraph";
 
     setup() {

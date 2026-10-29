@@ -8,7 +8,7 @@
  * trae su acción con el filtro ya armado por el servidor
  * (`construction.planner.home.get_home_data`).
  */
-import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
+import { Component, onWillStart, proxy, usePlugin, useProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -25,7 +25,7 @@ const STATE_BADGES = {
 
 export class ConstructionPlannerHome extends Component {
     static template = "al_construction_planner.Home";
-    static props = ["*"];
+    props = useProps();
 
     setup() {
         this.orm = useService("orm");

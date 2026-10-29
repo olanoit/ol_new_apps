@@ -36,6 +36,8 @@ cero códigos hardcodeados (ver plan §5).
         'hr_payroll',
         'hr_payroll_account',
         'l10n_pe',
+        # l10n_pe_document_label del representante legal (contacto).
+        'al_account_base',
     ],
     'data': [
         'data/hr_worker_type.xml',

@@ -328,6 +328,5 @@ class TestInvoiceTaxBreakdown(AccountTestInvoicingCommon):
         igv = self._tax('1000')
         move = self._invoice([('Servicio', 1000.0, igv)])
         self.company.partner_id.bank_ids.filtered(
-            lambda b: b.bank_id == self.env.ref('l10n_pe.peruvian_national_bank')
-        ).unlink()
+            lambda b: b._l10n_pe_is_national_bank()).unlink()
         self.assertEqual(move._l10n_pe_get_national_bank_account_number(), '')

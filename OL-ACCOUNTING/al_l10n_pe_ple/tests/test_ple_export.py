@@ -199,12 +199,9 @@ class TestPleExport(TransactionCase):
     # 4.1 — Retenciones
     # ------------------------------------------------------------------
     def test_export_41(self):
-        dni_type = self.env['l10n_latam.identification.type'].search(
-            [('l10n_pe_vat_code', '=', '1')], limit=1)
         partner = self.env['res.partner'].create({
             'name': 'Juan Pérez Test',
-            'l10n_latam_identification_type_id': dni_type.id,
-            'vat': '46779810',
+            'additional_identifiers': {'PE_DNI': '46779810'},
         })
         record = self.env['l10n_pe.ple.withholding'].create({
             'date': date(2025, 3, 15),
@@ -247,11 +244,8 @@ class TestPleExport(TransactionCase):
             'default_code': 'CONS-001',
             'l10n_pe_type_of_existence': '1',
         })
-        ruc_type = self.env['l10n_latam.identification.type'].search(
-            [('l10n_pe_vat_code', '=', '6')], limit=1)
         partner = self.env['res.partner'].create({
             'name': 'Consignatario SAC',
-            'l10n_latam_identification_type_id': ruc_type.id,
             'vat': '20131312955',
         })
         picking_type = self.env['stock.picking.type'].search(
@@ -733,8 +727,6 @@ class TestPleExport(TransactionCase):
         company = self.env['res.partner'].create({
             'name': 'Proveedor Empresa SAC', 'is_company': True,
             'vat': '20131312955',
-            'l10n_latam_identification_type_id': self.env.ref(
-                'l10n_latam_base.it_vat').id,
         })
         contact = self.env['res.partner'].create({
             'name': 'Juan Pérez', 'parent_id': company.id})

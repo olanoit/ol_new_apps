@@ -177,7 +177,7 @@ class ResPartner(models.Model):
             main = partner.l10n_pe_economic_activity_ids.filtered(lambda l: l.kind == 'principal')[:1]
             partner.l10n_pe_main_activity_id = main.activity_id
 
-    @api.depends('l10n_latam_identification_type_id')
+    @api.depends('vat', 'additional_identifiers', 'company_type', 'country_id')
     @api.depends_context('company')
     def _compute_l10n_pe_lookup_state(self):
         company = self.env.company
@@ -193,58 +193,52 @@ class ResPartner(models.Model):
                 partner.l10n_pe_lookup_state = 'missing'
                 partner.l10n_pe_lookup_message = company._l10n_pe_lookup_not_ready_message(doc_type)
 
+    def _l10n_pe_lookup_target(self):
+        """``(tipo, número)`` del documento a consultar: ``'ruc'`` o ``'dni'``.
+
+        Odoo 20 retiró el tipo de identificación de l10n_latam_base: el RUC
+        es el ``vat`` de un contacto peruano y el DNI, el identificador
+        ``PE_DNI``. Sin número, el tipo es el esperado para el contacto
+        (DNI para personas); vacío si se identifica con otro documento."""
+        self.ensure_one()
+        peruvian = not self.country_id or self.country_code == 'PE'
+        vat = (self.vat or '').strip()
+        if vat:
+            return ('ruc', vat) if peruvian else ('', '')
+        dni = (self._get_additional_identifier('PE_DNI') or '').strip()
+        if dni:
+            return 'dni', dni
+        if not peruvian or self.additional_identifiers:
+            return '', ''
+        return ('dni' if self.company_type == 'person' else 'ruc'), ''
+
     def _l10n_pe_lookup_doc_type(self):
         """'ruc' o 'dni' si la compañía consulta el tipo de documento del
         contacto; vacío si no."""
         self.ensure_one()
         company = self.env.company
-        vat_code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
-        if vat_code == '1' and company.l10n_pe_dni_validation:
+        doc_type = self._l10n_pe_lookup_target()[0]
+        if doc_type == 'dni' and company.l10n_pe_dni_validation:
             return 'dni'
-        if vat_code == '6' and company.l10n_pe_ruc_validation:
+        if doc_type == 'ruc' and company.l10n_pe_ruc_validation:
             return 'ruc'
         return ''
 
-    @api.model
-    def default_get(self, fields_list):
-        """En compañías peruanas, un contacto nuevo nace con RUC como tipo de
-        identificación (el más usado al registrar proveedores y clientes)."""
-        res = super().default_get(fields_list)
-        if ('l10n_latam_identification_type_id' in fields_list
-                and not self.env.context.get('default_l10n_latam_identification_type_id')
-                and self.env.company.country_id.code == 'PE'):
-            ruc = self.env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
-            if ruc and not (res.get('company_type') == 'person' or self.env.context.get('default_parent_id')):
-                res['l10n_latam_identification_type_id'] = ruc.id
-        return res
-
-    @api.onchange('l10n_latam_identification_type_id')
-    def _onchange_identification_type_company_type(self):
+    @api.onchange('vat', 'additional_identifiers')
+    def _onchange_identification_company_type(self):
         """Contacto nuevo: RUC → empresa, DNI → persona. En un contacto ya
         guardado no se cambia lo que el usuario eligió."""
         if self._origin.id or self.parent_id:
             return
-        code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
-        if code == '6' and not (self.vat or '').startswith('10'):
+        doc_type, number = self._l10n_pe_lookup_target()
+        if doc_type == 'ruc' and number and not number.startswith('10'):
             self.company_type = 'company'
-        elif code == '1':
+        elif doc_type == 'dni' and number:
             self.company_type = 'person'
 
     # ============================================================ #
     # Onchange / entry point                                        #
     # ============================================================ #
-
-    @api.onchange('company_type')
-    def _onchange_company_type_sunat(self):
-        """Setea el tipo de documento por defecto según company_type."""
-        if self.vat:
-            return
-        if self.company_type == 'person':
-            rec = self.env.ref('l10n_pe.it_DNI', raise_if_not_found=False)
-        else:
-            rec = self.env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
-        if rec:
-            self.l10n_latam_identification_type_id = rec.id
 
     @api.onchange('parent_id')
     def _onchange_parent_id_address(self):
@@ -253,11 +247,13 @@ class ResPartner(models.Model):
             self.city_id = self.parent_id.city_id.id
             self.l10n_pe_district = self.parent_id.l10n_pe_district.id
 
-    @api.onchange('vat', 'l10n_latam_identification_type_id')
+    @api.onchange('vat', 'additional_identifiers')
     def _doc_number_change(self):
         """Consulta automática al escribir (onchange): silenciosa, solo marca
         alerta si falla — no interrumpe la edición."""
-        if (self.vat or '') != (self._origin.vat or ''):
+        number = self._l10n_pe_lookup_target()[1]
+        origin = self._origin._l10n_pe_lookup_target()[1] if self._origin else ''
+        if number != origin:
             # Otro documento: el estado, la condición y los padrones del
             # anterior ya no valen (quedaban «ACTIVO/Habido» si la consulta
             # del nuevo fallaba).
@@ -271,17 +267,16 @@ class ResPartner(models.Model):
     def _run_document_lookup(self, raise_on_fail=False):
         """``raise_on_fail`` distingue el botón (espera, reintenta y avisa)
         de la consulta automática al escribir (rápida y silenciosa)."""
-        if not self.vat or not self.l10n_latam_identification_type_id:
-            return
+        doc_type, number = self._l10n_pe_lookup_target()
+        if not number:
+            return None
         # Sólo si la compañía habilitó validación.
         company = self.env.company
-        vat = (self.vat or '').strip()
-        vat_code = self.l10n_latam_identification_type_id.l10n_pe_vat_code
-        if vat_code == '1' and company.l10n_pe_dni_validation:
-            self._validate_dni(vat)
+        if doc_type == 'dni' and company.l10n_pe_dni_validation:
+            self._validate_dni(number)
             return self._fetch_document('dni', raise_on_fail=raise_on_fail)
-        if vat_code == '6' and company.l10n_pe_ruc_validation:
-            self._validate_ruc(vat)
+        if doc_type == 'ruc' and company.l10n_pe_ruc_validation:
+            self._validate_ruc(number)
             return self._fetch_document('ruc', raise_on_fail=raise_on_fail)
         return None
 
@@ -293,19 +288,20 @@ class ResPartner(models.Model):
     )
 
     @api.model
-    def _l10n_pe_lookup_document(self, number, identification_type):
+    def _l10n_pe_lookup_document(self, number, sunat_code):
         """Consulta un RUC o DNI sin crear el contacto, como el onchange del
         formulario: la usan el TPV y la tienda en línea.
 
         :param str number: número de documento.
-        :param identification_type: ``l10n_latam.identification.type``.
+        :param str sunat_code: tipo de documento del catálogo 06 de SUNAT
+            (``'6'`` RUC, ``'1'`` DNI).
         :return: ``{campo: valor}`` (Many2one como id) o ``{}`` si el número
             no es válido, la consulta está desactivada o ninguna conexión
             respondió.
         """
         partner = self.new({
-            'vat': (number or '').strip(),
-            'l10n_latam_identification_type_id': identification_type.id,
+            'country_id': self.env.ref('base.pe').id,
+            **self._l10n_pe_identification_vals(sunat_code, (number or '').strip()),
         })
         try:
             partner._run_document_lookup(raise_on_fail=False)
@@ -422,7 +418,7 @@ class ResPartner(models.Model):
             if raise_on_fail:
                 raise UserError(msg)
             return
-        document = (self.vat or '').strip()
+        document = self._l10n_pe_lookup_target()[1]
         last_exc = None
         result = {}
         for index, connection in enumerate(connections):

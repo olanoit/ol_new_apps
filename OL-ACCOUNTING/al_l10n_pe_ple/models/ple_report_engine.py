@@ -72,7 +72,6 @@ class L10nPePleReportHandler(models.AbstractModel):
         extractor = self.env['l10n_pe.rce.extractor']
         amounts = extractor._rce_amounts(move, group_ids)
         partner = move.partner_id.commercial_partner_id
-        identification = partner.l10n_latam_identification_type_id
         mod_date, mod_type, mod_serie, mod_folio = \
             extractor._rce_modified_document(move)
         dua = move.l10n_pe_dua_invoice_id
@@ -87,9 +86,9 @@ class L10nPePleReportHandler(models.AbstractModel):
             'date': move.date,
             'date_due': move.invoice_date_due,
             'document_type': move.l10n_latam_document_type_id.code or '',
-            'partner_lit': identification.name,
-            'partner_lit_code': identification.l10n_pe_vat_code or '',
-            'id_number': partner.vat or '',
+            'partner_lit': partner.l10n_pe_document_label,
+            'partner_lit_code': partner.l10n_pe_sunat_id_code or '',
+            'id_number': partner.l10n_pe_sunat_id_value or '',
             'customer_vat': partner.vat or '',
             'customer': partner.name or '',
             'amount_total': extractor._rce_total(move),

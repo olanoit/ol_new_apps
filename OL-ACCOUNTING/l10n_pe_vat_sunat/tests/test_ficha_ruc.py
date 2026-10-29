@@ -175,14 +175,12 @@ class TestFichaRucPartner(TransactionCase):
         super().setUpClass()
         use_pe_company(cls)
         cls.pe = cls.env.ref('base.pe')
-        cls.ruc_type = cls.env.ref('l10n_pe.it_RUC')
-        cls.dni_type = cls.env.ref('l10n_pe.it_DNI')
         cls.company_pe = cls.env['res.company'].create({
             'name': 'FICHA RUC TEST S.A.C.', 'country_id': cls.pe.id})
         cls.company_pe._l10n_pe_seed_default_connections()
         cls.partner = cls.env['res.partner'].create({
             'name': 'SUPERMERCADOS PERUANOS', 'is_company': True, 'country_id': cls.pe.id,
-            'l10n_latam_identification_type_id': cls.ruc_type.id, 'vat': '20100070970'})
+            'vat': '20100070970'})
 
     def test_catalog_is_loaded(self):
         Activity = self.env['l10n_pe.economic.activity']
@@ -289,10 +287,11 @@ class TestFichaRucPartner(TransactionCase):
         # Solo el comportamiento del formulario: la compañía de prueba no tiene
         # plan contable, así que no se guarda.
         form = Form(Partner.with_user(self.env.user).with_company(self.company_pe))
-        self.assertEqual(form.l10n_latam_identification_type_id, self.ruc_type)
-        form.l10n_latam_identification_type_id = self.dni_type
+        # Odoo 20: el tipo sale del identificador (DNI) o del RUC (vat).
+        form.additional_identifiers = {'PE_DNI': '45678901'}
         self.assertEqual(form.company_type, 'person')
-        form.l10n_latam_identification_type_id = self.ruc_type
+        form.additional_identifiers = {}
+        form.vat = '20100070970'
         self.assertEqual(form.company_type, 'company')
 
 

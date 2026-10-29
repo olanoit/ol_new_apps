@@ -8,7 +8,7 @@
  * Todo lo acumulado lo calcula el servidor
  * (`construction.resource.plan.get_tree_nodes` y `get_selection_summary`).
  */
-import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
+import { Component, onWillStart, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -22,7 +22,7 @@ const ROOT_KEY = "p";
 
 export class ConstructionPlanTree extends Component {
     static template = "al_construction_planner.PlanTree";
-    static props = ["*"];
+    props = useProps();
 
     setup() {
         this.orm = useService("orm");

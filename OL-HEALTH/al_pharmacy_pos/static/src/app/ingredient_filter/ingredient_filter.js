@@ -1,4 +1,4 @@
-import { Component, proxy } from "@odoo/owl";
+import { Component, proxy, t, useProps } from "@odoo/owl";
 import { normalize } from "@web/core/l10n/utils";
 import { patch } from "@web/core/utils/patch";
 import { usePos } from "@point_of_sale/app/hooks/pos_hook";
@@ -108,7 +108,7 @@ patch(ProductTemplate.prototype, {
 /** Buscador de principios activos con desplegable y chips de los elegidos. */
 export class PharmacyIngredientSelector extends Component {
     static template = "al_pharmacy_pos.PharmacyIngredientSelector";
-    static props = {};
+    props = useProps({});
 
     setup() {
         this.pos = usePos();

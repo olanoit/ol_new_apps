@@ -145,8 +145,6 @@ class TestSire(TransactionCase):
             'name': 'Socio SIRE Test',
             'vat': '20131312955',
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env['l10n_latam.identification.type'].search([
-                ('l10n_pe_vat_code', '=', '6')], limit=1).id,
         })
 
     def _tax(self, type_tax_use):

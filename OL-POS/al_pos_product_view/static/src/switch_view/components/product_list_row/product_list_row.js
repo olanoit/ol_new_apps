@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component } from "@odoo/owl";
+import { Component, t, useProps } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 
 /**
@@ -12,21 +12,15 @@ import { _t } from "@web/core/l10n/translation";
  */
 export class ProductListRow extends Component {
     static template = "al_pos_product_view.ProductListRow";
-    static props = {
-        product: Object,
-        name: String,
-        priceLabel: { type: String, optional: true },
-        imageUrl: [String, Boolean],
-        productCartQty: { type: [Number, undefined], optional: true },
-        onClick: { type: Function, optional: true },
-        onInfoClick: { type: Function, optional: true },
-    };
-    static defaultProps = {
-        priceLabel: "",
-        productCartQty: 0,
-        onClick: () => {},
-        onInfoClick: () => {},
-    };
+    props = useProps({
+        product: t.object(),
+        name: t.string(),
+        priceLabel: t.string().optional(""),
+        imageUrl: t.or([t.string(), t.boolean()]),
+        productCartQty: t.number().optional(0),
+        onClick: t.function().optional(() => () => {}),
+        onInfoClick: t.function().optional(() => () => {}),
+    });
 
     get barcode() {
         return this.props.product?.barcode || "";

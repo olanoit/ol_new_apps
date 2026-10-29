@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, proxy } from "@odoo/owl";
+import { Component, proxy, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 /**
@@ -20,12 +20,12 @@ import { Dialog } from "@web/core/dialog/dialog";
 export class AgentAuthorizationDialog extends Component {
     static template = "al_pos_network_printer.AgentAuthorizationDialog";
     static components = { Dialog };
-    static props = {
-        close: { type: Function },
-        agentUrl: { type: String },
-        checkAgentReachable: { type: Function },
-        getPayload: { type: Function, optional: true },
-    };
+    props = useProps({
+        close: t.function(),
+        agentUrl: t.string(),
+        checkAgentReachable: t.function(),
+        getPayload: t.function().optional(),
+    });
 
     setup() {
         this.state = proxy({ checking: false, failed: false });

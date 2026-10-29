@@ -23,17 +23,12 @@ class TestPeCheck(TransactionCase):
         cls.rejected = ChartTemplate.ref('l10n_pe_rejected_check')
         Journal = cls.env['account.journal']
         cls.bank = Journal.search([*Journal._check_company_domain(cls.company), ('type', '=', 'bank')], limit=1)
-        cls.check_bank = cls.env['res.bank'].create({'name': 'Banco de cheques (test)'})
-        ruc, dni = cls.env.ref('l10n_pe.it_RUC'), cls.env.ref('l10n_pe.it_DNI')
         Partner = cls.env['res.partner']
         cls.customer = Partner.create({'name': 'Cliente RUC (test)', 'vat': '20100070970', 'is_company': True,
-                                       'l10n_latam_identification_type_id': ruc.id,
                                        'country_id': cls.env.ref('base.pe').id})
-        cls.person = Partner.create({'name': 'Cliente DNI (test)', 'vat': '41234567',
-                                     'l10n_latam_identification_type_id': dni.id,
+        cls.person = Partner.create({'name': 'Cliente DNI (test)', 'additional_identifiers': {'PE_DNI': '41234567'},
                                      'country_id': cls.env.ref('base.pe').id})
         cls.supplier = Partner.create({'name': 'Proveedor (test)', 'vat': '20131312955', 'is_company': True,
-                                       'l10n_latam_identification_type_id': ruc.id,
                                        'country_id': cls.env.ref('base.pe').id})
 
     def _receive(self, partner, number, amount, payment_date, date_received=None):
@@ -44,7 +39,7 @@ class TestPeCheck(TransactionCase):
             'journal_id': self.portfolio.id, 'payment_method_line_id': line.id,
             'date': date_received or payment_date,
             'l10n_latam_new_check_ids': [Command.create({
-                'name': number, 'bank_id': self.check_bank.id, 'payment_date': payment_date,
+                'name': number, 'payment_date': payment_date,
                 'amount': amount})],
         })
         payment.action_post()

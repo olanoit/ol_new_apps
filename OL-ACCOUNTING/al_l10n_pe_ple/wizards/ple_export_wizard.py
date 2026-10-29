@@ -231,8 +231,8 @@ class L10nPePleExportWizard(models.TransientModel):
         RUC es de la empresa. El tipo «VAT» genérico de LATAM trae código 0,
         que el 8.3 no admite: con 11 u 8 dígitos se infiere RUC o DNI."""
         partner = partner.commercial_partner_id
-        code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code
-        vat = (partner.vat or '').strip()
+        code = partner.l10n_pe_sunat_id_code
+        vat = (partner.l10n_pe_sunat_id_value or '').strip()
         if not code or code == '0':
             if vat.isdigit() and len(vat) == 11:
                 code = '6'
@@ -470,7 +470,7 @@ class L10nPePleExportWizard(models.TransientModel):
             doc_code, doc_number, name = self._partner_doc(partner)
             row += [doc_code, doc_number, name]       # 16-18 consignatario
         else:
-            ruc = (partner.vat or '').strip()
+            ruc = (partner.l10n_pe_sunat_id_value or '').strip()
             row += [self._ple_text(ruc, 11, '-'),
                     self._ple_text(partner.name, 100, '-')]  # 16-17 consignador
         row += [

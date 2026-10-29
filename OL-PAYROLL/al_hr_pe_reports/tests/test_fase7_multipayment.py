@@ -458,7 +458,7 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         })
         cls.env = cls.env(context=dict(
             cls.env.context, allowed_company_ids=cls.company.ids))
-        cls.bank = cls.env['res.bank'].create({
+        cls.bank = cls.env['l10n_pe.bank'].create({
             'name': 'Banco de prueba', 'format_bank': 'bcp'})
         cls.employee = cls.env['hr.employee'].create({
             'names': 'Ana', 'last_name': 'Ruiz', 'm_last_name': 'Paz',
@@ -473,7 +473,7 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         cls.account = cls.env['res.partner.bank'].create({
             'account_number': '19100000001',
             'partner_id': partner.id,
-            'bank_id': cls.bank.id,
+            'l10n_pe_bank_id': cls.bank.id,
             'company_id': cls.company.id,
         })
         # primary_bank_account_id es un compute NO almacenado a partir de
@@ -543,7 +543,9 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         self.slip.write({'state': 'validated'})
         journal = self.env['account.journal'].create({
             'name': 'Banco TXT', 'type': 'bank', 'code': 'BTXT',
-            'company_id': self.company.id, 'bank_id': self.bank.id,
+            'company_id': self.company.id,
+            # Odoo 20: el banco del diario es el de su cuenta bancaria.
+            'bank_account_id': self._company_bank_account().id,
         })
         pago = self.env['hr.automate.multipayment'].create({
             'company_id': self.company.id,
@@ -564,7 +566,9 @@ class TestFase7MultipaymentOrigen(TransactionCase):
     def _pago(self, code):
         journal = self.env['account.journal'].create({
             'name': 'Banco %s' % code, 'type': 'bank', 'code': code,
-            'company_id': self.company.id, 'bank_id': self.bank.id,
+            'company_id': self.company.id,
+            # Odoo 20: el banco del diario es el de su cuenta bancaria.
+            'bank_account_id': self._company_bank_account().id,
         })
         return self.env['hr.automate.multipayment'].create({
             'company_id': self.company.id,
@@ -604,3 +608,9 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         self.account.currency_id = other
         self.assertFalse(pago._get_txt_lines(),
                          'una cuenta en otra moneda no cabe en el TXT')
+
+    def _company_bank_account(self):
+        return self.env['res.partner.bank'].create({
+            'account_number': '19100000999', 'partner_id': self.company.partner_id.id,
+            'l10n_pe_bank_id': self.bank.id, 'company_id': self.company.id,
+        })

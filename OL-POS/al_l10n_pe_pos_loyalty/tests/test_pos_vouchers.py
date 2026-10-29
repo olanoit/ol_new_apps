@@ -33,8 +33,7 @@ class TestPosPeVouchers(TestPoSCommon):
         cls.reward = cls.env.ref('loyalty.gift_card_program_reward').sudo()
         cls.reward.program_id.company_id = cls.env.company
         cls.customer = cls.env['res.partner'].create({
-            'name': 'Rosa Huamán Ccori', 'vat': '44556677',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id})
+            'name': 'Rosa Huamán Ccori', 'additional_identifiers': {'PE_DNI': '44556677'}})
         cls.env['res.company']._l10n_pe_pos_setup_vouchers()
         cls.voucher_account = cls.env.company.l10n_pe_pos_voucher_account_id
 
@@ -189,8 +188,7 @@ class TestPosPeVouchersTour(TestPointOfSaleHttpCommon):
 
     def test_mixed_sale_receipt_shows_the_card_outside(self):
         self.env['res.partner'].create({
-            'name': 'Rosa Huamán Ccori', 'vat': '44556677',
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_DNI').id})
+            'name': 'Rosa Huamán Ccori', 'additional_identifiers': {'PE_DNI': '44556677'}})
         config, program = self._setup_pe_pos()
         self.start_pos_tour('al_l10n_pe_pos_gift_card_mixed')
         order = self.env['pos.order'].search([('session_id', '=', config.current_session_id.id)], limit=1)

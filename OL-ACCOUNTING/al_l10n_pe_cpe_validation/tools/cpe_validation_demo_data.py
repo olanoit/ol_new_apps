@@ -8,7 +8,6 @@ from stdnum.pe import ruc as stdnum_ruc
 
 company = env.company
 pe = env.ref('base.pe')
-ruc_type = env.ref('l10n_pe.it_RUC')
 invoice_type = env.ref('l10n_pe.document_type01')
 journal = env['account.journal'].search([('type', '=', 'purchase'), ('company_id', '=', company.id)], limit=1)
 Partner = env['res.partner']
@@ -17,7 +16,7 @@ Partner = env['res.partner']
 def vendor(name, body):
     vat = body + stdnum_ruc.calc_check_digit(body)
     return Partner.search([('vat', '=', vat)], limit=1) or Partner.create({
-        'name': name, 'country_id': pe.id, 'l10n_latam_identification_type_id': ruc_type.id,
+        'name': name, 'country_id': pe.id,
         'vat': vat, 'is_company': True})
 
 

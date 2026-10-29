@@ -89,12 +89,9 @@ class TestCollectionV3(CollectionCommon):
             'result_id': self.result_no_answer.id, 'date': local_dt + timedelta(hours=5)})
 
     def test_consumer_detection(self):
-        dni = self.env.ref('l10n_pe.it_DNI')
-        ruc = self.env.ref('l10n_pe.it_RUC')
-        person = self.env['res.partner'].create({'name': 'Luis Soto', 'l10n_latam_identification_type_id': dni.id,
-                                                 'vat': '45678912'})
-        company = self.env['res.partner'].create({'name': 'EMPRESA SAC', 'is_company': True,
-                                                  'l10n_latam_identification_type_id': ruc.id})
+        person = self.env['res.partner'].create({'name': 'Luis Soto',
+                                                 'additional_identifiers': {'PE_DNI': '45678912'}})
+        company = self.env['res.partner'].create({'name': 'EMPRESA SAC', 'is_company': True})
         self.assertTrue(person._l10n_pe_collection_is_consumer())
         self.assertFalse(company._l10n_pe_collection_is_consumer())
         person.l10n_pe_collection_debtor_type = 'business'

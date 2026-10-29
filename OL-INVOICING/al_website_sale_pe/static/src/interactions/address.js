@@ -4,7 +4,10 @@ import { patch } from '@web/core/utils/patch';
 import { patchDynamicContent } from '@web/public/utils';
 import { CustomerAddress } from '@portal/interactions/address';
 
-const DOCUMENT_REGEX = /^(\d{8}|\d{11})$/;
+// Odoo 20: el RUC va en «vat» y el DNI en el identificador adicional PE_DNI.
+const DNI_KEY = 'PE_DNI';
+const RUC_REGEX = /^\d{11}$/;
+const DNI_REGEX = /^\d{8}$/;
 
 patch(CustomerAddress.prototype, {
     setup() {
@@ -18,38 +21,51 @@ patch(CustomerAddress.prototype, {
             '.o_l10n_pe_document_lookup': {
                 't-on-click.prevent': this.locked(this.l10nPeLookupDocument.bind(this), true),
             },
-            'input[name="vat"]': { 't-on-change': this.onChangeL10nPeVat.bind(this) },
+            'input[name="vat"]': { 't-on-change': this.onChangeL10nPeDocument.bind(this) },
+            [`input[name="${DNI_KEY}"]`]: { 't-on-change': this.onChangeL10nPeDocument.bind(this) },
         });
     },
 
+    _l10nPeIsInvoice() {
+        return this.el.querySelector('#l10n_pe_receipt_factura')?.checked;
+    },
+
     /**
-     * Boleta o factura: el tipo de documento sigue al comprobante (factura →
-     * RUC; boleta → DNI, salvo que ya haya elegido otro documento).
+     * Boleta o factura: la factura se emite al RUC (campo «vat»); la boleta,
+     * al DNI, cuyo campo se muestra si aún no está.
      */
-    onChangeL10nPeReceipt(ev) {
-        const select = this.addressForm.l10n_latam_identification_type_id;
-        if (!select || select.tagName !== 'SELECT') {
+    onChangeL10nPeReceipt() {
+        if (this._l10nPeIsInvoice()) {
+            this.addressForm.vat?.focus();
             return;
         }
-        const typeId = ev.currentTarget.dataset.identificationTypeId;
-        const rucId = this.el.querySelector('#l10n_pe_receipt_factura').dataset.identificationTypeId;
-        if (ev.currentTarget.value === 'factura' || select.value === rucId) {
-            select.value = typeId;
+        const field = this.el.querySelector(`.o_additional_identifier_field[data-identifier-key="${DNI_KEY}"]`);
+        if (field && field.style.display === 'none') {
+            this.el.querySelector(`.o_add_identifier_item[data-identifier-key="${DNI_KEY}"]`)?.click();
         }
+        this.el.querySelector(`input[name="${DNI_KEY}"]`)?.focus();
     },
 
     /**
      * Al terminar de escribir un RUC (11 dígitos) o un DNI (8), se consulta
      * solo.
      */
-    async onChangeL10nPeVat() {
-        if (DOCUMENT_REGEX.test(this._l10nPeDocumentNumber())) {
+    async onChangeL10nPeDocument() {
+        const [, number, regex] = this._l10nPeDocument();
+        if (regex.test(number)) {
             await this.l10nPeLookupDocument();
         }
     },
 
-    _l10nPeDocumentNumber() {
-        return (this.addressForm.vat?.value || '').replace(/[\s.-]/g, '');
+    /**
+     * @returns {[string, string, RegExp]} código SUNAT, número y su formato
+     */
+    _l10nPeDocument() {
+        const clean = (value) => (value || '').replace(/[\s.-]/g, '');
+        if (this._l10nPeIsInvoice()) {
+            return ['6', clean(this.addressForm.vat?.value), RUC_REGEX];
+        }
+        return ['1', clean(this.el.querySelector(`input[name="${DNI_KEY}"]`)?.value), DNI_REGEX];
     },
 
     _l10nPeSetMessage(message) {
@@ -63,16 +79,17 @@ patch(CustomerAddress.prototype, {
      * Consulta el RUC o DNI y llena el nombre y la dirección.
      */
     async l10nPeLookupDocument() {
-        const number = this._l10nPeDocumentNumber();
-        const typeSelect = this.addressForm.l10n_latam_identification_type_id;
-        if (!DOCUMENT_REGEX.test(number) || !typeSelect?.value) {
-            this._l10nPeSetMessage(_t('Escriba un RUC (11 dígitos) o un DNI (8 dígitos).'));
+        const [sunatCode, number, regex] = this._l10nPeDocument();
+        if (!regex.test(number)) {
+            this._l10nPeSetMessage(sunatCode === '6'
+                ? _t('Escriba un RUC de 11 dígitos.')
+                : _t('Escriba un DNI de 8 dígitos.'));
             return;
         }
         this._l10nPeSetMessage(_t('Consultando…'));
         const result = await this.waitFor(rpc('/shop/l10n_pe/document_lookup', {
             number,
-            identification_type_id: parseInt(typeSelect.value),
+            sunat_code: sunatCode,
         }));
         if (!result.found) {
             this._l10nPeSetMessage(result.message);
@@ -97,7 +114,7 @@ patch(CustomerAddress.prototype, {
         }
         if (values.country_id && form.country_id && form.country_id.value !== String(values.country_id)) {
             form.country_id.value = values.country_id;
-            await this.waitFor(this._onChangeCountry());
+            await this.waitFor(this.onChangeCountry());
         }
         if (values.state_id && form.state_id) {
             form.state_id.value = values.state_id;

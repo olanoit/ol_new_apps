@@ -5,8 +5,7 @@
         <!-- Clientes con DNI (boleta) y RUC (factura) -->
         <record id="customer_dni" model="res.partner">
             <field name="name">Lucía Fernández Ríos</field>
-            <field name="vat">44556677</field>
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
+            <field name="additional_identifiers" eval="{'PE_DNI': '44556677'}"/>
             <field name="country_id" ref="base.pe"/>
             <field name="street">Calle Los Pinos 120</field>
             <field name="city">Lima</field>
@@ -15,7 +14,6 @@
             <field name="name">Distribuidora Médica Lima S.A.C.</field>
             <field name="is_company" eval="True"/>
             <field name="vat">20512528458</field>
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_RUC"/>
             <field name="country_id" ref="base.pe"/>
             <field name="street">Av. Javier Prado Este 4200</field>
             <field name="city">Lima</field>

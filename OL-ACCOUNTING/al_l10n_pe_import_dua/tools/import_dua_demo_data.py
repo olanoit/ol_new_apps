@@ -9,8 +9,7 @@ company = env.company
 Partner = env['res.partner']
 customs = Partner.search([('name', '=', 'SUNAT - Superintendencia Nacional de Aduanas')], limit=1) or Partner.create({
     'name': 'SUNAT - Superintendencia Nacional de Aduanas', 'is_company': True,
-    'country_id': env.ref('base.pe').id,
-    'l10n_latam_identification_type_id': env.ref('l10n_pe.it_RUC').id, 'vat': '20131312955'})
+    'country_id': env.ref('base.pe').id, 'vat': '20131312955'})
 offset = env['account.account'].search([('code', '=', '609190'), *env['account.account']._check_company_domain(company)], limit=1) \
     or env['account.account'].create({'name': 'Valor en aduana por regularizar', 'code': '609190',
                                       'account_type': 'expense'})

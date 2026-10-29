@@ -70,9 +70,9 @@ class L10nPeHrFinancialEntity(models.Model):
     _inherit = ['l10n_pe.hr.catalog.mixin']
 
 
-class ResPartnerBank(models.Model):
-    # Odoo 20 retiró res.bank: el banco es un dato de la propia cuenta.
-    _inherit = 'res.partner.bank'
+class L10nPeBank(models.Model):
+    # Odoo 20 retiró res.bank: catálogo de bancos de al_account_base.
+    _inherit = 'l10n_pe.bank'
 
     l10n_pe_financial_entity_id = fields.Many2one(
         'l10n_pe.hr.financial.entity', string='Entidad SUNAT (T36)',
@@ -239,7 +239,7 @@ class HrEmployee(models.Model):
         if not account:
             return []
         doc_type, doc_number, country = self._l10n_pe_doc_pair()
-        entity = account.l10n_pe_financial_entity_id
+        entity = account.l10n_pe_bank_id.l10n_pe_financial_entity_id
         number = re.sub(r'\D', '', account.account_number or '')
         return [[doc_type, doc_number, country, entity.code or '', number]]
 
@@ -253,7 +253,7 @@ class HrEmployee(models.Model):
         account = self.sudo().primary_bank_account_id
         if not account:
             return [_('%s: sin cuenta de abono.', self.display_name)]
-        entity = account.l10n_pe_financial_entity_id
+        entity = account.l10n_pe_bank_id.l10n_pe_financial_entity_id
         number = re.sub(r'\D', '', account.account_number or '')
         name = self.display_name
         if not entity:

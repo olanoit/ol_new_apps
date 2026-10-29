@@ -510,8 +510,8 @@ class L10nPeSireMixin(models.AbstractModel):
     def _sire_partner_doc_type(self, partner):
         """Tipo de documento (tabla 2) del contacto. El tipo «VAT» genérico
         de LATAM tiene código 0: con 11 u 8 dígitos se infiere RUC o DNI."""
-        code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code or ''
-        vat = (partner.vat or '').strip()
+        code = partner.l10n_pe_sunat_id_code or ''
+        vat = (partner.l10n_pe_sunat_id_value or '').strip()
         if code in ('', '0') and vat.isdigit():
             if len(vat) == 11:
                 return '6'

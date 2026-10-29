@@ -251,7 +251,7 @@ class HrCtsLine(models.Model):
     cts_account = fields.Many2one(
         related='employee_id.cts_bank_account_id', string='Cuenta CTS')
     cts_bank = fields.Many2one(
-        related='cts_account.bank_id', string='Banco')
+        related='cts_account.l10n_pe_bank_id', string='Banco')
     exchange_type = fields.Float(string='Tipo de cambio')
     distribution_id = fields.Char(string='Distribución analítica')
     months = fields.Integer(string='Meses completos')

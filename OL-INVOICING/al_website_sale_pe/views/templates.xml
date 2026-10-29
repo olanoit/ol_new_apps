@@ -2,36 +2,31 @@
 <odoo>
 
     <!-- Dirección de facturación (portal y checkout): boleta o factura antes
-         del tipo de documento, y consulta del RUC o DNI junto al número. -->
-    <template id="address_form_fields" inherit_id="l10n_latam_base.address_form_fields">
-        <xpath expr="//select[@name='l10n_latam_identification_type_id']/.." position="before">
+         del documento, y consulta del RUC o DNI. Odoo 20: el RUC va en «vat»
+         y el DNI en el identificador adicional PE_DNI. -->
+    <template id="address_form_fields" inherit_id="portal.address_form_fields">
+        <xpath expr="//div[@id='div_vat']" position="before">
             <div t-if="l10n_pe_receipt and is_commercial_address and can_edit_vat"
                  id="div_l10n_pe_receipt" class="col-12 mb-2">
                 <label class="col-form-label d-block">Comprobante</label>
                 <div class="btn-group" role="group" aria-label="Comprobante">
                     <input type="radio" class="btn-check" name="l10n_pe_receipt" id="l10n_pe_receipt_boleta"
-                           value="boleta" autocomplete="off"
-                           t-att-data-identification-type-id="l10n_pe_dni_type.id"
+                           value="boleta" autocomplete="off" data-sunat-code="1"
                            t-att-checked="l10n_pe_receipt == 'boleta'"/>
                     <label class="btn btn-outline-primary" for="l10n_pe_receipt_boleta">Boleta</label>
                     <input type="radio" class="btn-check" name="l10n_pe_receipt" id="l10n_pe_receipt_factura"
-                           value="factura" autocomplete="off"
-                           t-att-data-identification-type-id="l10n_pe_ruc_type.id"
+                           value="factura" autocomplete="off" data-sunat-code="6"
                            t-att-checked="l10n_pe_receipt == 'factura'"/>
                     <label class="btn btn-outline-primary" for="l10n_pe_receipt_factura">Factura</label>
                 </div>
                 <small class="form-text text-muted d-block">
                     La factura se emite a un RUC; la boleta, a su DNI u otro documento.
                 </small>
-            </div>
-        </xpath>
-        <xpath expr="//input[@id='o_vat']" position="after">
-            <t t-if="l10n_pe_receipt and is_commercial_address and can_edit_vat">
                 <button type="button" class="btn btn-link px-0 o_l10n_pe_document_lookup">
                     <i class="oi me-1" data-icon="search"/>Consultar en SUNAT
                 </button>
                 <small class="o_l10n_pe_document_lookup_message form-text text-muted d-block"/>
-            </t>
+            </div>
         </xpath>
     </template>
 

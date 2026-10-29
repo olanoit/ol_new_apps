@@ -226,8 +226,8 @@ class L10nPeRceExtractor(models.AbstractModel):
         """(código de tipo de documento, número, nombre) del proveedor."""
         partner = move.partner_id.commercial_partner_id
         return (
-            partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '',
-            partner.vat or '',
+            partner.l10n_pe_sunat_id_code or '',
+            partner.l10n_pe_sunat_id_value or '',
             partner.name or '',
         )
 

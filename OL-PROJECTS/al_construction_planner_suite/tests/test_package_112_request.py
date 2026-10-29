@@ -42,7 +42,7 @@ class TestPackage112Request(ConstructionRequestCommon):
         def bom(product, picking_type):
             return cls.env['mrp.bom'].create({
                 'product_tmpl_id': product.product_tmpl_id.id, 'product_qty': 1.0,
-                'consumption': 'flexible', 'picking_type_id': picking_type.id,
+                'picking_type_id': picking_type.id,
                 'bom_line_ids': [Command.create({'product_id': cls.cement.id, 'product_qty': 2})]})
 
         # La lista del módulo queda en la planta de la última etapa.

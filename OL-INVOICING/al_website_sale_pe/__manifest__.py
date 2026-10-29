@@ -6,13 +6,13 @@
     'description': """
 Tienda en línea peruana
 =======================
-Odoo 19 ya pide en el checkout el tipo y el número de documento
-(``l10n_latam_base``) y la provincia y el distrito (``l10n_pe``); con RUC emite
+Odoo 20 pide en el checkout el RUC (``vat``) y los identificadores adicionales
+(DNI, pasaporte…) y la provincia y el distrito (``l10n_pe``); con RUC emite
 factura y con otro documento, boleta. Este módulo lo hace explícito y rápido
 para el cliente peruano:
 
-* **Boleta o factura**: el cliente elige el comprobante y el tipo de
-  documento se ajusta solo (factura → RUC; boleta → DNI u otro documento).
+* **Boleta o factura**: el cliente elige el comprobante y se
+  muestra el documento que corresponde (factura → RUC; boleta → DNI).
 * **Consulta del RUC o DNI**: con las conexiones de ``l10n_pe_vat_sunat``, el
   nombre o razón social, la dirección, el departamento, la provincia y el
   distrito se llenan solos.

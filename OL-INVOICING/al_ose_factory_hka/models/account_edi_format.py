@@ -179,8 +179,8 @@ class AccountEdiFormat(models.Model):
         return {
             'document_type': move.l10n_latam_document_type_id.code,
             'number': move.name.replace(' ', ''),
-            'customer_vat': partner.vat or '-',
-            'customer_vat_type': partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '-',
+            'customer_vat': partner.l10n_pe_sunat_id_value or '-',
+            'customer_vat_type': partner.l10n_pe_sunat_id_code or '-',
             'reference_number': origin.name.replace(' ', '') if origin else False,
             'reference_type': origin.l10n_latam_document_type_id.code if origin else False,
             'currency': currency.name,

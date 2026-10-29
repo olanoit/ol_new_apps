@@ -1,4 +1,4 @@
-import { Component } from "@odoo/owl";
+import { Component, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 /**
@@ -8,12 +8,12 @@ import { Dialog } from "@web/core/dialog/dialog";
 export class TreatmentRefillDialog extends Component {
     static template = "al_pharmacy_care.TreatmentRefillDialog";
     static components = { Dialog };
-    static props = {
-        partnerName: String,
-        treatments: Array,
-        getPayload: Function,
-        close: Function,
-    };
+    props = useProps({
+        partnerName: t.string(),
+        treatments: t.array(),
+        getPayload: t.function(),
+        close: t.function(),
+    });
 
     formatDate(value) {
         if (!value) {

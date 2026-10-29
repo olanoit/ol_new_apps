@@ -138,10 +138,7 @@ class TestPagoEfectivo(PagoEfectivoCommon, PaymentHttpCommon):
         self.assertIn('508', tx.state_message)
 
     def test_dni_is_sent_as_document(self):
-        dni = self.env.ref('l10n_pe.it_DNI', raise_if_not_found=False)
-        if not dni:
-            self.skipTest('Sin la localización peruana.')
-        self.partner.write({'l10n_latam_identification_type_id': dni.id, 'vat': '45678912'})
+        self.partner.write({'additional_identifiers': {'PE_DNI': '45678912'}})
         tx = self._create_transaction('redirect', reference=self.reference)
         payload = tx._pagoefectivo_prepare_cip_payload()
         self.assertEqual((payload['userDocumentType'], payload['userDocumentNumber']), ('DNI', '45678912'))

@@ -131,9 +131,8 @@ class L10nPeBankCollectionBatch(models.Model):
             'min_amount': line.amount if agreement.validation == 'full' else 0.0,
             'update_type': 'A',
             'document_number': move.name,
-            'depositor_vat': line.partner_id.vat,
-            'depositor_id_type': line.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code
-            if 'l10n_latam_identification_type_id' in line.partner_id._fields else '',
+            'depositor_vat': line.partner_id.l10n_pe_sunat_id_value,
+            'depositor_id_type': line.partner_id.l10n_pe_sunat_id_code or '',
         }
 
     def action_generate(self):

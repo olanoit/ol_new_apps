@@ -11,7 +11,7 @@ BATCH_FORMATS = [
 
 
 class ResBank(models.Model):
-    _inherit = 'res.bank'
+    _inherit = 'l10n_pe.bank'
 
     l10n_pe_batch_format = fields.Selection(
         BATCH_FORMATS, string='Formato de pago masivo',

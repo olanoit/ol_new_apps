@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, usePlugin } from "@odoo/owl";
+import { Component, usePlugin, useProps } from "@odoo/owl";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
 import { standardWidgetProps } from "@web/views/widgets/standard_widget_props";
@@ -25,9 +25,9 @@ import { _t } from "@web/core/l10n/translation";
  */
 export class TestEscposAgent extends Component {
     static template = "al_pos_network_printer.TestEscposAgentButton";
-    static props = {
+    props = useProps({
         ...standardWidgetProps,
-    };
+    });
 
     setup() {
         super.setup();

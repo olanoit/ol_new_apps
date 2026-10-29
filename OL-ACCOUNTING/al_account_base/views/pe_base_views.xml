@@ -20,6 +20,9 @@
         <field name="model">res.partner.bank</field>
         <field name="inherit_id" ref="base.view_partner_bank_form"/>
         <field name="arch" type="xml">
+            <field name="bank_name" position="before">
+                <field name="l10n_pe_bank_id" options="{'no_create': True}"/>
+            </field>
             <field name="bank_name" position="after">
                 <field name="l10n_pe_bank_code"/>
             </field>
@@ -39,6 +42,41 @@
                        invisible="country_code != 'PE'"/>
             </field>
         </field>
+    </record>
+
+    <!-- Catálogo de bancos (Odoo 20 retiró res.bank) -->
+    <record id="l10n_pe_bank_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.bank.list</field>
+        <field name="model">l10n_pe.bank</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="bic"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_bank_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.bank.form</field>
+        <field name="model">l10n_pe.bank</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group name="main">
+                        <field name="name"/>
+                        <field name="bic"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_pe_bank_action" model="ir.actions.act_window">
+        <field name="name">Bancos</field>
+        <field name="res_model">l10n_pe.bank</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

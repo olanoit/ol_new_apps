@@ -104,7 +104,7 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
         """AgentParty / ReceiverParty en el orden UBL 2.0: documento, nombre,
         dirección, razón social (con RUC y domicilio fiscal) y contacto."""
         partner = partner.commercial_partner_id
-        doc_type = partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '6'
+        doc_type = partner.l10n_pe_sunat_id_code or '6'
         name = partner.name or ''
         country_code = partner.country_id.code or 'PE'
         country_name = partner.country_id.name or 'Peru'
@@ -115,7 +115,7 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
             _el(country, 'cbc:Name', country_name)
 
         node = _el(parent, tag)
-        _el(_el(node, 'cac:PartyIdentification'), 'cbc:ID', partner.vat or '', schemeID=doc_type)
+        _el(_el(node, 'cac:PartyIdentification'), 'cbc:ID', partner.l10n_pe_sunat_id_value or '', schemeID=doc_type)
         _el(_el(node, 'cac:PartyName'), 'cbc:Name', name)
         address = _el(node, 'cac:PostalAddress')
         if partner.street:
@@ -127,7 +127,7 @@ class AccountEdiXmlUblPeWithholding(models.AbstractModel):
         add_country(address)
         legal = _el(node, 'cac:PartyLegalEntity')
         _el(legal, 'cbc:RegistrationName', name)
-        _el(legal, 'cbc:CompanyID', partner.vat or '')
+        _el(legal, 'cbc:CompanyID', partner.l10n_pe_sunat_id_value or '')
         registration = _el(legal, 'cac:RegistrationAddress')
         if address_type_code:
             # código del establecimiento anexo (0000 = domicilio fiscal)

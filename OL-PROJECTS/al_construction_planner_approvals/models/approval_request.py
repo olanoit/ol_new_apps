@@ -425,6 +425,11 @@ class ApprovalRequest(models.Model):
 class ApprovalApprover(models.Model):
     _inherit = 'approval.approver'
 
+    # Odoo 20 aprueba a todos a la vez y retiró «En espera»; los tramos de
+    # obra lo siguen usando para quien aprueba después.
+    status = fields.Selection(
+        selection_add=[('waiting', 'En espera'), ('pending',)],
+        ondelete={'waiting': 'set default'})
     construction_step = fields.Integer(
         string='Tramo', readonly=True, default=0, help='El primer tramo en que aprueba.')
     construction_route_id = fields.Many2one(

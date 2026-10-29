@@ -36,13 +36,10 @@ class TestMonthlyTax(TransactionCase):
         cls.igv_sale = Tax.search(domain + [('type_tax_use', '=', 'sale')], limit=1)
         cls.igv_purchase = Tax.search(domain + [('type_tax_use', '=', 'purchase')], limit=1)
         pe = cls.env.ref('base.pe')
-        ruc_type = cls.env.ref('l10n_pe.it_RUC')
         cls.customer = cls.env['res.partner'].create({
-            'name': 'CLIENTE 621 SAC (test)', 'country_id': pe.id, 'is_company': True,
-            'l10n_latam_identification_type_id': ruc_type.id, 'vat': _ruc('2060123456')})
+            'name': 'CLIENTE 621 SAC (test)', 'country_id': pe.id, 'is_company': True, 'vat': _ruc('2060123456')})
         cls.vendor = cls.env['res.partner'].create({
-            'name': 'PROVEEDOR 621 SAC (test)', 'country_id': pe.id, 'is_company': True,
-            'l10n_latam_identification_type_id': ruc_type.id, 'vat': _ruc('2060765432')})
+            'name': 'PROVEEDOR 621 SAC (test)', 'country_id': pe.id, 'is_company': True, 'vat': _ruc('2060765432')})
         cls.sale_journal = cls.env['account.journal'].search([
             ('type', '=', 'sale'), ('company_id', '=', cls.company.id)], limit=1)
         cls.purchase_journal = cls.env['account.journal'].search([

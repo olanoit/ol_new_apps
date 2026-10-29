@@ -1,4 +1,4 @@
-import { Component, proxy } from "@odoo/owl";
+import { Component, proxy, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 /**
@@ -10,15 +10,15 @@ import { Dialog } from "@web/core/dialog/dialog";
 export class PrescriptionDialog extends Component {
     static template = "al_pharmacy_pos.PrescriptionDialog";
     static components = { Dialog };
-    static props = {
-        productName: String,
-        controlled: Boolean,
-        needsPatient: Boolean,
-        allowException: Boolean,
-        allowContinue: Boolean,
-        getPayload: Function,
-        close: Function,
-    };
+    props = useProps({
+        productName: t.string(),
+        controlled: t.boolean(),
+        needsPatient: t.boolean(),
+        allowException: t.boolean(),
+        allowContinue: t.boolean(),
+        getPayload: t.function(),
+        close: t.function(),
+    });
 
     setup() {
         this.state = proxy({

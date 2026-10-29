@@ -23,12 +23,10 @@ company.write({
     'l10n_pe_perception_received_account_id': to_apply.id,
     'l10n_pe_perception_received_journal_id': misc.id,
 })
-ruc = env.ref('l10n_pe.it_RUC')
 Partner = env['res.partner']
 def partner(name, vat, **kw):
     p = Partner.search([('name', '=', name)], limit=1)
-    return p or Partner.create(dict({'name': name, 'vat': vat, 'is_company': True,
-        'l10n_latam_identification_type_id': ruc.id, 'country_id': env.ref('base.pe').id,
+    return p or Partner.create(dict({'name': name, 'vat': vat, 'is_company': True, 'country_id': env.ref('base.pe').id,
         'street': 'Av. Industrial 123', 'city': 'Lima'}, **kw))
 customer = partner('Ferretería Los Andes SAC', '20601234565')
 agent_customer = partner('Distribuidora Agente SAC', '20601234573', l10n_pe_is_perception_agent=True)

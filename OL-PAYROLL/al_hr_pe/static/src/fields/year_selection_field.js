@@ -1,4 +1,4 @@
-import { Component } from "@odoo/owl";
+import { Component, t, useProps } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { standardFieldProps } from "@web/views/fields/standard_field_props";
@@ -18,13 +18,12 @@ import { standardFieldProps } from "@web/views/fields/standard_field_props";
  */
 export class YearSelectionField extends Component {
     static template = "al_hr_pe.YearSelectionField";
-    static props = {
+    props = useProps({
         ...standardFieldProps,
-        yearsBack: { type: Number, optional: true },
-        yearsAhead: { type: Number, optional: true },
-        placeholder: { type: String, optional: true },
-    };
-    static defaultProps = { yearsBack: 6, yearsAhead: 1 };
+        yearsBack: t.number().optional(6),
+        yearsAhead: t.number().optional(1),
+        placeholder: t.string().optional(),
+    });
 
     get value() {
         return this.props.record.data[this.props.name] || false;

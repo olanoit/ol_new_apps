@@ -8,7 +8,7 @@
  * datos, prompt y validación está en el servidor (`al.gantt.ai`); aquí solo hay
  * conversación y revisión de propuestas.
  */
-import { Component, onPatched, proxy, usePlugin } from "@odoo/owl";
+import { Component, onPatched, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -16,14 +16,14 @@ import { useRef } from "@web/owl2/utils";
 
 export class GanttAiPanel extends Component {
     static template = "al_project_gantt_ai.GanttAiPanel";
-    static props = {
+    props = useProps({
         // () => ({ task_ids, project_ids }) — lo que se está viendo ahora mismo.
-        getContext: Function,
+        getContext: t.function(),
         // (changeset) => Promise — reutiliza la escritura del módulo base.
-        applyProposals: Function,
-        close: Function,
-        status: { type: Object, optional: true },
-    };
+        applyProposals: t.function(),
+        close: t.function(),
+        status: t.object().optional(),
+    });
 
     setup() {
         this.orm = useService("orm");

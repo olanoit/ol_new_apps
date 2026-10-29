@@ -46,8 +46,7 @@ class TestPosPeEdi(TestPoSCommon):
         })
         cls.partner_dni = cls.env['res.partner'].create({
             'name': 'Cliente con DNI',
-            'vat': '44556677',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id,
+            'additional_identifiers': {'PE_DNI': '44556677'},
         })
 
     def test_cpe_enabled_flag(self):
@@ -114,8 +113,7 @@ class TestPosPeEdi(TestPoSCommon):
         """11 dígitos con tipo «VAT» (código 0) no es RUC: SUNAT rechazaría la factura."""
         self.open_new_session()
         partner = self.env['res.partner'].create({
-            'name': 'Cliente VAT 11', 'vat': '20557912879',
-            'l10n_latam_identification_type_id': self.env.ref('l10n_latam_base.it_vat').id})
+            'name': 'Cliente VAT 11', 'vat': '20557912879'})
         order = self.env['pos.order'].create({
             'session_id': self.pos_session.id, 'partner_id': partner.id,
             'l10n_pe_doc_type': 'factura',

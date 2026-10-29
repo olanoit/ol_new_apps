@@ -199,12 +199,8 @@ class AccountMove(models.Model):
         detracción del reporte (mismo criterio que usa el core en
         ``_l10n_pe_edi_get_spot``)."""
         self.ensure_one()
-        national_bank = self.env.ref(
-            'l10n_pe.peruvian_national_bank', raise_if_not_found=False)
-        if not national_bank:
-            return ''
         account = self.company_id.bank_ids.filtered(
-            lambda b: b.bank_id == national_bank)
+            lambda b: b._is_peruvian_national_bank_account())
         return account[0].account_number if account else ''
 
     # ------------------------------------------------------------------

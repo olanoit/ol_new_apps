@@ -10,7 +10,7 @@
  * Hace polling cada segundo via ORM hasta que status === 'done' | 'error'.
  * (Port v18 → v19: la API de useService("orm")/doAction no cambió.)
  */
-import { Component, onMounted, onWillUnmount, proxy, usePlugin } from "@odoo/owl";
+import { Component, onMounted, onWillUnmount, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
@@ -23,10 +23,9 @@ const MAX_POLLS = 3600;
 
 export class ImportPayrollProgressWidget extends Component {
     static template = "al_hr_pe_import.ImportPayrollProgressWidget";
-    static props = {
-        record: { type: Object },
-        "*": true,
-    };
+    props = useProps({
+        record: t.object(),
+    });
 
     setup() {
         this.orm = useService("orm");

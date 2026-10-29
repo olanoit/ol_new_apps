@@ -30,8 +30,6 @@ class RceExportCommon(AccountTestInvoicingCommon):
             'name': 'EUROCAPITAL SERVICIOS FINANCIEROS S.A.C.',
             'vat': RUC_SUPPLIER,
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref(
-                'l10n_pe.it_RUC').id,
         })
         cls.product = cls.env['product.product'].create({
             'name': 'Servicio de asesoría RCE',

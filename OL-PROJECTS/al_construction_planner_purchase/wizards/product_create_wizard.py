@@ -217,7 +217,7 @@ class ConstructionProductCreateWizard(models.TransientModel):
                 'partner_id': self.partner_id.id,
                 'price': self.price_reference,
                 'currency_id': self.currency_id.id,
-                'product_uom_id': (self.purchase_uom_id or self.uom_id).id,
+                'uom_id': (self.purchase_uom_id or self.uom_id).id,
                 'company_id': self.company_id.id,
             })]
         # sudo: el planificador crea el producto desde el plan sin administrar

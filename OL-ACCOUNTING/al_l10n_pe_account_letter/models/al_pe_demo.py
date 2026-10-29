@@ -60,7 +60,7 @@ class AlPeDemo(models.AbstractModel):
                                       self._demo_ruc('2060555888'))
         supplier = self._demo_partner(env, 'al_l10n_pe_account_letter.demo_supplier', 'Suministros del Norte S.A.C.',
                                       self._demo_ruc('2060555999'))
-        bank = self._demo_record('al_l10n_pe_account_letter.demo_bank', env['res.bank'], {'name': 'Banco Comercial Andino'})
+        bank = self._demo_record('al_l10n_pe_account_letter.demo_bank', env['l10n_pe.bank'], {'name': 'Banco Comercial Andino'})
         today = fields.Date.context_today(self)
         start = today - timedelta(days=20)
 

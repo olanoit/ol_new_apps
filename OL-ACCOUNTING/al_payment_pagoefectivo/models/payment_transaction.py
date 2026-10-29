@@ -88,8 +88,9 @@ class PaymentTransaction(models.Model):
         if self.company_id.email:
             payload['adminEmail'] = self.company_id.email
         document_type = self._pagoefectivo_document_type()
-        if document_type and self.partner_id.vat:
-            payload.update(userDocumentType=document_type, userDocumentNumber=self.partner_id.vat)
+        number = 'l10n_pe_sunat_id_value' in self.partner_id._fields and self.partner_id.l10n_pe_sunat_id_value
+        if document_type and number:
+            payload.update(userDocumentType=document_type, userDocumentNumber=number)
         phone = re.sub(r'\D', '', self.partner_phone or '')
         if self.partner_country_id.code == 'PE' and len(phone) == 9:
             payload.update(userPhone=phone, userCodeCountry='+51')
@@ -98,10 +99,8 @@ class PaymentTransaction(models.Model):
     def _pagoefectivo_document_type(self):
         """DNI o pasaporte según el tipo de identificación del cliente; el RUC
         no tiene equivalente y se omite."""
-        identification = self.partner_id._fields.get('l10n_latam_identification_type_id') \
-            and self.partner_id.l10n_latam_identification_type_id
-        code = identification and identification._fields.get('l10n_pe_vat_code') \
-            and identification.l10n_pe_vat_code
+        partner = self.partner_id
+        code = 'l10n_pe_sunat_id_code' in partner._fields and partner.l10n_pe_sunat_id_code
         return SUNAT_DOCUMENT_TYPES.get(code)
 
     def _pagoefectivo_apply_cip(self, data):

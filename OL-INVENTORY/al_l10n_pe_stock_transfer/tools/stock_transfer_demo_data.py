@@ -31,7 +31,6 @@ else:
     # Consignación: el campo «Propietario» en recepciones y transferencias.
     env.ref('base.group_user').implied_ids |= env.ref('stock.group_tracking_owner')
     district = company.partner_id.l10n_pe_district or env['l10n_pe.res.city.district'].search([], limit=1)
-    it_ruc = env.ref('l10n_pe.it_RUC')
     Partner = env['res.partner']
     addr_plant = Partner.create({
         'name': 'Planta Ate', 'parent_id': company.partner_id.id, 'type': 'other',
@@ -46,16 +45,13 @@ else:
     site = Warehouse.create({'name': 'Obra Surco', 'code': 'DTO', 'partner_id': addr_site.id,
                              'company_id': company.id})
     owner = Partner.create({
-        'name': 'Alquiler de Equipos S.A.C.', 'vat': ruc('2061111111'), 'is_company': True,
-        'l10n_latam_identification_type_id': it_ruc.id, 'street': 'Jr. Los Andamios 300',
+        'name': 'Alquiler de Equipos S.A.C.', 'vat': ruc('2061111111'), 'is_company': True, 'street': 'Jr. Los Andamios 300',
         'l10n_pe_district': district.id, 'country_id': env.ref('base.pe').id})
     supplier = Partner.create({
-        'name': 'Aceros del Centro S.A.C.', 'vat': ruc('2062222222'), 'is_company': True,
-        'l10n_latam_identification_type_id': it_ruc.id, 'street': 'Av. Argentina 2100',
+        'name': 'Aceros del Centro S.A.C.', 'vat': ruc('2062222222'), 'is_company': True, 'street': 'Av. Argentina 2100',
         'l10n_pe_district': district.id, 'country_id': env.ref('base.pe').id})
     carrier = Partner.create({
-        'name': 'Transportes Rápidos S.A.C.', 'vat': ruc('2063333333'), 'is_company': True,
-        'l10n_latam_identification_type_id': it_ruc.id, 'l10n_pe_edi_mtc_number': '1512345CNG',
+        'name': 'Transportes Rápidos S.A.C.', 'vat': ruc('2063333333'), 'is_company': True, 'l10n_pe_edi_mtc_number': '1512345CNG',
         'country_id': env.ref('base.pe').id})
     product = env['product.product'].create({
         'name': 'Andamio tubular 2 m', 'type': 'consu', 'is_storable': True, 'weight': 18.0})

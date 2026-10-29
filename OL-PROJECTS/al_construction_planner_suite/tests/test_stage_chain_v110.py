@@ -30,10 +30,10 @@ class TestStageChainV110(PlannerCommon):
             'name': 'Planta de armado (test v110)', 'code': 'TV1A', 'company_id': cls.company.id})
         cls.route_mto = cls.env.ref('stock.route_warehouse0_mto')
         cls.route_mto.active = True
-        cls.route_manufacture = cls.env.ref('mrp.route_warehouse0_manufacture')
         cls.package_categ = cls.env['product.category'].create({
             'name': 'Paquetes de piezas (test v110)',
-            'route_ids': [Command.set((cls.route_mto | cls.route_manufacture).ids)]})
+            # Odoo 20: «Fabricar» es de almacén (se aplica con la lista de materiales).
+            'route_ids': [Command.set(cls.route_mto.ids)]})
         Stage = cls.env['construction.stage']
         cls.stage_cut = Stage._by_code(['production'])
         cls.stage_asm = Stage._by_code(['assembly'])

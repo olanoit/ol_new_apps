@@ -79,7 +79,7 @@ class ConstructionChangeOrder(models.Model):
                                    change=self.name, task=plan_line.task_id.display_name,
                                    activity=activity.display_name),
                 'product_qty': plan_line.qty_planned,
-                'product_uom_id': plan_line.product_uom_id.id,
+                'uom_id': plan_line.product_uom_id.id,
                 'price_unit': plan_line.price_unit_planned,
                 'tax_ids': [Command.set(taxes.ids)] if taxes else [Command.clear()],
                 'date_planned': fields.Datetime.now(),

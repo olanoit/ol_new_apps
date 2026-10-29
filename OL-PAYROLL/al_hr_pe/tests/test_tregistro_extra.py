@@ -49,19 +49,18 @@ class TestTregistroExtra(TransactionCase):
             [('institution_id', '=', cls.institution.id)], limit=1)
         cls.level_13 = cls.env.ref('al_hr_pe.education_level_13')
         cls.level_11 = cls.env.ref('al_hr_pe.education_level_11')
-        # Odoo 20 retiró res.bank: el banco va en la cuenta.
-        cls.bcp = {
-            'bank_name': 'Banco de Crédito del Perú (test)',
+        cls.bcp = cls.env['l10n_pe.bank'].create({
+            'name': 'Banco de Crédito del Perú (test)',
             'l10n_pe_financial_entity_id': cls.env.ref(
                 'al_hr_pe.fin_entity_002').id,
-        }
+        })
 
     def _account(self, number, bank=None):
         return self.env['res.partner.bank'].create({
             'account_number': number,
             'partner_id': self.employee.work_contact_id.id
             or self.employee.company_id.partner_id.id,
-            **(self.bcp if bank is None else bank),
+            'l10n_pe_bank_id': (bank or self.bcp).id,
         })
 
     # ------------------------------------------------------------------
@@ -215,7 +214,7 @@ class TestTregistroExtra(TransactionCase):
                 for issue in self.employee._l10n_pe_bank_account_issues()))
 
     def test_bank_without_sunat_code(self):
-        bank = {'bank_name': 'Banco sin código'}
+        bank = self.env['l10n_pe.bank'].create({'name': 'Banco sin código'})
         self.employee.bank_account_ids = self._account('19100000123456', bank)
         issues = self.employee._l10n_pe_bank_account_issues()
         self.assertTrue(any('tabla 36' in issue for issue in issues))

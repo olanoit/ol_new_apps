@@ -22,7 +22,7 @@ class TestInvoiceReport(AccountTestInvoicingCommon):
         # publicar facturas con detracción (mismo setup que TestPeEdiCommon)
         cls.national_bank_account = cls.env['res.partner.bank'].create({
             'account_number': '00-000-123456',
-            'bank_id': cls.env.ref('l10n_pe.peruvian_national_bank').id,
+            **cls.env['res.partner.bank']._l10n_pe_national_bank_vals(),
             'partner_id': company.partner_id.id,
             'allow_out_payment': True,
         })

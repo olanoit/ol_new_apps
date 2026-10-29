@@ -44,8 +44,8 @@ class TestLetterBankFlow(TransactionCase):
             'company_id': cls.company.id, 'l10n_latam_use_documents': False})
         cls.partner = cls.env['res.partner'].create({
             'name': 'CLIENTE LETRAS TEST SAC', 'vat': '20100070970'})
-        cls.bank = cls.env['res.bank'].search([], limit=1) or \
-            cls.env['res.bank'].create({'name': 'Banco test'})
+        cls.bank = cls.env['l10n_pe.bank'].search([], limit=1) or \
+            cls.env['l10n_pe.bank'].create({'name': 'Banco test'})
         cls.doc_type = cls.env.ref('l10n_pe.document_type01')
 
     # ------------------------------------------------------------------

@@ -247,8 +247,8 @@ class StockPicking(models.Model):
         no se informa."""
         if self._l10n_pe_is_own_address(partner):
             return self.company_id.vat, (partner.l10n_pe_annex_code or '').strip() or '0'
-        if partner.l10n_latam_identification_type_id.l10n_pe_vat_code == '6' and partner.vat:
-            return partner.vat, '0'
+        if partner.l10n_pe_sunat_id_code == '6' and partner.l10n_pe_sunat_id_value:
+            return partner.l10n_pe_sunat_id_value, '0'
         return False, False
 
     def _l10n_pe_edi_get_delivery_guide_values(self):

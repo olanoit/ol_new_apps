@@ -212,7 +212,7 @@ class ConstructionRealRecipe(models.Model):
             ._construction_module_bom_values(company)
         lines = [Command.clear()] + [Command.create({
             'product_id': line.product_id.id, 'product_qty': line.qty,
-            'product_uom_id': (line.uom_id or line.product_id.uom_id).id,
+            'uom_id': (line.uom_id or line.product_id.uom_id).id,
             'construction_consumption_stage': line.stage or False}) for line in self.line_ids
             if not line.stage or line.stage in codes]
         if bom:

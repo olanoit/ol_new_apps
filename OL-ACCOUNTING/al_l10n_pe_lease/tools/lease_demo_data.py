@@ -21,10 +21,8 @@ Partner = env['res.partner']
 if Partner.search([('name', '=', 'Inmobiliaria San Isidro S.A.C.')], limit=1):
     print('Los datos NIIF 16 ya existen.')
 else:
-    it_ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
     lessor = Partner.create({'name': 'Inmobiliaria San Isidro S.A.C.', 'vat': ruc('2061234567'),
-                             'is_company': True, 'country_id': env.ref('base.pe').id,
-                             'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False})
+                             'is_company': True, 'country_id': env.ref('base.pe').id})
     Lease = env['l10n_pe.lease']
     office = Lease.create({
         'partner_id': lessor.id, 'property_description': 'Oficina Av. Javier Prado 450, piso 8',
@@ -58,10 +56,8 @@ if Partner.search([('name', '=', lessor2_name)], limit=1):
     print('Los datos NIIF 16 (v2) ya existen.')
 else:
     from dateutil.relativedelta import relativedelta
-    it_ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
     lessor2 = Partner.create({'name': lessor2_name, 'vat': ruc('2061234598'), 'is_company': True,
-                              'country_id': env.ref('base.pe').id,
-                              'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False})
+                              'country_id': env.ref('base.pe').id})
     Lease = env['l10n_pe.lease']
     usd = env.ref('base.USD')
     usd.active = True

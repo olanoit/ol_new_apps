@@ -21,8 +21,6 @@ class AlPeDemo(models.AbstractModel):
         bank_journal = self._demo_bank_journal(env)
         if not portfolio or not bank_journal:
             return
-        bank = self._demo_record('al_l10n_pe_check.demo_bank', env['res.bank'],
-                                 {'name': 'Banco de Crédito', 'bic': 'BCPLPEPL'})
         customer = self._demo_partner(env, 'al_l10n_pe_check.demo_customer', 'Ferretería Los Andes S.A.C.',
                                       self._demo_ruc('2061223334'))
         person = self._demo_partner(env, 'al_l10n_pe_check.demo_person', 'Rosa Quispe Mamani', '41234567')
@@ -37,7 +35,7 @@ class AlPeDemo(models.AbstractModel):
                 'journal_id': portfolio.id, 'payment_method_line_id': new_line.id,
                 'date': min(date, today),
                 'l10n_latam_new_check_ids': [Command.create({
-                    'name': number, 'bank_id': bank.id, 'payment_date': date, 'amount': amount})],
+                    'name': number, 'payment_date': date, 'amount': amount})],
             })
             payment.action_post()
             return payment.l10n_latam_new_check_ids

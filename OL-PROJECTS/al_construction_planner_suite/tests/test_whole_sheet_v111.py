@@ -44,8 +44,6 @@ class TestWholeSheetV111(TransactionCase):
         return self.env['mrp.bom'].create({
             'product_tmpl_id': (product or self.kitchen).product_tmpl_id.id,
             'product_qty': 1.0,
-            # Con aviso de consumo, como las listas de Allcenter.
-            'consumption': 'warning',
             'bom_line_ids': [Command.create({'product_id': p.id, 'product_qty': qty})
                              for p, qty in lines],
         })
@@ -137,10 +135,10 @@ class TestWholeSheetV111(TransactionCase):
     def test_order_created_by_procurement(self):
         mto = self.env.ref('stock.route_warehouse0_mto')
         mto.active = True
-        manufacture = self.env.ref('mrp.route_warehouse0_manufacture')
         package = self.env['product.product'].create({
             'name': 'Paquete de piezas C07 (test)', 'is_storable': True,
-            'route_ids': [Command.set((mto | manufacture).ids)]})
+            # Odoo 20: «Fabricar» es de almacén (se aplica con la lista de materiales).
+            'route_ids': [Command.set(mto.ids)]})
         self._bom([(self.board, 7.2)], product=package)
         assembly = self._production([(package, 1.0)])
         cut = self.env['mrp.production'].search([

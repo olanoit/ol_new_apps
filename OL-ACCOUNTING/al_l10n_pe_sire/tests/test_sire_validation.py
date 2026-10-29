@@ -318,8 +318,6 @@ class TestSireValidation(TestSire):
 
     def test_partner_with_generic_vat_type_is_ruc(self):
         """Tipo «VAT» genérico (código 0) con 11 dígitos → RUC (6)."""
-        self.partner.l10n_latam_identification_type_id = self.env.ref(
-            'l10n_latam_base.it_vat')
         self.assertEqual(self.rvie._sire_partner_doc_type(self.partner), '6')
 
     def test_ticket_code_unknown_keeps_polling(self):

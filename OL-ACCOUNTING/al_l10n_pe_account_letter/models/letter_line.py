@@ -59,7 +59,7 @@ class L10nPeLetterLine(models.Model):
         related='letter_id.currency_id', store=True,
     )
     bank_id = fields.Many2one(
-        'res.bank',
+        'l10n_pe.bank',
         string='Banco',
     )
     code = fields.Char(

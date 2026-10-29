@@ -187,7 +187,7 @@ class ConstructionCrewDay(models.Model):
                 'kind': 'planned', 'project_id': line.project_id.id,
                 'company_id': line.company_id.id, 'plan_line_id': line.id,
                 'task_id': line.task_id.id, 'role_id': role.id,
-                'employee_id': slot.employee_id.id, 'date': slot.start_datetime.date(),
+                'employee_id': slot.resource_ids.employee_id[:1].id, 'date': slot.start_datetime.date(),
                 'days': days, 'hours': slot.allocated_hours,
                 'amount': line.currency_id.round(days * cost), 'slot_id': slot.id,
                 'source': 'crew'})

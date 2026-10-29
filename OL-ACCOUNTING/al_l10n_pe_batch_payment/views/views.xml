@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_res_bank_form_batch" model="ir.ui.view">
-        <field name="name">res.bank.form.pe.batch</field>
-        <field name="model">res.bank</field>
-        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="name">l10n_pe.bank.form.pe.batch</field>
+        <field name="model">l10n_pe.bank</field>
+        <field name="inherit_id" ref="al_account_base.l10n_pe_bank_view_form"/>
         <field name="arch" type="xml">
             <field name="bic" position="after">
                 <field name="l10n_pe_batch_format"/>
@@ -39,8 +39,8 @@
         <field name="model">account.journal</field>
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
-            <field name="bank_id" position="after">
-                <field name="l10n_pe_batch_format" invisible="not bank_id"/>
+            <field name="bank_account_id" position="after">
+                <field name="l10n_pe_batch_format" invisible="not bank_account_id"/>
                 <field name="l10n_pe_batch_service_code" invisible="l10n_pe_batch_format not in ('interbank', 'scotiabank')"/>
                 <field name="l10n_pe_batch_company_code" invisible="l10n_pe_batch_format != 'interbank'"/>
                 <field name="l10n_pe_batch_process_type" invisible="l10n_pe_batch_format != 'bbva'"/>

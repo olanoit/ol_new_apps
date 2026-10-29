@@ -27,8 +27,7 @@ class TestDeliveryGuideReport(TransactionCase):
         })
         cls.operator = cls.env['res.partner'].create({
             'name': 'Conductor de Prueba',
-            'vat': '70025425',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id,
+            'additional_identifiers': {'PE_DNI': '70025425'},
         })
         cls.vehicle = cls.env['l10n_pe_edi.vehicle'].create({
             'name': 'Camión de prueba',

@@ -23,7 +23,7 @@ class AlPeDemo(models.AbstractModel):
             return
         # Cuenta de detracciones en el Banco de la Nación (la pide el XML de la venta).
         self._demo_record('al_l10n_pe_detraction.demo_national_bank_account', env['res.partner.bank'], {
-            'partner_id': company.partner_id.id, 'bank_id': env.ref('l10n_pe.peruvian_national_bank').id,
+            'partner_id': company.partner_id.id, **env['res.partner.bank']._l10n_pe_national_bank_vals(),
             'account_number': '00-045-123456'})
         service = self._demo_record('al_l10n_pe_detraction.demo_product_service', env['product.product'], {
             'name': 'Servicio de asesoría empresarial', 'type': 'service', 'default_code': 'SRV-037',

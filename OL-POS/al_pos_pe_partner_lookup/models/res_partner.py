@@ -23,14 +23,18 @@ class ResPartner(models.Model):
         """
         self.check_access('create')
         number = re.sub(r'\D', '', number or '')
+        # Catálogo 06 de SUNAT: 6 RUC, 1 DNI.
         if REGEX_RUC.match(number):
-            identification_type = self.env.ref('l10n_pe.it_RUC')
+            sunat_code, label = '6', 'RUC'
         elif REGEX_DNI.match(number):
-            identification_type = self.env.ref('l10n_pe.it_DNI')
+            sunat_code, label = '1', 'DNI'
         else:
             raise UserError(_('Escriba un RUC (11 dígitos) o un DNI (8 dígitos).'))
 
-        existing = self.search([('vat', '=', number)], limit=1)
+        # Odoo 20: el RUC va en vat y el DNI en additional_identifiers; el
+        # número con que se identifica el contacto queda en
+        # l10n_pe_sunat_id_value.
+        existing = self.search([('l10n_pe_sunat_id_value', '=', number)], limit=1)
         if existing:
             return existing.id
 
@@ -40,14 +44,13 @@ class ResPartner(models.Model):
         doc_type = 'ruc' if len(number) == 11 else 'dni'
         if not company._l10n_pe_lookup_ready(doc_type):
             raise UserError(company._l10n_pe_lookup_not_ready_message(doc_type))
-        values = self._l10n_pe_lookup_document(number, identification_type)
+        values = self._l10n_pe_lookup_document(number, sunat_code)
         if not values:
             raise UserError(_(
                 'No se encontraron datos del %(type)s %(number)s. Revise el número o cree el '
-                'cliente a mano.', type=identification_type.name, number=number))
+                'cliente a mano.', type=label, number=number))
         partner = self.create({
             **values,
-            'vat': number,
-            'l10n_latam_identification_type_id': identification_type.id,
+            **self._l10n_pe_identification_vals(sunat_code, number),
         })
         return partner.id

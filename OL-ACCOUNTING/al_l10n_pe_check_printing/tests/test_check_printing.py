@@ -117,8 +117,7 @@ class TestCheckPrinting(TransactionCase):
             'payment_type': 'inbound', 'partner_type': 'customer', 'partner_id': self.supplier.id,
             'journal_id': self.portfolio.id, 'payment_method_line_id': line.id, 'date': date(2026, 10, 21),
             'l10n_latam_new_check_ids': [Command.create({
-                'name': '00000777', 'payment_date': date(2026, 10, 21), 'amount': 50,
-                'bank_id': self.env['res.bank'].create({'name': 'Banco tercero'}).id})],
+                'name': '00000777', 'payment_date': date(2026, 10, 21), 'amount': 50})],
         })
         received.action_post()
         with self.assertRaisesRegex(UserError, 'cheques propios'):

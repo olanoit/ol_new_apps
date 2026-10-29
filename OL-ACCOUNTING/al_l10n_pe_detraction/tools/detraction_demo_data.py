@@ -46,12 +46,12 @@ partner = get_or_create('res.partner', [('name', '=', 'Consultores Asociados del
     'name': 'Consultores Asociados del Sur S.A.C.', 'vat': '20131312955'})
 
 # cuenta de detracciones en el Banco de la Nación (requisito del XML)
-national_bank = env.ref('l10n_pe.peruvian_national_bank')
 bn_account = get_or_create(
     'res.partner.bank',
     [('partner_id', '=', company.partner_id.id),
-     ('bank_id', '=', national_bank.id)],
-    {'partner_id': company.partner_id.id, 'bank_id': national_bank.id,
+     ('bank_bic', '=', 'BANCPEPL')],
+    {'partner_id': company.partner_id.id,
+     **env['res.partner.bank']._l10n_pe_national_bank_vals(),
      'account_number': '00-045-123456'})
 
 dtype_37 = env.ref('al_l10n_pe_detraction.detraction_037')  # 12%

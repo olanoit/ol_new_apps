@@ -33,8 +33,7 @@ class TestCashFund(TransactionCase):
             *cls.env['account.journal']._check_company_domain(cls.company),
             ('type', '=', 'bank')], limit=1)
         cls.worker = cls.env['res.partner'].create({
-            'name': 'Rosa Quispe (test)', 'vat': '40506070',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id})
+            'name': 'Rosa Quispe (test)', 'additional_identifiers': {'PE_DNI': '40506070'}})
         cls.supplier = cls.env['res.partner'].create({'name': 'Grifo Central (test)'})
         cls.expense = cls.env['account.account'].search([
             *Account._check_company_domain(cls.company), ('account_type', '=', 'expense')], limit=1)

@@ -63,7 +63,7 @@ class StockPicking(models.Model):
                 problems.append(self.env._('%(product)s: registro sanitario vencido el %(date)s.',
                                            product=template.display_name,
                                            date=template.pharmacy_registry_expiry))
-            if move_line.product_id.tracking != 'none':
+            if move_line.product_id.tracking:
                 if not (move_line.lot_id or move_line.lot_name):
                     problems.append(self.env._('%s: falta el lote.', template.display_name))
                 elif template.use_expiration_date and not (

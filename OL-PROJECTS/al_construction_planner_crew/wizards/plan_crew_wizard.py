@@ -210,7 +210,8 @@ class ConstructionPlanCrewWizard(models.TransientModel):
             start, end = self._slot_datetimes(row.week_start)
             line = row.plan_line_id
             slot_values.append({
-                'resource_id': row.resource_id.id,
+                # Odoo 20: el turno admite varios recursos.
+                'resource_ids': [Command.set(row.resource_id.ids)],
                 'role_id': row.role_id.id,
                 'project_id': plan.project_id.id,
                 'company_id': plan.company_id.id,

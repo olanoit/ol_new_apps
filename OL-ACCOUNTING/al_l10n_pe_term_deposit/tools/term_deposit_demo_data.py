@@ -28,9 +28,7 @@ Partner = env['res.partner']
 if Partner.search([('name', '=', 'Banco Andino S.A.')], limit=1):
     print('Los datos de depósitos ya existen.')
 else:
-    it_ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
-    common = {'is_company': True, 'country_id': env.ref('base.pe').id,
-              'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False}
+    common = {'is_company': True, 'country_id': env.ref('base.pe').id,}
     bank = Partner.create(dict(common, name='Banco Andino S.A.', vat=ruc('2061112223')))
     landlord = Partner.create(dict(common, name='Inmuebles Lurín S.A.C.', vat=ruc('2061445556')))
     entity = Partner.create(dict(common, name='Proyecto Especial Vial', vat=ruc('2061778889')))

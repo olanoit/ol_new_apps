@@ -280,9 +280,9 @@
     <!-- Formato de TXT en el banco / tipo de cuenta en la cuenta   -->
     <!-- ========================================================== -->
     <record id="res_bank_view_form_multipayment" model="ir.ui.view">
-        <field name="name">res.bank.form.multipayment</field>
-        <field name="model">res.bank</field>
-        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="name">l10n_pe.bank.form.multipayment</field>
+        <field name="model">l10n_pe.bank</field>
+        <field name="inherit_id" ref="al_account_base.l10n_pe_bank_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='bic']" position="after">
                 <field name="format_bank"/>

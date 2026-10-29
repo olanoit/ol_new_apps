@@ -367,8 +367,8 @@ class AccountMove(models.Model):
         partner = self.partner_id.commercial_partner_id
         if not (company.vat and len(company.vat) == 11):
             errors.append(self.env._('La compañía no tiene un RUC válido.'))
-        doc_type = partner.l10n_latam_identification_type_id.l10n_pe_vat_code
-        if doc_type not in SELLER_DOC_TYPES or not partner.vat:
+        doc_type = partner.l10n_pe_sunat_id_code
+        if doc_type not in SELLER_DOC_TYPES or not partner.l10n_pe_sunat_id_value:
             errors.append(self.env._(
                 'El vendedor debe ser una persona natural sin RUC identificada con DNI, carné de '
                 'extranjería, pasaporte o cédula diplomática. Si su RUC fue dado de baja, '
@@ -495,9 +495,9 @@ class AccountMove(models.Model):
             'number': self._l10n_pe_lce_number(),
             'buyer_address': self._l10n_pe_lce_address(
                 company.partner_id.street, company.partner_id.street2, company.partner_id.l10n_pe_district),
-            'seller_vat': partner.vat,
-            'seller_doc_type': partner.l10n_latam_identification_type_id.l10n_pe_vat_code,
-            'seller_doc_name': partner.l10n_latam_identification_type_id.name,
+            'seller_vat': partner.l10n_pe_sunat_id_value,
+            'seller_doc_type': partner.l10n_pe_sunat_id_code,
+            'seller_doc_name': partner.l10n_pe_document_label,
             'seller_name': partner.name,
             'seller_address': self._l10n_pe_lce_address(
                 partner.street, partner.street2, partner.l10n_pe_district),

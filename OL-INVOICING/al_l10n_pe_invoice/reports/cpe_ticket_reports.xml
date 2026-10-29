@@ -49,8 +49,8 @@
                         <span t-field="partner.name"/>
                     </li>
                     <li>
-                        <strong><span t-out="partner.l10n_latam_identification_type_id.name or 'Doc.'"/>:</strong>
-                        <span t-field="partner.vat"/>
+                        <strong><span t-out="partner.l10n_pe_document_label or 'Doc.'"/>:</strong>
+                        <span t-field="partner.l10n_pe_sunat_id_value"/>
                     </li>
                     <li t-if="o.partner_id.street">
                         <strong>Dirección:</strong>

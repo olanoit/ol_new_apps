@@ -41,23 +41,24 @@ class TestPartnerLookup(TransactionCase):
         with patch(LOOKUP, return_value=self.ruc_values) as lookup:
             partner_id = self.Partner.l10n_pe_pos_create_from_document(self.ruc)
         partner = self.Partner.browse(partner_id)
-        self.assertEqual(lookup.call_args.args[-1], self.env.ref('l10n_pe.it_RUC'))
+        self.assertEqual(lookup.call_args.args[-1], '6')
         self.assertEqual(partner.vat, self.ruc)
-        self.assertEqual(partner.l10n_latam_identification_type_id, self.env.ref('l10n_pe.it_RUC'))
+        self.assertEqual(partner.l10n_pe_sunat_id_code, '6')
         self.assertTrue(partner.is_company)
         self.assertEqual(partner.street, 'AV. GARCILASO DE LA VEGA NRO. 1472')
 
     def test_dni_with_spaces(self):
         with patch(LOOKUP, return_value={'name': 'ROSA QUISPE HUAMAN', 'company_type': 'person'}) as lookup:
             partner = self.Partner.browse(self.Partner.l10n_pe_pos_create_from_document(' 4567 8901 '))
-        self.assertEqual(lookup.call_args.args[-1], self.env.ref('l10n_pe.it_DNI'))
-        self.assertEqual(partner.vat, '45678901')
+        self.assertEqual(lookup.call_args.args[-1], '1')
+        self.assertEqual(partner.l10n_pe_sunat_id_value, '45678901')
+        self.assertEqual(partner.l10n_pe_sunat_id_code, '1')
         self.assertEqual(partner.name, 'ROSA QUISPE HUAMAN')
 
     def test_existing_partner_is_returned_without_lookup(self):
         existing = self.Partner.create({
             'name': 'Cliente ya registrado', 'vat': self.ruc,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id})
+            'country_id': self.env.ref('base.pe').id})
         with patch(LOOKUP) as lookup:
             self.assertEqual(self.Partner.l10n_pe_pos_create_from_document(self.ruc), existing.id)
         lookup.assert_not_called()

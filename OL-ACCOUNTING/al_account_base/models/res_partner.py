@@ -13,6 +13,16 @@ _lt = LazyTranslate(__name__)
 PE_CE_KEY = 'PE_CE'
 # Código del catálogo 06 → clave del identificador en Odoo. El RUC (6) no
 # está: va en el campo ``vat``.
+# Nombre corto del documento por código del catálogo 06.
+PE_DOCUMENT_LABELS = {
+    '0': _lt('Doc. trib. no domiciliado'),
+    '1': _lt('DNI'),
+    '4': _lt('Carné de extranjería'),
+    '6': _lt('RUC'),
+    '7': _lt('Pasaporte'),
+    'A': _lt('Cédula diplomática'),
+    'F': _lt('PTP'),
+}
 PE_IDENTIFIER_KEYS = {
     **{code: key for key, code in PE_SUNAT_CODES.items()},
     '4': PE_CE_KEY,
@@ -29,6 +39,19 @@ class ResPartner(models.Model):
         help='Código de cuatro dígitos del establecimiento anexo declarado en '
              'el RUC. Se informa en los libros de inventario y en las guías '
              'de remisión. El establecimiento principal es «0000».')
+
+    # Nombre del documento con que se identifica el contacto en los
+    # comprobantes y reportes (antes l10n_latam_identification_type_id.name).
+    l10n_pe_document_label = fields.Char(
+        string='Tipo de documento', compute='_compute_l10n_pe_document_label')
+
+    @api.depends('l10n_pe_sunat_id_code', 'vat', 'additional_identifiers')
+    def _compute_l10n_pe_document_label(self):
+        labels = dict(PE_DOCUMENT_LABELS)
+        for partner in self:
+            code = partner.l10n_pe_sunat_id_code
+            partner.l10n_pe_document_label = labels.get(code) or (
+                partner._get_preferred_legal_entity_identifier_vals().get('label') or '')
 
     @api.model
     def _get_all_additional_identifiers_metadata(self):

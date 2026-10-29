@@ -19,15 +19,13 @@ class TestBatchPayment(TransactionCase):
         use_pe_company(cls)
         cls.company = cls.env.company
         cls.pen = cls.env.ref('base.PEN')
-        Bank = cls.env['res.bank']
+        Bank = cls.env['l10n_pe.bank']
         cls.bcp = Bank.create({'name': 'BCP (test)', 'l10n_pe_batch_format': 'bcp'})
         cls.bbva = Bank.create({'name': 'BBVA (test)', 'l10n_pe_batch_format': 'bbva'})
         cls.ibk = Bank.create({'name': 'Interbank (test)', 'l10n_pe_batch_format': 'interbank'})
-        ruc = cls.env.ref('l10n_pe.it_RUC')
-
         def journal(name, code, bank, account):
             acc = cls.env['res.partner.bank'].create({
-                'partner_id': cls.company.partner_id.id, 'bank_id': bank.id,
+                'partner_id': cls.company.partner_id.id, 'l10n_pe_bank_id': bank.id,
                 'account_number': account, 'currency_id': cls.pen.id})
             return cls.env['account.journal'].create({
                 'name': name, 'code': code, 'type': 'bank', 'currency_id': cls.pen.id,
@@ -39,10 +37,9 @@ class TestBatchPayment(TransactionCase):
         def supplier(name, vat, bank, account, cci=False):
             partner = cls.env['res.partner'].create({
                 'name': name, 'is_company': True, 'vat': vat,
-                'l10n_latam_identification_type_id': ruc.id,
                 'country_id': cls.env.ref('base.pe').id})
             bank_account = cls.env['res.partner.bank'].create({
-                'partner_id': partner.id, 'bank_id': bank.id, 'account_number': account,
+                'partner_id': partner.id, 'l10n_pe_bank_id': bank.id, 'account_number': account,
                 'l10n_pe_cci': cci, 'allow_out_payment': True})
             return partner, bank_account
 
@@ -220,11 +217,11 @@ class TestBatchPayment(TransactionCase):
     def test_prefers_supplier_account_in_journal_bank(self):
         partner, ibk_account = self.s3
         Bank = self.env['res.partner.bank']
-        Bank.create({'partner_id': partner.id, 'bank_id': self.bcp.id, 'account_number': '191-0000001-1-01',
+        Bank.create({'partner_id': partner.id, 'l10n_pe_bank_id': self.bcp.id, 'account_number': '191-0000001-1-01',
                      'l10n_pe_account_kind': 'savings', 'allow_out_payment': True})
-        checking = Bank.create({'partner_id': partner.id, 'bank_id': self.bcp.id,
+        checking = Bank.create({'partner_id': partner.id, 'l10n_pe_bank_id': self.bcp.id,
                                 'account_number': '191-0000002-0-02', 'allow_out_payment': True})
-        Bank.create({'partner_id': partner.id, 'bank_id': self.bcp.id, 'account_number': '191-0000003-0-03',
+        Bank.create({'partner_id': partner.id, 'l10n_pe_bank_id': self.bcp.id, 'account_number': '191-0000003-0-03',
                      'allow_out_payment': False})
         # Asistente de pago desde la factura, que trae la cuenta de Interbank.
         payment = self._pay_bills(self._bill(partner, 100.0, partner_bank=ibk_account), self.j_bcp)

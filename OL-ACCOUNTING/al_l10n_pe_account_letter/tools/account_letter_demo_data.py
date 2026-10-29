@@ -65,7 +65,7 @@ partner = get_or_create('res.partner', [('name', '=', 'Comercial Los Olivos S.A.
     'name': 'Comercial Los Olivos S.A.C.', 'vat': '20100070970'})
 provider = get_or_create('res.partner', [('name', '=', 'Suministros del Norte S.A.C.')], {
     'name': 'Suministros del Norte S.A.C.', 'vat': '20131312955'})
-bank = env['res.bank'].search([], limit=1) or env['res.bank'].create({'name': 'Banco'})
+bank = env['l10n_pe.bank'].search([], limit=1) or env['l10n_pe.bank'].create({'name': 'Banco'})
 
 # Diarios propios sin numeración SUNAT (l10n_latam_use_documents=False) para
 # no depender del correlativo real de comprobantes electrónicos del entorno.

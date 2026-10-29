@@ -101,10 +101,10 @@ class FourthCategoryReport(models.TransientModel):
         rows = []
         for line in self.line_ids:
             partner = line.move_id.partner_id.commercial_partner_id
-            code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code
+            code = partner.l10n_pe_sunat_id_code
             fields_ = [
                 PLAME_DOC_TYPES.get(code, '06'),
-                (partner.vat or '').strip(),
+                (partner.l10n_pe_sunat_id_value or '').strip(),
                 'R',
                 line.series or '',
                 line.number or '',

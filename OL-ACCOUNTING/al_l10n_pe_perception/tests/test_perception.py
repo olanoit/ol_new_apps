@@ -49,17 +49,13 @@ class TestPerception(AccountTestInvoicingCommon):
             'l10n_pe_perception_account_id': cls.perception_account.id,
             'l10n_pe_perception_received_account_id': cls.received_account.id,
         })
-        ruc = cls.env.ref('l10n_pe.it_RUC')
         cls.customer = cls.env['res.partner'].create({
-            'name': 'FERRETERÍA CLIENTE SAC', 'is_company': True, 'vat': '20557912879',
-            'l10n_latam_identification_type_id': ruc.id, 'country_id': cls.env.ref('base.pe').id})
+            'name': 'FERRETERÍA CLIENTE SAC', 'is_company': True, 'vat': '20557912879', 'country_id': cls.env.ref('base.pe').id})
         cls.person = cls.env['res.partner'].create({
-            'name': 'Juan Pérez', 'vat': '45678912',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id,
+            'name': 'Juan Pérez', 'additional_identifiers': {'PE_DNI': '45678912'},
             'country_id': cls.env.ref('base.pe').id})
         cls.supplier = cls.env['res.partner'].create({
-            'name': 'DISTRIBUIDORA AGENTE SAC', 'is_company': True, 'vat': '20100070970',
-            'l10n_latam_identification_type_id': ruc.id})
+            'name': 'DISTRIBUIDORA AGENTE SAC', 'is_company': True, 'vat': '20100070970'})
         cls.igv = cls.env['account.tax'].search([
             ('l10n_pe_edi_tax_code', '=', '1000'), ('type_tax_use', '=', 'sale'),
             ('amount', '=', 18), ('company_id', '=', cls.company.id)], limit=1)

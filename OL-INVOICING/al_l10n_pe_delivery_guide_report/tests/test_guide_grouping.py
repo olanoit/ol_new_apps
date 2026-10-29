@@ -35,8 +35,7 @@ class TestGuideGrouping(TransactionCase):
         })
         cls.operator = cls.env['res.partner'].create({
             'name': 'Conductor Agrupación',
-            'vat': '70025426',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id,
+            'additional_identifiers': {'PE_DNI': '70025426'},
         })
         cls.vehicle = cls.env['l10n_pe_edi.vehicle'].create({
             'name': 'Camión agrupación',

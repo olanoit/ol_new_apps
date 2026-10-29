@@ -6,7 +6,7 @@ class AccountJournal(models.Model):
     _inherit = 'account.journal'
 
     l10n_pe_batch_format = fields.Selection(
-        related='bank_id.l10n_pe_batch_format', string='Formato de pago masivo')
+        related='bank_account_id.l10n_pe_bank_id.l10n_pe_batch_format', string='Formato de pago masivo')
     l10n_pe_batch_service_code = fields.Char(
         string='Código del servicio',
         help='Lo asigna el banco al afiliar el pago a proveedores. Interbank: código del '

@@ -35,7 +35,7 @@ class AccountBatchPayment(models.Model):
         """(cuenta, es CCI) con la que se abona al proveedor: su cuenta en el
         mismo banco de la empresa o, si es de otro banco, su CCI."""
         bank = payment.partner_bank_id
-        if bank.bank_id and bank.bank_id == self.journal_id.bank_id:
+        if bank.l10n_pe_bank_id and bank.l10n_pe_bank_id == self.journal_id.bank_account_id.l10n_pe_bank_id:
             return digits(bank.account_number), False
         return digits(bank.l10n_pe_cci), True
 
@@ -151,8 +151,8 @@ class AccountBatchPayment(models.Model):
             partner = payment.partner_id.commercial_partner_id
             account, is_cci = self._l10n_pe_payment_account(payment)
             lines.append({
-                'doc_type': partner.l10n_latam_identification_type_id.l10n_pe_vat_code or '6',
-                'doc_number': (partner.vat or '').strip(),
+                'doc_type': partner.l10n_pe_sunat_id_code or '6',
+                'doc_number': (partner.l10n_pe_sunat_id_value or '').strip(),
                 'name': partner.name,
                 'account': account,
                 'is_cci': is_cci,

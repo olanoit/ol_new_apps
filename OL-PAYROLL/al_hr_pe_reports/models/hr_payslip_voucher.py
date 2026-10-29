@@ -274,7 +274,7 @@ class HrPayslip(models.Model):
         cuenta_abono = ''
         if bank_account:
             cuenta_abono = ' '.join(filter(None, [
-                bank_account.bank_id.name or '',
+                bank_account.bank_name or '',
                 bank_account.account_number or '']))
 
         # Etiquetas de selección (el QWeb no resuelve selections crudas)

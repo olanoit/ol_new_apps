@@ -289,7 +289,7 @@ class AccountEdiXmlUbl_Pe(models.AbstractModel):
         issuer = {
             'cbc:ID': {
                 '_text': invoice.company_id.vat,
-                'schemeID': invoice.company_id.partner_id.l10n_latam_identification_type_id.l10n_pe_vat_code,
+                'schemeID': invoice.company_id.partner_id.l10n_pe_sunat_id_code,
             },
         }
         for sequence, move in enumerate(sorted(amounts, key=lambda m: m.name), start=1):

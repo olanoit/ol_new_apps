@@ -19,12 +19,12 @@ class TestWebsiteSalePe(HttpCase):
         if cls.company.country_id.code != 'PE':
             cls.skipTest(cls, 'la compañía principal no es peruana')
         cls.website = cls.env['website'].search([('company_id', '=', cls.company.id)], limit=1)
-        cls.ruc_type = cls.env.ref('l10n_pe.it_RUC')
-        cls.dni_type = cls.env.ref('l10n_pe.it_DNI')
+        # Catálogo 06 de SUNAT.
+        cls.ruc_type, cls.dni_type = '6', '1'
         cls.portal_user = new_test_user(cls.env, login='pe_portal_shop', groups='base.group_portal')
         cls.portal_user.partner_id.write({
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.dni_type.id,
+            'additional_identifiers': {'PE_DNI': '45678901'},
         })
 
     def setUp(self):
@@ -33,9 +33,8 @@ class TestWebsiteSalePe(HttpCase):
         # base de la prueba para que la ruta pública la encuentre.
         self.authenticate(None, None)
 
-    def _lookup(self, number, identification_type):
-        return self.make_jsonrpc_request(ROUTE, {
-            'number': number, 'identification_type_id': identification_type.id})
+    def _lookup(self, number, sunat_code):
+        return self.make_jsonrpc_request(ROUTE, {'number': number, 'sunat_code': sunat_code})
 
     def test_lookup_returns_values(self):
         values = {'name': 'SUNAT', 'street': 'AV. GARCILASO DE LA VEGA 1472', 'state_id': False}
@@ -52,10 +51,8 @@ class TestWebsiteSalePe(HttpCase):
         self.assertIn('a mano', result['message'])
 
     def test_lookup_only_for_ruc_and_dni(self):
-        passport = self.env['l10n_latam.identification.type'].search(
-            [('l10n_pe_vat_code', 'not in', ('1', '6'))], limit=1)
         with patch(LOOKUP) as lookup:
-            result = self._lookup('AB123456', passport)
+            result = self._lookup('AB123456', '7')  # pasaporte
         lookup.assert_not_called()
         self.assertFalse(result['found'])
 
@@ -75,7 +72,7 @@ class TestWebsiteSalePe(HttpCase):
         html = response.text
         self.assertIn('id="l10n_pe_receipt_boleta"', html)
         self.assertIn('id="l10n_pe_receipt_factura"', html)
-        self.assertIn(f'data-identification-type-id="{self.ruc_type.id}"', html)
+        self.assertIn('data-sunat-code="6"', html)
         self.assertIn('o_l10n_pe_document_lookup', html)
         # Con DNI, la boleta queda marcada.
         boleta = html[html.index('id="l10n_pe_receipt_boleta"') - 300:html.index('id="l10n_pe_receipt_boleta"') + 300]

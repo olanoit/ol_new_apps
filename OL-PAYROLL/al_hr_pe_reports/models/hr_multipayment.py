@@ -690,7 +690,7 @@ _BANK_FORMATS = {
 class ResBank(models.Model):
     """Formato de TXT de pago masivo del banco (port de
     ``hr_automate_multipayment/models/res_bank.py``)."""
-    _inherit = 'res.bank'
+    _inherit = 'l10n_pe.bank'
 
     format_bank = fields.Selection(
         selection=[
@@ -802,7 +802,7 @@ class HrAutomateMultipayment(models.Model):
         required=True, check_company=True,
         domain=[('type', 'in', ('bank', 'cash'))], tracking=True)
     format_bank = fields.Selection(
-        related='journal_id.bank_id.format_bank', string='Formato')
+        related='journal_id.bank_account_id.l10n_pe_bank_id.format_bank', string='Formato')
     charge_account_id = fields.Many2one(
         related='journal_id.bank_account_id', string='Cuenta de cargo')
     payment_date = fields.Date(
@@ -1021,7 +1021,7 @@ class HrAutomateMultipayment(models.Model):
             vals_list = []
             for raw in record._iter_origin_lines():
                 account = raw['account']
-                if account.bank_id.format_bank != record.format_bank:
+                if account.l10n_pe_bank_id.format_bank != record.format_bank:
                     continue
                 vals_list.append({
                     'multipayment_id': record.id,
@@ -1262,7 +1262,7 @@ class HrAutomateMultipayment(models.Model):
             'names': employee.names or '',
             'account_number': account.account_number or '',
             'acc_type': account.type_of_account or '',
-            'acc_bic': account.bank_id.bic or '',
+            'acc_bic': account.bank_bic or '',
             'amount': amount,
             'amount_soles': line.amount,
             'computable_base': line.computable_base,
@@ -1373,10 +1373,10 @@ class HrAutomateMultipayment(models.Model):
         template = self.with_company(company).new({
             field_name: origin.id, 'company_id': company.id})
         raw_lines = list(template._iter_origin_lines())
-        formats = {raw['account'].bank_id.format_bank
+        formats = {raw['account'].l10n_pe_bank_id.format_bank
                    for raw in raw_lines if raw['account']}
         for journal in journals:
-            if journal.bank_id.format_bank not in formats:
+            if journal.bank_account_id.l10n_pe_bank_id.format_bank not in formats:
                 continue
             multipayment = self.with_company(company).create({
                 'company_id': company.id,
@@ -1388,10 +1388,10 @@ class HrAutomateMultipayment(models.Model):
             multipayment.action_load_lines()
         # Fuera de todo TXT quedan quienes no tienen cuenta o banco con
         # formato y quienes tienen un banco sin diario de pago masivo.
-        journal_formats = set(journals.mapped('bank_id.format_bank'))
+        journal_formats = set(journals.mapped('bank_account_id.l10n_pe_bank_id.format_bank'))
         journal_formats.discard(False)
         excluded = [raw['employee'].name for raw in raw_lines
-                    if raw['account'].bank_id.format_bank
+                    if raw['account'].l10n_pe_bank_id.format_bank
                     not in journal_formats]
         if excluded:
             return {
@@ -1446,7 +1446,7 @@ class HrAutomateMultipaymentLine(models.Model):
         'res.partner.bank', string='Cuenta destino',
         check_company=True)
     bank_id = fields.Many2one(
-        related='bank_account_id.bank_id', string='Banco')
+        related='bank_account_id.l10n_pe_bank_id', string='Banco')
     amount = fields.Float(string='Monto (S/)')
     amount_usd = fields.Float(
         string='Monto (USD)',

@@ -57,9 +57,8 @@ class TestFreeTransfer(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
         company = cls.company_data['company']
-        ruc = cls.env.ref('l10n_pe.it_RUC')
         company.partner_id.write({
-            'vat': '20557912879', 'l10n_latam_identification_type_id': ruc.id,
+            'vat': '20557912879',
             'country_id': cls.env.ref('base.pe').id})
         cls.journal = cls.company_data['default_journal_sale']
         cls.journal.l10n_latam_use_documents = True
@@ -71,7 +70,7 @@ class TestFreeTransfer(AccountTestInvoicingCommon):
         cls.free_taxed = ref('tax_free_group')
         cls.free_exempt = ref('sale_tax_free_exempt_group')
         cls.customer = cls.env['res.partner'].create({
-            'name': 'Cliente RUC', 'vat': '20100070970', 'l10n_latam_identification_type_id': ruc.id,
+            'name': 'Cliente RUC', 'vat': '20100070970',
             'country_id': cls.env.ref('base.pe').id})
         Product = cls.env['product.product']
         cls.p_igv = Product.create({'name': 'Polo promocional', 'type': 'consu',

@@ -173,7 +173,6 @@ class TestPackage111V3Request(TestProcess):
             'name': 'Puerta de alto C07 (test v3)', 'is_storable': True})
         self.env['mrp.bom'].create({
             'product_tmpl_id': piece.product_tmpl_id.id, 'product_qty': 1.0,
-            'consumption': 'flexible',
             'bom_line_ids': [Command.create({'product_id': self.cement.id, 'product_qty': 1})]})
         self._set_stock(self.cement, self.warehouse.lot_stock_id, 10)
         replacement = self.env['construction.replacement.request'].with_user(

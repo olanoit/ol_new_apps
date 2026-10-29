@@ -70,7 +70,7 @@ class ResCompany(models.Model):
         if cache is not None and day in cache:
             return cache[day]
         calendar = self.construction_income_calendar_id or self.resource_calendar_id
-        weekdays = {int(a.dayofweek) for a in calendar.attendance_ids if not a.display_type}
+        weekdays = {int(a.dayofweek) for a in calendar.attendance_ids}
         working = (not weekdays or day.weekday() in weekdays) and \
             not self._construction_is_holiday(day)
         if cache is not None:

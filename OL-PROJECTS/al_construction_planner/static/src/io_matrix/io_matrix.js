@@ -8,7 +8,7 @@
  * pliega y despliega; un grupo plegado es una sola columna con su subtotal.
  * Todo lo calcula `construction.resource.plan.get_io_matrix`.
  */
-import { Component, onWillStart, proxy, usePlugin } from "@odoo/owl";
+import { Component, onWillStart, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
@@ -72,7 +72,7 @@ export function headerRows(matrix, visible) {
 
 export class ConstructionIoMatrix extends Component {
     static template = "al_construction_planner.IoMatrix";
-    static props = ["*"];
+    props = useProps();
 
     setup() {
         this.orm = useService("orm");

@@ -308,7 +308,8 @@ class ConstructionCutClosingWizardLine(models.TransientModel):
             vals.update({
                 'location_dest_id': destination.id,
                 'construction_fixed_cost': cost,
-                'manual_consumption': True,
+                # Odoo 20 retiró manual_consumption: la cantidad se marca
+                # como tomada (picked) al validar el corte.
             })
             move = self.env['stock.move'].create(vals)
             move._action_confirm(merge=False)

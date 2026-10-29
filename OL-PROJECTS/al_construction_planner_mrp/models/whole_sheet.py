@@ -95,7 +95,8 @@ class MrpProduction(models.Model):
         plancha entera (y lo que cambian los retazos o las planchas sin tocar)
         no es un desvío si se consume lo que pide la orden."""
         issues = []
-        for order, product, consumed, expected in super()._get_consumption_issues():
+        # Odoo 20: (orden, producto, UdM, movimiento, consumido, esperado).
+        for order, product, uom, move, consumed, expected in super()._get_consumption_issues():
             moves = order.move_raw_ids.filtered(
                 lambda m: m.product_id == product and m.state != 'cancel')
             if moves and all(m.construction_covers_move_id for m in moves):
@@ -107,7 +108,7 @@ class MrpProduction(models.Model):
                     * order.qty_producing / order.product_qty
                 if product.uom_id.compare(consumed, planned) == 0:
                     continue
-            issues.append((order, product, consumed, expected))
+            issues.append((order, product, uom, move, consumed, expected))
         return issues
 
     def _update_raw_moves(self, factor):

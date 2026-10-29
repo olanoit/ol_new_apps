@@ -25,8 +25,6 @@ class TestTokenStatus(TransactionCase):
         cls.sunat = Connection.create({
             'name': 'Portal sin token (test)', 'engine': 'sunat_oficial',
             'document_type': 'ruc', 'company_id': cls.company.id})
-        cls.dni_type = cls.env.ref('l10n_pe.it_DNI')
-        cls.ruc_type = cls.env.ref('l10n_pe.it_RUC')
 
     def test_connection_shows_the_missing_token(self):
         self.assertTrue(self.api.needs_token)
@@ -50,15 +48,18 @@ class TestTokenStatus(TransactionCase):
                       self.company._l10n_pe_lookup_not_ready_message('dni'))
 
     def test_partner_form_hides_the_lookup_without_token(self):
-        partner = self.env['res.partner'].new({'name': 'X', 'l10n_latam_identification_type_id': self.dni_type.id})
+        # Odoo 20: el tipo de documento sale de los identificadores; sin
+        # número, una persona se consulta por DNI y una empresa por RUC.
+        partner = self.env['res.partner'].new({
+            'name': 'X', 'company_type': 'person', 'country_id': self.env.ref('base.pe').id})
         self.assertEqual(partner.l10n_pe_lookup_state, 'missing')
         self.assertIn('API con token (test)', partner.l10n_pe_lookup_message)
-        partner.l10n_latam_identification_type_id = self.ruc_type
+        partner.company_type = 'company'
         self.assertEqual(partner.l10n_pe_lookup_state, 'ready')
-        partner.l10n_latam_identification_type_id = self.env.ref('l10n_latam_base.it_vat')
+        partner.additional_identifiers = {'PASSPORT': 'AB123456'}
         self.assertEqual(partner.l10n_pe_lookup_state, 'na')
         self.company.l10n_pe_dni_validation = False
-        partner.l10n_latam_identification_type_id = self.dni_type
+        partner.additional_identifiers = {'PE_DNI': '45678901'}
         self.assertEqual(partner.l10n_pe_lookup_state, 'na')
 
     def test_typing_a_dni_without_token_is_not_an_api_failure(self):
@@ -66,8 +67,7 @@ class TestTokenStatus(TransactionCase):
         no respondió» y el botón explica qué falta."""
         with Form(self.env['res.partner']) as form:
             form.name = 'Cliente sin consulta'
-            form.l10n_latam_identification_type_id = self.dni_type
-            form.vat = '45678901'
+            form.additional_identifiers = {'PE_DNI': '45678901'}
             self.assertFalse(form.alert_warning_vat)
             self.assertEqual(form.l10n_pe_lookup_state, 'missing')
             partner = form.save()

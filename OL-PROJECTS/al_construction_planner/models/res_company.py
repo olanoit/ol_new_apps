@@ -116,8 +116,7 @@ class ResCompany(models.Model):
         """Días de la semana con horario en el calendario de la compañía
         (sin calendario: lunes a viernes)."""
         self.ensure_one()
-        weekdays = {int(a.dayofweek) for a in self.resource_calendar_id.attendance_ids
-                    if not a.display_type}
+        weekdays = {int(a.dayofweek) for a in self.resource_calendar_id.attendance_ids}
         return weekdays or {0, 1, 2, 3, 4}
 
     def _construction_is_site_day(self, day):

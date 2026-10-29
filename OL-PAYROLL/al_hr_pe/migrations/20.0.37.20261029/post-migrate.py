@@ -5,8 +5,8 @@
   ``l10n_latam.identification.type`` (retirado con l10n_latam_base) al
   catálogo ``l10n_pe.hr.document.type``: la columna anterior se traduce por
   el xmlid del tipo de origen y luego se elimina;
-- ``res.bank`` desaparece: la entidad SUNAT (T36) del banco pasa a cada
-  cuenta bancaria, si la base aún conserva el enlace cuenta → banco.
+- ``res.bank`` desaparece: la entidad SUNAT (T36) del banco pasa al
+  catálogo l10n_pe.bank (al_account_base lo creó con el id de origen).
 """
 import logging
 
@@ -43,12 +43,11 @@ def migrate(cr, version):
             _logger.info('%s: %s.%s → %s (%s filas)', table, module, name, new_xmlid, cr.rowcount)
         cr.execute(f'ALTER TABLE {table} DROP COLUMN {OLD_COLUMN} CASCADE')
 
-    if sql.column_exists(cr, 'res_partner_bank', 'bank_id') \
-            and sql.column_exists(cr, 'res_bank', 'l10n_pe_financial_entity_id'):
+    if sql.column_exists(cr, 'res_bank', 'l10n_pe_financial_entity_id'):
         cr.execute("""
-            UPDATE res_partner_bank a
+            UPDATE l10n_pe_bank pb
                SET l10n_pe_financial_entity_id = b.l10n_pe_financial_entity_id
               FROM res_bank b
-             WHERE a.bank_id = b.id AND a.l10n_pe_financial_entity_id IS NULL
+             WHERE pb.legacy_res_bank_id = b.id AND pb.l10n_pe_financial_entity_id IS NULL
         """)
-        _logger.info('res_partner_bank: entidad T36 desde el banco (%s filas)', cr.rowcount)
+        _logger.info('l10n_pe_bank: entidad T36 desde res_bank (%s filas)', cr.rowcount)

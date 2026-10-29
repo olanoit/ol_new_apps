@@ -72,7 +72,7 @@ class L10nPeBankCollectionLayout(models.Model):
 
     name = fields.Char(string='Formato', required=True)
     active = fields.Boolean(default=True)
-    bank_id = fields.Many2one('res.bank', string='Banco')
+    bank_id = fields.Many2one('l10n_pe.bank', string='Banco')
     file_type = fields.Selection([('debtors', 'Archivo de deudores'), ('response', 'Respuesta del banco')],
                                  string='Archivo', required=True)
     record_length = fields.Integer(

@@ -150,7 +150,6 @@ class ConstructionApprovalMixin(models.AbstractModel):
                         (step, route, '%s:%s:%s' % (step, route.approval_rule, slot)))
         approver_values = [{
             'user_id': user.id,
-            'sequence': tokens[0][0] * 1000 + index,
             'construction_step': tokens[0][0],
             'construction_route_id': tokens[0][1].id,
             'construction_slots': ','.join(token for _step, _route, token in tokens),

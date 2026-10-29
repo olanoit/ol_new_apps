@@ -14,7 +14,6 @@ from stdnum.pe import ruc as stdnum_ruc
 
 company = env.company
 company.write({'l10n_pe_fourth_category_agent': True})
-ruc_type = env.ref('l10n_pe.it_RUC')
 receipt_type = env.ref('l10n_pe.document_type03')
 journal = env['account.journal'].search([('type', '=', 'purchase'), ('company_id', '=', company.id)], limit=1)
 bank = env['account.journal'].search([('type', '=', 'bank'), ('company_id', '=', company.id)], limit=1)
@@ -26,8 +25,7 @@ def provider(name, body):
     vat = body + stdnum_ruc.calc_check_digit(body)
     partner = env['res.partner'].search([('vat', '=', vat)], limit=1)
     return partner or env['res.partner'].create({
-        'name': name, 'country_id': env.ref('base.pe').id, 'vat': vat,
-        'l10n_latam_identification_type_id': ruc_type.id})
+        'name': name, 'country_id': env.ref('base.pe').id, 'vat': vat})
 
 
 quispe = provider('QUISPE ROJAS ANA', '1047382956')

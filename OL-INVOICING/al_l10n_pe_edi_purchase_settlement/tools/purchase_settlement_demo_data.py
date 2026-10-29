@@ -25,8 +25,7 @@ seller = env['res.partner'].search([('name', '=', 'QUISPE MAMANI JUANA')], limit
 if not seller:
     seller = env['res.partner'].create({
         'name': 'QUISPE MAMANI JUANA',
-        'l10n_latam_identification_type_id': env.ref('l10n_pe.it_DNI').id,
-        'vat': '45612378',
+        'additional_identifiers': {'PE_DNI': '45612378'},
         'street': 'Caserío Santa Rosa, parcela 14',
         'country_id': env.ref('base.pe').id,
         'state_id': district.city_id.state_id.id,

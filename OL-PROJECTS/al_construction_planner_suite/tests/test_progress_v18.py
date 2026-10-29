@@ -111,9 +111,11 @@ class TestPartidaDriver(TransactionCase):
         # El seguimiento de campos se escribe en el precommit.
         self.env.flush_all()
         self.env.cr.precommit.run()
-        tracked = progress.sudo().message_ids.tracking_value_ids.mapped('field_id.name')
-        self.assertIn('supervisor_evaluation', tracked)
-        self.assertIn('state', tracked)
+        # Odoo 20: el seguimiento va en el cuerpo del mensaje, con la
+        # etiqueta del campo entre paréntesis.
+        tracked = ' '.join(progress.sudo().message_ids.mapped('body'))
+        self.assertIn('(%s)' % progress._fields['supervisor_evaluation'].string, tracked)
+        self.assertIn('(%s)' % progress._fields['state'].string, tracked)
         rejected = self._progress(self.wall, 6.0)
         rejected.with_user(self.supervisor)._action_reject('Fotos de otra partida')
         self.assertIn('Fotos de otra partida', ' '.join(rejected.message_ids.mapped('body')))

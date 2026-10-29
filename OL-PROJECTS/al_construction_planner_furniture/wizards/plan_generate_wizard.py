@@ -346,7 +346,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
                                                               (0.0, False, False))
                         vals = dict(
                             common, resource_type='material', stage=stage or False,
-                            product_id=product.id, product_uom_id=bom_line.product_uom_id.id,
+                            product_id=product.id, product_uom_id=bom_line.uom_id.id,
                             qty_planned=line_qty,
                             price_unit_planned=price, price_basis=basis,
                             price_basis_date=basis_date)

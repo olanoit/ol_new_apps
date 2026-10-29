@@ -7,7 +7,7 @@ import {useService} from "@web/core/utils/hooks";
 import {_t} from "@web/core/l10n/translation";
 
 const {DateTime} = luxon;
-import { Component, proxy, useState, xml } from "@odoo/owl";
+import { Component, proxy, useProps, xml } from "@odoo/owl";
 
 export class SubscriptionManager {
     constructor(env, {orm, notification}) {
@@ -77,7 +77,7 @@ export class SubscriptionManager {
 }
 
 class ExpiredSubscriptionBlockUI extends Component {
-    static props = {};
+    props = useProps({});
     static template = xml`
         <t>
             <!-- Renderizado condicional basado en el template original -->

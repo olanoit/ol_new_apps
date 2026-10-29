@@ -103,9 +103,9 @@
                         <td class="pe-doc-label">R.U.C.</td>
                         <td><span t-field="o.company_id.vat"/></td>
                         <td class="pe-doc-label">
-                            <span t-out="receiver.l10n_latam_identification_type_id.name or 'Doc.'"/>
+                            <span t-out="receiver.l10n_pe_document_label or 'Doc.'"/>
                         </td>
-                        <td><span t-field="receiver.vat"/></td>
+                        <td><span t-field="receiver.l10n_pe_sunat_id_value"/></td>
                     </tr>
                     <tr>
                         <td/>
@@ -150,7 +150,7 @@
                         <td class="pe-doc-label" style="width: 14%;">Razón social</td>
                         <td style="width: 36%;"><span t-field="o.l10n_pe_edi_operator_id.name"/></td>
                         <td class="pe-doc-label" style="width: 14%;">R.U.C.</td>
-                        <td style="width: 36%;"><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                        <td style="width: 36%;"><span t-field="o.l10n_pe_edi_operator_id.l10n_pe_sunat_id_value"/></td>
                     </tr>
                     <tr>
                         <td class="pe-doc-label">N.º registro MTC</td>
@@ -173,9 +173,9 @@
                     </tr>
                     <tr>
                         <td class="pe-doc-label">
-                            <span t-out="o.l10n_pe_edi_operator_id.l10n_latam_identification_type_id.name or 'Doc.'"/>
+                            <span t-out="o.l10n_pe_edi_operator_id.l10n_pe_document_label or 'Doc.'"/>
                         </td>
-                        <td><span t-field="o.l10n_pe_edi_operator_id.vat"/></td>
+                        <td><span t-field="o.l10n_pe_edi_operator_id.l10n_pe_sunat_id_value"/></td>
                         <td class="pe-doc-label">Marca/Modelo</td>
                         <td><span t-field="o.l10n_pe_edi_vehicle_id.name"/></td>
                     </tr>

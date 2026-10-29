@@ -49,7 +49,7 @@ class ConstructionResourcePlanLine(models.Model):
         for allocation in self.allocation_ids.filtered(
                 lambda a: a.kind == 'planning_slot' and a.state != 'cancel'):
             slot_sudo = allocation.sudo().slot_id
-            employee = slot_sudo.employee_id
+            employee = slot_sudo.resource_ids.employee_id[:1]
             if employee:
                 planned[employee] += slot_sudo.allocated_hours
         committed = sum(

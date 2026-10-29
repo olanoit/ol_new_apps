@@ -19,8 +19,8 @@
                 <tr>
                     <td class="pe-doc-label" style="width: 18%;"><t t-if="o.payment_type == 'inbound'">Recibimos de</t><t t-else="">Pagado a</t></td>
                     <td class="pe-doc-value" style="width: 47%;"><span t-out="partner.name or 'Varios (ver detalle)'"/></td>
-                    <td class="pe-doc-label" style="width: 15%;"><span t-out="partner.l10n_latam_identification_type_id.name or 'Documento'"/></td>
-                    <td class="pe-doc-value" style="width: 20%;"><span t-out="partner.vat or '—'"/></td>
+                    <td class="pe-doc-label" style="width: 15%;"><span t-out="partner.l10n_pe_document_label or 'Documento'"/></td>
+                    <td class="pe-doc-value" style="width: 20%;"><span t-out="partner.l10n_pe_sunat_id_value or '—'"/></td>
                 </tr>
                 <tr>
                     <td class="pe-doc-label">Fecha</td>

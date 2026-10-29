@@ -59,13 +59,11 @@ class TestPackage112Analytic(TransactionCase):
         Bom = cls.env['mrp.bom']
         cls.bom_cut = Bom.create({
             'product_tmpl_id': cls.package.product_tmpl_id.id, 'product_qty': 1.0,
-            'consumption': 'flexible',
             'bom_line_ids': [Command.create({
                 'product_id': cls.board.id, 'product_qty': 2,
                 'construction_consumption_stage': 'production'})]})
         cls.bom_asm = Bom.create({
             'product_tmpl_id': cls.module.product_tmpl_id.id, 'product_qty': 1.0,
-            'consumption': 'flexible',
             'bom_line_ids': [
                 Command.create({'product_id': cls.package.id, 'product_qty': 1,
                                 'construction_intermediate': True}),

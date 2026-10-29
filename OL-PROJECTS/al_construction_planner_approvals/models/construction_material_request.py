@@ -43,7 +43,6 @@ class ConstructionMaterialRequest(models.Model):
             # Un solo tramo, «basta uno», con el jefe o con el grupo.
             approver_values = [{
                 'user_id': user.id,
-                'sequence': 1000 + index,
                 'construction_step': 1,
                 'construction_slots': '1:any:internal',
                 'status': 'new',

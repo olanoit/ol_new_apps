@@ -297,7 +297,7 @@ class StockPicking(models.Model):
         Lot = self.env['stock.lot']
         for picking in self._construction_dispatch_pickings():
             for move in picking.move_ids.filtered(
-                    lambda m: m.product_id.tracking != 'none' and not m.construction_lot_id
+                    lambda m: m.product_id.tracking and not m.construction_lot_id
                     and m.state not in ('done', 'cancel')):
                 name = picking._construction_expected_lot_name(move.product_id)
                 lot = Lot.search([('product_id', '=', move.product_id.id), ('name', '=', name)],
@@ -353,7 +353,7 @@ class StockPicking(models.Model):
                 lambda t: t not in dispatched).sorted(
                 lambda t: (t.construction_shipment_picking_id != self, t.id))
             dispatched |= available[:qty]
-            if product.tracking != 'none':
+            if product.tracking:
                 expected = self._construction_expected_lot_name(product)
                 wrong_lots += [line.lot_id.name for line in move.move_line_ids
                                if line.lot_id and line.lot_id.name != expected]

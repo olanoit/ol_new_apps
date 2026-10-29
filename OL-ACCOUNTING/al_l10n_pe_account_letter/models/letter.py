@@ -46,7 +46,7 @@ class L10nPeLetterCanjeWizard(models.TransientModel):
     letter_line_id = fields.Many2one('l10n_pe.letter.line', 'Letra', required=False)
 
     bank_id = fields.Many2one(
-        'res.bank',
+        'l10n_pe.bank',
         string='Banco',
         required=True,
     )

@@ -423,7 +423,7 @@ class ConstructionPortalService(models.AbstractModel):
                 ('project_id', '=', project.id),
                 ('start_datetime', '<=', datetime.combine(today + timedelta(days=1), time.min)),
                 ('end_datetime', '>=', datetime.combine(today - timedelta(days=7), time.min))])
-            employees |= slots.resource_id.employee_id
+            employees |= slots.resource_ids.employee_id
         employees |= members.employee_id
         return [{'id': employee.id, 'name': employee.name,
                  'category': employee.version_id.l10n_pe_construction_category_id.name or ''

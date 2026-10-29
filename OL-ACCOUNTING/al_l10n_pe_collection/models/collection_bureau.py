@@ -221,14 +221,13 @@ class L10nPeCollectionBureau(models.Model):
         row = 1
         for report in reports:
             partner = report.partner_id
-            id_code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code \
-                if 'l10n_latam_identification_type_id' in partner._fields else ''
+            id_code = partner.l10n_pe_sunat_id_code
             for line in report.line_ids.filtered(lambda l: l.amount_residual > 0):
                 due = line.date_maturity or line.date
                 sheet.write(row, 0, bureaus[report.bureau])
                 sheet.write(row, 1, states[report.state])
                 sheet.write(row, 2, id_code or '')
-                sheet.write(row, 3, partner.vat or '')
+                sheet.write(row, 3, partner.l10n_pe_sunat_id_value or '')
                 sheet.write(row, 4, partner.name)
                 sheet.write(row, 5, line.move_id.name)
                 sheet.write_datetime(row, 6, fields.Datetime.to_datetime(line.move_id.invoice_date or line.date),

@@ -21,9 +21,8 @@ class TestSunatRules(AccountTestInvoicingCommon):
     def setUpClass(cls):
         super().setUpClass()
         company = cls.company_data['company']
-        ruc = cls.env.ref('l10n_pe.it_RUC')
         company.partner_id.write({
-            'vat': '20557912879', 'l10n_latam_identification_type_id': ruc.id,
+            'vat': '20557912879',
             'country_id': cls.env.ref('base.pe').id})
         cls.journal = cls.company_data['default_journal_sale']
         cls.journal.l10n_latam_use_documents = True
@@ -33,11 +32,10 @@ class TestSunatRules(AccountTestInvoicingCommon):
         cls.ina = ref('sale_tax_ina')
         cls.igv_incl = cls.igv.copy({'name': 'IGV 18% incluido (prueba)', 'price_include_override': 'tax_included'})
         cls.customer = cls.env['res.partner'].create({
-            'name': 'Cliente RUC', 'vat': '20100070970', 'l10n_latam_identification_type_id': ruc.id,
+            'name': 'Cliente RUC', 'vat': '20100070970',
             'country_id': cls.env.ref('base.pe').id})
         cls.customer_dni = cls.env['res.partner'].create({
-            'name': 'Cliente DNI', 'vat': '46027897',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id,
+            'name': 'Cliente DNI', 'additional_identifiers': {'PE_DNI': '46027897'},
             'country_id': cls.env.ref('base.pe').id})
         Product = cls.env['product.product']
         cls.p_a = Product.create({'name': 'Servicio A', 'type': 'service', 'invoice_policy': 'order',

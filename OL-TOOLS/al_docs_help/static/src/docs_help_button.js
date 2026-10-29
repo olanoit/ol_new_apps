@@ -1,7 +1,7 @@
 /** @odoo-module **/
 // Botón «?» que abre la página de la documentación de la pantalla actual:
 // en la barra superior (pantallas) y en la cabecera de los asistentes.
-import { Component, onWillStart, onWillUpdateProps, proxy, usePlugin } from "@odoo/owl";
+import { Component, onWillStart, onWillUpdateProps, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useBus, useService } from "@web/core/utils/hooks";
@@ -33,7 +33,7 @@ function currentKey(action) {
 
 export class DocsHelpSystray extends Component {
     static template = "al_docs_help.DocsHelpSystray";
-    static props = {};
+    props = useProps({});
 
     setup() {
         this.action = usePlugin(ActionManagerPlugin);
@@ -58,7 +58,9 @@ export class DocsHelpSystray extends Component {
 
 export class DocsHelpButton extends Component {
     static template = "al_docs_help.DocsHelpButton";
-    static props = { helpKey: { optional: true } };
+    props = useProps({
+        helpKey: t.any().optional(),
+    });
 
     setup() {
         this.docsHelp = useService("al_docs_help");

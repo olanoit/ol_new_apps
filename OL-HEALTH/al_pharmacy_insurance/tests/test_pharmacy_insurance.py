@@ -363,21 +363,17 @@ class TestPharmacyInsurancePeXml(TestPoSCommon):
     def setUpClass(cls):
         super().setUpClass()
         company = cls.company_data['company']
-        ruc = cls.env.ref('l10n_pe.it_RUC')
         # TestPoSCommon pisa el país de la compañía con uno ficticio.
         company.write({'country_id': cls.env.ref('base.pe').id, 'vat': '20557912879'})
-        company.partner_id.l10n_latam_identification_type_id = ruc
         cls.config = cls.basic_config
         cls.config.invoice_journal_id.l10n_latam_use_documents = True
         cls.igv = cls.env['account.chart.template'].with_company(company).ref('sale_tax_igv_18')
         cls.analgesic = cls.create_product('Paracetamol 500 mg', cls.categ_basic, 10.0, tax_ids=cls.igv.ids)
         cls.losartan = cls.create_product('Losartán 50 mg', cls.categ_basic, 20.0, tax_ids=cls.igv.ids)
         cls.insurer = cls.env['res.partner'].create({
-            'name': 'Salud Andina EPS S.A.', 'is_company': True, 'vat': '20100070970',
-            'l10n_latam_identification_type_id': ruc.id, 'country_id': cls.env.ref('base.pe').id})
+            'name': 'Salud Andina EPS S.A.', 'is_company': True, 'vat': '20100070970', 'country_id': cls.env.ref('base.pe').id})
         cls.patient = cls.env['res.partner'].create({
-            'name': 'María Torres Quispe', 'vat': '44556677', 'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id})
+            'name': 'María Torres Quispe', 'additional_identifiers': {'PE_DNI': '44556677'}, 'country_id': cls.env.ref('base.pe').id})
         today = fields.Date.context_today(cls.env.user)
         cls.agreement = cls.env['pharmacy.insurance.agreement'].create({
             'name': 'Salud Andina · Plan regular', 'partner_id': cls.insurer.id,

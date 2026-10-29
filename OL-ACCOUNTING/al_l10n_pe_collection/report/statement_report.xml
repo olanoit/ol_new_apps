@@ -12,8 +12,8 @@
                 <tr>
                     <td class="pe-doc-label" style="width: 15%;">Cliente</td>
                     <td class="pe-doc-value" style="width: 50%;"><span t-out="o.name"/></td>
-                    <td class="pe-doc-label" style="width: 15%;"><span t-out="o.l10n_latam_identification_type_id.name or 'Documento'"/></td>
-                    <td class="pe-doc-value"><span t-out="o.vat or '—'"/></td>
+                    <td class="pe-doc-label" style="width: 15%;"><span t-out="o.l10n_pe_document_label or 'Documento'"/></td>
+                    <td class="pe-doc-value"><span t-out="o.l10n_pe_sunat_id_value or '—'"/></td>
                 </tr>
                 <tr>
                     <td class="pe-doc-label">Dirección</td>

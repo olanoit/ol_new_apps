@@ -1,4 +1,4 @@
-import { Component, proxy } from "@odoo/owl";
+import { Component, proxy, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 
@@ -14,25 +14,19 @@ import { _t } from "@web/core/l10n/translation";
 export class DocTypePopup extends Component {
     static template = "al_l10n_pe_edi_pos.DocTypePopup";
     static components = { Dialog };
-    static props = {
-        title: { type: String, optional: true },
-        currentType: { type: String, optional: true },
-        currentSerieId: { type: [Number, { value: false }], optional: true },
-        currentSend: { type: Boolean, optional: true },
+    props = useProps({
+        title: t.string().optional("Comprobante"),
+        currentType: t.string().optional("boleta"),
+        currentSerieId: t.or([t.number(), t.literal(false)]).optional(false),
+        currentSend: t.boolean().optional(true),
         // {boleta: [{id, name}], factura: [{id, name}]}
-        series: { type: Object },
+        series: t.object(),
         // {boleta: id|null, factura: id|null} — series fijas actuales
-        fixedIds: { type: Object },
-        onSetFixed: { type: Function },
-        getPayload: Function,
-        close: Function,
-    };
-    static defaultProps = {
-        title: "Comprobante",
-        currentType: "boleta",
-        currentSerieId: false,
-        currentSend: true,
-    };
+        fixedIds: t.object(),
+        onSetFixed: t.function(),
+        getPayload: t.function(),
+        close: t.function(),
+    });
 
     // Getter (no array estático): `_t` se evalúa en tiempo de ejecución,
     // con las traducciones ya cargadas.

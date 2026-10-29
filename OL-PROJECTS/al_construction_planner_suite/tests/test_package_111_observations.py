@@ -276,7 +276,7 @@ class TestPackage111WithPlan(TestProductionExcess):
         cls.p_white.write({'uom_id': cls.uom_sheet.id, 'is_storable': True,
                            'default_code': '3101508'})
         white_line = cls.bom.bom_line_ids.filtered(lambda l: l.product_id == cls.p_white)
-        white_line.write({'product_uom_id': cls.uom_sheet.id, 'product_qty': 1.6})
+        white_line.write({'uom_id': cls.uom_sheet.id, 'product_qty': 1.6})
         cls.p_white.product_tmpl_id.action_construction_create_remnant()
         pool = cls.env['stock.location'].create({
             'name': 'Retazos (test plan)', 'usage': 'internal',
@@ -363,7 +363,7 @@ class TestPackage111WithPlan(TestProductionExcess):
         self.env['product.supplierinfo'].create({
             'partner_id': self.env['res.partner'].create({'name': 'Novopan (test)'}).id,
             'product_tmpl_id': self.p_white.product_tmpl_id.id,
-            'product_uom_id': self.square_meter.id, 'price': 30.0})
+            'uom_id': self.square_meter.id, 'price': 30.0})
 
     def test_mass_purchase_whole_sheets_in_m2(self):
         self._buy_in_square_meters()

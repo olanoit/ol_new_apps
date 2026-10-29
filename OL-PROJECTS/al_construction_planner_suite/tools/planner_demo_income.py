@@ -63,9 +63,6 @@ else:
         company.construction_income_calendar_id = calendar
     customer_vals = {'name': f'{P}Inmobiliaria MOMEN', 'is_company': True,
                      'vat': '20557912879', 'company_id': False}
-    ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
-    if ruc:
-        customer_vals['l10n_latam_identification_type_id'] = ruc.id
     customer = env['res.partner'].search([('name', '=', customer_vals['name'])], limit=1) \
         or env['res.partner'].create(customer_vals)
     product = env['product.product'].search([('name', '=', f'{P}Cocinas')], limit=1)

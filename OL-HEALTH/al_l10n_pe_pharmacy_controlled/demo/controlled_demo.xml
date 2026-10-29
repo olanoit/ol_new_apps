@@ -52,36 +52,28 @@
         </function>
         <!-- Documento de identidad de los pacientes (lo exige la receta especial) -->
         <record id="al_pharmacy_prescription.patient_mendoza" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">41235678</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '41235678'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_castro" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">45879632</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '45879632'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_quispe" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">08765412</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '08765412'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_ramos" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">42319876</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '42319876'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_salinas" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">47652013</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '47652013'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_benites" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">06543219</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '06543219'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_ccahuana" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">78123456</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '78123456'}"/>
         </record>
         <record id="al_pharmacy_prescription.patient_lopez" model="res.partner">
-            <field name="l10n_latam_identification_type_id" ref="l10n_pe.it_DNI"/>
-            <field name="vat">40987123</field>
+            <field name="additional_identifiers" eval="{'PE_DNI': '40987123'}"/>
         </record>
         <!-- Receta especial vigente (3 días) y receta retenida con su folio -->
         <record id="prescription_special" model="pharmacy.prescription">

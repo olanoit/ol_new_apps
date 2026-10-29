@@ -32,7 +32,7 @@ afiliada: valide el primer archivo con el banco antes de pagar.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_batch_payment/static/description/icon.png',
-    'version': '6.20261027',
+    'version': '7.20261029',
     'license': 'OPL-1',
     'depends': ['account_batch_payment', 'al_account_payments', 'l10n_pe'],
     'data': [

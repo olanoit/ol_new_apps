@@ -53,8 +53,7 @@ class TestPurchaseSettlement(TransactionCase):
         cls.district = cls.env.ref('l10n_pe.district_pe_150131')
         cls.seller = cls.env['res.partner'].create({
             'name': 'Quispe Mamani Juana',
-            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_DNI').id,
-            'vat': '40404040',
+            'additional_identifiers': {'PE_DNI': '40404040'},
             'street': 'Jr. Los Olivos 123, caserío Santa Rosa',
             'country_id': cls.env.ref('base.pe').id,
             'l10n_pe_district': cls.district.id,

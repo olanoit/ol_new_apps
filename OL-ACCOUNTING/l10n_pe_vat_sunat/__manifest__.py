@@ -45,9 +45,7 @@ Consulta de RUC/DNI peruanos **configurable por datos** (Odoo 19):
     'license': 'OPL-1',
     'depends': [
         'base',
-        'base_vat',
         'contacts',
-        'l10n_latam_base',
         'l10n_pe',
         'al_account_base',
     ],

@@ -28,7 +28,7 @@ campos sin uso.
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_account_base/static/description/icon.png',
-    'version': '20.20261027',
+    'version': '21.20261029',
     'license': 'OPL-1',
     # El formato de los documentos impresos (encabezado, pie y estilos del
     # comprobante A4) vive en al_report_base, común a toda la suite.
@@ -36,6 +36,8 @@ campos sin uso.
     # de las notas cuyo original no está en Odoo (PLE y SIRE).
     'depends': ['account', 'al_report_base', 'l10n_latam_invoice_document', 'l10n_pe'],
     'data': [
+        'security/ir.access.csv',
+        'data/l10n_pe_bank_data.xml',
         'views/res_company_views.xml',
         'views/res_config_settings_views.xml',
         'views/account_move_views.xml',

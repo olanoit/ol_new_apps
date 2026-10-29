@@ -25,13 +25,10 @@ Partner = env['res.partner']
 if Partner.search([('name', '=', 'Factor Capital S.A.')], limit=1):
     print('Los datos de factoring ya existen.')
 else:
-    it_ruc = env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
     factor = Partner.create({'name': 'Factor Capital S.A.', 'vat': ruc('2060123456'), 'is_company': True,
-                             'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False,
                              'country_id': env.ref('base.pe').id})
     customer = Partner.create({'name': 'Inmobiliaria del Sur S.A.C.', 'vat': ruc('2060987654'),
-                               'is_company': True, 'country_id': env.ref('base.pe').id,
-                               'l10n_latam_identification_type_id': it_ruc.id if it_ruc else False})
+                               'is_company': True, 'country_id': env.ref('base.pe').id})
     Journal = env['account.journal'].with_company(company)
     sale = Journal.create({'name': 'Ventas factoring', 'code': 'DFAC', 'type': 'sale',
                            'company_id': company.id, 'l10n_latam_use_documents': False})
@@ -85,10 +82,10 @@ else:
 factor = Partner.search([('name', '=', 'Factor Capital S.A.')], limit=1)
 Contract = env['l10n_pe.factoring.contract']
 if factor and not Contract.search([('factor_id', '=', factor.id)], limit=1):
-    bank = env['res.bank'].search([('name', 'ilike', 'Crédito')], limit=1) or env['res.bank'].create(
+    bank = env['l10n_pe.bank'].search([('name', 'ilike', 'Crédito')], limit=1) or env['l10n_pe.bank'].create(
         {'name': 'Banco de Crédito del Perú'})
     account = env['res.partner.bank'].create({
-        'partner_id': factor.id, 'account_number': '193-2456789-0-12', 'bank_id': bank.id,
+        'partner_id': factor.id, 'account_number': '193-2456789-0-12', 'l10n_pe_bank_id': bank.id,
         'currency_id': company.currency_id.id})
     contract = Contract.create({
         'name': 'Línea de factoring 2026', 'factor_id': factor.id, 'factor_bank_id': account.id,

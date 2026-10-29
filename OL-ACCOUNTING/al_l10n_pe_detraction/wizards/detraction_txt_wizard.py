@@ -132,9 +132,7 @@ class L10nPeDetractionTxtWizard(models.TransientModel):
     @api.model
     def _document_type(self, partner):
         """Tipo de documento de identidad (tabla 5.8, códigos de SUNAT)."""
-        identification = partner.l10n_latam_identification_type_id
-        code = identification.l10n_pe_vat_code if identification else False
-        return code or bn_txt.DOC_TYPE_RUC
+        return partner.l10n_pe_sunat_id_code or bn_txt.DOC_TYPE_RUC
 
     def _check_move(self, move):
         """Motivo por el que un comprobante no puede incluirse, o ``None``."""

@@ -121,8 +121,7 @@ class TestStockTransfer(TransactionCase):
     def test_outgoing_guide(self):
         customer = self.env['res.partner'].create({
             'name': 'Cliente', 'vat': '20131312955', 'street': 'Calle 1',
-            'l10n_pe_district': self.addr_a.l10n_pe_district.id,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id})
+            'l10n_pe_district': self.addr_a.l10n_pe_district.id})
         picking = self.env['stock.picking'].create({
             'picking_type_id': self.wh_a.out_type_id.id, 'partner_id': customer.id,
             'location_id': self.wh_a.lot_stock_id.id,
@@ -147,8 +146,7 @@ class TestStockTransfer(TransactionCase):
     def _supplier(self):
         return self.env['res.partner'].create({
             'name': 'Proveedor Andino S.A.C.', 'vat': '20100070970', 'street': 'Av. Proveedores 50',
-            'l10n_pe_district': self.addr_a.l10n_pe_district.id,
-            'l10n_latam_identification_type_id': self.env.ref('l10n_pe.it_RUC').id})
+            'l10n_pe_district': self.addr_a.l10n_pe_district.id})
 
     def _receipt(self, partner, qty=2.0):
         supplier_loc = self.env.ref('stock.stock_location_suppliers')

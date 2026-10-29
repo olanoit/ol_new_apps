@@ -206,8 +206,7 @@ class TestBankCollectionBBVA(CollectionCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.company.vat = '20100130204'
-        cls.customer.write({'vat': '20100047218', 'name': 'ÑANDÚ, CÍA; S.A.C.',
-                            'l10n_latam_identification_type_id': cls.env.ref('l10n_pe.it_RUC').id})
+        cls.customer.write({'vat': '20100047218', 'name': 'ÑANDÚ, CÍA; S.A.C.'})
         cls.agreement = cls.env['l10n_pe.bank.collection.agreement'].create({
             'name': 'BBVA soles (prueba)', 'journal_id': cls.bank.id, 'service_code': '123',
             'account_number': '001102410100001250',

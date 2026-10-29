@@ -80,7 +80,7 @@
     <menuitem id="menu_treasury_config_journals" name="Bancos y cajas" parent="menu_treasury_config_section"
               action="action_treasury_journals" sequence="20"/>
     <menuitem id="menu_treasury_config_banks" name="Bancos" parent="menu_treasury_config_section"
-              action="base.action_res_bank_form" sequence="30"/>
+              action="al_account_base.l10n_pe_bank_action" sequence="30"/>
     <menuitem id="menu_treasury_config_bank_accounts" name="Cuentas bancarias"
               parent="menu_treasury_config_section" action="base.action_res_partner_bank_account_form"
               sequence="40"/>

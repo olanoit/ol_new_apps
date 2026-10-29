@@ -163,9 +163,7 @@ class ResPartner(models.Model):
         partner = self.commercial_partner_id
         if partner.l10n_pe_collection_debtor_type != 'auto':
             return partner.l10n_pe_collection_debtor_type == 'consumer'
-        code = partner.l10n_latam_identification_type_id.l10n_pe_vat_code \
-            if 'l10n_latam_identification_type_id' in partner._fields else False
-        return code != '6' and not partner.is_company
+        return partner.l10n_pe_sunat_id_code != '6' and not partner.is_company
 
     # ------------------------------------------------------------------
     # Calificación de riesgo y bloqueo

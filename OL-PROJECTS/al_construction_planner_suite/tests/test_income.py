@@ -104,10 +104,6 @@ class IncomeCommon(TransactionCase):
         # Contrato: una línea de la OV por partida, cantidad 1 (D23).
         customer_vals = {'name': 'Inmobiliaria MOMEN (test)', 'vat': '20557912879',
                          'is_company': True}
-        ruc = cls.env.ref('l10n_pe.it_RUC', raise_if_not_found=False)
-        if ruc:
-            # Localización peruana: la factura exige el RUC del cliente.
-            customer_vals['l10n_latam_identification_type_id'] = ruc.id
         cls.customer = cls.env['res.partner'].create(customer_vals)
         cls.tax = cls.env['account.tax'].search([
             *cls.env['account.tax']._check_company_domain(cls.company),

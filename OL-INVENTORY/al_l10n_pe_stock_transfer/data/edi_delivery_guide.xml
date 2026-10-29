@@ -14,10 +14,10 @@
                                        xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
                 <cac:Party>
                     <cac:PartyIdentification>
-                        <cbc:ID t-att-schemeID="l10n_pe_delivery_customer.l10n_latam_identification_type_id.l10n_pe_vat_code"
+                        <cbc:ID t-att-schemeID="l10n_pe_delivery_customer.l10n_pe_sunat_id_code"
                             schemeName="Documento de Identidad"
                             schemeAgencyName="PE:SUNAT"
-                            schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"><t t-out='l10n_pe_delivery_customer.vat'/></cbc:ID>
+                            schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06"><t t-out='l10n_pe_delivery_customer.l10n_pe_sunat_id_value'/></cbc:ID>
                     </cac:PartyIdentification>
                     <cac:PartyLegalEntity>
                         <cbc:RegistrationName><t t-out='l10n_pe_delivery_customer.commercial_partner_id.name'/></cbc:RegistrationName>

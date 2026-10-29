@@ -33,7 +33,7 @@ class L10nPeCheckLayout(models.Model):
     name = fields.Char(string='Nombre', required=True)
     active = fields.Boolean(default=True)
     company_id = fields.Many2one('res.company', string='Compañía', default=lambda self: self.env.company)
-    bank_id = fields.Many2one('res.bank', string='Banco')
+    bank_id = fields.Many2one('l10n_pe.bank', string='Banco')
     paper_width = fields.Integer(string='Ancho de la hoja (mm)', default=175, required=True)
     paper_height = fields.Integer(string='Alto de la hoja (mm)', default=80, required=True)
     offset_x = fields.Float(string='Desplazamiento horizontal (mm)', digits=(5, 1),

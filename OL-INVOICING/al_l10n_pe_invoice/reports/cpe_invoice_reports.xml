@@ -51,8 +51,8 @@
                                   t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
                     </tr>
                     <tr>
-                        <td class="pe-doc-label"><span t-out="buyer.l10n_latam_identification_type_id.name or 'Doc.'"/></td>
-                        <td><span t-field="buyer.vat"/></td>
+                        <td class="pe-doc-label"><span t-out="buyer.l10n_pe_document_label or 'Doc.'"/></td>
+                        <td><span t-field="buyer.l10n_pe_sunat_id_value"/></td>
                         <td class="pe-doc-label">Fecha de vencimiento</td>
                         <td><span t-if="o.invoice_date_due" t-field="o.invoice_date_due"
                                   t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
@@ -313,7 +313,7 @@
                     <tbody>
                         <tr t-foreach="o.company_id.partner_id.bank_ids" t-as="bank">
                             <td class="text-center"><span t-out="bank_index + 1"/></td>
-                            <td><span t-field="bank.bank_id.name"/></td>
+                            <td><span t-field="bank.bank_name"/></td>
                             <td class="text-center"><span t-field="bank.currency_id.name"/></td>
                             <td><span t-field="bank.account_number"/></td>
                         </tr>

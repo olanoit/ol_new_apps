@@ -106,11 +106,8 @@ class TestSireControls(TestSire):
     def _dni_bill(self, number):
         partner = self.env['res.partner'].create({
             'name': 'Proveedor con DNI',
-            'vat': '45678912',
+            'additional_identifiers': {'PE_DNI': '45678912'},
             'country_id': self.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': self.env[
-                'l10n_latam.identification.type'].search(
-                    [('l10n_pe_vat_code', '=', '1')], limit=1).id,
         })
         doc_type = self.env['l10n_latam.document.type'].search([
             ('code', '=', '01'), ('country_id.code', '=', 'PE')], limit=1)

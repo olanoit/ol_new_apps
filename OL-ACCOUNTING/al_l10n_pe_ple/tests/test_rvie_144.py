@@ -31,8 +31,6 @@ class TestRvie144(AccountTestInvoicingCommon):
             'name': 'CLIENTE DEMO S.A.C.',
             'vat': RUC_CUSTOMER,
             'country_id': cls.env.ref('base.pe').id,
-            'l10n_latam_identification_type_id': cls.env.ref(
-                'l10n_pe.it_RUC').id,
         })
         cls.product = cls.env['product.product'].create({'name': 'Producto'})
         cls.sale_journal = cls.env['account.journal'].search([

@@ -17,7 +17,7 @@ class PlanningSlot(models.Model):
 
     # Control de las líneas del plan: los turnos son el comprometido del
     # personal propio (horas aún no registradas).
-    _CONTROL_FIELDS = {'start_datetime', 'end_datetime', 'allocated_hours', 'resource_id'}
+    _CONTROL_FIELDS = {'start_datetime', 'end_datetime', 'allocated_hours', 'resource_ids'}
 
     def write(self, vals):
         res = super().write(vals)

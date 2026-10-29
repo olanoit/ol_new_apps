@@ -82,7 +82,7 @@
                             <tr t-if="bank">
                                 <td class="pe-doc-label">Banco y cuenta</td>
                                 <td class="pe-doc-value">
-                                    <span t-out="bank.bank_id.name"/> · <span t-out="bank.account_number"/>
+                                    <span t-out="bank.bank_name"/> · <span t-out="bank.account_number"/>
                                     <t t-if="bank.currency_id"> (<span t-out="bank.currency_id.name"/>)</t>
                                 </td>
                             </tr>

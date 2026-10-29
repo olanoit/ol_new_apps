@@ -87,7 +87,7 @@ class StockMove(models.Model):
             for line in move.move_line_ids.filtered(lambda l: not l.picked).sorted('quantity'):
                 if uom.is_zero(excess):
                     break
-                line_qty = line.product_uom_id._compute_quantity(line.quantity, uom, round=False)
+                line_qty = line.uom_id._compute_quantity(line.quantity, uom, round=False)
                 take = min(line_qty, excess)
                 excess -= take
                 if uom.compare(line_qty, take) <= 0:

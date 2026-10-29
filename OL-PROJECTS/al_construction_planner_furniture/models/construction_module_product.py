@@ -101,7 +101,6 @@ class ConstructionTypologyModule(models.Model):
         """Producto fabricado del módulo con su lista de materiales."""
         Product = self.env['product.product']
         Bom = self.env['mrp.bom']
-        route = self.env.ref('mrp.route_warehouse0_manufacture', raise_if_not_found=False)
         created = Product
         for module in self:
             company = module.typology_id.company_id or self.env.company
@@ -123,8 +122,8 @@ class ConstructionTypologyModule(models.Model):
                     'attribute_id': value.attribute_id.id,
                     'value_ids': [Command.set(value.ids)]}) for value in values],
             }
-            if route:
-                template_vals['route_ids'] = [Command.link(route.id)]
+            # Odoo 20: «Fabricar» es ruta de almacén y se aplica sola al
+            # producto con lista de materiales; ya no se enlaza al producto.
             template = self.env['product.template'].create(template_vals)
             product = template.product_variant_id
             module.product_id = product

@@ -1,4 +1,4 @@
-import { Component, proxy } from "@odoo/owl";
+import { Component, proxy, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 
 export const SHORTAGE_REASONS = [
@@ -15,12 +15,12 @@ export const SHORTAGE_REASONS = [
 export class ShortageDialog extends Component {
     static template = "al_pharmacy_replenishment.ShortageDialog";
     static components = { Dialog };
-    static props = {
-        productId: { type: [Number, Boolean], optional: true },
-        productName: { type: String, optional: true },
-        getPayload: Function,
-        close: Function,
-    };
+    props = useProps({
+        productId: t.or([t.number(), t.boolean()]).optional(),
+        productName: t.string().optional(),
+        getPayload: t.function(),
+        close: t.function(),
+    });
 
     setup() {
         this.reasons = SHORTAGE_REASONS;

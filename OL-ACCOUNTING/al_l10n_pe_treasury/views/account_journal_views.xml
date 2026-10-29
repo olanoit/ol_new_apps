@@ -34,7 +34,7 @@
                 <field name="name"/>
                 <field name="type"/>
                 <field name="l10n_pe_treasury_kind"/>
-                <field name="bank_id" optional="show"/>
+                <field name="bank_name" optional="show"/>
                 <field name="bank_account_id" optional="show"/>
                 <field name="currency_id" groups="base.group_multi_currency"/>
                 <field name="l10n_pe_treasury_currency_id" column_invisible="1"/>

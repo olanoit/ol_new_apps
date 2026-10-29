@@ -204,7 +204,7 @@ class TestControl(PlannerCommon):
         slots = self.env['planning.slot'].search([('construction_plan_line_id', '=', line.id)])
         self.assertEqual(len(slots), 2)
         self.assertEqual(slots.construction_task_id, self.space_501)
-        self.assertEqual(slots.resource_id, resource)
+        self.assertEqual(slots.resource_ids, resource)
         self.assertEqual(set(slots.mapped('allocated_hours')), {10.0})
         self.assertEqual(slots.project_id, self.project)
         self.assertIn(self.role, resource.role_ids)

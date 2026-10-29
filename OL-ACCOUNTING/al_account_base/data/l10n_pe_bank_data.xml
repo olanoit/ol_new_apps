@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Bancos más usados en Perú; el catálogo se completa desde Contabilidad. -->
+    <record id="bank_bcp" model="l10n_pe.bank">
+        <field name="name">Banco de Crédito del Perú</field>
+        <field name="bic">BCPLPEPL</field>
+        <field name="sequence">1</field>
+    </record>
+    <record id="bank_bbva" model="l10n_pe.bank">
+        <field name="name">BBVA Perú</field>
+        <field name="bic">BCONPEPL</field>
+        <field name="sequence">2</field>
+    </record>
+    <record id="bank_interbank" model="l10n_pe.bank">
+        <field name="name">Interbank</field>
+        <field name="bic">BINPPEPL</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="bank_scotiabank" model="l10n_pe.bank">
+        <field name="name">Scotiabank Perú</field>
+        <field name="bic">BSUDPEPL</field>
+        <field name="sequence">4</field>
+    </record>
+    <record id="bank_nacion" model="l10n_pe.bank">
+        <field name="name">Banco de la Nación</field>
+        <field name="bic">BANCPEPL</field>
+        <field name="sequence">5</field>
+    </record>
+    <record id="bank_banbif" model="l10n_pe.bank">
+        <field name="name">BanBif</field>
+        <field name="sequence">6</field>
+    </record>
+</odoo>

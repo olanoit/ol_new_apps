@@ -32,10 +32,10 @@ class ResPartnerBank(models.Model):
         moneda, se abona ahí (directo, sin pasar por la CCI), la corriente
         antes que la de ahorros. Solo con bancos que tienen formato de pago
         masivo."""
-        bank = journal.bank_id
-        if not bank.l10n_pe_batch_format or current.bank_id == bank:
+        bank = journal.bank_account_id.l10n_pe_bank_id
+        if not bank.l10n_pe_batch_format or current.l10n_pe_bank_id == bank:
             return current
-        candidates = self.filtered(lambda acc: acc.bank_id == bank and acc.allow_out_payment
+        candidates = self.filtered(lambda acc: acc.l10n_pe_bank_id == bank and acc.allow_out_payment
                                    and acc.currency_id in (currency, self.env['res.currency']))
         best = candidates.sorted(lambda acc: (acc.l10n_pe_account_kind != 'checking',
                                               not acc.currency_id))[:1]

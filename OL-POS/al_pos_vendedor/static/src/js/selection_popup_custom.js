@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import { Component, proxy, onMounted } from "@odoo/owl";
+import { Component, onMounted, proxy, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 import { useRef } from "@web/owl2/utils";
@@ -14,20 +14,15 @@ const AVATAR_COLORS = [
 export class SelectionPopupCustom extends Component {
     static template = "al_pos_vendedor.SelectionPopupCustom";
     static components = { Dialog };
-    static props = {
-        title: { type: String, optional: true },
-        list: { type: Array },
-        cancelText: { type: String, optional: true },
-        defaultId: { type: [Number, { value: null }], optional: true },
-        onSetDefault: { type: Function, optional: true },
-        getPayload: Function,
-        close: Function,
-    };
-    static defaultProps = {
-        title: _t("Seleccionar"),
-        cancelText: _t("Cancelar"),
-        defaultId: null,
-    };
+    props = useProps({
+        title: t.string().optional(_t("Seleccionar")),
+        list: t.array(),
+        cancelText: t.string().optional(_t("Cancelar")),
+        defaultId: t.or([t.number(), t.literal(null)]).optional(null),
+        onSetDefault: t.function().optional(),
+        getPayload: t.function(),
+        close: t.function(),
+    });
 
     setup() {
         this.state = proxy({

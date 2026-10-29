@@ -1,4 +1,4 @@
-import { Component, proxy, usePlugin } from "@odoo/owl";
+import { Component, proxy, usePlugin, useProps } from "@odoo/owl";
 import {Dropdown} from "@web/core/dropdown/dropdown";
 import {registry} from "@web/core/registry";
 import {useDiscussSystray} from "@mail/utils/common/hooks";
@@ -8,7 +8,7 @@ import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
 
 export class TierReviewMenu extends Component {
     static components = {Dropdown};
-    static props = [];
+    props = useProps({});
     static template = "base_tier_validation.TierReviewMenu";
 
     setup() {

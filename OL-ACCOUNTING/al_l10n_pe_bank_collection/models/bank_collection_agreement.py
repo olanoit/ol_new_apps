@@ -19,7 +19,7 @@ class L10nPeBankCollectionAgreement(models.Model):
     journal_id = fields.Many2one(
         'account.journal', string='Diario del banco', required=True, check_company=True,
         domain="[('type', '=', 'bank')]", help='Cuenta recaudadora donde el banco abona lo cobrado.')
-    bank_id = fields.Many2one(related='journal_id.bank_id', string='Banco')
+    bank_id = fields.Many2one(related='journal_id.bank_account_id.l10n_pe_bank_id', string='Banco')
     currency_id = fields.Many2one('res.currency', string='Moneda', required=True,
                                   default=lambda self: self.env.company.currency_id,
                                   help='Un convenio por moneda: solo se envían las cuotas en esta moneda.')

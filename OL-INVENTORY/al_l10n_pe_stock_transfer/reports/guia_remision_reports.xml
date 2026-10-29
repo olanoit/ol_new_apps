@@ -32,7 +32,7 @@
                     <td class="pe-doc-label" style="width: 14%;">Razón social</td>
                     <td>
                         <span t-out="owner.name"/>
-                        <t t-if="owner.vat"> · <span t-out="owner.l10n_latam_identification_type_id.name or 'Doc.'"/> <span t-out="owner.vat"/></t>
+                        <t t-if="owner.l10n_pe_sunat_id_value"> · <span t-out="owner.l10n_pe_document_label or 'Doc.'"/> <span t-out="owner.l10n_pe_sunat_id_value"/></t>
                     </td>
                 </tr>
             </table>

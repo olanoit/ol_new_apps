@@ -10,7 +10,6 @@
             <t t-set="company_currency" t-value="company.currency_id"/>
             <t t-set="documents" t-value="o._l10n_pe_edi_get_retention_breakdown()"/>
             <t t-set="supplier" t-value="o.partner_id.commercial_partner_id"/>
-            <t t-set="supplier_id_type" t-value="supplier.l10n_latam_identification_type_id"/>
             <div class="article" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
                  t-att-data-oe-lang="o and o.env.context.get('lang')">
             <div class="page pe-doc-fs-13">
@@ -32,10 +31,10 @@
                     </tr>
                     <tr>
                         <td class="pe-doc-label">
-                            <t t-if="supplier_id_type.l10n_pe_vat_code == '6' or (supplier_id_type.l10n_pe_vat_code in (False, '0') and len(supplier.vat or '') == 11)">R.U.C.</t>
-                            <t t-else="" t-out="supplier_id_type.name"/>
+                            <t t-if="supplier.l10n_pe_sunat_id_code == '6' or (supplier.l10n_pe_sunat_id_code in (False, '0') and len(supplier.vat or '') == 11)">R.U.C.</t>
+                            <t t-else="" t-out="supplier.l10n_pe_document_label"/>
                         </td>
-                        <td class="pe-doc-value"><span t-out="supplier.vat"/></td>
+                        <td class="pe-doc-value"><span t-out="supplier.l10n_pe_sunat_id_value"/></td>
                         <td class="pe-doc-label">Régimen</td>
                         <td class="pe-doc-value">Retención del IGV (<span t-out="'%g' % company.l10n_pe_retention_rate"/> %)</td>
                     </tr>
