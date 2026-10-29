@@ -44,6 +44,10 @@ class L10nPeKardexLine(models.Model):
     - ``k = 1`` / ``k = 2``: salida / entrada de un traslado entre almacenes de
       la misma compañía (``is_internal``). No mueven el saldo consolidado; en
       el saldo por almacén se valoran al costo unitario consolidado corriente.
+
+    Con el costo por almacén activo (``res.company.l10n_pe_wh_cost``), el valor
+    y los saldos salen de ``l10n_pe.kardex.wh.cost``, que guarda el promedio de
+    cada almacén; la aproximación de arriba queda para lo no calculado.
     """
     _name = 'l10n_pe.kardex.line'
     _description = 'Kardex SUNAT (línea)'
@@ -63,6 +67,10 @@ class L10nPeKardexLine(models.Model):
         ],
         'stock.location': ['company_id', 'usage', 'warehouse_id'],
         'res.company': ['partner_id'],
+        'l10n_pe.kardex.wh.cost': [
+            'line_key', 'value', 'balance_qty', 'balance_value',
+            'balance_qty_wh', 'balance_value_wh',
+        ],
     }
 
     move_id = fields.Many2one('stock.move', string='Movimiento', readonly=True)
@@ -106,16 +114,21 @@ class L10nPeKardexLine(models.Model):
     # ------------------------------------------------------------------
     # Vista SQL
     # ------------------------------------------------------------------
-    def _query(self):
+    @api.model
+    def _base_query(self):
+        """Movimientos hechos con su cantidad valorizada y sus almacenes.
+
+        La comparten la vista y el motor del costo por almacén
+        (``l10n_pe.kardex.wh.cost``), para que ambos vean las mismas filas.
+        """
         src_valued = SQL(_VALUED.format(alias='src'))
         dst_valued = SQL(_VALUED.format(alias='dst'))
         sl_valued = SQL(_VALUED.format(alias='sl'))
         dl_valued = SQL(_VALUED.format(alias='dl'))
         return SQL("""
-            WITH base AS (
                 SELECT
                     sm.id AS move_id, sm.product_id, sm.company_id, sm.picking_id,
-                    sm.date,
+                    sm.date, sm.origin_returned_move_id,
                     COALESCE(sm.is_in, FALSE) AS is_in, COALESCE(sm.is_out, FALSE) AS is_out,
                     src.warehouse_id AS src_wh, dst.warehouse_id AS dst_wh,
                     %(src_valued)s AS src_valued, %(dst_valued)s AS dst_valued,
@@ -138,7 +151,12 @@ class L10nPeKardexLine(models.Model):
                 JOIN stock_location src ON src.id = sm.location_id
                 JOIN stock_location dst ON dst.id = sm.location_dest_id
                 WHERE sm.state = 'done'
-            ),
+        """, src_valued=src_valued, dst_valued=dst_valued,
+             sl_valued=sl_valued, dl_valued=dl_valued)
+
+    def _query(self):
+        return SQL("""
+            WITH base AS (%(base)s),
             krows AS (
                 SELECT move_id * 3 AS id, move_id, product_id, company_id, picking_id, date,
                        CASE WHEN is_in THEN dst_wh ELSE src_wh END AS warehouse_id,
@@ -184,6 +202,19 @@ class L10nPeKardexLine(models.Model):
                 WINDOW w_wh AS (PARTITION BY ev.product_id, ev.warehouse_id, ev.company_id
                                 ORDER BY ev.date, ev.id
                                 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+            ),
+            -- Costo por almacén (l10n_pe.kardex.wh.cost): donde está calculado,
+            -- reemplaza el valor y los saldos aproximados de arriba.
+            fin AS (
+                SELECT wh.id, wh.move_id, wh.product_id, wh.company_id, wh.picking_id,
+                       wh.warehouse_id, wh.date, wh.direction, wh.is_internal, wh.qty,
+                       COALESCE(ABS(c.value), wh.val_eff) AS val_eff,
+                       COALESCE(c.balance_qty, wh.balance_qty) AS balance_qty,
+                       COALESCE(c.balance_value, wh.balance_value) AS balance_value,
+                       COALESCE(c.balance_qty_wh, wh.balance_qty_wh) AS balance_qty_wh,
+                       COALESCE(c.balance_value_wh, wh.balance_value_wh) AS balance_value_wh
+                  FROM wh
+                  LEFT JOIN l10n_pe_kardex_wh_cost c ON c.line_key = wh.id
             )
             SELECT
                 id, move_id, product_id, company_id, picking_id, warehouse_id, date,
@@ -198,9 +229,8 @@ class L10nPeKardexLine(models.Model):
                 CASE WHEN balance_qty <> 0 THEN balance_value / balance_qty ELSE 0.0 END AS balance_unit_cost,
                 balance_qty_wh, balance_value_wh,
                 CASE WHEN balance_qty_wh <> 0 THEN balance_value_wh / balance_qty_wh ELSE 0.0 END AS balance_unit_cost_wh
-            FROM wh
-        """, src_valued=src_valued, dst_valued=dst_valued,
-             sl_valued=sl_valued, dl_valued=dl_valued)
+            FROM fin
+        """, base=self._base_query())
 
     def init(self):
         # Una encarnación previa de este modelo era TransientModel y creó una
@@ -214,6 +244,10 @@ class L10nPeKardexLine(models.Model):
                 "DROP TABLE IF EXISTS %s CASCADE", SQL.identifier(self._table)))
         else:
             tools.drop_view_if_exists(self.env.cr, self._table)
+        # La vista lee el costo por almacén: si su tabla aún no existe, la
+        # crea el init de ese modelo, que vuelve a llamar a este.
+        if not tools.sql.table_exists(self.env.cr, self.env['l10n_pe.kardex.wh.cost']._table):
+            return
         self.env.cr.execute(SQL(
             "CREATE OR REPLACE VIEW %s AS (%s)",
             SQL.identifier(self._table), self._query()))

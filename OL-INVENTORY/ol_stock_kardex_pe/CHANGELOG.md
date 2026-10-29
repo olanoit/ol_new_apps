@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/ol_stock_kardex_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 16.20261028 — 28/10/2026
+
+- Costo promedio por almacén (opcional): salidas y traslados al costo del almacén de origen, en el kardex en pantalla, el Excel y el PDF.
+- Cierre mensual de almacén: ajuste 20/69 con el cierre de valorización de Odoo y bloqueo del periodo.
+- Revalorizar el costo por almacén desde una fecha, con permiso propio.
+
 ## 15.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

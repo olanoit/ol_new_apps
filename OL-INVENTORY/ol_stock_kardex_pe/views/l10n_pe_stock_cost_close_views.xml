@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_pe_stock_cost_close_view_list" model="ir.ui.view">
+        <field name="name">l10n_pe.stock.cost.close.list</field>
+        <field name="model">l10n_pe.stock.cost.close</field>
+        <field name="arch" type="xml">
+            <list string="Cierres de almacén" decoration-muted="state == 'reopened'" decoration-info="state == 'draft'">
+                <field name="date"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="account_move_id"/>
+                <field name="user_id" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_pe_stock_cost_close_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.stock.cost.close.form</field>
+        <field name="model">l10n_pe.stock.cost.close</field>
+        <field name="arch" type="xml">
+            <form string="Cierre de almacén">
+                <header>
+                    <button name="action_close" string="Cerrar" type="object" class="btn-primary"
+                            invisible="state == 'closed'"
+                            confirm="Se publicará el cierre de valorización y se bloquearán los movimientos hasta esta fecha. ¿Continuar?"/>
+                    <button name="action_reopen" string="Reabrir" type="object" invisible="state != 'closed'"
+                            confirm="Se anulará el asiento de cierre y se desbloqueará el periodo. ¿Continuar?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,closed"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="state != 'draft'">
+                        Al cerrar se pone al día el costo por almacén, se publica el cierre de
+                        valorización del inventario a esta fecha (cuenta de existencias contra
+                        la de variación) y se bloquean los movimientos y los ajustes de valor
+                        con fecha hasta este día.
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state == 'closed'"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="account_move_id"/>
+                            <field name="user_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_stock_cost_close" model="ir.actions.act_window">
+        <field name="name">Cierres de almacén</field>
+        <field name="res_model">l10n_pe.stock.cost.close</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Cierre el primer mes de almacén</p>
+            <p>El cierre ajusta la cuenta de existencias al valor del kardex y bloquea
+               los movimientos del periodo.</p>
+        </field>
+    </record>
+
+    <record id="l10n_pe_wh_cost_recompute_wizard_view_form" model="ir.ui.view">
+        <field name="name">l10n_pe.wh.cost.recompute.wizard.form</field>
+        <field name="model">l10n_pe.wh.cost.recompute.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Revalorizar costo por almacén">
+                <div class="alert alert-info" role="alert">
+                    Rehace el costo promedio de cada almacén desde la fecha indicada, con el
+                    valor actual de los movimientos (facturas de compra tardías, costos en
+                    destino, costos de producción corregidos). Las diferencias con la
+                    contabilidad las ajusta el siguiente cierre de almacén.
+                </div>
+                <group>
+                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                    <field name="date_from"/>
+                    <field name="lock_date" invisible="not lock_date"/>
+                </group>
+                <footer>
+                    <button name="action_recompute" string="Revalorizar" type="object" class="btn-primary"/>
+                    <button string="Cancelar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_pe_wh_cost_recompute_wizard" model="ir.actions.act_window">
+        <field name="name">Revalorizar costo por almacén</field>
+        <field name="res_model">l10n_pe.wh.cost.recompute.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

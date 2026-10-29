@@ -8,6 +8,9 @@ DOC_TYPE_RE = re.compile(r'^\d{2}$')
 SERIE_RE = re.compile(r'^[A-Za-z0-9]{1,20}$')
 NUMBER_RE = re.compile(r'^\d{1,20}$')
 DOC_FIELDS = ('l10n_pe_kardex_doc_type', 'l10n_pe_kardex_serie', 'l10n_pe_kardex_number')
+#: Campos de un movimiento hecho que cambian su valorización: los bloquea el
+#: cierre mensual de almacén y obligan a recalcular el costo por almacén.
+VALUATION_FIELDS = {'value', 'date', 'quantity', 'location_id', 'location_dest_id', 'product_id'}
 
 
 def split_serie_number(number):
@@ -68,7 +71,16 @@ class StockMove(models.Model):
         if (set(DOC_FIELDS) & set(vals) and 'l10n_pe_kardex_doc_manual' not in vals
                 and not self.env.context.get('l10n_pe_kardex_auto')):
             vals = dict(vals, l10n_pe_kardex_doc_manual=any(vals.get(f) for f in DOC_FIELDS))
-        return super().write(vals)
+        done = self.filtered(lambda m: m.state == 'done') if VALUATION_FIELDS & set(vals) else self.browse()
+        for move in done:
+            move.company_id._l10n_pe_check_stock_lock(move.date, _('Movimiento %s', move.reference or move.id))
+        old_dates = {move: move.date for move in done}
+        res = super().write(vals)
+        for move, old_date in old_dates.items():
+            if 'date' in vals:
+                move.company_id._l10n_pe_check_stock_lock(move.date, _('Movimiento %s', move.reference or move.id))
+            move.company_id._l10n_pe_wh_cost_mark_dirty(min(old_date, move.date))
+        return res
 
     # ------------------------------------------------------------------
     # Llenado automático
@@ -187,6 +199,13 @@ class StockMove(models.Model):
 
     def _action_done(self, cancel_backorder=False):
         moves = super()._action_done(cancel_backorder=cancel_backorder)
+        period_date = self.env.context.get('force_period_date')
+        for move in moves.filtered(lambda m: m.state == 'done'):
+            what = _('Movimiento %s', move.reference or move.id)
+            move.company_id._l10n_pe_check_stock_lock(move.date, what)
+            if period_date:
+                move.company_id._l10n_pe_check_stock_lock(fields.Date.to_date(period_date), what)
+            move.company_id._l10n_pe_wh_cost_mark_dirty(move.date)
         # Factura antes que entrega (p. ej. compra facturada al pedir).
         moves._l10n_pe_kardex_fill_documents(force=True)
         return moves

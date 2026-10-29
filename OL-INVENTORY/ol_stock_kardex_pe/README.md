@@ -13,6 +13,21 @@ PLE): reutiliza sus campos SUNAT y añade la capa visual que falta.
 
 ## Funcionalidades
 
+- **Costo promedio por almacén** (opcional, `res.company.l10n_pe_wh_cost`,
+  delegado a la raíz): `l10n_pe.kardex.wh.cost` reproduce los movimientos y
+  lleva un promedio por almacén (salidas y traslados al costo del origen,
+  tránsito como almacén propio, devoluciones de cliente a su costo de
+  salida). La vista del kardex toma de ahí el valor y los saldos. Se pone al
+  día por marca de «pendiente desde» (movimientos hechos, cambios de valor),
+  cada noche y antes de cada kardex.
+- **Cierre mensual de almacén** (`l10n_pe.stock.cost.close`): publica el
+  cierre de valorización de Odoo a fin de mes con `stock_value()`
+  sobrescrito (la 20 queda con el valor por almacén contra la variación, 69
+  en el PCGE) y fija `l10n_pe_stock_lock_date`, que bloquea movimientos,
+  `product.value` y la revalorización del periodo.
+- **Revalorizar desde una fecha** (grupo `group_l10n_pe_wh_cost_revaluation`,
+  implícito en el administrador de contabilidad).
+
 - **Integrado a la aplicación única «Perú»**: además de Inventario ▸
   Informes, el menú **Perú ▸ Contabilidad ▸ Kardex (12.1 / 13.1) (12.1/13.1)** (vía `al_account_base`)
   ofrece «Generar Kardex» y «Kardex generados» junto al resto de libros

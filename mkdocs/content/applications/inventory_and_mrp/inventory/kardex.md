@@ -114,6 +114,68 @@ ingreso del inventario (3 450,00) los contabiliza la valorización de Odoo con
 las cuentas de la categoría del producto. En el consolidado, el costo es el de
 la valorización de Odoo con el método del producto.
 
+## Costo promedio por almacén
+
+Odoo valoriza el inventario con **un solo costo promedio por compañía**: los
+traslados entre almacenes no llevan valor y cada salida sale al promedio de
+toda la empresa. Con el costo por almacén, el kárdex lleva un promedio
+ponderado en cada almacén.
+
+1. Vaya a **Inventario ‣ Configuración ‣ Ajustes ‣ Valorización** y active
+   **Costo promedio por almacén**. Vale para todo el RUC y se aplica a los
+   productos con costo promedio y sin valorización por lote.
+2. El primer cálculo recorre toda la historia. Después se pone al día solo:
+   cada noche, antes de cada kárdex y antes de cada cierre.
+
+Cómo se calcula:
+
+| Movimiento | Costo |
+|---|---|
+| Entrada (compra, producción, ajuste) | El valor del movimiento en Odoo, al almacén de destino |
+| Salida (venta, consumo, merma) | El promedio del almacén de origen |
+| Traslado entre almacenes | Sale al promedio del almacén de origen y entra al destino con ese valor; el tránsito lleva el valor en camino |
+| Devolución de cliente | Vuelve al costo con que salió |
+
+**Ejemplo.** El almacén principal compra 10 bolsas a S/ 10,00 y el Norte, 10 a
+S/ 20,00. Se trasladan 5 del principal al Norte (salen a S/ 10,00: S/ 50,00) y
+Norte queda con 15 por S/ 250,00. Norte vende 3 a S/ 16,67 (S/ 50,00). Con un
+solo promedio, Odoo habría vendido a S/ 15,00 (S/ 45,00) y valorizado el
+inventario en S/ 255,00 en lugar de S/ 250,00.
+
+!!! note "Qué no cambia"
+    El costo del producto, el informe de valorización de Inventario y el costo
+    de cada venta siguen siendo los de Odoo. La diferencia con la contabilidad
+    la ajusta el cierre mensual de almacén. El TXT del PLE 13.1 aún sale con el
+    costo de Odoo.
+
+### Revalorizar desde una fecha
+
+Si cambia el valor de un movimiento ya hecho (factura de compra tardía, costo
+en destino, costo de producción corregido), el costo por almacén se recalcula
+solo. Para forzarlo desde una fecha, use **Perú ‣ Contabilidad ‣ Kardex ‣
+Revalorizar costo por almacén**. Lo pueden usar los administradores de
+contabilidad y quienes tengan el permiso **Revalorizar costo por almacén**, y
+solo dentro del periodo abierto.
+
+### Cierre mensual de almacén
+
+En **Perú ‣ Contabilidad ‣ Kardex ‣ Cierres de almacén**, un administrador de
+contabilidad crea el cierre con la fecha de fin de mes y pulsa **Cerrar**:
+
+1. se pone al día el costo por almacén;
+2. se publica el cierre de valorización del inventario de Odoo a esa fecha: la
+   cuenta de existencias (20) queda con el valor del kárdex y la diferencia va
+   a la cuenta de variación (69 en el PCGE);
+3. se bloquean los movimientos, los ajustes de valor y la revalorización con
+   fecha hasta ese día.
+
+Solo se reabre el último cierre: **Reabrir** anula su asiento y el bloqueo
+vuelve al cierre anterior.
+
+!!! warning "Requisito"
+    El cierre necesita el diario y la cuenta de valorización del inventario en
+    los ajustes de Contabilidad.
+
 ## Corregir el documento de un movimiento
 
 1. Abra la transferencia y edite el **Documento del kardex**, o hágalo desde el
@@ -149,7 +211,8 @@ Cómo se elige el documento:
 | Sin movimientos ni saldos en el periodo | No se genera nada y se avisa | Revisar los filtros y el periodo |
 | Entrega facturada en partes | Se empareja en orden | Verificar y corregir a mano si el orden real fue otro |
 | Movimiento sin comprobante (traslado, ajuste) | Tipo 09 en ventas o compras sin comprobante y 00 en el resto | Revisar si corresponde un documento |
-| Kárdex por almacén | El costo por almacén es aproximado; los traslados internos salen como operaciones 11 y 21 | Usar el consolidado para el valor oficial |
+| Kárdex por almacén sin costo por almacén | El costo por almacén es aproximado; los traslados internos salen como operaciones 11 y 21 | Activar el costo promedio por almacén o usar el consolidado |
+| Movimiento o ajuste de valor en un mes cerrado | Se bloquea | Reabrir el cierre de almacén o usar una fecha posterior |
 | Bienes de terceros (propietario distinto) | No se valorizan en Odoo ni van al kárdex valorizado | Controlarlos con [Traslados y bienes de terceros](stock_transfers.md) |
 
 !!! info "Ver también"

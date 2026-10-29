@@ -137,6 +137,18 @@ funcionalidades:
       - "Sin movimientos ni saldos en el periodo no se genera ni se muestra nada: el Excel, el PDF, la vista y el segundo plano avisan al usuario."
 
       - "Tipo de operación de la transferencia (tabla 12) o deducido de las ubicaciones: compra, venta, devoluciones, producción, ajuste, merma y traslados."
+  - grupo: Costo por almacén
+    items:
+      - "Opcional: cada almacén lleva su propio costo promedio ponderado."
+      - "Las salidas y los traslados salen al costo del almacén de origen; el traslado entra al destino con ese mismo valor y las ubicaciones de tránsito llevan el valor en camino."
+      - "Las devoluciones de clientes vuelven al costo con que salieron."
+      - "El kardex en pantalla, el Excel y el PDF del 13.1 muestran ese costo, en el consolidado y por almacén."
+      - "Revalorizar desde una fecha (permiso propio) tras una factura de compra tardía, un costo en destino o un costo de producción corregido; los cambios de valor se recalculan solos cada noche y antes de cada kardex."
+  - grupo: Cierre mensual de almacén
+    items:
+      - "Publica el cierre de valorización del inventario de Odoo a fin de mes: la cuenta de existencias (20) queda con el valor del kardex por almacén y la diferencia va a la de variación (69)."
+      - "Bloquea los movimientos, los ajustes de valor y la revalorización con fecha en el periodo cerrado."
+      - "Se reabre el último cierre: su asiento se anula y el bloqueo vuelve al cierre anterior."
   - grupo: Salidas
     items:
       - Vista en pantalla con saldo corrido, sumas y acceso al documento origen.
@@ -168,7 +180,20 @@ ejemplos:
     tabla:
       - [Modo, Saldo corrido, Costo, Traslados internos]
       - [Consolidado, Por producto y compañía, "El de la valorización de Odoo", "No cambian el saldo de la compañía"]
-      - [Por almacén, Por producto y almacén, "Aproximado", "Sí, con operaciones 11 y 21 de la tabla 12"]
+      - [Por almacén, Por producto y almacén, "El promedio de cada almacén (con el costo por almacén activo) o aproximado", "Sí, con operaciones 11 y 21 de la tabla 12"]
+
+  - titulo: Promedio por almacén
+    texto: >-
+      Cemento, con el costo promedio por almacén activo. El 12/01 se trasladan
+      5 bolsas del almacén principal (a S/ 10,00) al Norte (que tenía 10 a
+      S/ 20,00); el 13/01 Norte vende 3:
+    tabla:
+      - [Movimiento, Almacén, Costo, Saldo del almacén]
+      - ["Compra 10 × S/ 10,00", Principal, "S/ 100,00", "10 por S/ 100,00"]
+      - ["Compra 10 × S/ 20,00", Norte, "S/ 200,00", "10 por S/ 200,00"]
+      - ["Traslado 5", "Principal → Norte", "S/ 50,00", "Principal 5 por S/ 50,00; Norte 15 por S/ 250,00"]
+      - ["Venta 3", Norte, "S/ 50,00 (16,67 c/u)", "12 por S/ 200,00"]
+    nota: "Con un solo promedio (S/ 15,00) Odoo vende a S/ 45,00 y valoriza en S/ 255,00; el cierre de almacén lleva la cuenta 20 a S/ 250,00 contra la 69."
 
 configuracion_intro: >-
   El kardex usa los mismos datos SUNAT que el TXT del inventario permanente
@@ -178,6 +203,8 @@ configuracion:
   - "En cada producto almacenable indique el **tipo de existencia** (tabla 5) y use unidades de medida con **código SUNAT** (tabla 6)."
   - "En los almacenes registre el **código de establecimiento anexo**."
   - "En las transferencias indique el **tipo de operación** (tabla 12); si falta, se deduce de las ubicaciones."
+  - "Para el costo por almacén active **Costo promedio por almacén** en Inventario ▸ Configuración ▸ Ajustes ▸ Valorización. Se aplica a los productos con costo promedio y sin valorización por lote."
+  - "El cierre mensual se hace en Perú ▸ Contabilidad ▸ Kardex ▸ Cierres de almacén (administrador de contabilidad) y necesita el diario y la cuenta de valorización del inventario en los ajustes."
 requisitos_nota: >-
   Requiere Odoo Enterprise: se apoya en los campos SUNAT de los reportes de
   inventario de la localización oficial. El TXT del PLE 12.1 / 13.1 se sigue
@@ -191,9 +218,19 @@ faq:
       pantalla, Excel y PDF— con los mismos datos.
   - pregunta: ¿Por qué el modo por almacén no cuadra con la contabilidad?
     respuesta: >-
-      Odoo valoriza el inventario por compañía, no por almacén. En el modo por
-      almacén el costo es una aproximación y los traslados internos se valoran
-      al costo promedio corriente. Para cifras contables use el consolidado.
+      Odoo valoriza el inventario con un solo promedio por compañía. Sin el
+      costo por almacén, el modo por almacén es una aproximación. Con él, cada
+      almacén lleva su promedio y el cierre mensual de almacén ajusta la
+      cuenta 20 contra la 69 para que la contabilidad cuadre con el kardex.
+  - pregunta: ¿El costo por almacén cambia el costo del producto en Odoo?
+    respuesta: >-
+      No. El costo del producto, el informe de valorización de Inventario y
+      el costo de cada venta siguen siendo los de Odoo (promedio de la
+      compañía). La diferencia la ajusta el cierre mensual de almacén.
+  - pregunta: ¿Y el TXT del PLE 13.1?
+    respuesta: >-
+      Por ahora sigue con el costo de Odoo; el costo por almacén está en el
+      kardex en pantalla, el Excel y el PDF.
   - pregunta: ¿Qué fecha aparece en la columna Fecha?
     respuesta: >-
       La del movimiento de inventario, en hora de Lima. El tipo, la serie y el
@@ -211,6 +248,12 @@ faq:
       del producto o de su categoría.
 
 novedades:
+  - version: '16.20261028'
+    fecha: 28/10/2026
+    cambios:
+      - "Costo promedio por almacén (opcional): salidas y traslados al costo del almacén de origen, en el kardex en pantalla, el Excel y el PDF."
+      - "Cierre mensual de almacén: ajuste 20/69 con el cierre de valorización de Odoo y bloqueo del periodo."
+      - "Revalorizar el costo por almacén desde una fecha, con permiso propio."
   - version: '15.20261027'
     fecha: 27/10/2026
     cambios:

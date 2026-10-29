@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_groups_privilege_wh_cost" model="res.groups.privilege">
+        <field name="name">Costo por almacén</field>
+        <field name="sequence">80</field>
+    </record>
+
+    <!-- Revalorizar rehace el costo de periodos ya informados: queda para
+         quien tiene este permiso, que lo tienen los administradores de
+         contabilidad. -->
+    <record id="group_l10n_pe_wh_cost_revaluation" model="res.groups">
+        <field name="name">Revalorizar costo por almacén</field>
+        <field name="comment">Recalcula el costo por almacén del kardex desde una fecha del periodo abierto.</field>
+        <field name="privilege_id" ref="res_groups_privilege_wh_cost"/>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="account.group_account_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_l10n_pe_wh_cost_revaluation'))]"/>
+    </record>
+</odoo>

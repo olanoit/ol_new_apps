@@ -39,4 +39,18 @@
               parent="menu_l10n_pe_kardex_peru"
               action="action_l10n_pe_kardex_report"
               sequence="20"/>
+
+    <menuitem id="menu_l10n_pe_stock_cost_close"
+              name="Cierres de almacén"
+              parent="menu_l10n_pe_kardex_peru"
+              action="action_l10n_pe_stock_cost_close"
+              groups="stock.group_stock_user"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_pe_wh_cost_recompute"
+              name="Revalorizar costo por almacén"
+              parent="menu_l10n_pe_kardex_peru"
+              action="action_l10n_pe_wh_cost_recompute_wizard"
+              groups="group_l10n_pe_wh_cost_revaluation"
+              sequence="40"/>
 </odoo>

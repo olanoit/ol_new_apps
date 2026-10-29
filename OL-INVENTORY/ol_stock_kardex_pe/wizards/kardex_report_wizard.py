@@ -115,9 +115,10 @@ class L10nPeKardexReportWizard(models.TransientModel):
     group_by_warehouse = fields.Boolean(
         string='Kardex por almacén',
         help='Genera una sección/hoja por almacén con su propio saldo corrido. '
-             'El costo por almacén es aproximado: Odoo valoriza por compañía y '
-             'los traslados entre almacenes se valoran al costo promedio '
-             'corriente. Desmarcado: kardex consolidado de la compañía.')
+             'Con «Costo promedio por almacén» activo en los ajustes, cada '
+             'almacén lleva su propio promedio; si no, el costo por almacén es '
+             'aproximado (Odoo valoriza por compañía). Desmarcado: kardex '
+             'consolidado de la compañía.')
     include_no_movement = fields.Boolean(
         string='Incluir sin movimientos', default=True,
         help='Incluye productos con saldo inicial distinto de cero aunque no '
@@ -182,6 +183,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
         """Abre la vista SQL del kardex filtrada; no se puebla nada."""
         self.ensure_one()
         self._sync_period_dates()
+        self.company_id._l10n_pe_wh_cost_refresh()
         if not self.env['l10n_pe.kardex.line'].search_count(self._get_line_domain(None), limit=1):
             raise UserError(self._no_data_message(movements_only=True))
         by_warehouse = self._by_warehouse()
@@ -410,6 +412,7 @@ class L10nPeKardexReportWizard(models.TransientModel):
 
     def _get_report_data(self):
         self.ensure_one()
+        self.company_id._l10n_pe_wh_cost_refresh()
         valued = self.report_type == '1301'
         Line = self.env['l10n_pe.kardex.line']
         scopes = []

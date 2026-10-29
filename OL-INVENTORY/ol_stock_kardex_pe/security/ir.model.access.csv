@@ -4,3 +4,7 @@ access_l10n_pe_kardex_line_user,l10n_pe.kardex.line user,model_l10n_pe_kardex_li
 access_l10n_pe_kardex_report_user,l10n_pe.kardex.report user,model_l10n_pe_kardex_report,stock.group_stock_user,1,1,1,1
 access_l10n_pe_kardex_report_manager,l10n_pe.kardex.report manager,model_l10n_pe_kardex_report,stock.group_stock_manager,1,1,1,1
 access_l10n_pe_kardex_document_wizard,l10n_pe.kardex.document.wizard,model_l10n_pe_kardex_document_wizard,stock.group_stock_user,1,1,1,1
+access_l10n_pe_kardex_wh_cost_user,l10n_pe.kardex.wh.cost user,model_l10n_pe_kardex_wh_cost,stock.group_stock_user,1,0,0,0
+access_l10n_pe_stock_cost_close_user,l10n_pe.stock.cost.close user,model_l10n_pe_stock_cost_close,stock.group_stock_user,1,0,0,0
+access_l10n_pe_stock_cost_close_manager,l10n_pe.stock.cost.close manager,model_l10n_pe_stock_cost_close,account.group_account_manager,1,1,1,1
+access_l10n_pe_wh_cost_recompute_wizard,l10n_pe.wh.cost.recompute.wizard,model_l10n_pe_wh_cost_recompute_wizard,group_l10n_pe_wh_cost_revaluation,1,1,1,1
