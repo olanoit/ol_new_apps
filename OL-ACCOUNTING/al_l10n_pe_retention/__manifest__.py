@@ -34,6 +34,9 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
     'depends': [
         'al_account_base',
         'l10n_account_withholding_tax',
+        # Odoo 20: impuesto, secuencia, campos del pago y XML del CRE nativos;
+        # este módulo añade solo el régimen peruano completo encima.
+        'l10n_pe_edi_withholding',
         'l10n_latam_invoice_document',
         # código SUNAT de los impuestos (IGV) para las excepciones
         'l10n_pe',

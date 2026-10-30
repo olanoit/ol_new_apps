@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 """XML UBL 2.0 del Comprobante de Retención Electrónico (tipo 20).
 
-Mismo nombre de modelo y punto de entrada (``_export_retention``) que el
-módulo oficial de Odoo ``l10n_pe_edi_withholding`` (Enterprise 19.4/20), para
-poder cambiar a él sin tocar a quien lo llame. Implementación propia con lxml,
-contrastada con los XML de prueba oficiales.
+Odoo 20 trae el generador (``l10n_pe_edi_withholding``): aquí solo se ajustan
+sus partes para que sirva a cualquier documento ``l10n_pe.retention.edi.mixin``
+(un pago o un CRE sin pago de Odoo): tasa del régimen de la compañía, nota,
+totales del reparto, número del comprobante citado y número del pago a ese
+comprobante. ``_l10n_pe_retention_party`` y los helpers ``_el``/``_amount``
+los usa además el comprobante de percepción.
 """
 from lxml import etree
 
 from odoo import models
+
+from odoo.addons.account_edi_ubl_cii.models.account_edi_common import FloatFmt
 
 NS = {
     None: 'urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1',
@@ -33,72 +37,56 @@ def _amount(value, digits=2):
 
 
 class AccountEdiXmlUblPeWithholding(models.AbstractModel):
-    _name = 'account.edi.xml.ubl_pe_withholding'
-    _inherit = 'account.edi.xml.ubl_pe'
-    _description = 'Comprobante de retención UBL (SUNAT)'
+    _inherit = 'account.edi.xml.ubl_pe_withholding'
 
-    def _export_retention(self, payment):
-        """XML del CRE sin el bloque de firma, en UTF-8 (bytes). ``payment`` es
-        cualquier documento ``l10n_pe.retention.edi.mixin``: un pago o un CRE
-        sin pago de Odoo."""
-        company = payment.company_id
-        company_partner = company.partner_id.commercial_partner_id
-        currency = company.currency_id.name
-        breakdown = payment._l10n_pe_edi_get_retention_breakdown()
+    def _add_retention_header_nodes(self, document_node, vals):
+        """Tasa del régimen de la compañía y nota del documento: el nativo las
+        toma de la línea de retención y del memo del pago, que el CRE sin pago
+        no tiene."""
+        document = vals['payment']
+        note = document._l10n_pe_retention_note()
+        document_node.update({
+            'cbc:UBLVersionID': {'_text': '2.0'},
+            'cbc:CustomizationID': {'_text': '1.0'},
+            'cbc:ID': {'_text': document.l10n_pe_edi_retention_number or document.name},
+            'cbc:IssueDate': {'_text': document.date},
+            'sac:SUNATRetentionSystemCode': {'_text': '01'},
+            'sac:SUNATRetentionPercent': {
+                '_text': FloatFmt(document.company_id.l10n_pe_retention_rate, min_dp=2)},
+            'cbc:Note': {'_text': note} if note else None,
+        })
 
-        root = etree.Element('Retention', nsmap=NS)
-        _el(root, 'cbc:UBLVersionID', '2.0')
-        _el(root, 'cbc:CustomizationID', '1.0')
-        signature = _el(root, 'cac:Signature')
-        _el(signature, 'cbc:ID', 'IDSignKG')
-        signatory = _el(signature, 'cac:SignatoryParty')
-        _el(_el(signatory, 'cac:PartyIdentification'), 'cbc:ID', company_partner.vat or '')
-        _el(_el(signatory, 'cac:PartyName'), 'cbc:Name', (company_partner.name or '').upper())
-        _el(_el(_el(signature, 'cac:DigitalSignatureAttachment'), 'cac:ExternalReference'),
-            'cbc:URI', '#SignVX')
-        _el(root, 'cbc:ID', payment.l10n_pe_edi_retention_number or payment.name)
-        _el(root, 'cbc:IssueDate', payment.date)
-        self._l10n_pe_retention_party(root, 'cac:AgentParty', company_partner,
-                                      company.l10n_pe_edi_address_type_code or '0000')
-        self._l10n_pe_retention_party(root, 'cac:ReceiverParty', payment.partner_id)
-        _el(root, 'sac:SUNATRetentionSystemCode', '01')
-        _el(root, 'sac:SUNATRetentionPercent', _amount(company.l10n_pe_retention_rate))
-        note = payment._l10n_pe_retention_note()
-        if note:
-            _el(root, 'cbc:Note', note)
-        # Totales en soles: importe retenido y pagado neto de la retención.
-        _el(root, 'cbc:TotalInvoiceAmount',
-            _amount(sum(entry['bill_retention_pen'] for entry in breakdown)), currencyID=currency)
-        _el(root, 'sac:SUNATTotalPaid',
-            _amount(sum(entry['net_total_paid_pen'] for entry in breakdown)), currencyID=currency)
-        for entry in breakdown:
+    def _add_retention_monetary_totals_nodes(self, document_node, vals):
+        """Totales en soles desde el reparto: retenido y pagado neto (el
+        nativo parte del importe del pago, que el CRE sin pago no tiene)."""
+        currency = vals['company_currency_id'].name
+        breakdown = vals['breakdown']
+        document_node.update({
+            'cbc:TotalInvoiceAmount': {
+                '_text': FloatFmt(sum(e['bill_retention_pen'] for e in breakdown), min_dp=2),
+                'currencyID': currency},
+            'sac:SUNATTotalPaid': {
+                '_text': FloatFmt(sum(e['net_total_paid_pen'] for e in breakdown), min_dp=2),
+                'currencyID': currency},
+        })
+
+    def _add_retention_document_reference_nodes(self, document_node, vals):
+        """Número del comprobante citado (serie-número SUNAT, también sin tipo
+        de documento LATAM) y número del pago a ESE comprobante (1, 2…), no su
+        posición en el CRE."""
+        super()._add_retention_document_reference_nodes(document_node, vals)
+        document = vals['payment']
+        references = document_node.get('sac:SUNATRetentionDocumentReference') or []
+        for reference, entry in zip(references, vals['breakdown']):
             bill = entry['bill']
-            reference = _el(root, 'sac:SUNATRetentionDocumentReference')
-            _el(reference, 'cbc:ID', payment._l10n_pe_edi_retention_bill_number(bill),
-                schemeID=bill.l10n_latam_document_type_id.code
-                or ('07' if bill.move_type == 'in_refund' else '01'))
-            _el(reference, 'cbc:IssueDate', bill.invoice_date or bill.date)
-            _el(reference, 'cbc:TotalInvoiceAmount', _amount(bill.amount_total),
-                currencyID=bill.currency_id.name)
-            payment_node = _el(reference, 'cac:Payment')
-            # Número del pago a ESTE comprobante (1, 2…), no su posición en el CRE.
-            _el(payment_node, 'cbc:ID', payment._l10n_pe_edi_retention_payment_index(bill))
-            _el(payment_node, 'cbc:PaidAmount', _amount(entry['bill_paid_currency']),
-                currencyID=bill.currency_id.name)
-            _el(payment_node, 'cbc:PaidDate', payment.date)
-            information = _el(reference, 'sac:SUNATRetentionInformation')
-            _el(information, 'sac:SUNATRetentionAmount', _amount(entry['bill_retention_pen']),
-                currencyID=currency)
-            _el(information, 'sac:SUNATRetentionDate', payment.date)
-            _el(information, 'sac:SUNATNetTotalPaid', _amount(entry['net_total_paid_pen']),
-                currencyID=currency)
-            if bill.currency_id != company.currency_id:
-                exchange = _el(information, 'cac:ExchangeRate')
-                _el(exchange, 'cbc:SourceCurrencyCode', bill.currency_id.name)
-                _el(exchange, 'cbc:TargetCurrencyCode', currency)
-                _el(exchange, 'cbc:CalculationRate', _amount(entry['exchange_rate'], 6))
-                _el(exchange, 'cbc:Date', payment.date)
-        return etree.tostring(root, xml_declaration=True, encoding='UTF-8')
+            reference['cbc:ID'] = {
+                '_text': document._l10n_pe_edi_retention_bill_number(bill),
+                'schemeID': bill.l10n_latam_document_type_id.code
+                or ('07' if bill.move_type == 'in_refund' else '01'),
+            }
+            reference['cbc:IssueDate'] = {'_text': bill.invoice_date or bill.date}
+            reference['cac:Payment']['cbc:ID'] = {
+                '_text': str(document._l10n_pe_edi_retention_payment_index(bill))}
 
     def _l10n_pe_retention_party(self, parent, tag, partner, address_type_code=None):
         """AgentParty / ReceiverParty en el orden UBL 2.0: documento, nombre,

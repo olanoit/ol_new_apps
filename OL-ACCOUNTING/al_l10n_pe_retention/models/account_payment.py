@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 """Comprobante de Retención Electrónico (CRE, tipo 20) desde el pago.
 
-La interfaz sigue al módulo oficial de Odoo ``l10n_pe_edi_withholding``
-(Enterprise 19.4/20) para que al migrar se pueda cambiar a él: mismos campos
-(``l10n_pe_edi_status``, ``l10n_pe_edi_warnings``,
-``l10n_pe_edi_attachment_file``, ``l10n_pe_edi_retention_number``,
-``l10n_pe_edi_is_required``) y mismos métodos (reparto por comprobante,
-XML, nombre del archivo, envío y servicio de SUNAT). La implementación es
-propia y se apoya en los servicios de firma y envío de ``l10n_pe_edi`` 19.0.
+Odoo 20 trae los campos y el XML del CRE en ``l10n_pe_edi_withholding``
+(estado, avisos, archivo, número); este módulo añade el régimen peruano: plazo
+de 7 días, reversión, descuento de notas de crédito, reparto con descuentos y
+envío por el servicio CPE de la compañía (SUNAT u OSE como Factory HKA), que el
+nativo no admite.
 
 Diferencia deliberada con el oficial: la retención es el 3 % del importe
 pagado **con IGV** (R.S. 037-2002/SUNAT); en los XML de prueba oficiales sale
@@ -17,6 +15,8 @@ from datetime import timedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+
+from .retention_edi_mixin import L10nPeRetentionEdiMixin as RetentionEdiMixin
 
 # R.S. 274-2015/SUNAT: el CRE se envía a SUNAT u OSE dentro de los 7 días
 # calendario siguientes a su emisión; fuera de plazo no vale como CRE.
@@ -30,19 +30,10 @@ class AccountPayment(models.Model):
     _name = 'account.payment'
     _inherit = ['account.payment', 'l10n_pe.retention.edi.mixin']
 
-    # Etiqueta en español del marco nativo
-    withholding_line_ids = fields.One2many(string='Retenciones')
-
-    l10n_pe_edi_retention_number = fields.Char(
-        string='Nº comprobante de retención',
-        compute='_compute_l10n_pe_edi_retention_number', store=True)
+    # Odoo 20: el estado del CRE es el del módulo nativo, con la reversión.
     l10n_pe_edi_status = fields.Selection(
-        selection=CRE_STATES, string='Estado del CRE', copy=False, tracking=True)
-    l10n_pe_edi_warnings = fields.Json(string='Avisos del CRE', readonly=True, copy=False)
-    l10n_pe_edi_attachment_file = fields.Binary(
-        string='CRE firmado y CDR', attachment=True, copy=False)
-    l10n_pe_edi_is_required = fields.Boolean(
-        string='CRE por enviar', compute='_compute_l10n_pe_edi_is_required')
+        selection_add=[('reversing', 'Reversión en proceso'), ('cancelled',)],
+        ondelete={'reversing': 'set null'}, tracking=True)
     l10n_pe_edi_deadline = fields.Date(
         string='Enviar el CRE hasta', compute='_compute_l10n_pe_edi_deadline', store=True,
         help='Plazo de 7 días calendario desde la emisión del comprobante de retención '
@@ -73,12 +64,6 @@ class AccountPayment(models.Model):
         for payment in self:
             payment.l10n_pe_retention_amount = sum(
                 payment._l10n_pe_retention_lines().mapped('amount'))
-
-    @api.depends('withholding_line_ids.name')
-    def _compute_l10n_pe_edi_retention_number(self):
-        for payment in self:
-            payment.l10n_pe_edi_retention_number = ', '.join(
-                n for n in payment._l10n_pe_retention_lines().mapped('name') if n) or False
 
     @api.depends('state', 'l10n_pe_edi_retention_number', 'l10n_pe_edi_status', 'country_code')
     def _compute_l10n_pe_edi_is_required(self):
@@ -116,6 +101,23 @@ class AccountPayment(models.Model):
         for payment in self:
             error = (payment.l10n_pe_edi_warnings or {}).get('edi_error') or {}
             payment.l10n_pe_edi_error_message = error.get('message') or False
+
+    # El nativo envía solo por IAP/SUNAT/Estela: el pago usa el envío del
+    # mixin (servicio CPE de la compañía, también para otros OSE).
+    def _l10n_pe_edi_generate_retention_bstr(self):
+        return RetentionEdiMixin._l10n_pe_edi_generate_retention_bstr(self)
+
+    def _l10n_pe_edi_generate_retention_filename(self):
+        return RetentionEdiMixin._l10n_pe_edi_generate_retention_filename(self)
+
+    def action_l10n_pe_edi_send_retention(self):
+        return RetentionEdiMixin.action_l10n_pe_edi_send_retention(self)
+
+    def _l10n_pe_edi_post_retention(self, edi_str):
+        return RetentionEdiMixin._l10n_pe_edi_post_retention(self, edi_str)
+
+    def _l10n_pe_edi_get_retention_sunat_wsdl(self):
+        return RetentionEdiMixin._l10n_pe_edi_get_retention_sunat_wsdl(self)
 
     def action_post(self):
         """El comprobante de retención se numera al emitir el pago (el marco

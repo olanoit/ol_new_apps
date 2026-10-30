@@ -22,9 +22,12 @@ def _l10n_pe_retention_load_template(env):
             continue
         if ChartTemplate.ref(TAX_XMLID, raise_if_not_found=False):
             continue
+        # Impuesto y secuencia del módulo nativo, con la serie peruana.
+        sequences = ChartTemplate._get_pe_withholding_ir_sequence()
+        sequences[SEQUENCE_XMLID].update(ChartTemplate._get_pe_retention_ir_sequence()[SEQUENCE_XMLID])
         data = {
-            'ir.sequence': ChartTemplate._get_pe_retention_ir_sequence(),
-            'account.tax': ChartTemplate._parse_csv('pe', 'account.tax', module='al_l10n_pe_retention'),
+            'ir.sequence': sequences,
+            'account.tax': ChartTemplate._parse_csv('pe', 'account.tax', module='l10n_pe_edi_withholding'),
         }
         ChartTemplate._deref_account_tags('pe', data['account.tax'])
         ChartTemplate._pre_reload_data(company, {}, data)

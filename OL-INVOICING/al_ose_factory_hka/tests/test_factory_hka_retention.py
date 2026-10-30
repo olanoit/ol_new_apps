@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from lxml import etree
 
+from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
@@ -22,7 +23,14 @@ class TestFactoryHkaRetention(FactoryHkaCommon):
             'partner_id': self.partner_a.id, 'amount': 35.40, 'date': '2026-10-01',
             'journal_id': self.company_data['default_journal_bank'].id,
         })
-        payment.write({'l10n_pe_edi_retention_number': 'R001-00000005', 'l10n_pe_edi_status': 'sent'})
+        # Odoo 20: el número del CRE es el de la línea de retención del pago.
+        tax = self.env.company.l10n_pe_retention_tax_id
+        payment.write({
+            'withholding_line_ids': [Command.create({
+                'tax_id': tax.id, 'name': 'R001-00000005', 'base_amount': 1180.0, 'amount': 35.40})],
+            'l10n_pe_edi_status': 'sent',
+        })
+        self.assertEqual(payment.l10n_pe_edi_retention_number, 'R001-00000005')
         return payment
 
     # ------------------------------------------------------------------

@@ -230,9 +230,8 @@
         <field name="inherit_id" ref="account.view_account_payment_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
-                <button name="action_l10n_pe_edi_send_retention" type="object"
-                        string="Enviar CRE a SUNAT" class="btn-primary"
-                        invisible="not l10n_pe_edi_is_required"/>
+                <!-- Odoo 20: el botón de envío, el número y el aviso de errores
+                     los pone l10n_pe_edi_withholding. -->
                 <button name="action_l10n_pe_generate_cre_xml" type="object"
                         string="XML CRE"
                         invisible="not l10n_pe_edi_retention_number"/>
@@ -256,14 +255,8 @@
                     revise si debe emitir uno nuevo.
                     <field name="l10n_pe_edi_overdue" invisible="1"/>
                 </div>
-                <div class="alert alert-danger mb-0" role="alert"
-                     invisible="not l10n_pe_edi_error_message">
-                    <strong>El comprobante de retención no fue aceptado:</strong>
-                    <field name="l10n_pe_edi_error_message" readonly="1"/>
-                </div>
             </xpath>
             <xpath expr="//group[@name='group2']" position="inside">
-                <field name="l10n_pe_edi_retention_number" invisible="not l10n_pe_edi_retention_number"/>
                 <field name="l10n_pe_edi_status" invisible="not l10n_pe_edi_retention_number"/>
                 <field name="l10n_pe_edi_reversal_available" invisible="1"/>
                 <field name="l10n_pe_edi_reversal_reason"
