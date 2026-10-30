@@ -43,7 +43,7 @@ import {
     selectedValues,
 } from "@al_project_gantt_base/js/gantt_filters";
 import { GanttSelection } from "./gantt_selection";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 /**
  * Puntos de extensión para pantallas que reutilizan este componente
@@ -76,7 +76,7 @@ export class GanttAction extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.notification = usePlugin(NotificationPlugin);
         this.containerRef = signal.ref();
         this.gantt = null;

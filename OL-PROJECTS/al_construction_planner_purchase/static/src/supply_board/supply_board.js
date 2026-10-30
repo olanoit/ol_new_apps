@@ -14,7 +14,7 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
 import { formatDate, parseDate } from "@web/core/l10n/dates";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 const BOARD = "construction.supply.board";
 const WEEK_OPTIONS = [2, 3, 4, 6, 8, 12];
@@ -29,7 +29,7 @@ export class ConstructionSupplyBoard extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.weekOptions = WEEK_OPTIONS;
         this.state = proxy({
             projects: [],

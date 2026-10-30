@@ -12,7 +12,7 @@ import { Component, onWillStart, proxy, usePlugin, useProps } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 const HOME = "construction.planner.home";
 const STATE_BADGES = {
@@ -29,7 +29,7 @@ export class ConstructionPlannerHome extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.state = proxy({ data: null, loading: false });
         onWillStart(() => this.load());
     }

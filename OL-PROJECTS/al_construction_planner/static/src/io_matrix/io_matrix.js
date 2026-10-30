@@ -14,7 +14,7 @@ import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
 import { _t } from "@web/core/l10n/translation";
 import { stageFilterLabel, stageNodeState, toggleStageNode } from "../stage_filter/stage_filter";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 const PLAN = "construction.resource.plan";
 const KINDS = ["parent", "stage", "type"];
@@ -76,7 +76,7 @@ export class ConstructionIoMatrix extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         const context = this.props.action?.context || {};
         this.keys = context.construction_selection_keys || ["p"];
         this.state = proxy({

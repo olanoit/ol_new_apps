@@ -7,7 +7,7 @@ import {registry} from "@web/core/registry";
 import { useLayoutEffect } from "@web/owl2/utils";
 import {standardFieldProps} from "@web/views/fields/standard_field_props";
 import {useService} from "@web/core/utils/hooks";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 
 const {document} = globalThis;
@@ -20,7 +20,7 @@ class JobDirectGraph extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.rootRef = signal.ref();
         this.network = null;
         this.forceRender = false;

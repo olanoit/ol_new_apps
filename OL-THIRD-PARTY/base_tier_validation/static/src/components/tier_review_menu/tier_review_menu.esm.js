@@ -4,7 +4,7 @@ import {registry} from "@web/core/registry";
 import {useDiscussSystray} from "@mail/utils/common/hooks";
 import {useDropdownState} from "@web/core/dropdown/dropdown_hooks";
 import {useService} from "@web/core/utils/hooks";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 export class TierReviewMenu extends Component {
     static components = {Dropdown};
@@ -16,7 +16,7 @@ export class TierReviewMenu extends Component {
         this.discussSystray = useDiscussSystray();
         this.orm = useService("orm");
         this.store = proxy(useService("mail.store"));
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.dropdown = useDropdownState();
         this.fetchSystrayReviewer();
     }

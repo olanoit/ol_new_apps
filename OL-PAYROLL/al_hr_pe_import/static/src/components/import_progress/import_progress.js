@@ -14,7 +14,7 @@ import { Component, onMounted, onWillUnmount, proxy, t, usePlugin, useProps } fr
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 // Tope de consultas (1 por segundo): pasado ese tiempo se deja de
 // consultar aunque el servidor no haya cerrado la importación. El
@@ -29,7 +29,7 @@ export class ImportPayrollProgressWidget extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
 
         this.state = proxy({
             total: 0,

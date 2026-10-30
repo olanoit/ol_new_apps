@@ -6,7 +6,7 @@ import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
 import { useBus, useService } from "@web/core/utils/hooks";
 import { ActionDialog } from "@web/webclient/actions/action_dialog";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 function openHelp(help) {
     window.open(help.url, "_blank", "noopener");
@@ -36,7 +36,7 @@ export class DocsHelpSystray extends Component {
     props = useProps({});
 
     setup() {
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.docsHelp = useService("al_docs_help");
         this.state = proxy({ help: null });
         useBus(this.env.bus, "ACTION_MANAGER:UI-UPDATED", () => this.update());

@@ -13,7 +13,7 @@ import { Component, onWillStart, proxy, t, usePlugin, useProps } from "@odoo/owl
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { formatFloat } from "@web/core/utils/numbers";
-import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
+import { ActionPlugin } from "@web/webclient/actions/action_plugin";
 
 const REPORT = "construction.schedule.report";
 const CHART = { width: 900, height: 260, left: 70, right: 16, top: 12, bottom: 28 };
@@ -33,7 +33,7 @@ export class ConstructionScheduleReport extends Component {
 
     setup() {
         this.orm = useService("orm");
-        this.action = usePlugin(ActionManagerPlugin);
+        this.action = usePlugin(ActionPlugin);
         this.chart = CHART;
         this.state = proxy({
             projects: [],
