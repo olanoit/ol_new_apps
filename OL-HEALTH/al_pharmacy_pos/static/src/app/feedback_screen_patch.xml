@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Odoo 20: los botones tras el pago están en FeedbackScreen. -->
+    <t t-inherit="point_of_sale.FeedbackScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('desktop-format')]/button[hasclass('print-ticket-button')]" position="after">
+            <button t-if="this.pharmacyFractionLines.length" type="button"
+                    class="button o_pharmacy_fraction_label btn btn-secondary btn-lg lh-lg text-truncate flex-basis-25 py-3 rounded-3"
+                    t-att-disabled="typeof this.currentOrder.id !== 'number'"
+                    t-on-click.stop="() => this.printPharmacyFractionLabel()">
+                <i class="oi me-1" data-icon="label"/>Rótulo de venta fraccionada
+            </button>
+        </xpath>
+    </t>
+</templates>

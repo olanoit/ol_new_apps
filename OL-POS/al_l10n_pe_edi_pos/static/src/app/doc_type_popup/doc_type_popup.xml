@@ -42,7 +42,7 @@
             <!-- Switch de emisión a SUNAT, debajo de la serie -->
             <div t-if="this.state.type !== 'recibo'" class="form-check form-switch mt-3">
                 <input class="form-check-input" type="checkbox" role="switch"
-                       id="alpe-send-switch" t-custom-model="this.state.send"/>
+                       id="alpe-send-switch" t-model.proxy="this.state.send"/>
                 <label class="form-check-label" for="alpe-send-switch">
                     Emitir a SUNAT
                     <span class="fw-bold" t-out="this.state.send ? 'Sí' : 'No'"/>

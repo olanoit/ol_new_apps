@@ -30,7 +30,7 @@ class TestControlled(TransactionCase):
             'name': 'Dra. Elena Vargas', 'pharmacy_is_prescriber': True,
             'pharmacy_prescriber_license': '051234'})
         cls.patient = cls.env['res.partner'].create({
-            'name': 'Mario Cárdenas', 'vat': '40112233', 'street': 'Av. Arequipa 1234',
+            'name': 'Mario Cárdenas', 'additional_identifiers': {'PE_DNI': '40112233'}, 'street': 'Av. Arequipa 1234',
             'phone': '987654321'})
 
     def _prescription(self, product, prescription_type='common', **vals):

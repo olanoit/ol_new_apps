@@ -6,7 +6,7 @@
                 <p class="text-muted">Lo que el cliente pidió y no se le pudo vender.</p>
                 <div class="form-check mb-3" t-if="this.props.productId">
                     <input id="shortage_use_product" type="checkbox" class="form-check-input"
-                           t-custom-model="this.state.useProduct"/>
+                           t-model.proxy="this.state.useProduct"/>
                     <label class="form-check-label" for="shortage_use_product">
                         Producto: <strong t-out="this.props.productName"/>
                     </label>
@@ -16,16 +16,16 @@
                         <label class="form-label" for="shortage_description">Qué pidió</label>
                         <input id="shortage_description" class="form-control"
                                placeholder="Nombre, concentración o presentación"
-                               t-custom-model="this.state.description"/>
+                               t-model.proxy="this.state.description"/>
                     </div>
                     <div class="col-4">
                         <label class="form-label" for="shortage_quantity">Cantidad</label>
                         <input id="shortage_quantity" type="number" min="0" step="any"
-                               class="form-control" t-custom-model="this.state.quantity"/>
+                               class="form-control" t-model.proxy="this.state.quantity"/>
                     </div>
                     <div class="col-8">
                         <label class="form-label" for="shortage_reason">Motivo</label>
-                        <select id="shortage_reason" class="form-select" t-custom-model="this.state.reason">
+                        <select id="shortage_reason" class="form-select" t-model.proxy="this.state.reason">
                             <t t-foreach="this.reasons" t-as="reason" t-key="reason[0]">
                                 <option t-att-value="reason[0]" t-out="reason[1]"/>
                             </t>

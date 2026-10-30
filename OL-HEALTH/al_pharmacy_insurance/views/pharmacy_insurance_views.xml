@@ -256,7 +256,8 @@
         <field name="model">pos.payment.method</field>
         <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
         <field name="arch" type="xml">
-            <field name="split_transactions" position="before">
+            <!-- Odoo 20: split_transactions desapareció (la cuenta de cliente es type pay_later). -->
+            <field name="config_ids" position="after">
                 <field name="pharmacy_insurance_agreement_id" invisible="not pharmacy_insurance_agreement_id"/>
             </field>
         </field>

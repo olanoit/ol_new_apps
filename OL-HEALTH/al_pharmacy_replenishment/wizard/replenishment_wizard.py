@@ -211,7 +211,7 @@ class PharmacyReplenishmentWizard(models.TransientModel):
                 order_lines.append(Command.create({
                     'product_id': line.product_id.id,
                     'product_qty': qty,
-                    'product_uom_id': uom.id,
+                    'uom_id': uom.id,  # Odoo 20: UdM de la línea de compra
                 }))
             order = self.env['purchase.order'].create({
                 'partner_id': vendor.id,

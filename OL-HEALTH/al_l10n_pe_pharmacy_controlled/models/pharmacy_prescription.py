@@ -45,7 +45,7 @@ class PharmacyPrescription(models.Model):
         for prescription in self.sudo().filtered(lambda p: p.prescription_type == 'special'):
             patient = prescription.patient_id
             missing = []
-            if not patient.vat:
+            if not patient._pharmacy_identification_number():
                 missing.append(self.env._('documento de identidad del paciente'))
             if not (patient.street or patient.city):
                 missing.append(self.env._('dirección del paciente'))

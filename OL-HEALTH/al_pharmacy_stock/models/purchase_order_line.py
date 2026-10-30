@@ -49,7 +49,7 @@ class PurchaseOrderLine(models.Model):
                     **values,
                     'order_id': line.order_id.id,
                     'product_id': line.product_id.id,
-                    'product_uom_id': line.product_uom_id.id,
+                    'uom_id': line.uom_id.id,  # Odoo 20: UdM de la línea de compra
                     'tax_ids': [(6, 0, line.tax_ids.ids)],
                     'date_planned': line.date_planned,
                     'pharmacy_bonus_of_id': line.id,

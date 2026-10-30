@@ -3,6 +3,7 @@ import { patch } from "@web/core/utils/patch";
 import { AlertDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { PaymentScreen } from "@point_of_sale/app/screens/payment_screen/payment_screen";
 import OrderPaymentValidation from "@point_of_sale/app/utils/order_payment_validation";
+import { PosOrder } from "@point_of_sale/app/models/pos_order";
 import { roundPrecision } from "@web/core/utils/numbers";
 
 /**
@@ -36,12 +37,7 @@ patch(PaymentScreen.prototype, {
         const refundAmount = insuranceRefundAmount(order, this.pos.currency);
         if (refundAmount) {
             // Devolución: vuelve a la aseguradora lo que ella pagó.
-            const added = await super.addNewPaymentLine(paymentMethod);
-            if (added) {
-                this.paymentLines.at(-1).setAmount(refundAmount);
-                this.numberBuffer.set(refundAmount.toString());
-            }
-            return added;
+            return await this._addPharmacyInsuranceLine(paymentMethod, refundAmount);
         }
         const coverage = await this.pos.data.call("pharmacy.insurance.agreement", "get_pos_coverage", [
             paymentMethod.id,
@@ -62,14 +58,11 @@ patch(PaymentScreen.prototype, {
             this.dialog.add(AlertDialog, { title: _t("Convenio"), body: coverage.error });
             return false;
         }
-        const added = await super.addNewPaymentLine(paymentMethod);
+        const amount = Math.min(coverage.amount, order.remainingDue);
+        const added = await this._addPharmacyInsuranceLine(paymentMethod, amount);
         if (!added) {
             return added;
         }
-        const line = this.paymentLines.at(-1);
-        const amount = Math.min(coverage.amount, line.amount);
-        line.setAmount(amount);
-        this.numberBuffer.set(amount.toString());
         this.notification.add(
             _t("%(agreement)s cubre %(amount)s (afiliado %(affiliate)s).", {
                 agreement: coverage.agreement,
@@ -79,6 +72,30 @@ patch(PaymentScreen.prototype, {
             { type: "info" }
         );
         return added;
+    },
+
+    /**
+     * Odoo 20: el monto de la línea se fija al crearla
+     * (``getDefaultAmountDueToPayIn``); cambiarlo después no refresca el saldo.
+     */
+    async _addPharmacyInsuranceLine(paymentMethod, amount) {
+        const order = this.currentOrder;
+        order.uiState.pharmacyInsuranceAmount = amount;
+        try {
+            return await super.addNewPaymentLine(paymentMethod);
+        } finally {
+            delete order.uiState.pharmacyInsuranceAmount;
+        }
+    },
+});
+
+patch(PosOrder.prototype, {
+    getDefaultAmountDueToPayIn(paymentMethod) {
+        const amount = this.uiState?.pharmacyInsuranceAmount;
+        if (paymentMethod.pharmacy_is_insurance && amount !== undefined) {
+            return amount;
+        }
+        return super.getDefaultAmountDueToPayIn(...arguments);
     },
 });
 

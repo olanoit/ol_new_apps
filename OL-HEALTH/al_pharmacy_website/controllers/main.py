@@ -4,7 +4,6 @@
 La receta se sube en un paso propio antes del pago: el carrito de la sesión
 (``request.cart``) o, desde el portal, un pedido con su ``access_token``.
 Nadie puede subir ni ver la receta de un pedido ajeno."""
-import base64
 
 from werkzeug.exceptions import NotFound
 
@@ -21,7 +20,7 @@ MAX_SIZE = 5 * 1024 * 1024  # 5 MB
 
 
 def _read_prescription(upload):
-    """Contenido en base64 de la receta subida, o el mensaje de error."""
+    """Contenido binario de la receta subida, o el mensaje de error."""
     if not upload or not getattr(upload, 'filename', None):
         return None, _('Elija la foto o el PDF de la receta.')
     data = upload.read(MAX_SIZE + 1)
@@ -29,7 +28,7 @@ def _read_prescription(upload):
         return None, _('La receta pesa más de 5 MB: tome una foto más liviana.')
     if guess_mimetype(data) not in ALLOWED_MIMETYPES:
         return None, _('La receta debe ser una foto (JPG o PNG) o un PDF.')
-    return base64.b64encode(data), None
+    return data, None
 
 
 class WebsiteSalePharmacy(WebsiteSale):

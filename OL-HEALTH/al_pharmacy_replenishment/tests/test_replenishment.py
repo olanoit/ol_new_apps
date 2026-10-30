@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.point_of_sale.tests.common import TestPoSCommon
+# Odoo 20: los ayudantes de stock (adjust_inventory) están en pos_stock.
+from odoo.addons.pos_stock.tests.common import TestPosStockCommon as TestPoSCommon
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import Form, tagged
 
@@ -11,7 +12,8 @@ class TestReplenishment(TestPoSCommon):
     def setUpClass(cls):
         super().setUpClass()
         cls.config = cls.basic_config
-        cls.warehouse = cls.company_data['default_warehouse']
+        # Odoo 20: company_data ya no trae el almacén por defecto.
+        cls.warehouse = cls.env['stock.warehouse'].search([('company_id', '=', cls.company.id)], limit=1)
         cls.units = cls.env.ref('uom.product_uom_unit')
         cls.box_10 = cls.env['uom.uom'].create({
             'name': 'Caja x 10', 'relative_factor': 10, 'relative_uom_id': cls.units.id})
@@ -156,7 +158,7 @@ class TestReplenishment(TestPoSCommon):
         self.assertEqual(order_a.picking_type_id, self.warehouse.in_type_id)
         line = order_a.order_line.filtered(lambda l: l.product_id == self.losartan)
         # 20 unidades = 2 cajas de 10.
-        self.assertEqual(line.product_uom_id, self.box_10)
+        self.assertEqual(line.uom_id, self.box_10)
         self.assertEqual(line.product_qty, 2.0)
         self.assertRecordValues(shortage, [{'state': 'ordered', 'purchase_order_id': order_a.id}])
         # El faltante sin producto sigue pendiente.

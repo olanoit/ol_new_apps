@@ -59,7 +59,7 @@ class TestPosProductInfo(TestPoSCommon):
     def test_pos_loads_ingredients_and_replaces_tag_filter(self):
         self.config.pharmacy_ingredient_filter = True
         self.open_new_session()
-        data = self.pos_session.load_data([])
+        data = self.pos_session.load_data({'only_records': True})
         templates = {t['id']: t for t in data['product.template']}
         self.assertEqual(templates[self.generic.id]['pharmacy_ingredient_ids'], [self.paracetamol.id])
         self.assertIn(self.paracetamol.id, [i['id'] for i in data['pharmacy.ingredient']])
@@ -88,7 +88,7 @@ class TestPosProductInfo(TestPoSCommon):
         self.assertTrue(by_id[other.id]['bioequivalent'])
         self.assertFalse(by_id[self.brand.id]['bioequivalent'])
         self.open_new_session()
-        data = self.pos_session.with_context(pos_limited_loading=False).load_data([])
+        data = self.pos_session.with_context(pos_limited_loading=False).load_data({'only_records': True})
         templates = {t['id']: t for t in data['product.template']}
         self.assertEqual(templates[self.generic.id]['pharmacy_bioequivalent_ids'], [other.id])
         self.assertEqual(templates[other.id]['pharmacy_bioequivalent_ids'], [self.generic.id])

@@ -83,7 +83,7 @@ class TestPharmacyLoyalty(TransactionCase):
         self.assertFalse(gift_card._pharmacy_excludes_prescription())
 
     def test_sale_order_points_skip_prescription(self):
-        partner = self.env['res.partner'].create({'name': 'Rosa Quispe', 'vat': '44556677'})
+        partner = self.env['res.partner'].create({'name': 'Rosa Quispe', 'additional_identifiers': {'PE_DNI': '44556677'}})
         order = self.env['sale.order'].create({
             'partner_id': partner.id,
             'order_line': [

@@ -126,7 +126,7 @@ class TestPosPeVouchers(TestPoSCommon):
         # Aunque el producto de descuento lleve el IGV, el canje no lo rebaja.
         self._sync([(self.ibuprofen, 1), self._redemption(20.0, self.igv)], [(self.cash_pm1, 39.0)])
         self.pos_session.action_pos_session_validate()
-        move = self.pos_session.move_id
+        move = self.pos_session.sale_move_ids
         tax_lines = move.line_ids.filtered(lambda line: line.tax_line_id == self.igv)
         self.assertAlmostEqual(-sum(tax_lines.mapped('balance')), 9.0)
         self.assertFalse(move.line_ids.filtered(

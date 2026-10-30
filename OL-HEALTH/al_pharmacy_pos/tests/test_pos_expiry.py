@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.addons.point_of_sale.tests.test_frontend import TestPointOfSaleHttpCommon
 from odoo.tests import tagged
 
@@ -9,6 +9,14 @@ from odoo.tests import tagged
 @tagged('post_install', '-at_install')
 class TestPosExpiryDiscount(TestPointOfSaleHttpCommon):
     """Precio por vencer en la caja (mejora E11)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Odoo 20: el albarán del TPV busca los lotes como el cajero, que debe
+        # ser usuario de Inventario para vender productos con lote (como en
+        # los tests de pos_stock).
+        cls.pos_user.write({'group_ids': [Command.link(cls.env.ref('stock.group_stock_user').id)]})
 
     def start_tour(self, url_path, tour_name, step_delay=None, **kwargs):
         # Los pasos de los tours del núcleo usan los textos en inglés; la base

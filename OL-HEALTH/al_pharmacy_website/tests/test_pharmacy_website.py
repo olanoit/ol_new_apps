@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 
-from odoo import Command, http
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import HttpCase, TransactionCase, new_test_user, tagged
 
@@ -14,7 +14,8 @@ class PharmacyWebsiteCommon:
 
     @classmethod
     def _setup_pharmacy_products(cls):
-        cls.website = cls.env.ref('website.default_website')
+        # Odoo 20: ya no existe el xmlid website.default_website.
+        cls.website = cls.env.company.website_id or cls.env['website'].search([], limit=1)
         ingredient = cls.env['pharmacy.ingredient']._get_or_create('Amoxicilina')
         common = {
             'type': 'consu', 'is_published': True, 'sale_ok': True, 'pharmacy_ok': True,
@@ -91,15 +92,13 @@ class TestPharmacyWebsite(PharmacyWebsiteCommon, TransactionCase):
             self.controlled.uom_id.id)
         self.assertEqual(qty, 0)
         self.assertIn('controlado', warning)
-        with self.assertRaises(ValidationError):
-            self._web_order(self.controlled)._check_cart_is_ready_to_be_paid()
+        self.assertFalse(self._web_order(self.controlled)._is_cart_ready_for_payment())
 
     def test_prescription_needed_before_paying(self):
         order = self._web_order(self.generic)
         self.assertTrue(order.pharmacy_prescription_required)
         self.assertEqual(order.pharmacy_review_state, 'to_upload')
-        with self.assertRaisesRegex(ValidationError, 'receta'):
-            order._check_cart_is_ready_to_be_paid()
+        self.assertFalse(order._is_cart_ready_for_payment())
         backend_order = self.env['sale.order'].create({
             'partner_id': self.customer.id,
             'order_line': [Command.create({'product_id': self.generic.product_variant_id.id})]})
@@ -107,7 +106,7 @@ class TestPharmacyWebsite(PharmacyWebsiteCommon, TransactionCase):
 
     def test_order_waits_for_the_pharmacist(self):
         order = self._web_order(self.generic)
-        order._pharmacy_save_prescription(base64.b64encode(PNG), 'receta.png')
+        order._pharmacy_save_prescription(PNG, 'receta.png')
         self.assertEqual(order.pharmacy_review_state, 'to_review')
         self.assertFalse(order._is_confirmation_amount_reached())
         with self.assertRaises(UserError):
@@ -115,7 +114,7 @@ class TestPharmacyWebsite(PharmacyWebsiteCommon, TransactionCase):
         with self.assertRaises(UserError):
             order.with_user(self.salesman).action_pharmacy_approve_prescription()
         # Sin pago no se confirma; aquí el pedido no exige pago previo.
-        order.require_payment = False
+        order.prepayment_percent = 0.0  # Odoo 20: sin require_payment
         order.with_user(self.pharmacist).action_pharmacy_approve_prescription()
         self.assertEqual(order.pharmacy_review_state, 'approved')
         self.assertEqual(order.pharmacy_reviewer_id, self.pharmacist)
@@ -123,7 +122,7 @@ class TestPharmacyWebsite(PharmacyWebsiteCommon, TransactionCase):
 
     def test_rejection_needs_a_reason_and_allows_a_new_upload(self):
         order = self._web_order(self.generic)
-        order._pharmacy_save_prescription(base64.b64encode(PNG), 'receta.png')
+        order._pharmacy_save_prescription(PNG, 'receta.png')
         as_pharmacist = order.with_user(self.pharmacist)
         with self.assertRaises(UserError):
             as_pharmacist.action_pharmacy_reject_prescription()
@@ -131,7 +130,7 @@ class TestPharmacyWebsite(PharmacyWebsiteCommon, TransactionCase):
         as_pharmacist.action_pharmacy_reject_prescription()
         self.assertEqual(order.pharmacy_review_state, 'rejected')
         self.assertIn(order.partner_id, order.message_ids[:1].partner_ids)
-        order._pharmacy_save_prescription(base64.b64encode(PNG), 'receta2.png')
+        order._pharmacy_save_prescription(PNG, 'receta2.png')
         self.assertEqual(order.pharmacy_review_state, 'to_review')
         self.assertFalse(order.pharmacy_review_reason)
 
@@ -175,7 +174,7 @@ class TestPharmacyWebsiteHttp(PharmacyWebsiteCommon, HttpCase):
         self.authenticate('cliente_web', 'cliente_web')
         response = self.url_open('/shop/payment')
         self.assertTrue(response.url.endswith('/shop/pharmacy/prescription'))
-        csrf = http.Request.csrf_token(self)
+        csrf = self.csrf_token()
         # Un archivo que no es imagen ni PDF se rechaza.
         response = self.url_open('/shop/pharmacy/prescription', data={'csrf_token': csrf},
                                  files={'prescription': ('receta.txt', b'hola', 'text/plain')})
@@ -190,7 +189,7 @@ class TestPharmacyWebsiteHttp(PharmacyWebsiteCommon, HttpCase):
     def test_portal_upload_needs_access(self):
         order = self._web_order(self.generic)
         self.authenticate(None, None)
-        csrf = http.Request.csrf_token(self)
+        csrf = self.csrf_token()
         url = '/my/orders/%s/prescription' % order.id
         response = self.url_open(url + '?access_token=malo', data={'csrf_token': csrf},
                                  files={'prescription': ('receta.png', PNG, 'image/png')})

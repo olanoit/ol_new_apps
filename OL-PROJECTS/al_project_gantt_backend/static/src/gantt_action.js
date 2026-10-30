@@ -7,10 +7,9 @@
  * tipo de vista de Odoo. Los datos vienen siempre del módulo base a través de
  * `project.project.al_gantt_get_data()`.
  */
-import { Component, onMounted, onWillStart, onWillUnmount, proxy, t, usePlugin, useProps } from "@odoo/owl";
+import { Component, signal, onMounted, onWillStart, onWillUnmount, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { registry } from "@web/core/registry";
-import { useRef } from "@web/owl2/utils";
 import { Layout } from "@web/search/layout";
 import { useService } from "@web/core/utils/hooks";
 import { loadCSS, loadJS } from "@web/core/assets";
@@ -79,7 +78,7 @@ export class GanttAction extends Component {
         this.orm = useService("orm");
         this.action = usePlugin(ActionManagerPlugin);
         this.notification = usePlugin(NotificationPlugin);
-        this.containerRef = useRef("ganttContainer");
+        this.containerRef = signal.ref();
         this.gantt = null;
         this.selection = this.selectionEnabled
             ? new GanttSelection({
@@ -295,7 +294,7 @@ export class GanttAction extends Component {
     // Librería
     // ------------------------------------------------------------------
     mountGantt() {
-        if (!this.containerRef.el || !window.Gantt) {
+        if (!this.containerRef() || !window.Gantt) {
             return;
         }
         // Instancia propia: no se comparte estado con otras vistas ni con la
@@ -303,11 +302,11 @@ export class GanttAction extends Component {
         this.gantt = window.Gantt.getGanttInstance();
         this.mountedSignature = this.configSignature();
         this.setupGantt();
-        this.gantt.init(this.containerRef.el);
+        this.gantt.init(this.containerRef());
         this.parseData();
         addTodayMarker(this.gantt);
         this.detachContextMenu = attachContextMenu(
-            this.gantt, this.containerRef.el, (taskId, task) => this.buildContextActions(taskId, task)
+            this.gantt, this.containerRef(), (taskId, task) => this.buildContextActions(taskId, task)
         );
         if (this.state.search) {
             this.state.searchMatches = applySearch(this.gantt, this.state.search);
@@ -317,7 +316,7 @@ export class GanttAction extends Component {
         // El contenedor cambia de alto al plegar avisos o al redimensionar la
         // ventana; sin esto la librería conserva el tamaño del primer render.
         this.resizeObserver = new ResizeObserver(() => this.gantt?.setSizes());
-        this.resizeObserver.observe(this.containerRef.el);
+        this.resizeObserver.observe(this.containerRef());
     }
 
     setupGantt() {

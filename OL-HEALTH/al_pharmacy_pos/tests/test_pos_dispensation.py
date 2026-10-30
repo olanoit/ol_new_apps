@@ -17,7 +17,7 @@ class TestPosDispensation(TestPoSCommon):
         cls.product.product_tmpl_id.write({
             'pharmacy_ok': True, 'pharmacy_sale_condition': 'prescription',
             'is_storable': True, 'tracking': 'lot'})
-        cls.customer = cls.env['res.partner'].create({'name': 'Pedro Huamán', 'vat': '44556677'})
+        cls.customer = cls.env['res.partner'].create({'name': 'Pedro Huamán', 'additional_identifiers': {'PE_DNI': '44556677'}})
 
     def _paid_order(self, qty=10, lot_name=False, **vals):
         order = self.env['pos.order'].create({

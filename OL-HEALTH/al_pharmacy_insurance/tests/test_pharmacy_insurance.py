@@ -33,7 +33,7 @@ class TestPharmacyInsurance(TestPoSCommon):
         cls.losartan = cls.create_product('Losartán 50 mg', cls.chronic_categ, 20.0,
                                           tax_ids=cls.igv.ids)
         cls.insurer = cls.env['res.partner'].create({'name': 'Salud Andina EPS S.A.', 'is_company': True})
-        cls.patient = cls.env['res.partner'].create({'name': 'María Torres Quispe', 'vat': '44556677'})
+        cls.patient = cls.env['res.partner'].create({'name': 'María Torres Quispe', 'additional_identifiers': {'PE_DNI': '44556677'}})
         cls.today = fields.Date.context_today(cls.env.user)
         cls.sale_journal = cls.env['account.journal'].search([
             ('type', '=', 'sale'), ('company_id', '=', cls.env.company.id)], limit=1)
@@ -79,7 +79,6 @@ class TestPharmacyInsurance(TestPoSCommon):
     # ------------------------------------------------------------------
     def test_payment_method_is_customer_account(self):
         self.assertEqual(self.insurance_pm.type, 'pay_later')
-        self.assertFalse(self.insurance_pm.split_transactions)
         self.assertTrue(self.insurance_pm.pharmacy_is_insurance)
 
     def test_coverage_by_category_with_copay(self):
@@ -157,7 +156,7 @@ class TestPharmacyInsurance(TestPoSCommon):
         self.assertAlmostEqual(patient_invoice.amount_total, 16.16)
         self.assertTrue(patient_invoice.currency_id.is_zero(patient_invoice.amount_residual))
         self.assertEqual(patient_invoice.partner_id, self.patient)
-        self.pos_session.action_pos_session_validate()
+        self.pos_session.close_session_from_ui()
 
         liquidation = self._liquidate()
         insurer_invoice = liquidation.invoice_id
@@ -175,17 +174,18 @@ class TestPharmacyInsurance(TestPoSCommon):
         self.assertAlmostEqual(receivable.balance, 19.24)
         self.assertEqual(receivable.partner_id, self.insurer)
         # El método «Convenio» no deja cuenta por cobrar en el cierre de caja.
-        session_lines = self.pos_session.move_id.line_ids
+        session_lines = self.pos_session.sale_move_ids.line_ids
         self.assertFalse(session_lines.filtered(
             lambda l: self.insurance_pm.name in (l.name or '')))
-        self.assertEqual(self.pos_session.move_id.state, 'posted')
+        # Odoo 20: si todo se facturó, el cierre puede no tener asiento de venta.
+        self.assertTrue(all(move.state == 'posted' for move in self.pos_session.sale_move_ids))
 
     def test_sale_without_invoice_books_only_patient_part(self):
         self.open_new_session()
         order = self._sync([(self.insurance_pm, 19.24), (self.cash_pm1, 16.16)])
         self.assertFalse(order.account_move)
-        self.pos_session.action_pos_session_validate()
-        move = self.pos_session.move_id
+        self.pos_session.close_session_from_ui()
+        move = self.pos_session.sale_move_ids
         income = move.line_ids.filtered(lambda l: self.igv in l.tax_ids)
         taxes = move.line_ids.filtered(lambda l: l.tax_line_id == self.igv)
         patient_untaxed = -sum(income.mapped('balance'))
@@ -246,7 +246,7 @@ class TestPharmacyInsurance(TestPoSCommon):
         self.assertTrue(credit_note.currency_id.is_zero(credit_note.amount_residual))
         # El tope del mes queda libre otra vez.
         self.assertAlmostEqual(self._coverage()['amount'], 19.24)
-        self.pos_session.action_pos_session_validate()
+        self.pos_session.close_session_from_ui()
         self.assertEqual(self.pos_session.state, 'closed')
         liquidation = self.env['pharmacy.insurance.liquidation'].create({
             'agreement_id': self.agreement.id, 'date_from': self.today.replace(day=1),

@@ -278,7 +278,7 @@
                                     t-on-click="() => this.clearFilters()">Limpiar filtros</button>
                         </p>
                     </div>
-                    <div class="algantt-container h-100 w-100" t-custom-ref="ganttContainer"/>
+                    <div class="algantt-container h-100 w-100" t-ref="this.containerRef"/>
                 </div>
                 <!-- Punto de extensión: panel a la derecha del diagrama. -->
                 <t t-if="this.sidePanelTemplate" t-call="{{ this.sidePanelTemplate }}"/>

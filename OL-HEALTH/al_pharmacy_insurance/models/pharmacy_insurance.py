@@ -110,7 +110,7 @@ class PharmacyInsuranceAgreement(models.Model):
         """Crea el método «cuenta de cliente» (sin diario) del convenio. Solo
         marca en la caja la parte cubierta: no queda como venta ni como cuenta
         por cobrar de la caja, porque se factura a la aseguradora en la
-        liquidación (ver ``pos.session._accumulate_amounts``)."""
+        liquidación (ver ``pos.order._prepare_account_move_line_data_for_payments``)."""
         for agreement in self.filtered(lambda a: not a.payment_method_id):
             if agreement.billing_mode == 'reimbursement':
                 raise UserError(_('Un convenio por reembolso no se cobra en la caja.'))
@@ -122,7 +122,6 @@ class PharmacyInsuranceAgreement(models.Model):
                 'company_id': agreement.company_id.id,
                 'type': 'pay_later',  # Odoo 20: el tipo es obligatorio
                 'journal_id': False,
-                'split_transactions': False,
                 'receivable_account_id': receivable.id,
             })
         return True

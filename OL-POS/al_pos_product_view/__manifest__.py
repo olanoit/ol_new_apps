@@ -55,6 +55,7 @@ sin dependencias externas.
     # models/product_template.py usa `qty_available` directamente.
     'depends': [
         'point_of_sale',
+        'pos_stock',
         'stock',
     ],
     'data': [

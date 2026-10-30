@@ -1,9 +1,8 @@
 /** @odoo-module **/
 
-import { Component, onMounted, proxy, t, useProps } from "@odoo/owl";
+import { Component, signal, onMounted, proxy, t, useProps } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
-import { useRef } from "@web/owl2/utils";
 
 const AVATAR_COLORS = [
     "#4A90E2", "#7B68EE", "#50C878", "#FF7043",
@@ -30,8 +29,8 @@ export class SelectionPopupCustom extends Component {
             filteredList: this.props.list,
             defaultId: this.props.defaultId,
         });
-        this.inputRef = useRef("input");
-        onMounted(() => this.inputRef.el?.focus());
+        this.inputRef = signal.ref();
+        onMounted(() => this.inputRef()?.focus());
     }
 
     get allowDefault() {

@@ -12,7 +12,6 @@ del paciente es el resto. Los dos comprobantes usan esos montos tal cual, así
 suman exactamente la venta."""
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-from odoo.fields import Command
 
 
 class PosPaymentMethod(models.Model):
@@ -110,17 +109,25 @@ class PosOrderLine(models.Model):
         return bool(patient) and self.order_id.currency_id.is_zero(
             patient['base'] + sum(patient['taxes'].values()))
 
-    def _prepare_base_line_for_taxes_computation(self):
+    def _prepare_base_lines_for_taxes_computation(self):
         """En el comprobante del paciente y en la venta del cierre de caja, la
         línea va solo por la parte del paciente, con su base e impuestos
         exactos (montos manuales del motor de impuestos)."""
-        base_line = super()._prepare_base_line_for_taxes_computation()
-        context = self.env.context
-        if not (context.get('invoicing') or context.get('linked_to_pos')):
-            return base_line
+        base_lines = super()._prepare_base_lines_for_taxes_computation()
+        # Odoo 20: el comprobante y el cierre de caja arman sus líneas con
+        # pos.order._prepare_account_move_line_data, que marca el contexto.
+        if not self.env.context.get('pharmacy_patient_part'):
+            return base_lines
+        for base_line in base_lines:
+            base_line['record']._pharmacy_patient_base_line(base_line)
+        return base_lines
+
+    def _pharmacy_patient_base_line(self, base_line):
+        """Deja ``base_line`` (de esta línea) solo por la parte del paciente."""
+        self.ensure_one()
         patient = self._pharmacy_patient_amounts()
         if not patient:
-            return base_line
+            return
         full = patient['full']
         price_included = any(tax.price_include for tax in self.tax_ids_after_fiscal_position)
         if price_included:
@@ -145,7 +152,6 @@ class PosOrderLine(models.Model):
                 'tax_amount': company_currency.round(sign * amount / rate),
             } for tax_id, amount in patient['taxes'].items()
         }
-        return base_line
 
 
 class PosOrder(models.Model):
@@ -255,86 +261,37 @@ class PosOrder(models.Model):
         self.ensure_one()
         return self.pharmacy_prescription_number or self.pharmacy_prescription_id
 
-    @api.model
-    def _get_invoice_lines_values(self, line_values, pos_line, move_type):
-        """Los montos manuales del paciente siguen valiendo si otro módulo
-        cambia el precio y la cantidad de la línea (presentaciones)."""
-        values = super()._get_invoice_lines_values(line_values, pos_line, move_type)
-        extra = values.get('extra_tax_data')
-        if extra and extra.get('manual_tax_amounts') and 'price_unit' in values:
-            extra.update({'price_unit': values['price_unit'], 'quantity': values['quantity'],
-                          'discount': values.get('discount', 0.0)})
-        return values
-
-    def _create_invoice(self, move_vals):
-        """El redondeo de efectivo de Odoo iguala el comprobante a lo cobrado
-        en caja, y eso incluye lo cobrado con el convenio, que no está en el
-        comprobante del paciente: se descuenta del ajuste para redondear solo
-        su parte."""
-        invoice = super()._create_invoice(move_vals)
-        covered = sum(self.payment_ids.filtered(
-            'payment_method_id.pharmacy_insurance_agreement_id').mapped('amount'))
-        if (self.currency_id.is_zero(covered) or not self.config_id.cash_rounding
-                or not invoice.invoice_cash_rounding_id):
-            return invoice
-        rounding_line = invoice.line_ids.filtered(
-            lambda line: line.display_type == 'rounding' and not line.tax_line_id)
-        terms_line = invoice.line_ids.filtered(lambda line: line.display_type == 'payment_term')\
-            .sorted(lambda line: -abs(line.amount_currency))[:1]
-        if not rounding_line or not terms_line:
-            return invoice
-        amount_sign = -1 if sum(self.mapped('amount_total')) < 0.0 else 1
-        difference_currency = -invoice.direction_sign * amount_sign * covered
-        rate = invoice.invoice_currency_rate
-        difference_balance = invoice.company_currency_id.round(difference_currency / rate) if rate else 0.0
-        rounding_amount = rounding_line.amount_currency + difference_currency
-        if self.currency_id.is_zero(rounding_amount):
-            rounding_command = Command.delete(rounding_line.id)
-        else:
-            cash_rounding = invoice.invoice_cash_rounding_id
-            rounding_command = Command.update(rounding_line.id, {
-                'amount_currency': rounding_amount,
-                'balance': rounding_line.balance + difference_balance,
-                'account_id': (cash_rounding.loss_account_id if rounding_amount > 0.0
-                               else cash_rounding.profit_account_id).id,
-            })
-        with self.env['account.move']._check_balanced({'records': invoice}):
-            invoice.with_context(skip_invoice_sync=True).line_ids = [
-                rounding_command,
-                Command.update(terms_line.id, {
-                    'amount_currency': terms_line.amount_currency - difference_currency,
-                    'balance': terms_line.balance - difference_balance,
-                }),
-            ]
-        return invoice
-
-    def _prepare_invoice_lines(self, move_type):
+    def _prepare_account_move_line_data_from_base_line(self, base_lines):
         """El comprobante del paciente no lleva las líneas que el convenio
-        cubre por completo (irían a precio cero, como si fueran gratuitas)."""
-        lines = super()._prepare_invoice_lines(move_type)
-        covered_products = {line.product_id.id for line in self.lines
-                            if line._pharmacy_is_fully_covered()}
-        if not covered_products:
-            return lines
-        return [command for command in lines
-                if not (command[2].get('product_id') in covered_products
-                        and not command[2].get('price_unit'))]
-
-
-class PosSession(models.Model):
-    _inherit = 'pos.session'
-
-    def _accumulate_amounts(self, data):
-        """La parte cubierta no es cuenta por cobrar de la caja: su venta y su
-        cobro van en la factura a la aseguradora. Como la venta del cierre ya
-        va solo por la parte del paciente, el asiento cuadra."""
-        data = super()._accumulate_amounts(data)
-        for key in ('combine_receivables_pay_later', 'split_receivables_pay_later'):
-            receivables = data.get(key)
-            if not receivables:
-                continue
-            for record in list(receivables):
-                method = record if record._name == 'pos.payment.method' else record.payment_method_id
-                if method.pharmacy_insurance_agreement_id:
-                    del receivables[record]
+        cubre por completo (irían a precio cero, como si fueran gratuitas).
+        Los montos manuales del paciente siguen valiendo si otro módulo
+        cambia el precio y la cantidad de la línea (presentaciones)."""
+        data = [
+            item for item in super()._prepare_account_move_line_data_from_base_line(base_lines)
+            if not (item['account.move.line'].get('display_type') == 'product'
+                    and item['metadata'].get('line')
+                    and item['metadata']['line']._pharmacy_is_fully_covered())
+        ]
+        for item in data:
+            values = item['account.move.line']
+            extra = values.get('extra_tax_data')
+            if extra and extra.get('manual_tax_amounts') and 'price_unit' in values:
+                extra.update({'price_unit': values['price_unit'], 'quantity': values['quantity'],
+                              'discount': values.get('discount', 0.0)})
         return data
+
+    def _prepare_account_move_line_data(self, aggregate=True):
+        """El comprobante del paciente y la venta del cierre de caja van solo
+        por la parte del paciente (ver _prepare_base_line_for_taxes_computation
+        de la línea)."""
+        return super(PosOrder, self.with_context(pharmacy_patient_part=True))\
+            ._prepare_account_move_line_data(aggregate)
+
+    def _prepare_account_move_line_data_for_payments(self, partner=None):
+        """Lo cobrado con el convenio no va en el comprobante del paciente: se
+        factura a la aseguradora en la liquidación. Sin esos pagos la factura
+        cuadra con la parte del paciente y el redondeo de efectivo de Odoo
+        redondea solo esa parte."""
+        payments = super()._prepare_account_move_line_data_for_payments(partner)
+        return [payment for payment in payments
+                if not payment['metadata']['payment_method_id'].pharmacy_insurance_agreement_id]

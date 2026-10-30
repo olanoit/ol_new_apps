@@ -10,7 +10,8 @@ Asientos:
 * Caja: la venta (boleta o factura del paciente, o el cierre de caja si no
   pidió comprobante) va solo por la parte del paciente, con su IGV, y se
   cobra con sus medios de pago. El método «Convenio» (cuenta de cliente) no
-  deja cuenta por cobrar en la caja (``pos.session._accumulate_amounts``):
+  deja cuenta por cobrar en la caja
+  (``pos.order._prepare_account_move_line_data_for_payments``):
   la parte cubierta no está en la contabilidad de la caja.
 * Liquidación: la factura de cliente a la aseguradora, una línea por
   producto vendido con su parte cubierta e impuestos. Es el ingreso y la
@@ -103,8 +104,8 @@ class PharmacyInsuranceLiquidation(models.Model):
         parts = [line.product_id.display_name, order.pos_reference or order.name]
         if order.account_move:
             parts.append(_('Comprobante %s', order.account_move.name))
-        if patient.vat:
-            parts.append(_('DNI %s', patient.vat))
+        if patient and (document := patient._pharmacy_identification_number()):
+            parts.append(_('DNI %s', document))
         parts.append(_('Paciente %s', patient.name))
         parts.append(_('Afiliado %s', order.pharmacy_insurance_affiliate_id.number))
         if order.pharmacy_prescription_number:

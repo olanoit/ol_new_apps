@@ -8,6 +8,7 @@
 """
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import BinaryBytes
 
 REVIEW_STATES = [
     ('none', 'No requiere'),
@@ -89,22 +90,26 @@ class SaleOrder(models.Model):
                         'receta especial.', product.display_name)
         return super()._verify_updated_quantity(order_line, product_id, new_qty, uom_id, **kwargs)
 
-    def _check_cart_is_ready_to_be_paid(self):
+    def _is_cart_ready_for_payment(self):
+        # Odoo 20: el carrito no lanza error; avisa al cliente y bloquea el paso.
         controlled = self.order_line.product_id.filtered(_is_controlled)
         if self.website_id and controlled:
-            raise ValidationError(_(
+            self._add_blocking_alert(_(
                 'Los medicamentos controlados no se venden en línea: %s.',
                 ', '.join(controlled.mapped('display_name'))))
+            return False
         if self.pharmacy_prescription_required and not self.pharmacy_prescription_uploaded:
-            raise ValidationError(_('Suba la receta médica antes de pagar.'))
-        super()._check_cart_is_ready_to_be_paid()
+            self._add_blocking_alert(_('Suba la receta médica antes de pagar.'))
+            return False
+        return super()._is_cart_ready_for_payment()
 
     def _pharmacy_save_prescription(self, content, filename):
-        """Guarda la receta que sube el cliente (contenido en base64) y la
+        """Guarda la receta que sube el cliente (contenido binario) y la
         deja por validar."""
         self.ensure_one()
         self.write({
-            'pharmacy_prescription_file': content,
+            # Odoo 20: los campos Binary se escriben con BinaryBytes.
+            'pharmacy_prescription_file': BinaryBytes(content),
             'pharmacy_prescription_filename': filename,
             'pharmacy_prescription_uploaded': True,
             'pharmacy_review_decision': False,

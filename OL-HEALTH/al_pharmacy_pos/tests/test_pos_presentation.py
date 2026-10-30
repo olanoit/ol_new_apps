@@ -35,6 +35,13 @@ class TestPosPresentation(TestPoSCommon):
             'amount_tax': 0, 'amount_total': total, 'amount_paid': 0, 'amount_return': 0,
         })
 
+    def _invoice(self, order):
+        # Odoo 20 quitó pos.order._create_invoice: la factura se crea dentro de
+        # _generate_pos_order_invoice con este mismo contexto.
+        vals = order._prepare_invoice_vals()
+        return self.env['account.move'].with_context(
+            default_move_type=vals['move_type'], linked_to_pos=True).create(vals)
+
     def test_line_keeps_exact_unit_price(self):
         self.open_new_session()
         order = self._order(7, self.blister)
@@ -45,7 +52,7 @@ class TestPosPresentation(TestPoSCommon):
         """1 blíster de 7 a S/ 1,00 se factura como 1 x 1,00, no 7 x 0,14."""
         self.open_new_session()
         order = self._order(14, self.blister)
-        invoice = order._create_invoice(order._prepare_invoice_vals())
+        invoice = self._invoice(order)
         line = invoice.invoice_line_ids.filtered('product_id')
         self.assertEqual(line.quantity, 2)
         self.assertEqual(line.product_uom_id, self.blister.uom_id)
@@ -57,7 +64,7 @@ class TestPosPresentation(TestPoSCommon):
         de blísteres, la factura queda en unidades."""
         self.open_new_session()
         order = self._order(3, self.blister)
-        invoice = order._create_invoice(order._prepare_invoice_vals())
+        invoice = self._invoice(order)
         line = invoice.invoice_line_ids.filtered('product_id')
         self.assertEqual(line.quantity, 3)
         self.assertEqual(line.product_uom_id, self.product.uom_id)

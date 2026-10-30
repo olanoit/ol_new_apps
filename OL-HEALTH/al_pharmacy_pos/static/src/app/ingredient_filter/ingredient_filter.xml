@@ -14,7 +14,7 @@
             <div class="alph-ingredient-search position-relative">
                 <input type="text" class="form-control form-control-sm"
                        placeholder="Filtrar por principio activo…"
-                       t-custom-model="this.state.query"
+                       t-model.proxy="this.state.query"
                        t-on-focus="() => this.state.open = true"
                        t-on-blur="() => this.state.open = false"
                        t-on-keydown="this.onKeydown"/>

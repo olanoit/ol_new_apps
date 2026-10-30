@@ -28,7 +28,8 @@ class PharmacyDestruction(models.Model):
                          help='Por ejemplo, entrega a una empresa operadora de residuos sólidos.')
     witness = fields.Char(string='Testigos o autoridad presente')
     line_ids = fields.One2many('pharmacy.destruction.line', 'destruction_id', string='Productos')
-    scrap_ids = fields.One2many('stock.scrap', 'pharmacy_destruction_id', string='Bajas')
+    # Odoo 20: la baja es un movimiento de stock (is_scrap), sin stock.scrap.
+    scrap_ids = fields.One2many('stock.move', 'pharmacy_destruction_id', string='Bajas')
     state = fields.Selection([('draft', 'Borrador'), ('done', 'Validada')], default='draft',
                              string='Estado', tracking=True)
     company_id = fields.Many2one('res.company', string='Compañía', required=True, readonly=True,
@@ -48,17 +49,21 @@ class PharmacyDestruction(models.Model):
             if not destruction.line_ids:
                 raise UserError(self.env._('El acta %s no tiene productos.', destruction.name))
             for line in destruction.line_ids:
-                scrap = self.env['stock.scrap'].create({
+                scrap = self.env['stock.move'].with_context(pharmacy_any_lot_state=True).create({
+                    'is_scrap': True,
                     'product_id': line.product_id.id,
-                    'product_uom_id': line.product_id.uom_id.id,
-                    'lot_id': line.lot_id.id,
-                    'scrap_qty': line.quantity,
+                    'uom_id': line.product_id.uom_id.id,
+                    'quantity': line.quantity,
                     'location_id': line.location_id.id,
+                    'location_dest_id': destruction.company_id.scrap_location_id.id,
                     'origin': destruction.name,
                     'company_id': destruction.company_id.id,
                     'pharmacy_destruction_id': destruction.id,
                 })
-                scrap.with_context(pharmacy_any_lot_state=True).action_validate()
+                if line.lot_id:
+                    scrap.lot_ids = line.lot_id
+                # Lote vencido o bloqueado: la baja se hace igual (es su destino).
+                scrap.with_context(pharmacy_any_lot_state=True)._action_scrap()
             destruction.state = 'done'
 
 
@@ -82,8 +87,8 @@ class PharmacyDestructionLine(models.Model):
     reason = fields.Selection(REASONS, string='Motivo', required=True, default='expired')
 
 
-class StockScrap(models.Model):
-    _inherit = 'stock.scrap'
+class StockMove(models.Model):
+    _inherit = 'stock.move'
 
     pharmacy_destruction_id = fields.Many2one('pharmacy.destruction', string='Acta de baja',
                                               readonly=True, index='btree_not_null',

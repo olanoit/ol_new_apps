@@ -8,11 +8,10 @@
  * datos, prompt y validación está en el servidor (`al.gantt.ai`); aquí solo hay
  * conversación y revisión de propuestas.
  */
-import { Component, onPatched, proxy, t, usePlugin, useProps } from "@odoo/owl";
+import { Component, signal, onPatched, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { useRef } from "@web/owl2/utils";
 
 export class GanttAiPanel extends Component {
     static template = "al_project_gantt_ai.GanttAiPanel";
@@ -28,8 +27,8 @@ export class GanttAiPanel extends Component {
     setup() {
         this.orm = useService("orm");
         this.notification = usePlugin(NotificationPlugin);
-        this.scrollRef = useRef("scroll");
-        this.inputRef = useRef("input");
+        this.scrollRef = signal.ref();
+        this.inputRef = signal.ref();
 
         this.state = proxy({
             messages: [],
@@ -39,8 +38,8 @@ export class GanttAiPanel extends Component {
 
         // Al llegar una respuesta el panel debe quedar abajo del todo.
         onPatched(() => {
-            if (this.pendingScroll && this.scrollRef.el) {
-                this.scrollRef.el.scrollTop = this.scrollRef.el.scrollHeight;
+            if (this.pendingScroll && this.scrollRef()) {
+                this.scrollRef().scrollTop = this.scrollRef().scrollHeight;
                 this.pendingScroll = false;
             }
         });
@@ -73,7 +72,7 @@ export class GanttAiPanel extends Component {
 
     useSuggestion(text) {
         this.state.input = text;
-        this.inputRef.el?.focus();
+        this.inputRef()?.focus();
     }
 
     /**

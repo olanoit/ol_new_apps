@@ -11,23 +11,23 @@
                 <div class="row g-2">
                     <div class="col-6">
                         <label class="form-label" for="rx_number">N.º de receta</label>
-                        <input id="rx_number" class="form-control" t-custom-model="this.state.number"/>
+                        <input id="rx_number" class="form-control" t-model.proxy="this.state.number"/>
                     </div>
                     <div class="col-6">
                         <label class="form-label" for="rx_date">Fecha</label>
-                        <input id="rx_date" type="date" class="form-control" t-custom-model="this.state.date"/>
+                        <input id="rx_date" type="date" class="form-control" t-model.proxy="this.state.date"/>
                     </div>
                     <div class="col-8">
                         <label class="form-label" for="rx_prescriber">Prescriptor</label>
-                        <input id="rx_prescriber" class="form-control" t-custom-model="this.state.prescriberName"/>
+                        <input id="rx_prescriber" class="form-control" t-model.proxy="this.state.prescriberName"/>
                     </div>
                     <div class="col-4">
                         <label class="form-label" for="rx_license">Colegiatura</label>
-                        <input id="rx_license" class="form-control" t-custom-model="this.state.license"/>
+                        <input id="rx_license" class="form-control" t-model.proxy="this.state.license"/>
                     </div>
                     <div class="col-12" t-if="this.props.needsPatient">
                         <label class="form-label" for="rx_patient">Paciente</label>
-                        <input id="rx_patient" class="form-control" t-custom-model="this.state.patientName"/>
+                        <input id="rx_patient" class="form-control" t-model.proxy="this.state.patientName"/>
                     </div>
                 </div>
             </div>

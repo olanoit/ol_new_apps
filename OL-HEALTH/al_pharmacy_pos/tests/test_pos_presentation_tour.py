@@ -39,8 +39,8 @@ class TestPosPresentationTour(TestPointOfSaleHttpCommon):
             'product_tmpl_id': product.id, 'name': 'Blíster', 'factor': 7, 'price': 1.00})
         agreement = self.env['product.pricelist'].create({
             'name': 'Convenio 10%', 'currency_id': self.main_pos_config.currency_id.id,
-            'item_ids': [(0, 0, {'compute_price': 'percentage', 'applied_on': '3_global',
-                                 'percent_price': 10})],
+            'item_ids': [(0, 0, {'compute_price': 'discount', 'applied_on': '3_global',
+                                 'price_discount': 10})],
         })
         self.main_pos_config.write({'available_pricelist_ids': [(4, agreement.id)]})
         self.main_pos_config.with_user(self.pos_user).open_ui()

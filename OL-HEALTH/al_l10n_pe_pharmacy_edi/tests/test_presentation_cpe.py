@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-from unittest.mock import patch
-
 from freezegun import freeze_time
 
-from odoo.addons.l10n_pe_edi.tests.common import (
-    TestPeEdiCommon,
-    mocked_l10n_pe_edi_post_invoice_web_service,
-)
+from odoo.addons.l10n_pe_edi.tests.common import TestPeEdiCommon
 from odoo.tests import tagged
 
 
@@ -20,11 +15,8 @@ class TestPresentationCpe(TestPeEdiCommon):
             'product_tmpl_id': self.product.product_tmpl_id.id,
             'name': 'Caja', 'factor': 100, 'price': 12.0,
         })
-        with freeze_time(self.frozen_today), \
-                patch('odoo.addons.l10n_pe_edi.models.account_edi_format.AccountEdiFormat.'
-                      '_l10n_pe_edi_post_invoice_web_service',
-                      new=mocked_l10n_pe_edi_post_invoice_web_service):
-            move = self._create_invoice(invoice_line_ids=[(0, 0, {
+        with freeze_time(self.frozen_today):
+            move = self._create_invoice_pe(invoice_line_ids=[(0, 0, {
                 'product_id': self.product.id,
                 'product_uom_id': box.uom_id.id,
                 'price_unit': 12.0,
@@ -32,8 +24,9 @@ class TestPresentationCpe(TestPeEdiCommon):
                 'tax_ids': [(6, 0, self.tax_18.ids)],
             })])
             move.action_post()
-            generated_files = self._process_documents_web_services(move, {'pe_ubl_2_1'})
-        edi_xml = self.edi_format._l10n_pe_edi_unzip_edi_document(generated_files[0])
+            # Odoo 20: el XML lo arma la factura (sin account.edi.format).
+            edi_xml, errors = move._l10n_pe_edi_generate_invoice_bstr()
+        self.assertFalse(errors)
         tree = self.get_xml_tree_from_string(edi_xml)
         quantity = tree.find('.//{*}InvoiceLine/{*}InvoicedQuantity')
         self.assertEqual(quantity.get('unitCode'), 'BX')

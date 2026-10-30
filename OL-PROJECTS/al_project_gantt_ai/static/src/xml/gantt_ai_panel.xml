@@ -22,7 +22,7 @@
                 </button>
             </header>
 
-            <div class="algantt-ai-scroll flex-grow-1 p-2" t-custom-ref="scroll">
+            <div class="algantt-ai-scroll flex-grow-1 p-2" t-ref="this.scrollRef">
 
                 <div class="algantt-ai-intro text-muted small" t-if="!this.state.messages.length">
                     <p class="mb-2">
@@ -115,7 +115,7 @@
 
             <footer class="algantt-ai-footer border-top p-2">
                 <textarea class="form-control form-control-sm" rows="2"
-                          t-custom-ref="input"
+                          t-ref="this.inputRef"
                           placeholder="Pregunte algo sobre este cronograma…"
                           t-att-value="this.state.input"
                           t-att-disabled="this.state.loading"

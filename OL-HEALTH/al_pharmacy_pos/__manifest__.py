@@ -58,7 +58,7 @@ Cumplimiento (DS 020-2024-SA):
     'version': '10.20261027',
     'license': 'OPL-1',
     'depends': ['al_pharmacy_base', 'al_pharmacy_stock', 'al_pharmacy_prescription',
-                'point_of_sale', 'pos_hr'],
+                'point_of_sale', 'pos_stock', 'pos_hr'],
     'data': ['report/pos_fraction_label.xml', 'views/res_config_settings_views.xml'],
     'assets': {
         'point_of_sale._assets_pos': [

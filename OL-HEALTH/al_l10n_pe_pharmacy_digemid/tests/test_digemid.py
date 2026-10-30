@@ -105,6 +105,7 @@ class TestDigemid(TransactionCase):
             self.skipTest('La compañía de la prueba no tiene el plan contable peruano.')
         with Form(self.env['product.template']) as form:
             form.name = 'Imatinib 400 mg tableta'
+            form.pharmacy_ok = True
             form.pharmacy_igv_regime = 'oncology_hiv'
             self.assertEqual(form.taxes_id[:], tax)
 

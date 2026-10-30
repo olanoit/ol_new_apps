@@ -222,5 +222,5 @@ class PosOrder(models.Model):
             prescription._dispense(line.product_id, line.qty, lot=lot, source=self.name,
                                    pharmacist=pharmacist,
                                    purchaser_name=self.partner_id.name or self.pharmacy_patient_name,
-                                   purchaser_vat=self.partner_id.vat)
+                                   purchaser_vat=self.partner_id._pharmacy_identification_number() if self.partner_id else False)
         return prescription

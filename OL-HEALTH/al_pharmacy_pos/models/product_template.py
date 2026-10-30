@@ -16,10 +16,12 @@ class PharmacyIngredient(models.Model):
 
     @api.model
     def _load_pos_data_domain(self, data):
-        # Odoo 20: sin argumento config; la configuración va en data['pos.config'].
-        config = data['pos.config']
-        # Solo los que llevan los productos cargados (dominio sobre esos productos).
-        ingredient_ids = {ingredient_id for template in data['product.template']
+        # Solo los que llevan los productos cargados (Odoo 20: data trae
+        # recordsets; load_product_from_pos pasa los productos leídos).
+        templates = data['product.template']
+        if isinstance(templates, models.BaseModel):
+            return [('id', 'in', templates.pharmacy_ingredient_ids.ids)]
+        ingredient_ids = {ingredient_id for template in templates
                           for ingredient_id in template.get('pharmacy_ingredient_ids') or []}
         return [('id', 'in', list(ingredient_ids))]
 
@@ -40,19 +42,19 @@ class ProductTemplate(models.Model):
         for template in self:
             template.pharmacy_ingredient_ids = template.pharmacy_ingredient_line_ids.ingredient_id
 
-    @api.model
-    def _load_pos_data_search_read(self, data, config):
+    def _load_pos_metadata(self, data, search_params={}):
         """Como los productos opcionales del TPV: los bioequivalentes vinculados
         se cargan aunque no entren en el límite de productos, para ofrecerlos
-        y cambiarlos en el pedido sin ir al servidor."""
-        result = super()._load_pos_data_search_read(data, config)
-        loaded = {template['id'] for template in result}
-        missing = {template_id for template in result
-                   for template_id in template.get('pharmacy_bioequivalent_ids') or []} - loaded
+        y cambiarlos en el pedido sin ir al servidor (Odoo 20: los registros
+        se arman en _load_pos_metadata)."""
+        data = super()._load_pos_metadata(data, search_params)
+        result = data['product.template']
+        templates = result['records']
+        missing = templates.pharmacy_bioequivalent_ids - templates
         if missing:
-            domain = Domain(self._load_pos_data_domain(data, config)) & Domain('id', 'in', list(missing))
-            result += self._load_pos_data_read(self._load_product_with_domain(domain), config)
-        return result
+            domain = Domain(result['domain']) & Domain('id', 'in', missing.ids)
+            result['records'] = templates | self._load_product_with_domain(domain)._filtered_access('read')
+        return data
 
     @api.model
     def load_product_from_pos(self, config_id, domain, offset=0, limit=0):
@@ -66,7 +68,7 @@ class ProductTemplate(models.Model):
             presentations = Presentation.search([('product_tmpl_id', 'in', [t['id'] for t in templates])])
             result['pharmacy.presentation'] = Presentation._load_pos_data_read(presentations, config)
             Ingredient = self.env['pharmacy.ingredient']
-            ingredients = Ingredient.search(Ingredient._load_pos_data_domain({'product.template': templates}, config))
+            ingredients = Ingredient.search(Ingredient._load_pos_data_domain({'product.template': templates}))
             result['pharmacy.ingredient'] = Ingredient._load_pos_data_read(ingredients, config)
         return result
 

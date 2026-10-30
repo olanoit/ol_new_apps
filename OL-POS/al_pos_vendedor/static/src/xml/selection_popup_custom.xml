@@ -13,8 +13,8 @@
                            type="text"
                            placeholder="Buscar..."
                            autocomplete="off"
-                           t-custom-model="this.state.inputValue"
-                           t-ref="input"
+                           t-model.proxy="this.state.inputValue"
+                           t-ref="this.inputRef"
                            t-on-input="this.searchLabel"/>
                     <button t-if="this.state.inputValue"
                             class="alv-search-clear"
