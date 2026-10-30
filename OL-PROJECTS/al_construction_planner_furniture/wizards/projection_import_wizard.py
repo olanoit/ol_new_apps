@@ -109,7 +109,7 @@ class ConstructionProjectionImportWizard(models.TransientModel):
         for code in codes:
             found[code] = Product.search([('default_code', '=', code),
                                           ('company_id', 'in', (company.id, False))], limit=1)
-        products = Product.union(*[p for p in found.values() if p])
+        products = Product.union([p for p in found.values() if p])
         missing = [code for code, product in found.items() if not product]
         if not products:
             return Product, 'unknown', self.env._('No existe en Odoo: %s.', ', '.join(missing))

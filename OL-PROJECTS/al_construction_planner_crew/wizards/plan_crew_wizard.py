@@ -115,7 +115,7 @@ class ConstructionPlanCrewWizard(models.TransientModel):
             # sudo: el empleado del recurso es de RR. HH.; solo se mira si
             # existe para avisar.
             resources_sudo = self.env['resource.resource'].union(
-                *(resource for resource, _role in members)).sudo()
+                resource for resource, _role in members).sudo()
             no_employee = resources_sudo.filtered(lambda r: not r.employee_id).sudo(False)
             if no_employee:
                 notes.append(self.env._(

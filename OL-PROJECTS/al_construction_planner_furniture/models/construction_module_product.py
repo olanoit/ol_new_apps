@@ -295,7 +295,7 @@ class ConstructionResourcePlan(models.Model):
             'location_dest_id': dest.id, 'origin': self.display_name,
             'construction_project_id': self.project_id.id, 'move_ids': moves,
         })
-        modules.filtered(lambda t: t in Task.union(*groups.values())).sudo().write(
+        modules.filtered(lambda t: t in Task.union(groups.values())).sudo().write(
             {'construction_shipment_picking_id': picking.id})
         return picking
 

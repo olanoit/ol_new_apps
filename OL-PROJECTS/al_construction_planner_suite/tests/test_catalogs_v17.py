@@ -131,7 +131,7 @@ class TestResourceTypeCatalog(PlannerCommon):
         self._line(resource_type='equipment', product_id=self.crane.id, qty_planned=2,
                    price_unit_planned=20.0)
         data = self.plan._get_control_data()
-        types = self.env['construction.resource.type'].union(*(rtype for _stage, rtype in data))
+        types = self.env['construction.resource.type'].union((rtype for _stage, rtype in data))
         self.assertEqual(types, self.labor_contract | self.env.ref(REF + 'resource_type_material')
                          | self.env.ref(REF + 'resource_type_labor')
                          | self.env.ref(REF + 'resource_type_equipment'))

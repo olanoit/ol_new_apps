@@ -116,7 +116,10 @@ class TestProfiles(TransactionCase):
         sin compañía también, sin cambiar de árbol."""
         Company = self.env['res.company'].with_context(active_test=False)
         legacy = Company.create({'name': 'Única antigua (test)'})
-        Company.search([('id', '!=', legacy.id)]).construction_profile_id = self.furniture
+        # Compañías antiguas: perfil Mobiliario y árbol clásico (sin plantilla;
+        # la base puede tener ya una elegida, p. ej. «Edificio»).
+        Company.search([('id', '!=', legacy.id)]).write({
+            'construction_profile_id': self.furniture.id, 'construction_level_template_id': False})
         Project = self.env['project.project']
         Project.with_company(legacy).create(
             {'name': 'Obra antigua (test)', 'is_construction_site': True, 'company_id': legacy.id})

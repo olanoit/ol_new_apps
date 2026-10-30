@@ -308,7 +308,7 @@ class ConstructionContractSettlement(models.Model):
             # se valorizan todavía (3.9).
             if po_line.order_id == order and not po_line.construction_additional_pending:
                 groups[(po_line, progress.is_rework, progress.rework_reason or False)] |= progress
-        included = Progress.sudo().union(*groups.values()) if groups else Progress.sudo()
+        included = Progress.sudo().union(groups.values()) if groups else Progress.sudo()
         settlement_sudo = self.sudo()
         (settlement_sudo.progress_ids - included).write({'settlement_id': False})
         included.write({'settlement_id': self.id})

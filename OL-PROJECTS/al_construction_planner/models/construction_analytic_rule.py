@@ -78,4 +78,4 @@ class ConstructionAnalyticRule(models.Model):
             for field in ('stage_account_id', 'cost_account_id', 'area_account_id'):
                 if field not in picked and rule[field]:
                     picked[field] = rule[field]
-        return Account.union(*picked.values()) if picked else Account
+        return Account.union(picked.values()) if picked else Account

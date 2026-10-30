@@ -210,7 +210,7 @@ class ConstructionExecutionTemplate(models.Model):
                     rows.append({'key': 'l%s' % line.id, 'kind': 'value', 'resource': name,
                                  'field': field, 'work_item': wi_value, 'template': tpl_value})
         for line in self.line_ids.filtered(lambda l: not l.work_item_line_id) + \
-                self.env['construction.execution.template.line'].union(*template_lines.values()):
+                self.env['construction.execution.template.line'].union(template_lines.values()):
             product = line.product_id or line.activity_id.product_id
             rows.append({'key': 'n%s' % line.id, 'kind': 'only_template',
                          'resource': (product or line.activity_id).display_name,

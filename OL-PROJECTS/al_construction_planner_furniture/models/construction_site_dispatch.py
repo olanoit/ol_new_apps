@@ -361,7 +361,7 @@ class StockPicking(models.Model):
         (linked - dispatched).write({'construction_shipment_picking_id': False})
         dispatched.write({'construction_shipment_picking_id': self.id,
                           'construction_unit_state': 'on_site'})
-        all_modules = Task_sudo.union(*modules.values()) if modules else Task_sudo
+        all_modules = Task_sudo.union(modules.values()) if modules else Task_sudo
         pending = all_modules.filtered(
             lambda t: t.construction_unit_state not in ('on_site', 'installed', 'delivered'))
         if pending:

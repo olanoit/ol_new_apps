@@ -172,7 +172,7 @@ class ConstructionWeeklyDelivery(models.Model):
                     'ingresos»).', project.display_name))
             lines_by_partida = project._construction_lines_by_partida(plan)
             all_lines = self.env['construction.resource.plan.line'].union(
-                *lines_by_partida.values())
+                lines_by_partida.values())
             execution = all_lines._construction_valued_execution(delivery.period_end)
             previous = {line.sale_line_id: line for line in delivery._get_previous().line_ids}
             commands = [fields.Command.clear()]

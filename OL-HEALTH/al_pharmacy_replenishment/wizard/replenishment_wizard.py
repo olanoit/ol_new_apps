@@ -128,7 +128,7 @@ class PharmacyReplenishmentWizard(models.TransientModel):
         for product, qty in self._other_deliveries(date_from).items():
             sales[product] += qty
         shortages = self._pending_shortages()
-        products = self.env['product.product'].union(*sales, *shortages)
+        products = self.env['product.product'].union([*sales, *shortages])
         products = products.filtered(lambda p: p.is_storable)
         products_wh = products.with_context(warehouse_id=self.warehouse_id.id)
         values = []

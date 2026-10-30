@@ -159,7 +159,7 @@ class ConstructionValuation(models.Model):
             raise UserError(self.env._('La obra %s no tiene un plan vigente.',
                                        project.display_name))
         lines_by_partida = project._construction_lines_by_partida(plan)
-        all_lines = self.env['construction.resource.plan.line'].union(*lines_by_partida.values())
+        all_lines = self.env['construction.resource.plan.line'].union(lines_by_partida.values())
         execution = all_lines._construction_valued_execution(cutoff)
         outside = self._construction_invoiced_outside(project, cutoff)
         previous = self.env['construction.valuation.line'].search([

@@ -270,7 +270,7 @@ class ConstructionContractSettlement(models.Model):
                     by_po_line[key] |= progress
                 else:
                     orphans |= progress
-            included = Progress.sudo().union(*by_po_line.values()) if by_po_line \
+            included = Progress.sudo().union(by_po_line.values()) if by_po_line \
                 else Progress.sudo()
             settlement_sudo = settlement.sudo()
             (settlement_sudo.progress_ids - included).write({'settlement_id': False})
@@ -297,7 +297,7 @@ class ConstructionContractSettlement(models.Model):
                     'qty_repeat': repeat,
                 })
             po_lines = [key[0] for key in by_po_line]
-            orders = Progress.env['purchase.order.line'].union(*po_lines).order_id \
+            orders = Progress.env['purchase.order.line'].union(po_lines).order_id \
                 if po_lines else self.env['purchase.order']
             settlement._construction_refresh_discounts()
             settlement._sync_lines(vals_list)
