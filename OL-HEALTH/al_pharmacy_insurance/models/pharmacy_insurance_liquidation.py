@@ -49,7 +49,7 @@ class PharmacyInsuranceLiquidation(models.Model):
     date_to = fields.Date(string='Hasta', required=True)
     order_ids = fields.One2many('pos.order', 'pharmacy_insurance_liquidation_id',
                                 string='Ventas cubiertas')
-    order_count = fields.Integer(compute='_compute_amount')
+    order_count = fields.Integer(compute='_compute_order_count')
     amount_total = fields.Monetary(string='Total a cobrar', currency_field='currency_id',
                                    compute='_compute_amount', store=True)
     invoice_id = fields.Many2one('account.move', string='Factura', readonly=True, copy=False,
@@ -64,10 +64,14 @@ class PharmacyInsuranceLiquidation(models.Model):
                               ('cancel', 'Anulada')], string='Estado', default='draft',
                              required=True, tracking=True, copy=False)
 
+    @api.depends('order_ids')
+    def _compute_order_count(self):
+        for liquidation in self:
+            liquidation.order_count = len(liquidation.order_ids)
+
     @api.depends('order_ids.pharmacy_insurance_amount')
     def _compute_amount(self):
         for liquidation in self:
-            liquidation.order_count = len(liquidation.order_ids)
             liquidation.amount_total = sum(liquidation.order_ids.mapped('pharmacy_insurance_amount'))
 
     @api.model_create_multi
