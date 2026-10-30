@@ -28,11 +28,14 @@ trabajo (XLSX).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_sire/static/description/icon.png',
-    'version': '23.20261027',
+    'version': '25.20261030',
     'license': 'OPL-1',
     'depends': [
         'al_account_base',
         'l10n_pe_edi',
+        # Odoo 20: códigos SUNAT de país, modalidad del servicio y tipo de
+        # renta del RCE nativos.
+        'l10n_pe_reports',
     ],
     'external_dependencies': {
         'python': ['xlsxwriter', 'requests'],

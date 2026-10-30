@@ -5,7 +5,7 @@ from markupsafe import Markup
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
-from .sire_country_codes import SIRE_COUNTRY_CODES
+from .sire_country_codes import SIRE_COUNTRY_CODE_FIXES
 from .sire_rce import RCE_EXCLUDED_DOC_TYPES
 from .sire_rvie import RVIE_EXCLUDED_DOC_TYPES
 
@@ -78,12 +78,6 @@ ND_INCOME_SELECTION = [
     ('41', '41 - Sobrestadía de contenedores'),
     ('42', '42 - Retransmisión por TV de eventos en vivo'),
     ('43', '43 - Extranjeros que ingresan a prestar servicios'),
-]
-#: Tabla 20: modalidad del servicio prestado.
-ND_MODALITY_SELECTION = [
-    ('1', '1 - Íntegramente en el Perú'),
-    ('2', '2 - Parte en el Perú y parte en el extranjero'),
-    ('3', '3 - Exclusivamente en el extranjero'),
 ]
 #: Tabla 21: exoneraciones (art. 19 de la LIR).
 ND_EXEMPTION_SELECTION = [
@@ -172,12 +166,31 @@ class AccountMove(models.Model):
         ND_AGREEMENT_SELECTION, string='Convenio de doble imposición', default='00')
     l10n_pe_sire_nd_exemption = fields.Selection(
         ND_EXEMPTION_SELECTION, string='Exoneración aplicada')
-    l10n_pe_sire_nd_income_type = fields.Selection(ND_INCOME_SELECTION, string='Tipo de renta')
+    # Odoo 20: el tipo de renta es el «tipo de uso» nativo de l10n_pe_reports
+    # (misma tabla SUNAT, mismos códigos 00-43); aquí se muestra con las
+    # etiquetas del registro de no domiciliados.
+    l10n_pe_sire_nd_income_type = fields.Selection(
+        ND_INCOME_SELECTION, string='Tipo de renta',
+        compute='_compute_l10n_pe_sire_nd_income_type',
+        inverse='_inverse_l10n_pe_sire_nd_income_type')
+    # Odoo 20: la modalidad del servicio es la nativa de l10n_pe_reports
+    # (la misma que lee el registro 8.2).
     l10n_pe_sire_nd_service_modality = fields.Selection(
-        ND_MODALITY_SELECTION, string='Modalidad del servicio')
+        related='l10n_pe_service_modality', readonly=False, string='Modalidad del servicio')
     l10n_pe_sire_nd_art76 = fields.Boolean(
         string='Aplica art. 76 LIR',
         help='Aplica el penúltimo párrafo del art. 76 de la LIR.')
+
+    @api.depends('l10n_pe_usage_type_id')
+    def _compute_l10n_pe_sire_nd_income_type(self):
+        for move in self:
+            move.l10n_pe_sire_nd_income_type = move.l10n_pe_usage_type_id.code or False
+
+    def _inverse_l10n_pe_sire_nd_income_type(self):
+        Usage = self.env['l10n_pe.ple.usage']
+        for move in self:
+            code = move.l10n_pe_sire_nd_income_type
+            move.l10n_pe_usage_type_id = code and Usage.search([('code', '=', code)], limit=1)
 
     @api.depends('partner_id.commercial_partner_id.country_id', 'l10n_latam_document_type_id',
                  'move_type')
@@ -319,14 +332,17 @@ class AccountMove(models.Model):
 class ResCountry(models.Model):
     _inherit = 'res.country'
 
+    # Odoo 20: el código de la tabla 16 es el nativo de l10n_pe_reports.
     l10n_pe_sire_country_code = fields.Char(
-        string='Código SUNAT (SIRE)', size=4,
+        string='Código SUNAT (SIRE)', related='l10n_pe_code', readonly=False,
         help='Tabla 16 del anexo 1 de la R.S. 112-2021/SUNAT: país en el registro '
              'de compras de no domiciliados.')
 
     @api.model
     def _l10n_pe_sire_load_country_codes(self):
-        """Asigna el código de la tabla 16 sin pisar el que se haya corregido a mano."""
-        for country in self.search([('code', 'in', list(SIRE_COUNTRY_CODES))]):
-            if not country.l10n_pe_sire_country_code:
-                country.l10n_pe_sire_country_code = SIRE_COUNTRY_CODES[country.code]
+        """Corrige los códigos en que Odoo difiere del anexo oficial (o no los
+        trae), sin pisar los que se hayan corregido a mano."""
+        for country in self.search([('code', 'in', list(SIRE_COUNTRY_CODE_FIXES))]):
+            official, odoo = SIRE_COUNTRY_CODE_FIXES[country.code]
+            if (country.l10n_pe_code or '') == odoo:
+                country.l10n_pe_code = official
