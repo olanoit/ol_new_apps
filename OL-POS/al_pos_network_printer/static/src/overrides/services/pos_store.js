@@ -7,83 +7,6 @@ import { makeAwaitable } from "@point_of_sale/app/utils/make_awaitable_dialog";
 import { AgentAuthorizationDialog } from "@al_pos_network_printer/app/components/agent_authorization_dialog/agent_authorization_dialog";
 
 patch(PosStore.prototype, {
-    async afterProcessServerData() {
-        await super.afterProcessServerData(...arguments);
-        // Basado en la rama que el propio core usa para `EpsonPrinter`
-        // (point_of_sale/static/src/app/services/pos_store.js,
-        // `afterProcessServerData`): si el recibo principal quedó
-        // configurado como impresora ESC/POS genérica de red -en vez de
-        // Epson, algo que `pos.config` impide combinar (ver la constraint
-        // en models/pos_config.py)-, se instancia acá.
-        //
-        // OJO — a propósito NO se exige `this.config.other_devices` acá
-        // (bug real, 2026-09-08, `TPV 1`: el ticket/comprobante se abría en
-        // el navegador en vez de imprimirse en la ESC/POS, aunque
-        // `escpos_printer_ip` estaba correctamente configurado y un
-        // comprobante impreso desde el servidor — sin este gate — sí salía bien
-        // en la misma impresora). `other_devices` es un campo del CORE que
-        // controla si la sección "Impresora de red" es VISIBLE en la
-        // pantalla de Ajustes (ver `res_config_settings_views.xml`,
-        // `invisible="not pos_other_devices"`) — no tiene ningún significado
-        // técnico propio más allá de eso, y nada en el backend
-        // (`print_pdf_bytes`) lo
-        // consulta: ahí la única condición real es `escpos_printer_ip`
-        // truthy. Guardar `pos.config` desde la pantalla de Ajustes general
-        // sin haber marcado ese toggle en esa sesión concreta lo deja en
-        // `False` aunque `escpos_printer_ip` siga con un valor válido (se
-        // había configurado originalmente por `odoo-bin shell`, sin pasar
-        // por esa pantalla) — con el gate viejo, esa combinación (IP
-        // configurada + `other_devices` en `False`) hacía que el ticket
-        // cayera silenciosamente al fallback de navegador. La condición real
-        // que importa es la misma que ya usa el lado Python: si hay IP, hay
-        // impresora.
-        // Además de la IP, el toggle "Impresora ESC/POS de red"
-        // (`escpos_network_printer_enabled`, mismo criterio que
-        // `pos.config._escpos_receipt_printer_active` en Python): apagado,
-        // no se instancia nada y el recibo queda con la impresora que haya
-        // armado el core (Epson / IoT) o el diálogo del navegador — igual
-        // que en el nativo, esté o no cargada la IP. Pedido en vivo
-        // 2026-09-28: antes, apagar el toggle solo ocultaba la sección y
-        // el POS seguía imprimiendo en la impresora de red.
-        if (this.config.escpos_network_printer_enabled && this.config.escpos_printer_ip) {
-            // `escpos_printer_mode` (ver models/pos_config.py) es la única
-            // fuente de verdad de si se usa el agente local — a propósito
-            // NO se infiere de si `escpos_agent_url` tiene algo cargado:
-            // así la URL/token pueden quedar siempre completos en Ajustes y
-            // alternar entre "backend"/"agent" sin perder esa
-            // configuración (pensado para poder probar el agente contra
-            // una instancia local con un solo click). Con "backend" (o
-            // cualquier valor viejo/vacío, instalaciones previas a este
-            // campo) se pasa `agentUrl: undefined` y `EscposNetworkPrinter`
-            // cae directo al `rpc()` de siempre — mismo comportamiento que
-            // antes de que existiera el agente.
-            const useAgent = this.config.escpos_printer_mode === "agent";
-            this.hardwareProxy.printer = new EscposNetworkPrinter({
-                ip: this.config.escpos_printer_ip,
-                port: this.config.escpos_printer_port,
-                // Camino A del agente local (Fase 1, ver
-                // agent/README.md). Solo el recibo
-                // principal por ahora (no las impresoras de preparación de
-                // `createPrinter()`, más abajo).
-                agentUrl: useAgent ? this.config.escpos_agent_url : undefined,
-                agentToken: useAgent ? this.config.escpos_agent_token : undefined,
-            });
-        }
-    },
-
-    createPrinter(config) {
-        // El core (mismo archivo, método `createPrinter`) solo sabe crear
-        // `EpsonPrinter` o `HWPrinter` para las impresoras de preparación
-        // (`pos.printer`). Esta rama agrega el tercer tipo, `escpos_network`.
-        if (config.printer_type === "escpos_network") {
-            return new EscposNetworkPrinter({
-                ip: config.escpos_printer_ip,
-                port: config.escpos_printer_port,
-            });
-        }
-        return super.createPrinter(...arguments);
-    },
-
     // ── Autorización del agente local (Camino A por HTTPS) ─────────────
     //
     // Confirmado en vivo (2026-09-14): con el agente en HTTPS (certificado
@@ -127,8 +50,12 @@ patch(PosStore.prototype, {
         if (!this.config.escpos_require_agent_authorization) {
             return true;
         }
-        const printer = this.hardwareProxy.printer;
-        if (!(printer instanceof EscposNetworkPrinter) || !printer.agentUrl) {
+        // Odoo 20: las instancias viven en las impresoras de recibo del
+        // plugin de impresión (ver pos_ticket_printer_plugin.js).
+        const printer = this.ticketPrinter.receiptPrinters
+            .map((p) => p._instance)
+            .find((instance) => instance instanceof EscposNetworkPrinter && instance.agentUrl);
+        if (!printer) {
             return true;
         }
         // Un agente por http:// (no https) contra un Odoo servido en

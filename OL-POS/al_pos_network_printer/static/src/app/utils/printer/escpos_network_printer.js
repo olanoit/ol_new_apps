@@ -38,10 +38,13 @@ import { rpc } from "@web/core/network/rpc";
  * dos a la vez.
  */
 export class EscposNetworkPrinter extends BasePrinter {
-    setup({ ip, port, agentUrl, agentToken }) {
+    // Odoo 20: toda impresora del TPV es un `pos.printer` (`BasePrinter.setup`
+    // lee `printer.id`, el nombre, el papel…); la IP y el puerto vienen de
+    // sus campos `escpos_printer_ip` / `escpos_printer_port`.
+    setup({ printer, agentUrl, agentToken }) {
         super.setup(...arguments);
-        this.ip = ip;
-        this.port = parseInt(port, 10) || 9100;
+        this.ip = printer.escpos_printer_ip;
+        this.port = parseInt(printer.escpos_printer_port, 10) || 9100;
         // Sin barra final, para poder concatenar "/print" directo sin
         // duplicarla ni dejarla faltando según cómo la haya tipeado el
         // administrador en Ajustes.

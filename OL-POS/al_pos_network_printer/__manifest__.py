@@ -26,7 +26,7 @@ Adaptación a la suite AL de la impresora de red del TPV de Mobilize
     'category': 'OL-POS/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_pos_network_printer/static/description/icon.png',
-    'version': '5.20261027',
+    'version': '6.20261030',
     'license': 'OPL-1',
     # Odoo 19 ya imprime por red sin IoT Box, pero solo en Epson (ePOS-XML:
     # ``pos.config.epson_printer_ip`` y ``printer_type = 'epson_epos'``). Este
@@ -63,11 +63,15 @@ Adaptación a la suite AL de la impresora de red del TPV de Mobilize
             "al_pos_network_printer/static/src/app/components/agent_authorization_dialog/agent_authorization_dialog.js",
             "al_pos_network_printer/static/src/app/components/agent_authorization_dialog/agent_authorization_dialog.xml",
             "al_pos_network_printer/static/src/overrides/services/pos_store.js",
+            "al_pos_network_printer/static/src/overrides/plugins/pos_ticket_printer_plugin.js",
         ],
         # Botón "Probar agente" (widget de vista) en Ajustes/la ficha del
         # PDV — corre en el cliente web de backend, no en el POS, mismo
         # bundle que usa el core para `point_of_sale_test_epos` (ver
         # point_of_sale/__manifest__.py).
+        "web.assets_tests": [
+            "al_pos_network_printer/static/tests/tours/**/*",
+        ],
         "web.assets_backend": [
             "al_pos_network_printer/static/src/backend/test_escpos_agent/*",
         ],

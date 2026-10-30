@@ -1,6 +1,7 @@
 import secrets
 
 from odoo import api, fields, models
+from odoo.fields import Command
 from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.al_pos_network_printer.controllers.main import (
@@ -233,6 +234,53 @@ class PosConfig(models.Model):
              "ahí se ve el error, como antes de que existiera este diálogo.",
     )
 
+    # Odoo 20: el TPV imprime el recibo en las impresoras de recibo de la
+    # caja (``receipt_printer_ids``, ``pos.printer`` con use_type
+    # «receipt»); ya no existe la impresora única del hardware proxy. La
+    # ESC/POS configurada en la caja se refleja en una de esas impresoras.
+    al_escpos_receipt_printer_id = fields.Many2one(
+        "pos.printer", string="Impresora de recibo ESC/POS", readonly=True,
+        copy=False, ondelete="set null")
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        configs = super().create(vals_list)
+        configs._al_sync_escpos_receipt_printer()
+        return configs
+
+    def _al_sync_escpos_receipt_printer(self):
+        """Mantiene la impresora de recibo ``escpos_network`` de cada caja
+        igual a su configuración ESC/POS: activa → enlazada con la IP y el
+        puerto de la caja; inactiva → se elimina."""
+        Printer = self.env["pos.printer"].sudo()
+        for config in self.sudo().with_context(al_escpos_sync=True):
+            printer = config.al_escpos_receipt_printer_id
+            if config._escpos_receipt_printer_active():
+                vals = {
+                    "name": "%s · ESC/POS" % config.name,
+                    "printer_type": "escpos_network",
+                    "use_type": "receipt",
+                    "escpos_printer_ip": config.escpos_printer_ip,
+                    "escpos_printer_port": config.escpos_printer_port or "9100",
+                }
+                if printer:
+                    printer.write(vals)
+                else:
+                    printer = Printer.create(vals)
+                    config.al_escpos_receipt_printer_id = printer
+                if printer not in config.receipt_printer_ids:
+                    config.receipt_printer_ids = [Command.link(printer.id)]
+            elif printer:
+                # Se borra, no solo se desenlaza: su IP seguiría pasando la
+                # lista blanca del controlador (controllers/main.py).
+                printer.unlink()
+
+    def unlink(self):
+        printers = self.sudo().al_escpos_receipt_printer_id
+        res = super().unlink()
+        printers.exists().unlink()
+        return res
+
     def write(self, vals):
         # Si el TPV deja de imprimir en modo "backend" contra un destino
         # (cambia a "agent", o cambia de IP/puerto mientras sigue en
@@ -260,6 +308,10 @@ class PosConfig(models.Model):
             ], limit=1)
             if not still_used:
                 release_connection(host, int(port))
+        if not self.env.context.get("al_escpos_sync") and {
+                "escpos_network_printer_enabled", "escpos_printer_ip",
+                "escpos_printer_port", "name"} & vals.keys():
+            self._al_sync_escpos_receipt_printer()
         return res
 
     def action_test_escpos_printer(self):
@@ -358,8 +410,7 @@ class PosConfig(models.Model):
     @api.constrains("receipt_printer_ids", "escpos_printer_ip", "escpos_network_printer_enabled")
     def _check_single_receipt_printer_backend(self):
         # Si se configuran ambos campos a la vez, el POS igual tendría que
-        # elegir uno solo para el recibo principal (ver la rama nueva en
-        # `afterProcessServerData`, static/src/overrides/services/pos_store.js).
+        # elegir uno solo para el recibo principal.
         # Es más seguro prohibir la ambigüedad de plano que resolverla en
         # silencio con una prioridad implícita que el administrador no vería
         # reflejada en la UI.
