@@ -5,7 +5,7 @@ from datetime import date
 from odoo import Command
 from odoo.exceptions import UserError
 from odoo.tests import tagged
-from odoo.tests.common import TransactionCase
+from odoo.tests.common import HttpCase
 
 from odoo.addons.al_account_base.tests.common import use_pe_company
 from odoo.addons.al_l10n_pe_check_printing.models.check_layout import amount_in_words
@@ -14,7 +14,10 @@ MM = 72 / 25.4  # puntos por milímetro
 
 
 @tagged('post_install', '-at_install')
-class TestCheckPrinting(TransactionCase):
+class TestCheckPrinting(HttpCase):
+    # HttpCase: wkhtmltopdf pide los assets al servidor de pruebas, que así
+    # usa el cursor del test (con TransactionCase la petición se bloquea).
+
 
     @classmethod
     def setUpClass(cls):

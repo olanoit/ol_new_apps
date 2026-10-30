@@ -1,6 +1,11 @@
 Historial de cambios — PE - Datos de la ciudad
 ==============================================
 
+## 20.0
+
+- No instalable: en Odoo 20 `l10n_pe` incluye las provincias (`res.city` con
+  `l10n_pe_code`) y los distritos de Perú; este catálogo los duplicaba.
+
 Módulo de Laxicon Solution (`l10n_pe_city`, LGPL-3), incluido con el nombre
 técnico `al_l10n_pe_city`. Aquí se registran su incorporación a este
 repositorio y los cambios locales sobre la versión original.

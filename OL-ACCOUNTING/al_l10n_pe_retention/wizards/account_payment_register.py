@@ -27,7 +27,7 @@ class AccountPaymentRegister(models.TransientModel):
             lines = wizard.withholding_line_ids.filtered(lambda l: l.tax_id == tax)
             if not (tax and lines and wizard.batches):
                 continue
-            bills = wizard.batches[0]['lines'].move_id.filtered('l10n_pe_retention_eligible')
+            bills = wizard._get_batches()[0]['lines'].move_id.filtered('l10n_pe_retention_eligible')
             total = sum(bill._l10n_pe_retention_base(wizard.payment_date) for bill in bills)
             if total <= wizard.company_id.l10n_pe_retention_min_amount:
                 wizard.withholding_line_ids = wizard.withholding_line_ids - lines
@@ -43,7 +43,7 @@ class AccountPaymentRegister(models.TransientModel):
         company = self.company_id
         if not company.l10n_pe_retention_deduct_credit_notes:
             return
-        partner = self.batches[0]['lines'].move_id.commercial_partner_id[:1]
+        partner = self._get_batches()[0]['lines'].move_id.commercial_partner_id[:1]
         company_currency = company.currency_id
         available = self.currency_id._convert(
             line.amount, company_currency, company, self.payment_date)
@@ -54,14 +54,14 @@ class AccountPaymentRegister(models.TransientModel):
             line.amount = self.currency_id.round(line.amount - company_currency._convert(
                 deducted, self.currency_id, company, self.payment_date))
 
-    @api.depends('withholding_payment_account_id', 'should_withhold_tax')
+    @api.depends('withholding_payment_account_id', 'withhold')
     def _compute_withholding_outstanding_account_id(self):
         """El nativo solo propone la cuenta copiándola del último pago
         similar: en una base nueva queda vacía y el campo es obligatorio.
         Fallback: la cuenta configurada en la compañía."""
         super()._compute_withholding_outstanding_account_id()
         for wizard in self:
-            if (wizard.should_withhold_tax
+            if (wizard.withhold != 'payment'
                     and not wizard.withholding_payment_account_id
                     and not wizard.withholding_outstanding_account_id):
                 wizard.withholding_outstanding_account_id = (

@@ -41,6 +41,15 @@ class L10nLatamCheck(models.Model):
                     date=check.l10n_pe_presentation_deadline.strftime('%d/%m/%Y')))
         return messages
 
+    @api.depends('payment_id.partner_id.l10n_pe_sunat_id_value')
+    def _compute_issuer_vat(self):
+        # Odoo 20: el DNI o carné del emisor está en additional_identifiers,
+        # no en vat; se toma el documento SUNAT del cliente.
+        super()._compute_issuer_vat()
+        for check in self.filtered(lambda c: c.payment_method_line_id.code == 'new_third_party_checks'
+                                   and c.company_id.account_fiscal_country_id.code == 'PE'):
+            check.issuer_vat = check.payment_id.partner_id.l10n_pe_sunat_id_value or check.issuer_vat
+
     @api.constrains('issuer_vat')
     def _check_issuer_vat(self):
         # Perú: el emisor puede ser una persona con DNI o carné de extranjería;

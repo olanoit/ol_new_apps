@@ -84,10 +84,12 @@ class TestPurchaseSettlement(TransactionCase):
     def _xml(self, move):
         return etree.fromstring(move._l10n_pe_lce_generate_xml())
 
+    # Odoo 20: el envío pasa por l10n_pe.edi.cpe.service (al_l10n_pe_edi_service).
+    def _service(self):
+        return type(self.env['l10n_pe.edi.cpe.service'])
+
     def _patched(self, result=SIGNED):
-        edi = type(self.env['account.edi.format'])
-        return patch.object(edi, '_l10n_pe_edi_sign_service_sunat_digiflow_common',
-                            autospec=True, return_value=result)
+        return patch.object(self._service(), '_send_bill', autospec=True, return_value=result)
 
     # ------------------------------------------------------------------
     # Configuración
@@ -224,7 +226,7 @@ class TestPurchaseSettlement(TransactionCase):
         uit = self.company._l10n_pe_lce_uit(date.today().year)
         move = self._settlement(75 * uit + 100.0)
         self.assertIn('75 UIT', move.l10n_pe_lce_seller_warning or '')
-        small = self._settlement(1000.0, partner=self.seller.copy({'vat': '41414141'}))
+        small = self._settlement(1000.0, partner=self.seller.copy({'vat': False, 'additional_identifiers': {'PE_DNI': '41414141'}}))
         self.assertFalse(small.l10n_pe_lce_seller_warning)
 
     # ------------------------------------------------------------------
@@ -301,8 +303,10 @@ class TestPurchaseSettlement(TransactionCase):
         with self._patched() as direct:
             move.action_l10n_pe_lce_send()
         args = direct.call_args.args
-        self.assertEqual(args[-1], '04', 'tipo de documento')
-        self.assertIn('ol-ti-itcpfegem-beta', args[4]['wsdl'], 'servicio de facturas (anexo 6)')
+        self.assertEqual(args[4], '04', 'tipo de documento')
+        # Odoo 20 da el WSDL beta de facturas embebido (BytesIO), no su URL.
+        self.assertEqual(args[5].getvalue(), move._l10n_pe_edi_get_sunat_invoice_wsdl().getvalue(),
+                         'servicio de facturas (anexo 6)')
         self.assertTrue(args[2].endswith('-04-%s' % move._l10n_pe_lce_number()))
         self.assertEqual(move.l10n_pe_lce_status, 'sent')
         self.assertTrue(move.l10n_pe_lce_accepted_date)
@@ -324,8 +328,7 @@ class TestPurchaseSettlement(TransactionCase):
         self.company.l10n_pe_edi_provider = 'iap'
         move = self._settlement()
         move.action_post()
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_sign_service_iap', autospec=True,
+        with patch.object(self._service(), '_send_bill_iap', autospec=True,
                           return_value=SIGNED) as iap:
             move.action_l10n_pe_lce_send()
         self.assertEqual(iap.call_args.args[-1], '04')
@@ -377,20 +380,20 @@ class TestPurchaseSettlement(TransactionCase):
         with self.assertRaisesRegex(UserError, 'motivo'):
             move.action_l10n_pe_lce_reverse()
         move.l10n_pe_lce_reversal_reason = 'Error en la cantidad'
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common',
+        service = self._service()
+        with patch.object(service, '_send_summary',
                           autospec=True, return_value={'xml_document': b'<rr/>', 'cdr': b'',
                                                        'cdr_number': '123456'}) as step_1:
             move.action_l10n_pe_lce_reverse()
-        self.assertIn('ol-ti-itemision-otroscpe-gem-beta', step_1.call_args.args[5]['wsdl'],
+        self.assertIn('ol-ti-itemision-otroscpe-gem-beta', step_1.call_args.args[4],
                       'servicio de retenciones, percepciones y reversiones (anexo 22)')
         self.assertEqual(move.l10n_pe_lce_status, 'reversing')
         self.assertEqual(move.l10n_pe_lce_reversal_ticket, '123456')
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common',
+        with patch.object(service, '_get_status',
                           autospec=True, return_value={'error': 'En proceso', 'blocking_level': 'info'}):
             move.action_l10n_pe_lce_check_reversal()
         self.assertEqual(move.l10n_pe_lce_status, 'reversing')
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common',
+        with patch.object(service, '_get_status',
                           autospec=True, return_value={'success': True, 'cdr': b'<cdr/>'}):
             move.action_l10n_pe_lce_check_reversal()
         self.assertEqual(move.l10n_pe_lce_status, 'reversed')
@@ -400,11 +403,11 @@ class TestPurchaseSettlement(TransactionCase):
     def test_rejected_reversal_keeps_the_settlement(self):
         move = self._sent()
         move.l10n_pe_lce_reversal_reason = 'Error en la cantidad'
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common',
+        service = self._service()
+        with patch.object(service, '_send_summary',
                           autospec=True, return_value={'xml_document': b'<rr/>', 'cdr': b'',
                                                        'cdr_number': '9'}), \
-                patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common',
+                patch.object(service, '_get_status',
                              autospec=True, return_value={'error': 'Tiene pagos registrados',
                                                           'blocking_level': 'error'}):
             move.action_l10n_pe_lce_reverse()

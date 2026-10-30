@@ -7,17 +7,16 @@ instalar o actualizar este módulo y, al cargar el registro, cuando cambió el
 conjunto de módulos (``_register_hook``), salvo que alguien haya editado el
 tablero en la app Tableros (tiene revisiones propias).
 """
-import base64
 import json
 import logging
 
 from odoo import api, models
+from odoo.tools import BinaryBytes
 
 _logger = logging.getLogger(__name__)
 
 SALES = ['out_invoice', 'out_refund']
 PURCHASES = ['in_invoice', 'in_refund']
-PE_EDI_FORMAT = 'pe_ubl_2_1'
 # Grupos que ven el tablero (data/dashboard_data.xml).
 DASHBOARD_GROUPS = ('account.group_account_user', 'account.group_account_readonly')
 
@@ -254,10 +253,11 @@ class L10nPeDashboardBuilder(models.AbstractModel):
         if not force and revisions and dashboard_sudo.spreadsheet_revision_ids:
             return False
         content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
-        binary = base64.b64encode(content.encode())
-        if dashboard_sudo.spreadsheet_binary_data == binary:
+        raw = content.encode()
+        current = dashboard_sudo.spreadsheet_binary_data
+        if current and current.content == raw:
             return False
-        dashboard_sudo.spreadsheet_binary_data = binary
+        dashboard_sudo.spreadsheet_binary_data = BinaryBytes(raw)
         return True
 
     # ---------------------------------------------------------------- bloques
@@ -271,13 +271,13 @@ class L10nPeDashboardBuilder(models.AbstractModel):
         # Una fuente sin permiso de lectura para alguno de los grupos del
         # tablero mostraría un error en su celda: se omite el bloque.
         # sudo: se consultan los permisos, no los datos.
-        Access = self.env['ir.model.access'].sudo()
+        # Odoo 20 (ir.access): un permiso lleva grupo; sin grupo es restricción.
+        Access = self.env['ir.access'].sudo()
         for xmlid in DASHBOARD_GROUPS:
             group = self.env.ref(xmlid)
             groups = group | group.all_implied_ids
-            if not Access.search_count([('model_id.model', '=', model), ('perm_read', '=', True),
-                                        '|', ('group_id', '=', False), ('group_id', 'in', groups.ids)],
-                                       limit=1):
+            if not Access.search_count([('model_id.model', '=', model), ('for_read', '=', True),
+                                        ('group_id', 'in', groups.ids)], limit=1):
                 return False
         return True
 
@@ -285,7 +285,7 @@ class L10nPeDashboardBuilder(models.AbstractModel):
         """(método, campos requeridos) en el orden del tablero."""
         return [
             (self._section_tax, [('l10n_pe.dashboard.tax', 'igv')]),
-            (self._section_edi, [('account.edi.document', 'blocking_level')]),
+            (self._section_edi, [('account.move', 'l10n_pe_edi_status'), ('account.move', 'l10n_pe_edi_warnings')]),
             (self._section_withholdings, []),
             (self._section_treasury, []),
             (self._section_returns, [('l10n_pe.monthly.tax', 'total_to_pay')]),
@@ -358,21 +358,26 @@ class L10nPeDashboardBuilder(models.AbstractModel):
 
     # Comprobantes electrónicos --------------------------------------------
     def _section_edi(self, sheet):
-        doc = 'account.edi.document'
-        pe = [('edi_format_id.code', '=', PE_EDI_FORMAT)]
-        partner = self._match(partner='move_id.partner_id')
+        # Odoo 20: l10n_pe_edi dejó account.edi.document; el estado del CPE
+        # está en la factura (l10n_pe_edi_status, avisos en l10n_pe_edi_warnings).
+        doc = 'account.move'
+        pe = [('l10n_pe_edi_status', '!=', False)]
+        partner = self._match(partner='partner_id')
         count = [{'id': '__count', 'fieldName': '__count', 'userDefinedName': 'Cantidad'}]
         cells = []
-        p = sheet.pivot('CPE por enviar', doc, pe + [('state', '=', 'to_send')], count, partner)
+        p = sheet.pivot('CPE por enviar', doc, [('l10n_pe_edi_status', '=', 'to_send')], count, partner)
         cells.append(('Por enviar a SUNAT', sheet.value('CPE por enviar', f'=PIVOT.VALUE({p},"__count")', 'raw'),
                       None, ''))
-        p = sheet.pivot('CPE con error', doc, pe + [('blocking_level', '=', 'error')], count, partner)
-        cells.append(('Con error', sheet.value('CPE con error', f'=PIVOT.VALUE({p},"__count")', 'raw'), None, ''))
-        p = sheet.pivot('Bajas pendientes', doc, pe + [('state', '=', 'to_cancel')], count, partner)
+        p = sheet.pivot('CPE con error', doc, pe + [('l10n_pe_edi_warnings', '!=', False)], count, partner)
+        cells.append(('Con observaciones', sheet.value('CPE con error', f'=PIVOT.VALUE({p},"__count")', 'raw'),
+                      None, ''))
+        p = sheet.pivot('Bajas pendientes', doc,
+                        [('l10n_pe_edi_status', '=', 'sent'), ('l10n_pe_edi_cancel_reason', '!=', False)],
+                        count, partner)
         cells.append(('Bajas por comunicar', sheet.value('Bajas pendientes', f'=PIVOT.VALUE({p},"__count")', 'raw'),
                       None, ''))
-        p = sheet.pivot('CPE aceptados', doc, pe + [('state', '=', 'sent')], count,
-                        self._match('move_id.date', 'move_id.partner_id'))
+        p = sheet.pivot('CPE aceptados', doc, [('l10n_pe_edi_status', '=', 'sent')], count,
+                        self._match('date', 'partner_id'))
         cells.append(('Aceptados en el periodo',
                       sheet.value('CPE aceptados', f'=PIVOT.VALUE({p},"__count")', 'raw'), None, ''))
         if self._has('stock.picking', 'l10n_pe_edi_status'):
@@ -397,12 +402,10 @@ class L10nPeDashboardBuilder(models.AbstractModel):
         columns = [('name', 'Comprobante'), ('partner_id', 'Cliente'), ('amount_total_signed', 'Total')]
         move_match = self._match()
         pending = sheet.odoo_list('CPE por enviar', 'account.move',
-                                  [('edi_document_ids.edi_format_id.code', '=', PE_EDI_FORMAT),
-                                   ('edi_state', 'in', ['to_send', 'to_cancel'])],
+                                  [('l10n_pe_edi_status', '=', 'to_send')],
                                   [c for c, _label in columns], [('invoice_date', True)], move_match)
         errors = sheet.odoo_list('CPE con error', 'account.move',
-                                 [('edi_document_ids.edi_format_id.code', '=', PE_EDI_FORMAT),
-                                  ('edi_document_ids.blocking_level', 'in', ['error', 'warning'])],
+                                 [('l10n_pe_edi_status', '!=', False), ('l10n_pe_edi_warnings', '!=', False)],
                                  [c for c, _label in columns], [('invoice_date', False)], move_match)
         sheet.list_table(0, pending, columns)
         sheet.list_table(4, errors, columns)

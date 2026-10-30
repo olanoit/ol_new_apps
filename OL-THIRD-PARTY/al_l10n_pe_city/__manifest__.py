@@ -21,7 +21,9 @@
         "data/peru.xml",
         'data/res_country_data_enforce.xml'],
 
-    'installable': True,
+    # Odoo 20: l10n_pe ya trae las provincias (res.city con código) y los
+    # distritos de Perú; este catálogo los duplica.
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

@@ -36,23 +36,21 @@ class TestRetentionV16Improvements(TestRetentionApplies):
         self.company.l10n_pe_edi_provider = provider
         document.invalidate_recordset(['l10n_pe_edi_reversal_available'])
         document.write({'l10n_pe_edi_status': 'sent', 'l10n_pe_edi_reversal_reason': 'Duplicado'})
-        edi = type(self.env['account.edi.format'])
+        # Odoo 20: el envío pasa por l10n_pe.edi.cpe.service (al_l10n_pe_edi_service).
+        service = type(self.env['l10n_pe.edi.cpe.service'])
         calls = {}
 
-        def step_1(_self, company, invoices, filename, edi_str, *args):
-            calls.update(filename=filename, xml=edi_str, credentials=args and args[0])
+        def send_summary(_self, company, filename, edi_str, sunat_wsdl):
+            credentials = company._l10n_pe_edi_get_credentials(sunat_wsdl=sunat_wsdl)
+            calls.update(filename=filename, xml=edi_str, credentials=credentials)
             return {'xml_document': edi_str, 'cdr_number': '202610110001'}
 
-        def step_2(_self, company, edi_values, cdr_number, *args):
-            calls['ticket'] = cdr_number
+        def get_status(_self, company, ticket, sunat_wsdl):
+            calls['ticket'] = ticket
             return {'success': True, 'cdr': b'<ApplicationResponse/>'}
 
-        suffix = 'iap' if provider == 'iap' else 'sunat_digiflow_common'
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_1_%s' % suffix, step_1), \
-                patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_2_%s' % suffix, step_2), \
-                patch.object(edi, '_l10n_pe_edi_get_sunat_credentials', lambda s, c: {'wsdl': 'x'}), \
-                patch.object(edi, '_l10n_pe_edi_get_digiflow_credentials',
-                             lambda s, c: {'wsdl': 'digiflow'}):
+        with patch.object(service, '_send_summary', send_summary), \
+                patch.object(service, '_get_status', get_status):
             document.action_l10n_pe_edi_reverse_retention()
             self.assertEqual(document.l10n_pe_edi_status, 'reversing')
             document.action_l10n_pe_edi_check_reversal()
@@ -75,17 +73,17 @@ class TestRetentionV16Improvements(TestRetentionApplies):
                 calls = self._reverse(payment, provider)
                 self.assertEqual(calls['ticket'], '202610110001')
                 if provider == 'digiflow':
-                    self.assertEqual(calls['credentials']['wsdl'], 'digiflow')
+                    # Estela usa su propio servicio, no el de retenciones de SUNAT.
+                    self.assertNotIn('otroscpe', calls['credentials']['wsdl'])
 
     def test_reversal_still_processing(self):
         payment = self._paid()
         self.company.l10n_pe_edi_provider = 'sunat'
         payment.write({'l10n_pe_edi_status': 'reversing',
                        'l10n_pe_edi_reversal_ticket': '202610110002'})
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common',
-                          lambda *a: {'error': 'En proceso (98)', 'blocking_level': 'info'}), \
-                patch.object(edi, '_l10n_pe_edi_get_sunat_credentials', lambda s, c: {}):
+        service = type(self.env['l10n_pe.edi.cpe.service'])
+        with patch.object(service, '_get_status',
+                          lambda *a: {'error': 'En proceso (98)', 'blocking_level': 'info'}):
             payment.action_l10n_pe_edi_check_reversal()
         self.assertEqual(payment.l10n_pe_edi_status, 'reversing', 'se vuelve a consultar')
 

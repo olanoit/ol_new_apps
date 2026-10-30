@@ -558,32 +558,22 @@ class AccountMove(models.Model):
         return {'type': 'ir.actions.act_url', 'target': 'self',
                 'url': '/web/content/%d?download=true' % attachment.id}
 
-    def _l10n_pe_lce_sign_and_send(self, edi_format, filename, edi_str):
-        """Firma y envía con el operador de la compañía. Los servicios de
-        ``l10n_pe_edi`` (``_l10n_pe_edi_sign_service_<operador>``) comparten
-        contrato, y los operadores de otros módulos (Factory HKA) lo siguen:
-        se eligen por nombre. Con SUNAT directo la liquidación va al servicio
-        de facturas (anexo 6)."""
+    def _l10n_pe_lce_sign_and_send(self, filename, edi_str):
+        """Firma y envía con el operador de la compañía (Odoo 20: servicio
+        ``l10n_pe.edi.cpe.service``). Con SUNAT directo la liquidación va al
+        servicio de facturas (anexo 6)."""
         self.ensure_one()
-        company = self.company_id
-        provider = company.l10n_pe_edi_provider
-        service = getattr(edi_format, '_l10n_pe_edi_sign_service_%s' % provider, None)
-        if not service:
-            return {'error': self.env._(
-                'El operador electrónico «%s» no envía liquidaciones de compra.', provider),
-                'blocking_level': 'error'}
-        return service(company, filename, edi_str, '04')
+        return self.env['l10n_pe.edi.cpe.service']._send_bill(
+            self.company_id, filename, edi_str, '04', self._l10n_pe_edi_get_sunat_invoice_wsdl())
 
-    def _l10n_pe_lce_retrieve_cdr(self, edi_format, result):
+    def _l10n_pe_lce_retrieve_cdr(self, result):
         """SUNAT ya tenía la liquidación (códigos 1033 y 4000, p. ej. un envío
         anterior que no se llegó a guardar): se recupera su CDR."""
         self.ensure_one()
         if result.get('code') not in ('1033', '4000'):
             return result
         serie, folio = self._l10n_pe_lce_serie_folio()
-        retrieved = edi_format._l10n_pe_edi_retrieve_cdr(
-            self.company_id.l10n_pe_edi_provider, self.company_id,
-            {'serie': serie, 'folio': folio}, '04')
+        retrieved = self.env['l10n_pe.edi.cpe.service']._get_status_cdr(self.company_id, '04', serie, folio)
         if retrieved.get('error') or not retrieved.get('cdr'):
             return result
         self.message_post(body=self.env._(
@@ -592,7 +582,6 @@ class AccountMove(models.Model):
 
     def action_l10n_pe_lce_send(self):
         """Firma la liquidación de compra y la envía con el operador de la compañía."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         for move in self:
             if not move.l10n_pe_lce_required or move.state != 'posted' \
                     or move.l10n_pe_lce_status != 'to_send':
@@ -600,9 +589,9 @@ class AccountMove(models.Model):
                     '%s no es una liquidación de compra confirmada por enviar.', move.display_name))
             move._l10n_pe_lce_check_deadline()
             filename = move._l10n_pe_lce_filename()
-            result = move._l10n_pe_lce_sign_and_send(edi_format, filename, move._l10n_pe_lce_generate_xml())
+            result = move._l10n_pe_lce_sign_and_send(filename, move._l10n_pe_lce_generate_xml())
             if result.get('error'):
-                result = move._l10n_pe_lce_retrieve_cdr(edi_format, result)
+                result = move._l10n_pe_lce_retrieve_cdr(result)
             if result.get('error'):
                 move.l10n_pe_lce_message = result['error']
                 continue
@@ -612,7 +601,7 @@ class AccountMove(models.Model):
             attachment = self.env['ir.attachment'].create({
                 'name': '%s.zip' % filename, 'res_model': move._name, 'res_id': move.id,
                 'type': 'binary', 'mimetype': 'application/zip',
-                'raw': edi_format._l10n_pe_edi_zip_edi_document(documents),
+                'raw': move._l10n_pe_edi_zip_edi_document(documents),
             })
             move.write({
                 'l10n_pe_lce_status': 'sent',
@@ -661,9 +650,8 @@ class AccountMove(models.Model):
         attachment = self._l10n_pe_lce_xml_attachment()
         if not attachment:
             return ''
-        edi_format = self.env['account.edi.format']
         try:
-            xml = edi_format._l10n_pe_edi_unzip_edi_document(attachment.raw)
+            xml = self._l10n_pe_edi_unzip_edi_document(attachment.raw.content)
             digest = etree.fromstring(xml).find('.//{http://www.w3.org/2000/09/xmldsig#}DigestValue')
         except (etree.LxmlError, ValueError, KeyError):
             return ''
@@ -706,52 +694,28 @@ class AccountMove(models.Model):
                        'reason': self.l10n_pe_lce_reversal_reason}],
         }).encode()
 
-    def _l10n_pe_lce_reversal_credentials(self, edi_format):
+    def _l10n_pe_lce_reversal_wsdl(self):
         """SUNAT recibe los resúmenes de reversiones en el servicio de
-        retenciones y percepciones (anexo 22); Digiflow, en el suyo."""
+        retenciones y percepciones (anexo 22); Estela usa el suyo."""
         self.ensure_one()
-        company = self.company_id
-        if company.l10n_pe_edi_provider == 'digiflow':
-            return edi_format._l10n_pe_edi_get_digiflow_credentials(company)
-        credentials = edi_format._l10n_pe_edi_get_sunat_credentials(company)
-        credentials['wsdl'] = SUNAT_REVERSAL_WSDL['test' if company.l10n_pe_edi_test_env else 'prod']
-        return credentials
+        return SUNAT_REVERSAL_WSDL['test' if self.company_id.l10n_pe_edi_test_env else 'prod']
 
-    def _l10n_pe_lce_reversal_send(self, edi_format, filename, edi_str):
+    def _l10n_pe_lce_reversal_send(self, filename, edi_str):
         """Paso 1 (sendSummary): ``{'xml_document', 'cdr', 'cdr_number'}`` o
         ``{'error', 'blocking_level'}``, como los servicios de baja."""
         self.ensure_one()
-        company = self.company_id
-        provider = company.l10n_pe_edi_provider
-        if provider in ('sunat', 'digiflow'):
-            return edi_format._l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common(
-                company, self, filename, edi_str, self._l10n_pe_lce_reversal_credentials(edi_format))
-        service = getattr(edi_format, '_l10n_pe_edi_cancel_invoices_step_1_%s' % provider, None)
-        if not service:
-            return {'error': self.env._(
-                'El operador electrónico «%s» no envía resúmenes de reversiones.', provider),
-                'blocking_level': 'error'}
-        return service(company, self, filename, edi_str)
+        return self.env['l10n_pe.edi.cpe.service']._send_summary(
+            self.company_id, filename, edi_str, self._l10n_pe_lce_reversal_wsdl())
 
-    def _l10n_pe_lce_reversal_status(self, edi_format, ticket):
+    def _l10n_pe_lce_reversal_status(self, ticket):
         """Paso 2 (getStatus): ``{'success', 'cdr'}`` o ``{'error',
         'blocking_level'}`` (``info``: SUNAT aún procesa)."""
         self.ensure_one()
-        company = self.company_id
-        provider = company.l10n_pe_edi_provider
-        if provider in ('sunat', 'digiflow'):
-            return edi_format._l10n_pe_edi_cancel_invoices_step_2_sunat_digiflow_common(
-                company, [], ticket, self._l10n_pe_lce_reversal_credentials(edi_format))
-        service = getattr(edi_format, '_l10n_pe_edi_cancel_invoices_step_2_%s' % provider, None)
-        if not service:
-            return {'error': self.env._(
-                'El operador electrónico «%s» no consulta resúmenes de reversiones.', provider),
-                'blocking_level': 'error'}
-        return service(company, [], ticket)
+        return self.env['l10n_pe.edi.cpe.service']._get_status(
+            self.company_id, ticket, self._l10n_pe_lce_reversal_wsdl())
 
     def action_l10n_pe_lce_reverse(self):
         """Paso 1: envía el resumen diario de reversiones y guarda el ticket."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         for move in self:
             if move.l10n_pe_lce_status != 'sent':
                 raise UserError(self.env._('Solo se revierte una liquidación de compra aceptada por SUNAT.'))
@@ -766,7 +730,7 @@ class AccountMove(models.Model):
                     date=(accepted + timedelta(days=REVERSAL_DAYS)).strftime('%d/%m/%Y')))
             values = move._l10n_pe_lce_reversal_values()
             result = move._l10n_pe_lce_reversal_send(
-                edi_format, values['filename'], move._l10n_pe_lce_generate_reversal_xml(values))
+                values['filename'], move._l10n_pe_lce_generate_reversal_xml(values))
             if result.get('error'):
                 move.l10n_pe_lce_message = result['error']
                 continue
@@ -788,12 +752,11 @@ class AccountMove(models.Model):
     def action_l10n_pe_lce_check_reversal(self):
         """Paso 2: consulta el ticket; con la reversión aceptada, anula el
         asiento (el número no se vuelve a usar)."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
         for move in self:
             if move.l10n_pe_lce_status != 'reversing' or not move.l10n_pe_lce_reversal_ticket:
                 raise UserError(self.env._(
                     '%s no tiene una reversión en proceso.', move.display_name))
-            result = move._l10n_pe_lce_reversal_status(edi_format, move.l10n_pe_lce_reversal_ticket)
+            result = move._l10n_pe_lce_reversal_status(move.l10n_pe_lce_reversal_ticket)
             if result.get('error'):
                 move.l10n_pe_lce_message = result['error']
                 if result.get('blocking_level') != 'info':

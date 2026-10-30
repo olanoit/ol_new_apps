@@ -88,7 +88,7 @@ class AccountMove(models.Model):
         self.ensure_one()
         taxes = self.invoice_line_ids.filtered(
             lambda l: l.display_type == 'product'
-        ).tax_ids.filtered(lambda t: not t.is_withholding_tax_on_payment)
+        ).tax_ids.filtered(lambda t: not t.is_withholding_tax)
         return any(
             tax.l10n_pe_edi_tax_code == IGV_TAX_CODE
             or (not tax.l10n_pe_edi_tax_code and tax.amount > 0)
@@ -173,7 +173,7 @@ class AccountMove(models.Model):
     def _post(self, soft=True):
         """Inyecta el impuesto de retención nativo en las líneas de toda
         factura comprendida en el régimen: no altera el total (los impuestos
-        ``is_withholding_tax_on_payment`` se excluyen del cálculo) y hace que
+        ``is_withholding_tax`` se excluyen del cálculo) y hace que
         el asistente de pago proponga el 3 % de cada pago. El mínimo de
         S/ 700 lo aplica el asistente sobre los comprobantes pagados juntos."""
         for move in self:

@@ -38,7 +38,7 @@ if not tax:
     tax = env['account.tax'].create({
         'name': 'Retención IGV 3%', 'amount': -3.0,
         'amount_type': 'percent', 'type_tax_use': 'purchase',
-        'is_withholding_tax_on_payment': True,
+        'is_withholding_tax': True,
         'withholding_sequence_id': sequence.id, 'company_id': company.id})
     tax.invoice_repartition_line_ids.filtered(
         lambda l: l.repartition_type == 'tax').account_id = acc_ret

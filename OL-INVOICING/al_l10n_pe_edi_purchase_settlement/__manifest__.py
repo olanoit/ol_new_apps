@@ -42,6 +42,8 @@ R.S. 244-2019/SUNAT).
         'al_report_base',
         # Firma, envío y resúmenes con el operador electrónico de la compañía
         'l10n_pe_edi',
+        # Envío de CPE que no son facturas (Odoo 20 sin account.edi.format)
+        'al_l10n_pe_edi_service',
     ],
     'data': [
         'data/ir_sequence_data.xml',

@@ -120,7 +120,7 @@ class TestRetentionApplies(TransactionCase):
             tax = self.env['account.tax'].create({
                 'name': 'Retención IGV 3% Test', 'amount': -3.0,
                 'amount_type': 'percent', 'type_tax_use': 'purchase',
-                'is_withholding_tax_on_payment': True,
+                'is_withholding_tax': True,
                 'withholding_sequence_id': sequence.id,
                 'company_id': self.company.id})
             tax.invoice_repartition_line_ids.filtered(
@@ -617,7 +617,7 @@ class TestRetentionApplies(TransactionCase):
     def test_retention_received_multicompany_rule(self):
         rule = self.env.ref(
             'al_l10n_pe_retention.rule_retention_received_company')
-        self.assertIn('company_ids', rule.domain_force)
+        self.assertIn('company_ids', rule.domain)  # Odoo 20: ir.access.domain
         self.assertTrue(self.env['l10n_pe.retention.received']
                         ._check_company_auto)
 

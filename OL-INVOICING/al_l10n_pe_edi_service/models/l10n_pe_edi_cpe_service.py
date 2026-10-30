@@ -27,9 +27,13 @@ from odoo.addons.iap.tools.iap_tools import iap_jsonrpc
 
 
 def _as_error(result):
-    """Error de los servicios de 20 (``message``/``level``) con la forma de 19."""
-    return {'error': result.get('message') or result.get('error'),
-            'blocking_level': result.get('level', 'error')}
+    """Error de los servicios de 20 (``message``/``level``) con la forma de 19;
+    conserva el código de SUNAT (p. ej. 1033: el comprobante ya existe)."""
+    error = {'error': result.get('message') or result.get('error'),
+             'blocking_level': result.get('level', 'error')}
+    if result.get('code'):
+        error['code'] = result['code']
+    return error
 
 
 class L10nPeEdiCpeService(models.AbstractModel):
@@ -80,7 +84,8 @@ class L10nPeEdiCpeService(models.AbstractModel):
         zip_str = Move._l10n_pe_edi_zip_edi_document([('%s.xml' % filename, edi_str)])
         decoded = Move._l10n_pe_edi_send_bill_sunat_estela(credentials, filename, zip_str)
         if decoded.get('error'):
-            return {'message': decoded['error'], 'level': decoded.get('level', 'error')}
+            return {'message': decoded['error'], 'level': decoded.get('level', 'error'),
+                    'code': decoded.get('code')}
         return self._cdr_result(decoded['cdr'], edi_str)
 
     @api.model
@@ -108,7 +113,8 @@ class L10nPeEdiCpeService(models.AbstractModel):
         soap = result.get('cdr') and base64.b64decode(result['cdr'])
         decoded = Move._l10n_pe_edi_decode_soap_response(soap) if soap else {}
         if decoded.get('error') or not decoded.get('cdr'):
-            return {'message': decoded.get('error') or self.env._('Sin respuesta de SUNAT.')}
+            return {'message': decoded.get('error') or self.env._('Sin respuesta de SUNAT.'),
+                    'code': decoded.get('code')}
         return self._cdr_result(decoded['cdr'], xml_document)
 
     @api.model
@@ -185,3 +191,45 @@ class L10nPeEdiCpeService(models.AbstractModel):
             soap = response.content
         result = Move._l10n_pe_edi_parse_cancel_soap(soap)
         return result if result.get('success') else _as_error(result)
+
+    # ------------------------------------------------------------------
+    # Constancia de un comprobante ya enviado (getStatusCdr)
+    # ------------------------------------------------------------------
+    @api.model
+    def _get_status_cdr(self, company, doc_type, serie, folio):
+        """``{'cdr'}`` si SUNAT ya tiene el comprobante aceptado, o
+        ``{'error', 'blocking_level'}``."""
+        Move = self._move()
+        if company.l10n_pe_edi_provider == 'iap':
+            dbuuid, url, token = Move._l10n_pe_edi_get_iap_params(company)
+            params = {'vat': company.vat, 'doc_type': doc_type, 'dbuuid': dbuuid,
+                      'serie': serie, 'folio': folio, 'token': token}
+            try:
+                result = iap_jsonrpc(url + '/iap/l10n_pe_edi/1/get_status_cdr', params=params, timeout=60)
+            except RequestException:
+                return {'error': Move._l10n_pe_edi_get_general_error_messages()['L10NPE17'],
+                        'blocking_level': 'warning'}
+            if result.get('message'):
+                return {'error': result['message'], 'blocking_level': 'error'}
+            soap = result.get('cdr') and base64.b64decode(result['cdr'])
+        else:
+            credentials = self._credentials(
+                company, 'https://e-factura.sunat.gob.pe/ol-it-wsconscpegem/billConsultService?wsdl')
+            if credentials.get('error'):
+                return credentials
+            try:
+                response = self._soap_client(credentials).service.getStatusCdr(
+                    company.vat, doc_type, serie, folio)
+                response.raise_for_status()
+            except (ReqConnectionError, HTTPError, TypeError, ReadTimeout):
+                return {'error': Move._l10n_pe_edi_get_general_error_messages()['L10NPE08'],
+                        'blocking_level': 'warning'}
+            soap = response.content
+        decoded = Move._l10n_pe_edi_decode_soap_response(soap) if soap else {}
+        if decoded.get('error') or decoded.get('code') != '0004' or not decoded.get('cdr'):
+            return {'error': decoded.get('error') or self.env._('SUNAT no tiene la constancia.'),
+                    'blocking_level': 'error'}
+        if self._move()._l10n_pe_edi_extract_cdr_status(decoded['cdr'])['code'] != '0':
+            return {'error': self.env._('SUNAT registró el comprobante como rechazado.'),
+                    'blocking_level': 'error'}
+        return {'cdr': decoded['cdr']}

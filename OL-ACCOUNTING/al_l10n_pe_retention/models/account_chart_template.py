@@ -5,7 +5,7 @@ Mismos xmlids que el módulo oficial de Odoo ``l10n_pe_edi_withholding``
 (Enterprise 19.4/20): ``purchase_tax_withholding_3`` y
 ``l10n_pe_edi_withholding_sunat_sequence``. Al migrar a esa versión, la carga
 del plan encuentra estos registros y no los duplica. Los campos son los del
-marco nativo de 19.0 (``is_withholding_tax_on_payment``; en 20 se llama
+marco nativo de 19.0 (``is_withholding_tax``; en 20 se llama
 ``is_withholding_tax``).
 """
 from odoo import models

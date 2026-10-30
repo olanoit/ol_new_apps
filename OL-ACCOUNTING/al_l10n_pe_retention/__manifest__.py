@@ -39,6 +39,8 @@ la referencia CRE del v18 (``al_l10n_pe_edi_withholding``).
         'l10n_pe',
         # Firma y envío del CRE con el proveedor electrónico de la compañía
         'l10n_pe_edi',
+        # Servicio de envío de CPE (sendBill/sendSummary) sobre l10n_pe_edi 20
+        'al_l10n_pe_edi_service',
         # El padrón SUNAT es la fuente de «buen contribuyente» y «agente
         # de retención» del contacto: las dos excepciones al régimen.
         'l10n_pe_vat_sunat',

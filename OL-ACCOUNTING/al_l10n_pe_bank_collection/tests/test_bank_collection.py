@@ -47,7 +47,7 @@ class TestBankCollection(CollectionCommon):
         } for code, info, amount, operation in rows]
         header = {'account_branch': '191', 'account_number': '1234567', 'currency': self.agreement.currency_id,
                   'file_date': self.today, 'record_count': len(rows), 'total_amount': sum(r[2] for r in rows)}
-        return base64.b64encode(self.response_layout._build_file(header, details))
+        return BinaryBytes(self.response_layout._build_file(header, details))
 
     def _response(self, rows):
         response = self.env['l10n_pe.bank.collection.response'].create({

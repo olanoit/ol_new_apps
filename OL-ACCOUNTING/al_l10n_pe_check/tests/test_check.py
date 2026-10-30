@@ -48,7 +48,7 @@ class TestPeCheck(TransactionCase):
     def _transfer(self, checks, journal, when):
         return self.env['l10n_latam.payment.mass.transfer'].with_context(
             active_model='l10n_latam.check', active_ids=checks.ids).create({
-                'destination_journal_id': journal.id, 'payment_date': when})
+                'to_journal_id': journal.id, 'payment_date': when})
 
     def test_setup_creates_journals_and_accounts(self):
         self.assertEqual(self.portfolio.default_account_id.code, '1033001')

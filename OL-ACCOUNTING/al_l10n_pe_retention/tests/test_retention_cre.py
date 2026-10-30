@@ -64,14 +64,12 @@ class TestRetentionCre(TestRetentionApplies):
 
     def test_send_success_stores_zip(self):
         payment = self._paid()
-        edi = type(self.env['account.edi.format'])
+        # Odoo 20: el envío pasa por l10n_pe.edi.cpe.service (al_l10n_pe_edi_service).
+        service = type(self.env['l10n_pe.edi.cpe.service'])
         result = {'success': True, 'xml_document': b'<signed/>', 'cdr': b'<cdr/>'}
-        with patch.object(edi, '_l10n_pe_edi_sign_service_iap', autospec=True,
-                          return_value=result) as iap, \
-                patch.object(edi, '_l10n_pe_edi_sign_service_sunat_digiflow_common',
-                             autospec=True, return_value=result) as direct:
+        with patch.object(service, '_send_bill', autospec=True, return_value=result) as send:
             payment.action_l10n_pe_edi_send_retention()
-        sent_type = (iap.call_args or direct.call_args).args[-1]
+        sent_type = send.call_args.args[4]
         self.assertEqual(sent_type, '20', 'tipo de documento del CRE')
         self.assertEqual(payment.l10n_pe_edi_status, 'sent')
         self.assertTrue(payment.l10n_pe_edi_attachment_file)
@@ -81,12 +79,9 @@ class TestRetentionCre(TestRetentionApplies):
 
     def test_send_error_is_shown(self):
         payment = self._paid()
-        edi = type(self.env['account.edi.format'])
-        result = {'error': 'Certificado vencido'}
-        with patch.object(edi, '_l10n_pe_edi_sign_service_iap', autospec=True,
-                          return_value=result), \
-                patch.object(edi, '_l10n_pe_edi_sign_service_sunat_digiflow_common',
-                             autospec=True, return_value=result):
+        service = type(self.env['l10n_pe.edi.cpe.service'])
+        result = {'error': 'Certificado vencido', 'blocking_level': 'error'}
+        with patch.object(service, '_send_bill', autospec=True, return_value=result):
             payment.action_l10n_pe_edi_send_retention()
         self.assertEqual(payment.l10n_pe_edi_status, 'to_send')
         self.assertIn('Certificado vencido', payment.l10n_pe_edi_error_message)
@@ -96,12 +91,11 @@ class TestRetentionCre(TestRetentionApplies):
         payment = self._paid()
         self.company.l10n_pe_edi_provider = 'sunat'
         self.company.l10n_pe_edi_test_env = True
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_sign_service_sunat_digiflow_common',
-                          autospec=True, return_value={'error': 'x'}) as direct:
+        service = type(self.env['l10n_pe.edi.cpe.service'])
+        with patch.object(service, '_send_bill_soap', autospec=True,
+                          return_value={'message': 'x'}) as direct:
             payment.action_l10n_pe_edi_send_retention()
-        credentials = direct.call_args.args[4]
-        self.assertIn('ol-ti-itemision-otroscpe-gem-beta', credentials['wsdl'])
+        self.assertIn('ol-ti-itemision-otroscpe-gem-beta', direct.call_args.args[4])
 
     def test_official_interface(self):
         """Misma interfaz que l10n_pe_edi_withholding (Enterprise 19.4/20)."""
@@ -124,7 +118,7 @@ class TestRetentionCre(TestRetentionApplies):
         self.env['account.chart.template'].try_loading('pe', company=company, install_demo=False)
         tax = self.env.ref('account.%s_purchase_tax_withholding_3' % company.id)
         self.assertEqual(company.l10n_pe_retention_tax_id, tax)
-        self.assertTrue(tax.is_withholding_tax_on_payment)
+        self.assertTrue(tax.is_withholding_tax)
         self.assertEqual(tax.amount, -3)
         self.assertEqual(tax.withholding_sequence_id,
                          self.env.ref('account.%s_l10n_pe_edi_withholding_sunat_sequence' % company.id))

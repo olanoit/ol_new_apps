@@ -23,7 +23,7 @@ class ResCompany(models.Model):
     l10n_pe_retention_tax_id = fields.Many2one(
         'account.tax', string='Impuesto de retención IGV',
         check_company=True,
-        domain=[('is_withholding_tax_on_payment', '=', True),
+        domain=[('is_withholding_tax', '=', True),
                 ('type_tax_use', '=', 'purchase')],
         help='Impuesto negativo de retención en el pago (marco nativo): '
              'su cuenta debe ser «IGV – Retenciones por pagar» (4011x) y '

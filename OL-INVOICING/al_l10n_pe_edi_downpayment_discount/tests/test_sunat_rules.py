@@ -293,8 +293,8 @@ class TestSunatRules(AccountTestInvoicingCommon):
             'invoice_line_ids': [(0, 0, {'name': 'Devolución', 'product_id': self.p_a.id,
                                          'quantity': -1, 'price_unit': -100.0,
                                          'tax_ids': [(6, 0, self.igv.ids)]})]})
-        errors = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')._check_move_configuration(refund)
-        self.assertTrue(any('cantidades negativas' in str(error) for error in errors))
+        errors = refund._l10n_pe_edi_check_move_constraints()
+        self.assertIn('cantidades negativas', errors['al_pe_negative_quantity']['message'])
 
     # ------------------------------------------------- pruebas SUNAT beta 18/10/2026
     def test_lines_without_product_have_unit_code(self):

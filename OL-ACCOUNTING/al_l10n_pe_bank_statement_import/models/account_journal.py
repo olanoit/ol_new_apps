@@ -10,6 +10,8 @@ class AccountJournal(models.Model):
         """Movimientos del archivo si es un extracto reconocible, o ``None``."""
         if not raw:
             return None
+        # Odoo 20: los binarios llegan como BinaryValue.
+        raw = getattr(raw, 'content', raw)
         try:
             return parse_statement(raw)
         except StatementParseError:

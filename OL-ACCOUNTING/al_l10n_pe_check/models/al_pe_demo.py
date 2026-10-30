@@ -46,7 +46,7 @@ class AlPeDemo(models.AbstractModel):
         receive('4', person, '00730988', 420.0, today - timedelta(days=45))
         env['l10n_latam.payment.mass.transfer'].with_context(
             active_model='l10n_latam.check', active_ids=deposited.ids).create({
-                'destination_journal_id': bank_journal.id, 'payment_date': today - timedelta(days=5),
+                'to_journal_id': bank_journal.id, 'payment_date': today - timedelta(days=5),
                 'communication': 'Depósito de cheques'})._create_payments()
         own_line = bank_journal.outbound_payment_method_line_ids.filtered(lambda l: l.code == 'own_checks')[:1]
         if own_line.payment_account_id:

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import base64
 
 from odoo import fields, models
 from odoo.exceptions import UserError
 
+from odoo.tools import BinaryBytes
 from odoo.tools.float_utils import float_compare
 
 from .bank_formats import FORMATS, digits, group_by_beneficiary
@@ -201,6 +201,6 @@ class AccountBatchPayment(models.Model):
             label, self.currency_id.name, self.journal_id.code,
             (self.name or '').replace('/', '-'))
         return {
-            'file': base64.encodebytes(text.encode('latin-1', errors='replace')),
+            'file': BinaryBytes(text.encode('latin-1', errors='replace')),
             'filename': filename,
         }
