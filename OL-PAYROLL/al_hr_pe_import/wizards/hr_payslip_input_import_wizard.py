@@ -12,7 +12,7 @@ escribe con el helper ``hr.payslip._set_pe_input_amount`` de
 Plantilla de columnas:
 
     1  Nro documento     (identification_id del empleado / su versión)
-    2  Código de input   (code de hr.payslip.input.type)
+    2  Código de input   (code de la regla salarial)
     3  Monto             (redondeado con custom_round, criterio SUNAT)
 
 El asistente pide el lote (``hr.payslip.run``): cada fila se aplica a la
@@ -149,27 +149,26 @@ class AlImportPayslipInputWizard(models.TransientModel):
                 'la boleta de %(e)s no está en borrador (estado: %(s)s)'
             ) % {'e': slip.employee_id.name, 's': slip.state}, empty
 
-        # Primero entre los inputs de la estructura de la boleta: el código
-        # no es único entre países (varias localizaciones lo reutilizan).
-        input_type = slip.struct_id.input_line_type_ids.filtered(
-            lambda t: t.code == input_code)[:1]
-        if not input_type:
-            input_type = self.env['hr.payslip.input.type'].search([
-                ('code', '=', input_code),
-            ], limit=1)
+        # Odoo 20: el input de la boleta es una regla salarial de la
+        # estructura que admite entrada (el código es único por estructura).
+        input_type = self.env['hr.salary.rule'].search([
+            ('code', '=', input_code),
+            ('struct_ids', 'in', slip.struct_id.ids),
+        ], limit=1) if slip.struct_id else self.env['hr.salary.rule']
         if not input_type:
             return 'error', self.env._(
                 'no existe un tipo de input con código "%s"'
             ) % input_code, empty
-        if slip.struct_id and input_type not in \
-                slip.struct_id.input_line_type_ids:
+        if not (input_type.input_usage_payslip
+                or 'property_input' in (input_type.condition_select,
+                                        input_type.amount_select)):
             return 'error', self.env._(
                 'el input "%(i)s" no está permitido en la estructura '
                 '"%(s)s"') % {'i': input_code,
                               's': slip.struct_id.name}, empty
 
         existed = bool(slip.input_line_ids.filtered(
-            lambda line: line.input_type_id == input_type))
+            lambda line: line.salary_rule_id == input_type))
         if existed and not self.update_existing:
             return 'skipped', self.env._(
                 'la boleta de %(e)s ya tiene el input %(i)s '

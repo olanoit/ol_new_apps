@@ -455,12 +455,12 @@ class HrVacation(models.Model):
         """Fija el importe del input en la boleta (creándolo si falta:
         en v19 las líneas de input no se autogeneran como en v18)."""
         line = slip.input_line_ids.filtered(
-            lambda inp: inp.input_type_id == input_type)
+            lambda inp: inp.salary_rule_id == input_type)
         if line:
             line[:1].amount = amount
         else:
             slip.write({'input_line_ids': [(0, 0, {
-                'input_type_id': input_type.id,
+                'salary_rule_id': input_type.id,
                 'amount': amount,
             })]})
 
@@ -469,10 +469,10 @@ class HrVacation(models.Model):
         VAC (goce), COMP_VAC (venta), ADE_VAC (adelanto neto) y QUINTA
         (retención proporcional). v18 leía los input types de Parámetros
         Principales; en v19 son data del módulo base."""
-        inp_vacation = self.env.ref('al_hr_pe.input_type_VAC')
-        inp_venta_vacation = self.env.ref('al_hr_pe.input_type_COMP_VAC')
-        inp_ade_vacation = self.env.ref('al_hr_pe.input_type_ADE_VAC')
-        inp_fifth = self.env.ref('al_hr_pe.input_type_QUINTA')
+        inp_vacation = self.env.ref('al_hr_pe.salary_rule_VAC')
+        inp_venta_vacation = self.env.ref('al_hr_pe.salary_rule_COMP_VAC')
+        inp_ade_vacation = self.env.ref('al_hr_pe.salary_rule_ADE_VAC')
+        inp_fifth = self.env.ref('al_hr_pe.salary_rule_QUINTA')
 
         total_vacation = total_venta_vacation = 0.0
         total_ade_vaca = total_quinta = 0.0

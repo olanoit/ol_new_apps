@@ -4,9 +4,9 @@
 Sustituye al clon v18 ``hr_assistance_planning`` (~2 700 líneas que
 duplicaban el gantt, las plantillas y las líneas de turno de
 ``planning``): en v19 los turnos son ``planning.slot`` /
-``planning.slot.template`` nativos y las work entries las genera
-``hr_work_entry_planning`` cuando la versión del trabajador tiene
-``work_entry_source = 'planning'``. Aquí solo vive lo peruano:
+``planning.slot.template`` nativos (Odoo 20 ya no tiene
+``hr_work_entry_planning``: los días de la boleta salen del calendario o
+del tareaje). Aquí solo vive lo peruano:
 
 * Clasificación PE del rol de planificación (mañana/tarde/noche) y
   detección de jornada nocturna: D.S. 007-2002-TR (TUO Ley de Jornada)
@@ -18,9 +18,8 @@ duplicaban el gantt, las plantillas y las líneas de turno de
   art. 9: promedio ≤ 48 h semanales en el ciclo; STC 4635-2004-AA/TC:
   tope de 12 h diarias en jornadas atípicas mineras) y un generador
   que materializa los días de trabajo como ``planning.slot`` nativos.
-  Los días de descanso NO generan slot (un slot publicado se convierte
-  en work entry); el monitor de asistencia los reconstruye desde la
-  asignación de ciclo.
+  Los días de descanso NO generan slot; el monitor de asistencia los
+  reconstruye desde la asignación de ciclo.
 * Trazabilidad de reemplazos sobre ``planning.slot``: el flujo v18
   ``hr.make.replace.wizard`` (duplicar la línea con otro empleado) lo
   cubre el planning nativo con turnos abiertos, reasignación en el
@@ -32,7 +31,7 @@ from datetime import datetime, timedelta
 
 import pytz
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.date_utils import float_to_time
 
@@ -181,8 +180,7 @@ class L10nPeHrShiftCycleAssignment(models.Model):
     «atipico» + ``make_detail``): en lugar de crear líneas propias,
     materializa los días de trabajo del ciclo como ``planning.slot``
     nativos en borrador (el jefe los publica desde el gantt del
-    planning y ``hr_work_entry_planning`` los convierte en work
-    entries). Los días de descanso no generan slot; el monitor de
+    planning). Los días de descanso no generan slot; el monitor de
     asistencia los deriva de esta asignación.
 
     El registro además documenta el ciclo pactado, exigencia del
@@ -355,7 +353,7 @@ class L10nPeHrShiftCycleAssignment(models.Model):
                     max(work_dates), datetime.min.time()) + timedelta(
                     days=2, hours=duration)
                 existing_slots = self.env['planning.slot'].search([
-                    ('employee_id', '=', assignment.employee_id.id),
+                    ('employee_ids', 'in', assignment.employee_id.ids),
                     ('start_datetime', '<', range_end),
                     ('end_datetime', '>', range_start),
                 ])
@@ -375,7 +373,7 @@ class L10nPeHrShiftCycleAssignment(models.Model):
                     conflicts.append(fields.Date.to_string(work_date))
                     continue
                 vals_list.append({
-                    'resource_id': assignment.employee_id.resource_id.id,
+                    'resource_ids': [Command.set(assignment.employee_id.resource_id.ids)],
                     'company_id': assignment.company_id.id,
                     'start_datetime': start_utc,
                     'end_datetime': end_utc,
@@ -395,13 +393,13 @@ class L10nPeHrShiftCycleAssignment(models.Model):
     def unlink(self):
         """Al borrar la asignación se limpian sus turnos borrador.
 
-        Si algún turno ya está publicado se bloquea: un slot publicado
-        genera work entries (``hr_work_entry_planning``) y borrarlo por
+        Si algún turno ya está publicado se bloquea: el tareaje y el
+        monitor de asistencia leen los turnos publicados y borrarlo por
         arrastre rompería la nómina; primero hay que despublicarlo en
         el planning.
         """
         published = self.slot_ids.filtered(
-            lambda slot: slot.state == 'published')
+            lambda slot: slot.state == '2_published')
         if published:
             raise UserError(self.env._(
                 'La asignación tiene %d turno(s) publicados; '
@@ -421,7 +419,7 @@ class L10nPeHrShiftCycleAssignment(models.Model):
             'domain': [('l10n_pe_cycle_assignment_id', '=', self.id)],
             'context': {
                 'default_l10n_pe_cycle_assignment_id': self.id,
-                'default_resource_id': self.employee_id.resource_id.id,
+                'default_resource_ids': self.employee_id.resource_id.ids,
             },
         }
 

@@ -15,21 +15,24 @@ class TestLeaveSuspension(BenefitsCaseBase):
             leave_skip_state_check=True).create({
                 'name': 'Vacaciones',
                 'employee_id': self.employee.id,
-                'holiday_status_id': leave_type.id,
+                'work_entry_type_id': leave_type.id,
                 'request_date_from': date(2026, 1, 28),
                 'request_date_to': date(2026, 2, 3),
             })
 
     def test_validated_leave_creates_monthly_suspensions(self):
         vacation = self.env.ref('al_hr_pe.suspension_23')
-        leave_type = self.env['hr.leave.type'].create({
-            'name': 'Vacaciones PE', 'requires_allocation': False,
-            'company_id': self.company.id,
+        leave_type = self.env['hr.work.entry.type'].create({
+            'name': 'Vacaciones PE', 'code': 'TVACPE', 'count_as': 'absence',
+            'requires_allocation': False,
             'l10n_pe_suspension_type_id': vacation.id,
         })
         leave = self._leave(leave_type)
-        self.assertFalse(leave.l10n_pe_suspension_ids, 'sin aprobar, nada')
-        leave._action_validate(check_state=False)
+        # Odoo 20: la ausencia que registra RR. HH. para otro empleado se
+        # aprueba sola; si queda por aprobar, aún no tiene suspensiones.
+        if leave.state != 'validate':
+            self.assertFalse(leave.l10n_pe_suspension_ids, 'sin aprobar, nada')
+            leave._action_validate(check_state=False)
         suspensions = leave.l10n_pe_suspension_ids.sorted('date_from')
         self.assertEqual(suspensions.mapped('days'), [4, 3],
                          '28-31 de enero y 1-3 de febrero')
@@ -42,12 +45,13 @@ class TestLeaveSuspension(BenefitsCaseBase):
                          'rechazada, las suspensiones desaparecen')
 
     def test_leave_type_without_code_creates_nothing(self):
-        leave_type = self.env['hr.leave.type'].create({
-            'name': 'Permiso sin código', 'requires_allocation': False,
-            'company_id': self.company.id,
+        leave_type = self.env['hr.work.entry.type'].create({
+            'name': 'Permiso sin código', 'code': 'TPERPE', 'count_as': 'absence',
+            'requires_allocation': False,
         })
         leave = self._leave(leave_type)
-        leave._action_validate(check_state=False)
+        if leave.state != 'validate':
+            leave._action_validate(check_state=False)
         self.assertFalse(leave.l10n_pe_suspension_ids)
 
     def test_paid_time_off_defaults_to_vacation(self):

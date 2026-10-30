@@ -26,21 +26,21 @@
 
         <menuitem id="menu_hr_pe_cfg_parameters"
                   name="Parámetros"
-                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  parent="hr_payroll.menu_hr_payroll_configuration"
                   sequence="60"/>
         <menuitem id="menu_hr_pe_cfg_social"
                   name="Seguridad social"
-                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  parent="hr_payroll.menu_hr_payroll_configuration"
                   sequence="62"/>
         <!-- Las tablas del T-Registro juntas: se consultan poco y siempre
              por su número. -->
         <menuitem id="menu_hr_pe_cfg_catalogs"
                   name="Catálogos SUNAT"
-                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  parent="hr_payroll.menu_hr_payroll_configuration"
                   sequence="64"/>
         <menuitem id="menu_hr_pe_cfg_documents"
                   name="Tipos y plantillas"
-                  parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+                  parent="hr_payroll.menu_hr_payroll_configuration"
                   sequence="70"/>
 
         <!-- Recibos de nómina ▸ Pagos y contabilidad: el pago al banco

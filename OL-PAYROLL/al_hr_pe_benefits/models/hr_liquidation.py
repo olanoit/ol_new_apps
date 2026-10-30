@@ -245,13 +245,13 @@ class HrLiquidation(models.Model):
                 line.truncated_vacation)
             if line.vacation_indemnity:
                 self._set_slip_input(
-                    slip, self.env.ref('al_hr_pe.input_type_INDVAC'),
+                    slip, self.env.ref('al_hr_pe.salary_rule_INDVAC'),
                     line.vacation_indemnity)
             # Las vacaciones adelantadas se restaban solo en el total de la
             # línea: la boleta pagaba las truncas completas.
             if line.advanced_vacation:
                 self._set_slip_input(
-                    slip, self.env.ref('al_hr_pe.input_type_ADE_VAC'),
+                    slip, self.env.ref('al_hr_pe.salary_rule_ADE_VAC'),
                     line.advanced_vacation)
         for line in self.liq_ext_concept_ids:
             slip = employee_slip(line.employee_id)
@@ -479,12 +479,12 @@ class HrLiquidation(models.Model):
             return
         slip = slip[:1]
         input_line = slip.input_line_ids.filtered(
-            lambda inp: inp.input_type_id == input_type)
+            lambda inp: inp.salary_rule_id == input_type)
         if input_line:
             input_line.amount = amount
         else:
             slip.write({'input_line_ids': [(0, 0, {
-                'input_type_id': input_type.id,
+                'salary_rule_id': input_type.id,
                 'amount': amount,
             })]})
 
@@ -758,7 +758,7 @@ class HrExtraConceptLine(models.Model):
         related='extra_concept_id.company_id', string='Compañía',
         store=True, index=True)
     name_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Concepto')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Concepto')
     amount = fields.Float(string='Importe')
     type = fields.Selection(
         selection=[('in', 'Ingreso'), ('out', 'Descuento')],

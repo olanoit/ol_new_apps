@@ -88,11 +88,11 @@
 
     <!-- Bandera «Es vacaciones (Perú)» en el tipo de ausencia -->
     <record id="edit_holiday_status_form_inherit_l10n_pe" model="ir.ui.view">
-        <field name="name">hr.leave.type.form.inherit.l10n.pe</field>
-        <field name="model">hr.leave.type</field>
-        <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+        <field name="name">hr.work.entry.type.form.inherit.l10n.pe</field>
+        <field name="model">hr.work.entry.type</field>
+        <field name="inherit_id" ref="hr_holidays.hr_work_entry_type_view_form"/>
         <field name="arch" type="xml">
-            <field name="time_type" position="after">
+            <field name="request_unit" position="after">
                 <field name="l10n_pe_is_vacation"/>
             </field>
         </field>

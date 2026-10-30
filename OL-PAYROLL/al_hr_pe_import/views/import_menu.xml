@@ -2,11 +2,11 @@
 <odoo>
 
     <!-- Menú operativo de importaciones bajo la raíz de Nómina (v19:
-         hr_work_entry_enterprise.menu_hr_payroll_root) -->
+         hr_payroll.menu_hr_payroll_root) -->
     <!-- Al final: es una herramienta puntual, no un paso del mes. -->
     <menuitem id="menu_al_hr_pe_import_root"
               name="Importar desde Excel"
-              parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+              parent="hr_payroll.menu_hr_payroll_configuration"
               sequence="90"
               groups="hr_payroll.group_hr_payroll_user"/>
 

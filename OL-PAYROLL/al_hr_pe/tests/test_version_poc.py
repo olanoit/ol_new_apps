@@ -55,7 +55,7 @@ class TestVersionPoc(TestPayslipBase):
         payslip = self.env['hr.payslip'].create({
             'name': 'PoC PE',
             'employee_id': emp.id,
-            'struct_ids': [(6, 0, structure.ids)],
+            'struct_id': structure.id,
             'date_from': date(2023, 1, 1),
             'date_to': date(2023, 1, 31),
         })

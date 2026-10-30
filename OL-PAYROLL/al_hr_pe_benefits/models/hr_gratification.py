@@ -186,12 +186,12 @@ class HrGratification(models.Model):
                     (param.gratification_input_id, line.total_grat),
                     (param.bonus_nine_input_id, line.bonus_essalud)):
                 input_line = slip.input_line_ids.filtered(
-                    lambda inp: inp.input_type_id == input_type)
+                    lambda inp: inp.salary_rule_id == input_type)
                 if input_line:
                     input_line.amount = amount
                 else:
                     slip.write({'input_line_ids': [(0, 0, {
-                        'input_type_id': input_type.id,
+                        'salary_rule_id': input_type.id,
                         'amount': amount,
                     })]})
 

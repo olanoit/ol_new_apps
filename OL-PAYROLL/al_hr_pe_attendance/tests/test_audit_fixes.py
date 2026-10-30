@@ -28,7 +28,6 @@ class TestTareajeAuditFixes(TransactionCase):
             or Param.create({'company_id': cls.env.company.id})
         cls.calendar = cls.env['resource.calendar'].create({
             'name': 'Diurno auditoría',
-            'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [
                 (0, 0, {'dayofweek': str(dia),
                         'hour_from': 8.0, 'hour_to': 16.0,
@@ -196,8 +195,8 @@ class TestTareajeAuditFixes(TransactionCase):
             'al_hr_pe_attendance.'
             'l10n_pe_hr_attendance_monitor_planning_user_rule')
         self.assertEqual(rule.domain, "[('user_id', '=', user.id)]")
-        self.assertIn(self.env.ref('planning.group_planning_user'),
-                      rule.groups)
+        # Odoo 20: la regla es un ir.access con un solo grupo.
+        self.assertEqual(rule.group_id, self.env.ref('planning.group_planning_user'))
         # La vista SQL expone el usuario del trabajador para la regla.
         self.assertIn('user_id', Monitor._fields)
         Monitor.search([], limit=1)  # la vista se consulta sin error

@@ -323,7 +323,7 @@ class HrPayslip(models.Model):
         input_types = (param.quin_advance_id.input_id
                        | param.quin_loan_id.input_id)
         return sum(self.input_line_ids.filtered(
-            lambda line: line.input_type_id in input_types
+            lambda line: line.salary_rule_id in input_types
         ).mapped('amount'))
 
     def import_advance_quin(self):

@@ -42,12 +42,12 @@ class BenefitsCaseBase(TransactionCase):
             # referencia NO tiene comisiones/bonos (promedios = 0)
             'commission_sr_ids': [(6, 0, cls._dummy_rule('TCOMIS').ids)],
             'bonus_sr_ids': [(6, 0, cls._dummy_rule('TBON').ids)],
-            'cts_input_id': cls.env['hr.payslip.input.type'].search(
-                [], limit=1).id,
+            'cts_input_id': cls.env['hr.salary.rule'].search(
+                [('input_usage_payslip', '=', True)], limit=1).id,
             'gratification_input_id':
-                cls.env['hr.payslip.input.type'].search([], limit=1).id,
+                cls.env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1).id,
             'bonus_nine_input_id':
-                cls.env['hr.payslip.input.type'].search([], limit=1).id,
+                cls.env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1).id,
             'lack_wd_ids': [(6, 0, cls.env['hr.work.entry.type'].search(
                 [('code', '=', 'FAL')]).ids)],
             'working_wd_ids': [(6, 0, cls.env['hr.work.entry.type'].search(
@@ -91,7 +91,7 @@ class BenefitsCaseBase(TransactionCase):
             slip = cls.env['hr.payslip'].create({
                 'name': 'Boleta %s-%02d' % (year, month),
                 'employee_id': cls.employee.id,
-                'struct_ids': [(6, 0, cls.structure.ids)],
+                'struct_id': cls.structure.id,
                 'date_from': date(year, month, 1),
                 'date_to': date(year, month, last),
                 'payslip_run_id': run.id,

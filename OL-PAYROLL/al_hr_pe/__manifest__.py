@@ -54,7 +54,6 @@ cero códigos hardcodeados (ver plan §5).
         'data/hr_payroll_structure_type_data.xml',
         'data/hr_payroll_structure_data.xml',
         'data/hr_work_entry_type_data.xml',
-        'data/hr_payslip_input_type_data.xml',
         'data/hr_salary_rule_data.xml',
         'data/hr_salary_rule_sync.xml',
         'data/hr_tregistro_catalogs.xml',

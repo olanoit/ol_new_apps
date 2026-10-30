@@ -1006,7 +1006,7 @@ class HrTareajeManagerLineAttendance(models.Model):
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
-    def _get_worked_day_lines(self, domain=None, check_out_of_version=True):
+    def _get_worked_day_lines(self, versions, work_entries_vals, check_out_of_version=True):
         """Vuelca el tareaje aplicado a los días trabajados de la boleta.
 
         Llama SIEMPRE a ``super()`` (motor nativo + capa al_hr_pe, que
@@ -1022,7 +1022,7 @@ class HrPayslip(models.Model):
         calendario — comportamiento v18 del modo «Asistencias»).
         """
         res = super()._get_worked_day_lines(
-            domain=domain, check_out_of_version=check_out_of_version)
+            versions, work_entries_vals, check_out_of_version=check_out_of_version)
         if self.struct_id.country_id.code != 'PE' or not self.employee_id \
                 or not self.date_from or not self.date_to:
             return res
@@ -1051,6 +1051,8 @@ class HrPayslip(models.Model):
                     found = True
             if not found:
                 res.append({
+                    # Odoo 20: version_id es obligatorio en la línea de días.
+                    'version_id': versions[:1].id or self.version_id.id,
                     'sequence': wet.sequence,
                     'work_entry_type_id': wet.id,
                     'number_of_days': days,

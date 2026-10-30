@@ -72,5 +72,5 @@ class TestFortnightlyStructure(BenefitsCaseBase):
         monthly = fortnightly.payslip_run_id.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         advance = monthly.input_line_ids.filtered(
-            lambda i: i.input_type_id == self.param.fortnightly_input_id)
+            lambda i: i.salary_rule_id == self.param.fortnightly_input_id)
         self.assertAlmostEqual(sum(advance.mapped('amount')), self.wage * 0.5)

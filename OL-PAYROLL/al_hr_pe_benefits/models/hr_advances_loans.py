@@ -64,7 +64,7 @@ class HrAdvanceType(models.Model):
 
     name = fields.Char(string='Nombre', required=True)
     input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Entrada de la boleta',
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Entrada de la boleta',
         help='Entrada de la boleta por la que se descuenta el adelanto.')
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,
@@ -133,7 +133,7 @@ class HrLoanType(models.Model):
 
     name = fields.Char(string='Nombre', required=True)
     input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Entrada de la boleta',
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Entrada de la boleta',
         help='Entrada de la boleta por la que se descuentan las cuotas.')
     company_id = fields.Many2one(
         'res.company', string='Compañía', required=True, index=True,

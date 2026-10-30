@@ -120,9 +120,9 @@ class HrMainParameter(models.Model):
 
     # --- Gratificación (nombres v18 conservados) ---
     gratification_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input gratificación')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input gratificación')
     bonus_nine_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input bonificación 9 %')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input bonificación 9 %')
     bonus_sr_ids = fields.Many2many(
         'hr.salary.rule', 'sr_bonus_main_parameter_rel',
         'main_parameter_id', 'sr_id',
@@ -148,7 +148,7 @@ class HrMainParameter(models.Model):
 
     # --- CTS ---
     cts_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input CTS')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input CTS')
     medical_rest_wd_ids = fields.Many2many(
         'hr.work.entry.type', 'wd_medical_rest_parameter_rel',
         'main_parameter_id', 'wd_id', string='W.D. descanso médico')
@@ -161,15 +161,15 @@ class HrMainParameter(models.Model):
 
     # --- Liquidación de cese (Fase 4) ---
     truncated_gratification_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input gratificación trunca')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input gratificación trunca')
     truncated_bonus_nine_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input bonificación 9 % trunca')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input bonificación 9 % trunca')
     truncated_cts_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input CTS trunca')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input CTS trunca')
     vacation_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input vacaciones devengadas')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input vacaciones devengadas')
     truncated_vacation_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input vacaciones truncas')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input vacaciones truncas')
 
     # --- Subsidios EsSalud (Fase 4) ---
     vacation_sr_id = fields.Many2one(
@@ -182,9 +182,9 @@ class HrMainParameter(models.Model):
         'main_parameter_id', 'sr_id',
         string='R.S. descuentos por inasistencias')
     maternidad_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input maternidad')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input maternidad')
     enfermedad_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input enfermedad')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input enfermedad')
 
     # --- Utilidades D.L. 892 (Fase 4) ---
     rule_total_income = fields.Many2one(
@@ -197,7 +197,7 @@ class HrMainParameter(models.Model):
         'hr.work.entry.type', 'wd_falt_main_parameter_rel',
         'main_parameter_id', 'wd_id', string='W.D. faltas (utilidades)')
     hr_input_for_results = fields.Many2one(
-        'hr.payslip.input.type', string='Input utilidades')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input utilidades')
 
     # --- Adelantos/préstamos: tipos especiales BBSS + quincena ---
     grat_advance_id = fields.Many2one(
@@ -229,9 +229,9 @@ class HrMainParameter(models.Model):
 
     # --- Adelanto quincenal ---
     fortnightly_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input quincena',
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input quincena',
         default=lambda self: self.env.ref(
-            'al_hr_pe.input_type_ADE_QUIN', raise_if_not_found=False))
+            'al_hr_pe.salary_rule_ADE_QUIN', raise_if_not_found=False))
     net_fortnightly_sr_id = fields.Many2one(
         'hr.salary.rule', string='R.S. neto quincenal',
         default=lambda self: self.env.ref(
@@ -284,7 +284,7 @@ class HrMainParameter(models.Model):
         los datos del módulo, todos."""
         net_rule = self.env.ref('al_hr_pe_benefits.rule_NETO_AQ',
                                 raise_if_not_found=False)
-        input_type = self.env.ref('al_hr_pe.input_type_ADE_QUIN',
+        input_type = self.env.ref('al_hr_pe.salary_rule_ADE_QUIN',
                                   raise_if_not_found=False)
         for param in self or self.search([]):
             vals = {}

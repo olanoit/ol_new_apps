@@ -163,11 +163,11 @@ class HrPayslip(models.Model):
             return 0.0
         return round_half_up(base * rate / 100.0, 2)
 
-    def _get_localdict(self):
+    def _get_localdict(self, work_entries=None):
         """Las fórmulas PE leen ``inputs['CODIGO'].amount`` para conceptos
         opcionales (bonos, adelantos…): un input ausente vale 0 (semántica
         v18, donde todas las líneas se generaban aunque fueran cero)."""
-        localdict = super()._get_localdict()
+        localdict = super()._get_localdict(work_entries)
         if self.struct_id.country_id.code == 'PE':
             # Las fórmulas redondean con ``round(x, 2)``: en la boleta PE
             # es el HALF_UP de SUNAT, no el redondeo al par de Python.
@@ -184,25 +184,34 @@ class HrPayslip(models.Model):
                 localdict['worked_days'])
         return localdict
 
-    def _get_worked_day_lines(self, domain=None, check_out_of_version=True):
+    def _round_days(self, work_entry_type, days):
+        """La boleta PE no redondea los días: Odoo 20 redondea hacia abajo
+        los tipos por días (``request_unit``) y en 19 el valor por defecto
+        era «sin redondeo», que es lo que esperan las fórmulas."""
+        if self.struct_id.country_id.code == 'PE':
+            return days
+        return super()._round_days(work_entry_type, days)
+
+    def _get_worked_day_lines(self, versions, work_entries_vals, check_out_of_version=True):
         """Las fórmulas PE acceden por código (``worked_days['FAL']``…)
         y esperan que TODOS los conceptos peruanos tengan línea aunque
         valgan cero (patrón is_automatic del v18): se completan las que
         el motor nativo no generó."""
         res = super()._get_worked_day_lines(
-            domain=domain, check_out_of_version=check_out_of_version)
+            versions, work_entries_vals, check_out_of_version=check_out_of_version)
         if self.struct_id.country_id.code != 'PE':
             return res
         # La asistencia nativa (calendario) se remapea al concepto PE
         # DLAB: v18 pisaba el código del tipo nativo, aquí se sustituye
         # solo en la boleta peruana sin tocar datos de otros países.
-        attendance = self.env.ref(
-            'hr_work_entry.work_entry_type_attendance',
-            raise_if_not_found=False)
+        # Odoo 20: la asistencia llega con el tipo del calendario (hay uno
+        # «002.00» por país) o el tipo por defecto de la estructura.
+        attendance = self.env['hr.work.entry.type'].search([('code', '=', '002.00')]) \
+            | self.struct_id.type_id.default_work_entry_type_id
         dlab = self.env.ref('al_hr_pe.wd_DLAB', raise_if_not_found=False)
         if attendance and dlab:
             for vals in res:
-                if vals.get('work_entry_type_id') == attendance.id:
+                if vals.get('work_entry_type_id') in attendance.ids:
                     vals['work_entry_type_id'] = dlab.id
         present = {
             self.env['hr.work.entry.type'].browse(
@@ -213,6 +222,8 @@ class HrPayslip(models.Model):
         ])
         for wet in missing:
             res.append({
+                # Odoo 20: version_id es obligatorio en la línea de días.
+                'version_id': versions[:1].id or self.version_id.id,
                 'sequence': 100,
                 'work_entry_type_id': wet.id,
                 'number_of_days': 0.0,

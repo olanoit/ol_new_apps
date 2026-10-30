@@ -54,7 +54,7 @@ class TestConafovicer(TransactionCase):
             'date_from': week.date_start, 'date_to': week.date_end})
         payslip.worked_days_line_ids.unlink()
         payslip.worked_days_line_ids = [(0, 0, {
-            'name': 'Días', 'work_entry_type_id': self.wd_dlab.id,
+            'name': 'Días', 'version_id': payslip.version_id.id, 'work_entry_type_id': self.wd_dlab.id,
             'number_of_days': days, 'number_of_hours': days * 8,
             'amount': 0.0})]
         payslip.compute_sheet()

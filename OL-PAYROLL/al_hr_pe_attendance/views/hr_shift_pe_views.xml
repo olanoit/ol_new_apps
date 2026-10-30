@@ -215,12 +215,12 @@
          Configuración ▸ Asistencia. -->
     <menuitem id="menu_hr_pe_attendance_root"
         name="Asistencia"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_work_entries_root"
+        parent="hr_payroll.menu_hr_payroll_time_offs"
         sequence="80"
         groups="hr_payroll.group_hr_payroll_user,planning.group_planning_user"/>
     <menuitem id="menu_hr_pe_attendance_config"
         name="Asistencia"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_configuration"
+        parent="hr_payroll.menu_hr_payroll_configuration"
         sequence="68"
         groups="hr_payroll.group_hr_payroll_manager"/>
 

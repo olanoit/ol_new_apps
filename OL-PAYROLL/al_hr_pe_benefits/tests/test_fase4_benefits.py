@@ -111,8 +111,7 @@ class TestFase4Benefits(BenefitsCaseBase):
                 [('code', 'in', ('DLAB', 'DOM'))]).ids)],
             'wd_falt': [(6, 0, self.env['hr.work.entry.type'].search(
                 [('code', '=', 'FAL')]).ids)],
-            'hr_input_for_results': self.env[
-                'hr.payslip.input.type'].search([], limit=1).id,
+            'hr_input_for_results': self.env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1).id,
         })
         util = self.env['hr.utilities'].create({
             'company_id': self.company.id,

@@ -197,6 +197,10 @@ class AlImportHrAttendanceWizard(models.TransientModel):
                 ) % {'n': emp_name, 'd': check_in}, existing
             # Una celda de salida vacía no borra la salida ya registrada.
             if check_out:
+                # Odoo 20: el sobretiempo de la marcación anterior vive en
+                # asistencias hijas; se quitan y las reglas de tiempo lo
+                # vuelven a separar con la nueva salida.
+                existing.overtime_attendance_ids.sudo().unlink()
                 existing.write({'check_out': check_out})
             return 'updated', self.env._(
                 'actualizada asistencia de "%(n)s" (entrada %(d)s)'

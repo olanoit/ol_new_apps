@@ -47,8 +47,7 @@ y 18):
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'countries': ['pe'],
-    'depends': ['al_construction_planner_subcontract', 'al_construction_planner_crew', 'al_hr_pe_construction', 'hr_attendance',
-                'hr_hourly_cost'],
+    'depends': ['al_construction_planner_subcontract', 'al_construction_planner_crew', 'al_hr_pe_construction', 'hr_attendance'],
     'data': [
         'views/construction_site_views.xml',
         'views/contractor_views.xml',

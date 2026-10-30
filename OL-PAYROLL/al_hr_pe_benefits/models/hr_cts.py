@@ -183,12 +183,12 @@ class HrCts(models.Model):
             if not slip:
                 continue
             cts_input_line = slip.input_line_ids.filtered(
-                lambda inp: inp.input_type_id == input_cts)
+                lambda inp: inp.salary_rule_id == input_cts)
             if cts_input_line:
                 cts_input_line.amount = line.total_cts
             else:
                 slip[:1].write({'input_line_ids': [(0, 0, {
-                    'input_type_id': input_cts.id,
+                    'salary_rule_id': input_cts.id,
                     'amount': line.total_cts,
                 })]})
 

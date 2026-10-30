@@ -192,7 +192,6 @@ class TestTareajeFlow(TransactionCase):
         de la semana (hour_to no puede pasar de 24)."""
         return self.env['resource.calendar'].create({
             'name': 'Nocturno test',
-            'tz': 'America/Lima',
             'hours_per_day': 8.0,
             'attendance_ids': [(5, 0, 0)] + [
                 (0, 0, {'dayofweek': str(dia),
@@ -237,7 +236,6 @@ class TestTareajeFlow(TransactionCase):
         tareaje = self._create_tareaje('Tareaje Nocturno Odoo')
         calendario = self.env['resource.calendar'].create({
             'name': 'Nocturno día siguiente',
-            'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [
                 (0, 0, {'dayofweek': str(dia),
                         'hour_from': 22.0, 'hour_to': 24.0,

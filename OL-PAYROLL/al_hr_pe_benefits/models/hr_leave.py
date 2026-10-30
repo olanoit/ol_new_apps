@@ -17,8 +17,10 @@ from odoo import api, fields, models
 _logger = logging.getLogger(__name__)
 
 
-class HrLeaveType(models.Model):
-    _inherit = 'hr.leave.type'
+class HrWorkEntryType(models.Model):
+    # Odoo 20: el tipo de ausencia (hr.leave.type) es el tipo de entrada de
+    # trabajo.
+    _inherit = 'hr.work.entry.type'
 
     l10n_pe_suspension_type_id = fields.Many2one(
         'hr.suspension.type', string='Suspensión PLAME (T21)',
@@ -30,12 +32,9 @@ class HrLeaveType(models.Model):
     @api.model
     def _l10n_pe_set_default_suspensions(self):
         """Vacaciones pagadas → T21 «23», si aún no tiene código."""
-        # v19 lo llama leave_type_paid_time_off; las bases que vienen de
-        # versiones anteriores conservan holiday_status_cl.
-        leave_type = self.env.ref('hr_holidays.leave_type_paid_time_off',
-                                  raise_if_not_found=False) \
-            or self.env.ref('hr_holidays.holiday_status_cl',
-                            raise_if_not_found=False)
+        # Odoo 20: las vacaciones pagadas son el tipo «PTO» de hr_work_entry.
+        leave_type = self.env.ref('hr_work_entry.generic_work_entry_type_legal_leave',
+                                  raise_if_not_found=False)
         suspension = self.env.ref('al_hr_pe.suspension_23',
                                   raise_if_not_found=False)
         if leave_type and suspension \
@@ -69,7 +68,7 @@ class HrLeave(models.Model):
     def write(self, vals):
         res = super().write(vals)
         if {'state', 'request_date_from', 'request_date_to',
-                'holiday_status_id', 'employee_id'} & set(vals):
+                'work_entry_type_id', 'employee_id'} & set(vals):
             self._l10n_pe_sync_suspensions()
         return res
 
@@ -84,7 +83,7 @@ class HrLeave(models.Model):
         Suspension.search([('leave_id', 'in', self.ids)]).unlink()
         for leave in self:
             suspension_type = \
-                leave.holiday_status_id.l10n_pe_suspension_type_id
+                leave.work_entry_type_id.l10n_pe_suspension_type_id
             if leave.state != 'validate' or not suspension_type \
                     or not leave.employee_id \
                     or not leave.request_date_from \

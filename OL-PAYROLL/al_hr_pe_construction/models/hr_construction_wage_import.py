@@ -59,7 +59,7 @@ class L10nPeHrConstructionWageTable(models.Model):
     @api.model
     def _l10n_pe_watched_urls(self):
         """Direcciones que revisa la acción planificada, una por línea."""
-        value = self.env['ir.config_parameter'].sudo().get_str(URLS_PARAM)
+        value = self.env['ir.config_parameter'].sudo().get_str(URLS_PARAM, default=False)
         if value is False:
             # Nunca configurado: las direcciones conocidas. Un valor vacío,
             # en cambio, es que el usuario las quitó todas.

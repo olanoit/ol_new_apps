@@ -31,6 +31,11 @@ class PlannerCommon(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # La obra de prueba usa los niveles por defecto (Piso › Departamento ›
+        # Ambiente › Módulo): un perfil vertical aplicado en la base (p. ej.
+        # Mobiliario, al instalar la industria) deja otra plantilla en la
+        # compañía.
+        cls.company.construction_level_template_id = False
         # Días hábiles de la obra de lunes a viernes (las bases de prueba
         # pueden traer sábados laborables).
         # Odoo 20: la zona horaria es de la compañía, no del calendario.

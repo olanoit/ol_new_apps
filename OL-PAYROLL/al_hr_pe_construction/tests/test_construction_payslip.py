@@ -62,6 +62,7 @@ class TestConstructionPayslip(TransactionCase):
         payslip.worked_days_line_ids.unlink()
         lines = [(0, 0, {
             'name': 'Días laborados',
+            'version_id': payslip.version_id.id,
             'work_entry_type_id': self.wd_dlab.id,
             'number_of_days': days,
             'number_of_hours': days * 8,
@@ -70,6 +71,7 @@ class TestConstructionPayslip(TransactionCase):
         for work_entry_type, hours in (overtime or {}).items():
             lines.append((0, 0, {
                 'name': work_entry_type.name,
+                'version_id': payslip.version_id.id,
                 'work_entry_type_id': work_entry_type.id,
                 'number_of_days': 0,
                 'number_of_hours': hours,

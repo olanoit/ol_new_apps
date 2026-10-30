@@ -675,7 +675,7 @@ class HrPayslipRun(models.Model):
         if not slips:
             raise UserError(self.env._('El lote no tiene boletas.'))
         lines = slips.line_ids.filtered(
-            lambda line: line.appears_on_payslip and line.total)
+            lambda line: line.appears_on_payslip != 'never' and line.total)
         rules = lines.salary_rule_id.sorted(lambda rule: (rule.sequence, rule.code))
         totals = {}
         for line in lines:

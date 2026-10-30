@@ -11,10 +11,10 @@
                 <page string="Quinta categoría" name="fifth_category">
                     <group>
                         <group string="Reglas salariales">
-                            <field name="fifth_afect_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
-                            <field name="fifth_extr_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
-                            <field name="proy_afect_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
-                            <field name="gratification_sr_id" domain="[('struct_id.name', '=', 'BASE')]"/>
+                            <field name="fifth_afect_sr_id" domain="[('struct_ids.name', '=', 'BASE')]"/>
+                            <field name="fifth_extr_sr_id" domain="[('struct_ids.name', '=', 'BASE')]"/>
+                            <field name="proy_afect_sr_id" domain="[('struct_ids.name', '=', 'BASE')]"/>
+                            <field name="gratification_sr_id" domain="[('struct_ids.name', '=', 'BASE')]"/>
                         </group>
                         <group string="Inputs de la boleta">
                             <field name="fifth_category_input_id"

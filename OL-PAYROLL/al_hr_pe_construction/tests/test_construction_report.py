@@ -59,7 +59,7 @@ class TestConstructionReport(TransactionCase):
             'date_from': date(2026, 3, 2), 'date_to': date(2026, 3, 8)})
         payslip.worked_days_line_ids.unlink()
         payslip.worked_days_line_ids = [(0, 0, {
-            'name': 'Días', 'work_entry_type_id': self.wd_dlab.id,
+            'name': 'Días', 'version_id': payslip.version_id.id, 'work_entry_type_id': self.wd_dlab.id,
             'number_of_days': days, 'number_of_hours': days * 8,
             'amount': 0.0})]
         payslip.compute_sheet()
@@ -151,6 +151,7 @@ class TestConstructionReport(TransactionCase):
         payslip = self._payslip(employee)
         payslip.worked_days_line_ids = [(0, 0, {
             'name': 'Horas extras 60%',
+            'version_id': payslip.version_id.id,
             'work_entry_type_id': self.env.ref(
                 'al_hr_pe_construction.wd_HE60').id,
             'number_of_days': 0, 'number_of_hours': 4, 'amount': 0.0})]

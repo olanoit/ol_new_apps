@@ -222,12 +222,15 @@ class TestMrpCost(AccountTestInvoicingCommon):
         })
         slip.compute_sheet()
         slip.state = 'validated'
-        worked = slip.worked_days_line_ids.filtered(lambda wd: wd.number_of_hours and not wd.work_entry_type_id.is_leave)
+        worked = slip.worked_days_line_ids.filtered(lambda wd: wd.number_of_hours and wd.work_entry_type_id.count_as != 'absence')
         self.assertTrue(worked)
         self.env['hr.main.parameter'].get_main_parameter(self.company).wd_dlab = worked.work_entry_type_id
-        expected = sum(
-            line.total * {'ING': 1, 'DES_AFE': -1, 'APOR_EMP': 1}[line.category_id.code]
-            for line in slip.line_ids if line.category_id.code in ('ING', 'DES_AFE', 'APOR_EMP'))
+        signs = {'ING': 1, 'DES_AFE': -1, 'APOR_EMP': 1}
+        expected = 0.0
+        for line in slip.line_ids:
+            code = next((code for code in line.category_ids.mapped('code') if code in signs), None)
+            if code:
+                expected += line.total * signs[code]
         self.assertGreater(expected, 3000.0)
         rate = self.env['l10n_pe.mrp.labor.rate'].create({
             'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31),

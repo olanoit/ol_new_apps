@@ -603,12 +603,12 @@ class HrPayslip(models.Model):
         """
         self.ensure_one()
         line = self.input_line_ids.filtered(
-            lambda inp: inp.input_type_id == input_type)
+            lambda inp: inp.salary_rule_id == input_type)
         if line:
             line[:1].amount = amount
         else:
             self.write({'input_line_ids': [(0, 0, {
-                'input_type_id': input_type.id,
+                'salary_rule_id': input_type.id,
                 'amount': amount,
             })]})
 

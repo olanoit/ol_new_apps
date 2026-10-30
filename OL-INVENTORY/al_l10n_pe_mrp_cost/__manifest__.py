@@ -25,7 +25,7 @@ Costeo de órdenes de fabricación (Perú)
     'version': '1.20261029',
     'license': 'OPL-1',
     'countries': ['pe'],
-    'depends': ['mrp_workorder', 'mrp_landed_costs', 'hr_hourly_cost', 'al_hr_pe'],
+    'depends': ['mrp_workorder', 'mrp_landed_costs', 'al_hr_pe'],
     'external_dependencies': {'python': ['openpyxl']},
     'data': [
         'data/product_data.xml',

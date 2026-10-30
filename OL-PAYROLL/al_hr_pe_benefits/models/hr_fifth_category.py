@@ -58,9 +58,9 @@ class HrMainParameter(models.Model):
     gratification_sr_id = fields.Many2one(
         'hr.salary.rule', string='R.S. Gratificación julio y diciembre')
     fifth_category_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input quinta categoría')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input quinta categoría')
     ret_extraordinary_input_id = fields.Many2one(
-        'hr.payslip.input.type', string='Input retención extraordinaria')
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input retención extraordinaria')
     rate_limit_ids = fields.One2many(
         'hr.rate.limit', 'main_parameter_id', string='Tramos de 5ta')
 
@@ -295,12 +295,12 @@ class HrFifthCategory(models.Model):
             slip = line.slip_id
             amount = custom_round(line.monthly_ret + line.ext_ret, 2)
             input_line = slip.input_line_ids.filtered(
-                lambda inp: inp.input_type_id == input_type)
+                lambda inp: inp.salary_rule_id == input_type)
             if input_line:
                 input_line.amount = amount
             else:
                 slip.write({'input_line_ids': [Command.create({
-                    'input_type_id': input_type.id,
+                    'salary_rule_id': input_type.id,
                     'amount': amount,
                 })]})
         self.state = 'exported'

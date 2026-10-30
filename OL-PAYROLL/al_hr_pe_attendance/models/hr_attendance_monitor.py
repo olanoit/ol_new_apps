@@ -8,8 +8,7 @@ sobre los modelos nativos v19:
   ``hr.assistance.planning.line``).
 * Días de descanso del régimen atípico: derivados de
   ``l10n_pe.hr.shift.cycle.assignment`` (antes líneas con
-  ``is_day_rest``; en v19 los descansos no generan slot porque un slot
-  publicado se convierte en work entry vía ``hr_work_entry_planning``).
+  ``is_day_rest``; los descansos no generan slot).
 * Marcaciones: ``hr.attendance`` agregadas por día local del empleado
   (el campo nativo ``hr.attendance.date`` ya se calcula en la zona
   horaria del empleado). Con 4 marcaciones (salida/retorno de
@@ -46,9 +45,12 @@ from odoo.addons.al_hr_pe.models.display_name import pe_join, pe_date
 from odoo.tools import SQL
 
 
-class HrLeaveType(models.Model):
-    """Bandera configurable para clasificar vacaciones en el monitor."""
-    _inherit = 'hr.leave.type'
+class HrWorkEntryType(models.Model):
+    """Bandera configurable para clasificar vacaciones en el monitor.
+
+    Odoo 20: el tipo de ausencia (hr.leave.type) es el tipo de entrada de
+    trabajo."""
+    _inherit = 'hr.work.entry.type'
 
     l10n_pe_is_vacation = fields.Boolean(
         string='Es vacaciones (Perú)',
@@ -149,8 +151,9 @@ WITH att AS (
      GROUP BY ha.employee_id, ha.date
 ),
 base AS (
-    -- Rama 1: turnos planificados publicados
-    SELECT s.employee_id,
+    -- Rama 1: turnos planificados publicados (Odoo 20: un turno puede
+    -- tener varios recursos; una fila por empleado del turno)
+    SELECT hes.id AS employee_id,
            s.company_id,
            z.tz,
            (s.start_datetime AT TIME ZONE 'UTC' AT TIME ZONE z.tz)::date
@@ -168,11 +171,13 @@ base AS (
                / 3600.0 AS duration_asis,
            FALSE AS is_day_rest
       FROM planning_slot s
-      JOIN resource_resource rr ON rr.id = s.resource_id
+      JOIN planning_slot_resource_resource_rel srel
+        ON srel.planning_slot_id = s.id
+      JOIN resource_resource rr ON rr.id = srel.resource_resource_id
+      JOIN hr_employee hes ON hes.resource_id = rr.id
      CROSS JOIN LATERAL (
            SELECT COALESCE(NULLIF(rr.tz, ''), 'UTC') AS tz) z
-     WHERE s.state = 'published'
-       AND s.employee_id IS NOT NULL
+     WHERE s.state = '2_published'
 
     UNION ALL
 
@@ -202,9 +207,12 @@ base AS (
        AND NOT EXISTS (
            SELECT 1
              FROM planning_slot s2
-             JOIN resource_resource rr2 ON rr2.id = s2.resource_id
-            WHERE s2.employee_id = a.employee_id
-              AND s2.state = 'published'
+             JOIN planning_slot_resource_resource_rel srel2
+               ON srel2.planning_slot_id = s2.id
+             JOIN resource_resource rr2 ON rr2.id = srel2.resource_resource_id
+             JOIN hr_employee hes2 ON hes2.resource_id = rr2.id
+            WHERE hes2.id = a.employee_id
+              AND s2.state = '2_published'
               AND (s2.start_datetime AT TIME ZONE 'UTC' AT TIME ZONE
                    COALESCE(NULLIF(rr2.tz, ''), 'UTC'))::date
                   = d.fecha::date)
@@ -266,10 +274,10 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
          ON att.employee_id = b.employee_id AND att.fecha = b.fecha
   LEFT JOIN LATERAL (
        SELECT hl.id AS leave_id,
-              hlt.work_entry_type_id,
-              hlt.l10n_pe_is_vacation
+              hl.work_entry_type_id,
+              wet.l10n_pe_is_vacation
          FROM hr_leave hl
-         JOIN hr_leave_type hlt ON hlt.id = hl.holiday_status_id
+         JOIN hr_work_entry_type wet ON wet.id = hl.work_entry_type_id
         WHERE hl.employee_id = b.employee_id
           AND hl.state = 'validate'
           AND b.fecha BETWEEN hl.request_date_from

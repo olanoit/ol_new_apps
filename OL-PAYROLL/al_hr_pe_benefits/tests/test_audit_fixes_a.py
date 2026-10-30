@@ -43,7 +43,8 @@ class TestAuditFixesA(BenefitsCaseBase):
             wet = self.env['hr.work.entry.type'].search(
                 [('code', '=', code)], limit=1)
             target = self.env['hr.payslip.worked_days'].create({
-                'payslip_id': slip.id, 'work_entry_type_id': wet.id,
+                'payslip_id': slip.id, 'version_id': slip.version_id.id,
+                'work_entry_type_id': wet.id,
                 'number_of_days': 0.0, 'number_of_hours': 0.0,
             })
         pending = days
@@ -232,6 +233,7 @@ class TestAuditFixesA(BenefitsCaseBase):
 
     def test_vacation_rest_ceased_before_anniversary(self):
         """Un cesado no recibe un año vacacional que no completó."""
+        self._reopen_slips_after(date(2025, 12, 15))
         self.employee.version_id.contract_date_end = date(2025, 12, 15)
         Rest = self.env['hr.vacation.rest']
         Rest.get_vacation_employee(self.employee, False)
@@ -267,8 +269,17 @@ class TestAuditFixesA(BenefitsCaseBase):
     # ------------------------------------------------------------------
     # Liquidación de cese
     # ------------------------------------------------------------------
+    def _reopen_slips_after(self, end):
+        self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee.id), ('date_to', '>', end),
+            ('state', 'in', ('validated', 'paid')),
+        ]).write({'state': 'draft'})
+
     def _cessation_in_july(self, day=10, month=7):
         version = self.employee.version_id
+        # Odoo 20 no deja recortar el contrato con boletas validadas fuera
+        # del nuevo periodo: se reabren (en la práctica se reliquidan).
+        self._reopen_slips_after(date(2026, month, day))
         version.write({
             'contract_date_end': date(2026, month, day),
             'situation_id': self.env.ref('al_hr_pe.situation_0').id,
@@ -293,7 +304,7 @@ class TestAuditFixesA(BenefitsCaseBase):
             'payslip_run_id': run.id,
         })
         slip.compute_sheet()
-        input_type = self.env['hr.payslip.input.type'].search([], limit=1)
+        input_type = self.env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1)
         self.param.write({
             'truncated_gratification_input_id': input_type.id,
             'truncated_bonus_nine_input_id': input_type.id,
@@ -337,7 +348,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         slip = liquidation.payslip_run_id.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         indem = slip.input_line_ids.filtered(
-            lambda i: i.input_type_id == self.env.ref('al_hr_pe.input_type_INDVAC'))
+            lambda i: i.salary_rule_id == self.env.ref('al_hr_pe.salary_rule_INDVAC'))
         self.assertAlmostEqual(indem.amount, 1000.0, 2)
 
     def test_liquidation_july_pays_first_semester(self):
@@ -365,7 +376,7 @@ class TestAuditFixesA(BenefitsCaseBase):
         slip = liquidation.payslip_run_id.slip_ids.filtered(
             lambda s: s.employee_id == self.employee)
         ade = slip.input_line_ids.filtered(
-            lambda i: i.input_type_id == self.env.ref('al_hr_pe.input_type_ADE_VAC'))
+            lambda i: i.salary_rule_id == self.env.ref('al_hr_pe.salary_rule_ADE_VAC'))
         self.assertAlmostEqual(ade.amount, 300.0, 2)
 
     def test_liquidation_detail_views_do_not_crash(self):

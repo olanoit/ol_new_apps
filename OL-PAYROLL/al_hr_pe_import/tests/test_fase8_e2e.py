@@ -83,7 +83,7 @@ class TestFase8E2EMulticompania(TransactionCase):
             cls.afp_rules |= _regla(code)
         cls.afp = cls.env['hr.membership'].search(
             [('is_afp', '=', True), ('company_id', '=', False)], limit=1)
-        cls.input_ret_jud = cls.env.ref('al_hr_pe.input_type_RET_JUD')
+        cls.input_ret_jud = cls.env.ref('al_hr_pe.salary_rule_RET_JUD')
         # Reglas de variables en estructura aparte: el caso de referencia
         # no tiene comisiones/bonos (promedios = 0). Compartidas.
         cls.dummy_comis = cls._regla_auxiliar('TCOMIS')
@@ -135,12 +135,12 @@ class TestFase8E2EMulticompania(TransactionCase):
                 Rule.search([('code', '=', 'HE25')], limit=1).id,
             'commission_sr_ids': [(6, 0, cls.dummy_comis.ids)],
             'bonus_sr_ids': [(6, 0, cls.dummy_bono.ids)],
-            'cts_input_id': env['hr.payslip.input.type'].search(
-                [], limit=1).id,
+            'cts_input_id': env['hr.salary.rule'].search(
+                [('input_usage_payslip', '=', True)], limit=1).id,
             'gratification_input_id':
-                env['hr.payslip.input.type'].search([], limit=1).id,
+                env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1).id,
             'bonus_nine_input_id':
-                env['hr.payslip.input.type'].search([], limit=1).id,
+                env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1).id,
             'lack_wd_ids': [(6, 0, env['hr.work.entry.type'].search(
                 [('code', '=', 'FAL')]).ids)],
             'working_wd_ids': [(6, 0, env['hr.work.entry.type'].search(
@@ -229,7 +229,7 @@ class TestFase8E2EMulticompania(TransactionCase):
                 vals = {
                     'name': 'Boleta %s %s-%02d' % (emp.names, year, month),
                     'employee_id': emp.id,
-                    'struct_ids': [(6, 0, cls.structure.ids)],
+                    'struct_id': cls.structure.id,
                     'date_from': date(year, month, 1),
                     'date_to': date(year, month, last),
                     'payslip_run_id': lote.id,
@@ -239,7 +239,7 @@ class TestFase8E2EMulticompania(TransactionCase):
                 if (con_ret_jud and emp == trabajadores[0]
                         and (year, month) == (2026, 4)):
                     vals['input_line_ids'] = [(0, 0, {
-                        'input_type_id': cls.input_ret_jud.id,
+                        'salary_rule_id': cls.input_ret_jud.id,
                         'amount': IMPORTE_RET_JUD,
                     })]
                 slip = env['hr.payslip'].with_company(company).create(vals)

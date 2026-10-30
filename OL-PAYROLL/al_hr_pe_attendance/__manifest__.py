@@ -39,7 +39,6 @@ Sustituye al clon de planning EE de ~2 700 líneas de v18
     'depends': [
         'al_hr_pe',
         'planning',
-        'hr_payroll_planning',
         'hr_attendance',
         'hr_payroll_attendance',
         'hr_holidays',

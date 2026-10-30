@@ -53,7 +53,7 @@ class L10nPeMrpCostAnalysis(models.Model):
                 SELECT mp.id AS production_id, mp.product_id, mp.company_id,
                        mp.date_finished AS date, NULL::integer AS workcenter_id,
                        'material' AS element, NULL::integer AS pool_id,
-                       0.0 AS hours, SUM(sm.value) AS amount
+                       0.0 AS hours, -SUM(sm.value) AS amount  -- Odoo 20: el consumo (salida) se valora en negativo
                   FROM mrp_production mp
                   JOIN stock_move sm ON sm.raw_material_production_id = mp.id AND sm.state = 'done'
                  WHERE mp.state = 'done'

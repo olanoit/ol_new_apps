@@ -46,8 +46,10 @@ class TestConstructionAuditFixes(TransactionCase):
         cls.Table = cls.env['l10n_pe.hr.construction.wage.table']
         # Horario propio en hora de Lima (lunes a viernes, el de Odoo por
         # defecto): así el feriado de la prueba cae en día laborable.
+        # Odoo 20: el calendario ya no tiene zona horaria; va en la compañía.
+        cls.company.tz = 'America/Lima'
         cls.calendar = cls.env['resource.calendar'].create({
-            'name': 'Obra Lima', 'tz': 'America/Lima',
+            'name': 'Obra Lima',
             'company_id': cls.company.id})
 
     def _worker(self, seq, category=None):
@@ -77,6 +79,7 @@ class TestConstructionAuditFixes(TransactionCase):
         payslip.worked_days_line_ids.unlink()
         payslip.worked_days_line_ids = [Command.create({
             'name': work_entry_type.name,
+            'version_id': payslip.version_id.id,
             'work_entry_type_id': work_entry_type.id,
             'number_of_days': days, 'number_of_hours': days * 8,
             'amount': 0.0,
@@ -105,7 +108,8 @@ class TestConstructionAuditFixes(TransactionCase):
         # hr_holidays reinterpreta las fechas del create en el huso del
         # usuario; el write las deja tal cual (mismo truco que el módulo
         # de feriados).
-        leave.write({'date_from': date_from, 'date_to': date_to})
+        leave.write({'date_from': date_from, 'date_to': date_to,
+                     'work_entry_type_id': self.wd_dom.id})
         return leave
 
     # ------------------------------------------------------------------

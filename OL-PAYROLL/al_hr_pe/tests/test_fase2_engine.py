@@ -251,8 +251,8 @@ class TestFase2Engine(TransactionCase):
         ]
         with patch.object(type(self.env['hr.payslip']),
                           '_get_worked_day_lines_values',
-                          lambda self, domain=None: [dict(v) for v in values]):
-            lines = slip._get_worked_day_lines(check_out_of_version=False)
+                          lambda self, version, work_entries_vals: [dict(v) for v in values]):
+            lines = slip._get_worked_day_lines(slip.version_id, [], check_out_of_version=False)
         dom = self.env.ref('al_hr_pe.wd_DOM')
         dom_days = sum(v['number_of_days'] for v in lines
                        if v['work_entry_type_id'] == dom.id)
@@ -451,7 +451,7 @@ class TestFase2Engine(TransactionCase):
         net = self._line(slip, 'NETO').total
         aonp = self._line(slip, 'AAFP').total
         slip.write({'input_line_ids': [(0, 0, {
-            'input_type_id': self.env.ref('al_hr_pe.input_type_INDEM').id,
+            'salary_rule_id': self.env.ref('al_hr_pe.salary_rule_INDEM').id,
             'amount': 1000.0})]})
         slip.compute_sheet()
         self.assertAlmostEqual(self._line(slip, 'NETO').total, net + 1000.0)
@@ -470,7 +470,7 @@ class TestFase2Engine(TransactionCase):
         reaq = self._line(slip, 'REAQ').total
         aafp = self._line(slip, 'AAFP').total
         slip.write({'input_line_ids': [(0, 0, {
-            'input_type_id': self.env.ref('al_hr_pe.input_type_INDVAC').id,
+            'salary_rule_id': self.env.ref('al_hr_pe.salary_rule_INDVAC').id,
             'amount': 900.0})]})
         slip.compute_sheet()
         self.assertAlmostEqual(self._line(slip, 'NETO').total, net + 900.0)

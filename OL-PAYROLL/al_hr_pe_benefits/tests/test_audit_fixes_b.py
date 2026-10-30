@@ -47,7 +47,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         rule = {code: Rule.search([('struct_ids', 'in', struct.ids),
                                    ('code', '=', code)], limit=1)
                 for code in ('BAS', 'REAQ')}
-        quinta_input = self.env['hr.payslip.input.type'].search(
+        quinta_input = self.env['hr.salary.rule'].search(
             [('code', '=', 'QUINTA')], limit=1)
         self.assertTrue(quinta_input, 'Falta el input QUINTA')
         self.param.write({
@@ -170,7 +170,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         self.assertGreater(line.ext_ret, 0.0)
         fifth.action_export_to_payslips()
         exported = june.input_line_ids.filtered(
-            lambda inp: inp.input_type_id == quinta_input)
+            lambda inp: inp.salary_rule_id == quinta_input)
         self.assertAlmostEqual(
             sum(exported.mapped('amount')),
             line.monthly_ret + line.ext_ret, places=2)
@@ -212,6 +212,12 @@ class TestAuditFixesB(BenefitsCaseBase):
         """Ingreso el 01/03: la gratificación de julio se proyecta por 4 de
         6 meses (Ley 27735), no completa."""
         self._configure_fifth()
+        # Odoo 20 no deja mover el inicio del contrato con boletas validadas
+        # anteriores: se reabren.
+        self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee.id), ('date_from', '<', date(2026, 3, 1)),
+            ('state', 'in', ('validated', 'paid')),
+        ]).write({'state': 'draft'})
         self.employee.version_id.contract_date_start = date(2026, 3, 1)
         fifth, line = self._fifth_line_june()
         if not line:
@@ -229,8 +235,7 @@ class TestAuditFixesB(BenefitsCaseBase):
                 [('code', 'in', ('DLAB', 'DOM'))]).ids)],
             'wd_falt': [(6, 0, self.env['hr.work.entry.type'].search(
                 [('code', '=', 'FAL')]).ids)],
-            'hr_input_for_results': self.env[
-                'hr.payslip.input.type'].search([], limit=1).id,
+            'hr_input_for_results': self.env['hr.salary.rule'].search([('input_usage_payslip', '=', True)], limit=1).id,
         })
         return self.env['hr.utilities'].create({
             'company_id': self.company.id,
@@ -381,7 +386,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         self.param.grat_advance_id = self.env['hr.advance.type'].create({
             'name': 'Adelanto de gratificación',
             'company_id': self.company.id})
-        input_type = self.env.ref('al_hr_pe.input_type_INDEM').copy(
+        input_type = self.env.ref('al_hr_pe.salary_rule_INDEM').copy(
             {'name': 'Adelanto prueba', 'code': 'ADE_PRUEBA'})
         advance_type = self.env['hr.advance.type'].create({
             'name': 'Adelanto', 'company_id': self.company.id,
@@ -401,5 +406,5 @@ class TestAuditFixesB(BenefitsCaseBase):
         advance(50.0)
         slip.import_advances()
         line = slip.input_line_ids.filtered(
-            lambda inp: inp.input_type_id == input_type)
+            lambda inp: inp.salary_rule_id == input_type)
         self.assertAlmostEqual(sum(line.mapped('amount')), 150.0)

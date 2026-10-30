@@ -205,7 +205,7 @@
     <record id="hr_payslip_run_view_kanban_inherit_subsidies" model="ir.ui.view">
         <field name="name">hr.payslip.run.kanban.inherit.subsidies</field>
         <field name="model">hr.payslip.run</field>
-        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
+        <field name="inherit_id" ref="hr_payroll.hr_payrun_payslip_kanban_card_view"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='menu']" position="inside">
                 <button name="action_import_subsidies" type="object"

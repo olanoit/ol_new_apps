@@ -17,7 +17,6 @@ class TestAttendanceRegister(TransactionCase):
             or Param.create({'company_id': cls.env.company.id})
         calendar = cls.env['resource.calendar'].create({
             'name': 'Diurno registro',
-            'tz': 'America/Lima',
             'attendance_ids': [(5, 0, 0)] + [
                 (0, 0, {'dayofweek': str(dia),
                         'hour_from': 8.0, 'hour_to': 16.0,

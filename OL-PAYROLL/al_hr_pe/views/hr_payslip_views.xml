@@ -55,7 +55,7 @@
     <record id="hr_payslip_run_view_kanban_inherit_pe" model="ir.ui.view">
         <field name="name">hr.payslip.run.kanban.inherit.al.hr.pe</field>
         <field name="model">hr.payslip.run</field>
-        <field name="inherit_id" ref="hr_payroll.hr_payslip_run_view_kanban"/>
+        <field name="inherit_id" ref="hr_payroll.hr_payrun_payslip_kanban_card_view"/>
         <field name="arch" type="xml">
             <xpath expr="//t[@t-name='menu']" position="inside">
                 <button name="action_export_plame_rem" type="object"
@@ -104,6 +104,6 @@
     </record>
 
     <menuitem id="menu_hr_pe_work_suspension" name="Suspensiones de labores"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_work_entries_root" action="hr_work_suspension_action" sequence="30"/>
+        parent="hr_payroll.menu_hr_payroll_time_offs" action="hr_work_suspension_action" sequence="30"/>
 
 </odoo>

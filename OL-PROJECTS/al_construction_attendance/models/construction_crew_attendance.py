@@ -127,7 +127,7 @@ class ConstructionCrewDay(models.Model):
                 continue
             day_start = datetime.combine(day, time.min)
             slot = Slot.search([
-                ('resource_id.employee_id', '=', employee.id), ('project_id', '=', project.id),
+                ('resource_ids.employee_id', '=', employee.id), ('project_id', '=', project.id),
                 ('construction_plan_line_id', '!=', False),
                 ('start_datetime', '<=', day_start + timedelta(days=1)),
                 ('end_datetime', '>=', day_start)], order='start_datetime desc', limit=1)

@@ -40,7 +40,7 @@
             <field name="code">JOR</field>
             <field name="sunat_code">0121</field>
             <field name="sequence">10</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -55,7 +55,7 @@ result = payslip._l10n_pe_construction_amount('jornal')
             <field name="code">DSO</field>
             <field name="sunat_code">0115</field>
             <field name="sequence">20</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Un día de descanso por cada seis trabajados: el importe
@@ -72,7 +72,7 @@ result = payslip._l10n_pe_construction_amount('dso')
             <field name="code">BUC</field>
             <field name="sunat_code">0311</field>
             <field name="sequence">30</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -87,7 +87,7 @@ result = payslip._l10n_pe_construction_amount('buc')
             <field name="code">MOV</field>
             <field name="sunat_code">0909</field>
             <field name="sequence">40</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -102,7 +102,7 @@ result = payslip._l10n_pe_construction_amount('movilidad')
             <field name="code">BAE</field>
             <field name="sunat_code">0306</field>
             <field name="sequence">50</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -125,7 +125,7 @@ result = payslip._l10n_pe_construction_bonus('BAE')
             <field name="code">BALTI</field>
             <field name="sunat_code">0303</field>
             <field name="sequence">60</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -140,7 +140,7 @@ result = payslip._l10n_pe_construction_bonus('BALTI')
             <field name="code">BAGUA</field>
             <field name="sunat_code">0310</field>
             <field name="sequence">61</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -155,7 +155,7 @@ result = payslip._l10n_pe_construction_bonus('BAGUA')
             <field name="code">BCOTA</field>
             <field name="sunat_code">0303</field>
             <field name="sequence">62</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -170,7 +170,7 @@ result = payslip._l10n_pe_construction_bonus('BCOTA')
             <field name="code">BALTU</field>
             <field name="sunat_code">0303</field>
             <field name="sequence">63</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -187,7 +187,7 @@ result = payslip._l10n_pe_construction_bonus('BALTU')
             <field name="code">HE60</field>
             <field name="sunat_code">0105</field>
             <field name="sequence">70</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -202,7 +202,7 @@ result = payslip._l10n_pe_construction_overtime('HE60', 1.6)
             <field name="code">HE100</field>
             <field name="sunat_code">0106</field>
             <field name="sequence">71</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -222,7 +222,7 @@ result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
             <field name="code">FER100</field>
             <field name="sunat_code">0107</field>
             <field name="sequence">72</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -243,7 +243,7 @@ result = payslip._l10n_pe_construction_rest_work_surcharge()
             <field name="code">INDEM</field>
             <field name="sunat_code">0904</field>
             <field name="sequence">100</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Base: jornal del periodo + horas extras a valor simple. -->
@@ -259,7 +259,7 @@ result = payslip._l10n_pe_construction_cts()
             <field name="code">VAC10</field>
             <field name="sunat_code">0118</field>
             <field name="sequence">110</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -274,7 +274,7 @@ result = payslip._l10n_pe_construction_amount('vacaciones')
             <field name="code">GRAT</field>
             <field name="sunat_code">0406</field>
             <field name="sequence">120</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- 40 jornales al año: Fiestas Patrias se devenga en 210 días
@@ -291,7 +291,7 @@ result = payslip._l10n_pe_construction_gratification()
             <field name="code">BEXT</field>
             <field name="sunat_code">0312</field>
             <field name="sequence">130</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -306,7 +306,7 @@ result = payslip._l10n_pe_construction_extra_bonus()
             <field name="code">AESC</field>
             <field name="sunat_code">0211</field>
             <field name="sequence">140</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- 30 jornales al año por cada hijo con derecho; los hijos
@@ -325,7 +325,7 @@ result = payslip._l10n_pe_construction_school()
             <field name="code">CONAF</field>
             <field name="sunat_code">0602</field>
             <field name="sequence">150</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Base: jornal + D.S.O. La tabla del convenio lo demuestra;
@@ -347,7 +347,7 @@ result = -payslip._l10n_pe_construction_conafovicer()
             <field name="code">ESSALUD</field>
             <field name="sunat_code">0804</field>
             <field name="sequence">195</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -363,7 +363,7 @@ result = payslip._l10n_pe_construction_employer_rate(
             <field name="code">SCTRS</field>
             <field name="sunat_code">0806</field>
             <field name="sequence">196</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -378,7 +378,7 @@ result = payslip._l10n_pe_construction_sctr('health', TREM)
             <field name="code">SCTRP</field>
             <field name="sunat_code">0814</field>
             <field name="sequence">197</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -392,7 +392,7 @@ result = payslip._l10n_pe_construction_sctr('pension', TREM)
             <field name="name">Total remuneración computable</field>
             <field name="code">TREM</field>
             <field name="sequence">190</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Base afecta a ONP/AFP y EsSalud. Se enumera lo afecto en
@@ -420,7 +420,7 @@ result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
             <field name="code">ONP</field>
             <field name="sunat_code">0607</field>
             <field name="sequence">191</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -440,7 +440,7 @@ else:
             <field name="code">A_JUB</field>
             <field name="sunat_code">0608</field>
             <field name="sequence">192</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -459,7 +459,7 @@ else:
             <field name="code">COMFI</field>
             <field name="sunat_code">0601</field>
             <field name="sequence">193</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -479,7 +479,7 @@ else:
             <field name="code">COMMIX</field>
             <field name="sunat_code">0601</field>
             <field name="sequence">193</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -499,7 +499,7 @@ else:
             <field name="code">SEGI</field>
             <field name="sunat_code">0606</field>
             <field name="sequence">194</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- El tope asegurable es mensual y se compara con la base de
@@ -522,7 +522,7 @@ else:
             <field name="name">Total ingresos</field>
             <field name="code">TINGR</field>
             <field name="sequence">200</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -536,7 +536,7 @@ result = categories['ING']
             <field name="name">Total descuentos</field>
             <field name="code">TDES</field>
             <field name="sequence">210</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Las reglas de descuento ya vienen en negativo, así que se
@@ -553,7 +553,7 @@ result = -(categories['APOR_TRA'] + categories['DES_NET'])
             <field name="name">Neto a pagar</field>
             <field name="code">NETO</field>
             <field name="sequence">220</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Mismo código que la regla del régimen general: la boleta

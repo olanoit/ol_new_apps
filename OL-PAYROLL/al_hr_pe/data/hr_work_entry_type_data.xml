@@ -15,7 +15,6 @@
             <field name="code">DLAB</field>
             <field name="name">DIAS LABORADOS</field>
             <field name="sequence">1</field>
-            <field name="is_leave" eval="False"/>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_DOM" model="hr.work.entry.type">
@@ -23,8 +22,6 @@
             <field name="name">DIAS DE DESCANSO</field>
             <field name="sequence">5</field>
             <field name="color">3</field>
-            <field name="is_leave" eval="False"/>
-            <field name="round_days">NO</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_FER" model="hr.work.entry.type">
@@ -32,8 +29,6 @@
             <field name="name">DIAS FERIADO/DESCANSO LABORADO</field>
             <field name="sequence">8</field>
             <field name="color">2</field>
-            <field name="is_leave" eval="False"/>
-            <field name="round_days">NO</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_FAL" model="hr.work.entry.type">
@@ -41,15 +36,13 @@
             <field name="name">DIAS FALTAS</field>
             <field name="sequence">10</field>
             <field name="color">9</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_TAR" model="hr.work.entry.type">
             <field name="code">TAR</field>
             <field name="name">TARDANZAS</field>
             <field name="sequence">11</field>
-            <field name="is_leave" eval="False"/>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_DMED" model="hr.work.entry.type">
@@ -57,8 +50,7 @@
             <field name="name">DIAS DESCANSOS MEDICOS</field>
             <field name="sequence">15</field>
             <field name="color">4</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_DPAT" model="hr.work.entry.type">
@@ -66,8 +58,7 @@
             <field name="name">DIAS DE PATERNIDAD</field>
             <field name="sequence">16</field>
             <field name="color">5</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_LCGH" model="hr.work.entry.type">
@@ -75,8 +66,7 @@
             <field name="name">DIAS LICENCIA CON GOCE DE HABER</field>
             <field name="sequence">17</field>
             <field name="color">6</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_LSGH" model="hr.work.entry.type">
@@ -84,8 +74,7 @@
             <field name="name">DIAS LICENCIA SIN GOCE DE HABER</field>
             <field name="sequence">18</field>
             <field name="color">11</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <!-- Horas de la jornada en horario nocturno (22:00-06:00): no son
@@ -93,7 +82,6 @@
         <record id="wd_HTN" model="hr.work.entry.type">
             <field name="code">HTN</field>
             <field name="name">HORAS TRABAJO NOCTURNO</field>
-            <field name="is_leave" eval="False"/>
             <field name="sequence">24</field>
             <field name="country_id" ref="base.pe"/>
         </record>
@@ -101,7 +89,7 @@
             <field name="code">HE25</field>
             <field name="name">HORAS EXTRAS 25%</field>
             <field name="amount_rate">1.25</field>
-            <field name="is_extra_hours" eval="True"/>
+            <field name="category_ids" eval="[(4, ref('hr_payroll.EXTRA_HOURS'))]"/>
             <field name="sequence">25</field>
             <field name="country_id" ref="base.pe"/>
         </record>
@@ -109,7 +97,7 @@
             <field name="code">HE35</field>
             <field name="name">HORAS EXTRAS 35%</field>
             <field name="amount_rate">1.35</field>
-            <field name="is_extra_hours" eval="True"/>
+            <field name="category_ids" eval="[(4, ref('hr_payroll.EXTRA_HOURS'))]"/>
             <field name="sequence">26</field>
             <field name="country_id" ref="base.pe"/>
         </record>
@@ -117,7 +105,7 @@
             <field name="code">HE100</field>
             <field name="name">HORAS EXTRAS 100%</field>
             <field name="amount_rate">2.0</field>
-            <field name="is_extra_hours" eval="True"/>
+            <field name="category_ids" eval="[(4, ref('hr_payroll.EXTRA_HOURS'))]"/>
             <field name="sequence">27</field>
             <field name="country_id" ref="base.pe"/>
         </record>
@@ -126,8 +114,7 @@
             <field name="name">DIAS VACACIONES</field>
             <field name="sequence">35</field>
             <field name="color">10</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_SMAR" model="hr.work.entry.type">
@@ -135,8 +122,7 @@
             <field name="name">DIAS SUBSIDIADOS POR MATERNIDAD</field>
             <field name="sequence">36</field>
             <field name="color">7</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
         <record id="wd_SENF" model="hr.work.entry.type">
@@ -144,8 +130,7 @@
             <field name="name">DIAS SUBSIDIADOS POR ENFERMEDAD</field>
             <field name="sequence">37</field>
             <field name="color">8</field>
-            <field name="is_leave" eval="True"/>
-            <field name="round_days">NO</field>
+            <field name="count_as">absence</field>
             <field name="country_id" ref="base.pe"/>
         </record>
     </data>

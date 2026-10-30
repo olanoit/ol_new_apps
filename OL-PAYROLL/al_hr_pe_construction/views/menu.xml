@@ -2,7 +2,7 @@
 <odoo>
     <!-- Entre los catálogos SUNAT (50) y Documentos (70). -->
     <menuitem id="menu_construction_root" name="Construcción civil"
-              parent="hr_work_entry_enterprise.menu_hr_payroll_configuration" sequence="66"/>
+              parent="hr_payroll.menu_hr_payroll_configuration" sequence="66"/>
 
     <menuitem id="menu_construction_wage_table" name="Tablas salariales"
               parent="menu_construction_root"

@@ -20,7 +20,7 @@
             <field name="name">Adelanto de remuneración</field>
             <field name="code">BAS_AQ</field>
             <field name="sequence">1</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -33,7 +33,7 @@ result = payslip._l10n_pe_fortnightly_basic()
             <field name="name">Adelanto de asignación familiar</field>
             <field name="code">AF_AQ</field>
             <field name="sequence">2</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -46,7 +46,7 @@ result = payslip._l10n_pe_fortnightly_family_allowance()
             <field name="name">Total adelanto</field>
             <field name="code">TINGR_AQ</field>
             <field name="sequence">10</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -59,7 +59,7 @@ result = BAS_AQ + AF_AQ
             <field name="name">Aportes previsionales a cuenta</field>
             <field name="code">TAT_AQ</field>
             <field name="sequence">20</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -72,7 +72,7 @@ result = payslip._l10n_pe_fortnightly_pension(TINGR_AQ)
             <field name="name">Adelantos y préstamos de quincena</field>
             <field name="code">TDESN_AQ</field>
             <field name="sequence">30</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -85,7 +85,7 @@ result = payslip._l10n_pe_fortnightly_discounts()
             <field name="name">Neto quincenal</field>
             <field name="code">NETO_AQ</field>
             <field name="sequence">90</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">

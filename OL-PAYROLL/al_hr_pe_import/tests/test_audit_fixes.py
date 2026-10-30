@@ -152,7 +152,10 @@ class TestImportAuditFixes(TransactionCase):
         _res, _c, _log, ids = self._run(wizard('2026-05-04 17:00:00'))
         attendance = self.env['hr.attendance'].browse(ids[0])
         self._run(wizard(''))
-        self.assertEqual(attendance.check_out, datetime(2026, 5, 4, 22, 0))
+        # Odoo 20: las reglas de tiempo separan el sobretiempo en otra
+        # asistencia; el tramo del día sigue terminando a las 17:00 de Lima.
+        day = attendance | attendance.overtime_attendance_ids
+        self.assertEqual(max(day.mapped('check_out')), datetime(2026, 5, 4, 22, 0))
 
     # ------------------------------------------------------------------
     # Límites y progreso atascado

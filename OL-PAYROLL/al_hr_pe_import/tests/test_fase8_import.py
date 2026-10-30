@@ -155,7 +155,10 @@ class TestFase8Import(TransactionCase):
         # 08:00 America/Lima (UTC-5) → 13:00 UTC almacenado.
         self.assertEqual(att.employee_id, self.employee)
         self.assertEqual(att.check_in, datetime(2026, 7, 1, 13, 0, 0))
-        self.assertEqual(att.check_out, datetime(2026, 7, 1, 22, 0, 0))
+        # Odoo 20: las reglas de tiempo separan el sobretiempo en otra
+        # asistencia; el tramo del día sigue terminando a las 17:00 de Lima.
+        day = att | att.overtime_attendance_ids
+        self.assertEqual(max(day.mapped('check_out')), datetime(2026, 7, 1, 22, 0, 0))
 
         # Los errores llevan sugerencia de corrección específica.
         errores = [r for r in results if r['status'] == 'error']
@@ -172,7 +175,8 @@ class TestFase8Import(TransactionCase):
         _res, counts2, _log, _ids = self._correr(wizard2)
         self.assertEqual(counts2['updated'], 1)
         self.assertEqual(counts2['created'], 0)
-        self.assertEqual(att.check_out, datetime(2026, 7, 1, 23, 0, 0))
+        day = att | att.overtime_attendance_ids
+        self.assertEqual(max(day.mapped('check_out')), datetime(2026, 7, 1, 23, 0, 0))
 
         # Con "Actualizar existentes" desmarcado la fila se omite.
         wizard3 = self._wizard_asistencias({
@@ -184,7 +188,8 @@ class TestFase8Import(TransactionCase):
         }, update_existing=False)
         _res, counts3, _log, _ids = self._correr(wizard3)
         self.assertEqual(counts3['skipped'], 1)
-        self.assertEqual(att.check_out, datetime(2026, 7, 1, 23, 0, 0))
+        day = att | att.overtime_attendance_ids
+        self.assertEqual(max(day.mapped('check_out')), datetime(2026, 7, 1, 23, 0, 0))
 
     def test_03_asistencias_multicompania(self):
         # El empleado es de la compañía A: importarlo desde B falla por

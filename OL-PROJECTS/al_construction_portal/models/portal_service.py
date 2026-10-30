@@ -799,6 +799,10 @@ class ConstructionPortalService(models.AbstractModel):
                     move.product_uom_qty = move.product_id.uom_id._compute_quantity(qty, move.uom_id)
                 else:
                     move.unlink()
+            # Lista para que el almacén la valide (en 19 el asistente la
+            # confirmaba y reservaba).
+            returned.action_confirm()
+            returned.action_assign()
             records |= returned
         if damaged:
             destination = project._construction_damaged_location()

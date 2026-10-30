@@ -58,12 +58,14 @@ class TestConstructionBenefits(TransactionCase):
         payslip.worked_days_line_ids.unlink()
         lines = [(0, 0, {
             'name': 'Días laborados',
+            'version_id': payslip.version_id.id,
             'work_entry_type_id': self.wd_dlab.id,
             'number_of_days': days, 'number_of_hours': days * 8,
             'amount': 0.0})]
         if overtime:
             lines.append((0, 0, {
                 'name': 'Horas extras',
+                'version_id': payslip.version_id.id,
                 'work_entry_type_id': self.wd_he60.id,
                 'number_of_days': 0, 'number_of_hours': overtime,
                 'amount': 0.0}))

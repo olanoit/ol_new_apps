@@ -84,12 +84,16 @@ class HrAttendance(models.Model):
         window_end = fields.Datetime.add(
             max(todo.mapped('check_in')), hours=_MATCH_WINDOW_HOURS)
         all_slots = slot_model.search([
-            ('employee_id', 'in', todo.employee_id.ids),
-            ('state', '=', 'published'),
+            ('employee_ids', 'in', todo.employee_id.ids),
+            ('state', '=', '2_published'),
             ('start_datetime', '>=', window_start),
             ('start_datetime', '<=', window_end),
         ])
-        slots_by_employee = all_slots.grouped('employee_id')
+        # Odoo 20: un turno puede tener varios empleados (employee_ids).
+        slots_by_employee = {}
+        for slot in all_slots:
+            for employee in slot.employee_ids:
+                slots_by_employee[employee] = slots_by_employee.get(employee, slot_model) | slot
         for attendance in todo:
             check_in = attendance.check_in
             low = fields.Datetime.subtract(

@@ -59,7 +59,7 @@ class TestConstructionWeekly(TransactionCase):
             'date_from': date_from, 'date_to': date_to})
         payslip.worked_days_line_ids.unlink()
         payslip.worked_days_line_ids = [(0, 0, {
-            'name': 'Días', 'work_entry_type_id': self.wd_dlab.id,
+            'name': 'Días', 'version_id': payslip.version_id.id, 'work_entry_type_id': self.wd_dlab.id,
             'number_of_days': days, 'number_of_hours': days * 8,
             'amount': 0.0})]
         payslip.compute_sheet()
@@ -167,7 +167,7 @@ class TestConstructionWeekly(TransactionCase):
         month = self._month('202603')
         week = month.child_ids.sorted('date_start')[0]
         run = self.env['hr.payslip.run'].create({
-            'name': 'Semana 1 marzo', 'company_id': self.company.id,
+            'name': 'Semana 1 marzo', 'company_id': self.company.id, 'structure_id': self.structure.id,
             'periodo_id': week.id})
         self.assertEqual(run.l10n_pe_plame_period_id, month)
 
@@ -184,7 +184,7 @@ class TestConstructionWeekly(TransactionCase):
             payslips |= payslip
 
         run = self.env['hr.payslip.run'].create({
-            'name': 'Semana 1', 'company_id': self.company.id,
+            'name': 'Semana 1', 'company_id': self.company.id, 'structure_id': self.structure.id,
             'periodo_id': weeks[0].id})
         run.slip_ids = payslips[0]
         self.assertEqual(len(run.slip_ids), 1)
@@ -198,7 +198,7 @@ class TestConstructionWeekly(TransactionCase):
         payslip = self._payslip(worker, date(2026, 4, 1), date(2026, 4, 30),
                                 days=26)
         run = self.env['hr.payslip.run'].create({
-            'name': 'Abril', 'company_id': self.company.id,
+            'name': 'Abril', 'company_id': self.company.id, 'structure_id': self.structure.id,
             'periodo_id': month.id})
         run.slip_ids = payslip
         self.assertEqual(run.l10n_pe_plame_period_id, month)

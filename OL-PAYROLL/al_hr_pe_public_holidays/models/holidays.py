@@ -172,8 +172,13 @@ class PeruPublicHoliday(models.Model):
                     # desplazaba (un feriado de Lima creado por un usuario
                     # sin zona horaria empezaba a las 05:00 y se comía las
                     # cinco primeras horas del día). El write no
-                    # reinterpreta nada, así que se fijan de nuevo.
-                    leave.write({"date_from": date_from, "date_to": date_to})
+                    # reinterpreta nada, así que se fijan de nuevo. Odoo 20
+                    # además recalcula el tipo (feriado genérico) al crear:
+                    # se vuelve a fijar el del feriado.
+                    leave.write({
+                        "date_from": date_from, "date_to": date_to,
+                        "work_entry_type_id": holiday.work_entry_type_id.id or False,
+                    })
                     created += 1
         return {
             "type": "ir.actions.client",

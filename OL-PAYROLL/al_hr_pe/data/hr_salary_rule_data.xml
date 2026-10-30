@@ -13,7 +13,7 @@
             <field name="code">BAS</field>
             <field name="sunat_code">0121</field>
             <field name="sequence">1</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -44,7 +44,7 @@ else:
             <field name="code">FER</field>
             <field name="sunat_code">0107</field>
             <field name="sequence">4</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -61,7 +61,7 @@ result = worked_days['FER'].number_of_days * (version.wage/30) * 2
             <field name="code">FAL</field>
             <field name="sunat_code">0705</field>
             <field name="sequence">5</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -84,7 +84,7 @@ else:
             <field name="code">TAR</field>
             <field name="sunat_code">0704</field>
             <field name="sequence">6</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -98,7 +98,7 @@ result = worked_days['TAR'].number_of_hours * (version.wage/30/8)
             <field name="code">DMED</field>
             <field name="sunat_code">0907</field>
             <field name="sequence">7</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -112,7 +112,7 @@ result = worked_days['DMED'].number_of_days * (version.wage/30)
             <field name="code">DPAT</field>
             <field name="sunat_code">0907</field>
             <field name="sequence">8</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -126,7 +126,7 @@ result = worked_days['DPAT'].number_of_days * (version.wage/30)
             <field name="code">LCGH</field>
             <field name="sunat_code">0907</field>
             <field name="sequence">9</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -140,7 +140,7 @@ result = worked_days['LCGH'].number_of_days * (version.wage/30)
             <field name="code">LSGH</field>
             <field name="sunat_code">0707</field>
             <field name="sequence">10</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -154,7 +154,7 @@ result = worked_days['LSGH'].number_of_days * (version.wage/30)
             <field name="code">NOCT</field>
             <field name="sunat_code">0121</field>
             <field name="sequence">14</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -175,7 +175,7 @@ else:
             <field name="name">Basico del mes</field>
             <field name="code">BAS_M</field>
             <field name="sequence">15</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -190,7 +190,7 @@ result = BAS + FER + NOCT - FAL - TAR + DMED + DPAT + LCGH - LSGH
             <field name="code">AF</field>
             <field name="sunat_code">0201</field>
             <field name="sequence">16</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- El derecho sale de los derechohabientes registrados (hijos
@@ -217,7 +217,7 @@ else:
             <field name="code">HE25</field>
             <field name="sunat_code">0105</field>
             <field name="sequence">17</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -231,7 +231,7 @@ result = (((version.wage+AF)/30/8) * (1+25/100)) * worked_days['HE25'].number_of
             <field name="code">HE35</field>
             <field name="sunat_code">0106</field>
             <field name="sequence">18</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -245,7 +245,7 @@ result = (((version.wage+AF)/30/8) * (1+35/100)) * worked_days['HE35'].number_of
             <field name="code">HE100</field>
             <field name="sunat_code">0107</field>
             <field name="sequence">19</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -258,7 +258,7 @@ result = (((version.wage+AF)/30/8) * (1+100/100)) * worked_days['HE100'].number_
             <field name="name">Total Horas Extras</field>
             <field name="code">TOT_EXT</field>
             <field name="sequence">23</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -271,13 +271,15 @@ result = HE25 + HE35 + HE100
         <record model="hr.salary.rule" id="salary_rule_BONR">
             <field name="name">Bonificaciones regulares</field>
             <field name="code">BONR</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0306</field>
             <field name="sequence">25</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = inputs['BONRER'].amount if inputs['BONRER'] else 0
+result = inputs['BONR'].amount if inputs['BONR'] else 0
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -285,9 +287,11 @@ result = inputs['BONRER'].amount if inputs['BONRER'] else 0
         <record model="hr.salary.rule" id="salary_rule_BONI_EX">
             <field name="name">Bonificacion Extraordinaria</field>
             <field name="code">BONI_EX</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0312</field>
             <field name="sequence">26</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -299,9 +303,11 @@ result = inputs['BONI_EX'].amount if inputs['BONI_EX'] else 0
         <record model="hr.salary.rule" id="salary_rule_SMAR">
             <field name="name">Subsidio por Maternidad</field>
             <field name="code">SMAR</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0915</field>
             <field name="sequence">27</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -313,9 +319,11 @@ result = inputs['SMAR'].amount if inputs['SMAR'] else 0
         <record model="hr.salary.rule" id="salary_rule_SENF">
             <field name="name">Subsidio por Enfermedad</field>
             <field name="code">SENF</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0916</field>
             <field name="sequence">28</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -327,9 +335,11 @@ result = inputs['SENF'].amount if inputs['SENF'] else 0
         <record model="hr.salary.rule" id="salary_rule_COMP_VAC">
             <field name="name">Compensacion Vacacional</field>
             <field name="code">COMP_VAC</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0117</field>
             <field name="sequence">29</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -341,9 +351,11 @@ result = inputs['COMP_VAC'].amount if inputs['COMP_VAC'] else 0
         <record model="hr.salary.rule" id="salary_rule_VAC">
             <field name="name">Vacaciones</field>
             <field name="code">VAC</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0118</field>
             <field name="sequence">30</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -358,13 +370,15 @@ else:
         <record model="hr.salary.rule" id="salary_rule_VATRU">
             <field name="name">Vacaciones Truncas</field>
             <field name="code">VATRU</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0114</field>
             <field name="sequence">31</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = inputs['VAC_TRU'].amount if inputs['VAC_TRU'] else 0
+result = inputs['VATRU'].amount if inputs['VATRU'] else 0
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -372,9 +386,11 @@ result = inputs['VAC_TRU'].amount if inputs['VAC_TRU'] else 0
         <record model="hr.salary.rule" id="salary_rule_GRA">
             <field name="name">Gratificaciones de fiestas patrias y navidad</field>
             <field name="code">GRA</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0406</field>
             <field name="sequence">32</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -387,9 +403,11 @@ result = inputs['GRA'].amount if inputs['GRA'] else 0
         <record model="hr.salary.rule" id="salary_rule_BON9">
             <field name="name">Bonificacion 9%</field>
             <field name="code">BON9</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0312</field>
             <field name="sequence">33</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -401,9 +419,11 @@ result = inputs['BON9'].amount if inputs['BON9'] else 0
         <record model="hr.salary.rule" id="salary_rule_GRA_TRU">
             <field name="name">Gratificación Trunca</field>
             <field name="code">GRA_TRU</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0407</field>
             <field name="sequence">34</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -415,9 +435,11 @@ result = inputs['GRA_TRU'].amount if inputs['GRA_TRU'] else 0
         <record model="hr.salary.rule" id="salary_rule_BON9_TRU">
             <field name="name">Bonificacion 9% Trunca</field>
             <field name="code">BON9_TRU</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0313</field>
             <field name="sequence">35</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -429,9 +451,11 @@ result = inputs['BON9_TRU'].amount if inputs['BON9_TRU'] else 0
         <record model="hr.salary.rule" id="salary_rule_CTS">
             <field name="name">Compensación por tiempo de servicios</field>
             <field name="code">CTS</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0904</field>
             <field name="sequence">36</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -443,9 +467,11 @@ result = inputs['CTS'].amount if inputs['CTS'] else 0
         <record model="hr.salary.rule" id="salary_rule_CTS_TRU">
             <field name="name">CTS Trunca</field>
             <field name="code">CTS_TRU</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0904</field>
             <field name="sequence">37</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -457,9 +483,11 @@ result = inputs['CTS_TRU'].amount if inputs['CTS_TRU'] else 0
         <record model="hr.salary.rule" id="salary_rule_INDEM">
             <field name="name">Indemnizacion</field>
             <field name="code">INDEM</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0501</field>
             <field name="sequence">38</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -474,9 +502,11 @@ result = inputs['INDEM'].amount if inputs['INDEM'] else 0
         <record model="hr.salary.rule" id="salary_rule_INDVAC">
             <field name="name">Indemnización vacacional</field>
             <field name="code">INDVAC</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0504</field>
             <field name="sequence">39</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -488,9 +518,11 @@ result = inputs['INDVAC'].amount if inputs['INDVAC'] else 0
         <record model="hr.salary.rule" id="salary_rule_COMI">
             <field name="name">Comisiones</field>
             <field name="code">COMI</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0103</field>
             <field name="sequence">39</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -502,9 +534,11 @@ result = inputs['COMI'].amount if inputs['COMI'] else 0
         <record model="hr.salary.rule" id="salary_rule_UTIL">
             <field name="name">Utilidades</field>
             <field name="code">UTIL</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0911</field>
             <field name="sequence">40</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -518,7 +552,7 @@ result = inputs['UTIL'].amount if inputs['UTIL'] else 0
             <field name="name">Total Ingresos</field>
             <field name="code">TINGR</field>
             <field name="sequence">54</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -531,7 +565,7 @@ result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+
             <field name="name">Ingresos Afectos ONP</field>
             <field name="code">AONP</field>
             <field name="sequence">55</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -544,7 +578,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="name">Ingresos Afectos AFP</field>
             <field name="code">AAFP</field>
             <field name="sequence">56</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -561,7 +595,7 @@ else:
             <field name="code">ONP</field>
             <field name="sunat_code">0607</field>
             <field name="sequence">57</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -580,7 +614,7 @@ else:
             <field name="code">A_JUB</field>
             <field name="sunat_code">0608</field>
             <field name="sequence">58</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -597,7 +631,7 @@ else:
             <field name="code">COMFI</field>
             <field name="sunat_code">0601</field>
             <field name="sequence">59</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -614,7 +648,7 @@ else:
             <field name="code">COMMIX</field>
             <field name="sunat_code">0601</field>
             <field name="sequence">60</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -631,7 +665,7 @@ else:
             <field name="code">SEGI</field>
             <field name="sunat_code">0606</field>
             <field name="sequence">61</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -651,9 +685,11 @@ else:
         <record model="hr.salary.rule" id="salary_rule_QUINTA">
             <field name="name">Quinta Categoría</field>
             <field name="code">QUINTA</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0605</field>
             <field name="sequence">66</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -666,7 +702,7 @@ result = inputs['QUINTA'].amount if inputs['QUINTA'] else 0
             <field name="name">Total Aportes Trabajador</field>
             <field name="code">TAT</field>
             <field name="sequence">67</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -679,9 +715,11 @@ result = ONP+A_JUB+COMFI+COMMIX+SEGI+QUINTA
         <record model="hr.salary.rule" id="salary_rule_ADELANTO">
             <field name="name">Adelanto de Remuneracion</field>
             <field name="code">ADELANTO</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0701</field>
             <field name="sequence">69</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -693,9 +731,11 @@ result = inputs['ADELANTO'].amount if inputs['ADELANTO'] else 0
         <record model="hr.salary.rule" id="salary_rule_ADE_QUIN">
             <field name="name">Adelanto Quincenal</field>
             <field name="code">ADE_QUIN</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0701</field>
             <field name="sequence">70</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -707,9 +747,11 @@ result = inputs['ADE_QUIN'].amount if inputs['ADE_QUIN'] else 0
         <record model="hr.salary.rule" id="salary_rule_RET_JUD">
             <field name="name">Retención Judicial</field>
             <field name="code">RET_JUD</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0703</field>
             <field name="sequence">71</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -721,9 +763,11 @@ result = inputs['RET_JUD'].amount if inputs['RET_JUD'] else 0
         <record model="hr.salary.rule" id="salary_rule_ADE_GRA">
             <field name="name">Adelanto de Gratificacion</field>
             <field name="code">ADE_GRA</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0701</field>
             <field name="sequence">72</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -738,9 +782,11 @@ else:
         <record model="hr.salary.rule" id="salary_rule_ADE_CTS">
             <field name="name">Adelanto de CTS</field>
             <field name="code">ADE_CTS</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0701</field>
             <field name="sequence">73</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -755,9 +801,11 @@ else:
         <record model="hr.salary.rule" id="salary_rule_ADE_VAC">
             <field name="name">Adelanto de Vacaciones</field>
             <field name="code">ADE_VAC</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0701</field>
             <field name="sequence">74</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -772,9 +820,11 @@ else:
         <record model="hr.salary.rule" id="salary_rule_PREST">
             <field name="name">Prestamos al Personal</field>
             <field name="code">PREST</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sunat_code">0706</field>
             <field name="sequence">75</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -786,8 +836,10 @@ result = inputs['PREST'].amount if inputs['PREST'] else 0
         <record model="hr.salary.rule" id="salary_rule_DES_BBSS">
             <field name="name">Descuentos en BBSS</field>
             <field name="code">DES_BBSS</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
             <field name="sequence">76</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -800,7 +852,7 @@ result = inputs['DES_BBSS'].amount if inputs['DES_BBSS'] else 0
             <field name="name">Total Descuentos al Neto</field>
             <field name="code">TDESN</field>
             <field name="sequence">85</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -814,7 +866,7 @@ result = ADELANTO+ADE_QUIN+RET_JUD+ADE_GRA+ADE_CTS+ADE_VAC+PREST+DES_BBSS
             <field name="name">Total descuentos</field>
             <field name="code">TDES</field>
             <field name="sequence">86</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -827,7 +879,7 @@ result = TAT + TDESN
             <field name="name">Neto a pagar</field>
             <field name="code">NETO</field>
             <field name="sequence">87</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -841,7 +893,7 @@ result = TINGR - TDES
             <field name="name">Ingresos Afectos Essalud</field>
             <field name="code">AESSALUD</field>
             <field name="sequence">88</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -855,7 +907,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="code">ESSALUD</field>
             <field name="sunat_code">0804</field>
             <field name="sequence">89</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -878,7 +930,7 @@ else:
             <field name="name">Eps 2.25%</field>
             <field name="code">EPS225</field>
             <field name="sequence">90</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -896,7 +948,7 @@ else:
             <field name="code">SVLEY</field>
             <field name="sunat_code">0803</field>
             <field name="sequence">92</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -920,7 +972,7 @@ for aporte in version.contributions_ids:
             <field name="code">SCTRS</field>
             <field name="sunat_code">0806</field>
             <field name="sequence">93</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -934,7 +986,7 @@ result = payslip._l10n_pe_sctr('health', AESSALUD)
             <field name="code">SCTRP</field>
             <field name="sunat_code">0814</field>
             <field name="sequence">94</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -947,7 +999,7 @@ result = payslip._l10n_pe_sctr('pension', AESSALUD)
             <field name="name">Total Aportes Empleador</field>
             <field name="code">AEM</field>
             <field name="sequence">95</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -961,7 +1013,7 @@ result = ESSALUD + EPS225 + SVLEY
             <field name="name">Remuneraciones Afectas</field>
             <field name="code">REMAFE</field>
             <field name="sequence">96</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -977,7 +1029,7 @@ else:
             <field name="name">Vacaciones afectas</field>
             <field name="code">VACAFE</field>
             <field name="sequence">97</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -993,7 +1045,7 @@ else:
             <field name="name">Neto Remuneraciones</field>
             <field name="code">NETREMU</field>
             <field name="sequence">98</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -1010,7 +1062,7 @@ else:
             <field name="name">Neto Vacaciones</field>
             <field name="code">NETVACA</field>
             <field name="sequence">99</field>
-            <field name="appears_on_payslip" eval="True"/>
+            <field name="appears_on_payslip">always</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -1031,7 +1083,7 @@ else:
             <field name="name">Remuneracion Ord. Afecta Quinta</field>
             <field name="code">ROAQ</field>
             <field name="sequence">100</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -1044,7 +1096,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
             <field name="name">Remuneracion Extra Afecta Quinta</field>
             <field name="code">REAQ</field>
             <field name="sequence">101</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -1057,7 +1109,7 @@ result = BONI_EX+UTIL+INDVAC
             <field name="name">Proyeccion Ingresos Afectos Quinta</field>
             <field name="code">PIAQ</field>
             <field name="sequence">102</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -1070,7 +1122,7 @@ result = version.wage+AF+TOT_EXT+BONR+COMI
             <field name="name">Remuneracion Afecta Utilidades</field>
             <field name="code">RAU</field>
             <field name="sequence">104</field>
-            <field name="appears_on_payslip" eval="False"/>
+            <field name="appears_on_payslip">never</field>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">

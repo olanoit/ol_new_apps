@@ -236,7 +236,7 @@
          planilla del mes y después se liquidan los beneficios. -->
     <menuitem id="menu_hr_pe_benefits_root"
         name="Beneficios sociales"
-        parent="hr_work_entry_enterprise.menu_hr_payroll_root"
+        parent="hr_payroll.menu_hr_payroll_root"
         sequence="72"
         groups="hr_payroll.group_hr_payroll_user"/>
     <!-- Secciones de Beneficios sociales (Vacaciones y Adelantos y

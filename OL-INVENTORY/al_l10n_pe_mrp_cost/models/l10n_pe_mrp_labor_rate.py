@@ -88,9 +88,13 @@ class L10nPeMrpLaborRate(models.Model):
         costs = defaultdict(lambda: {'payroll_cost': 0.0, 'provision_cost': 0.0, 'hours': 0.0})
         for slip in slips:
             values = costs[slip.employee_id]
-            values['payroll_cost'] += sum(
-                line.total * COST_CATEGORIES[line.category_id.code]
-                for line in slip.line_ids if line.category_id.code in COST_CATEGORIES)
+            for line in slip.line_ids:
+                # Odoo 20: una regla puede tener varias categorías; cuenta la
+                # primera que es de costo.
+                code = next((code for code in line.category_ids.mapped('code')
+                             if code in COST_CATEGORIES), None)
+                if code:
+                    values['payroll_cost'] += line.total * COST_CATEGORIES[code]
             values['hours'] += sum(
                 wd.number_of_hours for wd in slip.worked_days_line_ids if wd.code in dlab_codes)
         for employee, amount in self._l10n_pe_provisions(slips.payslip_run_id).items():
