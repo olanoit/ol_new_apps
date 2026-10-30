@@ -1032,7 +1032,7 @@ caso('al_project_gantt_ai', 'Asistente IA del Gantt con el proveedor simulado',
 def t_gantt_ai():
     ICP = env['ir.config_parameter'].sudo()
     keys = ['al_gantt_ai.provider', 'al_gantt_ai.model', 'al_gantt_ai.api_key']
-    saved = {k: ICP.get_str(k) if hasattr(ICP, 'get_str') else ICP.get_param(k) for k in keys}
+    saved = {k: ICP.get_str(k, None) if hasattr(ICP, 'get_str') else ICP.get_param(k) for k in keys}
     setp = ICP.set_str if hasattr(ICP, 'set_str') else ICP.set_param
     try:
         setp('al_gantt_ai.provider', 'anthropic'); setp('al_gantt_ai.model', 'claude-opus-5-5')
@@ -1058,10 +1058,11 @@ def t_gantt_ai():
         with patch('odoo.addons.al_project_gantt_ai.services.ai_provider.call_provider', return_value=('ok', bad, {})):
             res = ai.ask({'question': 'mueve otra', 'task_ids': NS['gantt_tasks'].ids})
         check(not res['proposals'] and res.get('warnings'), 'propuesta sobre tarea desconocida descartada')
-        for k, v in saved.items():
-            setp(k, v or '')
     finally:
-        pass
+        # None deja el parámetro sin definir: un '' rompe el selection del
+        # proveedor en los Ajustes.
+        for k, v in saved.items():
+            setp(k, v)
 ejecutar(t_gantt_ai)
 
 # ======================================================================
