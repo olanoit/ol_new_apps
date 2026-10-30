@@ -46,6 +46,19 @@ class L10nPeGeneralLedgerXlsx(models.AbstractModel):
                 'file_export_type': _('XLSX'),
             })
 
+    def _l10n_pe_get_txt_data(self, options, ple_version=None):
+        """5.1 / 6.1 nativos: la glosa es la descripción de la operación
+        (campo 18 del Anexo 2), no el número del asiento que pone
+        l10n_pe_reports. Se usa la glosa del asiento de al_account_base
+        cuando está; si no, queda el valor nativo."""
+        data = super()._l10n_pe_get_txt_data(options, ple_version=ple_version)
+        moves = self.env['account.move'].browse({row['cuo'] for row in data})
+        gloss = {move.id: move.l10n_pe_gloss for move in moves if move.l10n_pe_gloss}
+        for row in data:
+            if row['cuo'] in gloss:
+                row['glosa'] = gloss[row['cuo']].replace('|', ' ')[:200]
+        return data
+
     @api.model
     def _l10n_pe_txt_result_to_xlsx(self, result, book_code, options):
         year, month = _period(options)

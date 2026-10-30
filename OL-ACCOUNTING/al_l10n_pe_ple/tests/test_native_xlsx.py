@@ -13,8 +13,11 @@ from unittest.mock import patch
 
 from openpyxl import load_workbook
 
+from odoo import fields
+from odoo.fields import Command
 from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
+from odoo.addons.account_reports.tests.common import TestAccountReportsCommon
 
 from odoo.addons.al_l10n_pe_ple.models.ple_mixin import PLE_EXPECTED_FIELDS
 from odoo.addons.al_l10n_pe_ple.models.ple_official_headers import PLE_OFFICIAL_HEADERS
@@ -211,3 +214,37 @@ class TestNativeXlsx(AccountTestInvoicingCommon):
                           return_value=''):
             wizard.action_export_xlsx_12_1()
         self.assertEqual(wizard.report_filename, 'LE2051252845820260300120100001011.xlsx')
+
+
+
+@tagged('post_install_l10n', 'post_install', '-at_install')
+class TestNativeGloss(TestAccountReportsCommon):
+
+    @classmethod
+    @TestAccountReportsCommon.setup_country('pe')
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_data['company'].vat = '20512528458'
+
+    def test_journal_gloss_in_native_51(self):
+        """La glosa del asiento (al_account_base) reemplaza al número del
+        asiento que l10n_pe_reports pone en el campo glosa del 5.1."""
+        journal = self.company_data['default_journal_misc']
+        move = self.env['account.move'].create({
+            'journal_id': journal.id, 'date': '2026-03-10',
+            'l10n_pe_gloss': 'Provisión de alquiler | marzo',
+            'line_ids': [
+                Command.create({'account_id': self.company_data['default_account_expense'].id, 'debit': 100.0}),
+                Command.create({'account_id': self.company_data['default_account_payable'].id, 'credit': 100.0}),
+            ],
+        })
+        move.action_post()
+        plain = move.copy({'date': '2026-03-11', 'l10n_pe_gloss': False})
+        plain.action_post()
+        report = self.env.ref('account_reports.general_ledger_report')
+        options = self._generate_options(
+            report, fields.Date.from_string('2026-03-01'), fields.Date.from_string('2026-03-31'))
+        rows = self.env[report.custom_handler_model_name]._l10n_pe_get_txt_data(options)
+        glosas = {row['cuo']: row['glosa'] for row in rows}
+        self.assertEqual(glosas[move.id], 'Provisión de alquiler   marzo')
+        self.assertEqual(glosas[plain.id], plain.name)
