@@ -9,7 +9,7 @@
                     <button class="alpe-doctype-card btn"
                             t-att-class="{ 'alpe-selected': this.state.type === docType.code }"
                             t-on-click="() => this.selectType(docType.code)">
-                        <i t-att-class="'fa fa-2x mb-2 ' + docType.icon" role="img"/>
+                        <i class="oi fs-2 mb-2" t-att-data-icon="docType.icon" role="img"/>
                         <div class="alpe-doctype-label" t-out="docType.label"/>
                         <div class="alpe-doctype-hint text-muted" t-out="docType.hint"/>
                         <i t-if="this.state.type === docType.code"
@@ -27,7 +27,8 @@
                             t-att-class="this.state.serieId === serie.id ? 'btn-primary' : 'btn-light'"
                             t-on-click="() => this.selectSerie(serie)">
                         <span t-out="serie.name"/>
-                        <i t-att-class="'fa ' + (this.state.fixedIds[this.state.type] === serie.id ? 'fa-star text-warning' : 'fa-star-o')"
+                        <i class="oi" data-icon="star"
+                           t-att-class="this.state.fixedIds[this.state.type] === serie.id ? 'oi-filled text-warning' : ''"
                            t-att-title="this.state.fixedIds[this.state.type] === serie.id ? 'Quitar serie fija' : 'Fijar como serie de esta caja'"
                            role="img"
                            t-on-click="(ev) => this.toggleFixed(serie, ev)"/>

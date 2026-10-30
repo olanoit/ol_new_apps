@@ -23,7 +23,7 @@
                         t-on-click="this.toggleProductView"
                         t-att-title="this.switchViewLabel"
                         t-att-aria-label="this.switchViewLabel">
-                    <i t-attf-class="oi oi-fw {{ this.state.viewMode === 'list' ? 'fa-th-large' : 'fa-list' }}"/>
+                    <i class="oi oi-fw" t-att-data-icon="this.state.viewMode === 'list' ? 'grid_view' : 'view_list'"/>
                     <span class="d-none d-md-inline">
                         <t t-if="this.state.viewMode === 'list'">Cuadrícula</t>
                         <t t-else="">Lista</t>
