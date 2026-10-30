@@ -8,10 +8,10 @@
         <field name="arch" type="xml">
             <group name="provider_credentials" position="inside">
                 <group invisible="code != 'pagoefectivo'" name="pagoefectivo_credentials">
-                    <field name="pagoefectivo_service_id" required="code == 'pagoefectivo' and state != 'disabled'"/>
-                    <field name="pagoefectivo_access_key" required="code == 'pagoefectivo' and state != 'disabled'"
+                    <field name="pagoefectivo_service_id" required="code == 'pagoefectivo' and active"/>
+                    <field name="pagoefectivo_access_key" required="code == 'pagoefectivo' and active"
                            password="True" groups="base.group_system"/>
-                    <field name="pagoefectivo_secret_key" required="code == 'pagoefectivo' and state != 'disabled'"
+                    <field name="pagoefectivo_secret_key" required="code == 'pagoefectivo' and active"
                            password="True" groups="base.group_system"/>
                     <field name="pagoefectivo_expiry_hours"/>
                     <field name="pagoefectivo_webhook_url" widget="CopyClipboardChar"/>

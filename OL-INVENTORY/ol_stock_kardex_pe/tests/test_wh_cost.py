@@ -133,8 +133,8 @@ class TestWarehouseCost(TestSaleCommon):
         self.assertEqual(transfer_in.warehouse_id, self.wh_north)
         sale_row = self._row(self.delivery.move_ids)
         self.assertAlmostEqual(sale_row.value, -50.0, places=2)
-        # Odoo vendió al promedio de la compañía.
-        self.assertAlmostEqual(self.delivery.move_ids.value, 45.0, places=2)
+        # Odoo vendió al promedio de la compañía (en 20 la salida es negativa).
+        self.assertAlmostEqual(self.delivery.move_ids.value, -45.0, places=2)
         self.assertEqual(self._wh_balance(self.wh_main), (5.0, 50.0))
         self.assertEqual(self._wh_balance(self.wh_north), (12.0, 200.0))
         self.assertAlmostEqual(sale_row.balance_qty, 17.0)
@@ -174,8 +174,11 @@ class TestWarehouseCost(TestSaleCommon):
         self.assertEqual(close.state, 'closed')
         self.assertEqual(self.company.l10n_pe_stock_lock_date, date(2024, 1, 31))
         self.assertTrue(close.account_move_id)
-        accounting = self.company.stock_accounting_value(at_date=date(2024, 1, 31))
-        self.assertAlmostEqual(accounting[valuation_account], 250.0, places=2)
+        # Odoo 20 quitó res.company.stock_accounting_value: saldo contable directo.
+        accounting = sum(self.env['account.move.line'].search([
+            ('account_id', '=', valuation_account.id), ('company_id', '=', self.company.id),
+            ('parent_state', '=', 'posted'), ('date', '<=', date(2024, 1, 31))]).mapped('balance'))
+        self.assertAlmostEqual(accounting, 250.0, places=2)
         # El cierre de Odoo lleva la diferencia a la cuenta de variación (69).
         variation = valuation_account.account_stock_variation_id
         self.assertIn(variation, close.account_move_id.line_ids.account_id)

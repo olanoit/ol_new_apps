@@ -140,7 +140,7 @@ class L10nPeLetterInvoiceLine(models.Model):
             else:
                 record.account_id = False
 
-    invoice_name = fields.Char(
+    invoice_name = fields.Text(
         string='N.º de comprobante',
         related='move_line_id.name',
     )

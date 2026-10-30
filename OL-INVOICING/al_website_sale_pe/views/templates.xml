@@ -6,7 +6,7 @@
          y el DNI en el identificador adicional PE_DNI. -->
     <template id="address_form_fields" inherit_id="portal.address_form_fields">
         <xpath expr="//div[@id='div_vat']" position="before">
-            <div t-if="l10n_pe_receipt and is_commercial_address and can_edit_vat"
+            <div t-if="l10n_pe_receipt and can_edit_commercial_fields"
                  id="div_l10n_pe_receipt" class="col-12 mb-2">
                 <label class="col-form-label d-block">Comprobante</label>
                 <div class="btn-group" role="group" aria-label="Comprobante">

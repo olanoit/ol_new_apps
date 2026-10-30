@@ -111,7 +111,7 @@ class PaymentTransaction(models.Model):
         }
         response = self.provider_id._send_api_request(
             'POST', 'refunds', json=payload, reference=self.reference)
-        self._process('culqi', {**response, 'reference': self.reference})
+        self.with_context(payment_safe_write=True)._process({**response, 'reference': self.reference})
 
     # -------------------------------------------------------------------------
     # Procesamiento

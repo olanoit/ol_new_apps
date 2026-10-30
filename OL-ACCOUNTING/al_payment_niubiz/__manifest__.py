@@ -29,6 +29,7 @@ tarjetas, Yape, Plin, Cuotéalo BCP y PagoEfectivo.
         'views/payment_niubiz_templates.xml',
         'views/payment_provider_views.xml',
         'data/payment_provider_data.xml',
+        'data/payment_method_data.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'uninstall_hook': 'uninstall_hook',

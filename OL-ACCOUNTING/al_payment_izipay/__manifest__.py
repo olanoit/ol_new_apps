@@ -33,6 +33,7 @@ micuentaweb.pe y formulario incrustado) y validado contra su tienda de prueba.
         'views/payment_provider_views.xml',
         'views/payment_izipay_templates.xml',
         'data/payment_provider_data.xml',
+        'data/payment_method_data.xml',
     ],
     'assets': {
         'web.assets_frontend': [

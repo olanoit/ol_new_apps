@@ -49,12 +49,13 @@ class TestTokenStatus(TransactionCase):
 
     def test_partner_form_hides_the_lookup_without_token(self):
         # Odoo 20: el tipo de documento sale de los identificadores; sin
-        # número, una persona se consulta por DNI y una empresa por RUC.
+        # número se espera un RUC.
         partner = self.env['res.partner'].new({
-            'name': 'X', 'company_type': 'person', 'country_id': self.env.ref('base.pe').id})
+            'name': 'X', 'country_id': self.env.ref('base.pe').id,
+            'additional_identifiers': {'PE_DNI': '45678901'}})
         self.assertEqual(partner.l10n_pe_lookup_state, 'missing')
         self.assertIn('API con token (test)', partner.l10n_pe_lookup_message)
-        partner.company_type = 'company'
+        partner.additional_identifiers = {}
         self.assertEqual(partner.l10n_pe_lookup_state, 'ready')
         partner.additional_identifiers = {'PASSPORT': 'AB123456'}
         self.assertEqual(partner.l10n_pe_lookup_state, 'na')

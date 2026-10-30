@@ -154,11 +154,11 @@
             <xpath expr="//field[@name='parent_id']" position="after">
                 <field name="l10n_pe_main_activity_id"/>
             </xpath>
-            <xpath expr="//filter[@name='type_company']" position="after">
+            <xpath expr="//filter[@name='filter_vat_set']" position="after">
                 <filter name="l10n_pe_legal_reps" string="Representantes legales"
                         domain="[('l10n_pe_is_legal_rep', '=', True)]"/>
             </xpath>
-            <xpath expr="//group[@name='group_by']" position="inside">
+            <xpath expr="//filter[@name='group_country']" position="after">
                 <filter name="group_l10n_pe_main_activity" string="Actividad principal"
                         context="{'group_by': 'l10n_pe_main_activity_id'}"/>
             </xpath>

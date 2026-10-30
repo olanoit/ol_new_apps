@@ -52,11 +52,11 @@ class PaymentProvider(models.Model):
         for provider in self.filtered(lambda p: p.code == 'niubiz'):
             provider.support_refund = 'partial'
 
-    @api.constrains('niubiz_merchant_id', 'niubiz_access_key', 'niubiz_secret_key', 'state')
+    @api.constrains('niubiz_merchant_id', 'niubiz_access_key', 'niubiz_secret_key', 'active', 'is_published', 'is_live')
     def _check_niubiz_credentials_before_enabling(self):
         # La contraseña está restringida a administradores: se lee con sudo.
         for provider in self.sudo():
-            if provider.code == 'niubiz' and provider.state != 'disabled':
+            if provider.code == 'niubiz' and provider.active and (provider.is_published or provider.is_live):
                 missing = []
                 if not provider.niubiz_merchant_id:
                     missing.append(_("Código de comercio"))
@@ -106,7 +106,7 @@ class PaymentProvider(models.Model):
 
     def _niubiz_get_urls(self):
         self.ensure_one()
-        return const.SANDBOX_URLS if self.state == 'test' else const.PROD_URLS
+        return const.SANDBOX_URLS if not self.is_live else const.PROD_URLS
 
     def _niubiz_get_checkout_url(self):
         self.ensure_one()

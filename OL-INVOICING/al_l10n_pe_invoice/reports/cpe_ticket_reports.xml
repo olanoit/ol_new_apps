@@ -99,7 +99,7 @@
                     <tbody>
                         <tr t-foreach="lines" t-as="line">
                             <td class="cpe-ctr"><span t-field="line.quantity"/></td>
-                            <td><span t-field="line.name"/></td>
+                            <td><span t-field="line.label"/></td>
                             <td class="cpe-num"><span t-out="line.price_unit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
                             <td class="cpe-ctr" t-if="has_discount">
                                 <span t-out="'%.2f' % line.discount"/>

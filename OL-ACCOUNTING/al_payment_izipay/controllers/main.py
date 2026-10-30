@@ -49,7 +49,9 @@ class IzipayController(http.Controller):
         if tx_sudo.state in ('draft', 'pending'):
             payment_data = tx_sudo._izipay_fetch_payment_data()
             if payment_data:
-                tx_sudo._process('izipay', payment_data)
+                # Consulta propia a Izipay con la fila bloqueada: se procesa ya
+                # para devolver el estado al checkout.
+                tx_sudo.with_context(payment_safe_write=True)._process(payment_data)
         return {'state': tx_sudo.state, 'message': tx_sudo.state_message or ''}
 
     @http.route(_webhook_url, type='http', auth='public', methods=['POST'], csrf=False, save_session=False)
@@ -73,7 +75,7 @@ class IzipayController(http.Controller):
         if tx_sudo:
             self._verify_signature(data, tx_sudo)
             self._lock_transaction(tx_sudo)
-            tx_sudo._process('izipay', payment_data)
+            tx_sudo._record(payment_data)
         return 'OK'
 
     @staticmethod

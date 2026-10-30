@@ -287,12 +287,12 @@ class TestFichaRucPartner(TransactionCase):
         # Solo el comportamiento del formulario: la compañía de prueba no tiene
         # plan contable, así que no se guarda.
         form = Form(Partner.with_user(self.env.user).with_company(self.company_pe))
-        # Odoo 20: el tipo sale del identificador (DNI) o del RUC (vat).
+        # Odoo 20: «empresa» se deduce del RUC (vat); con DNI es persona.
         form.additional_identifiers = {'PE_DNI': '45678901'}
-        self.assertEqual(form.company_type, 'person')
+        self.assertFalse(form.is_company)
         form.additional_identifiers = {}
         form.vat = '20100070970'
-        self.assertEqual(form.company_type, 'company')
+        self.assertTrue(form.is_company)
 
 
 @tagged('post_install', '-at_install')

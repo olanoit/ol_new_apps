@@ -142,7 +142,7 @@
                         <tr t-foreach="lines" t-as="line">
                             <td class="text-center"><span t-out="line_index + 1"/></td>
                             <td><span t-field="line.product_id.default_code"/></td>
-                            <td><span t-field="line.name"/></td>
+                            <td><span t-field="line.label"/></td>
                             <td class="text-end"><span t-field="line.quantity"/></td>
                             <!-- Línea sin unidad (descuento, intereses): el XML
                                  la informa como servicio (ZZ, catálogo 03). -->

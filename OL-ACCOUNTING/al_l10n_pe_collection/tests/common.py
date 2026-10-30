@@ -33,8 +33,11 @@ class CollectionCommon(TransactionCase):
         cls.zone = cls.env['l10n_pe.collection.zone'].create({'name': 'Lima Norte', 'user_id': cls.collector.id})
         cls.customer, cls.other_customer = cls.env['res.partner'].create([
             # Empresas: el art. 62 (horario de contacto) solo protege a consumidores.
-            {'name': 'CLIENTE COBRANZA SAC', 'email': 'cliente@example.com', 'is_company': True},
-            {'name': 'OTRO CLIENTE SAC', 'email': 'otro.cliente@example.com', 'is_company': True},
+            # Odoo 20: es empresa quien tiene RUC (is_company se calcula del vat).
+            {'name': 'CLIENTE COBRANZA SAC', 'email': 'cliente@example.com',
+             'vat': '20100070970', 'country_id': cls.env.ref('base.pe').id},
+            {'name': 'OTRO CLIENTE SAC', 'email': 'otro.cliente@example.com',
+             'vat': '20131312955', 'country_id': cls.env.ref('base.pe').id},
         ])
         cls.customer.with_company(cls.company).write({
             'followup_responsible_id': cls.collector.id, 'l10n_pe_collection_zone_id': cls.zone.id})

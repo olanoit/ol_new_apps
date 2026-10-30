@@ -25,6 +25,8 @@ class TestNiubiz(PaymentHttpCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Odoo 20: PaymentCommon reemplaza _process por un mock; aquí se prueba.
+        cls.enable_process_patcher = False
         cls.provider = cls._prepare_provider('niubiz', update_values={
             'niubiz_merchant_id': '456879852',
             'niubiz_access_key': 'integraciones@niubiz.com.pe',
@@ -35,7 +37,7 @@ class TestNiubiz(PaymentHttpCommon):
         cls.amount = 150.0
         cls.partner.write({'email': 'cliente@example.com', 'phone': False, 'city': 'Lima',
                            'country_id': cls.env.ref('base.pe').id})
-        cls.payment_method_id = cls.env.ref('payment.payment_method_card').id
+        cls.payment_method_id = cls.env.ref('al_payment_niubiz.payment_method_card').id
         cls.approved = {
             'header': {'ecoreTransactionUUID': 'a1b2c3', 'ecoreTransactionDate': 1791232000000},
             'order': {'actionCode': '000', 'authorizationCode': '173424', 'traceNumber': '75', 'purchaseNumber': '1'},
@@ -77,7 +79,7 @@ class TestNiubiz(PaymentHttpCommon):
         tx = self._create_transaction('redirect')
         with patch(f'{REQUESTS}.post', return_value=response(200, self.approved)):
             data = self.provider._niubiz_authorize(JWT, 'TKN', tx)
-        tx._process('niubiz', {**data, 'reference': tx.reference})
+        tx.with_context(payment_safe_write=True)._process({**data, 'reference': tx.reference})
         self.assertEqual(tx.state, 'done')
         self.assertEqual(tx.provider_reference, '173424')
         self.assertEqual(tx.niubiz_trace_number, '75')
@@ -88,7 +90,7 @@ class TestNiubiz(PaymentHttpCommon):
         tx = self._create_transaction('redirect')
         with patch(f'{REQUESTS}.post', return_value=response(400, self.declined)):
             data = self.provider._niubiz_authorize(JWT, 'TKN', tx)
-        tx._process('niubiz', {**data, 'reference': tx.reference})
+        tx.with_context(payment_safe_write=True)._process({**data, 'reference': tx.reference})
         self.assertEqual(tx.state, 'error')
         self.assertIn('Fondos insuficientes', tx.state_message)
 
@@ -145,10 +147,10 @@ class TestNiubiz(PaymentHttpCommon):
     def test_landing_rejects_bad_signature(self):
         tx = self._create_transaction('redirect', state='error')
         with patch(f'{REQUESTS}.request') as get:
-            resp = self.url_open(f'/payment/niubiz/landing?reference={tx.reference}&access_token=falso',
-                                 allow_redirects=False)
+            # El sitio puede anteponer primero el prefijo de idioma (/en/...).
+            resp = self.url_open(f'/payment/niubiz/landing?reference={tx.reference}&access_token=falso')
         get.assert_not_called()
-        self.assertIn('/payment/status', resp.headers.get('Location', ''))
+        self.assertIn('/payment/status', resp.url)
         self.assertEqual(tx.state, 'error')
 
     def test_landing_return_url_carries_signature_not_niubiz_token(self):

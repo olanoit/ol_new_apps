@@ -91,7 +91,8 @@ class TestCollectionV3(CollectionCommon):
     def test_consumer_detection(self):
         person = self.env['res.partner'].create({'name': 'Luis Soto',
                                                  'additional_identifiers': {'PE_DNI': '45678912'}})
-        company = self.env['res.partner'].create({'name': 'EMPRESA SAC', 'is_company': True})
+        company = self.env['res.partner'].create({'name': 'EMPRESA SAC', 'vat': '20601234565',
+                                                  'country_id': self.env.ref('base.pe').id})
         self.assertTrue(person._l10n_pe_collection_is_consumer())
         self.assertFalse(company._l10n_pe_collection_is_consumer())
         person.l10n_pe_collection_debtor_type = 'business'
@@ -127,7 +128,10 @@ class TestCollectionV3(CollectionCommon):
         Line._l10n_pe_load_levels(self.company)
         self._invoice(100, 2, partner=self.consumer)
         self.consumer.invalidate_recordset()
-        self.assertEqual(self.consumer.followup_line_id.delay, -3)
+        # Odoo 20: followup_line_id es el último nivel enviado; el que toca
+        # ahora lo calcula _query_followup_data.
+        next_line_id = self.consumer._query_followup_data()[self.consumer.id]['followup_line_id']
+        self.assertEqual(self.env['account_followup.followup.line'].browse(next_line_id).delay, -3)
         self.assertTrue(self.consumer._l10n_pe_collection_skip_preventive())
         self.assertFalse(self.consumer._execute_followup_partner())
         self.consumer.l10n_pe_collection_reminder_consent = True
@@ -476,12 +480,12 @@ class TestCollectionV3(CollectionCommon):
     # ------------------------------------------------------------------ pago en línea
     def _online_provider(self):
         return self.env['payment.provider'].create({
-            'name': 'Pasarela de prueba', 'code': 'none', 'state': 'test', 'company_id': self.company.id})
+            'name': 'Pasarela de prueba', 'code': 'none', 'is_live': False, 'is_published': True, 'company_id': self.company.id})
 
     def test_payment_url_needs_online_provider_and_balance(self):
         from odoo.addons.payment import utils as payment_utils
-        self.env['payment.provider'].search([('code', '!=', 'custom'), ('state', '!=', 'disabled'),
-                                             ('company_id', '=', self.company.id)]).state = 'disabled'
+        self.env['payment.provider'].search([('code', '!=', 'custom'), ('active', '=', True),
+                                             ('company_id', '=', self.company.id)]).is_published = False
         self._invoice(300, -10)
         self.assertFalse(self.customer._l10n_pe_collection_payment_url(self.company), 'sin pasarela en línea')
         self._online_provider()
@@ -525,10 +529,12 @@ class TestCollectionV3(CollectionCommon):
                 'payment_method_id': method.id, 'payment_provider_id': provider.id,
                 'payment_account_id': self.bank.inbound_payment_method_line_ids[:1].payment_account_id.id})]
         tx = self.env['payment.transaction'].create({
-            'provider_id': provider.id, 'payment_method_id': self.env.ref('payment.payment_method_unknown').id,
+            'provider_id': provider.id, 'payment_method_id': self.env['payment.method'].create({
+                'name': 'Prueba', 'code': 'unknown', 'provider_id': provider.id}).id,
             'amount': 300.0, 'currency_id': self.company.currency_id.id, 'partner_id': self.customer.id,
             'reference': 'COB-%s' % self.customer.id, 'operation': 'online_redirect',
         })
+        tx = tx.with_context(payment_safe_write=True)
         tx._set_done()
         tx._post_process()
         self.assertTrue(tx.payment_id)

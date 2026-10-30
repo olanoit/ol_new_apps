@@ -42,7 +42,7 @@ class PagoEfectivoController(http.Controller):
         if tx_sudo:
             self._verify_signature(body, request.httprequest.headers.get(const.SIGNATURE_HEADER), tx_sudo)
             self._lock_transaction(tx_sudo)
-            tx_sudo._process('pagoefectivo', payment_data)
+            tx_sudo._record(payment_data)
         return request.make_response('', status=200)
 
     @staticmethod

@@ -9,7 +9,10 @@ class IzipayCommon(PaymentCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Odoo 20: PaymentCommon reemplaza _process por un mock; aquí se prueba.
+        cls.enable_process_patcher = False
         cls.provider = cls._prepare_provider('izipay', update_values={
+            'is_published': True,
             'izipay_shop_id': '89289758',
             'izipay_password': 'testpassword_odoo0000000000',
             'izipay_public_key': '89289758:testpublickey_odoo0000000000',
@@ -22,7 +25,7 @@ class IzipayCommon(PaymentCommon):
             'phone': '987654321', 'street': 'Av. Arequipa 123', 'city': 'Lima',
             'vat': '20131312955', 'country_id': cls.env.ref('base.pe').id,
         })
-        cls.payment_method_id = cls.env.ref('payment.payment_method_card').id
+        cls.payment_method_id = cls.env.ref('al_payment_izipay.payment_method_card').id
         cls.form_token_answer = {'formToken': '26XrYMTBDzS9yZR4K3afl8Uw26AeyJhbW91bnQiOjEyMDUw', '_type': 'V4/Charge/PaymentForm'}
         cls.uuid = '34030cb72c1c4e43b98644b3a758411c'
         cls.paid_transaction = cls._izipay_transaction(cls.uuid, 'PAID', 'AUTHORISED')

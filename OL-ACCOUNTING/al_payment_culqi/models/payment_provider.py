@@ -57,17 +57,17 @@ class PaymentProvider(models.Model):
             return super()._get_default_payment_method_codes()
         return const.DEFAULT_PAYMENT_METHOD_CODES
 
-    @api.constrains('state', 'culqi_public_key', 'culqi_secret_key')
+    @api.constrains('active', 'is_published', 'is_live', 'culqi_public_key', 'culqi_secret_key')
     def _check_culqi_credentials(self):
         """Las llaves son obligatorias para activar el proveedor, y deben
         corresponder al modo: de prueba en «Modo de prueba», de producción en
         «Activado»."""
-        for provider in self.filtered(lambda p: p.code == 'culqi' and p.state != 'disabled'):
+        for provider in self.filtered(lambda p: p.code == 'culqi' and p.active and (p.is_published or p.is_live)):
             # La llave secreta está restringida a administradores.
             provider_sudo = provider.sudo()
             if not provider_sudo.culqi_public_key or not provider_sudo.culqi_secret_key:
                 raise ValidationError(_('Indique las llaves pública y secreta de Culqi antes de activar el proveedor.'))
-            prefix = 'test' if provider.state == 'test' else 'live'
+            prefix = 'test' if not provider.is_live else 'live'
             for label, key, kind in ((_('pública'), provider_sudo.culqi_public_key, 'pk'),
                                      (_('secreta'), provider_sudo.culqi_secret_key, 'sk')):
                 if not key.startswith(f'{kind}_{prefix}_'):

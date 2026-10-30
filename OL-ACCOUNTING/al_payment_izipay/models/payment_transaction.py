@@ -197,7 +197,7 @@ class PaymentTransaction(models.Model):
             raise ValidationError(_(
                 'Izipay no permite devolver una transacción en estado %s.', detailed_status))
 
-        self._process('izipay', {
+        self.with_context(payment_safe_write=True)._process({
             'reference': self.reference,
             'refund_operation': operation,
             'refund_amount': amount,
@@ -222,7 +222,9 @@ class PaymentTransaction(models.Model):
             }
         # Una transacción ya confirmada puede recibir avisos posteriores (IPN
         # de una anulación o con el importe reducido): no se vuelve a validar.
-        if self.state == 'done' or transaction.get('status') not in (const.STATUS_PAID, const.STATUS_RUNNING):
+        # En 20 el importe se valida después de _apply_updates, cuando la
+        # transacción ya quedó «done»: por eso se marca en payment_data.
+        if payment_data.get('izipay_already_done') or transaction.get('status') not in (const.STATUS_PAID, const.STATUS_RUNNING):
             return None
         return {
             'amount': payment_utils.to_major_currency_units(int(transaction['amount']), self.currency_id),
@@ -238,13 +240,16 @@ class PaymentTransaction(models.Model):
             self._izipay_apply_refund(payment_data['refund_operation'], transaction)
             return
         if self.state == 'done':
-            return  # Avisos posteriores (anulación, devolución): la devolución tiene su propia transacción.
+            # Avisos posteriores (anulación, devolución): la devolución tiene
+            # su propia transacción; tampoco se revalida el importe.
+            payment_data['izipay_already_done'] = True
+            return
 
         if transaction.get('uuid'):
             self.provider_reference = transaction['uuid']
         brand = ((transaction.get('transactionDetails') or {}).get('cardDetails') or {}).get('effectiveBrand')
         if brand and self.payment_method_id.code == 'card':
-            payment_method = self.env['payment.method']._get_from_code(
+            payment_method = self.provider_id._get_pm_from_code(
                 brand, mapping=const.PAYMENT_METHODS_MAPPING)
             self.payment_method_id = payment_method or self.payment_method_id
 

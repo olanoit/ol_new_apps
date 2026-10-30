@@ -70,12 +70,12 @@ class PaymentProvider(models.Model):
             return super()._get_default_payment_method_codes()
         return const.DEFAULT_PAYMENT_METHOD_CODES
 
-    @api.constrains('state', 'izipay_shop_id', 'izipay_password', 'izipay_public_key')
+    @api.constrains('active', 'is_published', 'is_live', 'izipay_shop_id', 'izipay_password', 'izipay_public_key')
     def _check_izipay_credentials(self):
         """Las claves son obligatorias para activar el proveedor y deben
         corresponder al modo: de test en «Modo de prueba», de producción en
         «Activado». La clave pública empieza con el identificador de la tienda."""
-        for provider in self.filtered(lambda p: p.code == 'izipay' and p.state != 'disabled'):
+        for provider in self.filtered(lambda p: p.code == 'izipay' and p.active and (p.is_published or p.is_live)):
             # La contraseña está restringida a administradores.
             provider_sudo = provider.sudo()
             shop_id = provider_sudo.izipay_shop_id
@@ -85,7 +85,7 @@ class PaymentProvider(models.Model):
                 raise ValidationError(_(
                     'Indique el identificador de la tienda, la contraseña y la clave pública de '
                     'Izipay antes de activar el proveedor.'))
-            test = provider.state == 'test'
+            test = not provider.is_live
             password_prefix = 'testpassword_' if test else 'prodpassword_'
             public_prefix = f"{shop_id}:{'testpublickey_' if test else 'publickey_'}"
             if not password.startswith(password_prefix):

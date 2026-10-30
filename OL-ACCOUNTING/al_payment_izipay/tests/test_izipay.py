@@ -43,7 +43,8 @@ class TestIzipay(IzipayCommon, PaymentHttpCommon):
         currencies = self.provider._get_supported_currencies().mapped('name')
         self.assertEqual(sorted(currencies), ['PEN', 'USD'])
         self.assertEqual(self.provider.support_refund, 'partial')
-        self.assertEqual(self.provider.payment_method_ids.mapped('code'), ['card'])
+        # Método principal «card» y sus marcas (en 20 son de cada pasarela).
+        self.assertEqual(self.provider.payment_method_ids.filtered(lambda m: not m.primary_payment_method_id).mapped('code'), ['card'])
         self.assertTrue(self.provider.izipay_webhook_url.endswith('/payment/izipay/webhook'))
 
     def test_webhook_url_without_double_slash(self):
@@ -54,7 +55,7 @@ class TestIzipay(IzipayCommon, PaymentHttpCommon):
     def test_credentials_must_match_mode(self):
         # assertRaises de Odoo abre un savepoint: la escritura rechazada se deshace.
         cases = [
-            ({'state': 'enabled'}, 'prodpassword_'),
+            ({'is_live': True}, 'prodpassword_'),
             ({'izipay_public_key': '11111111:testpublickey_x'}, '89289758:testpublickey_'),
             ({'izipay_password': False}, 'contraseña'),
         ]
@@ -182,14 +183,17 @@ class TestIzipay(IzipayCommon, PaymentHttpCommon):
         response = self._ipn(self._izipay_payment_answer([self.paid_transaction], 'PAID'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.text, 'OK')
+        self._run_processing()  # Odoo 20: la IPN se encola con _record()
         self.assertEqual(tx.state, 'done')
         self.assertEqual(tx.provider_reference, self.uuid)
 
     def test_ipn_of_retryable_refusal_keeps_transaction_open(self):
         tx = self._create_izipay_tx()
         self._ipn(self._izipay_payment_answer([self.refused_transaction], 'UNPAID', order_cycle='OPEN'))
+        self._run_processing()
         self.assertEqual(tx.state, 'draft')
         self._ipn(self._izipay_payment_answer([self.refused_transaction], 'UNPAID'))
+        self._run_processing()
         self.assertEqual(tx.state, 'error')
 
     @mute_logger('odoo.addons.al_payment_izipay.controllers.main', 'odoo.http')
@@ -208,6 +212,7 @@ class TestIzipay(IzipayCommon, PaymentHttpCommon):
         tx = self._create_izipay_tx(state='done', provider_reference=self.uuid)
         cancelled = dict(self.paid_transaction, status='UNPAID', detailedStatus='CANCELLED')
         self._ipn(self._izipay_payment_answer([cancelled], 'UNPAID'))
+        self._run_processing()
         self.assertEqual(tx.state, 'done')
 
     # ----------------------------------------------------------- devolución

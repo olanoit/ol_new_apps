@@ -135,11 +135,11 @@ class TestConnection(TransactionCase):
         self.assertIn('SUNAT (oficial)', usable.mapped('name'))
 
     def test_apply_result_writes_partner(self):
-        partner = self.env['res.partner'].create({'name': 'TMP'})
+        partner = self.env['res.partner'].create({'name': 'TMP', 'vat': '20100070970'})
         vals = {'name': 'EMPRESA X', 'state': 'ACTIVO', 'street': 'AV Y'}
         partner._apply_api_result('ruc', vals, {})
         self.assertEqual(partner.name, 'EMPRESA X')
-        self.assertEqual(partner.company_type, 'company')
+        self.assertTrue(partner.is_company)
         self.assertFalse(partner.alert_warning_vat)
 
     def test_branch_uses_root_connections(self):

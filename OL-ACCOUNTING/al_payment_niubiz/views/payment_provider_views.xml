@@ -10,17 +10,17 @@
                 <group invisible="code != 'niubiz'">
                     <field
                         name="niubiz_merchant_id"
-                        required="code == 'niubiz' and state != 'disabled'"
+                        required="code == 'niubiz' and active"
                     />
                     <field
                         name="niubiz_access_key"
-                        required="code == 'niubiz' and state != 'disabled'"
+                        required="code == 'niubiz' and active"
                     />
                     <field
                         name="niubiz_secret_key"
                         password="True"
                         groups="base.group_system"
-                        required="code == 'niubiz' and state != 'disabled'"
+                        required="code == 'niubiz' and active"
                     />
                     <field name="niubiz_ruc"
                            placeholder="20123456789"
@@ -28,7 +28,7 @@
                 </group>
             </group>
             <group name="provider_credentials" position="after">
-                <div invisible="code != 'niubiz' or state != 'test'">
+                <div invisible="code != 'niubiz' or is_live">
                     <div class="alert alert-info mt-2" role="alert">
                         <strong>Modo Sandbox activo — Checkout All-In-One</strong><br/>
                         Credenciales de prueba Niubiz:<br/>
@@ -62,7 +62,7 @@
                 />
             </button>
             <!-- Niubiz-specific info fields -->
-            <group name="transaction_partner" position="inside">
+            <group name="transaction_details" position="inside">
                 <field name="niubiz_transaction_date"
                        invisible="provider_code != 'niubiz' or not niubiz_transaction_date"
                        readonly="1"

@@ -31,7 +31,7 @@ class TestCulqi(CulqiCommon, PaymentHttpCommon):
 
     def test_keys_must_match_mode(self):
         with self.assertRaisesRegex(ValidationError, 'pk_live_'):
-            self.provider.write({'state': 'enabled'})
+            self.provider.write({'is_live': True})
         with self.assertRaisesRegex(ValidationError, 'llaves'):
             self.provider.write({'culqi_secret_key': False})
 
@@ -76,7 +76,7 @@ class TestCulqi(CulqiCommon, PaymentHttpCommon):
     def test_successful_charge_sets_done(self):
         tx = self._create_transaction('direct')
         with patch(API, return_value=self.charge_data) as api:
-            tx._process('culqi', tx._culqi_create_charge(self.token))
+            tx.with_context(payment_safe_write=True)._process(tx._culqi_create_charge(self.token))
         self.assertEqual(api.call_args.args[:2], ('POST', 'charges'))
         self.assertEqual(tx.state, 'done')
         self.assertEqual(tx.provider_reference, 'chr_test_kEazTaQBDtzNdwFr')
@@ -86,7 +86,7 @@ class TestCulqi(CulqiCommon, PaymentHttpCommon):
         tx = self._create_transaction('direct')
         error = ValidationError('El proveedor de pago rechazó la solicitud.\nSu tarjeta no tiene fondos suficientes.')
         with patch(API, side_effect=error):
-            tx._process('culqi', tx._culqi_create_charge(self.token))
+            tx.with_context(payment_safe_write=True)._process(tx._culqi_create_charge(self.token))
         self.assertEqual(tx.state, 'error')
         self.assertIn('fondos suficientes', tx.state_message)
 
@@ -94,12 +94,12 @@ class TestCulqi(CulqiCommon, PaymentHttpCommon):
     def test_charge_amount_mismatch_is_rejected(self):
         tx = self._create_transaction('direct')
         with patch(API, return_value={**self.charge_data, 'amount': 100}):
-            tx._process('culqi', tx._culqi_create_charge(self.token))
+            tx.with_context(payment_safe_write=True)._process(tx._culqi_create_charge(self.token))
         self.assertEqual(tx.state, 'error')
 
     def test_missing_email_is_rejected_without_calling_culqi(self):
         tx = self._create_transaction('direct')
-        tx.partner_email = False
+        tx.with_context(payment_safe_write=True).partner_email = False
         with patch(API) as api:
             data = tx._culqi_create_charge(self.token)
         api.assert_not_called()

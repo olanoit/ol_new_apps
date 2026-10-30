@@ -47,7 +47,7 @@ class NiubizPaymentController(http.Controller):
 
         # Reset errored transaction so a new authorization attempt can succeed
         if tx_sudo.state == 'error':
-            tx_sudo.write({'state': 'pending', 'state_message': False})
+            tx_sudo.with_context(payment_safe_write=True).write({'state': 'pending', 'state_message': False})
 
         provider_sudo = tx_sudo.provider_id.sudo()
 
@@ -164,7 +164,7 @@ class NiubizPaymentController(http.Controller):
             cip_url = cip_data.get('cipUrl', '')
             expiry_date = cip_data.get('expiryDate', '')
 
-            tx_sudo.write({
+            tx_sudo.with_context(payment_safe_write=True).write({
                 'provider_reference': str(cip),
                 'niubiz_cip_url': cip_url,
             })
@@ -200,7 +200,9 @@ class NiubizPaymentController(http.Controller):
             "Niubiz: processing authorization response for tx %s: %s",
             reference, auth_response
         )
-        tx_sudo._process('niubiz', auth_response)
+        # La autorización es síncrona (ya se cobró): se procesa en el acto para
+        # decidir la redirección.
+        tx_sudo.with_context(payment_safe_write=True)._process(auth_response)
 
         # On decline/error let the user retry on the landing page with a fresh session token.
         # On success redirect to the standard Odoo payment status page.

@@ -1,7 +1,8 @@
 from odoo import _, models
 
 #: Niveles de seguimiento en español: (días respecto al vencimiento, nombre,
-#: plantilla de correo, programar actividad).
+#: plantilla de correo, programar actividad). En Odoo 20 el nivel no tiene
+#: nombre propio (se muestra por sus días); el nombre queda como referencia.
 PE_LEVELS = [
     (-3, 'Recordatorio de vencimiento', 'mail_template_followup_preventive', False),
     (1, 'Aviso de documento vencido', 'mail_template_followup_overdue', False),
@@ -20,20 +21,17 @@ class AccountFollowupLine(models.Model):
         existing = self.search([('company_id', '=', company.id)])
         created = self.browse()
         for delay, name, template, activity in PE_LEVELS:
-            if delay in existing.mapped('delay') or name in existing.mapped('name'):
+            if delay in existing.mapped('delay'):
                 continue
             created |= self.create({
-                'name': name,
                 'delay': delay,
                 'company_id': company.id,
                 'send_email': True,
-                'join_invoices': delay > 0,
                 'mail_template_id': self.env.ref('al_l10n_pe_collection.%s' % template).id,
                 'create_activity': activity,
                 'activity_type_id': activity and self.env.ref('mail.mail_activity_data_call').id,
                 'activity_summary': activity and _('Llamar al cliente por la deuda vencida'),
                 'activity_default_responsible_type': 'followup',
-                'auto_execute': not activity,
             })
         return {
             'type': 'ir.actions.client', 'tag': 'display_notification',
@@ -60,7 +58,9 @@ class ResPartner(models.Model):
 
     def _l10n_pe_collection_skip_preventive(self):
         self.ensure_one()
-        followup_line = self.followup_line_id or self._get_first_followup_level()
+        # Odoo 20: el nivel que toca enviar lo da _query_followup_data.
+        line_id = (self._query_followup_data().get(self.id) or {}).get('followup_line_id')
+        followup_line = self.env['account_followup.followup.line'].browse(line_id)
         return bool(followup_line.delay < 0
                     and self.env.company.root_id.l10n_pe_collection_consumer_guard
                     and self._l10n_pe_collection_is_consumer()

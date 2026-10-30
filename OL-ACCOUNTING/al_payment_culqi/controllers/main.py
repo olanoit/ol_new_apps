@@ -51,5 +51,8 @@ class CulqiController(http.Controller):
             _logger.info('Culqi pide autenticación 3DS para %s.', reference)
             return {'action': 'review', 'message': payment_data.get('user_message')}
 
-        tx_sudo._process('culqi', payment_data)
+        # Respuesta de nuestra propia llamada a Culqi: se procesa ya (como en
+        # 19) para devolver el resultado al checkout; Odoo 20 encola en
+        # payment.data solo lo que llega por webhook.
+        tx_sudo.with_context(payment_safe_write=True)._process(payment_data)
         return {'state': tx_sudo.state, 'message': tx_sudo.state_message or ''}

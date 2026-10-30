@@ -92,7 +92,7 @@ class PaymentTransaction(models.Model):
                 _logger.warning("Niubiz: could not parse ecoreTransactionDate: %s", ecore_ts)
 
         if brand:
-            payment_method = self.env['payment.method']._get_from_code(
+            payment_method = self.provider_id._get_pm_from_code(
                 brand, mapping=const.PAYMENT_METHODS_MAPPING
             )
             if not payment_method:
@@ -144,7 +144,8 @@ class PaymentTransaction(models.Model):
         except ValidationError:
             raise
 
-        # Mark refund transaction as done
+        # Mark refund transaction as done (la devolución ya se hizo en Niubiz)
+        self = self.with_context(payment_safe_write=True)
         devolucion_code = (result.get('data') or {}).get('CODIGODEVOLUCION', '')
         self.provider_reference = devolucion_code or self.reference
         self._set_done()
@@ -182,6 +183,8 @@ class PaymentTransaction(models.Model):
                 },
             }
 
+        # La anulación ya se hizo en Niubiz: registrar su respuesta aquí mismo.
+        self = self.with_context(payment_safe_write=True)
         order = result.get('order', {})
         data_map = result.get('dataMap', {})
         reversa_action_code = order.get('actionCode', '')

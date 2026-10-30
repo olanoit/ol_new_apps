@@ -6,6 +6,7 @@ from werkzeug.exceptions import NotFound
 from odoo import _, fields, http
 from odoo.exceptions import AccessError, MissingError, ValidationError
 from odoo.http import request
+from odoo.http.stream import content_disposition
 from odoo.tools import email_normalize
 from odoo.tools.misc import consteq, hmac
 
@@ -36,7 +37,7 @@ class ComplaintsBookController(CustomerPortal):
 
     def _complaint_books(self):
         """Libros publicados en el sitio web actual."""
-        return request.website._l10n_pe_complaint_books()
+        return request.env.website._l10n_pe_complaint_books()
 
     @staticmethod
     def _form_token(timestamp):

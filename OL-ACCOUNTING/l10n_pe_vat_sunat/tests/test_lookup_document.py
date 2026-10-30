@@ -43,7 +43,6 @@ class TestLookupDocument(TransactionCase):
         })
         run.assert_called_once()
         self.assertEqual(result['name'][:28], 'SUPERINTENDENCIA NACIONAL DE')
-        self.assertEqual(result['company_type'], 'company')
         self.assertEqual(result['l10n_pe_district'], self.district.id)
         self.assertEqual(result['city_id'], city.id)
         self.assertEqual(result['city'], city.name)

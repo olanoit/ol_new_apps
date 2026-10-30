@@ -8,8 +8,11 @@ class PagoEfectivoCommon(PaymentCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Odoo 20: PaymentCommon reemplaza _process por un mock; aquí se prueba.
+        cls.enable_process_patcher = False
         cls.secret_key = 'secreto-de-prueba-odoo'
         cls.provider = cls._prepare_provider('pagoefectivo', update_values={
+            'is_published': True,
             'pagoefectivo_service_id': '1035',
             'pagoefectivo_access_key': 'clave-de-acceso-odoo',
             'pagoefectivo_secret_key': cls.secret_key,

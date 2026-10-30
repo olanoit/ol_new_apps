@@ -256,7 +256,7 @@ class AccountMove(models.Model):
                 move._reset_tax_amounts_stored()
                 continue
             move._update_stored_tax_amounts(
-                move._compute_tax_breakdown(move._prepare_edi_tax_details()))
+                move._compute_tax_breakdown(move._prepare_invoice_aggregated_taxes()))
 
     def _update_stored_tax_amounts(self, tax_amounts):
         self.update({
@@ -283,8 +283,9 @@ class AccountMove(models.Model):
                     '7152': 'icbper', '9999': 'others'}
         base_keys = {'9995': 'export', '9996': 'free',
                      '9997': 'exonerated', '9998': 'unaffected'}
-        for tax_detail in tax_details.get('tax_details', {}).values():
-            tax = tax_detail.get('grouping_key', self.env['account.tax'])
+        # Odoo 20 (account_edi retirado): agregador nativo, con el impuesto
+        # como clave.
+        for tax, tax_detail in tax_details.get('tax_details', {}).items():
             tax_code = tax.l10n_pe_edi_tax_code if tax else ''
             # Claves *_currency: moneda del documento (igual a la de compañía
             # en facturas PEN). Con 'tax_amount'/'base_amount' (moneda de

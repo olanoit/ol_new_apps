@@ -105,10 +105,11 @@ class TestComplaintsBookWebsite(HttpCase):
         self.assertIn('padre, la madre o el representante', response.text)
 
     def test_footer_link_on_every_page(self):
+        # El enlace puede llevar el prefijo de idioma (/en/libro-reclamaciones).
         home = self.url_open('/')
-        self.assertIn('href="/libro-reclamaciones"', home.text)
+        self.assertIn('/libro-reclamaciones"', home.text)
         self.website.l10n_pe_complaint_show_link = False
-        self.assertNotIn('href="/libro-reclamaciones"', self.url_open('/').text)
+        self.assertNotIn('/libro-reclamaciones"', self.url_open('/').text)
 
     def test_no_book_no_form(self):
         self.env['l10n_pe.complaint.book'].search([('website_ids', 'in', self.website.ids)]).write(

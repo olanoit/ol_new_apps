@@ -9,6 +9,8 @@ class CulqiCommon(PaymentCommon):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Odoo 20: PaymentCommon reemplaza _process por un mock; aquí se prueba.
+        cls.enable_process_patcher = False
         cls.provider = cls._prepare_provider('culqi', update_values={
             'culqi_public_key': 'pk_test_odoo00000000000',
             'culqi_secret_key': 'sk_test_odoo00000000000',
@@ -20,7 +22,7 @@ class CulqiCommon(PaymentCommon):
             'phone': '987654321', 'street': 'Av. Arequipa 123', 'city': 'Lima',
             'country_id': cls.env.ref('base.pe').id,
         })
-        cls.payment_method_id = cls.env.ref('payment.payment_method_card').id
+        cls.payment_method_id = cls.env.ref('al_payment_culqi.payment_method_card').id
         cls.token = 'tkn_test_RvtfMbLatXRJrJQo'
         cls.charge_data = {
             'object': 'charge',

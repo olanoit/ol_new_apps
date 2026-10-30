@@ -24,6 +24,7 @@
                 <field name="l10n_pe_bank_id" options="{'no_create': True}"/>
             </field>
             <field name="bank_name" position="after">
+                <field name="currency_id" options="{'no_create': True}"/>
                 <field name="l10n_pe_bank_code"/>
             </field>
         </field>

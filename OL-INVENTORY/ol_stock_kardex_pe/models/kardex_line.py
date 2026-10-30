@@ -322,7 +322,7 @@ class L10nPeKardexLine(models.Model):
             if op:
                 line.operation_type = op.zfill(2)
                 continue
-            if move.scrap_id:
+            if move.is_scrap:
                 line.operation_type = '13'
                 continue
             other = move.location_id if line.direction == 'in' else move.location_dest_id

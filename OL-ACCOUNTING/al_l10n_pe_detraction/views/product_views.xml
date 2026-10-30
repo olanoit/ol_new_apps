@@ -10,7 +10,7 @@
         <field name="inherit_id"
                ref="l10n_pe_edi.product_template_form_inherit_l10n_pe_edi"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='invoicing']/group[@name='properties']" position="after">
+            <xpath expr="//page[@name='invoicing']/group[@name='accounting']" position="after">
                 <group name="l10n_pe_detraction" string="Detracción"
                        invisible="'PE' not in fiscal_country_codes">
                     <group name="l10n_pe_detraction_left">

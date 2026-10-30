@@ -9,6 +9,9 @@ class ResPartnerBank(models.Model):
     # Sin ``size``: truncar convertiría un código erróneo en uno válido —
     # «123» pasaría a «12», que es otro banco— y el libro saldría mal sin que
     # nadie lo advierta. Mejor rechazarlo.
+    # Moneda de la cuenta (soles o dólares). Odoo 20 la retiró de
+    # res.partner.bank; con el mismo nombre se conserva la columna de 19.
+    currency_id = fields.Many2one('res.currency', string='Moneda')
     # Odoo 20 retiró res.bank (bank_id): el banco de la cuenta, del catálogo.
     l10n_pe_bank_id = fields.Many2one(
         'l10n_pe.bank', string='Banco (catálogo)', index='btree_not_null',

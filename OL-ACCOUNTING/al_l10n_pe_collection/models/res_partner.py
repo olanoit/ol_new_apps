@@ -357,7 +357,8 @@ class ResPartner(models.Model):
             return ''
         # sudo: los gestores no leen la configuración de las pasarelas.
         providers_sudo = self.env['payment.provider'].sudo().search([
-            ('state', 'in', ('enabled', 'test')), ('code', '!=', 'custom'),
+            # Odoo 20: sin «state»; la pasarela visible al cliente es la publicada.
+            ('is_published', '=', True), ('code', '!=', 'custom'),
             ('company_id', 'in', (company | company.root_id).ids)], limit=1)
         if not providers_sudo:
             return ''

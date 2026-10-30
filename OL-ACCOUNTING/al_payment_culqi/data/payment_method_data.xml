@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
+    <!-- Odoo 20: cada método de pago pertenece a una pasarela (provider_id). -->
+    <record id="payment_method_card" model="payment.method">
+        <field name="name">Tarjeta</field>
+        <field name="code">card</field>
+        <field name="sequence">10</field>
+        <field name="provider_id" ref="payment_provider_culqi"/>
+        <field name="image" type="bytes" file="payment/static/img/card.png"/>
+        <field name="support_tokenization">False</field>
+        <field name="support_manual_capture">none</field>
+        <field name="support_refund">partial</field>
+    </record>
+
 
     <!-- Yape (BCP): billetera móvil peruana. Culqi la tokeniza en el checkout
          (token ype_…) y se cobra con el mismo endpoint de cargos. -->
     <record id="payment_method_yape" model="payment.method">
         <field name="name">Yape</field>
         <field name="code">yape</field>
+        <field name="provider_id" ref="payment_provider_culqi"/>
         <field name="sequence">20</field>
         <field name="active">False</field>
         <field name="image" type="bytes" file="al_payment_culqi/static/img/yape.png"/>
@@ -16,5 +29,4 @@
         <field name="supported_country_ids" eval="[Command.set([ref('base.pe')])]"/>
         <field name="supported_currency_ids" eval="[Command.set([ref('base.PEN')])]"/>
     </record>
-
 </odoo>

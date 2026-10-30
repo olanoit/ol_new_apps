@@ -116,7 +116,9 @@ class TestPaymentAgreedRate(AccountTestInvoicingCommon):
         invoice = self._document()
         wizard = self._register(invoice, self.pen_bank, 3.72, currency=self.company.currency_id)
         self.assertAlmostEqual(wizard.amount, 3720.0)
-        self.assertAlmostEqual(wizard.payment_difference, 40.0, msg='3 760 al cambio del día menos 3 720')
+        # Odoo 20 propone el saldo contable en soles (3 750, al cambio de la
+        # factura), no el saldo en dólares al cambio del día (3 760).
+        self.assertAlmostEqual(wizard.payment_difference, 30.0, msg='3 750 de saldo menos 3 720')
         self.assertEqual(wizard.payment_difference_handling, 'reconcile')
         self.assertEqual(wizard.writeoff_account_id, self.loss)
         self.assertTrue(wizard.writeoff_is_exchange_account)
@@ -140,11 +142,13 @@ class TestPaymentAgreedRate(AccountTestInvoicingCommon):
     def test_without_agreed_rate_nothing_changes(self):
         invoice = self._document()
         wizard = self._register(invoice, self.pen_bank, 0.0, currency=self.company.currency_id)
-        self.assertAlmostEqual(wizard.amount, 3760.0)
+        # Odoo 20: el saldo contable en soles (al cambio de la factura).
+        self.assertAlmostEqual(wizard.amount, 3750.0)
         self.assertEqual(wizard.payment_difference_handling, 'open')
         wizard._create_payments()
         self.assertIn(invoice.payment_state, ('paid', 'in_payment'))
-        self.assertEqual(self._exchange(invoice), (0.0, 10.0))
+        # Nativo de Odoo 20: se paga el saldo contable, sin diferencia de cambio.
+        self.assertEqual(self._exchange(invoice), (0.0, 0.0))
 
     # ------------------------------------------------------------------ pago directo
     def test_direct_payment_uses_agreed_rate(self):

@@ -11,6 +11,11 @@ SESSION_KEY = 'al_website_sale_pe_lookups'
 
 class WebsiteSalePeAddress(L10nPEPortalAccount):
 
+    def _is_peru_company(self):
+        """Compañía del sitio peruana. ``l10n_pe`` lo usa en 20 pero ya no lo
+        define (venía de ``l10n_latam_base``, retirado)."""
+        return request.env.company.country_code == 'PE'
+
     def _prepare_address_form_values(self, partner_sudo, *args, **kwargs):
         rendering_values = super()._prepare_address_form_values(partner_sudo, *args, **kwargs)
         country = rendering_values.get('country')
@@ -43,7 +48,7 @@ class WebsiteSalePeAddress(L10nPEPortalAccount):
         # token) no son legibles para él. Solo se devuelven el nombre y la
         # dirección del documento que el propio visitante escribió, y las
         # consultas por sesión están limitadas.
-        partner_model_sudo = request.env['res.partner'].sudo().with_company(request.website.company_id)
+        partner_model_sudo = request.env['res.partner'].sudo().with_company(request.env.website.company_id)
         values = partner_model_sudo._l10n_pe_lookup_document(number, sunat_code)
         if not values:
             return {'found': False, 'message': request.env._(

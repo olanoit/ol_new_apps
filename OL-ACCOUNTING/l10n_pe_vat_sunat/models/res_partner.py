@@ -177,7 +177,7 @@ class ResPartner(models.Model):
             main = partner.l10n_pe_economic_activity_ids.filtered(lambda l: l.kind == 'principal')[:1]
             partner.l10n_pe_main_activity_id = main.activity_id
 
-    @api.depends('vat', 'additional_identifiers', 'company_type', 'country_id')
+    @api.depends('vat', 'additional_identifiers', 'country_id')
     @api.depends_context('company')
     def _compute_l10n_pe_lookup_state(self):
         company = self.env.company
@@ -198,8 +198,9 @@ class ResPartner(models.Model):
 
         Odoo 20 retiró el tipo de identificación de l10n_latam_base: el RUC
         es el ``vat`` de un contacto peruano y el DNI, el identificador
-        ``PE_DNI``. Sin número, el tipo es el esperado para el contacto
-        (DNI para personas); vacío si se identifica con otro documento."""
+        ``PE_DNI``. Sin número se espera un RUC (como antes, el tipo por
+        defecto de un contacto nuevo); vacío si se identifica con otro
+        documento."""
         self.ensure_one()
         peruvian = not self.country_id or self.country_code == 'PE'
         vat = (self.vat or '').strip()
@@ -210,7 +211,7 @@ class ResPartner(models.Model):
             return 'dni', dni
         if not peruvian or self.additional_identifiers:
             return '', ''
-        return ('dni' if self.company_type == 'person' else 'ruc'), ''
+        return 'ruc', ''
 
     def _l10n_pe_lookup_doc_type(self):
         """'ruc' o 'dni' si la compañía consulta el tipo de documento del
@@ -223,18 +224,6 @@ class ResPartner(models.Model):
         if doc_type == 'ruc' and company.l10n_pe_ruc_validation:
             return 'ruc'
         return ''
-
-    @api.onchange('vat', 'additional_identifiers')
-    def _onchange_identification_company_type(self):
-        """Contacto nuevo: RUC → empresa, DNI → persona. En un contacto ya
-        guardado no se cambia lo que el usuario eligió."""
-        if self._origin.id or self.parent_id:
-            return
-        doc_type, number = self._l10n_pe_lookup_target()
-        if doc_type == 'ruc' and number and not number.startswith('10'):
-            self.company_type = 'company'
-        elif doc_type == 'dni' and number:
-            self.company_type = 'person'
 
     # ============================================================ #
     # Onchange / entry point                                        #
@@ -283,7 +272,7 @@ class ResPartner(models.Model):
     # Datos que devuelve ``_l10n_pe_lookup_document``: los que la consulta
     # escribe en el contacto y sirven para llenar un formulario.
     _L10N_PE_LOOKUP_FIELDS = (
-        'name', 'company_type', 'street', 'city', 'city_id', 'state_id',
+        'name', 'street', 'city', 'city_id', 'state_id',
         'country_id', 'zip', 'l10n_pe_district',
     )
 
@@ -482,7 +471,6 @@ class ResPartner(models.Model):
         """Escribe el dict mapeado y post-procesa estructuras especiales."""
         self.ensure_one()
         vals = dict(vals or {})
-        vals.setdefault('company_type', 'person' if doc_type == 'dni' else 'company')
         vals['alert_warning_vat'] = False
         # No sobrescribir el nombre con vacío.
         if not (vals.get('name') or '').strip():
@@ -505,7 +493,8 @@ class ResPartner(models.Model):
 
         # Los contactos hijos solo se crean en un contacto ya guardado (botón):
         # desde el onchange quedarían creados aunque se descarte el formulario.
-        if doc_type == 'ruc' and self.is_company and isinstance(self.id, int):
+        # Odoo 20: is_company se deduce del RUC; basta con que sea la entidad comercial.
+        if doc_type == 'ruc' and not self.parent_id and isinstance(self.id, int):
             if extra.get('legal_representatives'):
                 self._sync_legal_representatives(extra['legal_representatives'])
             if extra.get('annexed_locals'):

@@ -85,7 +85,8 @@ class L10nPeStockPleWizard(models.TransientModel):
                 ['value:sum', 'quantity:sum'])
             for product, uom, value, qty in groups:
                 balances[product][0] += sign * uom._compute_quantity(qty, product.uom_id)
-                balances[product][1] += sign * value
+                # Odoo 20: el valor de las salidas ya es negativo.
+                balances[product][1] += value
         for product, balance in self._l10n_pe_kardex_wh_cost_balances(dt_from).items():
             if products is None or (product.id in products) != exclude:
                 balances[product] = balance

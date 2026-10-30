@@ -216,5 +216,6 @@ class TestInvoiceReportFixes(AccountTestInvoicingCommon):
             'product_id': product.id, 'quantity': 2, 'price_unit': 18.5,
             'tax_ids': [Command.set(self._tax('1000').ids)]})])
         row = self._html(self.a4, move).split('Jarabe', 1)[1].split('</tr>', 1)[0]
-        self.assertIn(move.invoice_line_ids.product_uom_id.name, row)
+        lang = move.partner_id.lang or self.env.lang
+        self.assertIn(move.invoice_line_ids.product_uom_id.with_context(lang=lang).name, row)
         self.assertNotIn('Servicio', row)

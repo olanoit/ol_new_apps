@@ -27,15 +27,13 @@
             <xpath expr="//group[@name='l10n_pe_edi_document_left']" position="inside">
                 <xpath expr="//group[@name='l10n_pe_edi_electronic_info']" position="move"/>
             </xpath>
-            <!-- «Documentos EDI» de account_edi (estado del envío al OSE, errores
-                 y descarga del XML): pestaña interna de «Facturación PE» y visible
-                 para facturación, no solo en modo desarrollador. -->
-            <xpath expr="//page[@name='l10n_pe_edi_document']" position="after">
-                <xpath expr="//page[@name='page_edi_documents']" position="move"/>
-            </xpath>
-            <xpath expr="//page[@name='page_edi_documents']" position="attributes">
-                <attribute name="string">Envío electrónico</attribute>
-                <attribute name="groups">account.group_account_invoice</attribute>
+            <!-- Envío electrónico (Odoo 20: estado y XML en el propio asiento;
+                 ya no hay «Documentos EDI» de account_edi). -->
+            <xpath expr="//group[@name='l10n_pe_edi_document_options']" position="inside">
+                <field name="l10n_pe_edi_status" invisible="not l10n_pe_edi_is_required"
+                       groups="account.group_account_invoice"/>
+                <field name="l10n_pe_edi_attachment_file"
+                       invisible="not l10n_pe_edi_attachment_file" groups="account.group_account_invoice"/>
             </xpath>
             <!-- La detracción (al_l10n_pe_detraction) después del comprobante. -->
             <xpath expr="//page[@name='l10n_pe_edi_document']" position="after">

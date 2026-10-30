@@ -80,10 +80,10 @@ class PaymentProvider(models.Model):
             return super()._get_default_payment_method_codes()
         return const.DEFAULT_PAYMENT_METHOD_CODES
 
-    @api.constrains('state', 'pagoefectivo_service_id', 'pagoefectivo_access_key',
+    @api.constrains('active', 'is_published', 'is_live', 'pagoefectivo_service_id', 'pagoefectivo_access_key',
                     'pagoefectivo_secret_key', 'pagoefectivo_expiry_hours')
     def _check_pagoefectivo_credentials(self):
-        for provider in self.filtered(lambda p: p.code == 'pagoefectivo' and p.state != 'disabled'):
+        for provider in self.filtered(lambda p: p.code == 'pagoefectivo' and p.active and (p.is_published or p.is_live)):
             # Las claves están restringidas a administradores.
             provider_sudo = provider.sudo()
             if not (provider_sudo.pagoefectivo_service_id and provider_sudo.pagoefectivo_access_key
@@ -102,7 +102,7 @@ class PaymentProvider(models.Model):
 
     def _pagoefectivo_api_url(self):
         self.ensure_one()
-        return const.API_URL_PROD if self.state == 'enabled' else const.API_URL_TEST
+        return const.API_URL_PROD if self.is_live else const.API_URL_TEST
 
     def _build_request_url(self, endpoint, **kwargs):
         if self.code != 'pagoefectivo':

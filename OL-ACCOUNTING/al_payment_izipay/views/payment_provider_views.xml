@@ -8,11 +8,11 @@
         <field name="arch" type="xml">
             <group name="provider_credentials" position="inside">
                 <group invisible="code != 'izipay'" name="izipay_credentials">
-                    <field name="izipay_shop_id" required="code == 'izipay' and state != 'disabled'"
+                    <field name="izipay_shop_id" required="code == 'izipay' and active"
                            placeholder="89289758"/>
-                    <field name="izipay_password" required="code == 'izipay' and state != 'disabled'"
+                    <field name="izipay_password" required="code == 'izipay' and active"
                            password="True" placeholder="testpassword_…" groups="base.group_system"/>
-                    <field name="izipay_public_key" required="code == 'izipay' and state != 'disabled'"
+                    <field name="izipay_public_key" required="code == 'izipay' and active"
                            placeholder="89289758:testpublickey_…"/>
                     <field name="izipay_webhook_url" widget="CopyClipboardChar"/>
                     <div colspan="2" class="text-muted small">

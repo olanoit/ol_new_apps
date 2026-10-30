@@ -208,5 +208,5 @@ class TestPagoEfectivo(PagoEfectivoCommon, PaymentHttpCommon):
         tx.pagoefectivo_date_expiry = fields.Datetime.now() - timedelta(hours=3)
         self.env['payment.transaction']._cron_pagoefectivo_cancel_expired()
         self.assertEqual(tx.state, 'cancel')
-        tx._process('pagoefectivo', self._notification())
+        tx.with_context(payment_safe_write=True)._process(self._notification())
         self.assertEqual(tx.state, 'done')

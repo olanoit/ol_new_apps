@@ -30,8 +30,8 @@ por internet y las billeteras.
     'data': [
         'views/payment_provider_views.xml',
         'views/payment_pagoefectivo_templates.xml',
-        'data/payment_method_data.xml',
         'data/payment_provider_data.xml',
+        'data/payment_method_data.xml',
         'data/ir_cron_data.xml',
     ],
     'post_init_hook': 'post_init_hook',

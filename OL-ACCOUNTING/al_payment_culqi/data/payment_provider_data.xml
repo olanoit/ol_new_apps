@@ -8,8 +8,6 @@
         <field name="module_id" ref="base.module_al_payment_culqi"/>
         <field name="inline_form_view_id" ref="inline_form"/>
         <field name="available_country_ids" eval="[Command.set([ref('base.pe')])]"/>
-        <field name="payment_method_ids"
-               eval="[Command.set([ref('payment.payment_method_card'), ref('payment_method_yape')])]"/>
     </record>
 
 </odoo>
