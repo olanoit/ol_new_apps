@@ -98,7 +98,6 @@ class TestPosPaymentGateway(TestUi):
 
     def test_pos_card_of_peruvian_gateways(self):
         """Niubiz, Culqi e Izipay traen su tarjeta 240 × 160 para el TPV."""
-        import base64
         import io
         from PIL import Image
         for xmlid in ('al_payment_niubiz.payment_provider_niubiz', 'al_payment_culqi.payment_provider_culqi',
@@ -108,8 +107,15 @@ class TestPosPaymentGateway(TestUi):
                 continue
             # sudo: el usuario de estas pruebas es de otra compañía que el proveedor.
             provider_sudo = provider.sudo()
-            card = Image.open(io.BytesIO(base64.b64decode(provider_sudo._al_pos_payment_logo())))
+            card = Image.open(io.BytesIO(bytes(provider_sudo._al_pos_payment_logo())))
             self.assertEqual(card.size, (240, 160), xmlid)
+            # Odoo 20: el campo binario solo acepta BinaryValue, no bytes en base64.
+            method = self.env['pos.payment.method'].sudo().create({
+                'name': provider_sudo.name, 'type': 'online',
+                'online_payment_provider_ids': [Command.set(provider_sudo.ids)],
+                'company_id': provider_sudo.company_id.id})
+            # El campo imagen la redimensiona: basta con que se guarde y sea una imagen.
+            self.assertTrue(Image.open(io.BytesIO(bytes(method.image))).size, xmlid)
 
     def test_invoice_checked_before_qr(self):
         """Antes del QR se arma el comprobante y se deshace: si no se puede

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import base64
-
 from odoo import _, fields, models
 from odoo.fields import Command
+from odoo.tools import BinaryBytes
 from odoo.tools.misc import file_open
 
 
@@ -27,7 +26,7 @@ class PaymentProvider(models.Model):
         if self.module_id:
             try:
                 with file_open(f'{self.module_id.name}/static/img/{self.code}_pos.png', 'rb') as card:
-                    return base64.b64encode(card.read())
+                    return BinaryBytes(card.read())
             except (FileNotFoundError, ValueError):
                 pass
         return self.image_128
