@@ -9,7 +9,10 @@ class AccountPayment(models.Model):
 
     pe_payment_method_id = fields.Many2one(
         comodel_name='pe.catalog.payment', string='Medio pago')
-    bank_operation_number = fields.Char(string='Número de operación banco')
+    # Odoo 20: el número de operación es la referencia nativa del pago
+    # (payment_reference), la que ven el extracto y la conciliación.
+    bank_operation_number = fields.Char(
+        string='Número de operación banco', related='payment_reference', readonly=False)
     l10n_pe_future_date = fields.Boolean(
         string='Fecha futura', compute='_compute_l10n_pe_future_date',
         help='La fecha del pago es posterior a hoy: suele ser un error de digitación.')
