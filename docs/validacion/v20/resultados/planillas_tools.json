@@ -1,0 +1,1951 @@
+{
+ "fase": "planillas_tools",
+ "casos": [
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "Preparación: parámetros, periodos y trabajadores QA20",
+   "pasos": "El jefe de planillas genera los periodos 2025-2026, completa la pestaña de beneficios de Parámetros Principales y registra 4 trabajadores con su contrato.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Parámetros Principales de la compañía existen",
+     "detalle": "Parámetros Principales"
+    },
+    {
+     "estado": "OK",
+     "titulo": "periodos mensuales 2025-07 y 2026-10 generados",
+     "detalle": ""
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "Parámetros Principales: se completaron campos vacíos",
+     "detalle": "basic_sr_id, bonus_nine_input_id, bonus_sr_ids, commission_sr_ids, cts_input_id, extra_hours_sr_id, fifth_afect_sr_id, fifth_category_input_id, fifth_extr_sr_id, gratification_input_id, household_allowance_sr_id, insurable_remuneration, lack_wd_ids, medical_rest_wd_ids, net_to_pay_sr_id, proy_afect_sr_id, truncated_bonus_nine_input_id, truncated_cts_input_id, truncated_gratification_input_id, truncated_vacation_input_id, vacation_input_id, working_wd_ids"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "Estructura BASE: se quita el diario nativo para usar el asiento peruano por lote",
+     "detalle": "antes: Salarios (hr_payroll_account generaría un asiento por boleta)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del trabajador con prefijo QA20",
+     "detalle": "QA20 Torres Ruiz Ana"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.employee",
+     "id": 935,
+     "nombre": "QA20 Torres Ruiz Ana",
+     "nota": "AFP INTEGRA, sueldo 6000.00, 2025-01-01"
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 936,
+     "nombre": "QA20 Díaz Mora Bruno",
+     "nota": "ONP, sueldo 2500.00, 2025-01-01"
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 937,
+     "nombre": "QA20 Ríos León Carla",
+     "nota": "AFP HABITAT, sueldo 1000.00, 2025-06-01"
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 938,
+     "nombre": "QA20 Cárdenas Paz Diego",
+     "nota": "AFP PRIMA, sueldo 2400.00, 2025-03-01"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "Planillas mensuales jul-2025 → jun-2026 (base de los beneficios)",
+   "pasos": "Cada mes se crea el lote del periodo, se calculan y validan las boletas de los 4 trabajadores.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "12 lotes mensuales jul-2025 → jun-2026 validados",
+     "detalle": "QA20 Planilla 2025-07, QA20 Planilla 2025-08, QA20 Planilla 2025-09, QA20 Planilla 2025-10, QA20 Planilla 2025-11, QA20 Planilla 2025-12, QA20 Planilla 2026-01, QA20 Planilla 2026-02, QA20 Planilla 2026-03, QA20 Planilla 2026-04, QA20 Planilla 2026-05, QA20 Planilla 2026-06"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.payslip.run",
+     "id": 553,
+     "nombre": "QA20 Planilla 2026-06",
+     "nota": "lote junio 2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_benefits",
+   "titulo": "Gratificación de Navidad 2025 (lote dic-2025)",
+   "pasos": "El usuario crea la gratificación de diciembre 2025 sobre el lote de diciembre y pulsa «Procesar».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Torres Ruiz Ana",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: meses computables jul-dic",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: gratificación = computable/6 × 6 meses = sueldo",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 %",
+     "detalle": "esperado 540.0, obtenido 540.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Díaz Mora Bruno",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: meses computables jul-dic",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: gratificación = computable/6 × 6 meses = sueldo",
+     "detalle": "esperado 2500.0, obtenido 2500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 %",
+     "detalle": "esperado 225.0, obtenido 225.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Ríos León Carla",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: meses computables jul-dic",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: gratificación = computable/6 × 6 meses = sueldo",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 %",
+     "detalle": "esperado 90.0, obtenido 90.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Cárdenas Paz Diego",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: meses computables jul-dic",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: gratificación = computable/6 × 6 meses = sueldo",
+     "detalle": "esperado 2400.0, obtenido 2400.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 %",
+     "detalle": "esperado 216.0, obtenido 216.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.gratification",
+     "id": 41,
+     "nombre": "Gratificación Navidad 2025",
+     "nota": "gratificación Navidad 2025"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_benefits",
+   "titulo": "CTS de mayo 2026 con 1/6 de la gratificación",
+   "pasos": "El usuario crea la CTS semestral nov-abr sobre el lote de abril y pulsa «Procesar».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "línea de CTS de QA20 Torres Ruiz Ana",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: 1/6 de la gratificación de diciembre",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: computable = sueldo + 1/6 gratificación",
+     "detalle": "esperado 7000.0, obtenido 7000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: 6 meses nov-abr",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: CTS = computable/12 × 6",
+     "detalle": "esperado 3500.0, obtenido 3500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de CTS de QA20 Díaz Mora Bruno",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: 1/6 de la gratificación de diciembre",
+     "detalle": "esperado 416.67, obtenido 416.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: computable = sueldo + 1/6 gratificación",
+     "detalle": "esperado 2916.67, obtenido 2916.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: 6 meses nov-abr",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: CTS = computable/12 × 6",
+     "detalle": "esperado 1458.34, obtenido 1458.34"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de CTS de QA20 Ríos León Carla",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: 1/6 de la gratificación de diciembre",
+     "detalle": "esperado 166.67, obtenido 166.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: computable = sueldo + 1/6 gratificación",
+     "detalle": "esperado 1166.67, obtenido 1166.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: 6 meses nov-abr",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: CTS = computable/12 × 6",
+     "detalle": "esperado 583.34, obtenido 583.34"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de CTS de QA20 Cárdenas Paz Diego",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: 1/6 de la gratificación de diciembre",
+     "detalle": "esperado 400.0, obtenido 400.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: computable = sueldo + 1/6 gratificación",
+     "detalle": "esperado 2800.0, obtenido 2800.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: 6 meses nov-abr",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: CTS = computable/12 × 6",
+     "detalle": "esperado 1400.0, obtenido 1400.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.cts",
+     "id": 54,
+     "nombre": "CTS Noviembre - Abril 2026",
+     "nota": "CTS mayo 2026 (nov-2025 → abr-2026)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_benefits",
+   "titulo": "Gratificación de julio 2026 con bonificación 9 %",
+   "pasos": "El usuario crea la gratificación de Fiestas Patrias sobre el lote de junio y pulsa «Procesar».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre propuesto del documento",
+     "detalle": "esperado 'Gratificación Fiestas Patrias 2026', obtenido 'Gratificación Fiestas Patrias 2026'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Torres Ruiz Ana",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: computable = sueldo (sin AF ni variables)",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: 6 meses ene-jun",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: gratificación = computable/6 × 6",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: total = gratificación + bono 9 %",
+     "detalle": "esperado 6540.0, obtenido 6540.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Díaz Mora Bruno",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: computable = sueldo (sin AF ni variables)",
+     "detalle": "esperado 2500.0, obtenido 2500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: 6 meses ene-jun",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: gratificación = computable/6 × 6",
+     "detalle": "esperado 2500.0, obtenido 2500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: total = gratificación + bono 9 %",
+     "detalle": "esperado 2725.0, obtenido 2725.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Ríos León Carla",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: computable = sueldo (sin AF ni variables)",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: 6 meses ene-jun",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: gratificación = computable/6 × 6",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: total = gratificación + bono 9 %",
+     "detalle": "esperado 1090.0, obtenido 1090.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de gratificación de QA20 Cárdenas Paz Diego",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: computable = sueldo (sin AF ni variables)",
+     "detalle": "esperado 2400.0, obtenido 2400.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: 6 meses ene-jun",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: gratificación = computable/6 × 6",
+     "detalle": "esperado 2400.0, obtenido 2400.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cese: total = gratificación + bono 9 %",
+     "detalle": "esperado 2616.0, obtenido 2616.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.gratification",
+     "id": 42,
+     "nombre": "Gratificación Fiestas Patrias 2026",
+     "nota": "gratificación Fiestas Patrias 2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_benefits",
+   "titulo": "Liquidación por cese (10/07/2026): CTS y vacaciones truncas",
+   "pasos": "Se registra el cese en el contrato, se crea la liquidación sobre el lote de julio, se pulsa «Procesar» y «Exportar a boletas».",
+   "checks": [
+    {
+     "estado": "AVISO",
+     "titulo": "días de la boleta jul-2026 del cesado (contrato hasta el 10/07)",
+     "detalle": "{'DLAB': 8.0, '000.00': 15.0, 'DOM': 8.0}"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "DLAB + DOM = 10 días de contrato en julio (1-10/07)",
+     "detalle": "esperado 10.0, obtenido 16.0"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "básico de julio = sueldo/30 × 10 días",
+     "detalle": "esperado 800.0, obtenido 1280.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "solo el trabajador cesado entra en la liquidación",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "una línea de CTS trunca",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "CTS trunca: meses completos (may, jun)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "CTS trunca: días de julio hasta el cese",
+     "detalle": "esperado 10, obtenido 16"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CTS trunca: computable = sueldo + 1/6 grati dic-2025",
+     "detalle": "esperado 2800.0, obtenido 2800.0"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "CTS trunca = computable/12 × 2 + computable/360 × 10",
+     "detalle": "esperado 544.45, obtenido 591.11"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin gratificación trunca ene-jun (ya incluida en la regular de julio)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "una línea de vacaciones truncas",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "vacaciones: cómputo desde el último aniversario",
+     "detalle": "esperado '2026-03-01', obtenido '2026-03-01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "vacaciones truncas: meses mar-jun",
+     "detalle": "esperado 4, obtenido 4"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "vacaciones truncas: días de julio",
+     "detalle": "esperado 10, obtenido 16.0"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "vacaciones truncas = sueldo/12 × 4 + sueldo/360 × 10",
+     "detalle": "esperado 866.67, obtenido 906.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "vacaciones: neto = total − fondo 10 % − prima − comisión AFP",
+     "detalle": "esperado 789.07, obtenido 789.07"
+    },
+    {
+     "estado": "OK",
+     "titulo": "exportar: input CTS_TRU en la boleta de julio",
+     "detalle": "esperado 591.11, obtenido 591.11"
+    },
+    {
+     "estado": "OK",
+     "titulo": "exportar: input VATRU en la boleta de julio",
+     "detalle": "esperado 906.67, obtenido 906.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "boleta de julio: línea VATRU calculada",
+     "detalle": "esperado 906.67, obtenido 906.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "boleta de cese validada",
+     "detalle": "validated"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.payslip.run",
+     "id": 554,
+     "nombre": "QA20 Planilla 2026-07",
+     "nota": "lote julio 2026 (con el cese)"
+    },
+    {
+     "modelo": "hr.liquidation",
+     "id": 30,
+     "nombre": false,
+     "nota": "liquidación del cese 10/07/2026"
+    }
+   ],
+   "error": null,
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "Planillas ago → oct 2026",
+   "pasos": "Se generan los lotes de agosto y setiembre (validados) y octubre (en borrador).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el cesado ya no tiene boleta en setiembre",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.payslip.run",
+     "id": 556,
+     "nombre": "QA20 Planilla 2026-09",
+     "nota": "lote setiembre 2026 (validado)"
+    },
+    {
+     "modelo": "hr.payslip.run",
+     "id": 557,
+     "nombre": "QA20 Planilla 2026-10",
+     "nota": "lote octubre 2026 (en borrador hasta la quinta)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "Parámetros nativos UIT / RMV / EsSalud con su historial",
+   "pasos": "El usuario abre Nómina ▸ Configuración ▸ Parámetros de reglas y revisa los valores por fecha.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "existe el parámetro de reglas l10n_pe_uit",
+     "detalle": "Perú: UIT (Unidad Impositiva Tributaria)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_uit vigente desde 2024-01-01",
+     "detalle": "esperado 5150.0, obtenido 5150.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_uit vigente desde 2025-01-01",
+     "detalle": "esperado 5350.0, obtenido 5350.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_uit vigente desde 2026-01-01",
+     "detalle": "esperado 5500.0, obtenido 5500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "existe el parámetro de reglas l10n_pe_rmv",
+     "detalle": "Perú: Remuneración Mínima Vital"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_rmv vigente desde 2022-05-01",
+     "detalle": "esperado 1025.0, obtenido 1025.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_rmv vigente desde 2025-01-01",
+     "detalle": "esperado 1130.0, obtenido 1130.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_rmv vigente desde 2026-10-01",
+     "detalle": "esperado 1230.0, obtenido 1230.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "existe el parámetro de reglas l10n_pe_essalud_rate",
+     "detalle": "Perú: tasa de EsSalud (%)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_essalud_rate vigente desde 1997-05-01",
+     "detalle": "esperado 9.0, obtenido 9.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_uit(2024)",
+     "detalle": "esperado 5150.0, obtenido 5150.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_uit(2025)",
+     "detalle": "esperado 5350.0, obtenido 5350.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_uit(2026)",
+     "detalle": "esperado 5500.0, obtenido 5500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_rmv(2024-06-30)",
+     "detalle": "esperado 1025.0, obtenido 1025.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_rmv(2026-09-30)",
+     "detalle": "esperado 1130.0, obtenido 1130.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_rmv(2026-10-01)",
+     "detalle": "esperado 1230.0, obtenido 1230.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "_l10n_pe_get_rmv(2022-01-01)",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin UIT 2031 → UserError claro",
+     "detalle": "No está registrada la UIT del año 2031 (Nómina ▸ Configuración ▸ Perú ▸ UIT)."
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "Boleta mensual: AFP, ONP y sueldo menor a la RMV",
+   "pasos": "El usuario abre las boletas de setiembre y octubre 2026 y revisa cada concepto.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "afp set-2026: RMV de la boleta = 1 130 (parámetro al 30/09)",
+     "detalle": "esperado 1130.0, obtenido 1130.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: básico mes completo = sueldo",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: afecto AFP = básico",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: fondo AFP = afecto × 10.00 %",
+     "detalle": "esperado 600.0, obtenido 600.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: comisión flujo = afecto × 1.55 %",
+     "detalle": "esperado 93.0, obtenido 93.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: prima de seguro = min(afecto, tope 12732.70) × 1.37 %",
+     "detalle": "esperado 82.2, obtenido 82.2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: sin ONP",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: EsSalud = max(afecto 6000.00, RMV 1130.00) × 9 %",
+     "detalle": "esperado 540.0, obtenido 540.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: neto = ingresos − aportes del trabajador",
+     "detalle": "esperado 5224.8, obtenido 5224.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp set-2026: RMV de la boleta = 1 130 (parámetro al 30/09)",
+     "detalle": "esperado 1130.0, obtenido 1130.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: básico mes completo = sueldo",
+     "detalle": "esperado 2500.0, obtenido 2500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: ONP = afecto × 13 %",
+     "detalle": "esperado 325.0, obtenido 325.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: sin aporte AFP",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: EsSalud = max(afecto 2500.00, RMV 1130.00) × 9 %",
+     "detalle": "esperado 225.0, obtenido 225.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: neto = ingresos − aportes del trabajador",
+     "detalle": "esperado 2175.0, obtenido 2175.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv set-2026: RMV de la boleta = 1 130 (parámetro al 30/09)",
+     "detalle": "esperado 1130.0, obtenido 1130.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: básico mes completo = sueldo",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: afecto AFP = básico",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: fondo AFP = afecto × 10.00 %",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: comisión flujo = afecto × 1.47 %",
+     "detalle": "esperado 14.7, obtenido 14.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: prima de seguro = min(afecto, tope 12732.70) × 1.37 %",
+     "detalle": "esperado 13.7, obtenido 13.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: sin ONP",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: EsSalud = max(afecto 1000.00, RMV 1130.00) × 9 %",
+     "detalle": "esperado 101.7, obtenido 101.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: neto = ingresos − aportes del trabajador",
+     "detalle": "esperado 871.6, obtenido 871.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv oct-2026: RMV = 1 230",
+     "detalle": "esperado 1230.0, obtenido 1230.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv oct-2026: asignación familiar = 10 % RMV",
+     "detalle": "esperado 123.0, obtenido 123.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv oct-2026: EsSalud sobre la RMV nueva (1 230 × 9 %)",
+     "detalle": "esperado 110.7, obtenido 110.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la boleta validada de setiembre conserva RMV 1 130",
+     "detalle": "esperado 1130.0, obtenido 1130.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.payslip",
+     "id": 1443,
+     "nombre": "Recibo de nómina - QA20 Torres Ruiz Ana - setiembre 2026",
+     "nota": "afp set-2026"
+    },
+    {
+     "modelo": "hr.payslip",
+     "id": 1444,
+     "nombre": "Recibo de nómina - QA20 Díaz Mora Bruno - setiembre 2026",
+     "nota": "onp set-2026"
+    },
+    {
+     "modelo": "hr.payslip",
+     "id": 1445,
+     "nombre": "Recibo de nómina - QA20 Ríos León Carla - setiembre 2026",
+     "nota": "rmv set-2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "RMV con fecha futura solo afecta a las planillas posteriores",
+   "pasos": "Se registra una RMV vigente desde 01/01/2027 y se calculan boletas de dic-2026 y ene-2027.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "dic-2026 (antes de la vigencia) sigue con RMV 1 230",
+     "detalle": "esperado 1230.0, obtenido 1230.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ene-2027 toma la RMV futura 1 300",
+     "detalle": "esperado 1300.0, obtenido 1300.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ene-2027: EsSalud = 1 300 × 9 % (sueldo 1 000 < RMV)",
+     "detalle": "esperado 117.0, obtenido 117.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la boleta de oct-2026 ya calculada no cambia",
+     "detalle": "esperado 1230.0, obtenido 1230.0"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "valor RMV 2027 creado dentro de un savepoint y deshecho",
+     "detalle": "no queda en la base"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_hr_pe_benefits",
+   "titulo": "Vacaciones: récord vacacional y goce de 15 días",
+   "pasos": "El usuario calcula el récord vacacional de Bruno y registra 15 días de vacaciones en el lote de agosto.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "récord vacacional del año 2025 generado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "récord 2025: 2.5 días × 12 meses = 30 días",
+     "detalle": "esperado 30.0, obtenido 30.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "vacaciones 15 días = sueldo/30 × 15",
+     "detalle": "esperado 1250.0, obtenido 1250.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ONP 13 % de la remuneración vacacional",
+     "detalle": "esperado 162.5, obtenido 162.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "neto vacacional = total − ONP",
+     "detalle": "esperado 1087.5, obtenido 1087.5"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.vacation.rest",
+     "id": 56,
+     "nombre": "QA20 Díaz Mora Bruno · 01/01/2025 – 31/12/2025",
+     "nota": "récord vacacional 2025"
+    },
+    {
+     "modelo": "hr.vacation",
+     "id": 11,
+     "nombre": "Vacaciones QA20 Planilla 2026-08",
+     "nota": "vacaciones agosto 2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_benefits",
+   "titulo": "Renta de 5.ª de octubre con la UIT 2026",
+   "pasos": "El usuario crea la quinta del lote de octubre, pulsa «Generar» y «Exportar a boletas».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Ana (6 000) queda afecta a 5.ª",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "7 UIT = 7 × 5500 (UIT 2026 del parámetro)",
+     "detalle": "esperado 38500.0, obtenido 38500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "remuneraciones ene-set (boletas validadas)",
+     "detalle": "esperado 54000.0, obtenido 54000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "renta bruta proyectada = 12 sueldos + 2 gratificaciones con bono",
+     "detalle": "esperado 85080.0, obtenido 85080.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "renta neta = bruta − 7 UIT",
+     "detalle": "esperado 46580.0, obtenido 46580.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "impuesto anual por tramos 8/14/17/20/30 % (calculado a mano)",
+     "detalle": "esperado 4871.2, obtenido 4871.200000000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "retención de octubre = (impuesto − retenido) / 4 (art. 40)",
+     "detalle": "esperado 1217.8, obtenido 1217.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Bruno (2 500) y Carla (1 000) pasan a excluidos",
+     "detalle": "QA20 Díaz Mora Bruno, QA20 Ríos León Carla"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la boleta de octubre descuenta la quinta exportada",
+     "detalle": "esperado 1217.8, obtenido 1217.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tramos 2031 sin UIT → mensaje claro",
+     "detalle": "No está registrada la UIT del año 2031 (Nómina ▸ Configuración ▸ Perú ▸ UIT)."
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.fifth.category",
+     "id": 25,
+     "nombre": "Quinta QA20 Planilla 2026-10",
+     "nota": "renta de 5.ª octubre 2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_import",
+   "titulo": "Importar inputs de boleta desde Excel",
+   "pasos": "El usuario sube un Excel con DNI, código de input y monto al lote de octubre y lo importa.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "filas importadas (Bruno 300, Carla 150.50)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "filas con error (DNI sin boleta, input inexistente)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cada error trae su sugerencia",
+     "detalle": "[OK  ] fila 2: input BONR = 300.0 en la boleta de QA20 Díaz Mora Bruno | [OK  ] fila 3: input BONR = 150.5 en la boleta de QA20 Ríos León Carla | [ERR ] fila 4: no hay boleta en el lote \"QA20 Planilla 2026-10\" para el documento 99999999 | [ERR ] fila 5: no existe un tipo de input con código \"NOEXISTE\""
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: línea BONR = input importado",
+     "detalle": "esperado 300.0, obtenido 300.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: línea BONR = input importado",
+     "detalle": "esperado 150.5, obtenido 150.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: ONP sobre sueldo + bonificación regular",
+     "detalle": "esperado 364.0, obtenido 364.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: EsSalud sigue con base RMV (1 150.50 < 1 230)",
+     "detalle": "esperado 110.7, obtenido 110.7"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe",
+   "titulo": "Cierre del lote de octubre",
+   "pasos": "Se recalculan y validan las boletas de octubre (con quinta e inputs importados).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "lote de octubre validado",
+     "detalle": "02_close"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_hr_pe_account",
+   "titulo": "Asiento de planilla del lote de setiembre",
+   "pasos": "El contador configura las cuentas de las reglas y pulsa «Asiento de planilla por lote».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "cuentas PCGE de planilla existen",
+     "detalle": "6211000, 4111000, 4032000, 4170000, 6271000, 4031000"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "configuración contable completada (solo campos vacíos)",
+     "detalle": "BAS debe 6211000; NETO haber 4111000; ONP haber 4032000; ESSALUD debe 6271000; ESSALUD haber 4031000; AFP INTEGRA → 4170000; AFP HABITAT → 4170000; AFP PRIMA → 4170000; afp_rule_ids; move_journal_id; move_partner_id"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el lote de setiembre tiene asiento",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento publicado",
+     "detalle": "posted"
+    },
+    {
+     "estado": "OK",
+     "titulo": "referencia PLA + MM + AAAA",
+     "detalle": "esperado 'PLA092026', obtenido 'PLA092026'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento cuadrado",
+     "detalle": "esperado 10366.699999999999, obtenido 10366.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "6211 debe = Σ básicos del lote",
+     "detalle": "esperado 9500.0, obtenido 9500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "4111 haber = Σ netos",
+     "detalle": "esperado 8271.4, obtenido 8271.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "4032 haber = Σ ONP",
+     "detalle": "esperado 325.0, obtenido 325.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "4170 haber = Σ fondo + comisión + prima AFP (cuenta de la afiliación)",
+     "detalle": "esperado 903.6, obtenido 903.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "6271 debe = Σ EsSalud",
+     "detalle": "esperado 866.7, obtenido 866.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "4031 haber = Σ EsSalud",
+     "detalle": "esperado 866.7, obtenido 866.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin línea de ajuste por redondeo (el lote cuadra por construcción)",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6087,
+     "nombre": "QA20 Planillas",
+     "nota": "diario del asiento de planilla"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9478,
+     "nombre": "QA20 Planilla OLANO IT (contrapartida)",
+     "nota": "partner del asiento de planilla"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31413,
+     "nombre": "QPLA/2026/09/0001 (PLA092026)",
+     "nota": "asiento de planilla set-2026"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_hr_pe_reports",
+   "titulo": "Boleta PDF, PLAME .rem, AFPnet y TXT de haberes BCP del lote de octubre",
+   "pasos": "El usuario imprime la boleta, exporta PLAME y AFPnet, genera el pago masivo y descarga el TXT del BCP.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "la boleta usa la cabecera común de al_report_base",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la boleta muestra DNI y RUC",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "boleta PDF renderizada",
+     "detalle": "29979 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "formato tipo|doc|concepto|devengado|pagado|",
+     "detalle": "14 filas"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: concepto 0121 (básico) declarado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: 0121 devengado = básico",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: tipo de documento DNI = 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: concepto 0121 (básico) declarado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: 0121 devengado = básico",
+     "detalle": "esperado 2500.0, obtenido 2500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: tipo de documento DNI = 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: concepto 0121 (básico) declarado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: 0121 devengado = básico",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: tipo de documento DNI = 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: 0605 (renta 5.ª) declarada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: 0605 = retención de octubre",
+     "detalle": "esperado 1217.8, obtenido 1217.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: sin comisión AFP 0601",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "EsSalud (0804) no se importa (lo calcula PLAME)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "AFPnet: solo los 2 afiliados AFP (Ana, Carla)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "correlativo 1, 2 sin huecos",
+     "detalle": "esperado [1, 2], obtenido [1, 2]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fila de Ana en AFPnet",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "CUSPP",
+     "detalle": "esperado '6000101XQA0', obtenido '6000101XQA0'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "apellidos y nombres",
+     "detalle": "esperado ('Torres', 'Ruiz', 'Ana'), obtenido ('Torres', 'Ruiz', 'Ana')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "devenga S, inicio N, cese N",
+     "detalle": "esperado ('S', 'N', 'N'), obtenido ('S', 'N', 'N')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "remuneración asegurable = AAFP",
+     "detalle": "esperado 6000.0, obtenido 6000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo de labor N",
+     "detalle": "esperado 'N', obtenido 'N'"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "banco BCP: se configuró format_bank = bcp",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago masivo BCP generado desde el lote",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "una línea por trabajador con cuenta BCP",
+     "detalle": "esperado 3, obtenido 3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afp: monto = NETO peruano",
+     "detalle": "esperado 4007.0, obtenido 4007.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "onp: monto = NETO peruano",
+     "detalle": "esperado 2436.0, obtenido 2436.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rmv: monto = NETO peruano",
+     "detalle": "esperado 1002.78, obtenido 1002.78"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT BCP: cabecera + 3 detalles",
+     "detalle": "esperado 4, obtenido 4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera tipo 1",
+     "detalle": "esperado '1', obtenido '1'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera: 3 abonos",
+     "detalle": "esperado '000003', obtenido '000003'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo de cargo C",
+     "detalle": "esperado 'C', obtenido 'C'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "moneda soles 0001",
+     "detalle": "esperado '0001', obtenido '0001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta de cargo",
+     "detalle": "esperado '1917000123456', obtenido '1917000123456'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total de la planilla en la cabecera",
+     "detalle": "esperado 7445.78, obtenido 7445.78"
+    },
+    {
+     "estado": "OK",
+     "titulo": "checksum = Σ cuentas (desde la 4.ª posición) + cargo",
+     "detalle": "esperado '000007000138462', obtenido '000007000138462'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle de Ana",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle: cuenta destino",
+     "detalle": "esperado '19100000005001', obtenido '19100000005001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle: importe = neto",
+     "detalle": "esperado 4007.0, obtenido 4007.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "ir.attachment",
+     "id": 70495,
+     "nombre": "QA20 Boleta oct-2026 Ana.pdf",
+     "nota": "PDF de la boleta"
+    },
+    {
+     "modelo": "ir.attachment",
+     "id": 70496,
+     "nombre": "060120261020557912879.rem",
+     "nota": "PLAME .rem"
+    },
+    {
+     "modelo": "ir.attachment",
+     "id": 70497,
+     "nombre": "AFP_NET.xlsx",
+     "nota": "AFPnet"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6088,
+     "nombre": "QA20 Pagos planilla BCP",
+     "nota": "diario de pago masivo"
+    },
+    {
+     "modelo": "hr.automate.multipayment",
+     "id": 14,
+     "nombre": "PM-000001",
+     "nota": "pago masivo BCP"
+    },
+    {
+     "modelo": "ir.attachment",
+     "id": 70498,
+     "nombre": "BCP_Haberes.txt",
+     "nota": "TXT haberes BCP"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_hr_pe_attendance",
+   "titulo": "Turno, marcaciones importadas, tardanza y horas extra 25 %/35 %",
+   "pasos": "Se define el turno, se importa el Excel de marcaciones de setiembre, se genera y aplica el tareaje y se calcula la boleta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "promedio semanal 12 h × 4 × 7/7 = 48 h",
+     "detalle": "esperado 48.0, obtenido 48.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ciclo 6×1 de 10 h rechazado por superar 48 h",
+     "detalle": "El promedio semanal del ciclo (60.00 h) supera las 48 horas permitidas por el art. 4 del D.S. 007-2002-TR."
+    },
+    {
+     "estado": "OK",
+     "titulo": "al_hr_pe_import: marcaciones creadas desde Excel",
+     "detalle": "esperado 22, obtenido 22"
+    },
+    {
+     "estado": "OK",
+     "titulo": "marcación del 09/09 (08:00 Lima = 13:00 UTC)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el día termina 20:00 Lima aunque el sobretiempo vaya en asistencia separada",
+     "detalle": "esperado '2026-09-10 01:00:00', obtenido '2026-09-10 01:00:00'"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "asistencias del 09/09",
+     "detalle": "2 registro(s): 2026-09-09 13:00:00→2026-09-09 21:00:00, 2026-09-09 21:00:00→2026-09-10 01:00:00"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de tareaje de Elena",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "08/09: tardanza 40 min (> 15 min de tolerancia) = 0.67 h",
+     "detalle": "esperado 0.67, obtenido 0.67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "09/09: 3 h extra → 2 h al 25 %",
+     "detalle": "esperado 2.0, obtenido 2.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "09/09: … y 1 h al 35 %",
+     "detalle": "esperado 1.0, obtenido 1.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "10/09: 1.5 h al 25 %",
+     "detalle": "esperado 1.5, obtenido 1.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "días laborados = 22 días hábiles de setiembre",
+     "detalle": "esperado 22.0, obtenido 22.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total HE 25 % = 3.5 h",
+     "detalle": "esperado 3.5, obtenido 3.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total HE 35 % = 1 h",
+     "detalle": "esperado 1.0, obtenido 1.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "HE25 = sueldo/30/8 × 1.25 × 3.5 h",
+     "detalle": "esperado 54.6875, obtenido 54.69"
+    },
+    {
+     "estado": "OK",
+     "titulo": "HE35 = sueldo/30/8 × 1.35 × 1 h",
+     "detalle": "esperado 16.875, obtenido 16.88"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TAR = horas de tardanza × sueldo/30/8 (0.67 h)",
+     "detalle": "esperado 8.375, obtenido 8.38"
+    },
+    {
+     "estado": "OK",
+     "titulo": "básico completo (22 DLAB + 8 DOM = 30 días)",
+     "detalle": "esperado 3000.0, obtenido 3000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registro de control: fila del 09/09",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "ingreso, salida e inicio/fin del sobretiempo",
+     "detalle": "esperado ('08:00', '20:00', '17:00', '20:00'), obtenido ('08:00', '20:00', '17:00', '20:00')"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.employee",
+     "id": 942,
+     "nombre": "QA20 Quispe Huamán Elena",
+     "nota": "trabajadora con marcación, sujeta a HE"
+    },
+    {
+     "modelo": "l10n_pe.hr.shift.cycle",
+     "id": 11,
+     "nombre": "QA20 Ciclo 4x3 (4×3)",
+     "nota": "turno atípico 4×3 de 12 h"
+    },
+    {
+     "modelo": "hr.tareaje.manager",
+     "id": 56,
+     "nombre": "QA20 Tareaje setiembre 2026",
+     "nota": "tareaje setiembre"
+    },
+    {
+     "modelo": "hr.payslip",
+     "id": 1451,
+     "nombre": "Recibo de nómina - QA20 Quispe Huamán Elena - setiembre 2026",
+     "nota": "boleta con tareaje aplicado"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_hr_pe_public_holidays",
+   "titulo": "Feriados 2026 en calendarios sin duplicar los nativos de Odoo 20",
+   "pasos": "El usuario aplica los feriados del catálogo a los calendarios y abre el asistente nativo «Cargar feriados».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "catálogo 2026: 16 feriados nacionales",
+     "detalle": "esperado 16, obtenido 16"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "feriados del catálogo 2026-2035 sin concepto de nómina (debería ser DOM)",
+     "detalle": "esperado 0, obtenido 170"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aplicar dos veces deja 16 descansos (sin duplicar)",
+     "detalle": "esperado 16, obtenido 16"
+    },
+    {
+     "estado": "OK",
+     "titulo": "28/07 00:00 Lima = 05:00 UTC",
+     "detalle": "esperado '2026-07-28 05:00:00', obtenido '2026-07-28 05:00:00'"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "el descanso usa el concepto DOM de la planilla",
+     "detalle": "esperado 'DOM', obtenido False"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Odoo 20 (asistente nativo) no propone días que ya cubre el catálogo 2026",
+     "detalle": "0 propuestos: "
+    },
+    {
+     "estado": "OK",
+     "titulo": "2036 (fuera del catálogo): el nativo propone los feriados del CSV",
+     "detalle": "16 días"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el tareaje reconoce el 08/10 como feriado del calendario",
+     "detalle": ""
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "calcular la boleta de octubre de un trabajador con el feriado aplicado",
+     "detalle": "NotNullViolation: null value in column \"work_entry_type_id\" of relation \"hr_payslip_worked_days\" violates not-null constraint"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "descansos retirados de calendarios no QA20 tras la prueba",
+     "detalle": "48"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "resource.calendar",
+     "id": 1465,
+     "nombre": "QA20 Calendario feriados",
+     "nota": "calendario de prueba"
+    }
+   ],
+   "error": null,
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_hr_pe_construction",
+   "titulo": "Boleta semanal de operario: BUC, movilidad y CONAFOVICER",
+   "pasos": "Se registra al operario, se genera la semana del 12 al 18/10 con 6 días laborados y se calcula.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "semana 12-18/10/2026 generada",
+     "detalle": "202610-S03"
+    },
+    {
+     "estado": "OK",
+     "titulo": "jornal diario de la tabla del convenio (89.30)",
+     "detalle": "esperado 89.3, obtenido 89.3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "JOR = jornal × 6 días",
+     "detalle": "esperado 535.8, obtenido 535.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "DSO = 1 jornal por 6 días trabajados",
+     "detalle": "esperado 89.3, obtenido 89.3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "BUC = jornal × 6 × 32 %",
+     "detalle": "esperado 171.46, obtenido 171.46"
+    },
+    {
+     "estado": "OK",
+     "titulo": "movilidad = 8.60 × 6 días",
+     "detalle": "esperado 51.6, obtenido 51.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CONAFOVICER = −(JOR + DSO) × 2.0 %",
+     "detalle": "esperado -12.5, obtenido -12.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "afecto (TREM) = JOR + DSO + BUC; la movilidad no está afecta",
+     "detalle": "esperado 796.56, obtenido 796.56"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ONP 13 % del afecto",
+     "detalle": "esperado 103.55, obtenido 103.55"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.employee",
+     "id": 943,
+     "nombre": "QA20 Mamani Condori Julio",
+     "nota": "operario de construcción civil"
+    },
+    {
+     "modelo": "hr.payslip",
+     "id": 1453,
+     "nombre": "Recibo de nómina - QA20 Mamani Condori Julio - 12/10/2026 - 18/10/2026",
+     "nota": "boleta semanal 6 días"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_docs_help",
+   "titulo": "Ayuda contextual: entradas, UIT/RMV y respuesta al systray",
+   "pasos": "Un usuario interno pulsa el «?» de la barra superior en la pantalla de UIT/RMV.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "entradas de ayuda cargadas",
+     "detalle": "529"
+    },
+    {
+     "estado": "OK",
+     "titulo": "entrada UIT/RMV apunta al modelo nativo hr.rule.parameter.value",
+     "detalle": "UIT y Remuneración Mínima Vital"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin entrada al modelo eliminado l10n_pe.hr.uit",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin entrada al modelo eliminado hr.uit",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin entrada al modelo eliminado l10n_pe.hr.rmv",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin entrada al modelo eliminado hr.rmv",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "get_help_map (systray) responde al usuario interno con la URL de UIT/RMV",
+     "detalle": "https://docs.altalatam.com/latest/applications/hr/payroll/peru/"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el usuario interno no puede editar la ayuda",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "ninguna ayuda visible apunta a un modelo inexistente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "botón «?» abre la guía",
+     "detalle": "https://docs.altalatam.com/latest/applications/hr/payroll/peru/"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.users",
+     "id": 3810,
+     "nombre": "QA20 Usuario ayuda",
+     "nota": "usuario interno"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_report_base",
+   "titulo": "Página común de documentos (cabecera y pie)",
+   "pasos": "Se imprime un documento con el formato común de OLANO IT.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "página común: cabecera y pie",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la cabecera muestra el RUC 20557912879",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "número del documento en la cabecera",
+     "detalle": ""
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "plantillas que usan la cabecera común",
+     "detalle": "35: al_construction_material_request.report_construction_request_document, al_construction_material_request.report_dispatch_slip_document, al_construction_planner_sale.report_construction_valuation_document, al_construction_planner_subcontract.report_contract_summary, al_construction_planner_subcontract.report_contract_valuation_document, al_hr_pe_reports.report_certificate, al_hr_pe_reports.report_contract, al_hr_pe_reports.report_fifth_certificate, al_hr_pe_reports.report_l10n_pe_boleta_pago_page, al_hr_pe_reports.report_letter, al_l10n_pe_cash_closing.report_cash_closing_document, al_l10n_pe_cash_fund.report_cash_fund_document"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "PDF de factura con cabecera común",
+     "detalle": "ninguna plantilla de factura (account.move) usa al_report_base.report_pe_page; se validó el PDF de la boleta (al_hr_pe_reports) que sí la usa, ver caso de reportes"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_base_module_info",
+   "titulo": "Ficha de módulo en Aplicaciones",
+   "pasos": "El usuario abre Aplicaciones y pulsa «Ver la ficha completa del módulo».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "ficha del propio módulo",
+     "detalle": "esperado '/al_base_module_info/static/description/index.html', obtenido '/al_base_module_info/static/description/index.html'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "«base» no se considera ficha",
+     "detalle": ""
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "fichas de los módulos de planillas",
+     "detalle": "8/8 con ficha: al_hr_pe, al_hr_pe_account, al_hr_pe_attendance, al_hr_pe_benefits, al_hr_pe_construction, al_hr_pe_import, al_hr_pe_public_holidays, al_hr_pe_reports"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el kanban de Aplicaciones ofrece el enlace a la ficha",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_mcp_server",
+   "titulo": "Herramienta MCP de lectura con usuario no administrador",
+   "pasos": "Un asistente IA conectado con el token de un usuario interno consulta contactos y boletas.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "odoo_search_read de contactos funciona con alcance read",
+     "detalle": "total 85"
+    },
+    {
+     "estado": "OK",
+     "titulo": "boletas (hr.payslip) denegadas al usuario sin permisos",
+     "detalle": "AccessError"
+    },
+    {
+     "estado": "OK",
+     "titulo": "odoo_create rechazado con alcance read",
+     "detalle": "PermissionError: La herramienta 'odoo_create' requiere al menos el alcance 'write'. Este token está restringido al alcance 'read' (solo lectura). Contacte a su administrador para ampliar el alcance del token."
+    },
+    {
+     "estado": "OK",
+     "titulo": "odoo_count responde",
+     "detalle": "{'model': 'res.partner', 'domain': [['name', '=like', 'QA20%']], 'count': 85}"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.users",
+     "id": 3811,
+     "nombre": "QA20 Lector MCP",
+     "nota": "usuario interno sin permisos de nómina"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "ol_licencia_perpetua",
+   "titulo": "Constatar instalación y reemplazo del aviso de suscripción",
+   "pasos": "Se verifica que el módulo está instalado y su asset reemplaza al de web_enterprise.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "ol_licencia_perpetua instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el reemplazo de asset apunta a archivos existentes",
+     "detalle": "web_enterprise/static/src/webclient/home_menu/enterprise_subscription_service.js ← ol_licencia_perpetua/static/src/js/subscription_manager.js"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "prt_report_attachment_preview",
+   "titulo": "Vista previa de PDF en el navegador",
+   "pasos": "El usuario imprime un PDF y se abre en una pestaña en lugar de descargarse.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "prt_report_attachment_preview instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el controlador de vista previa extiende /report",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "evalúa el nombre del PDF con «object» (abre en pestaña con su nombre)",
+     "detalle": "{'object': 'report'}"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "queue_job",
+   "titulo": "Encolar un job con with_delay y ejecutarlo",
+   "pasos": "Un proceso encola una escritura diferida y el job runner la ejecuta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "job encolado en queue.job (pending)",
+     "detalle": "pending"
+    },
+    {
+     "estado": "OK",
+     "titulo": "antes de ejecutarse el contacto no cambia",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "job ejecutado con perform → done",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el método diferido se ejecutó (write)",
+     "detalle": "esperado True, obtenido True"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9481,
+     "nombre": "QA20 Contacto queue_job",
+     "nota": "contacto escrito por un job"
+    },
+    {
+     "modelo": "queue.job",
+     "id": 59,
+     "nombre": "QA20 Job de prueba",
+     "nota": "queue.job"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_city",
+   "titulo": "Módulo no instalable en Odoo 20",
+   "pasos": "Solo constatar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "al_l10n_pe_city no instalado",
+     "detalle": "esperado 'uninstalled', obtenido 'uninstalled'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "al_l10n_pe_city",
+     "detalle": "manifest 'installable': False en Odoo 20 (depende de base_address_extended); no se valida"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}

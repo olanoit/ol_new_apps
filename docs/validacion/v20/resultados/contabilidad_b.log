@@ -1,0 +1,789 @@
+2026-10-30 12:36:47,852 526355 WARNING ce20_db_ol odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)
+2026-10-30 12:36:55,360 526355 WARNING ce20_db_ol odoo.fields: res.config.settings.l10n_pe_cpe_post_mode: selection attribute will be ignored as the field is related
+2026-10-30 12:36:56,284 526355 WARNING ce20_db_ol odoo.fields: Field l10n_pe.retention.edi.mixin.l10n_pe_edi_reversal_reason: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:36:56,286 526355 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.year: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:36:56,286 526355 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.month: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:36:56,286 526355 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:36:56,751 526355 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:616: UserWarning: pharmacy.insurance.liquidation: inconsistent 'compute_sudo' for computed fields order_count, amount_total. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 616, in field_computed
+    warnings.warn(
+
+2026-10-30 12:36:56,752 526355 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:633: UserWarning: pharmacy.insurance.liquidation: inconsistent 'store' for computed fields, accessing order_count may recompute and update amount_total. Use distinct compute methods for stored and non-stored fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 633, in field_computed
+    warnings.warn(
+
+P4 preparación: {'closure': 'QA20 P4 Cierre TC 123657 S.A.C.', 'reval': 'QA20 P4 Revaluación 123657 S.A.C.', 'dua_seeded': True}
+
+== [al_l10n_pe_bank_loan] Préstamo francés: desembolso con comisión e ITF, devengo y pago de la 1.ª cuota
+  OK      secuencia PRE/ — PRE/2026/0079
+  OK      cuenta de capital 4511 — 4511000
+  OK      intereses por pagar 45511 — 4551100
+  OK      cronograma de 12 cuotas — esperado 12, obtenido 12
+  OK      capital del cronograma = préstamo — esperado 120000.0, obtenido 120000.0
+  OK      cuota fija (método francés) — esperado 1, obtenido 1
+  OK      interés 1.ª cuota (TEA, 31 días, base 360) — esperado 1176.8, obtenido 1176.8
+  OK      préstamo en curso — esperado 'running', obtenido 'running'
+  OK      desembolso: capital al haber 4511 — esperado -120000.0, obtenido -120000.0
+  OK      comisión de desembolso al gasto — esperado 500.0, obtenido 500.0
+  OK      banco recibe el neto de comisión menos ITF (5.95) — esperado 119494.05, obtenido 119494.05
+  OK      ITF calculado sobre el desembolso — ITF 6.0 (tasa 0.005 %)
+  OK      TCEA > TEA por la comisión — TCEA 12.8700
+  OK      devengo de 16/31 días (idempotente) — esperado 607.38, obtenido 607.38
+  OK      interés por pagar devengado — esperado -607.38, obtenido -607.38
+  OK      asistente propone el total de la cuota — esperado 10633.68, obtenido 10633.68
+  OK      cuota 1 pagada — esperado 'paid', obtenido 'paid'
+  OK      devengo cancelado al pagar — esperado 0.0, obtenido 0.0
+  OK      gasto financiero = interés — esperado 1176.8, obtenido 1176.8
+  OK      saldo de capital tras la cuota — esperado 110543.12, obtenido 110543.12
+  OK      todos los asientos cuadran — 4 asientos
+  OK      impide pagar cuotas fuera de orden — Pague las cuotas en orden: la siguiente es la 2.
+    (_p4_t_loan: 4 s)
+
+== [al_l10n_pe_bank_loan] Prepago con reducción de cuota y línea de crédito
+  OK      línea: usado — esperado 120000.0, obtenido 120000.0
+  OK      línea: disponible — esperado 30000.0, obtenido 30000.0
+  OK      bloquea exceder la línea de crédito — El préstamo supera el disponible de la línea QA20 P4 Línea préstamos (30000.0).
+  OK      mantiene 11 cuotas pendientes — esperado 11, obtenido 11
+  OK      capital pendiente = saldo − prepago — esperado 80543.12, obtenido 80543.12
+  OK      la cuota baja tras el prepago — 10633.68 → 7713.76
+  OK      asientos cuadrados
+    (_p4_t_loan_prepay: 2 s)
+
+== [al_l10n_pe_bank_guarantee] Carta fianza emitida: comisión por trimestre, activación, renovación y ejecución
+  OK      comisión 3 trimestres × 0,5 % × 50 000 — esperado 750.0, obtenido 750.0
+  OK      comisión mínima — esperado 100.0, obtenido 100.0
+  OK      fianza activa — esperado 'active', obtenido 'active'
+  OK      gasto de comisión — esperado 750.0, obtenido 750.0
+  OK      salida de banco por la comisión — esperado -750.0, obtenido -750.0
+  OK      original queda renovada — esperado 'renewed', obtenido 'renewed'
+  OK      renovación activa — esperado 'active', obtenido 'active'
+  OK      renovación desde el vencimiento anterior — esperado datetime.date(2026, 7, 10), obtenido datetime.date(2026, 7, 10)
+  OK      comisión de la renovación — esperado 750.0, obtenido 750.0
+  OK      fianza ejecutada — esperado 'executed', obtenido 'executed'
+  OK      ejecución al gasto (6591000) — esperado 20000.0, obtenido 20000.0
+    (_p4_t_guarantee: 1 s)
+
+== [al_l10n_pe_bank_guarantee] Carta fianza recibida: sin comisión, plazo de reclamo y aviso por cron
+  OK      sin comisión — esperado 0.0, obtenido 0.0
+  OK      plazo de reclamo (art. 1898 CC: +15 días) — esperado datetime.date(2026, 7, 25), obtenido datetime.date(2026, 7, 25)
+  OK      no genera asientos
+  OK      cron crea actividad de aviso
+  OK      actividad vence con el plazo de reclamo — esperado datetime.date(2026, 7, 25), obtenido datetime.date(2026, 7, 25)
+    (_p4_t_guarantee_received: 0 s)
+
+== [al_l10n_pe_term_deposit] Depósito a plazo: apertura, devengo mensual y cancelación al vencimiento
+  OK      secuencia DEP/ — DEP/2026/0083
+  OK      vencimiento a 180 días — esperado datetime.date(2026, 6, 30), obtenido datetime.date(2026, 6, 30)
+  OK      cuenta 1062 — 1062000
+  OK      interés esperado 100 000 × (1,06^(180/360) − 1) — esperado 2956.3, obtenido 2956.3
+  OK      depósito abierto — esperado 'open', obtenido 'open'
+  OK      cargo a 1062 — esperado 100000.0, obtenido 100000.0
+  OK      abono al banco — esperado -100000.0, obtenido -100000.0
+  OK      devengo a marzo (idempotente) — esperado 1450.96, obtenido 1450.96
+  OK      apertura + 3 devengos — esperado 4, obtenido 4
+  OK      ingreso financiero devengado — esperado -1450.96, obtenido -1450.96
+  OK      depósito cancelado — esperado 'closed', obtenido 'closed'
+  OK      saldo 1062 en cero — esperado 0.0, obtenido 0.0
+  OK      intereses por cobrar en cero — esperado 0.0, obtenido -0.0
+  OK      el banco recibe capital + intereses — esperado 2956.3, obtenido 2956.3
+  OK      asientos cuadrados
+    (_p4_t_deposit: 1 s)
+
+== [al_l10n_pe_term_deposit] Renovación con capitalización y garantía de alquiler con liberación parcial
+  OK      original renovado — esperado 'renewed', obtenido 'renewed'
+  OK      renovación abierta — esperado 'open', obtenido 'open'
+  OK      capital nuevo = capital + intereses — esperado 102956.3, obtenido 102956.3
+  OK      intereses capitalizados (sin saldo por cobrar) — esperado 0.0, obtenido 0.0
+  OK      garantía en 1643 — 1643000
+  OK      saldo tras liberación parcial — esperado 4000.0, obtenido 4000.0
+  OK      no libera más del saldo — El importe a liberar debe ser mayor que cero y no superar el saldo (4000.0).
+  OK      garantía cerrada — esperado 'closed', obtenido 'closed'
+  OK      saldo 1643 en cero — esperado 0.0, obtenido 0.0
+    (_p4_t_deposit_renew: 2 s)
+
+== [al_l10n_pe_lease] Reconocimiento NIIF 16: derecho de uso, pasivo, activo, préstamo y cuotas
+  OK      pasivo = VP de 35 cuotas (la 1.ª es adelantada) — esperado 29662.97, obtenido 29662.97
+  OK      derecho de uso = pasivo + cuota adelantada + costos — esperado 31162.97, obtenido 31162.97
+  OK      subcuenta pasivo LP 4521 — 4521000
+  OK      subcuenta pasivo CP 4522 — 4522000
+  OK      contrato en curso — esperado 'running', obtenido 'running'
+  OK      asiento inicial publicado — esperado 'posted', obtenido 'posted'
+  OK      transitoria: cuota adelantada + costos — esperado 1500.0, obtenido 1500.0
+  OK      activo lineal a 36 meses — esperado ('linear', 36), obtenido ('linear', 36.0)
+  OK      valor del activo = derecho de uso — esperado 31162.97, obtenido 31162.97
+  OK      préstamo (account_loans) de 35 cuotas — esperado 35, obtenido 35
+  OK      préstamo = pasivo — esperado 29662.97, obtenido 29662.97
+  OK      activo y pasivo enlazados por grupo
+  OK      cuota 1 salda la transitoria — esperado account.account(14183,), obtenido account.account(14183,)
+  OK      cuota 2 al pasivo CP — esperado account.account(282203,), obtenido account.account(282203,)
+  OK      cuota 2 fechada 01/02 — esperado datetime.date(2026, 2, 1), obtenido datetime.date(2026, 2, 1)
+    (_p4_t_lease: 8 s)
+
+== [al_l10n_pe_lease] Remedición (aumento de renta) tras publicar la depreciación del mes
+    depreciación publicada hasta 2026-09-30 ; asientos préstamo publicados 26
+  OK      rechaza remedir un mes ya contabilizado (01/10) — Ya hay asientos contabilizados desde 2026-10-01 (Q4AR/2026/10/0004 (ARR/2026/0218 - QA20 P4 Oficina remedición
+  OK      depreciación de octubre publicada — MISC/2026/10/0002
+  OK      nuevo pasivo (incluye la cuota adelantada de noviembre) — esperado 25479.22, obtenido 25479.22
+  OK      diferencia positiva (aumento) — 2534.01
+  OK      préstamo anterior cerrado — esperado 'closed', obtenido 'closed'
+  OK      nuevo préstamo = nuevo pasivo — esperado 25479.22, obtenido 25479.22
+  OK      aumento bruto del derecho de uso — esperado 2534.01, obtenido 2534.01
+  OK      valor en libros + diferencia — esperado 24679.489999999998, obtenido 24679.49
+  OK      evento de remedición — esperado ['remeasurement'], obtenido ['remeasurement']
+  OK      libro cuadra con la tabla — esperado 0.0, obtenido 0.0
+    (_p4_t_lease_remeasure: 151 s)
+
+== [al_l10n_pe_import_dua] DUA: número de la DAM, liquidación (derechos + IGV) y publicación
+  AVISO   compañía sin socio Aduanas / cuenta puente de DUA — se configuraron al inicio de la fase
+  OK      reconocida como DUA
+  OK      número DAM aduana-año-régimen-correlativo — esperado '118-2026-10-023657', obtenido '118-2026-10-023657'
+  OK      base del IGV = valor + derechos — esperado 10700.0, obtenido 10700.0
+  OK      IGV 18 % de 10 700 — esperado 1926.0, obtenido 1926.0
+  OK      total a pagar a Aduanas: derechos 700 + IGV 1 926 — esperado 2626.0, obtenido 2626.0
+  OK      regenerar no duplica líneas — esperado 4, obtenido 4
+  OK      DUA publicada — esperado 'posted', obtenido 'posted'
+  OK      costos en destino exigen recepciones — Indique las recepciones de la importación.
+    (_p4_t_dua: 1 s)
+
+== [al_l10n_pe_exchange_closure] Cierre mensual de T.C.: activo a compra, pasivo a venta, detalle por socio
+  OK      fecha de asiento fin de mes — esperado datetime.date(2026, 9, 30), obtenido datetime.date(2026, 9, 30)
+  OK      T.C. de cierre SBS publicado al día siguiente — esperado datetime.date(2026, 10, 1), obtenido datetime.date(2026, 10, 1)
+  OK      T.C. tomado del registro (sin red) — esperado (3.8, 3.82), obtenido (3.8, 3.82)
+  OK      activo usa T.C. compra — esperado 'purchase', obtenido 'purchase'
+  OK      ajuste banco 1 000 × (3,80 − 3,70) — esperado 100.0, obtenido 100.0
+  OK      pasivo usa T.C. venta — esperado 'sale', obtenido 'sale'
+  OK      ajuste préstamo −1 000 × (3,82 − 3,70) — esperado -120.0, obtenido -120.0
+  OK      detalle socio A — esperado 100.0, obtenido 100.0
+  OK      detalle socio B (1 900 − 1 855) — esperado 45.0, obtenido 45.0
+  OK      ganancia total — esperado 245.0, obtenido 245.0
+  OK      pérdida total (no se netea) — esperado 120.0, obtenido 120.0
+  OK      cierre contabilizado — esperado 'posted', obtenido 'posted'
+  OK      abono a ganancia por diferencia de cambio — esperado 245.0, obtenido 245.0
+  OK      cargo a pérdida por diferencia de cambio — esperado 120.0, obtenido 120.0
+  OK      el ajuste no mueve moneda extranjera — 4 líneas en USD
+  OK      T.C. citado en la línea — esperado 3.8, obtenido 3.8
+    (_p4_t_closure: 1 s)
+
+== [al_l10n_pe_multicurrency_revaluation] Informe de G/P no realizadas con T.C. compra/venta por cuenta y asiento
+  OK      campo T.C. visible solo en cuentas de balance
+  OK      columna T.C. presente
+2026-10-30 12:40:20,825 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,825 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,825 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __setitem__ on report data object to set key 'name'. Rather access the attribute directly.
+2026-10-30 12:40:20,825 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,825 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+  OK      líneas de las cuentas en el informe
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'columns'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'no_format'. Rather access the attribute directly.
+  OK      por pagar revaluada a T.C. compra — esperado 'S/ 3.720', obtenido 'S/ 3.720'
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'columns'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'no_format'. Rather access the attribute directly.
+  OK      ajuste por pagar −100 × (3,72 − 3,70) — esperado -2.0, obtenido -2.000000000000026
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'columns'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'no_format'. Rather access the attribute directly.
+  OK      por cobrar revaluada a T.C. venta — esperado 'S/ 3.700', obtenido 'S/ 3.700'
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'columns'. Rather access the attribute directly.
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'no_format'. Rather access the attribute directly.
+  OK      por cobrar sin ajuste — esperado 0.0, obtenido 1.3783e-13
+2026-10-30 12:40:20,828 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,829 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+  OK      línea total de la moneda
+2026-10-30 12:40:20,829 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'name'. Rather access the attribute directly.
+  OK      cabecera con el T.C. — esperado 'USD (1 USD = S/ 3.700)', obtenido 'USD (1 USD = S/ 3.700)'
+2026-10-30 12:40:20,829 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'columns'. Rather access the attribute directly.
+2026-10-30 12:40:20,829 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'no_format'. Rather access the attribute directly.
+  OK      T.C. en blanco al mezclar tasas — esperado '', obtenido ''
+2026-10-30 12:40:20,829 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'columns'. Rather access the attribute directly.
+2026-10-30 12:40:20,829 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'no_format'. Rather access the attribute directly.
+  OK      ajuste total — esperado -2.0, obtenido -1.9999999999998883
+2026-10-30 12:40:20,967 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,967 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,967 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __setitem__ on report data object to set key 'name'. Rather access the attribute directly.
+2026-10-30 12:40:20,967 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,967 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,967 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:20,968 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,113 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,114 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,114 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __setitem__ on report data object to set key 'name'. Rather access the attribute directly.
+2026-10-30 12:40:21,114 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,114 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,114 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,114 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+  OK      línea del asiento cita el T.C. aplicado — Provisión de USD (T.C. S/ 3.720)
+  OK      abono de 2,00 a por pagar — esperado 2.0, obtenido 2.000000000000026
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __setitem__ on report data object to set key 'name'. Rather access the attribute directly.
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+2026-10-30 12:40:21,262 526355 WARNING ce20_db_ol odoo.addons.account_reports.utils.report_data_objects: Use of slow __getitem__ on report data object to get key 'id'. Rather access the attribute directly.
+  OK      asiento de ajuste publicado — Q4VR/2026/09/0003
+    (_p4_t_revaluation: 2 s)
+
+== [al_account_payments] N.º de operación = payment_reference nativo y medio de pago SUNAT
+  OK      bank_operation_number es related a payment_reference — payment_reference
+  OK      Diario con «Exigir número de operación» bloquea sin n.º — Indique el número de operación del banco en: Borrador de pago.
+  OK      escribir bank_operation_number llena payment_reference — esperado 'OP-QA20-0001', obtenido 'OP-QA20-0001'
+  OK      escribir payment_reference se refleja en bank_operation_number — esperado 'OP-QA20-0002', obtenido 'OP-QA20-0002'
+  OK      pago publicado con n.º de operación — paid
+  OK      el n.º se guarda en la columna nativa payment_reference — esperado 'OP-QA20-0002', obtenido 'OP-QA20-0002'
+  OK      bank_operation_number no es columna propia (no store)
+  OK      medio de pago SUNAT en el pago — esperado '003', obtenido '003'
+  OK      búsqueda por n.º de operación funciona sobre el related
+
+== [al_account_payments] Asistente de registro traslada medio y n.º de operación (agrupado)
+  OK      un solo pago agrupado — esperado 1, obtenido 1
+  OK      importe del pago — esperado 1000.0, obtenido 1000.0
+  OK      n.º de operación trasladado — esperado 'LOTE-QA20-01', obtenido 'LOTE-QA20-01'
+  OK      payment_reference nativo poblado por el asistente — esperado 'LOTE-QA20-01', obtenido 'LOTE-QA20-01'
+  OK      medio de pago trasladado — esperado pe.catalog.payment(1,), obtenido pe.catalog.payment(1,)
+  OK      facturas pagadas — ['in_payment', 'in_payment']
+
+== [al_account_payments] Compra de dólares al T.C. del banco (asistente de cambio)
+  OK      US$ recibidos = 3 800 / 3,80 — esperado 1000.0, obtenido 1000.0
+  OK      T.C. del sistema — esperado 3.75, obtenido 3.75
+  OK      diferencia frente al T.C. del sistema — esperado -50.0, obtenido -50.0
+  OK      salida en soles y entrada en dólares — esperado ['inbound', 'outbound'], obtenido ['inbound', 'outbound']
+  OK      n.º de operación en ambos pagos — esperado {'CAMB-QA20-1'}, obtenido {'CAMB-QA20-1'}
+  OK      cuenta de transferencias conciliada — 1051001
+  OK      asiento de diferencia de cambio en 6760000 por 50.0
+
+== [al_l10n_pe_payment_multi] Un pago para facturas de dos proveedores + anticipo + comisión
+  OK      carga las facturas abiertas de ambos proveedores — esperado account.move(31277, 31278), obtenido account.move(31278, 31277)
+  OK      total = 1000 + 500 + 250 + 15 — esperado 1765.0, obtenido 1765.0
+  OK      dos socios — esperado 2, obtenido 2
+  OK      pago múltiple validado — esperado 'posted', obtenido 'posted'
+  OK      importe del pago — esperado 1765.0, obtenido 1765.0
+  OK      varios socios: el pago no lleva socio
+  OK      facturas pagadas — ('in_payment', 'in_payment')
+  OK      anticipo al debe en 422 (4220000) — esperado 250.0, obtenido 250.0
+  OK      anticipo con el socio — esperado res.partner(9406,), obtenido res.partner(9406,)
+  OK      comisión al gasto — esperado 15.0, obtenido 15.0
+  OK      comprobante de egreso numerado — RE-Q1PM-000001
+  OK      comprobante PDF lista a cada socio
+  OK      anular reabre las facturas — ('canceled', 1000.0)
+  OK      revalidar crea un pago nuevo
+
+== [al_l10n_pe_payment_multi] Factura en US$ pagada desde banco en soles: diferencia de cambio
+  OK      US$ 100 a pagar — esperado 100.0, obtenido 100.0
+  OK      en soles al T.C. del pago — esperado 380.0, obtenido 380.0
+  OK      diferencia de cambio registrada — esperado 10.0, obtenido 10.0
+
+== [al_l10n_pe_payment_application] Anticipo de proveedor (422) aplicado a factura y reversión
+  OK      el anticipo va a la 422 (4220000) — esperado account.account(14744,), obtenido account.account(14744,)
+  OK      la factura ve 1 anticipo pendiente — esperado 1, obtenido 1
+  OK      aplicación validada — esperado 'posted', obtenido 'posted'
+  OK      asiento en el diario de aplicaciones — esperado account.journal(1366,), obtenido account.journal(1366,)
+  OK      factura cancelada con el anticipo — paid
+  OK      saldo del anticipo por aplicar — esperado 400.0, obtenido 400.0
+  OK      aplicación anulada — esperado 'cancel', obtenido 'cancel'
+  OK      asiento de reversión creado
+  OK      la factura vuelve a quedar pendiente — esperado 600.0, obtenido 600.0
+  OK      compensación carga cobrar y pagar del socio
+  OK      factura de compra compensada por 500 — esperado 100.0, obtenido 100.0
+  OK      factura de venta cancelada por compensación — paid
+
+== [al_l10n_pe_payment_receipt] Comprobante de ingreso/egreso numerado por diario y PDF
+  OK      secuencia de ingresos por diario — esperado 'RI-Q1CJ-', obtenido 'RI-Q1CJ-'
+  OK      secuencia de egresos por diario — esperado 'RE-Q1CJ-', obtenido 'RE-Q1CJ-'
+  OK      n.º de recibo de ingreso — RI-Q1CJ-000001
+  OK      el comprobante detalla la factura aplicada
+  OK      aplicado — esperado 118.5, obtenido 118.5
+  OK      saldo de la factura — esperado 181.5, obtenido 181.5
+  OK      importe en letras — esperado 'CIENTO DIECIOCHO Y 50/100 SOLES', obtenido 'CIENTO DIECIOCHO Y 50/100 SOLES'
+2026-10-30 12:40:32,115 526355 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7706fb16fe20, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 1127, in <module>
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 1107, in _p1_receipt
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<6157>", line 42, in template_al_l10n_pe_payment_receipt_report_payment_receipt_pe_document_6157_t_call_0
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+  OK      PDF con número, importe en letras y factura
+  OK      el número se conserva al volver a borrador — esperado 'RI-Q1CJ-000001', obtenido 'RI-Q1CJ-000001'
+  OK      n.º de recibo de egreso — RE-Q1CJ-000001
+  OK      acción Imprimir comprobante — ir.actions.act_window (sin diseño: Odoo abre antes el asistente de diseño)
+
+== [al_l10n_pe_payment_term_currency] Cuota fija en soles en factura en dólares
+  OK      primera cuota = S/ 750 exactos — esperado 750.0, obtenido 750.0
+  OK      primera cuota en US$ al T.C. de la factura (3.75) — esperado 200.0, obtenido 200.0
+  OK      cuotas en US$ suman el total — esperado 1000.0, obtenido 1000.0
+  OK      cuotas en S/ suman el total — esperado 3750.0, obtenido 3750.0
+  OK      en soles el término funciona como el nativo — esperado [750.0, 250.0], obtenido [750.0, 250.0]
+
+== [al_l10n_pe_bank_statement_import] Importar extracto XLSX y CSV de banca por internet (archivos de sus tests)
+  OK      XLSX reconocido sin mapeo manual de columnas
+  OK      importes en orden cronológico — esperado [-10.5, 2350.5, -1500.0], obtenido [-10.5, 2350.5, -1500.0]
+  OK      descripción — esperado 'COMISION MANTENIMIENTO', obtenido 'COMISION MANTENIMIENTO'
+  OK      un extracto — esperado 1, obtenido 1
+  OK      saldos inicial y final del banco — esperado (7510.0, 8350.0), obtenido (7510.0, 8350.0)
+  OK      extracto completo (saldos cuadran)
+  OK      CSV cargo/abono añade 3 movimientos — esperado 6, obtenido 6
+  OK      importes del CSV (coma decimal) — esperado [-800.0, -0.05, 1250.0], obtenido [-800.0, -0.05, 1250.0]
+  OK      reimportar el mismo archivo no duplica — esperado 6, obtenido 6
+  OK      CSV no reconocido pasa al importador nativo — esperado 'import_bank_stmt', obtenido 'import_bank_stmt'
+
+== [al_l10n_pe_batch_payment] Lote de pagos a 3 proveedores → TXT del BCP
+  OK      el diario ofrece el método de pago masivo pe_bank_txt
+  OK      archivo TXT generado — BCP_PEN_Q1BCP_BATCH-OUT-2026-0001.txt
+  OK      cabecera + 3 abonos — esperado 4, obtenido 4
+  OK      cabecera: tipo 1 y 3 abonos — esperado '1000003', obtenido '1000003'
+  OK      total 1 330,50 en la cabecera — 100000320261030C00011919912345071       00000000001330.50BAT
+  OK      longitud de cabecera BCP proveedores — esperado 113, obtenido 113
+  OK      mismo banco: abono a cuenta BCP — 2C1937654321022     
+  OK      otro banco: abono por CCI — 2B01145600020009876512162
+  OK      longitud de detalle BCP — esperado 196, obtenido 196
+  OK      conteo y total del lote — esperado (3, 1330.5), obtenido (3, 1330.5)
+  OK      nombre del archivo — BCP_PEN_Q1BCP_BATCH-OUT-2026-0001.txt
+  OK      proveedor de otro banco sin CCI se rechaza — RedirectWarning: ('Cuentas de otro banco sin CCI de 20 dígitos.\nUn proveedor con cuenta en otro ban
+
+== [al_l10n_pe_treasury] Posición diaria: saldo contable, en tránsito y disponible
+  OK      saldo contable — esperado 10000.0, obtenido 10000.0
+  OK      pago confirmado sin conciliar en tránsito — esperado -1500.0, obtenido -1500.0
+  OK      saldo proyectado — esperado 8500.0, obtenido 8500.0
+  OK      disponible = proyectado − mínimo + sobregiro — esperado 10000.0, obtenido 10000.0
+
+== [al_l10n_pe_treasury] Transferencia entre bancos y compra de US$ a T.C. oficial (pérdida)
+  OK      misma moneda: no es cambio
+  OK      transferencia realizada (sin umbral de aprobación) — esperado 'done', obtenido 'done'
+  OK      por la cuenta de transferencias — esperado account.account(15323,), obtenido account.account(15323,)
+  OK      cuenta de transferencias conciliada
+  OK      compra de dólares — esperado 'buy', obtenido 'buy'
+  OK      US$ recibidos — esperado 1000.0, obtenido 1000.0
+  OK      diferencia de cambio (T.C. oficial 3.7) — esperado -50.0, obtenido -50.0
+  OK      asiento de diferencia de cambio
+  OK      cuenta de transferencias saldada — esperado 0.0, obtenido 0.0
+
+== [al_l10n_pe_treasury] Programación de pagos: proponer, aprobar y pagar
+  OK      propone lo vencido al 31/10, no la de diciembre — esperado account.move(31310, 31311, 31312), obtenido account.move(31312, 31310, 31311)
+  OK      total programado — esperado 2100.0, obtenido 2100.0
+  OK      dos proveedores — esperado 2, obtenido 2
+  OK      días de atraso al 16/10 — esperado 6, obtenido 6
+  OK      sin umbral configurado requiere aprobación — esperado 'to_approve', obtenido 'to_approve'
+  OK      quien prepara no puede aprobar — Quien prepara la programación no puede aprobarla.
+  OK      aprobada — esperado 'approved', obtenido 'approved'
+  OK      la posición refleja lo programado aprobado — esperado 2100.0, obtenido 2100.0
+  OK      programación pagada — esperado 'paid', obtenido 'paid'
+  OK      un pago por proveedor — esperado 2, obtenido 2
+  OK      facturas pagadas
+
+== [al_l10n_pe_treasury_batch_payment] Programación pagada con método TXT genera lote y archivo del banco
+  OK      propone las dos facturas — esperado account.move(31316, 31317), obtenido account.move(31317, 31316)
+  OK      se creó el lote bancario
+  OK      el lote contiene los pagos de la programación — esperado account.payment(1354, 1355), obtenido account.payment(1354, 1355)
+  OK      pagos con el método TXT — esperado account.payment.method.line(10096,), obtenido account.payment.method.line(10096,)
+  OK      TXT BCP con cabecera de 2 abonos — ['100000220261030C00011919912345071       00000000001250.00BATCHOUT20260003                        N000013245678104']
+  OK      total S/ 1 250,00 en el TXT
+
+== [al_l10n_pe_check] Cheque de terceros: recepción en cartera, aviso de plazo y depósito
+  OK      el cheque queda en el diario de cartera — esperado 'CHQT', obtenido 'CHQT'
+  OK      RUC del girador tomado del cliente — esperado '20612090310', obtenido '20612090310'
+  OK      débito en 1033001 Cheques de terceros en cartera — esperado 1180.0, obtenido 1180.0
+  OK      plazo de presentación = 30 días — esperado datetime.date(2026, 11, 19), obtenido datetime.date(2026, 11, 19)
+  OK      aviso de plazo vencido solo para el cheque viejo — El cheque 00912346 venció su plazo de presentación el 10/10/2026 (30 días): el banco puede rechazarlo.
+  OK      depositado: el cheque pasa al banco — esperado account.journal(6069,), obtenido account.journal(6069,)
+  OK      operaciones del cheque: recepción + depósito — esperado 2, obtenido 2
+  OK      RUC de girador inválido rechazado — El documento del emisor del cheque 00912345 no es válido: RUC de 11 dígitos, DNI de 8 o carné de extranjería.
+
+== [al_l10n_pe_check] Cheque propio girado a proveedor
+  OK      el banco QA tiene el método «Cheques propios» — ['Cheques propios']
+  OK      cuenta de cheques girados 1049001 — esperado '1049001', obtenido '1049001'
+  OK      cheque entregado — esperado 'handed', obtenido 'handed'
+  OK      pendiente en 1049001 hasta el cobro — esperado '1049001', obtenido '1049001'
+
+== [al_l10n_pe_check_printing] Formato de chequera e impresión del cheque propio
+  OK      formato de papel = tamaño de la chequera — esperado ('custom', 170, 75), obtenido ('custom', 170, 75)
+  OK      importe en letras — esperado 'MIL DOSCIENTOS CINCUENTA Y 00/100 SOLES', obtenido 'MIL DOSCIENTOS CINCUENTA Y 00/100 SOLES'
+  OK      importe con relleno — esperado 'S/ ******1,250.00', obtenido 'S/ ******1,250.00'
+  OK      acción de impresión — esperado 'al_l10n_pe_check_printing.report_check', obtenido 'al_l10n_pe_check_printing.report_check'
+  OK      el cheque impreso contiene «QA20 P2 PROVEEDOR IMPRESION SAC»
+  OK      el cheque impreso contiene «S/ ******1,250.00»
+  OK      el cheque impreso contiene «MIL DOSCIENTOS CINCUENTA Y 00/100 SOLES»
+  OK      el cheque impreso contiene «Lima, 21 de octubre de 2026»
+  OK      el cheque impreso contiene «Pagar desde: 20 de noviembre de 2026»
+  OK      hoja de prueba de alineación
+  OMITIDO PDF del cheque (wkhtmltopdf) — el shell corre con --no-http; se valida el HTML del reporte
+
+== [al_l10n_pe_collection] Cartera vencida, gestión con compromiso de pago y cumplimiento
+  OK      días de atraso en la cartera — esperado 40, obtenido 40
+  OK      tramo de antigüedad — esperado '31 a 60 días', obtenido '31 a 60 días'
+  OK      saldo en cartera — esperado 1000.0, obtenido 1000.0
+  OK      compromiso pendiente por 600 — esperado (600.0, 'pending'), obtenido (600.0, 'pending')
+  OK      actividad de seguimiento programada
+  OK      compromiso cumplido antes de su fecha — esperado 'kept', obtenido 'kept'
+  OK      importe cobrado del compromiso — esperado 600.0, obtenido 600.0
+
+== [al_l10n_pe_collection] Interés moratorio y nota de débito
+  OK      días de mora — esperado 36, obtenido 36
+  OK      interés 1000 × (1.12^(36/360) − 1) — esperado 11.4, obtenido 11.4
+  OK      una línea de interés — esperado 1, obtenido 1
+  OK      nota de débito en borrador — esperado 'draft', obtenido 'draft'
+  OK      nota de débito referida a la factura — esperado account.move(31328,), obtenido account.move(31328,)
+  OK      base de la nota de débito — esperado 11.4, obtenido 11.4
+  OK      facturado el interés, no se vuelve a calcular — esperado 0.0, obtenido 0.0
+
+== [al_l10n_pe_collection] Calificación del deudor y bloqueo automático por mora
+  OK      compromiso incumplido — esperado 'broken', obtenido 'broken'
+  OK      calificación C/D — D
+  OK      máximo atraso — esperado 130, obtenido 130
+  OK      bloqueo automático — esperado 'auto', obtenido 'auto'
+  OK      cliente bloqueado
+  OK      liberado por el jefe de cobranza — esperado 'released', obtenido 'released'
+
+== [al_l10n_pe_collection_sale] Pedido de venta bloqueado por crédito y liberado
+  OK      aviso de bloqueo en el pedido — QA20 P2 Cliente bloqueado venta tiene el crédito bloqueado por cobranza: no se puede confirmar el pedido hasta que regularice su deuda o el administrador de cobranza lo libere.
+  OK      confirmación rechazada por bloqueo — No se puede confirmar S00280: QA20 P2 Cliente bloqueado venta tiene el crédito bloqueado por cobranza.
+  OK      sin aviso tras liberar
+  OK      pedido confirmado tras liberar — esperado 'sale', obtenido 'sale'
+
+== [al_l10n_pe_bank_collection] Archivo de deudores BCP (CREP)
+  OK      documentos en el lote (excluye el que vence después) — esperado 2, obtenido 2
+  OK      total del lote — esperado 1334.56, obtenido 1334.56
+  OK      lote generado — esperado 'generated', obtenido 'generated'
+  OK      nombre del archivo CREP — CREP_0_20261030.txt
+  OK      cabecera + 2 detalles — esperado 3, obtenido 3
+  OK      registros de 250 posiciones
+  OK      cabecera: sucursal/moneda/cuenta — esperado 'CC19101234567', obtenido 'CC19101234567'
+  OK      cabecera: cantidad de registros — esperado '000000002', obtenido '000000002'
+  OK      cabecera: importe total — esperado '000000000133456', obtenido '000000000133456'
+  OK      detalle: código de depositante = RUC — esperado '20612090387', obtenido '20612090387'
+  OK      detalle: nombre en ASCII — esperado 'QA20 P2 COMPANIA NANDU SAC', obtenido 'QA20 P2 COMPANIA NANDU SAC'
+  OK      detalle: número de documento — esperado 'Q2VT/2026/00004', obtenido 'Q2VT/2026/00004'
+  OK      detalle: importe — esperado '000000000123456', obtenido '000000000123456'
+
+== [al_l10n_pe_bank_collection] Importar respuesta del banco y aplicar cobros
+  OK      abono 1 casado con el documento — esperado ('matched', res.partner(9428,)), obtenido ('matched', res.partner(9428,))
+  OK      abono 2 casado por cliente (ceros a la izquierda) — esperado 'partner', obtenido 'partner'
+  OK      respuesta procesada — esperado 'done', obtenido 'done'
+  OK      factura con documento cobrada — in_payment
+  OK      memo del cobro lleva la operación — Recaudación QA20 P2 Banco op. 552001
+  OK      abono sin documento paga primero la más antigua
+  OK      saldo de la reciente — esperado 200.0, obtenido 200.0
+  OK      reimportar el mismo archivo: duplicados — esperado {'duplicate'}, obtenido {'duplicate'}
+
+== [al_l10n_pe_account_letter] Canje de factura en 2 letras y descuento bancario
+  OK      cuentas de letras de la compañía — 4511000 / 6734000 / 6391000
+  OK      canje en estado Canjeado — esperado 'redeemed', obtenido 'redeemed'
+  OK      dos letras — esperado 2, obtenido 2
+  OK      las letras suman la factura — esperado 1000.0, obtenido 1000.0
+  OK      el canje carga las letras en cartera — 1232000 → ['1232000']
+  OK      canje Bancarizado al enviar todas las letras — esperado 'banked', obtenido 'banked'
+  OK      asiento del envío con la fecha del envío — esperado datetime.date(2026, 10, 10), obtenido datetime.date(2026, 10, 10)
+  OK      neto abonado por el banco — esperado 965.0, obtenido 965.0
+  OK      banco neto — esperado 965.0, obtenido 965.0
+  OK      interés 6734 — esperado 30.0, obtenido 30.0
+  OK      comisión 6391 — esperado 5.0, obtenido 5.0
+  OK      préstamo 4511 — esperado -1000.0, obtenido -1000.0
+  OK      descontada sigue pendiente — esperado {'pending'}, obtenido {'pending'}
+  OK      letras cobradas — esperado {'paid'}, obtenido {'paid'}
+  OK      préstamo cancelado — esperado 0.0, obtenido 0.0
+
+== [al_l10n_pe_account_letter] Letra en cobranza libre cobrada por el banco
+  OK      letra en cobranza libre — esperado {'billing'}, obtenido {'billing'}
+  OK      letra en el banco: el pago directo se bloquea
+  OK      neto cobrado — esperado 993.0, obtenido 993.0
+  OK      banco — esperado 993.0, obtenido 993.0
+  OK      letra cobrada — esperado 'paid', obtenido 'paid'
+  OK      restablecer a borrador bloqueado con operaciones
+
+== [al_l10n_pe_factoring] Factoring sin recurso: cesión, desembolso y liquidación
+  OK      adelanto 90 % y retenido 10 % — esperado (900.0, 100.0), obtenido (900.0, 100.0)
+  OK      cedida — esperado 'assigned', obtenido 'assigned'
+  OK      sin recurso la factura se da de baja — paid
+  OK      deuda pasa al factor — esperado 1000.0, obtenido 1000.0
+  OK      neto desembolsado — esperado 865.0, obtenido 865.0
+  OK      banco recibe el neto — esperado 865.0, obtenido 865.0
+  OK      interés — esperado 20.0, obtenido 20.0
+  OK      operación liquidada — esperado 'done', obtenido 'done'
+  OK      cuenta del factor saldada — esperado 0.0, obtenido 0.0
+  OK      banco total (neto + retenido) — esperado 965.0, obtenido 965.0
+  OK      asiento Cesión de facturas FAC/2026/0194 cuadra
+  OK      asiento Desembolso del factor FAC/2026/0194 cuadra
+  OK      asiento Cobro del factor FAC/2026/0194 cuadra
+
+== [al_l10n_pe_factoring] Factoring con recurso y anotación en CAVALI (servicio simulado)
+  OK      URL de registro CAVALI — esperado 'https://cavali.test/api/facturas/registro', obtenido 'https://cavali.test/api/facturas/registro'
+  OK      payload: monto neto pendiente — esperado 2000.0, obtenido 2000.0
+  OK      payload: RUC del adquirente — esperado '20612090468', obtenido '20612090468'
+  OK      factura negociable anotada — esperado ('registered', 'AN-QA20'), obtenido ('registered', 'AN-QA20')
+  OK      credenciales fuera del log
+  OK      transferencia CAVALI — esperado 'https://cavali.test/api/facturas/transferencia', obtenido 'https://cavali.test/api/facturas/transferencia'
+  OK      factura transferida — esperado 'transferred', obtenido 'transferred'
+  OK      con recurso no se da de baja (NIIF 9) — esperado 'not_paid', obtenido 'not_paid'
+  OK      obligación con el factor — esperado -1600.0, obtenido -1600.0
+  OK      pago informado a CAVALI — esperado 2000.0, obtenido 2000.0
+  OK      operación liquidada — esperado 'done', obtenido 'done'
+  OK      el cobro del factor cancela la factura
+  OK      banco: adelanto 1570 + retenido 400 — esperado 1970.0, obtenido 1970.0
+  OMITIDO CAVALI real — sin credenciales de prueba: servicio simulado con mock
+
+== [al_l10n_pe_cash_fund] Entrega a rendir: rendición con movilidad, devolución y cierre
+  OK      Número con prefijo ER/ — ER/2026/0017
+  OK      Fondo abierto y entregado — esperado ('open', 500.0, 500.0), obtenido ('open', 500.0, 500.0)
+  OK      Exceso de movilidad sobre el tope 4 % RMV (45,20/día) — esperado 9.8, obtenido 9.8
+  OK      La factura queda pagada con la rendición — esperado 'paid', obtenido 'paid'
+  OK      Planilla de movilidad numerada — PM/2026/00008
+  OK      Asiento de rendición publicado — esperado 'posted', obtenido 'posted'
+  OK      Saldo por devolver 500 − 300 − 55 — esperado 145.0, obtenido 145.0
+  OK      No permite cerrar con saldo pendiente — El fondo ER/2026/0017 · QA20 P3 Trabajador ER tiene un saldo de S/ 145.00: registre la dev
+  OK      Saldo cero tras la devolución — esperado 0.0, obtenido 0.0
+  OK      Fondo cerrado — esperado 'closed', obtenido 'closed'
+  OK      Cuenta del fondo conciliada al cerrar
+  OK      PDF de planilla de movilidad generado
+
+== [al_l10n_pe_cash_fund] Caja chica: gasto y reposición; reembolso de entrega excedida
+  OK      Número con prefijo CCH/ — CCH/013
+  OK      Saldo de caja chica tras el gasto — esperado 600.0, obtenido 600.0
+  OK      Reposición por lo gastado — esperado (400.0, 'replenishment'), obtenido (400.0, 'replenishment')
+  OK      Caja chica repuesta al monto fijo — esperado 1000.0, obtenido 1000.0
+  OK      Saldo a favor del trabajador — esperado -50.0, obtenido -50.0
+  OK      Reembolso de salida por 50 — esperado ('outbound', 50.0), obtenido ('outbound', 50.0)
+  OK      Entrega con reembolso cerrada — esperado 'closed', obtenido 'closed'
+
+== [al_l10n_pe_cash_fund_expense] Gasto de empleado pagado con caja chica → factura de proveedor
+  OK      Diario de compras con documentos para gastos — Compras
+  OK      El gasto se contabiliza como factura de proveedor — esperado 'in_invoice', obtenido 'in_invoice'
+  OK      Proveedor del comprobante — esperado res.partner(9441,), obtenido res.partner(9441,)
+  OK      Tipo de documento boleta (03) — esperado l10n_latam.document.type(2,), obtenido l10n_latam.document.type(2,)
+  OK      Número del comprobante en la factura — R B010-00095725
+  OK      Importe de la factura — esperado 32.0, obtenido 32.0
+  OK      Factura pagada por la caja chica — esperado 'paid', obtenido 'paid'
+  OK      Gasto pagado — esperado 'paid', obtenido 'paid'
+  OK      Saldo de caja chica descontado — esperado 443.35, obtenido 443.35
+  OK      Una rendición publicada para ambos gastos — esperado (1, 'posted'), obtenido (1, 'posted')
+  OK      Exige número de comprobante — El gasto «Almuerzo del personal» se paga con el fondo CCH/014 · QA20 P3 Empleado gastos: l
+
+== [al_l10n_pe_cash_closing] Cierre de caja con faltante: saldo según libros, arqueo y asiento de diferencia
+  OK      Saldo inicial según libros — esperado 1000.0, obtenido 1000.0
+  OK      Ingresos del día (contado 500 + cobranza 200) — esperado 700.0, obtenido 700.0
+  OK      Egresos del día — esperado 100.0, obtenido 100.0
+  OK      Saldo final según libros — esperado 1600.0, obtenido 1600.0
+  OK      Venta al contado clasificada — esperado ('collection', 'cash'), obtenido ('collection', 'cash')
+  OK      Cobranza de venta al crédito clasificada — esperado ('collection', 'credit'), obtenido ('collection', 'credit')
+  OK      Denominaciones vigentes precargadas — [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0]
+  OK      Exige arqueo antes de cerrar — Registre el arqueo: cuente los billetes y monedas de la caja.
+  OK      Faltante de 10 en el arqueo — esperado -10.0, obtenido -10.0
+  OK      Caja cerrada — esperado 'closed', obtenido 'closed'
+  OK      Asiento de diferencia publicado — esperado 'posted', obtenido 'posted'
+  OK      Faltante a la cuenta de pérdida de la caja — esperado 10.0, obtenido 10.0
+  OK      Día cerrado bloquea nuevos pagos — La caja QA20 P3 Caja tienda está cerrada hasta el 20/10/2026 (CC/2026/00041): no
+  OK      El día siguiente parte de lo arqueado — esperado 1590.0, obtenido 1590.0
+  OK      PDF de cierre con faltante y resumen por categoría
+
+== [al_l10n_pe_cash_closing] Reapertura del cierre: anula la diferencia y desbloquea el día
+  OK      Faltante del día 2 contabilizado
+  OK      Cierre reabierto — esperado 'open', obtenido 'open'
+  OK      Asiento de diferencia anulado al reabrir — esperado 'cancel', obtenido 'cancel'
+  OK      Libros recalculados tras la reapertura — esperado 1650.0, obtenido 1650.0
+
+== [al_payment_culqi] Proveedor Culqi en prueba: valores del checkout, payload del cargo y cargo simulado
+  OK      Monedas PEN/USD — esperado ['PEN', 'USD'], obtenido ['PEN', 'USD']
+  OK      Soporta devolución parcial — esperado 'partial', obtenido 'partial'
+  OK      Cabecera con la llave secreta — esperado 'Bearer sk_test_qa2000000000', obtenido 'Bearer sk_test_qa2000000000'
+  OK      Llaves de prueba no sirven en producción — La llave pública de Culqi debe empezar con «pk_live_» en este modo.
+  OK      Valores del checkout en céntimos — esperado (12050, 'PEN', 'tarjeta'), obtenido (12050, 'PEN', 'tarjeta')
+  OK      La llave secreta no llega al navegador
+  OK      Payload del cargo — esperado (12050, 'PEN', 'tkn_test_QA20P3', 'PE'), obtenido (12050, 'PEN', 'tkn_test_QA20P3', 'PE')
+  OK      Solo campos 3DS permitidos — {'eci': '05', 'xid': 'X'}
+  OK      Llamada al endpoint charges (mock) — esperado ('POST', 'charges'), obtenido ('POST', 'charges')
+  OK      Transacción confirmada — esperado ('done', 'chr_test_QA20P3'), obtenido ('done', 'chr_test_QA20P3')
+  OK      Cargo con importe distinto se rechaza — esperado 'error', obtenido 'error'
+  OMITIDO Cargo real contra api.culqi.com — sin credenciales de prueba
+
+== [al_payment_izipay] Proveedor Izipay en prueba: formToken, firma de la IPN y confirmación
+  OK      Autenticación básica tienda/contraseña — esperado ('89289758', 'testpassword_qa2000000000'), obtenido ('89289758', 'testpassword_qa2000000000')
+  OK      URL de IPN — http://127.0.0.1:20003/payment/izipay/webhook
+  OK      Payload CreatePayment — esperado (12050, 'PEN', {'odoo_reference': 'QA20-P3-IZI-124107000000'}), obtenido (12050, 'PEN', {'odoo_reference': 'QA20-P3-IZI-124107000000'})
+  OK      RUC del cliente en el payload — esperado '20131312955', obtenido '20131312955'
+  OK      formToken al navegador — esperado 'QA20FORMTOKEN', obtenido 'QA20FORMTOKEN'
+  OK      La contraseña no llega al navegador
+  OK      Firma HMAC-SHA256 de la IPN válida
+2026-10-30 12:41:07,960 526355 WARNING ce20_db_ol odoo.addons.al_payment_izipay.controllers.main: IPN de Izipay con firma no válida.
+  OK      IPN con firma alterada rechazada
+  OK      La IPN ubica la transacción por metadata — esperado 'QA20-P3-IZI-124107000000', obtenido 'QA20-P3-IZI-124107000000'
+  OK      Transacción confirmada por la IPN — esperado ('done', 'qa20p3uuid0000000000000000000001'), obtenido ('done', 'qa20p3uuid0000000000000000000001')
+  OMITIDO Llamada real a api.micuentaweb.pe — sin credenciales de prueba
+
+== [al_payment_niubiz] Proveedor Niubiz en prueba: autorización aprobada y rechazada (mock)
+  OK      Monedas PEN/USD — esperado ['PEN', 'USD'], obtenido ['PEN', 'USD']
+  OK      Sesión sin teléfono usa 000000000 — esperado '000000000', obtenido '000000000'
+  OK      Autorización aprobada confirma la transacción — esperado ('done', '173424', '75'), obtenido ('done', '173424', '75')
+  OK      Autorización rechazada → error — esperado 'error', obtenido 'error'
+  OK      Mensaje de código 116 traducido — Fondos insuficientes. Por favor use otra tarjeta o intente con otro monto.
+  OMITIDO Llamada real a la API de Niubiz — sin credenciales de prueba
+
+== [al_payment_pagoefectivo] Proveedor PagoEfectivo en prueba: firma de autorización, CIP y notificación firmada
+  OK      URL del entorno de pruebas — esperado 'https://pre1a.services.pagoefectivo.pe/v1/cips', obtenido 'https://pre1a.services.pagoefectivo.pe/v1/cips'
+  OK      Token de autorización — esperado 'eyJ.qa20', obtenido 'eyJ.qa20'
+  OK      hashString SHA-256 de servicio.clave.secreto.fecha — esperado 'e1a831a2926fded392b238ae21c82cb1cfa2808cc96ae4b111fc866710fbcd43', obtenido 'e1a831a2926fded392b238ae21c82cb1cfa2808cc96ae4b111fc866710fbcd43'
+  OK      El secreto no viaja en el payload
+  OK      Autoriza y genera el CIP — esperado ['authorizations', 'cips'], obtenido ['authorizations', 'cips']
+  OK      Payload del CIP — esperado (120.5, 'PEN', 'QA20-P3-PEF-124108000000', '987654321', '+51'), obtenido (120.5, 'PEN', 'QA20-P3-PEF-124108000000', '987654321', '+51')
+  OK      DNI como documento — esperado ('DNI', '45678912'), obtenido ('DNI', '45678912')
+  OK      Transacción pendiente con el CIP — esperado ('pending', '2834561'), obtenido ('pending', '2834561')
+  OK      Redirección a la URL del CIP — esperado 'https://pre1a.payment.pagoefectivo.pe/PE/Checkout/Cip?token=qa20&lang=es', obtenido 'https://pre1a.payment.pagoefectivo.pe/PE/Checkout/Cip?token=qa20&lang=es'
+  OK      Firma PE-Signature sobre JSON compacto aceptada
+2026-10-30 12:41:08,235 526355 WARNING ce20_db_ol odoo.addons.al_payment_pagoefectivo.controllers.main: Notificación de PagoEfectivo con firma no válida.
+  OK      Notificación con firma inválida rechazada
+  OK      La notificación ubica la transacción por el CIP — esperado payment.transaction(308,), obtenido payment.transaction(308,)
+  OK      CIP pagado confirma la transacción — esperado 'done', obtenido 'done'
+  OMITIDO Llamada real a services.pagoefectivo.pe — sin credenciales de prueba
+
+== [al_l10n_pe_cash_forecast] Flujo de caja proyectado: saldo inicial, partidas por vencimiento, escenario y XLSX
+  OK      Saldo inicial suma el banco disponible — esperado 10000.0, obtenido 10000.0
+  OK      Fondos restringidos (detracciones) excluidos — esperado 500.0, obtenido 500.0
+  OK      12 semanas y «Desde…» — esperado 13, obtenido 13
+  OK      Cobranza proyectada — esperado ('receivable', 1200.0), obtenido ('receivable', 1200.0)
+  OK      Pago proyectado — esperado ('payable', -800.0), obtenido ('payable', -800.0)
+  OK      Vencido se proyecta en el primer periodo
+  OK      Partida en el periodo de su vencimiento
+  OK      Saldo final encadenado — esperado -241781.61000000002, obtenido -241781.61
+  OK      Partida editada marcada como escenario
+  OK      El escenario sobrevive al refrescar — esperado (datetime.date(2026, 12, 14), 600.0, True), obtenido (datetime.date(2026, 12, 14), 600.0, True)
+  OK      Partida manual se conserva con periodo
+  OK      Exporta el flujo a XLSX — QA20 P3 Flujo 12 semanas 2026-10-30.xlsx (12393 bytes)
+
+COMMIT
+RESUMEN contabilidad_b: {'OK': 47, 'AVISO': 1}

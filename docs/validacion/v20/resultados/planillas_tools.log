@@ -1,0 +1,438 @@
+2026-10-30 12:41:53,455 530458 WARNING ce20_db_ol odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)
+2026-10-30 12:42:00,055 530458 WARNING ce20_db_ol odoo.fields: res.config.settings.l10n_pe_cpe_post_mode: selection attribute will be ignored as the field is related
+2026-10-30 12:42:00,976 530458 WARNING ce20_db_ol odoo.fields: Field l10n_pe.retention.edi.mixin.l10n_pe_edi_reversal_reason: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:42:00,978 530458 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.year: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:42:00,979 530458 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.month: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:42:00,979 530458 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:42:01,378 530458 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:616: UserWarning: pharmacy.insurance.liquidation: inconsistent 'compute_sudo' for computed fields order_count, amount_total. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 616, in field_computed
+    warnings.warn(
+
+2026-10-30 12:42:01,379 530458 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:633: UserWarning: pharmacy.insurance.liquidation: inconsistent 'store' for computed fields, accessing order_count may recompute and update amount_total. Use distinct compute methods for stored and non-stored fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 633, in field_computed
+    warnings.warn(
+
+
+== [al_hr_pe] Preparación: parámetros, periodos y trabajadores QA20
+  OK      Parámetros Principales de la compañía existen — Parámetros Principales
+  OK      periodos mensuales 2025-07 y 2026-10 generados
+  AVISO   Parámetros Principales: se completaron campos vacíos — basic_sr_id, bonus_nine_input_id, bonus_sr_ids, commission_sr_ids, cts_input_id, extra_hours_sr_id, fifth_afect_sr_id, fifth_category_input_id, fifth_extr_sr_id, gratification_input_id, household_allowance_sr_id, insurable_remuneration, lack_wd_ids, medical_rest_wd_ids, net_to_pay_sr_id, proy_afect_sr_id, truncated_bonus_nine_input_id, truncated_cts_input_id, truncated_gratification_input_id, truncated_vacation_input_id, vacation_input_id, working_wd_ids
+  AVISO   Estructura BASE: se quita el diario nativo para usar el asiento peruano por lote — antes: Salarios (hr_payroll_account generaría un asiento por boleta)
+  OK      nombre del trabajador con prefijo QA20 — QA20 Torres Ruiz Ana
+
+== [al_hr_pe] Planillas mensuales jul-2025 → jun-2026 (base de los beneficios)
+  OK      12 lotes mensuales jul-2025 → jun-2026 validados — QA20 Planilla 2025-07, QA20 Planilla 2025-08, QA20 Planilla 2025-09, QA20 Planilla 2025-10, QA20 Planilla 2025-11, QA20 Planilla 2025-12, QA20 Planilla 2026-01, QA20 Planilla 2026-02, QA20 Planilla 2026-03, QA20 Planilla 2026-04, QA20 Planilla 2026-05, QA20 Planilla 2026-06
+
+== [al_hr_pe_benefits] Gratificación de Navidad 2025 (lote dic-2025)
+  OK      línea de gratificación de QA20 Torres Ruiz Ana
+  OK      afp: meses computables jul-dic — esperado 6, obtenido 6
+  OK      afp: gratificación = computable/6 × 6 meses = sueldo — esperado 6000.0, obtenido 6000.0
+  OK      afp: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 % — esperado 540.0, obtenido 540.0
+  OK      línea de gratificación de QA20 Díaz Mora Bruno
+  OK      onp: meses computables jul-dic — esperado 6, obtenido 6
+  OK      onp: gratificación = computable/6 × 6 meses = sueldo — esperado 2500.0, obtenido 2500.0
+  OK      onp: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 % — esperado 225.0, obtenido 225.0
+  OK      línea de gratificación de QA20 Ríos León Carla
+  OK      rmv: meses computables jul-dic — esperado 6, obtenido 6
+  OK      rmv: gratificación = computable/6 × 6 meses = sueldo — esperado 1000.0, obtenido 1000.0
+  OK      rmv: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 % — esperado 90.0, obtenido 90.0
+  OK      línea de gratificación de QA20 Cárdenas Paz Diego
+  OK      cese: meses computables jul-dic — esperado 6, obtenido 6
+  OK      cese: gratificación = computable/6 × 6 meses = sueldo — esperado 2400.0, obtenido 2400.0
+  OK      cese: bonificación extraordinaria 9 % (EsSalud) = sueldo × 9 % — esperado 216.0, obtenido 216.0
+
+== [al_hr_pe_benefits] CTS de mayo 2026 con 1/6 de la gratificación
+  OK      línea de CTS de QA20 Torres Ruiz Ana
+  OK      afp: 1/6 de la gratificación de diciembre — esperado 1000.0, obtenido 1000.0
+  OK      afp: computable = sueldo + 1/6 gratificación — esperado 7000.0, obtenido 7000.0
+  OK      afp: 6 meses nov-abr — esperado 6, obtenido 6
+  OK      afp: CTS = computable/12 × 6 — esperado 3500.0, obtenido 3500.0
+  OK      línea de CTS de QA20 Díaz Mora Bruno
+  OK      onp: 1/6 de la gratificación de diciembre — esperado 416.67, obtenido 416.67
+  OK      onp: computable = sueldo + 1/6 gratificación — esperado 2916.67, obtenido 2916.67
+  OK      onp: 6 meses nov-abr — esperado 6, obtenido 6
+  OK      onp: CTS = computable/12 × 6 — esperado 1458.34, obtenido 1458.34
+  OK      línea de CTS de QA20 Ríos León Carla
+  OK      rmv: 1/6 de la gratificación de diciembre — esperado 166.67, obtenido 166.67
+  OK      rmv: computable = sueldo + 1/6 gratificación — esperado 1166.67, obtenido 1166.67
+  OK      rmv: 6 meses nov-abr — esperado 6, obtenido 6
+  OK      rmv: CTS = computable/12 × 6 — esperado 583.34, obtenido 583.34
+  OK      línea de CTS de QA20 Cárdenas Paz Diego
+  OK      cese: 1/6 de la gratificación de diciembre — esperado 400.0, obtenido 400.0
+  OK      cese: computable = sueldo + 1/6 gratificación — esperado 2800.0, obtenido 2800.0
+  OK      cese: 6 meses nov-abr — esperado 6, obtenido 6
+  OK      cese: CTS = computable/12 × 6 — esperado 1400.0, obtenido 1400.0
+
+== [al_hr_pe_benefits] Gratificación de julio 2026 con bonificación 9 %
+  OK      nombre propuesto del documento — esperado 'Gratificación Fiestas Patrias 2026', obtenido 'Gratificación Fiestas Patrias 2026'
+  OK      línea de gratificación de QA20 Torres Ruiz Ana
+  OK      afp: computable = sueldo (sin AF ni variables) — esperado 6000.0, obtenido 6000.0
+  OK      afp: 6 meses ene-jun — esperado 6, obtenido 6
+  OK      afp: gratificación = computable/6 × 6 — esperado 6000.0, obtenido 6000.0
+  OK      afp: total = gratificación + bono 9 % — esperado 6540.0, obtenido 6540.0
+  OK      línea de gratificación de QA20 Díaz Mora Bruno
+  OK      onp: computable = sueldo (sin AF ni variables) — esperado 2500.0, obtenido 2500.0
+  OK      onp: 6 meses ene-jun — esperado 6, obtenido 6
+  OK      onp: gratificación = computable/6 × 6 — esperado 2500.0, obtenido 2500.0
+  OK      onp: total = gratificación + bono 9 % — esperado 2725.0, obtenido 2725.0
+  OK      línea de gratificación de QA20 Ríos León Carla
+  OK      rmv: computable = sueldo (sin AF ni variables) — esperado 1000.0, obtenido 1000.0
+  OK      rmv: 6 meses ene-jun — esperado 6, obtenido 6
+  OK      rmv: gratificación = computable/6 × 6 — esperado 1000.0, obtenido 1000.0
+  OK      rmv: total = gratificación + bono 9 % — esperado 1090.0, obtenido 1090.0
+  OK      línea de gratificación de QA20 Cárdenas Paz Diego
+  OK      cese: computable = sueldo (sin AF ni variables) — esperado 2400.0, obtenido 2400.0
+  OK      cese: 6 meses ene-jun — esperado 6, obtenido 6
+  OK      cese: gratificación = computable/6 × 6 — esperado 2400.0, obtenido 2400.0
+  OK      cese: total = gratificación + bono 9 % — esperado 2616.0, obtenido 2616.0
+
+== [al_hr_pe_benefits] Liquidación por cese (10/07/2026): CTS y vacaciones truncas
+  AVISO   días de la boleta jul-2026 del cesado (contrato hasta el 10/07) — {'DLAB': 8.0, '000.00': 15.0, 'DOM': 8.0}
+  FALLA   DLAB + DOM = 10 días de contrato en julio (1-10/07) — esperado 10.0, obtenido 16.0
+  FALLA   básico de julio = sueldo/30 × 10 días — esperado 800.0, obtenido 1280.0
+  OK      solo el trabajador cesado entra en la liquidación
+  OK      una línea de CTS trunca
+  OK      CTS trunca: meses completos (may, jun) — esperado 2, obtenido 2
+  FALLA   CTS trunca: días de julio hasta el cese — esperado 10, obtenido 16
+  OK      CTS trunca: computable = sueldo + 1/6 grati dic-2025 — esperado 2800.0, obtenido 2800.0
+  FALLA   CTS trunca = computable/12 × 2 + computable/360 × 10 — esperado 544.45, obtenido 591.11
+  OK      sin gratificación trunca ene-jun (ya incluida en la regular de julio)
+  OK      una línea de vacaciones truncas
+  OK      vacaciones: cómputo desde el último aniversario — esperado '2026-03-01', obtenido '2026-03-01'
+  OK      vacaciones truncas: meses mar-jun — esperado 4, obtenido 4
+  FALLA   vacaciones truncas: días de julio — esperado 10, obtenido 16.0
+  FALLA   vacaciones truncas = sueldo/12 × 4 + sueldo/360 × 10 — esperado 866.67, obtenido 906.67
+  OK      vacaciones: neto = total − fondo 10 % − prima − comisión AFP — esperado 789.07, obtenido 789.07
+  OK      exportar: input CTS_TRU en la boleta de julio — esperado 591.11, obtenido 591.11
+  OK      exportar: input VATRU en la boleta de julio — esperado 906.67, obtenido 906.67
+  OK      boleta de julio: línea VATRU calculada — esperado 906.67, obtenido 906.67
+  OK      boleta de cese validada — validated
+
+== [al_hr_pe] Planillas ago → oct 2026
+  OK      el cesado ya no tiene boleta en setiembre
+
+== [al_hr_pe] Parámetros nativos UIT / RMV / EsSalud con su historial
+  OK      existe el parámetro de reglas l10n_pe_uit — Perú: UIT (Unidad Impositiva Tributaria)
+  OK      l10n_pe_uit vigente desde 2024-01-01 — esperado 5150.0, obtenido 5150.0
+  OK      l10n_pe_uit vigente desde 2025-01-01 — esperado 5350.0, obtenido 5350.0
+  OK      l10n_pe_uit vigente desde 2026-01-01 — esperado 5500.0, obtenido 5500.0
+  OK      existe el parámetro de reglas l10n_pe_rmv — Perú: Remuneración Mínima Vital
+  OK      l10n_pe_rmv vigente desde 2022-05-01 — esperado 1025.0, obtenido 1025.0
+  OK      l10n_pe_rmv vigente desde 2025-01-01 — esperado 1130.0, obtenido 1130.0
+  OK      l10n_pe_rmv vigente desde 2026-10-01 — esperado 1230.0, obtenido 1230.0
+  OK      existe el parámetro de reglas l10n_pe_essalud_rate — Perú: tasa de EsSalud (%)
+  OK      l10n_pe_essalud_rate vigente desde 1997-05-01 — esperado 9.0, obtenido 9.0
+  OK      _l10n_pe_get_uit(2024) — esperado 5150.0, obtenido 5150.0
+  OK      _l10n_pe_get_uit(2025) — esperado 5350.0, obtenido 5350.0
+  OK      _l10n_pe_get_uit(2026) — esperado 5500.0, obtenido 5500.0
+  OK      _l10n_pe_get_rmv(2024-06-30) — esperado 1025.0, obtenido 1025.0
+  OK      _l10n_pe_get_rmv(2026-09-30) — esperado 1130.0, obtenido 1130.0
+  OK      _l10n_pe_get_rmv(2026-10-01) — esperado 1230.0, obtenido 1230.0
+  OK      _l10n_pe_get_rmv(2022-01-01) — esperado 0.0, obtenido 0.0
+  OK      sin UIT 2031 → UserError claro — No está registrada la UIT del año 2031 (Nómina ▸ Configuración ▸ Perú ▸ UIT).
+
+== [al_hr_pe] Boleta mensual: AFP, ONP y sueldo menor a la RMV
+  OK      afp set-2026: RMV de la boleta = 1 130 (parámetro al 30/09) — esperado 1130.0, obtenido 1130.0
+  OK      afp: básico mes completo = sueldo — esperado 6000.0, obtenido 6000.0
+  OK      afp: afecto AFP = básico — esperado 6000.0, obtenido 6000.0
+  OK      afp: fondo AFP = afecto × 10.00 % — esperado 600.0, obtenido 600.0
+  OK      afp: comisión flujo = afecto × 1.55 % — esperado 93.0, obtenido 93.0
+  OK      afp: prima de seguro = min(afecto, tope 12732.70) × 1.37 % — esperado 82.2, obtenido 82.2
+  OK      afp: sin ONP — esperado 0.0, obtenido 0.0
+  OK      afp: EsSalud = max(afecto 6000.00, RMV 1130.00) × 9 % — esperado 540.0, obtenido 540.0
+  OK      afp: neto = ingresos − aportes del trabajador — esperado 5224.8, obtenido 5224.8
+  OK      onp set-2026: RMV de la boleta = 1 130 (parámetro al 30/09) — esperado 1130.0, obtenido 1130.0
+  OK      onp: básico mes completo = sueldo — esperado 2500.0, obtenido 2500.0
+  OK      onp: ONP = afecto × 13 % — esperado 325.0, obtenido 325.0
+  OK      onp: sin aporte AFP — esperado 0.0, obtenido 0.0
+  OK      onp: EsSalud = max(afecto 2500.00, RMV 1130.00) × 9 % — esperado 225.0, obtenido 225.0
+  OK      onp: neto = ingresos − aportes del trabajador — esperado 2175.0, obtenido 2175.0
+  OK      rmv set-2026: RMV de la boleta = 1 130 (parámetro al 30/09) — esperado 1130.0, obtenido 1130.0
+  OK      rmv: básico mes completo = sueldo — esperado 1000.0, obtenido 1000.0
+  OK      rmv: afecto AFP = básico — esperado 1000.0, obtenido 1000.0
+  OK      rmv: fondo AFP = afecto × 10.00 % — esperado 100.0, obtenido 100.0
+  OK      rmv: comisión flujo = afecto × 1.47 % — esperado 14.7, obtenido 14.7
+  OK      rmv: prima de seguro = min(afecto, tope 12732.70) × 1.37 % — esperado 13.7, obtenido 13.7
+  OK      rmv: sin ONP — esperado 0.0, obtenido 0.0
+  OK      rmv: EsSalud = max(afecto 1000.00, RMV 1130.00) × 9 % — esperado 101.7, obtenido 101.7
+  OK      rmv: neto = ingresos − aportes del trabajador — esperado 871.6, obtenido 871.6
+  OK      rmv oct-2026: RMV = 1 230 — esperado 1230.0, obtenido 1230.0
+  OK      rmv oct-2026: asignación familiar = 10 % RMV — esperado 123.0, obtenido 123.0
+  OK      rmv oct-2026: EsSalud sobre la RMV nueva (1 230 × 9 %) — esperado 110.7, obtenido 110.7
+  OK      la boleta validada de setiembre conserva RMV 1 130 — esperado 1130.0, obtenido 1130.0
+
+== [al_hr_pe] RMV con fecha futura solo afecta a las planillas posteriores
+  OK      dic-2026 (antes de la vigencia) sigue con RMV 1 230 — esperado 1230.0, obtenido 1230.0
+  OK      ene-2027 toma la RMV futura 1 300 — esperado 1300.0, obtenido 1300.0
+  OK      ene-2027: EsSalud = 1 300 × 9 % (sueldo 1 000 < RMV) — esperado 117.0, obtenido 117.0
+  OK      la boleta de oct-2026 ya calculada no cambia — esperado 1230.0, obtenido 1230.0
+  AVISO   valor RMV 2027 creado dentro de un savepoint y deshecho — no queda en la base
+
+== [al_hr_pe_benefits] Vacaciones: récord vacacional y goce de 15 días
+  OK      récord vacacional del año 2025 generado
+  OK      récord 2025: 2.5 días × 12 meses = 30 días — esperado 30.0, obtenido 30.0
+  OK      vacaciones 15 días = sueldo/30 × 15 — esperado 1250.0, obtenido 1250.0
+  OK      ONP 13 % de la remuneración vacacional — esperado 162.5, obtenido 162.5
+  OK      neto vacacional = total − ONP — esperado 1087.5, obtenido 1087.5
+
+== [al_hr_pe_benefits] Renta de 5.ª de octubre con la UIT 2026
+  OK      Ana (6 000) queda afecta a 5.ª
+  OK      7 UIT = 7 × 5500 (UIT 2026 del parámetro) — esperado 38500.0, obtenido 38500.0
+  OK      remuneraciones ene-set (boletas validadas) — esperado 54000.0, obtenido 54000.0
+  OK      renta bruta proyectada = 12 sueldos + 2 gratificaciones con bono — esperado 85080.0, obtenido 85080.0
+  OK      renta neta = bruta − 7 UIT — esperado 46580.0, obtenido 46580.0
+  OK      impuesto anual por tramos 8/14/17/20/30 % (calculado a mano) — esperado 4871.2, obtenido 4871.200000000001
+  OK      retención de octubre = (impuesto − retenido) / 4 (art. 40) — esperado 1217.8, obtenido 1217.8
+  OK      Bruno (2 500) y Carla (1 000) pasan a excluidos — QA20 Díaz Mora Bruno, QA20 Ríos León Carla
+  OK      la boleta de octubre descuenta la quinta exportada — esperado 1217.8, obtenido 1217.8
+  OK      tramos 2031 sin UIT → mensaje claro — No está registrada la UIT del año 2031 (Nómina ▸ Configuración ▸ Perú ▸ UIT).
+
+== [al_hr_pe_import] Importar inputs de boleta desde Excel
+  OK      filas importadas (Bruno 300, Carla 150.50) — esperado 2, obtenido 2
+  OK      filas con error (DNI sin boleta, input inexistente) — esperado 2, obtenido 2
+  OK      cada error trae su sugerencia — [OK  ] fila 2: input BONR = 300.0 en la boleta de QA20 Díaz Mora Bruno | [OK  ] fila 3: input BONR = 150.5 en la boleta de QA20 Ríos León Carla | [ERR ] fila 4: no hay boleta en el lote "QA20 Planilla 2026-10" para el documento 99999999 | [ERR ] fila 5: no existe un tipo de input con código "NOEXISTE"
+  OK      onp: línea BONR = input importado — esperado 300.0, obtenido 300.0
+  OK      rmv: línea BONR = input importado — esperado 150.5, obtenido 150.5
+  OK      onp: ONP sobre sueldo + bonificación regular — esperado 364.0, obtenido 364.0
+  OK      rmv: EsSalud sigue con base RMV (1 150.50 < 1 230) — esperado 110.7, obtenido 110.7
+
+== [al_hr_pe] Cierre del lote de octubre
+  OK      lote de octubre validado — 02_close
+
+== [al_hr_pe_account] Asiento de planilla del lote de setiembre
+  OK      cuentas PCGE de planilla existen — 6211000, 4111000, 4032000, 4170000, 6271000, 4031000
+  AVISO   configuración contable completada (solo campos vacíos) — BAS debe 6211000; NETO haber 4111000; ONP haber 4032000; ESSALUD debe 6271000; ESSALUD haber 4031000; AFP INTEGRA → 4170000; AFP HABITAT → 4170000; AFP PRIMA → 4170000; afp_rule_ids; move_journal_id; move_partner_id
+  OK      el lote de setiembre tiene asiento
+  OK      asiento publicado — posted
+  OK      referencia PLA + MM + AAAA — esperado 'PLA092026', obtenido 'PLA092026'
+  OK      asiento cuadrado — esperado 10366.699999999999, obtenido 10366.7
+  OK      6211 debe = Σ básicos del lote — esperado 9500.0, obtenido 9500.0
+  OK      4111 haber = Σ netos — esperado 8271.4, obtenido 8271.4
+  OK      4032 haber = Σ ONP — esperado 325.0, obtenido 325.0
+  OK      4170 haber = Σ fondo + comisión + prima AFP (cuenta de la afiliación) — esperado 903.6, obtenido 903.6
+  OK      6271 debe = Σ EsSalud — esperado 866.7, obtenido 866.7
+  OK      4031 haber = Σ EsSalud — esperado 866.7, obtenido 866.7
+  OK      sin línea de ajuste por redondeo (el lote cuadra por construcción)
+
+== [al_hr_pe_reports] Boleta PDF, PLAME .rem, AFPnet y TXT de haberes BCP del lote de octubre2026-10-30 12:42:44,945 530458 ERROR ce20_db_ol odoo.sql_db: bad query: b'INSERT INTO "hr_payslip_worked_days" ("create_date", "create_uid", "number_of_days", "number_of_hours", "payslip_id", "sequence", "version_id", "work_entry_type_id", "write_date", "write_uid") VALUES (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 1.0, 8.0, 1452, 0, 954, NULL, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 21.0, 168.0, 1452, 25, 954, 662, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 9.0, 0.0, 1452, 100, 954, 663, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 664, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 665, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 666, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 667, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 668, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 669, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 670, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 671, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 690, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 672, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 673, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 674, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 675, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 676, \'2026-10-30T12:42:35.413707\'::timestamp, 1), (\'2026-10-30T12:42:35.413707\'::timestamp, 1, 0.0, 0.0, 1452, 100, 954, 677, \'2026-10-30T12:42:35.413707\'::timestamp, 1) RETURNING "id"'
+ERROR: null value in column "work_entry_type_id" of relation "hr_payslip_worked_days" violates not-null constraint
+DETAIL:  Failing row contains (25687, 1452, null, 0, null, 954, 1, 1, null, null, null, null, null, 2026-10-30 12:42:35.413707, 2026-10-30 12:42:35.413707, 1, 8, null).
+
+2026-10-30 12:42:46,129 530458 WARNING ce20_db_ol odoo.tools.safe_eval.runtime: Unsafe function access: <function report_base.<locals>.<lambda> at 0x71986609cae0> (type: <class 'function'>, path: __main__.report_base.<locals>.<lambda>)
+
+  OK      la boleta usa la cabecera común de al_report_base
+  OK      la boleta muestra DNI y RUC
+  OK      boleta PDF renderizada — 29979 bytes
+  OK      formato tipo|doc|concepto|devengado|pagado| — 14 filas
+  OK      afp: concepto 0121 (básico) declarado
+  OK      afp: 0121 devengado = básico — esperado 6000.0, obtenido 6000.0
+  OK      afp: tipo de documento DNI = 01 — esperado '01', obtenido '01'
+  OK      onp: concepto 0121 (básico) declarado
+  OK      onp: 0121 devengado = básico — esperado 2500.0, obtenido 2500.0
+  OK      onp: tipo de documento DNI = 01 — esperado '01', obtenido '01'
+  OK      rmv: concepto 0121 (básico) declarado
+  OK      rmv: 0121 devengado = básico — esperado 1000.0, obtenido 1000.0
+  OK      rmv: tipo de documento DNI = 01 — esperado '01', obtenido '01'
+  OK      afp: 0605 (renta 5.ª) declarada
+  OK      afp: 0605 = retención de octubre — esperado 1217.8, obtenido 1217.8
+  OK      onp: sin comisión AFP 0601
+  OK      EsSalud (0804) no se importa (lo calcula PLAME)
+  OK      AFPnet: solo los 2 afiliados AFP (Ana, Carla) — esperado 2, obtenido 2
+  OK      correlativo 1, 2 sin huecos — esperado [1, 2], obtenido [1, 2]
+  OK      fila de Ana en AFPnet
+  OK      CUSPP — esperado '6000101XQA0', obtenido '6000101XQA0'
+  OK      apellidos y nombres — esperado ('Torres', 'Ruiz', 'Ana'), obtenido ('Torres', 'Ruiz', 'Ana')
+  OK      devenga S, inicio N, cese N — esperado ('S', 'N', 'N'), obtenido ('S', 'N', 'N')
+  OK      remuneración asegurable = AAFP — esperado 6000.0, obtenido 6000.0
+  OK      tipo de labor N — esperado 'N', obtenido 'N'
+  AVISO   banco BCP: se configuró format_bank = bcp
+  OK      pago masivo BCP generado desde el lote
+  OK      una línea por trabajador con cuenta BCP — esperado 3, obtenido 3
+  OK      afp: monto = NETO peruano — esperado 4007.0, obtenido 4007.0
+  OK      onp: monto = NETO peruano — esperado 2436.0, obtenido 2436.0
+  OK      rmv: monto = NETO peruano — esperado 1002.78, obtenido 1002.78
+  OK      TXT BCP: cabecera + 3 detalles — esperado 4, obtenido 4
+  OK      cabecera tipo 1 — esperado '1', obtenido '1'
+  OK      cabecera: 3 abonos — esperado '000003', obtenido '000003'
+  OK      tipo de cargo C — esperado 'C', obtenido 'C'
+  OK      moneda soles 0001 — esperado '0001', obtenido '0001'
+  OK      cuenta de cargo — esperado '1917000123456', obtenido '1917000123456'
+  OK      total de la planilla en la cabecera — esperado 7445.78, obtenido 7445.78
+  OK      checksum = Σ cuentas (desde la 4.ª posición) + cargo — esperado '000007000138462', obtenido '000007000138462'
+  OK      detalle de Ana
+  OK      detalle: cuenta destino — esperado '19100000005001', obtenido '19100000005001'
+  OK      detalle: importe = neto — esperado 4007.0, obtenido 4007.0
+
+== [al_hr_pe_attendance] Turno, marcaciones importadas, tardanza y horas extra 25 %/35 %
+  OK      promedio semanal 12 h × 4 × 7/7 = 48 h — esperado 48.0, obtenido 48.0
+  OK      ciclo 6×1 de 10 h rechazado por superar 48 h — El promedio semanal del ciclo (60.00 h) supera las 48 horas permitidas por el art. 4 del D.S. 007-2002-TR.
+  OK      al_hr_pe_import: marcaciones creadas desde Excel — esperado 22, obtenido 22
+  OK      marcación del 09/09 (08:00 Lima = 13:00 UTC)
+  OK      el día termina 20:00 Lima aunque el sobretiempo vaya en asistencia separada — esperado '2026-09-10 01:00:00', obtenido '2026-09-10 01:00:00'
+  AVISO   asistencias del 09/09 — 2 registro(s): 2026-09-09 13:00:00→2026-09-09 21:00:00, 2026-09-09 21:00:00→2026-09-10 01:00:00
+  OK      línea de tareaje de Elena
+  OK      08/09: tardanza 40 min (> 15 min de tolerancia) = 0.67 h — esperado 0.67, obtenido 0.67
+  OK      09/09: 3 h extra → 2 h al 25 % — esperado 2.0, obtenido 2.0
+  OK      09/09: … y 1 h al 35 % — esperado 1.0, obtenido 1.0
+  OK      10/09: 1.5 h al 25 % — esperado 1.5, obtenido 1.5
+  OK      días laborados = 22 días hábiles de setiembre — esperado 22.0, obtenido 22.0
+  OK      total HE 25 % = 3.5 h — esperado 3.5, obtenido 3.5
+  OK      total HE 35 % = 1 h — esperado 1.0, obtenido 1.0
+  OK      HE25 = sueldo/30/8 × 1.25 × 3.5 h — esperado 54.6875, obtenido 54.69
+  OK      HE35 = sueldo/30/8 × 1.35 × 1 h — esperado 16.875, obtenido 16.88
+  OK      TAR = horas de tardanza × sueldo/30/8 (0.67 h) — esperado 8.375, obtenido 8.38
+  OK      básico completo (22 DLAB + 8 DOM = 30 días) — esperado 3000.0, obtenido 3000.0
+  OK      registro de control: fila del 09/09
+  OK      ingreso, salida e inicio/fin del sobretiempo — esperado ('08:00', '20:00', '17:00', '20:00'), obtenido ('08:00', '20:00', '17:00', '20:00')
+
+== [al_hr_pe_public_holidays] Feriados 2026 en calendarios sin duplicar los nativos de Odoo 20
+  OK      catálogo 2026: 16 feriados nacionales — esperado 16, obtenido 16
+  FALLA   feriados del catálogo 2026-2035 sin concepto de nómina (debería ser DOM) — esperado 0, obtenido 170
+  OK      aplicar dos veces deja 16 descansos (sin duplicar) — esperado 16, obtenido 16
+  OK      28/07 00:00 Lima = 05:00 UTC — esperado '2026-07-28 05:00:00', obtenido '2026-07-28 05:00:00'
+  FALLA   el descanso usa el concepto DOM de la planilla — esperado 'DOM', obtenido False
+  OK      Odoo 20 (asistente nativo) no propone días que ya cubre el catálogo 2026 — 0 propuestos: 
+  OK      2036 (fuera del catálogo): el nativo propone los feriados del CSV — 16 días
+  OK      el tareaje reconoce el 08/10 como feriado del calendario
+  FALLA   calcular la boleta de octubre de un trabajador con el feriado aplicado — NotNullViolation: null value in column "work_entry_type_id" of relation "hr_payslip_worked_days" violates not-null constraint
+  AVISO   descansos retirados de calendarios no QA20 tras la prueba — 48
+
+== [al_hr_pe_construction] Boleta semanal de operario: BUC, movilidad y CONAFOVICER
+  OK      semana 12-18/10/2026 generada — 202610-S03
+  OK      jornal diario de la tabla del convenio (89.30) — esperado 89.3, obtenido 89.3
+  OK      JOR = jornal × 6 días — esperado 535.8, obtenido 535.8
+  OK      DSO = 1 jornal por 6 días trabajados — esperado 89.3, obtenido 89.3
+  OK      BUC = jornal × 6 × 32 % — esperado 171.46, obtenido 171.46
+  OK      movilidad = 8.60 × 6 días — esperado 51.6, obtenido 51.6
+  OK      CONAFOVICER = −(JOR + DSO) × 2.0 % — esperado -12.5, obtenido -12.5
+  OK      afecto (TREM) = JOR + DSO + BUC; la movilidad no está afecta — esperado 796.56, obtenido 796.56
+  OK      ONP 13 % del afecto — esperado 103.55, obtenido 103.55
+
+== [al_docs_help] Ayuda contextual: entradas, UIT/RMV y respuesta al systray
+  OK      entradas de ayuda cargadas — 529
+  OK      entrada UIT/RMV apunta al modelo nativo hr.rule.parameter.value — UIT y Remuneración Mínima Vital
+  OK      sin entrada al modelo eliminado l10n_pe.hr.uit
+  OK      sin entrada al modelo eliminado hr.uit
+  OK      sin entrada al modelo eliminado l10n_pe.hr.rmv
+  OK      sin entrada al modelo eliminado hr.rmv
+  OK      get_help_map (systray) responde al usuario interno con la URL de UIT/RMV — https://docs.altalatam.com/latest/applications/hr/payroll/peru/
+  OK      el usuario interno no puede editar la ayuda
+  OK      ninguna ayuda visible apunta a un modelo inexistente
+  OK      botón «?» abre la guía — https://docs.altalatam.com/latest/applications/hr/payroll/peru/
+
+== [al_report_base] Página común de documentos (cabecera y pie)
+  OK      página común: cabecera y pie
+  OK      la cabecera muestra el RUC 20557912879
+  OK      número del documento en la cabecera
+  AVISO   plantillas que usan la cabecera común — 35: al_construction_material_request.report_construction_request_document, al_construction_material_request.report_dispatch_slip_document, al_construction_planner_sale.report_construction_valuation_document, al_construction_planner_subcontract.report_contract_summary, al_construction_planner_subcontract.report_contract_valuation_document, al_hr_pe_reports.report_certificate, al_hr_pe_reports.report_contract, al_hr_pe_reports.report_fifth_certificate, al_hr_pe_reports.report_l10n_pe_boleta_pago_page, al_hr_pe_reports.report_letter, al_l10n_pe_cash_closing.report_cash_closing_document, al_l10n_pe_cash_fund.report_cash_fund_document
+  OMITIDO PDF de factura con cabecera común — ninguna plantilla de factura (account.move) usa al_report_base.report_pe_page; se validó el PDF de la boleta (al_hr_pe_reports) que sí la usa, ver caso de reportes
+
+== [al_base_module_info] Ficha de módulo en Aplicaciones
+  OK      ficha del propio módulo — esperado '/al_base_module_info/static/description/index.html', obtenido '/al_base_module_info/static/description/index.html'
+  OK      «base» no se considera ficha
+  AVISO   fichas de los módulos de planillas — 8/8 con ficha: al_hr_pe, al_hr_pe_account, al_hr_pe_attendance, al_hr_pe_benefits, al_hr_pe_construction, al_hr_pe_import, al_hr_pe_public_holidays, al_hr_pe_reports
+  OK      el kanban de Aplicaciones ofrece el enlace a la ficha
+
+== [al_mcp_server] Herramienta MCP de lectura con usuario no administrador
+  OK      odoo_search_read de contactos funciona con alcance read — total 85
+  OK      boletas (hr.payslip) denegadas al usuario sin permisos — AccessError
+  OK      odoo_create rechazado con alcance read — PermissionError: La herramienta 'odoo_create' requiere al menos el alcance 'write'. Este token está restringido al alcance 'read' (solo lectura). Contacte a su administrador para ampliar el alcance del token.
+  OK      odoo_count responde — {'model': 'res.partner', 'domain': [['name', '=like', 'QA20%']], 'count': 85}
+
+== [ol_licencia_perpetua] Constatar instalación y reemplazo del aviso de suscripción
+  OK      ol_licencia_perpetua instalado — esperado 'installed', obtenido 'installed'
+  OK      el reemplazo de asset apunta a archivos existentes — web_enterprise/static/src/webclient/home_menu/enterprise_subscription_service.js ← ol_licencia_perpetua/static/src/js/subscription_manager.js
+
+== [prt_report_attachment_preview] Vista previa de PDF en el navegador
+  OK      prt_report_attachment_preview instalado — esperado 'installed', obtenido 'installed'
+  OK      el controlador de vista previa extiende /report
+  OK      evalúa el nombre del PDF con «object» (abre en pestaña con su nombre) — {'object': 'report'}
+
+== [queue_job] Encolar un job con with_delay y ejecutarlo
+  OK      job encolado en queue.job (pending) — pending
+  OK      antes de ejecutarse el contacto no cambia
+  OK      job ejecutado con perform → done — esperado 'done', obtenido 'done'
+  OK      el método diferido se ejecutó (write) — esperado True, obtenido True
+
+== [al_l10n_pe_city] Módulo no instalable en Odoo 20
+  OK      al_l10n_pe_city no instalado — esperado 'uninstalled', obtenido 'uninstalled'
+  OMITIDO al_l10n_pe_city — manifest 'installable': False en Odoo 20 (depende de base_address_extended); no se valida
+
+COMMIT
+RESUMEN planillas_tools: {'AVISO': 7, 'OK': 18, 'FALLA': 2}

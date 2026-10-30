@@ -1,0 +1,4333 @@
+{
+ "fase": "contabilidad_b",
+ "casos": [
+  {
+   "modulo": "al_l10n_pe_bank_loan",
+   "titulo": "Préstamo francés: desembolso con comisión e ITF, devengo y pago de la 1.ª cuota",
+   "pasos": "Tesorería ▸ Préstamos ▸ Nuevo (S/ 120 000, TEA 12 %, 12 cuotas) ▸ Calcular cronograma ▸ Confirmar; Devengar al 31/01 y Pagar cuota desde el asistente.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "secuencia PRE/",
+     "detalle": "PRE/2026/0079"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta de capital 4511",
+     "detalle": "4511000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "intereses por pagar 45511",
+     "detalle": "4551100"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cronograma de 12 cuotas",
+     "detalle": "esperado 12, obtenido 12"
+    },
+    {
+     "estado": "OK",
+     "titulo": "capital del cronograma = préstamo",
+     "detalle": "esperado 120000.0, obtenido 120000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuota fija (método francés)",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "interés 1.ª cuota (TEA, 31 días, base 360)",
+     "detalle": "esperado 1176.8, obtenido 1176.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "préstamo en curso",
+     "detalle": "esperado 'running', obtenido 'running'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "desembolso: capital al haber 4511",
+     "detalle": "esperado -120000.0, obtenido -120000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comisión de desembolso al gasto",
+     "detalle": "esperado 500.0, obtenido 500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "banco recibe el neto de comisión menos ITF (5.95)",
+     "detalle": "esperado 119494.05, obtenido 119494.05"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ITF calculado sobre el desembolso",
+     "detalle": "ITF 6.0 (tasa 0.005 %)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TCEA > TEA por la comisión",
+     "detalle": "TCEA 12.8700"
+    },
+    {
+     "estado": "OK",
+     "titulo": "devengo de 16/31 días (idempotente)",
+     "detalle": "esperado 607.38, obtenido 607.38"
+    },
+    {
+     "estado": "OK",
+     "titulo": "interés por pagar devengado",
+     "detalle": "esperado -607.38, obtenido -607.38"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asistente propone el total de la cuota",
+     "detalle": "esperado 10633.68, obtenido 10633.68"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuota 1 pagada",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "devengo cancelado al pagar",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "gasto financiero = interés",
+     "detalle": "esperado 1176.8, obtenido 1176.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo de capital tras la cuota",
+     "detalle": "esperado 110543.12, obtenido 110543.12"
+    },
+    {
+     "estado": "OK",
+     "titulo": "todos los asientos cuadran",
+     "detalle": "4 asientos"
+    },
+    {
+     "estado": "OK",
+     "titulo": "impide pagar cuotas fuera de orden",
+     "detalle": "Pague las cuotas en orden: la siguiente es la 2."
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.bank.loan",
+     "id": 79,
+     "nombre": "PRE/2026/0079",
+     "nota": "préstamo francés"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30804,
+     "nombre": "Q4BK/2026/00001 (Desembolso PRE/2026/0079 QA20 P4 BANCO [...])",
+     "nota": "asientos del préstamo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30805,
+     "nombre": "Q4MS/2026/01/0001 (Intereses PRE/2026/0079 al 2026-01-31)",
+     "nota": "asientos del préstamo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30806,
+     "nombre": "Q4MS/2026/02/0001 (Intereses PRE/2026/0079 al 2026-02-15)",
+     "nota": "asientos del préstamo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30807,
+     "nombre": "Q4BK/2026/00002 (Cuota 1 PRE/2026/0079)",
+     "nota": "asientos del préstamo"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_bank_loan",
+   "titulo": "Prepago con reducción de cuota y línea de crédito",
+   "pasos": "Tesorería ▸ Líneas de crédito ▸ Nueva (S/ 150 000); préstamo ligado ▸ Confirmar ▸ Prepagar capital S/ 30 000.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "línea: usado",
+     "detalle": "esperado 120000.0, obtenido 120000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea: disponible",
+     "detalle": "esperado 30000.0, obtenido 30000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "bloquea exceder la línea de crédito",
+     "detalle": "El préstamo supera el disponible de la línea QA20 P4 Línea préstamos (30000.0)."
+    },
+    {
+     "estado": "OK",
+     "titulo": "mantiene 11 cuotas pendientes",
+     "detalle": "esperado 11, obtenido 11"
+    },
+    {
+     "estado": "OK",
+     "titulo": "capital pendiente = saldo − prepago",
+     "detalle": "esperado 80543.12, obtenido 80543.12"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la cuota baja tras el prepago",
+     "detalle": "10633.68 → 7713.76"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asientos cuadrados",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.treasury.credit.line",
+     "id": 20,
+     "nombre": "QA20 P4 Línea préstamos",
+     "nota": "línea de crédito"
+    },
+    {
+     "modelo": "l10n_pe.bank.loan",
+     "id": 80,
+     "nombre": "PRE/2026/0080",
+     "nota": "préstamo con línea"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30811,
+     "nombre": "Q4MS/2026/03/0001 (Intereses PRE/2026/0080 al 2026-03-01)",
+     "nota": "asientos del préstamo prepagado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30812,
+     "nombre": "Q4BK/2026/00005 (Prepago PRE/2026/0080)",
+     "nota": "asientos del préstamo prepagado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30809,
+     "nombre": "Q4MS/2026/02/0002 (Intereses PRE/2026/0080 al 2026-02-15)",
+     "nota": "asientos del préstamo prepagado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30810,
+     "nombre": "Q4BK/2026/00004 (Cuota 1 PRE/2026/0080)",
+     "nota": "asientos del préstamo prepagado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30808,
+     "nombre": "Q4BK/2026/00003 (Desembolso PRE/2026/0080 QA20 P4 BANCO [...])",
+     "nota": "asientos del préstamo prepagado"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_bank_guarantee",
+   "titulo": "Carta fianza emitida: comisión por trimestre, activación, renovación y ejecución",
+   "pasos": "Tesorería ▸ Cartas fianza ▸ Nueva (S/ 50 000, 0,5 % trimestral) ▸ Activar ▸ Renovar ▸ Ejecutar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "comisión 3 trimestres × 0,5 % × 50 000",
+     "detalle": "esperado 750.0, obtenido 750.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comisión mínima",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fianza activa",
+     "detalle": "esperado 'active', obtenido 'active'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "gasto de comisión",
+     "detalle": "esperado 750.0, obtenido 750.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "salida de banco por la comisión",
+     "detalle": "esperado -750.0, obtenido -750.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "original queda renovada",
+     "detalle": "esperado 'renewed', obtenido 'renewed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "renovación activa",
+     "detalle": "esperado 'active', obtenido 'active'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "renovación desde el vencimiento anterior",
+     "detalle": "esperado datetime.date(2026, 7, 10), obtenido datetime.date(2026, 7, 10)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comisión de la renovación",
+     "detalle": "esperado 750.0, obtenido 750.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fianza ejecutada",
+     "detalle": "esperado 'executed', obtenido 'executed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ejecución al gasto (6591000)",
+     "detalle": "esperado 20000.0, obtenido 20000.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.bank.guarantee",
+     "id": 53,
+     "nombre": "CF/2026/0053",
+     "nota": "carta fianza emitida"
+    },
+    {
+     "modelo": "l10n_pe.bank.guarantee",
+     "id": 55,
+     "nombre": "CF/2026/0055",
+     "nota": "renovación"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30813,
+     "nombre": "Q4BK/2026/00006 (Comisión Carta fianza QA20-CF-123657 Fiel [...])",
+     "nota": "asientos de la fianza"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30814,
+     "nombre": "Q4BK/2026/00007 (Comisión Renovación carta fianza QA20-CF-123657)",
+     "nota": "asientos de la fianza"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30815,
+     "nombre": "Q4BK/2026/00008 (Ejecución carta fianza QA20-CF-123657)",
+     "nota": "asientos de la fianza"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_bank_guarantee",
+   "titulo": "Carta fianza recibida: sin comisión, plazo de reclamo y aviso por cron",
+   "pasos": "Tesorería ▸ Cartas fianza ▸ Nueva (recibida del contratista) ▸ Activar; el cron avisa antes del vencimiento.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "sin comisión",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "plazo de reclamo (art. 1898 CC: +15 días)",
+     "detalle": "esperado datetime.date(2026, 7, 25), obtenido datetime.date(2026, 7, 25)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no genera asientos",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cron crea actividad de aviso",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "actividad vence con el plazo de reclamo",
+     "detalle": "esperado datetime.date(2026, 7, 25), obtenido datetime.date(2026, 7, 25)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.bank.guarantee",
+     "id": 56,
+     "nombre": "CF/2026/0056",
+     "nota": "fianza recibida"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_term_deposit",
+   "titulo": "Depósito a plazo: apertura, devengo mensual y cancelación al vencimiento",
+   "pasos": "Tesorería ▸ Depósitos a plazo ▸ Nuevo (S/ 100 000, TEA 6 %, 180 días) ▸ Abrir ▸ Devengar ▸ Cancelar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "secuencia DEP/",
+     "detalle": "DEP/2026/0083"
+    },
+    {
+     "estado": "OK",
+     "titulo": "vencimiento a 180 días",
+     "detalle": "esperado datetime.date(2026, 6, 30), obtenido datetime.date(2026, 6, 30)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta 1062",
+     "detalle": "1062000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "interés esperado 100 000 × (1,06^(180/360) − 1)",
+     "detalle": "esperado 2956.3, obtenido 2956.3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "depósito abierto",
+     "detalle": "esperado 'open', obtenido 'open'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cargo a 1062",
+     "detalle": "esperado 100000.0, obtenido 100000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "abono al banco",
+     "detalle": "esperado -100000.0, obtenido -100000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "devengo a marzo (idempotente)",
+     "detalle": "esperado 1450.96, obtenido 1450.96"
+    },
+    {
+     "estado": "OK",
+     "titulo": "apertura + 3 devengos",
+     "detalle": "esperado 4, obtenido 4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ingreso financiero devengado",
+     "detalle": "esperado -1450.96, obtenido -1450.96"
+    },
+    {
+     "estado": "OK",
+     "titulo": "depósito cancelado",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo 1062 en cero",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "intereses por cobrar en cero",
+     "detalle": "esperado 0.0, obtenido -0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el banco recibe capital + intereses",
+     "detalle": "esperado 2956.3, obtenido 2956.3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asientos cuadrados",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.term.deposit",
+     "id": 83,
+     "nombre": "DEP/2026/0083",
+     "nota": "depósito a plazo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30816,
+     "nombre": "Q4BK/2026/00009 (Apertura DEP/2026/0083 Depósito a plazo)",
+     "nota": "asientos del depósito"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30817,
+     "nombre": "Q4MS/2026/01/0002 (Intereses DEP/2026/0083 al 2026-01-31)",
+     "nota": "asientos del depósito"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30818,
+     "nombre": "Q4MS/2026/02/0003 (Intereses DEP/2026/0083 al 2026-02-28)",
+     "nota": "asientos del depósito"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30819,
+     "nombre": "Q4MS/2026/03/0002 (Intereses DEP/2026/0083 al 2026-03-31)",
+     "nota": "asientos del depósito"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30820,
+     "nombre": "Q4MS/2026/06/0001 (Intereses DEP/2026/0083 al 2026-06-30)",
+     "nota": "asientos del depósito"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30821,
+     "nombre": "Q4BK/2026/00010 (Cancelación DEP/2026/0083)",
+     "nota": "asientos del depósito"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_term_deposit",
+   "titulo": "Renovación con capitalización y garantía de alquiler con liberación parcial",
+   "pasos": "Depósito ▸ Renovar (capitaliza intereses); Depósito de garantía ▸ Abrir ▸ Liberar S/ 2 000 y luego el saldo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "original renovado",
+     "detalle": "esperado 'renewed', obtenido 'renewed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "renovación abierta",
+     "detalle": "esperado 'open', obtenido 'open'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "capital nuevo = capital + intereses",
+     "detalle": "esperado 102956.3, obtenido 102956.3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "intereses capitalizados (sin saldo por cobrar)",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "garantía en 1643",
+     "detalle": "1643000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo tras liberación parcial",
+     "detalle": "esperado 4000.0, obtenido 4000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no libera más del saldo",
+     "detalle": "El importe a liberar debe ser mayor que cero y no superar el saldo (4000.0)."
+    },
+    {
+     "estado": "OK",
+     "titulo": "garantía cerrada",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo 1643 en cero",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.term.deposit",
+     "id": 84,
+     "nombre": "DEP/2026/0084",
+     "nota": "depósito capitalizable"
+    },
+    {
+     "modelo": "l10n_pe.term.deposit",
+     "id": 85,
+     "nombre": "DEP/2026/0085",
+     "nota": "renovación"
+    },
+    {
+     "modelo": "l10n_pe.term.deposit",
+     "id": 86,
+     "nombre": "DEP/2026/0086",
+     "nota": "garantía de alquiler"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_lease",
+   "titulo": "Reconocimiento NIIF 16: derecho de uso, pasivo, activo, préstamo y cuotas",
+   "pasos": "Contabilidad ▸ Arrendamientos ▸ Nuevo (36 meses, S/ 1 000 adelantado, TEA 12 %) ▸ Crear subcuentas ▸ Confirmar ▸ Registrar cuota (factura del arrendador).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "pasivo = VP de 35 cuotas (la 1.ª es adelantada)",
+     "detalle": "esperado 29662.97, obtenido 29662.97"
+    },
+    {
+     "estado": "OK",
+     "titulo": "derecho de uso = pasivo + cuota adelantada + costos",
+     "detalle": "esperado 31162.97, obtenido 31162.97"
+    },
+    {
+     "estado": "OK",
+     "titulo": "subcuenta pasivo LP 4521",
+     "detalle": "4521000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "subcuenta pasivo CP 4522",
+     "detalle": "4522000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "contrato en curso",
+     "detalle": "esperado 'running', obtenido 'running'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento inicial publicado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "transitoria: cuota adelantada + costos",
+     "detalle": "esperado 1500.0, obtenido 1500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "activo lineal a 36 meses",
+     "detalle": "esperado ('linear', 36), obtenido ('linear', 36.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "valor del activo = derecho de uso",
+     "detalle": "esperado 31162.97, obtenido 31162.97"
+    },
+    {
+     "estado": "OK",
+     "titulo": "préstamo (account_loans) de 35 cuotas",
+     "detalle": "esperado 35, obtenido 35"
+    },
+    {
+     "estado": "OK",
+     "titulo": "préstamo = pasivo",
+     "detalle": "esperado 29662.97, obtenido 29662.97"
+    },
+    {
+     "estado": "OK",
+     "titulo": "activo y pasivo enlazados por grupo",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuota 1 salda la transitoria",
+     "detalle": "esperado account.account(14183,), obtenido account.account(14183,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuota 2 al pasivo CP",
+     "detalle": "esperado account.account(282203,), obtenido account.account(282203,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuota 2 fechada 01/02",
+     "detalle": "esperado datetime.date(2026, 2, 1), obtenido datetime.date(2026, 2, 1)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.lease",
+     "id": 217,
+     "nombre": "ARR/2026/0217",
+     "nota": "arrendamiento"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30970,
+     "nombre": "Q4AP/2026/01/0001 (ARR/2026/0217 1/36)",
+     "nota": "facturas del arrendador"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30973,
+     "nombre": "Q4AP/2026/02/0001 (ARR/2026/0217 2/36)",
+     "nota": "facturas del arrendador"
+    },
+    {
+     "modelo": "account.move",
+     "id": 30829,
+     "nombre": "Q4AR/2026/01/0001 (Reconocimiento inicial ARR/2026/0217)",
+     "nota": "asiento inicial"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_lease",
+   "titulo": "Remedición (aumento de renta) tras publicar la depreciación del mes",
+   "pasos": "Arrendamiento ▸ Contabilizar depreciación de octubre ▸ Remedir desde 01/11/2026 (renta S/ 1 100, 26 meses).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "rechaza remedir un mes ya contabilizado (01/10)",
+     "detalle": "Ya hay asientos contabilizados desde 2026-10-01 (Q4AR/2026/10/0004 (ARR/2026/0218 - QA20 P4 Oficina remedición"
+    },
+    {
+     "estado": "OK",
+     "titulo": "depreciación de octubre publicada",
+     "detalle": "MISC/2026/10/0002"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nuevo pasivo (incluye la cuota adelantada de noviembre)",
+     "detalle": "esperado 25479.22, obtenido 25479.22"
+    },
+    {
+     "estado": "OK",
+     "titulo": "diferencia positiva (aumento)",
+     "detalle": "2534.01"
+    },
+    {
+     "estado": "OK",
+     "titulo": "préstamo anterior cerrado",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nuevo préstamo = nuevo pasivo",
+     "detalle": "esperado 25479.22, obtenido 25479.22"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aumento bruto del derecho de uso",
+     "detalle": "esperado 2534.01, obtenido 2534.01"
+    },
+    {
+     "estado": "OK",
+     "titulo": "valor en libros + diferencia",
+     "detalle": "esperado 24679.489999999998, obtenido 24679.49"
+    },
+    {
+     "estado": "OK",
+     "titulo": "evento de remedición",
+     "detalle": "esperado ['remeasurement'], obtenido ['remeasurement']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "libro cuadra con la tabla",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.lease",
+     "id": 218,
+     "nombre": "ARR/2026/0218",
+     "nota": "arrendamiento a remedir"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31208,
+     "nombre": "MISC/2026/11/0001 (Remedición ARR/2026/0218: aumento del [...])",
+     "nota": "asientos de remedición"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_import_dua",
+   "titulo": "DUA: número de la DAM, liquidación (derechos + IGV) y publicación",
+   "pasos": "Compras ▸ Facturas ▸ Nueva con tipo 50 (DUA), Aduana 118, régimen 10 ▸ Generar líneas de la liquidación ▸ Confirmar.",
+   "checks": [
+    {
+     "estado": "AVISO",
+     "titulo": "compañía sin socio Aduanas / cuenta puente de DUA",
+     "detalle": "se configuraron al inicio de la fase"
+    },
+    {
+     "estado": "OK",
+     "titulo": "reconocida como DUA",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "número DAM aduana-año-régimen-correlativo",
+     "detalle": "esperado '118-2026-10-023657', obtenido '118-2026-10-023657'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "base del IGV = valor + derechos",
+     "detalle": "esperado 10700.0, obtenido 10700.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "IGV 18 % de 10 700",
+     "detalle": "esperado 1926.0, obtenido 1926.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total a pagar a Aduanas: derechos 700 + IGV 1 926",
+     "detalle": "esperado 2626.0, obtenido 2626.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "regenerar no duplica líneas",
+     "detalle": "esperado 4, obtenido 4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "DUA publicada",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costos en destino exigen recepciones",
+     "detalle": "Indique las recepciones de la importación."
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31261,
+     "nombre": "Borrador de factura D 118-2026-10-023657 (QA20 P4 DUA)",
+     "nota": "DUA"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_l10n_pe_exchange_closure",
+   "titulo": "Cierre mensual de T.C.: activo a compra, pasivo a venta, detalle por socio",
+   "pasos": "Contabilidad ▸ Cierre ▸ Cierre de tipo de cambio ▸ Nuevo (setiembre 2026, compra 3,80 / venta 3,82) ▸ Calcular ▸ Contabilizar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "fecha de asiento fin de mes",
+     "detalle": "esperado datetime.date(2026, 9, 30), obtenido datetime.date(2026, 9, 30)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "T.C. de cierre SBS publicado al día siguiente",
+     "detalle": "esperado datetime.date(2026, 10, 1), obtenido datetime.date(2026, 10, 1)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "T.C. tomado del registro (sin red)",
+     "detalle": "esperado (3.8, 3.82), obtenido (3.8, 3.82)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "activo usa T.C. compra",
+     "detalle": "esperado 'purchase', obtenido 'purchase'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ajuste banco 1 000 × (3,80 − 3,70)",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pasivo usa T.C. venta",
+     "detalle": "esperado 'sale', obtenido 'sale'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ajuste préstamo −1 000 × (3,82 − 3,70)",
+     "detalle": "esperado -120.0, obtenido -120.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle socio A",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle socio B (1 900 − 1 855)",
+     "detalle": "esperado 45.0, obtenido 45.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ganancia total",
+     "detalle": "esperado 245.0, obtenido 245.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pérdida total (no se netea)",
+     "detalle": "esperado 120.0, obtenido 120.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cierre contabilizado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "abono a ganancia por diferencia de cambio",
+     "detalle": "esperado 245.0, obtenido 245.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cargo a pérdida por diferencia de cambio",
+     "detalle": "esperado 120.0, obtenido 120.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el ajuste no mueve moneda extranjera",
+     "detalle": "4 líneas en USD"
+    },
+    {
+     "estado": "OK",
+     "titulo": "T.C. citado en la línea",
+     "detalle": "esperado 3.8, obtenido 3.8"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.company",
+     "id": 1043,
+     "nombre": "QA20 P4 Cierre TC 123657 S.A.C.",
+     "nota": "compañía aislada del cierre"
+    },
+    {
+     "modelo": "l10n_pe.exchange.closure",
+     "id": 197,
+     "nombre": "Septiembre 2026",
+     "nota": "cierre de T.C."
+    },
+    {
+     "modelo": "account.move",
+     "id": 31265,
+     "nombre": "Q4TC/2026/09/0004 (Cierre de tipo de cambio Septiembre 2026)",
+     "nota": "asiento de cierre"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_multicurrency_revaluation",
+   "titulo": "Informe de G/P no realizadas con T.C. compra/venta por cuenta y asiento",
+   "pasos": "Contabilidad ▸ Informes ▸ Ganancias/pérdidas no realizadas al 30/09/2026 ▸ ver columna T.C. ▸ Ajuste ▸ asiento de provisión.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "campo T.C. visible solo en cuentas de balance",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "columna T.C. presente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "líneas de las cuentas en el informe",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "por pagar revaluada a T.C. compra",
+     "detalle": "esperado 'S/ 3.720', obtenido 'S/ 3.720'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ajuste por pagar −100 × (3,72 − 3,70)",
+     "detalle": "esperado -2.0, obtenido -2.000000000000026"
+    },
+    {
+     "estado": "OK",
+     "titulo": "por cobrar revaluada a T.C. venta",
+     "detalle": "esperado 'S/ 3.700', obtenido 'S/ 3.700'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "por cobrar sin ajuste",
+     "detalle": "esperado 0.0, obtenido 1.3783e-13"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea total de la moneda",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera con el T.C.",
+     "detalle": "esperado 'USD (1 USD = S/ 3.700)', obtenido 'USD (1 USD = S/ 3.700)'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "T.C. en blanco al mezclar tasas",
+     "detalle": "esperado '', obtenido ''"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ajuste total",
+     "detalle": "esperado -2.0, obtenido -1.9999999999998883"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea del asiento cita el T.C. aplicado",
+     "detalle": "Provisión de USD (T.C. S/ 3.720)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "abono de 2,00 a por pagar",
+     "detalle": "esperado 2.0, obtenido 2.000000000000026"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento de ajuste publicado",
+     "detalle": "Q4VR/2026/09/0003"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.company",
+     "id": 1044,
+     "nombre": "QA20 P4 Revaluación 123657 S.A.C.",
+     "nota": "compañía aislada de la revaluación"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31268,
+     "nombre": "Q4VR/2026/09/0003 (Asiento de ajuste de divisas extranjeras al [...])",
+     "nota": "asiento de revaluación"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_payments",
+   "titulo": "N.º de operación = payment_reference nativo y medio de pago SUNAT",
+   "pasos": "Contabilidad → Clientes → Pagos → Nuevo: medio «003 Transferencia», N.º de operación; Confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "bank_operation_number es related a payment_reference",
+     "detalle": "payment_reference"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Diario con «Exigir número de operación» bloquea sin n.º",
+     "detalle": "Indique el número de operación del banco en: Borrador de pago."
+    },
+    {
+     "estado": "OK",
+     "titulo": "escribir bank_operation_number llena payment_reference",
+     "detalle": "esperado 'OP-QA20-0001', obtenido 'OP-QA20-0001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "escribir payment_reference se refleja en bank_operation_number",
+     "detalle": "esperado 'OP-QA20-0002', obtenido 'OP-QA20-0002'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago publicado con n.º de operación",
+     "detalle": "paid"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el n.º se guarda en la columna nativa payment_reference",
+     "detalle": "esperado 'OP-QA20-0002', obtenido 'OP-QA20-0002'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "bank_operation_number no es columna propia (no store)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "medio de pago SUNAT en el pago",
+     "detalle": "esperado '003', obtenido '003'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "búsqueda por n.º de operación funciona sobre el related",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6057,
+     "nombre": "QA20 P1 Banco exige operación",
+     "nota": "diario que exige n.º de operación"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9403,
+     "nombre": "QA20 P1 Cliente pagos SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1333,
+     "nombre": "PQ1BOP/2026/00001",
+     "nota": "pago con n.º de operación"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_payments",
+   "titulo": "Asistente de registro traslada medio y n.º de operación (agrupado)",
+   "pasos": "Factura de cliente → Registrar pago (2 facturas, agrupar): medio 001, n.º LOTE; Crear pago.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "un solo pago agrupado",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe del pago",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "n.º de operación trasladado",
+     "detalle": "esperado 'LOTE-QA20-01', obtenido 'LOTE-QA20-01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "payment_reference nativo poblado por el asistente",
+     "detalle": "esperado 'LOTE-QA20-01', obtenido 'LOTE-QA20-01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "medio de pago trasladado",
+     "detalle": "esperado pe.catalog.payment(1,), obtenido pe.catalog.payment(1,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "facturas pagadas",
+     "detalle": "['in_payment', 'in_payment']"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9404,
+     "nombre": "QA20 P1 Cliente registro SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31271,
+     "nombre": "Q1VT/2026/00001",
+     "nota": "facturas de venta"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31272,
+     "nombre": "Q1VT/2026/00002",
+     "nota": "facturas de venta"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1334,
+     "nombre": "PQ1BK/2026/00001",
+     "nota": "pago agrupado"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_payments",
+   "titulo": "Compra de dólares al T.C. del banco (asistente de cambio)",
+   "pasos": "Contabilidad → Bancos → Compra/venta de moneda: de Banco soles a Banco dólares, S/ 3 800 a 3,80; Confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "US$ recibidos = 3 800 / 3,80",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "T.C. del sistema",
+     "detalle": "esperado 3.75, obtenido 3.75"
+    },
+    {
+     "estado": "OK",
+     "titulo": "diferencia frente al T.C. del sistema",
+     "detalle": "esperado -50.0, obtenido -50.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "salida en soles y entrada en dólares",
+     "detalle": "esperado ['inbound', 'outbound'], obtenido ['inbound', 'outbound']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "n.º de operación en ambos pagos",
+     "detalle": "esperado {'CAMB-QA20-1'}, obtenido {'CAMB-QA20-1'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta de transferencias conciliada",
+     "detalle": "1051001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento de diferencia de cambio en 6760000 por 50.0",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6059,
+     "nombre": "QA20 P1 Banco dólares (USD)",
+     "nota": ""
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1335,
+     "nombre": "PQ1BK/2026/00002",
+     "nota": "pagos de la compra de moneda"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1336,
+     "nombre": "PQ1BKU/2026/00001",
+     "nota": "pagos de la compra de moneda"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31276,
+     "nombre": "CAMBIO/2026/10/0001 (Diferencia de cambio en la compra y venta de [...])",
+     "nota": "asiento de diferencia de cambio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_payment_multi",
+   "titulo": "Un pago para facturas de dos proveedores + anticipo + comisión",
+   "pasos": "Contabilidad → Proveedores → Pago múltiple → Nuevo: cargar facturas de 2 proveedores, línea de anticipo y de comisión; Validar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "carga las facturas abiertas de ambos proveedores",
+     "detalle": "esperado account.move(31277, 31278), obtenido account.move(31278, 31277)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total = 1000 + 500 + 250 + 15",
+     "detalle": "esperado 1765.0, obtenido 1765.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dos socios",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago múltiple validado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe del pago",
+     "detalle": "esperado 1765.0, obtenido 1765.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "varios socios: el pago no lleva socio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "facturas pagadas",
+     "detalle": "('in_payment', 'in_payment')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "anticipo al debe en 422 (4220000)",
+     "detalle": "esperado 250.0, obtenido 250.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "anticipo con el socio",
+     "detalle": "esperado res.partner(9406,), obtenido res.partner(9406,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comisión al gasto",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comprobante de egreso numerado",
+     "detalle": "RE-Q1PM-000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comprobante PDF lista a cada socio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "anular reabre las facturas",
+     "detalle": "('canceled', 1000.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "revalidar crea un pago nuevo",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9405,
+     "nombre": "QA20 P1 Proveedor Uno SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9406,
+     "nombre": "QA20 P1 Proveedor Dos SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31277,
+     "nombre": "Q1CP/2026/10/0001",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31278,
+     "nombre": "Q1CP/2026/10/0002",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "l10n_pe.payment.multi",
+     "id": 51,
+     "nombre": "PM/2026/00051",
+     "nota": "pago múltiple"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1337,
+     "nombre": "PQ1PM/2026/00001",
+     "nota": "pago generado"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1338,
+     "nombre": "PQ1PM/2026/00002",
+     "nota": "pago tras revalidar"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_payment_multi",
+   "titulo": "Factura en US$ pagada desde banco en soles: diferencia de cambio",
+   "pasos": "Pago múltiple desde banco en soles con factura en dólares; Validar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "US$ 100 a pagar",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "en soles al T.C. del pago",
+     "detalle": "esperado 380.0, obtenido 380.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "diferencia de cambio registrada",
+     "detalle": "esperado 10.0, obtenido 10.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9407,
+     "nombre": "QA20 P1 Proveedor dólares SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31281,
+     "nombre": "Q1CP/2026/10/0003",
+     "nota": "factura US$"
+    },
+    {
+     "modelo": "l10n_pe.payment.multi",
+     "id": 52,
+     "nombre": "PM/2026/00052",
+     "nota": "pago múltiple en soles"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31283,
+     "nombre": "CAMBIO/2026/10/0002 (PQ1PM/2026/00003)",
+     "nota": "asiento de diferencia de cambio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_payment_application",
+   "titulo": "Anticipo de proveedor (422) aplicado a factura y reversión",
+   "pasos": "Pago a proveedor marcado «Anticipo»; desde la factura → Aplicar anticipos → Distribuir → Validar; luego Anular.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el anticipo va a la 422 (4220000)",
+     "detalle": "esperado account.account(14744,), obtenido account.account(14744,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la factura ve 1 anticipo pendiente",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aplicación validada",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento en el diario de aplicaciones",
+     "detalle": "esperado account.journal(1366,), obtenido account.journal(1366,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura cancelada con el anticipo",
+     "detalle": "paid"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo del anticipo por aplicar",
+     "detalle": "esperado 400.0, obtenido 400.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aplicación anulada",
+     "detalle": "esperado 'cancel', obtenido 'cancel'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento de reversión creado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la factura vuelve a quedar pendiente",
+     "detalle": "esperado 600.0, obtenido 600.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compensación carga cobrar y pagar del socio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura de compra compensada por 500",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura de venta cancelada por compensación",
+     "detalle": "paid"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9408,
+     "nombre": "QA20 P1 Socio anticipos SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1340,
+     "nombre": "PQ1AN/2026/00001",
+     "nota": "anticipo a proveedor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31285,
+     "nombre": "Q1CP/2026/10/0004",
+     "nota": "factura de proveedor"
+    },
+    {
+     "modelo": "l10n_pe.payment.application",
+     "id": 29,
+     "nombre": "APL/2026/00029",
+     "nota": "aplicación de anticipo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31288,
+     "nombre": "Q1VT/2026/00003",
+     "nota": "factura de venta a compensar"
+    },
+    {
+     "modelo": "l10n_pe.payment.application",
+     "id": 30,
+     "nombre": "APL/2026/00030",
+     "nota": "compensación"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_payment_receipt",
+   "titulo": "Comprobante de ingreso/egreso numerado por diario y PDF",
+   "pasos": "Caja con «Comprobante de pago» → Registrar pago parcial de una factura → Imprimir comprobante.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "secuencia de ingresos por diario",
+     "detalle": "esperado 'RI-Q1CJ-', obtenido 'RI-Q1CJ-'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "secuencia de egresos por diario",
+     "detalle": "esperado 'RE-Q1CJ-', obtenido 'RE-Q1CJ-'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "n.º de recibo de ingreso",
+     "detalle": "RI-Q1CJ-000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el comprobante detalla la factura aplicada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "aplicado",
+     "detalle": "esperado 118.5, obtenido 118.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo de la factura",
+     "detalle": "esperado 181.5, obtenido 181.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe en letras",
+     "detalle": "esperado 'CIENTO DIECIOCHO Y 50/100 SOLES', obtenido 'CIENTO DIECIOCHO Y 50/100 SOLES'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF con número, importe en letras y factura",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el número se conserva al volver a borrador",
+     "detalle": "esperado 'RI-Q1CJ-000001', obtenido 'RI-Q1CJ-000001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "n.º de recibo de egreso",
+     "detalle": "RE-Q1CJ-000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "acción Imprimir comprobante",
+     "detalle": "ir.actions.act_window (sin diseño: Odoo abre antes el asistente de diseño)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6062,
+     "nombre": "QA20 P1 Caja recibos",
+     "nota": "caja con comprobante"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9409,
+     "nombre": "QA20 P1 Cliente recibo SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31290,
+     "nombre": "Q1VT/2026/00004",
+     "nota": "factura de venta"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1341,
+     "nombre": "PAY00100",
+     "nota": "cobro parcial"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1342,
+     "nombre": "PAY00101",
+     "nota": "egreso de caja"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_payment_term_currency",
+   "titulo": "Cuota fija en soles en factura en dólares",
+   "pasos": "Configuración → Términos de pago: cuota fija S/ 750 «Importe en soles» + saldo a 30 días; factura en US$ 1 000 con ese término; Confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "primera cuota = S/ 750 exactos",
+     "detalle": "esperado 750.0, obtenido 750.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "primera cuota en US$ al T.C. de la factura (3.75)",
+     "detalle": "esperado 200.0, obtenido 200.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuotas en US$ suman el total",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuotas en S/ suman el total",
+     "detalle": "esperado 3750.0, obtenido 3750.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "en soles el término funciona como el nativo",
+     "detalle": "esperado [750.0, 250.0], obtenido [750.0, 250.0]"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.payment.term",
+     "id": 359,
+     "nombre": "QA20 P1 S/ 750 a la firma y saldo 30 días",
+     "nota": "término de pago"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9410,
+     "nombre": "QA20 P1 Cliente cuotas SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31291,
+     "nombre": "Q1VT/2026/00005",
+     "nota": "factura US$ 1 000"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31292,
+     "nombre": "Q1VT/2026/00006",
+     "nota": "factura en soles (sin cambio)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_bank_statement_import",
+   "titulo": "Importar extracto XLSX y CSV de banca por internet (archivos de sus tests)",
+   "pasos": "Contabilidad → Tablero → Banco → Importar archivo: movimientos.xlsx y estado.csv; reimportar no duplica.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "XLSX reconocido sin mapeo manual de columnas",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "importes en orden cronológico",
+     "detalle": "esperado [-10.5, 2350.5, -1500.0], obtenido [-10.5, 2350.5, -1500.0]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "descripción",
+     "detalle": "esperado 'COMISION MANTENIMIENTO', obtenido 'COMISION MANTENIMIENTO'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "un extracto",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldos inicial y final del banco",
+     "detalle": "esperado (7510.0, 8350.0), obtenido (7510.0, 8350.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "extracto completo (saldos cuadran)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "CSV cargo/abono añade 3 movimientos",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importes del CSV (coma decimal)",
+     "detalle": "esperado [-800.0, -0.05, 1250.0], obtenido [-800.0, -0.05, 1250.0]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "reimportar el mismo archivo no duplica",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CSV no reconocido pasa al importador nativo",
+     "detalle": "esperado 'import_bank_stmt', obtenido 'import_bank_stmt'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6063,
+     "nombre": "QA20 P1 Banco extractos",
+     "nota": "diario de extractos"
+    },
+    {
+     "modelo": "account.bank.statement",
+     "id": 385,
+     "nombre": "QA20 P1 Banco extractos 21/10/2026 al 23/10/2026",
+     "nota": "extracto XLSX"
+    },
+    {
+     "modelo": "account.bank.statement",
+     "id": 386,
+     "nombre": "QA20 P1 Banco extractos 01/10/2026 al 02/10/2026",
+     "nota": "extracto CSV"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_batch_payment",
+   "titulo": "Lote de pagos a 3 proveedores → TXT del BCP",
+   "pasos": "Proveedores → Pagos: 3 pagos con método «TXT banco» → Crear lote → Validar → Descargar archivo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el diario ofrece el método de pago masivo pe_bank_txt",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "archivo TXT generado",
+     "detalle": "BCP_PEN_Q1BCP_BATCH-OUT-2026-0001.txt"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera + 3 abonos",
+     "detalle": "esperado 4, obtenido 4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera: tipo 1 y 3 abonos",
+     "detalle": "esperado '1000003', obtenido '1000003'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total 1 330,50 en la cabecera",
+     "detalle": "100000320261030C00011919912345071       00000000001330.50BAT"
+    },
+    {
+     "estado": "OK",
+     "titulo": "longitud de cabecera BCP proveedores",
+     "detalle": "esperado 113, obtenido 113"
+    },
+    {
+     "estado": "OK",
+     "titulo": "mismo banco: abono a cuenta BCP",
+     "detalle": "2C1937654321022     "
+    },
+    {
+     "estado": "OK",
+     "titulo": "otro banco: abono por CCI",
+     "detalle": "2B01145600020009876512162"
+    },
+    {
+     "estado": "OK",
+     "titulo": "longitud de detalle BCP",
+     "detalle": "esperado 196, obtenido 196"
+    },
+    {
+     "estado": "OK",
+     "titulo": "conteo y total del lote",
+     "detalle": "esperado (3, 1330.5), obtenido (3, 1330.5)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del archivo",
+     "detalle": "BCP_PEN_Q1BCP_BATCH-OUT-2026-0001.txt"
+    },
+    {
+     "estado": "OK",
+     "titulo": "proveedor de otro banco sin CCI se rechaza",
+     "detalle": "RedirectWarning: ('Cuentas de otro banco sin CCI de 20 dígitos.\\nUn proveedor con cuenta en otro ban"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6064,
+     "nombre": "QA20 P1 BCP soles masivo",
+     "nota": "diario BCP con formato"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1343,
+     "nombre": "PQ1BCP/2026/00001",
+     "nota": "pagos a proveedores"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1344,
+     "nombre": "PQ1BCP/2026/00002",
+     "nota": "pagos a proveedores"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1345,
+     "nombre": "PQ1BCP/2026/00003",
+     "nota": "pagos a proveedores"
+    },
+    {
+     "modelo": "account.batch.payment",
+     "id": 45,
+     "nombre": "BATCH/OUT/2026/0001 (Enviado)",
+     "nota": "lote de pagos"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_treasury",
+   "titulo": "Posición diaria: saldo contable, en tránsito y disponible",
+   "pasos": "Tesorería → Posición diaria → Nuevo (fecha, banco); revisar saldo, tránsito y disponible.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "saldo contable",
+     "detalle": "esperado 10000.0, obtenido 10000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago confirmado sin conciliar en tránsito",
+     "detalle": "esperado -1500.0, obtenido -1500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo proyectado",
+     "detalle": "esperado 8500.0, obtenido 8500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "disponible = proyectado − mínimo + sobregiro",
+     "detalle": "esperado 10000.0, obtenido 10000.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31303,
+     "nombre": "MISC/2026/10/0003 (QA20 P1 saldo inicial)",
+     "nota": "saldo inicial del banco"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9414,
+     "nombre": "QA20 P1 Proveedor tesorería SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1347,
+     "nombre": "PQ1TP/2026/00001",
+     "nota": "pago en tránsito"
+    },
+    {
+     "modelo": "l10n_pe.treasury.position",
+     "id": 34,
+     "nombre": "Posición al 16/10/2026",
+     "nota": "posición de tesorería"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_treasury",
+   "titulo": "Transferencia entre bancos y compra de US$ a T.C. oficial (pérdida)",
+   "pasos": "Tesorería → Transferencias → Nuevo: de soles a soles S/ 5 000; otra de soles a dólares a 3,75 valorizada oficial; Confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "misma moneda: no es cambio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "transferencia realizada (sin umbral de aprobación)",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "por la cuenta de transferencias",
+     "detalle": "esperado account.account(15323,), obtenido account.account(15323,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta de transferencias conciliada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "compra de dólares",
+     "detalle": "esperado 'buy', obtenido 'buy'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "US$ recibidos",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "diferencia de cambio (T.C. oficial 3.7)",
+     "detalle": "esperado -50.0, obtenido -50.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento de diferencia de cambio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta de transferencias saldada",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.treasury.transfer",
+     "id": 49,
+     "nombre": "TRF/2026/0049",
+     "nota": "transferencia soles→soles"
+    },
+    {
+     "modelo": "l10n_pe.treasury.transfer",
+     "id": 50,
+     "nombre": "TRF/2026/0050",
+     "nota": "compra de US$"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31309,
+     "nombre": "CAMBIO/2026/10/0003 (Diferencia de cambio TRF/2026/0050)",
+     "nota": "asiento diferencia de cambio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_treasury",
+   "titulo": "Programación de pagos: proponer, aprobar y pagar",
+   "pasos": "Tesorería → Programación de pagos → Nuevo → Proponer (vence al 31/10, proveedores) → Enviar → Aprobar → Pagar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "propone lo vencido al 31/10, no la de diciembre",
+     "detalle": "esperado account.move(31310, 31311, 31312), obtenido account.move(31312, 31310, 31311)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total programado",
+     "detalle": "esperado 2100.0, obtenido 2100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dos proveedores",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "días de atraso al 16/10",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin umbral configurado requiere aprobación",
+     "detalle": "esperado 'to_approve', obtenido 'to_approve'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "quien prepara no puede aprobar",
+     "detalle": "Quien prepara la programación no puede aprobarla."
+    },
+    {
+     "estado": "OK",
+     "titulo": "aprobada",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la posición refleja lo programado aprobado",
+     "detalle": "esperado 2100.0, obtenido 2100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "programación pagada",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "un pago por proveedor",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "facturas pagadas",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9415,
+     "nombre": "QA20 P1 Proveedor plan Uno",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9416,
+     "nombre": "QA20 P1 Proveedor plan Dos",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31310,
+     "nombre": "Q1CP/2026/10/0005",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31311,
+     "nombre": "Q1CP/2026/10/0006",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31312,
+     "nombre": "Q1CP/2026/10/0007",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31313,
+     "nombre": "Q1CP/2026/10/0008",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "l10n_pe.treasury.payment.plan",
+     "id": 70,
+     "nombre": "PRG/2026/0070",
+     "nota": "programación de pagos"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1352,
+     "nombre": "PQ1TP/2026/00004",
+     "nota": "pagos de la programación"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1353,
+     "nombre": "PQ1TP/2026/00005",
+     "nota": "pagos de la programación"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_treasury_batch_payment",
+   "titulo": "Programación pagada con método TXT genera lote y archivo del banco",
+   "pasos": "Programación de pagos en banco BCP con método «TXT banco» → Pagar → Abrir lote → Validar → Descargar TXT.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "propone las dos facturas",
+     "detalle": "esperado account.move(31316, 31317), obtenido account.move(31317, 31316)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se creó el lote bancario",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el lote contiene los pagos de la programación",
+     "detalle": "esperado account.payment(1354, 1355), obtenido account.payment(1354, 1355)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pagos con el método TXT",
+     "detalle": "esperado account.payment.method.line(10096,), obtenido account.payment.method.line(10096,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT BCP con cabecera de 2 abonos",
+     "detalle": "['100000220261030C00011919912345071       00000000001250.00BATCHOUT20260003                        N000013245678104']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total S/ 1 250,00 en el TXT",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9417,
+     "nombre": "QA20 P1 Proveedor lote Uno",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9418,
+     "nombre": "QA20 P1 Proveedor lote Dos",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31316,
+     "nombre": "Q1CP/2026/10/0009",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31317,
+     "nombre": "Q1CP/2026/10/0010",
+     "nota": "facturas de proveedor"
+    },
+    {
+     "modelo": "l10n_pe.treasury.payment.plan",
+     "id": 71,
+     "nombre": "PRG/2026/0071",
+     "nota": "programación con método TXT"
+    },
+    {
+     "modelo": "account.batch.payment",
+     "id": 47,
+     "nombre": "BATCH/OUT/2026/0003 (Enviado)",
+     "nota": "lote bancario"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_check",
+   "titulo": "Cheque de terceros: recepción en cartera, aviso de plazo y depósito",
+   "pasos": "Contabilidad → Clientes → Pagos: nuevo cobro en «Cheques de terceros» con método «Nuevos cheques de terceros»; luego Cheques → seleccionar → Transferir al banco.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el cheque queda en el diario de cartera",
+     "detalle": "esperado 'CHQT', obtenido 'CHQT'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "RUC del girador tomado del cliente",
+     "detalle": "esperado '20612090310', obtenido '20612090310'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "débito en 1033001 Cheques de terceros en cartera",
+     "detalle": "esperado 1180.0, obtenido 1180.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "plazo de presentación = 30 días",
+     "detalle": "esperado datetime.date(2026, 11, 19), obtenido datetime.date(2026, 11, 19)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aviso de plazo vencido solo para el cheque viejo",
+     "detalle": "El cheque 00912346 venció su plazo de presentación el 10/10/2026 (30 días): el banco puede rechazarlo."
+    },
+    {
+     "estado": "OK",
+     "titulo": "depositado: el cheque pasa al banco",
+     "detalle": "esperado account.journal(6069,), obtenido account.journal(6069,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "operaciones del cheque: recepción + depósito",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "RUC de girador inválido rechazado",
+     "detalle": "El documento del emisor del cheque 00912345 no es válido: RUC de 11 dígitos, DNI de 8 o carné de extranjería."
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9419,
+     "nombre": "QA20 P2 Cliente cheques",
+     "nota": "girador del cheque"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1356,
+     "nombre": "PCHQT/2026/00001",
+     "nota": "cobro con cheque"
+    },
+    {
+     "modelo": "l10n_latam.check",
+     "id": 50,
+     "nombre": "00912345",
+     "nota": "cheque en cartera"
+    },
+    {
+     "modelo": "l10n_latam.check",
+     "id": 51,
+     "nombre": "00912346",
+     "nota": "cheque vencido"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_check",
+   "titulo": "Cheque propio girado a proveedor",
+   "pasos": "Contabilidad → Proveedores → Pagos: nuevo pago desde el banco con método «Cheques propios».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el banco QA tiene el método «Cheques propios»",
+     "detalle": "['Cheques propios']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta de cheques girados 1049001",
+     "detalle": "esperado '1049001', obtenido '1049001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cheque entregado",
+     "detalle": "esperado 'handed', obtenido 'handed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pendiente en 1049001 hasta el cobro",
+     "detalle": "esperado '1049001', obtenido '1049001'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9420,
+     "nombre": "QA20 P2 Proveedor cheques",
+     "nota": "proveedor"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1360,
+     "nombre": "PQ2BK/2026/00002",
+     "nota": "pago con cheque propio"
+    },
+    {
+     "modelo": "l10n_latam.check",
+     "id": 52,
+     "nombre": "00001021",
+     "nota": "cheque propio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_check_printing",
+   "titulo": "Formato de chequera e impresión del cheque propio",
+   "pasos": "Contabilidad → Configuración → Formatos de cheque: crear formato, asignarlo al banco; en el pago con cheque propio → Imprimir cheque.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "formato de papel = tamaño de la chequera",
+     "detalle": "esperado ('custom', 170, 75), obtenido ('custom', 170, 75)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe en letras",
+     "detalle": "esperado 'MIL DOSCIENTOS CINCUENTA Y 00/100 SOLES', obtenido 'MIL DOSCIENTOS CINCUENTA Y 00/100 SOLES'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe con relleno",
+     "detalle": "esperado 'S/ ******1,250.00', obtenido 'S/ ******1,250.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "acción de impresión",
+     "detalle": "esperado 'al_l10n_pe_check_printing.report_check', obtenido 'al_l10n_pe_check_printing.report_check'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cheque impreso contiene «QA20 P2 PROVEEDOR IMPRESION SAC»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cheque impreso contiene «S/ ******1,250.00»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cheque impreso contiene «MIL DOSCIENTOS CINCUENTA Y 00/100 SOLES»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cheque impreso contiene «Lima, 21 de octubre de 2026»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cheque impreso contiene «Pagar desde: 20 de noviembre de 2026»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "hoja de prueba de alineación",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "PDF del cheque (wkhtmltopdf)",
+     "detalle": "el shell corre con --no-http; se valida el HTML del reporte"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.check.layout",
+     "id": 7,
+     "nombre": "QA20 P2 Chequera",
+     "nota": "formato"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9421,
+     "nombre": "QA20 P2 PROVEEDOR IMPRESION",
+     "nota": "beneficiario"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1361,
+     "nombre": "PQ2BK/2026/00003",
+     "nota": "cheque diferido"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_collection",
+   "titulo": "Cartera vencida, gestión con compromiso de pago y cumplimiento",
+   "pasos": "Cobranza → Cartera: ver la factura vencida; Registrar gestión (llamada, «Promete pagar»); registrar el cobro y evaluar el compromiso.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "días de atraso en la cartera",
+     "detalle": "esperado 40, obtenido 40"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tramo de antigüedad",
+     "detalle": "esperado '31 a 60 días', obtenido '31 a 60 días'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo en cartera",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compromiso pendiente por 600",
+     "detalle": "esperado (600.0, 'pending'), obtenido (600.0, 'pending')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "actividad de seguimiento programada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "compromiso cumplido antes de su fecha",
+     "detalle": "esperado 'kept', obtenido 'kept'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe cobrado del compromiso",
+     "detalle": "esperado 600.0, obtenido 600.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9422,
+     "nombre": "QA20 P2 Cliente cobranza",
+     "nota": "deudor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31326,
+     "nombre": "Q2VT/2026/00001",
+     "nota": "factura vencida 40 días"
+    },
+    {
+     "modelo": "l10n_pe.collection.action",
+     "id": 129,
+     "nombre": "Llamada · QA20 P2 Cliente cobranza · 30/10/2026",
+     "nota": "gestión"
+    },
+    {
+     "modelo": "l10n_pe.collection.promise",
+     "id": 145,
+     "nombre": "CP/2026/00145",
+     "nota": "compromiso"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1362,
+     "nombre": "PQ2BK/2026/00004",
+     "nota": "cobro parcial"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_collection",
+   "titulo": "Interés moratorio y nota de débito",
+   "pasos": "Cobranza → Intereses: asistente de intereses para el cliente → crear nota de débito.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "días de mora",
+     "detalle": "esperado 36, obtenido 36"
+    },
+    {
+     "estado": "OK",
+     "titulo": "interés 1000 × (1.12^(36/360) − 1)",
+     "detalle": "esperado 11.4, obtenido 11.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "una línea de interés",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nota de débito en borrador",
+     "detalle": "esperado 'draft', obtenido 'draft'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nota de débito referida a la factura",
+     "detalle": "esperado account.move(31328,), obtenido account.move(31328,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "base de la nota de débito",
+     "detalle": "esperado 11.4, obtenido 11.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "facturado el interés, no se vuelve a calcular",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9423,
+     "nombre": "QA20 P2 Cliente intereses",
+     "nota": "deudor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31328,
+     "nombre": "Q2VT/2026/00002",
+     "nota": "factura vencida 36 días"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31329,
+     "nombre": "Borrador de factura (Intereses moratorios de Q2VT/2026/00002)",
+     "nota": "nota de débito por intereses (borrador)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_collection",
+   "titulo": "Calificación del deudor y bloqueo automático por mora",
+   "pasos": "Cobranza → Clientes: recalcular calificación; el cliente moroso queda bloqueado; el jefe lo libera.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "compromiso incumplido",
+     "detalle": "esperado 'broken', obtenido 'broken'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "calificación C/D",
+     "detalle": "D"
+    },
+    {
+     "estado": "OK",
+     "titulo": "máximo atraso",
+     "detalle": "esperado 130, obtenido 130"
+    },
+    {
+     "estado": "OK",
+     "titulo": "bloqueo automático",
+     "detalle": "esperado 'auto', obtenido 'auto'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cliente bloqueado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "liberado por el jefe de cobranza",
+     "detalle": "esperado 'released', obtenido 'released'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9424,
+     "nombre": "QA20 P2 Cliente moroso",
+     "nota": "deudor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31330,
+     "nombre": "Q2VT/2026/00003",
+     "nota": "factura vencida 130 días"
+    },
+    {
+     "modelo": "l10n_pe.collection.promise",
+     "id": 146,
+     "nombre": "CP/2026/00146",
+     "nota": "compromiso incumplido"
+    },
+    {
+     "modelo": "l10n_pe.collection.promise",
+     "id": 147,
+     "nombre": "CP/2026/00147",
+     "nota": "compromiso incumplido"
+    },
+    {
+     "modelo": "l10n_pe.collection.promise",
+     "id": 148,
+     "nombre": "CP/2026/00148",
+     "nota": "compromiso incumplido"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_collection_sale",
+   "titulo": "Pedido de venta bloqueado por crédito y liberado",
+   "pasos": "Cobranza → Clientes → Bloquear crédito; Ventas → pedido → Confirmar (rechazado); liberar y confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "aviso de bloqueo en el pedido",
+     "detalle": "QA20 P2 Cliente bloqueado venta tiene el crédito bloqueado por cobranza: no se puede confirmar el pedido hasta que regularice su deuda o el administrador de cobranza lo libere."
+    },
+    {
+     "estado": "OK",
+     "titulo": "confirmación rechazada por bloqueo",
+     "detalle": "No se puede confirmar S00280: QA20 P2 Cliente bloqueado venta tiene el crédito bloqueado por cobranza."
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin aviso tras liberar",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "pedido confirmado tras liberar",
+     "detalle": "esperado 'sale', obtenido 'sale'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9425,
+     "nombre": "QA20 P2 Cliente bloqueado venta",
+     "nota": "cliente"
+    },
+    {
+     "modelo": "product.product",
+     "id": 13825,
+     "nombre": "QA20 P2 Producto venta",
+     "nota": "producto"
+    },
+    {
+     "modelo": "sale.order",
+     "id": 280,
+     "nombre": "S00280",
+     "nota": "pedido"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_bank_collection",
+   "titulo": "Archivo de deudores BCP (CREP)",
+   "pasos": "Tesorería → Recaudación → Lotes de deudores: nuevo lote, Cargar documentos → Generar archivo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "documentos en el lote (excluye el que vence después)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total del lote",
+     "detalle": "esperado 1334.56, obtenido 1334.56"
+    },
+    {
+     "estado": "OK",
+     "titulo": "lote generado",
+     "detalle": "esperado 'generated', obtenido 'generated'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del archivo CREP",
+     "detalle": "CREP_0_20261030.txt"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera + 2 detalles",
+     "detalle": "esperado 3, obtenido 3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de 250 posiciones",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera: sucursal/moneda/cuenta",
+     "detalle": "esperado 'CC19101234567', obtenido 'CC19101234567'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera: cantidad de registros",
+     "detalle": "esperado '000000002', obtenido '000000002'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera: importe total",
+     "detalle": "esperado '000000000133456', obtenido '000000000133456'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle: código de depositante = RUC",
+     "detalle": "esperado '20612090387', obtenido '20612090387'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle: nombre en ASCII",
+     "detalle": "esperado 'QA20 P2 COMPANIA NANDU SAC', obtenido 'QA20 P2 COMPANIA NANDU SAC'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle: número de documento",
+     "detalle": "esperado 'Q2VT/2026/00004', obtenido 'Q2VT/2026/00004'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle: importe",
+     "detalle": "esperado '000000000123456', obtenido '000000000123456'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.bank.collection.agreement",
+     "id": 14,
+     "nombre": "QA20 P2 BCP soles",
+     "nota": "convenio"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9426,
+     "nombre": "QA20 P2 CLIENTE ÑANDÚ",
+     "nota": "deudor 1"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9427,
+     "nombre": "QA20 P2 Cliente recaudo 2",
+     "nota": "deudor 2"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31331,
+     "nombre": "Q2VT/2026/00004",
+     "nota": "vencida"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31332,
+     "nombre": "Q2VT/2026/00005",
+     "nota": "vence dentro de 10 días"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31333,
+     "nombre": "Q2VT/2026/00006",
+     "nota": "vence después (no va)"
+    },
+    {
+     "modelo": "l10n_pe.bank.collection.batch",
+     "id": 31,
+     "nombre": "REC/ENV/2026/0031",
+     "nota": "lote"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_bank_collection",
+   "titulo": "Importar respuesta del banco y aplicar cobros",
+   "pasos": "Tesorería → Recaudación → Respuestas: subir el archivo de abonos → Importar → Procesar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "abono 1 casado con el documento",
+     "detalle": "esperado ('matched', res.partner(9428,)), obtenido ('matched', res.partner(9428,))"
+    },
+    {
+     "estado": "OK",
+     "titulo": "abono 2 casado por cliente (ceros a la izquierda)",
+     "detalle": "esperado 'partner', obtenido 'partner'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "respuesta procesada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura con documento cobrada",
+     "detalle": "in_payment"
+    },
+    {
+     "estado": "OK",
+     "titulo": "memo del cobro lleva la operación",
+     "detalle": "Recaudación QA20 P2 Banco op. 552001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "abono sin documento paga primero la más antigua",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo de la reciente",
+     "detalle": "esperado 200.0, obtenido 200.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "reimportar el mismo archivo: duplicados",
+     "detalle": "esperado {'duplicate'}, obtenido {'duplicate'}"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.bank.collection.agreement",
+     "id": 14,
+     "nombre": "QA20 P2 BCP soles",
+     "nota": "convenio"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9428,
+     "nombre": "QA20 P2 Cliente abono 1",
+     "nota": "deudor"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9429,
+     "nombre": "QA20 P2 Cliente abono 2",
+     "nota": "deudor sin doc"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31334,
+     "nombre": "Q2VT/2026/00007",
+     "nota": "factura a cobrar"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31335,
+     "nombre": "Q2VT/2026/00008",
+     "nota": "antigua"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31336,
+     "nombre": "Q2VT/2026/00009",
+     "nota": "reciente"
+    },
+    {
+     "modelo": "l10n_pe.bank.collection.response",
+     "id": 34,
+     "nombre": "REC/RSP/2026/0034",
+     "nota": "respuesta"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1363,
+     "nombre": "PQ2BK/2026/00005",
+     "nota": "cobros generados"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1364,
+     "nombre": "PQ2BK/2026/00006",
+     "nota": "cobros generados"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_account_letter",
+   "titulo": "Canje de factura en 2 letras y descuento bancario",
+   "pasos": "Contabilidad → Letras → Canjes: nuevo canje, Verificar, Crear letras, Canjear; Enviar al banco (descuento); Liquidar descuento; Cobro del banco.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "cuentas de letras de la compañía",
+     "detalle": "4511000 / 6734000 / 6391000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "canje en estado Canjeado",
+     "detalle": "esperado 'redeemed', obtenido 'redeemed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dos letras",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "las letras suman la factura",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el canje carga las letras en cartera",
+     "detalle": "1232000 → ['1232000']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "canje Bancarizado al enviar todas las letras",
+     "detalle": "esperado 'banked', obtenido 'banked'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento del envío con la fecha del envío",
+     "detalle": "esperado datetime.date(2026, 10, 10), obtenido datetime.date(2026, 10, 10)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "neto abonado por el banco",
+     "detalle": "esperado 965.0, obtenido 965.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "banco neto",
+     "detalle": "esperado 965.0, obtenido 965.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "interés 6734",
+     "detalle": "esperado 30.0, obtenido 30.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comisión 6391",
+     "detalle": "esperado 5.0, obtenido 5.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "préstamo 4511",
+     "detalle": "esperado -1000.0, obtenido -1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "descontada sigue pendiente",
+     "detalle": "esperado {'pending'}, obtenido {'pending'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "letras cobradas",
+     "detalle": "esperado {'paid'}, obtenido {'paid'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "préstamo cancelado",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9430,
+     "nombre": "QA20 P2 Cliente letras",
+     "nota": "aceptante"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31339,
+     "nombre": "Q2VT/2026/00010",
+     "nota": "factura canjeada"
+    },
+    {
+     "modelo": "l10n_pe.letter",
+     "id": 123,
+     "nombre": "CLC00129",
+     "nota": "canje"
+    },
+    {
+     "modelo": "l10n_pe.letter.line",
+     "id": 192,
+     "nombre": "QA20-P2-123-001",
+     "nota": "letras"
+    },
+    {
+     "modelo": "l10n_pe.letter.line",
+     "id": 193,
+     "nombre": "QA20-P2-123-002",
+     "nota": "letras"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31342,
+     "nombre": "Q2BK/2026/00001 (Liquidación del descuento CLC00129)",
+     "nota": "liquidación del descuento"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31343,
+     "nombre": "Q2BK/2026/00002 (Cobro de la letra QA20-P2-123-001)",
+     "nota": "cobro del banco"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31344,
+     "nombre": "Q2BK/2026/00003 (Cobro de la letra QA20-P2-123-002)",
+     "nota": "cobro del banco"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_account_letter",
+   "titulo": "Letra en cobranza libre cobrada por el banco",
+   "pasos": "Canje → Enviar al banco (cobranza libre) → Operación bancaria «Cobrada» con comisión.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "letra en cobranza libre",
+     "detalle": "esperado {'billing'}, obtenido {'billing'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "letra en el banco: el pago directo se bloquea",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "neto cobrado",
+     "detalle": "esperado 993.0, obtenido 993.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "banco",
+     "detalle": "esperado 993.0, obtenido 993.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "letra cobrada",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "restablecer a borrador bloqueado con operaciones",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9431,
+     "nombre": "QA20 P2 Cliente letras cobranza",
+     "nota": "aceptante"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31345,
+     "nombre": "Q2VT/2026/00011",
+     "nota": "factura canjeada"
+    },
+    {
+     "modelo": "l10n_pe.letter",
+     "id": 124,
+     "nombre": "CLC00130",
+     "nota": "canje"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31348,
+     "nombre": "Q2BK/2026/00004 (Cobro de la letra QA20-P2-124-001)",
+     "nota": "cobro de la letra"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_factoring",
+   "titulo": "Factoring sin recurso: cesión, desembolso y liquidación",
+   "pasos": "Contabilidad → Factoring → Operaciones: nueva operación con la factura, Ceder → Desembolsar → Liquidar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "adelanto 90 % y retenido 10 %",
+     "detalle": "esperado (900.0, 100.0), obtenido (900.0, 100.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cedida",
+     "detalle": "esperado 'assigned', obtenido 'assigned'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin recurso la factura se da de baja",
+     "detalle": "paid"
+    },
+    {
+     "estado": "OK",
+     "titulo": "deuda pasa al factor",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "neto desembolsado",
+     "detalle": "esperado 865.0, obtenido 865.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "banco recibe el neto",
+     "detalle": "esperado 865.0, obtenido 865.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "interés",
+     "detalle": "esperado 20.0, obtenido 20.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "operación liquidada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta del factor saldada",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "banco total (neto + retenido)",
+     "detalle": "esperado 965.0, obtenido 965.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento Cesión de facturas FAC/2026/0194 cuadra",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento Desembolso del factor FAC/2026/0194 cuadra",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento Cobro del factor FAC/2026/0194 cuadra",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9432,
+     "nombre": "QA20 P2 Cliente factoring",
+     "nota": "adquirente"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9433,
+     "nombre": "QA20 P2 Factor capital",
+     "nota": "factor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31349,
+     "nombre": "Q2VT/2026/00012",
+     "nota": "factura cedida"
+    },
+    {
+     "modelo": "l10n_pe.factoring",
+     "id": 194,
+     "nombre": "FAC/2026/0194",
+     "nota": "operación sin recurso"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31350,
+     "nombre": "Q2FG/2026/10/0001 (Cesión de facturas FAC/2026/0194)",
+     "nota": "asientos de factoring"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31351,
+     "nombre": "Q2BK/2026/00005 (Desembolso del factor FAC/2026/0194)",
+     "nota": "asientos de factoring"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31352,
+     "nombre": "Q2BK/2026/00006 (Cobro del factor FAC/2026/0194)",
+     "nota": "asientos de factoring"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_factoring",
+   "titulo": "Factoring con recurso y anotación en CAVALI (servicio simulado)",
+   "pasos": "Factura → Registrar en CAVALI; Factoring con recurso: Ceder (transferencia CAVALI) → Desembolsar → Liquidar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "URL de registro CAVALI",
+     "detalle": "esperado 'https://cavali.test/api/facturas/registro', obtenido 'https://cavali.test/api/facturas/registro'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "payload: monto neto pendiente",
+     "detalle": "esperado 2000.0, obtenido 2000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "payload: RUC del adquirente",
+     "detalle": "esperado '20612090468', obtenido '20612090468'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura negociable anotada",
+     "detalle": "esperado ('registered', 'AN-QA20'), obtenido ('registered', 'AN-QA20')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "credenciales fuera del log",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "transferencia CAVALI",
+     "detalle": "esperado 'https://cavali.test/api/facturas/transferencia', obtenido 'https://cavali.test/api/facturas/transferencia'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura transferida",
+     "detalle": "esperado 'transferred', obtenido 'transferred'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "con recurso no se da de baja (NIIF 9)",
+     "detalle": "esperado 'not_paid', obtenido 'not_paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "obligación con el factor",
+     "detalle": "esperado -1600.0, obtenido -1600.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago informado a CAVALI",
+     "detalle": "esperado 2000.0, obtenido 2000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "operación liquidada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cobro del factor cancela la factura",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "banco: adelanto 1570 + retenido 400",
+     "detalle": "esperado 1970.0, obtenido 1970.0"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "CAVALI real",
+     "detalle": "sin credenciales de prueba: servicio simulado con mock"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9434,
+     "nombre": "QA20 P2 Cliente factoring recurso",
+     "nota": "adquirente"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9435,
+     "nombre": "QA20 P2 Factor recurso",
+     "nota": "factor"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31353,
+     "nombre": "Q2VT/2026/00013",
+     "nota": "factura negociable"
+    },
+    {
+     "modelo": "l10n_pe.cavali.log",
+     "id": 39,
+     "nombre": "l10n_pe.cavali.log,39",
+     "nota": "log CAVALI"
+    },
+    {
+     "modelo": "l10n_pe.factoring",
+     "id": 195,
+     "nombre": "FAC/2026/0195",
+     "nota": "operación con recurso"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31354,
+     "nombre": "Q2BK/2026/00007 (Desembolso del factor FAC/2026/0195)",
+     "nota": "asientos con recurso"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31355,
+     "nombre": "Q2BK/2026/00008 (Cobro del factor FAC/2026/0195)",
+     "nota": "asientos con recurso"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31356,
+     "nombre": "Q2FG/2026/10/0002 (Devengo de intereses FAC/2026/0195)",
+     "nota": "asientos con recurso"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cash_fund",
+   "titulo": "Entrega a rendir: rendición con movilidad, devolución y cierre",
+   "pasos": "Contabilidad → Entregas a rendir → Nuevo: aprobar, entregar, registrar rendición con factura y planilla de movilidad, registrar la devolución del saldo y cerrar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Número con prefijo ER/",
+     "detalle": "ER/2026/0017"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Fondo abierto y entregado",
+     "detalle": "esperado ('open', 500.0, 500.0), obtenido ('open', 500.0, 500.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Exceso de movilidad sobre el tope 4 % RMV (45,20/día)",
+     "detalle": "esperado 9.8, obtenido 9.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "La factura queda pagada con la rendición",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Planilla de movilidad numerada",
+     "detalle": "PM/2026/00008"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Asiento de rendición publicado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo por devolver 500 − 300 − 55",
+     "detalle": "esperado 145.0, obtenido 145.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "No permite cerrar con saldo pendiente",
+     "detalle": "El fondo ER/2026/0017 · QA20 P3 Trabajador ER tiene un saldo de S/ 145.00: registre la dev"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo cero tras la devolución",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Fondo cerrado",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cuenta del fondo conciliada al cerrar",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF de planilla de movilidad generado",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9436,
+     "nombre": "QA20 P3 Trabajador ER",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9437,
+     "nombre": "QA20 P3 Grifo ER",
+     "nota": ""
+    },
+    {
+     "modelo": "l10n_pe.cash.fund",
+     "id": 29,
+     "nombre": "ER/2026/0017 · QA20 P3 Trabajador ER",
+     "nota": "entrega a rendir"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31358,
+     "nombre": "F F001-00930001",
+     "nota": "factura rendida"
+    },
+    {
+     "modelo": "l10n_pe.cash.settlement",
+     "id": 27,
+     "nombre": "Rendición de ER/2026/0017 · QA20 P3 Trabajador ER",
+     "nota": "rendición"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31359,
+     "nombre": "MISC/2026/10/0004 (Rendición de ER/2026/0017 · Visita a obra)",
+     "nota": "asiento de rendición"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1366,
+     "nombre": "PBNK1/2026/00002",
+     "nota": "devolución del saldo"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cash_fund",
+   "titulo": "Caja chica: gasto y reposición; reembolso de entrega excedida",
+   "pasos": "Contabilidad → Caja chica → Nuevo: rendir una factura y reponer el fondo; en una entrega a rendir con gasto mayor, registrar el reembolso al trabajador.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Número con prefijo CCH/",
+     "detalle": "CCH/013"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo de caja chica tras el gasto",
+     "detalle": "esperado 600.0, obtenido 600.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Reposición por lo gastado",
+     "detalle": "esperado (400.0, 'replenishment'), obtenido (400.0, 'replenishment')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Caja chica repuesta al monto fijo",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo a favor del trabajador",
+     "detalle": "esperado -50.0, obtenido -50.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Reembolso de salida por 50",
+     "detalle": "esperado ('outbound', 50.0), obtenido ('outbound', 50.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Entrega con reembolso cerrada",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9438,
+     "nombre": "QA20 P3 Cajera CCH",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9439,
+     "nombre": "QA20 P3 Librería CCH",
+     "nota": ""
+    },
+    {
+     "modelo": "l10n_pe.cash.fund",
+     "id": 30,
+     "nombre": "CCH/013 · QA20 P3 Cajera CCH",
+     "nota": "caja chica"
+    },
+    {
+     "modelo": "l10n_pe.cash.settlement",
+     "id": 28,
+     "nombre": "REN/2026/0026",
+     "nota": "rendición caja chica"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1368,
+     "nombre": "PBNK1/2026/00004",
+     "nota": "reposición"
+    },
+    {
+     "modelo": "l10n_pe.cash.fund",
+     "id": 31,
+     "nombre": "ER/2026/0018 · QA20 P3 Cajera CCH",
+     "nota": "entrega excedida"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1370,
+     "nombre": "PBNK1/2026/00006",
+     "nota": "reembolso al trabajador"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cash_fund_expense",
+   "titulo": "Gasto de empleado pagado con caja chica → factura de proveedor",
+   "pasos": "Gastos → Nuevo gasto con comprobante (boleta) y caja chica; enviar, aprobar y contabilizar: se genera la factura del proveedor pagada con la rendición del fondo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Diario de compras con documentos para gastos",
+     "detalle": "Compras"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El gasto se contabiliza como factura de proveedor",
+     "detalle": "esperado 'in_invoice', obtenido 'in_invoice'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Proveedor del comprobante",
+     "detalle": "esperado res.partner(9441,), obtenido res.partner(9441,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Tipo de documento boleta (03)",
+     "detalle": "esperado l10n_latam.document.type(2,), obtenido l10n_latam.document.type(2,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Número del comprobante en la factura",
+     "detalle": "R B010-00095725"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Importe de la factura",
+     "detalle": "esperado 32.0, obtenido 32.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Factura pagada por la caja chica",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Gasto pagado",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo de caja chica descontado",
+     "detalle": "esperado 443.35, obtenido 443.35"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Una rendición publicada para ambos gastos",
+     "detalle": "esperado (1, 'posted'), obtenido (1, 'posted')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Exige número de comprobante",
+     "detalle": "El gasto «Almuerzo del personal» se paga con el fondo CCH/014 · QA20 P3 Empleado gastos: l"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9440,
+     "nombre": "QA20 P3 Empleado gastos",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9441,
+     "nombre": "QA20 P3 Restaurante gastos",
+     "nota": ""
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 931,
+     "nombre": "QA20 P3 Empleado gastos",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 13826,
+     "nombre": "QA20 P3 Almuerzo del personal",
+     "nota": ""
+    },
+    {
+     "modelo": "l10n_pe.cash.fund",
+     "id": 32,
+     "nombre": "CCH/014 · QA20 P3 Empleado gastos",
+     "nota": "caja chica"
+    },
+    {
+     "modelo": "hr.expense",
+     "id": 16,
+     "nombre": "Almuerzo del personal",
+     "nota": "gasto"
+    },
+    {
+     "modelo": "hr.expense",
+     "id": 17,
+     "nombre": "Almuerzo del personal",
+     "nota": "gasto"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31371,
+     "nombre": "R B010-00095725 (Almuerzo del personal)",
+     "nota": "factura de proveedor del gasto"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31372,
+     "nombre": "R B010-00095726 (Almuerzo del personal)",
+     "nota": "factura de proveedor del gasto"
+    },
+    {
+     "modelo": "l10n_pe.cash.settlement",
+     "id": 30,
+     "nombre": "REN/2026/0028",
+     "nota": "rendición automática"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cash_closing",
+   "titulo": "Cierre de caja con faltante: saldo según libros, arqueo y asiento de diferencia",
+   "pasos": "Contabilidad → Cierres de caja → Nuevo (caja, día): revisar ingresos/egresos del día, registrar el arqueo por denominaciones y cerrar; imprimir el PDF.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Saldo inicial según libros",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Ingresos del día (contado 500 + cobranza 200)",
+     "detalle": "esperado 700.0, obtenido 700.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Egresos del día",
+     "detalle": "esperado 100.0, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo final según libros",
+     "detalle": "esperado 1600.0, obtenido 1600.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Venta al contado clasificada",
+     "detalle": "esperado ('collection', 'cash'), obtenido ('collection', 'cash')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cobranza de venta al crédito clasificada",
+     "detalle": "esperado ('collection', 'credit'), obtenido ('collection', 'credit')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Denominaciones vigentes precargadas",
+     "detalle": "[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Exige arqueo antes de cerrar",
+     "detalle": "Registre el arqueo: cuente los billetes y monedas de la caja."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Faltante de 10 en el arqueo",
+     "detalle": "esperado -10.0, obtenido -10.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Caja cerrada",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Asiento de diferencia publicado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Faltante a la cuenta de pérdida de la caja",
+     "detalle": "esperado 10.0, obtenido 10.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Día cerrado bloquea nuevos pagos",
+     "detalle": "La caja QA20 P3 Caja tienda está cerrada hasta el 20/10/2026 (CC/2026/00041): no"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El día siguiente parte de lo arqueado",
+     "detalle": "esperado 1590.0, obtenido 1590.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF de cierre con faltante y resumen por categoría",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6072,
+     "nombre": "QA20 P3 Caja tienda",
+     "nota": "diario"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6073,
+     "nombre": "QA20 P3 Ventas caja",
+     "nota": "diario"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9442,
+     "nombre": "QA20 P3 Cliente caja",
+     "nota": ""
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1372,
+     "nombre": "PQ3CJ/2026/00001",
+     "nota": "movimiento de caja"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1375,
+     "nombre": "PQ3CJ/2026/00004",
+     "nota": "movimiento de caja"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31376,
+     "nombre": "Q3VC/2026/00001",
+     "nota": "venta"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31377,
+     "nombre": "Q3VC/2026/00002",
+     "nota": "venta"
+    },
+    {
+     "modelo": "l10n_pe.cash.closing",
+     "id": 41,
+     "nombre": "CC/2026/00041",
+     "nota": "cierre del día"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31381,
+     "nombre": "Q3CJ/2026/00001 (Faltante de caja CC/2026/00041)",
+     "nota": "asiento de faltante"
+    },
+    {
+     "modelo": "l10n_pe.cash.closing",
+     "id": 42,
+     "nombre": "CC/2026/00042",
+     "nota": "cierre día siguiente (abierto)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cash_closing",
+   "titulo": "Reapertura del cierre: anula la diferencia y desbloquea el día",
+   "pasos": "Cierres de caja → abrir el cierre posterior → Reabrir: el asiento de diferencia se anula y se puede volver a registrar movimientos.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Faltante del día 2 contabilizado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cierre reabierto",
+     "detalle": "esperado 'open', obtenido 'open'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Asiento de diferencia anulado al reabrir",
+     "detalle": "esperado 'cancel', obtenido 'cancel'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Libros recalculados tras la reapertura",
+     "detalle": "esperado 1650.0, obtenido 1650.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.payment",
+     "id": 1377,
+     "nombre": "PQ3CJ/2026/00005",
+     "nota": "cobro tras reapertura"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1378,
+     "nombre": "PQ3CJ/2026/00006",
+     "nota": "cobro tras reapertura"
+    },
+    {
+     "modelo": "l10n_pe.cash.closing",
+     "id": 42,
+     "nombre": "CC/2026/00042",
+     "nota": "cierre reabierto"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31384,
+     "nombre": "Q3CJ/2026/00002 (Faltante de caja CC/2026/00042)",
+     "nota": "diferencia anulada"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_payment_culqi",
+   "titulo": "Proveedor Culqi en prueba: valores del checkout, payload del cargo y cargo simulado",
+   "pasos": "Contabilidad → Configuración → Proveedores de pago → Culqi: llaves de prueba; el cliente paga con tarjeta en el portal (cargo simulado con mock).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Monedas PEN/USD",
+     "detalle": "esperado ['PEN', 'USD'], obtenido ['PEN', 'USD']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Soporta devolución parcial",
+     "detalle": "esperado 'partial', obtenido 'partial'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cabecera con la llave secreta",
+     "detalle": "esperado 'Bearer sk_test_qa2000000000', obtenido 'Bearer sk_test_qa2000000000'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Llaves de prueba no sirven en producción",
+     "detalle": "La llave pública de Culqi debe empezar con «pk_live_» en este modo."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Valores del checkout en céntimos",
+     "detalle": "esperado (12050, 'PEN', 'tarjeta'), obtenido (12050, 'PEN', 'tarjeta')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "La llave secreta no llega al navegador",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Payload del cargo",
+     "detalle": "esperado (12050, 'PEN', 'tkn_test_QA20P3', 'PE'), obtenido (12050, 'PEN', 'tkn_test_QA20P3', 'PE')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Solo campos 3DS permitidos",
+     "detalle": "{'eci': '05', 'xid': 'X'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Llamada al endpoint charges (mock)",
+     "detalle": "esperado ('POST', 'charges'), obtenido ('POST', 'charges')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Transacción confirmada",
+     "detalle": "esperado ('done', 'chr_test_QA20P3'), obtenido ('done', 'chr_test_QA20P3')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cargo con importe distinto se rechaza",
+     "detalle": "esperado 'error', obtenido 'error'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Cargo real contra api.culqi.com",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "payment.provider",
+     "id": 4691,
+     "nombre": "QA20 P3 Culqi",
+     "nota": "proveedor (test)"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9443,
+     "nombre": "QA20 P3 Cliente pasarela",
+     "nota": ""
+    },
+    {
+     "modelo": "payment.transaction",
+     "id": 303,
+     "nombre": "QA20-P3-CULQI-124107000000",
+     "nota": "transacción"
+    },
+    {
+     "modelo": "payment.transaction",
+     "id": 304,
+     "nombre": "QA20-P3-CULQI2-124107000000",
+     "nota": "transacción importe alterado"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_payment_izipay",
+   "titulo": "Proveedor Izipay en prueba: formToken, firma de la IPN y confirmación",
+   "pasos": "Proveedores de pago → Izipay: tienda y contraseña de prueba; el cliente paga en el formulario incrustado y llega la IPN firmada (simulada).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Autenticación básica tienda/contraseña",
+     "detalle": "esperado ('89289758', 'testpassword_qa2000000000'), obtenido ('89289758', 'testpassword_qa2000000000')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "URL de IPN",
+     "detalle": "http://127.0.0.1:20003/payment/izipay/webhook"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Payload CreatePayment",
+     "detalle": "esperado (12050, 'PEN', {'odoo_reference': 'QA20-P3-IZI-124107000000'}), obtenido (12050, 'PEN', {'odoo_reference': 'QA20-P3-IZI-124107000000'})"
+    },
+    {
+     "estado": "OK",
+     "titulo": "RUC del cliente en el payload",
+     "detalle": "esperado '20131312955', obtenido '20131312955'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "formToken al navegador",
+     "detalle": "esperado 'QA20FORMTOKEN', obtenido 'QA20FORMTOKEN'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "La contraseña no llega al navegador",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Firma HMAC-SHA256 de la IPN válida",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "IPN con firma alterada rechazada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "La IPN ubica la transacción por metadata",
+     "detalle": "esperado 'QA20-P3-IZI-124107000000', obtenido 'QA20-P3-IZI-124107000000'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Transacción confirmada por la IPN",
+     "detalle": "esperado ('done', 'qa20p3uuid0000000000000000000001'), obtenido ('done', 'qa20p3uuid0000000000000000000001')"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Llamada real a api.micuentaweb.pe",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "payment.provider",
+     "id": 4692,
+     "nombre": "QA20 P3 Izipay",
+     "nota": "proveedor (test)"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9444,
+     "nombre": "QA20 P3 Cliente pasarela",
+     "nota": ""
+    },
+    {
+     "modelo": "payment.transaction",
+     "id": 305,
+     "nombre": "QA20-P3-IZI-124107000000",
+     "nota": "transacción"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_payment_niubiz",
+   "titulo": "Proveedor Niubiz en prueba: autorización aprobada y rechazada (mock)",
+   "pasos": "Proveedores de pago → Niubiz: comercio y llaves de integración; el cliente paga con tarjeta en el botón de pago (autorización simulada).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Monedas PEN/USD",
+     "detalle": "esperado ['PEN', 'USD'], obtenido ['PEN', 'USD']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Sesión sin teléfono usa 000000000",
+     "detalle": "esperado '000000000', obtenido '000000000'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Autorización aprobada confirma la transacción",
+     "detalle": "esperado ('done', '173424', '75'), obtenido ('done', '173424', '75')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Autorización rechazada → error",
+     "detalle": "esperado 'error', obtenido 'error'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Mensaje de código 116 traducido",
+     "detalle": "Fondos insuficientes. Por favor use otra tarjeta o intente con otro monto."
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Llamada real a la API de Niubiz",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "payment.provider",
+     "id": 4693,
+     "nombre": "QA20 P3 Niubiz",
+     "nota": "proveedor (test)"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9445,
+     "nombre": "QA20 P3 Cliente pasarela",
+     "nota": ""
+    },
+    {
+     "modelo": "payment.transaction",
+     "id": 306,
+     "nombre": "QA20-P3-NBZ-124108000000",
+     "nota": "transacción"
+    },
+    {
+     "modelo": "payment.transaction",
+     "id": 307,
+     "nombre": "QA20-P3-NBZ2-124108000000",
+     "nota": "transacción rechazada"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_payment_pagoefectivo",
+   "titulo": "Proveedor PagoEfectivo en prueba: firma de autorización, CIP y notificación firmada",
+   "pasos": "Proveedores de pago → PagoEfectivo: servicio y claves de prueba; el cliente genera un CIP en el portal y llega la notificación de pago firmada (simulada).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "URL del entorno de pruebas",
+     "detalle": "esperado 'https://pre1a.services.pagoefectivo.pe/v1/cips', obtenido 'https://pre1a.services.pagoefectivo.pe/v1/cips'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Token de autorización",
+     "detalle": "esperado 'eyJ.qa20', obtenido 'eyJ.qa20'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "hashString SHA-256 de servicio.clave.secreto.fecha",
+     "detalle": "esperado 'e1a831a2926fded392b238ae21c82cb1cfa2808cc96ae4b111fc866710fbcd43', obtenido 'e1a831a2926fded392b238ae21c82cb1cfa2808cc96ae4b111fc866710fbcd43'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El secreto no viaja en el payload",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Autoriza y genera el CIP",
+     "detalle": "esperado ['authorizations', 'cips'], obtenido ['authorizations', 'cips']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Payload del CIP",
+     "detalle": "esperado (120.5, 'PEN', 'QA20-P3-PEF-124108000000', '987654321', '+51'), obtenido (120.5, 'PEN', 'QA20-P3-PEF-124108000000', '987654321', '+51')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "DNI como documento",
+     "detalle": "esperado ('DNI', '45678912'), obtenido ('DNI', '45678912')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Transacción pendiente con el CIP",
+     "detalle": "esperado ('pending', '2834561'), obtenido ('pending', '2834561')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Redirección a la URL del CIP",
+     "detalle": "esperado 'https://pre1a.payment.pagoefectivo.pe/PE/Checkout/Cip?token=qa20&lang=es', obtenido 'https://pre1a.payment.pagoefectivo.pe/PE/Checkout/Cip?token=qa20&lang=es'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Firma PE-Signature sobre JSON compacto aceptada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Notificación con firma inválida rechazada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "La notificación ubica la transacción por el CIP",
+     "detalle": "esperado payment.transaction(308,), obtenido payment.transaction(308,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CIP pagado confirma la transacción",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Llamada real a services.pagoefectivo.pe",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "payment.provider",
+     "id": 4694,
+     "nombre": "QA20 P3 PagoEfectivo",
+     "nota": "proveedor (test)"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9446,
+     "nombre": "QA20 P3 Cliente pasarela",
+     "nota": ""
+    },
+    {
+     "modelo": "payment.transaction",
+     "id": 308,
+     "nombre": "QA20-P3-PEF-124108000000",
+     "nota": "transacción"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cash_forecast",
+   "titulo": "Flujo de caja proyectado: saldo inicial, partidas por vencimiento, escenario y XLSX",
+   "pasos": "Contabilidad → Flujo de caja proyectado → Nuevo: 12 semanas; revisar cobranzas/pagos por semana, mover una partida, agregar una manual y exportar a Excel.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Saldo inicial suma el banco disponible",
+     "detalle": "esperado 10000.0, obtenido 10000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Fondos restringidos (detracciones) excluidos",
+     "detalle": "esperado 500.0, obtenido 500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "12 semanas y «Desde…»",
+     "detalle": "esperado 13, obtenido 13"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cobranza proyectada",
+     "detalle": "esperado ('receivable', 1200.0), obtenido ('receivable', 1200.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pago proyectado",
+     "detalle": "esperado ('payable', -800.0), obtenido ('payable', -800.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Vencido se proyecta en el primer periodo",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Partida en el periodo de su vencimiento",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Saldo final encadenado",
+     "detalle": "esperado -241781.61000000002, obtenido -241781.61"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Partida editada marcada como escenario",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "El escenario sobrevive al refrescar",
+     "detalle": "esperado (datetime.date(2026, 12, 14), 600.0, True), obtenido (datetime.date(2026, 12, 14), 600.0, True)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Partida manual se conserva con periodo",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Exporta el flujo a XLSX",
+     "detalle": "QA20 P3 Flujo 12 semanas 2026-10-30.xlsx (12393 bytes)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9447,
+     "nombre": "QA20 P3 Socio flujo",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6074,
+     "nombre": "QA20 P3 Banco flujo",
+     "nota": "diario"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6075,
+     "nombre": "QA20 P3 Detracciones BN",
+     "nota": "diario"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6076,
+     "nombre": "QA20 P3 Ventas flujo",
+     "nota": "diario"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6077,
+     "nombre": "QA20 P3 Compras flujo",
+     "nota": "diario"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31386,
+     "nombre": "MISC/2026/10/0008",
+     "nota": "saldo de bancos"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31387,
+     "nombre": "MISC/2026/10/0009",
+     "nota": "saldo de bancos"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31388,
+     "nombre": "Q3VF/2026/00001",
+     "nota": "documento proyectado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31389,
+     "nombre": "Q3CF/2026/09/0001",
+     "nota": "documento proyectado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31390,
+     "nombre": "Q3VF/2026/00002",
+     "nota": "documento proyectado"
+    },
+    {
+     "modelo": "l10n_pe.cash.forecast",
+     "id": 33,
+     "nombre": "QA20 P3 Flujo 12 semanas",
+     "nota": "flujo"
+    },
+    {
+     "modelo": "ir.attachment",
+     "id": 70344,
+     "nombre": "QA20 P3 Flujo 12 semanas 2026-10-30.xlsx",
+     "nota": "XLSX exportado"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}

@@ -1,0 +1,320 @@
+{
+ "fase": "fase0_navegador",
+ "casos": [
+  {
+   "modulo": "web (sonda)",
+   "titulo": "El detector capta excepciones no controladas",
+   "pasos": "Lanzar un error a propósito en la consola",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "La excepción aparece en la consola y en el diálogo «¡Vaya!»",
+     "detalle": "sonda 12:13:49"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner",
+   "titulo": "Pantalla: Inicio del planificador (action-540)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner",
+   "titulo": "Pantalla: Árbol de recursos (action-544)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner",
+   "titulo": "Pantalla: Cronograma de obra (action-545)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_purchase",
+   "titulo": "Pantalla: Tablero de abastecimiento (action-1028)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_sale",
+   "titulo": "Pantalla: Reporte de programación (action-1215)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_collection",
+   "titulo": "Pantalla: Tablero de cobranza (action-1483)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_dashboard",
+   "titulo": "Pantalla: Tablero Perú (action-1547)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_financial_reports",
+   "titulo": "Pantalla: 3.19 Cambios en el patrimonio (action-1586)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_financial_reports",
+   "titulo": "Pantalla: Hoja de trabajo formato 1 (action-1587)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_financial_reports",
+   "titulo": "Pantalla: Hoja de trabajo formato 2 (action-1588)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "Pantalla: PLE 7.1 activos fijos (action-1634)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "Pantalla: PLE 8.1 compras (action-1631)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "Pantalla: PLE 8.2 no domiciliados (action-1632)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "Pantalla: PLE 14.1 ventas (action-1630)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_project_gantt_backend",
+   "titulo": "Pantalla: Gantt de proyectos (action-513)",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_invoice",
+   "titulo": "Pantalla: Lista de facturas de cliente",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "queue_job",
+   "titulo": "Pantalla: Trabajos en cola",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_theme",
+   "titulo": "Pantalla: Tablero de puntos de venta",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_payments",
+   "titulo": "Pantalla: Pagos a proveedores",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "purchase_request",
+   "titulo": "Pantalla: Solicitudes de compra",
+   "pasos": "Abrir la pantalla con qa20_admin, esperar 5 s y revisar la consola y los diálogos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Carga sin excepciones en consola ni diálogo de error",
+     "detalle": "Chrome, recarga completa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}

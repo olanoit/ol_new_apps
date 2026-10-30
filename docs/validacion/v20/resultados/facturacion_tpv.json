@@ -1,0 +1,2136 @@
+{
+ "fase": "facturacion_tpv",
+ "casos": [
+  {
+   "modulo": "preparacion",
+   "titulo": "Datos maestros QA20 de la fase (contactos, productos, diarios)",
+   "pasos": "Crear clientes con RUC y DNI, productos y diarios propios para la fase.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "IGV 18 % de ventas del plan pe",
+     "detalle": "IGV 18%"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cliente RUC: código SUNAT 6",
+     "detalle": "esperado '6', obtenido '6'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cliente DNI (identificador adicional PE_DNI): código SUNAT 1",
+     "detalle": "esperado ('1', '46027897'), obtenido ('1', '46027897')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Diario de ventas QV20 con documentos LATAM",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9557,
+     "nombre": "QA20 Cliente RUC SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9558,
+     "nombre": "QA20 Cliente DNI Rosa Quispe",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 13176,
+     "nombre": "QA20 Servicio de consultoría",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14000,
+     "nombre": "[QA20-IBU] QA20 Ibuprofeno 400 mg",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6113,
+     "nombre": "QA20 Ventas facturación",
+     "nota": "diario propio: no comparte numeración con INV"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_invoice",
+   "titulo": "Factura electrónica a crédito a cliente RUC: XML, PDF A4/ticket y envío",
+   "pasos": "Crear una factura a 30 días para un cliente con RUC, confirmarla, imprimir A4 y ticket y enviarla a SUNAT.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Tipo de documento 01 (factura) por cliente RUC",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Numeración de factura serie F",
+     "detalle": "F FQV-00000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Detalle tributario: base gravada",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Detalle tributario: IGV",
+     "detalle": "esperado 180.0, obtenido 180.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Total de la factura",
+     "detalle": "esperado 1180.0, obtenido 1180.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Plazo 30 días: es crédito",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Forma de pago impresa CRÉDITO",
+     "detalle": "esperado 'CRÉDITO', obtenido 'CRÉDITO'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Una cuota de crédito",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Importe de la cuota = neto pendiente",
+     "detalle": "esperado 1180.0, obtenido 1180.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Etiqueta del IGV con la tasa aplicada",
+     "detalle": "esperado 'IGV (18%)', obtenido 'IGV (18%)'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Moneda en letras",
+     "detalle": "esperado 'SOLES', obtenido 'SOLES'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Monto en letras",
+     "detalle": "MIL CIENTO OCHENTA Y 00/100 SOL"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Dirección del cliente en una línea",
+     "detalle": "Av. Javier Prado Este 123, San Isidro, Lima"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML UBL generado sin errores",
+     "detalle": "7391 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: InvoiceTypeCode 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: serie-número",
+     "detalle": "esperado 'FFQV-00000001', obtenido 'FFQV-00000001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: RUC del adquirente",
+     "detalle": "esperado '20100070970', obtenido '20100070970'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: schemeID 6 (RUC)",
+     "detalle": "esperado '6', obtenido '6'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: IGV total",
+     "detalle": "esperado '180.00', obtenido '180.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: importe a pagar",
+     "detalle": "esperado '1180.00', obtenido '1180.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: forma de pago Credito con cuota",
+     "detalle": "['Credito', 'Cuota001']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF A4 de la factura renderizado",
+     "detalle": "27780 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF ticket 80 mm de la factura renderizado",
+     "detalle": "26202 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "HTML A4: forma de pago e importe impresos",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Envío a SUNAT pasa por el operador (IAP simulado)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Sin respuesta real el comprobante no queda aceptado",
+     "detalle": "to_send"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío a OSE/SUNAT real",
+     "detalle": "sin credenciales de prueba (IAP simulado)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31483,
+     "nombre": "F FQV-00000001",
+     "nota": "factura 01"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_invoice",
+   "titulo": "Boleta a cliente con DNI (identificador adicional): XML y PDF",
+   "pasos": "Crear una factura para un cliente con DNI, que el sistema emite como boleta, confirmarla e imprimirla.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Cliente con DNI → boleta (03) por defecto",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Numeración de boleta serie B",
+     "detalle": "B BQV-00000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Total de la boleta",
+     "detalle": "esperado 177.0, obtenido 177.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Forma de pago CONTADO",
+     "detalle": "esperado 'CONTADO', obtenido 'CONTADO'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML UBL generado sin errores",
+     "detalle": "6480 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: InvoiceTypeCode 03",
+     "detalle": "esperado '03', obtenido '03'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: DNI del adquirente desde PE_DNI",
+     "detalle": "esperado '46027897', obtenido '46027897'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: schemeID 1 (DNI)",
+     "detalle": "esperado '1', obtenido '1'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF A4 de la boleta renderizado",
+     "detalle": "27231 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Ticket: imprime el DNI del cliente",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31484,
+     "nombre": "B BQV-00000001",
+     "nota": "boleta 03"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_invoice",
+   "titulo": "Nota de crédito y nota de débito de la factura: XML y PDF",
+   "pasos": "Desde la factura, emitir una nota de crédito (anulación) y una nota de débito (intereses).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "NC: tipo 07",
+     "detalle": "esperado '07', obtenido '07'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC: documento que modifica",
+     "detalle": "esperado account.move(31483,), obtenido account.move(31483,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC: sin forma de pago impresa",
+     "detalle": "esperado '', obtenido ''"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML UBL generado sin errores",
+     "detalle": "7243 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML raíz CreditNote",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML NC: referencia a la factura",
+     "detalle": "esperado 'FFQV-00000001', obtenido 'FFQV-00000001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML NC: motivo 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF A4 de la NC renderizado",
+     "detalle": "27607 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ND: tipo 08",
+     "detalle": "esperado '08', obtenido '08'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ND: documento que modifica",
+     "detalle": "esperado account.move(31483,), obtenido account.move(31483,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ND: total",
+     "detalle": "esperado 59.0, obtenido 59.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML UBL generado sin errores",
+     "detalle": "7207 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML raíz DebitNote",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML ND: motivo 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF A4 de la ND renderizado",
+     "detalle": "27821 bytes"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31485,
+     "nombre": "F CQV-00000001 (Reversión de: F FQV-00000001, QA20 Anulación [...])",
+     "nota": "nota de crédito 07"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31486,
+     "nombre": "F NQV-00000001 (F FQV-00000001, QA20 Intereses por mora)",
+     "nota": "nota de débito 08"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_downpayment_discount",
+   "titulo": "Anticipo y factura final desde el pedido de venta",
+   "pasos": "Confirmar un pedido, facturar un anticipo de S/ 118 y luego la factura final que lo descuenta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "XML exportado sin errores",
+     "detalle": "set()"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Reglas de validación SUNAT sin observaciones",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PayableAmount = total del asiento",
+     "detalle": "esperado 118.0, obtenido 118.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "al_l10n_pe_invoice: la factura enlaza el pedido (sale_id)",
+     "detalle": "esperado sale.order(305,), obtenido sale.order(305,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "al_l10n_pe_invoice: OC externa del pedido",
+     "detalle": "esperado 'QA20 OC-ANT-001', obtenido 'QA20 OC-ANT-001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML exportado sin errores",
+     "detalle": "set()"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Reglas de validación SUNAT sin observaciones",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PayableAmount = total del asiento",
+     "detalle": "esperado 1062.0, obtenido 1062.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cargo/descuento global 04 (anticipo)",
+     "detalle": "esperado ['04'], obtenido ['04']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: PrepaidPayment del anticipo",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Factura final: 1180 − 118",
+     "detalle": "esperado 1062.0, obtenido 1062.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "sale.order",
+     "id": 305,
+     "nombre": "S00305",
+     "nota": "pedido con anticipo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31487,
+     "nombre": "F FFI-00000002 (S00305)",
+     "nota": "factura de anticipo"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31488,
+     "nombre": "F FFI-00000003 (S00305)",
+     "nota": "factura final con anticipo deducido"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_downpayment_discount",
+   "titulo": "Descuento por línea y descuento global",
+   "pasos": "Facturar con 10 % de descuento en una línea y una línea de descuento global negativa.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "XML exportado sin errores",
+     "detalle": "set()"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Reglas de validación SUNAT sin observaciones",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PayableAmount = total del asiento",
+     "detalle": "esperado 3186.0, obtenido 3186.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Descuento global código 02",
+     "detalle": "['02']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Descuento por línea código 00",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "al_l10n_pe_invoice: descuento total impreso (300 + 100)",
+     "detalle": "esperado 400.0, obtenido 400.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31489,
+     "nombre": "F FQV-00000002",
+     "nota": "factura con descuentos"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_free",
+   "titulo": "Convertir factura en transferencia gratuita (botón)",
+   "pasos": "En una factura borrador con ítem gravado e inafecto pulsar «Transferencia gratuita» y confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Afectaciones 11 (retiro gravado) y 37 (inafecto gratuito)",
+     "detalle": "esperado ['11', '37'], obtenido ['11', '37']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "No se cobra",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Leyenda 1002",
+     "detalle": "esperado '1002', obtenido '1002'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML exportado sin errores",
+     "detalle": "set()"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Reglas de validación SUNAT sin observaciones",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PayableAmount = total del asiento",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "IGV gratuito del retiro (18.00) en el XML",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31490,
+     "nombre": "F FQV-00000003",
+     "nota": "transferencia gratuita"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_free",
+   "titulo": "Bloqueo de ítem gratuito con valor referencial 0",
+   "pasos": "Intentar confirmar una factura con ítem gratuito a precio 0.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "No se confirma: regla SUNAT 2641",
+     "detalle": "SUNAT rechazaría los ítems gratuitos de Borrador de factura:\n· [QA20-IBU] QA20 Ibuprofeno 400 mg: el precio unitario de un ítem gratuito es su valor referencial y no puede ser 0 (2641, 3224)."
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_purchase_settlement",
+   "titulo": "Liquidación de compra: retenciones, XML anexo 6 y envío",
+   "pasos": "Registrar una liquidación de compra de café a un productor con DNI por S/ 1,000, confirmarla y enviarla.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Diario LCE: es liquidación de compra",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Tipo de documento 04",
+     "detalle": "esperado '04', obtenido '04'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "IGV retenido",
+     "detalle": "esperado 180.0, obtenido 180.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Retención de renta 1,5 %",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Importe neto a pagar",
+     "detalle": "esperado 985.0, obtenido 985.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Estado por enviar",
+     "detalle": "esperado 'to_send', obtenido 'to_send'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: SelfBilledInvoice",
+     "detalle": "esperado 'SelfBilledInvoice', obtenido 'SelfBilledInvoice'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: tipo 04",
+     "detalle": "esperado '04', obtenido '04'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: vendedor con DNI",
+     "detalle": "esperado ('41020304', '1'), obtenido ('41020304', '1')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: neto 985.00",
+     "detalle": "esperado '985.00', obtenido '985.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: retención de renta (3000) 15.00",
+     "detalle": "esperado '15.00', obtenido '15.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: placa del vehículo",
+     "detalle": "esperado 'QA2-020', obtenido 'QA2-020'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF de la liquidación de compra renderizado",
+     "detalle": "30751 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "al_l10n_pe_edi_service: sendBill IAP con tipo 04",
+     "detalle": "https://l10n-pe-edi.api.odoo.com/iap/l10n_pe_edi/1/send_bill"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Liquidación aceptada (CDR simulado)",
+     "detalle": "esperado 'sent', obtenido 'sent'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ZIP con XML y CDR adjunto",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío real a SUNAT",
+     "detalle": "sin credenciales de prueba (IAP simulado)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9559,
+     "nombre": "QA20 Productor Juana Quispe",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14001,
+     "nombre": "[QA20-CAFE] QA20 Café pergamino",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31492,
+     "nombre": "L L001-00000001",
+     "nota": "liquidación de compra"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_purchase_settlement",
+   "titulo": "UIT desde el parámetro de nómina l10n_pe_uit y tope de renta",
+   "pasos": "Revisar que el aviso de 75 UIT usa la UIT del año de la nómina y que hasta S/ 700 no se retiene renta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Parámetro de reglas nativo l10n_pe_uit con valores",
+     "detalle": "[('2026-01-01', '5500'), ('2025-01-01', '5350'), ('2024-01-01', '5150')]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "UIT 2026 desde hr.rule.parameter",
+     "detalle": "esperado 5500.0, obtenido 5500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "UIT 2025 = 5,350 del parámetro (no el 5,500 de ajustes): lee la nómina",
+     "detalle": "esperado 5350.0, obtenido 5350.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Aviso del vendedor sobre 75 UIT",
+     "detalle": "Las liquidaciones de compra a QA20 Productor Juana Quispe en 2026 suman S/ 413600.00 y pasan de 75 UIT (S/ 412500.00). Si sus ventas del año superan ese límite ya no corresponde emitirle liquidaciones: consúltelo en SUNAT Operaciones en Línea."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Hasta S/ 700 no se retiene renta",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Neto = 700 (IGV retenido)",
+     "detalle": "esperado 700.0, obtenido 700.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31494,
+     "nombre": "L L001-00000002",
+     "nota": "liquidación de S/ 700 sin renta"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_delivery_guide_report",
+   "titulo": "Guía de remisión: entrega validada y representación impresa",
+   "pasos": "Crear una entrega con transporte privado, validarla e imprimir la guía de remisión.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Entrega validada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Líneas agrupadas por producto",
+     "detalle": "esperado [(product.product(14000,), 5.0)], obtenido [(product.product(14000,), 5.0)]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Peso bruto calculado (5 × 0,5 kg)",
+     "detalle": "esperado 2.5, obtenido 2.5"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Remitente = compañía (RUC y razón social)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Licencia y DNI del conductor impresos",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Unidad de peso no fija",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Placa del vehículo impresa",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF de la guía renderizado",
+     "detalle": "26821 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Aparece en Perú ▸ Guías de remisión ▸ Por enviar",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío de la guía a SUNAT (GRE)",
+     "detalle": "sin credenciales de prueba; el botón de imprimir exige estado sent"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9560,
+     "nombre": "QA20 Conductor Pedro Ramos",
+     "nota": ""
+    },
+    {
+     "modelo": "l10n_pe_edi.vehicle",
+     "id": 14,
+     "nombre": "[QA2-020] QA20 Camión",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1888,
+     "nombre": "WH/OUT/00094",
+     "nota": "entrega con guía"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_complaints_book",
+   "titulo": "Libro de reclamaciones: registro, constancia, plazo y respuesta",
+   "pasos": "Registrar un reclamo de una consumidora con DNI, revisar el plazo de 15 días hábiles, atenderlo y cerrarlo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Correlativo por libro y año",
+     "detalle": "000000001-2026"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Plazo de 15 días hábiles",
+     "detalle": "esperado datetime.date(2026, 11, 20), obtenido datetime.date(2026, 11, 20)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Constancia por correo con la hoja en PDF",
+     "detalle": "['Hoja de reclamación 000000001-2026 - OLANO IT S.A.C. (dev)']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Fecha de constancia registrada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "DNI de 7 dígitos rechazado",
+     "detalle": "El DNI debe tener 8 dígitos."
+    },
+    {
+     "estado": "OK",
+     "titulo": "En atención",
+     "detalle": "esperado 'in_progress', obtenido 'in_progress'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Sin observaciones no se responde",
+     "detalle": "Escriba las observaciones y acciones adoptadas antes de responder."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Respondido",
+     "detalle": "esperado 'answered', obtenido 'answered'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cerrado",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF de la hoja de reclamación",
+     "detalle": "29539 bytes"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.complaint.book",
+     "id": 16,
+     "nombre": "QA20 Libro tienda virtual",
+     "nota": ""
+    },
+    {
+     "modelo": "l10n_pe.complaint",
+     "id": 82,
+     "nombre": "000000001-2026 - QA20 Consumidora Rosa Quispe",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_website_sale_pe",
+   "titulo": "Checkout: boleta/factura y consulta RUC/DNI (consulta simulada)",
+   "pasos": "En la dirección de facturación de la tienda elegir boleta o factura y consultar el documento.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Cliente con DNI: boleta marcada",
+     "detalle": "esperado 'boleta', obtenido 'boleta'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cliente con RUC: factura marcada",
+     "detalle": "esperado 'factura', obtenido 'factura'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Consulta RUC devuelve datos",
+     "detalle": "{'found': True, 'values': {'name': 'QA20 EMPRESA CONSULTADA SAC', 'street': 'AV. 1'}, 'message': ''}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pasaporte: no se consulta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Límite de consultas por sesión",
+     "detalle": "Alcanzó el límite de consultas. Complete sus datos a mano."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Formulario de dirección muestra el selector y el botón de consulta",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Interfaz del checkout",
+     "detalle": "requiere navegador; cubierto por tests HttpCase del módulo"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_pos",
+   "titulo": "Configurar TPV QA20 con diarios de boletas y facturas",
+   "pasos": "Crear el punto de venta QA20 con diario de boletas, diario de facturas, efectivo y Yape.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "CPE en el TPV activo (ambos diarios configurados)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "TPV sin diarios CPE: flujo estándar",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "El TPV carga el código SUNAT del cliente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "El TPV carga QR, importe en letras y totales del comprobante",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 6114,
+     "nombre": "QA20 Boletas TPV",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6115,
+     "nombre": "QA20 Facturas TPV",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6116,
+     "nombre": "QA20 Caja TPV CPE",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6117,
+     "nombre": "QA20 Caja TPV Lotes",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6118,
+     "nombre": "QA20 Yape",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner.bank",
+     "id": 185,
+     "nombre": "QA20-YAPE-987654321",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.payment.method",
+     "id": 834,
+     "nombre": "QA20 Efectivo CPE",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.payment.method",
+     "id": 835,
+     "nombre": "QA20 Efectivo Lotes",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.payment.method",
+     "id": 836,
+     "nombre": "QA20 Yape",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.config",
+     "id": 221,
+     "nombre": "QA20 TPV CPE",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.config",
+     "id": 222,
+     "nombre": "QA20 TPV Lotes",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_pe_wallet_qr",
+   "titulo": "Método Yape: QR de la billetera en la pantalla de pago",
+   "pasos": "Configurar Yape con la imagen del QR de la cuenta y pedir el QR de un cobro en soles.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Método QR «billetera» ofrecido",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "QR en data URI PNG",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Es la imagen de la cuenta",
+     "detalle": "esperado 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII=', obtenido 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII='"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Mismo QR sin conexión (default_qr)",
+     "detalle": "esperado 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII=', obtenido 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII='"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Solo en soles",
+     "detalle": "El siguiente error impidió generar el código QR de QR de billetera (Yape, Plin) aunque se detectó que es elegible:Yape y Plin solo cobran en soles."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cuenta sin imagen de QR rechazada",
+     "detalle": "Suba la imagen del QR de billetera en la cuenta bancaria QA20-SIN-QR."
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_network_printer",
+   "titulo": "Impresora ESC/POS de red: lista blanca y ticket de prueba (simulado)",
+   "pasos": "Activar la impresora de red del TPV, pulsar «Probar impresora» y revisar los destinos permitidos.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Destino de la caja permitido",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Destino de la impresora de cocina permitido",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "IP no configurada rechazada (anti-SSRF)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Puerto distinto rechazado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Ticket de prueba enviado con el nombre de la caja",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Notificación de éxito",
+     "detalle": "esperado 'success', obtenido 'success'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Modo agente: la prueba no se hace en el servidor",
+     "detalle": "El método de impresión está en 'Agente local' — use el botón 'Probar agente' de más abajo para confirmar que el agente responde. El backend de Odoo no tiene ruta de red directa a la impresora en ese m"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Imprimir al pagar activa iface_print_auto",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Impresión física",
+     "detalle": "sin impresora; conexión TCP simulada"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pos.printer",
+     "id": 79,
+     "nombre": "QA20 Cocina ESC/POS",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_theme",
+   "titulo": "Tema del TPV: marca, colores y variables CSS",
+   "pasos": "En Ajustes del TPV poner nombre de marca y color primario y revisar que la caja los use.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Título de la pestaña",
+     "detalle": "esperado 'QA20 Botica · QA20 TPV CPE', obtenido 'QA20 Botica · QA20 TPV CPE'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Color primario en las variables CSS",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Marca en las variables CSS",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Color inválido rechazado (red)",
+     "detalle": "Color primario debe ser un color hexadecimal como #2563EB (se recibió red)."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Color inválido rechazado (#0F766E; } b)",
+     "detalle": "Color primario debe ser un color hexadecimal como #2563EB (se recibió #0F766E; } body { display:none)."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Variables del modo oscuro",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "El TPV recibe el botón de categorías, no las imágenes del tema",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pantalla del cliente con título y variables sin comillas",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_product_view",
+   "titulo": "Vista de productos: stock del almacén del TPV y preferencia del cajero",
+   "pasos": "Cambiar a vista de lista en la caja: el cajero guarda su preferencia y ve el stock del almacén.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "qty_available viaja al TPV",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Stock del almacén del TPV (WH/Existencias)",
+     "detalle": "esperado 95.0, obtenido 95.0"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "Un solo almacén en la base",
+     "detalle": "no se compara contra otro almacén"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Etiquetas filtro en el TPV",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "El cajero guarda su vista (sin sudo)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Preferencia guardada",
+     "detalle": "esperado 'list', obtenido 'list'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "No cambia la preferencia de otro usuario",
+     "detalle": "Solo puedes cambiar tu propia preferencia de vista del TPV."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Preferencia cargada en el TPV",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.tag",
+     "id": 29,
+     "nombre": "QA20 Analgésicos",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_pos_vendedor",
+   "titulo": "Vendedores autorizados de la caja (sin PIN ni inicio de sesión)",
+   "pasos": "Activar «Vendedor autorizado» en el TPV y elegir los vendedores que se pueden asignar a la orden.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "El TPV carga empleados (vendedores)",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.employee",
+     "id": 955,
+     "nombre": "QA20 Ana Vendedora",
+     "nota": ""
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 956,
+     "nombre": "QA20 Carlos Almacén",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_payment_gateway",
+   "titulo": "Pasarelas en línea: método por pasarela y logo",
+   "pasos": "Desde la pasarela Niubiz crear su método de pago del TPV y agregar dos métodos en línea a la caja.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Tarjeta 240 × 160 de Niubiz para el TPV",
+     "detalle": "esperado (240, 160), obtenido (240, 160)"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "Crear el método del TPV desde Niubiz (botón de la pasarela)",
+     "detalle": "TypeError: pos.payment.method.image: use BinaryValue instead of bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Método creado desde la pasarela",
+     "detalle": "esperado payment.provider(4702,), obtenido payment.provider(4702,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El método lleva el logo de la pasarela",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Dos métodos en línea en la misma caja",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Una pasarela no puede estar en dos métodos de la caja",
+     "detalle": "La pasarela QA20 Pasarela A está en dos métodos de pago en línea de la caja QA20 TPV CPE: cada pasarela va en un solo método."
+    },
+    {
+     "estado": "OK",
+     "titulo": "El pago de la pasarela B va a su método",
+     "detalle": "esperado pos.payment.method(840,), obtenido pos.payment.method(840,)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "payment.provider",
+     "id": 4702,
+     "nombre": "QA20 Pasarela A",
+     "nota": ""
+    },
+    {
+     "modelo": "payment.provider",
+     "id": 4703,
+     "nombre": "QA20 Pasarela B",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.payment.method",
+     "id": 839,
+     "nombre": "QA20 Pasarela A",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.payment.method",
+     "id": 840,
+     "nombre": "QA20 Pasarela B",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_pos",
+   "titulo": "Venta en caja con boleta a cliente DNI (CPE desde el TPV)",
+   "pasos": "Abrir la caja, vender 2 ibuprofenos a una clienta con DNI eligiendo «Boleta», cobrar en efectivo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Orden pagada",
+     "detalle": "esperado 'paid', obtenido 'paid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "La orden generó su comprobante",
+     "detalle": "B BQB-00000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Comprobante en el diario de boletas del TPV",
+     "detalle": "esperado account.journal(6114,), obtenido account.journal(6114,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Tipo 03 (boleta)",
+     "detalle": "esperado '03', obtenido '03'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Total de la boleta",
+     "detalle": "esperado 118.0, obtenido 118.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Boleta pagada con el cobro de caja",
+     "detalle": "paid"
+    },
+    {
+     "estado": "OK",
+     "titulo": "QR de la representación impresa (RUC|03|serie|folio|igv|total|fecha|1|DNI)",
+     "detalle": "20557912879|03|BQB|00000001|18.00|118.00|2026-10-30|1|46027897"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Importe en letras del ticket",
+     "detalle": "CIENTO DIECIOCHO Y 00/100 SOL"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Etiqueta del IGV del ticket",
+     "detalle": "esperado 'IGV (18%)', obtenido 'IGV (18%)'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El TPV intentó enviar el CPE a SUNAT (IAP simulado)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML UBL generado sin errores",
+     "detalle": "6503 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML de la boleta del TPV: 03",
+     "detalle": "esperado '03', obtenido '03'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Ticket 80 mm de la boleta del TPV",
+     "detalle": "25767 bytes"
+    },
+    {
+     "estado": "OK",
+     "titulo": "al_pos_vendedor: vendedor guardado en la orden",
+     "detalle": "esperado hr.employee(955,), obtenido hr.employee(955,)"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío a OSE",
+     "detalle": "sin credenciales de prueba (IAP simulado)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pos.session",
+     "id": 400,
+     "nombre": "QA20 TPV CPE/00382",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.order",
+     "id": 431,
+     "nombre": "QA20 TPV CPE - 000001",
+     "nota": "orden con boleta"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31495,
+     "nombre": "B BQB-00000001 (Customer invoice from QA20 TPV CPE - 000001)",
+     "nota": "boleta del TPV"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_edi_pos",
+   "titulo": "Factura desde la caja a cliente RUC, retenida («Emitir a SUNAT: No») y NC por devolución",
+   "pasos": "Vender con «Factura» a un cliente con RUC; otra venta con «Emitir a SUNAT: No»; devolver la primera.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Factura en el diario de facturas del TPV",
+     "detalle": "esperado account.journal(6115,), obtenido account.journal(6115,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Tipo 01 (factura)",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Factura marcada «Emisión SUNAT retenida»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "El envío de la retenida no se hace",
+     "detalle": "Emisión SUNAT retenida desde el TPV: desmarque «Emisión SUNAT retenida» en F FQF-00000002 (Customer invoice from QA20 TPV CPE - 000003) para enviarla."
+    },
+    {
+     "estado": "OK",
+     "titulo": "La devolución enlaza la orden original",
+     "detalle": "esperado pos.order(432,), obtenido pos.order(432,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC de factura en el diario de facturas (aunque la caja marque boleta)",
+     "detalle": "esperado account.journal(6115,), obtenido account.journal(6115,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC tipo 07",
+     "detalle": "esperado '07', obtenido '07'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC enlazada a la factura",
+     "detalle": "esperado account.move(31497,), obtenido account.move(31497,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Factura a cliente sin RUC rechazada",
+     "detalle": "La factura electrónica requiere un cliente con RUC (tipo de documento RUC y 11 dígitos). Seleccione el cliente o emita una boleta."
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pos.order",
+     "id": 432,
+     "nombre": "QA20 TPV CPE - 000002",
+     "nota": "orden con factura"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31497,
+     "nombre": "F FQF-00000001 (Customer invoice from QA20 TPV CPE - 000002)",
+     "nota": "factura del TPV"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31499,
+     "nombre": "F FQF-00000002 (Customer invoice from QA20 TPV CPE - 000003)",
+     "nota": "factura retenida"
+    },
+    {
+     "modelo": "pos.order",
+     "id": 434,
+     "nombre": "REEMBOLSO DE QA20 TPV CPE - 000002",
+     "nota": "devolución"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31501,
+     "nombre": "F CQF-00000001 (Reversión de: F FQF-00000001)",
+     "nota": "NC del TPV"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_pos_loyalty",
+   "titulo": "Tarjeta de regalo: venta sola sin comprobante y venta mixta",
+   "pasos": "Vender solo una tarjeta de regalo (sale recibo) y luego ibuprofeno + tarjeta con boleta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Producto tarjeta de regalo marcado como vale",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Producto normal no es vale",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cuenta 496 de vales configurada",
+     "detalle": "4960000"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Venta solo de tarjeta: sin comprobante",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Queda como recibo",
+     "detalle": "esperado 'recibo', obtenido 'recibo'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "La boleta no incluye la tarjeta (59.00)",
+     "detalle": "esperado 59.0, obtenido 59.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Solo el producto en la boleta",
+     "detalle": "esperado product.product(14000,), obtenido product.product(14000,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Boleta saldada",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pasivo con el cliente por la tarjeta (−50.00)",
+     "detalle": "esperado -50.0, obtenido -50.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pos.order",
+     "id": 436,
+     "nombre": "QA20 TPV CPE - 000006",
+     "nota": "venta solo tarjeta"
+    },
+    {
+     "modelo": "pos.order",
+     "id": 437,
+     "nombre": "QA20 TPV CPE - 000007",
+     "nota": "venta mixta"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31503,
+     "nombre": "B BQB-00000002 (Customer invoice from QA20 TPV CPE - 000007)",
+     "nota": "boleta sin la tarjeta"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31505,
+     "nombre": "MISC/2026/10/0010 (Tarjeta de regalo y monedero: B BQB-00000002)",
+     "nota": "asiento del vale"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_pe_wallet_qr",
+   "titulo": "Cobro con Yape en caja",
+   "pasos": "Vender un ibuprofeno a una clienta y cobrar con Yape.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Pago registrado con Yape",
+     "detalle": "esperado pos.payment.method(836,), obtenido pos.payment.method(836,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El TPV carga los datos del QR del método",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pos.order",
+     "id": 438,
+     "nombre": "QA20 TPV CPE - 000008",
+     "nota": "venta con Yape"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_payment_gateway",
+   "titulo": "Revisión del comprobante antes del QR de la pasarela",
+   "pasos": "Con una venta a facturar, antes de mostrar el QR de la pasarela el sistema revisa que el comprobante se pueda emitir.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Boleta emitible: se puede cobrar",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "La factura de prueba se deshace",
+     "detalle": "esperado 533, obtenido 533"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Factura a cliente sin RUC: el cajero ve el motivo antes del QR",
+     "detalle": "No se puede emitir el comprobante de esta venta; corrija esto antes de cobrar:\n\nLa factura electrónica requiere un cliente con RUC (tipo de documento RUC y 11 dígitos). Seleccione el cliente o emita una boleta."
+    },
+    {
+     "estado": "OK",
+     "titulo": "El cajero elige el método B para el QR",
+     "detalle": "esperado pos.payment.method(840,), obtenido pos.payment.method(840,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "El pago que llega por la pasarela B va a su método",
+     "detalle": "esperado pos.payment.method(840,), obtenido pos.payment.method(840,)"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Cobro real en la pasarela",
+     "detalle": "requiere navegador y credenciales de la pasarela"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_vendedor",
+   "titulo": "Vendedor en la orden y en el análisis de ventas; cierre de caja",
+   "pasos": "Cerrar la caja y revisar el análisis del TPV agrupado por vendedor.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Sin pos_hr solo viajan los vendedores de la lista",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Vendedor sin PIN ni código de barras, marcado solo-vendedor",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cierre de caja sin errores",
+     "detalle": "{'status': True}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Sesión cerrada",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Asientos de cierre de la sesión",
+     "detalle": "['POSC/2026/00001']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Análisis del TPV: ventas por vendedor",
+     "detalle": "1"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_product_view",
+   "titulo": "Cajero QA20 (no admin) vende producto con lote: sin y con grupo Inventario/Usuario",
+   "pasos": "Como cajero sin permisos de Inventario abrir la caja, elegir el lote del producto, cobrar y cerrar; repetir con el grupo.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Cajero sin grupo Inventario/Usuario",
+     "detalle": ""
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "Sin grupo Inventario/Usuario el cajero NO completa la venta con lote",
+     "detalle": "AccessError: No puede acceder a los registros 'Número de serie/lote' (stock.lot). | en pos_stock/models/stock_picking.py:139 _create_move_from_pos_order_lines > pos_stock/models/stock_move.py:100 _add_mls_related_to_order > pos_stock/models/stock_move.py:44 _create_production_lots_for_pos_order > /home/och/odoo/ce20/ee20/stock_barcode/models/stock_lot.py:15 _search"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Con grupo Inventario/Usuario: lotes visibles, venta con lote y caja cerrada",
+     "detalle": "['QA20-LOTE-A1']"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "Cierre de caja del cajero",
+     "detalle": "cierre por el cajero bloqueado por una cuenta bancaria ajena no confiable; se cierra como sistema"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.users",
+     "id": 3831,
+     "nombre": "QA20 Cajero TPV",
+     "nota": "cajero sin grupo de inventario al inicio"
+    },
+    {
+     "modelo": "product.product",
+     "id": 14006,
+     "nombre": "QA20 Amoxicilina 500 mg (lote)",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.lot",
+     "id": 299,
+     "nombre": "QA20-LOTE-A1",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.session",
+     "id": 402,
+     "nombre": "QA20 TPV Lotes/00384",
+     "nota": "venta con lote con grupo"
+    },
+    {
+     "modelo": "pos.order",
+     "id": 441,
+     "nombre": "QA20 TPV Lotes - 000001",
+     "nota": "venta con lote con grupo"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_pos_pe_partner_lookup",
+   "titulo": "Crear cliente en caja desde RUC o DNI (consulta simulada)",
+   "pasos": "En la lista de clientes del TPV escribir un RUC o un DNI y crear el cliente con los datos consultados.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Consulta como RUC (código 6)",
+     "detalle": "esperado '6', obtenido '6'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cliente RUC creado",
+     "detalle": "esperado ('20600009002', '6', True), obtenido ('20600009002', '6', True)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Cliente DNI creado (identificador adicional)",
+     "detalle": "esperado ('1', '70123456'), obtenido ('1', '70123456')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "DNI existente: devuelve el cliente sin consultar",
+     "detalle": "esperado 9558, obtenido 9558"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Sin consulta para cliente existente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Formato inválido rechazado",
+     "detalle": "Escriba un RUC (11 dígitos) o un DNI (8 dígitos)."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Usuario sin permiso de crear contactos rechazado",
+     "detalle": "No puede crear registros 'Contacto' (res.partner).\n\nEsta operación está permitida para los siguientes grupos:\n\t- Ventas / Administrador\n\t- Manufactura / Administrador\n\t- Compras / Administrador\n\t- Pun"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Consulta real SUNAT/RENIEC",
+     "detalle": "sin token de consulta; respuesta simulada"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9572,
+     "nombre": "QA20 EMPRESA CONSULTADA SAC",
+     "nota": "creado desde RUC"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9573,
+     "nombre": "QA20 LUIS HUAMAN CCORI",
+     "nota": "creado desde DNI"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pos_theme",
+   "titulo": "Assets del TPV: los bundles compilan e incluyen los módulos QA",
+   "pasos": "Abrir la caja en el navegador (aquí: generar los bundles JS/CSS del TPV).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Bundle JS point_of_sale.assets_prod generado",
+     "detalle": "961 archivos"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Bundle CSS/SCSS point_of_sale.assets_prod compilado",
+     "detalle": "306 hojas"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Bundle CSS/SCSS point_of_sale.assets_prod_dark compilado",
+     "detalle": "339 hojas"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Bundle JS point_of_sale.customer_display_assets generado",
+     "detalle": "254 archivos"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Bundle CSS/SCSS point_of_sale.customer_display_assets compilado",
+     "detalle": "127 hojas"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Todos los módulos OL-POS presentes en los bundles del TPV",
+     "detalle": "3849"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Interfaz al_pos_theme",
+     "detalle": "requiere navegador; cubierto por tours/estático"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Interfaz al_pos_product_view",
+     "detalle": "requiere navegador; cubierto por tours/estático"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Interfaz al_pos_online_payment",
+     "detalle": "requiere navegador; cubierto por tours/estático"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Interfaz al_pos_network_printer",
+     "detalle": "requiere navegador; cubierto por tours/estático"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_sale_approval",
+   "titulo": "Pedido con producto que exige aprobación: pendiente hasta aprobar",
+   "pasos": "Cotizar un producto marcado «Requiere aprobación», solicitar la aprobación, aprobarla como gerente y confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Cotización: aprobación por solicitar",
+     "detalle": "esperado 'to_request', obtenido 'to_request'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "No se confirma sin aprobación",
+     "detalle": "La orden S00307 necesita una solicitud aprobada en Aprobaciones («Solicitar aprobación») antes de confirmarse."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Solicitud enlazada al pedido",
+     "detalle": "esperado (sale.order(307,), 'S00307'), obtenido (sale.order(307,), 'S00307')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pendiente de aprobación",
+     "detalle": "esperado 'pending', obtenido 'pending'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pendiente: no se confirma",
+     "detalle": "La orden S00307 necesita una solicitud aprobada en Aprobaciones («Solicitar aprobación») antes de confirmarse."
+    },
+    {
+     "estado": "OK",
+     "titulo": "Aprobada por el gerente",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Pedido confirmado tras aprobar",
+     "detalle": "esperado 'sale', obtenido 'sale'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Producto sin marca: no requiere aprobación",
+     "detalle": "esperado 'not_required', obtenido 'not_required'"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "El módulo aprueba por producto marcado, no por límite de importe",
+     "detalle": "no hay regla de monto en al_sale_approval (approvals nativo)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9574,
+     "nombre": "QA20 Cliente RUC Aprobaciones SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14009,
+     "nombre": "QA20 Servicio HKA",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6123,
+     "nombre": "QA20 Ventas OSE HKA",
+     "nota": ""
+    },
+    {
+     "modelo": "res.users",
+     "id": 3832,
+     "nombre": "QA20 Gerente aprobador",
+     "nota": ""
+    },
+    {
+     "modelo": "approval.category",
+     "id": 23,
+     "nombre": "QA20 Aprobación de orden de venta",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14010,
+     "nombre": "QA20 Muebles de melamina",
+     "nota": ""
+    },
+    {
+     "modelo": "sale.order",
+     "id": 307,
+     "nombre": "S00307",
+     "nota": "cotización con aprobación"
+    },
+    {
+     "modelo": "approval.request",
+     "id": 141,
+     "nombre": "Aprobación de S00307",
+     "nota": "solicitud de aprobación"
+    },
+    {
+     "modelo": "sale.order",
+     "id": 308,
+     "nombre": "S00308",
+     "nota": "pedido sin aprobación"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_ose_factory_hka",
+   "titulo": "Operador Factory HKA: envío, consulta CDR y baja (OSE simulado)",
+   "pasos": "Con el operador «The Factory HKA» y sus credenciales, enviar una factura, consultar su CDR y darla de baja.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Operador Factory HKA disponible",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Entorno de prueba usa el WSDL demo de HKA",
+     "detalle": "esperado 'https://demoose.thefactoryhka.com.pe/ol-ti-itcpfegem/billService?wsdl', obtenido 'https://demoose.thefactoryhka.com.pe/ol-ti-itcpfegem/billService?wsdl'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Nombre de archivo con número en 8 dígitos",
+     "detalle": "20557912879-01-FFQH-00000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Envío sin errores",
+     "detalle": "None"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Aceptada (CDR simulado)",
+     "detalle": "esperado 'sent', obtenido 'sent'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sendBill con el usuario de HKA",
+     "detalle": "esperado ('sendBill', 'QA20HKA'), obtenido ('sendBill', 'QA20HKA')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ZIP enviado con el nombre HKA",
+     "detalle": "20557912879-01-FFQH-00000001.zip"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML firmado con el certificado (SignatureValue)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Consulta de CDR (getStatusCdr)",
+     "detalle": "esperado '0004', obtenido '0004'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Baja por comunicación (sendSummary + getStatus)",
+     "detalle": "esperado 'cancelled', obtenido 'cancelled'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Operaciones de baja",
+     "detalle": "esperado ['sendSummary', 'getStatus'], obtenido ['sendSummary', 'getStatus']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Factura: baja por RA, no por resumen",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Sin contraseña: queda pendiente y no llama al OSE",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Configuración de la compañía restaurada",
+     "detalle": "esperado 'iap', obtenido 'iap'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío real a Factory HKA",
+     "detalle": "sin credenciales de prueba; cliente SOAP simulado"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9574,
+     "nombre": "QA20 Cliente RUC Aprobaciones SAC",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14009,
+     "nombre": "QA20 Servicio HKA",
+     "nota": ""
+    },
+    {
+     "modelo": "account.journal",
+     "id": 6123,
+     "nombre": "QA20 Ventas OSE HKA",
+     "nota": ""
+    },
+    {
+     "modelo": "certificate.certificate",
+     "id": 18,
+     "nombre": "QA20 Certificado demo (pruebas)",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31514,
+     "nombre": "F FQH-00000001",
+     "nota": "factura enviada por HKA (simulado)"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31515,
+     "nombre": "F FQH-00000002",
+     "nota": "factura sin credenciales HKA"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}

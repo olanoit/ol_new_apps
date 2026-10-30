@@ -1,0 +1,138 @@
+2026-10-30 12:44:34,077 532811 WARNING ce20_db_ol odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)
+2026-10-30 12:44:40,413 532811 WARNING ce20_db_ol odoo.fields: res.config.settings.l10n_pe_cpe_post_mode: selection attribute will be ignored as the field is related
+2026-10-30 12:44:41,190 532811 WARNING ce20_db_ol odoo.fields: Field l10n_pe.retention.edi.mixin.l10n_pe_edi_reversal_reason: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:44:41,192 532811 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.year: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:44:41,192 532811 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.month: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:44:41,192 532811 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:44:41,517 532811 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:616: UserWarning: pharmacy.insurance.liquidation: inconsistent 'compute_sudo' for computed fields order_count, amount_total. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 616, in field_computed
+    warnings.warn(
+
+2026-10-30 12:44:41,518 532811 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:633: UserWarning: pharmacy.insurance.liquidation: inconsistent 'store' for computed fields, accessing order_count may recompute and update amount_total. Use distinct compute methods for stored and non-stored fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 633, in field_computed
+    warnings.warn(
+
+obra QA20 MOMEN-35-26 PLR/2026/00734 · v2
+
+== [al_construction_planner_sale] OV del contrato, entregas semanales y valorización 1 facturada
+    | === Contrato y calendario de ingresos (P-21) ===
+    | S00292 7592.47 [datetime.date(2026, 10, 28), datetime.date(2026, 11, 11), datetime.date(2026, 11, 25), datetime.date(2026, 12, 9), datetime.date(2026, 12, 23)]
+    | === Entregas semanales (P-19) ===
+    | ENT/2026/00094 2026-10-22 2026-10-28 [0.0] 0.0 0.0 0.0
+    | ENT/2026/00095 2026-10-29 2026-11-04 [0.0] 0.0 0.0 0.0
+    | ENT/2026/00096 2026-11-05 2026-11-11 [0.64] 48.67 52.2 -3.53
+    | === Valorización 1 (P-20) ===
+    | VAL/2026/00074 invoiced 48.67 48.67 2.43 46.24 F FFI-00000001 48.67 [0.01]
+    | OK
+  OK      OV confirmada — esperado 'sale', obtenido 'sale'
+  OK      valorización facturada — esperado 'invoiced', obtenido 'invoiced'
+  OK      factura publicada — esperado 'posted', obtenido 'posted'
+  OK      fondo de garantía retenido — 2.43
+
+== [al_construction_planner_sale] Cronograma valorizado (plan y real) con cobro conciliado
+    | Cobro BNK1/2026/00001 F FFI-00000001 paid
+    | plan costo 8142.38 ingreso 7592.47 margen -549.91 cobrado 7592.47
+    | real costo 52.2 ingreso 48.67 margen -3.53 cobrado 48.67
+    | 22 filas
+    | OK
+  OK      cronograma: costo planificado — {'cost': 8142.38, 'revenue': 7592.47, 'valuation': 7592.47, 'invoice': 7592.47, 'collection': 7212.85, 'guarantee': 379.62, 'collection_total': 7592.47, 'margin': -549.91, 'max_gap': 8142.38, 'max_gap_week': '2026-11-26'}
+  OK      cronograma: ingreso real — {'cost': 52.2, 'revenue': 48.67, 'valuation': 48.67, 'invoice': 48.67, 'collection': 48.67, 'guarantee': 0.0, 'collection_total': 48.67, 'margin': -3.53, 'max_gap': 52.2, 'max_gap_week': '2026-12-10'}
+  OK      factura cobrada — esperado True, obtenido True
+
+== [al_construction_planner_sale_furniture] Partida del contrato por familia de la tipología
+  OK      línea del plan asignada a la partida «Cocinas» — S00292 - Cocinas (QA20 Inmobiliaria MOMEN)
+  OK      con familia kitchen la partida toma las cocinas — S00292 - Cocinas (QA20 Inmobiliaria MOMEN)
+
+== [al_construction_planner_spreadsheet] Hoja de presupuesto de la cotización (documents.spreadsheet)
+  OK      un documento de hoja por cotización — esperado 1, obtenido 1
+  OK      tipo de hoja presupuesto — esperado 'budget', obtenido 'budget'
+  OK      plantilla con las hojas del libro — ['INSTRUCCIONES', 'OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO', 'PLAN', 'LISTAS', 'REFERENCIAS', 'ERRORES']
+  OK      filas Odoo de la hoja (RPC de la pantalla) — ['OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PLAN']
+  OK      validación de la hoja responde — 4
+  OMITIDO edición visual de la hoja (o-spreadsheet) — sin navegador
+
+== [al_construction_planner_suite] Suite instalada: puentes y obra QA20 de punta a punta
+  OK      puentes del planificador instalados — 18
+  OK      plan vigente de la obra — PLR/2026/00734 · v2
+  OK      OC de la obra (servicio) — ['P00939', 'P00938']
+  OK      liquidaciones de la obra
+  OK      valorizaciones al cliente
+
+COMMIT
+RESUMEN proyectos_ingreso: {'OK': 5}

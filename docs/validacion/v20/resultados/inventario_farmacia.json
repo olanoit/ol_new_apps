@@ -1,0 +1,2837 @@
+{
+ "fase": "inventario_farmacia",
+ "casos": [
+  {
+   "modulo": "preparacion",
+   "titulo": "Datos maestros QA20 de la fase",
+   "pasos": "Crear almacenes, categorías y contactos de prueba.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "almacenes QA20 disponibles",
+     "detalle": "Q20TA, Q20TB, Q20FA"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "stock.warehouse",
+     "id": 897,
+     "nombre": "QA20 Inv Central",
+     "nota": "almacén propio de la fase"
+    },
+    {
+     "modelo": "stock.warehouse",
+     "id": 898,
+     "nombre": "QA20 Inv Obra",
+     "nota": "almacén propio de la fase"
+    },
+    {
+     "modelo": "stock.warehouse",
+     "id": 899,
+     "nombre": "QA20 Botica",
+     "nota": "almacén propio de la fase"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9636,
+     "nombre": "QA20 Droguería Andina S.A.C.",
+     "nota": "proveedor"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9637,
+     "nombre": "QA20 Clínica San Juan S.A.C.",
+     "nota": "cliente"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9638,
+     "nombre": "QA20 Alquileres del Sur S.A.C.",
+     "nota": "propietario"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9639,
+     "nombre": "QA20 Mario Cárdenas Ríos",
+     "nota": "paciente (DNI 40112233)"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9640,
+     "nombre": "QA20 Dra. Elena Vargas",
+     "nota": "prescriptor CMP"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "preparacion",
+   "titulo": "Caja «QA20 Botica» del local Q20FA",
+   "pasos": "Crear el diario de caja, el método Efectivo y el punto de venta del local y abrir la sesión.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el administrador es responsable del TPV",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sesión del TPV abierta",
+     "detalle": "opened"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pos.config",
+     "id": 225,
+     "nombre": "QA20 Botica",
+     "nota": "punto de venta"
+    },
+    {
+     "modelo": "pos.session",
+     "id": 405,
+     "nombre": "QA20 Botica/00387",
+     "nota": "sesión abierta"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_stock_base",
+   "titulo": "Tipo de operación SUNAT (tabla 12) y página «Logística PE»",
+   "pasos": "Abrir una recepción, una salida y un traslado: la página Logística PE muestra el tipo de operación de la tabla 12 (02 compra / 01 venta / 21 traslado).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "recepción validada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "recepción: tabla 12 = 02 (compra)",
+     "detalle": "esperado '2', obtenido '2'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "salida: tabla 12 = 01 (venta)",
+     "detalle": "esperado '1', obtenido '1'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "traslado interno: tabla 12 = 21",
+     "detalle": "esperado '21', obtenido '21'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "página «Logística PE» en el formulario",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el tipo de operación (tabla 12) vive en la página Logística PE",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el campo aparece una sola vez en el formulario",
+     "detalle": "esperado 1, obtenido 1"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14157,
+     "nombre": "QA20 Tornillo T12",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1987,
+     "nombre": "Q20TA/IN/00001",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1988,
+     "nombre": "Q20TA/OUT/00001",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1989,
+     "nombre": "Q20TA/INT/00001",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_stock_base",
+   "titulo": "Planchas enteras: producto indivisible y redondeo",
+   "pasos": "Crear la unidad «Plancha 2.44×2.15» marcada «Plancha entera» y un tablero con esa unidad: queda indivisible y una necesidad de 7.3 planchas se entrega como 8.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el tablero con unidad «Plancha entera» es indivisible",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "área de la plancha en m² desde el factor",
+     "detalle": "esperado 5.246, obtenido 5.246"
+    },
+    {
+     "estado": "OK",
+     "titulo": "necesidad 7.3 → planchas enteras (tolerancia 0.0)",
+     "detalle": "esperado 8.0, obtenido 8.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "7.000001 no sube a 8 (redondeo de la UdM)",
+     "detalle": "esperado 7.0, obtenido 7.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "forzado «No» en el producto anula la regla de la unidad",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "resumen de inventario sin la etiqueta «Late» en inglés",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "uom.uom",
+     "id": 180,
+     "nombre": "QA20 Plancha 2.44x2.15",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14158,
+     "nombre": "QA20 Tablero melamina 18 mm",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_stock_transfer",
+   "titulo": "Traslado interno entre establecimientos con GRE motivo 04",
+   "pasos": "Trasladar 4 andamios de «Inv Central» (anexo 0091) a «Inv Obra» (anexo 0092) y emitir la guía de remisión: motivo 04, destinatario = remitente.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el traslado admite guía de remisión",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "punto de partida = dirección del almacén origen",
+     "detalle": "esperado res.partner(9633,), obtenido res.partner(9633,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "punto de llegada = dirección del almacén destino",
+     "detalle": "esperado res.partner(9634,), obtenido res.partner(9634,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "motivo propuesto 04",
+     "detalle": "esperado '04', obtenido '04'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "GRE marcada como enviada (firma simulada)",
+     "detalle": "esperado 'sent', obtenido 'sent'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: HandlingCode 04",
+     "detalle": "esperado '04', obtenido '04'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: destinatario = RUC de la empresa",
+     "detalle": "esperado '20557912879', obtenido '20557912879'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: partida con anexo 0091 y RUC",
+     "detalle": "esperado ('0091', '20557912879'), obtenido ('0091', '20557912879')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: llegada con anexo 0092 y RUC",
+     "detalle": "esperado ('0092', '20557912879'), obtenido ('0092', '20557912879')"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío real de la GRE a SUNAT/OSE",
+     "detalle": "sin credenciales: firma y envío simulados como en los tests"
+    },
+    {
+     "estado": "OK",
+     "titulo": "traslado dentro del mismo establecimiento no admite guía",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "enviar la guía de un traslado sin salida del local se bloquea",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14159,
+     "nombre": "QA20 Andamio",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1990,
+     "nombre": "Q20TA/INT/00002",
+     "nota": "traslado entre establecimientos"
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1991,
+     "nombre": "Q20TA/INT/00003",
+     "nota": "dentro del mismo local"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_stock_transfer",
+   "titulo": "Bienes de terceros: guía con propietario y sin valorizar",
+   "pasos": "Recibir 5 andamios en consignación de «Alquileres del Sur» y trasladarlos a la obra: la guía lleva el propietario en observaciones y los bienes no entran a la valorización ni al kardex.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "recepción de terceros validada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la recepción se marca «Con bienes de terceros»",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la recepción de bienes de terceros no se valoriza (value = 0)",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "existencias de terceros separadas por propietario",
+     "detalle": "esperado 5.0, obtenido 5.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "los bienes de terceros no entran al kardex valorizado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "traslado con bienes de terceros",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "propietario detectado en la transferencia",
+     "detalle": "esperado res.partner(9638,), obtenido res.partner(9638,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML de la GRE: propietario en las observaciones",
+     "detalle": "Bienes de propiedad de QA20 Alquileres del Sur S.A.C. (20601234565)."
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF de la guía con el propietario",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la propia compañía no cuenta como tercero",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "stock.picking",
+     "id": 1992,
+     "nombre": "Q20TA/IN/00002",
+     "nota": "recepción en consignación"
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1993,
+     "nombre": "Q20TA/INT/00004",
+     "nota": "traslado de bienes de terceros"
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1994,
+     "nombre": "Q20TA/INT/00005",
+     "nota": "propietario = la compañía"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "ol_stock_kardex_pe",
+   "titulo": "Kardex 13.1 valorizado (AVCO) cuadra con el valor de inventario",
+   "pasos": "Comprar 10 u a S/10 y 10 u a S/20, facturar la primera compra (F001), vender 5 y abrir «Kardex SUNAT» 13.1 de octubre 2026: saldo 15 u × 15 = S/225.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "filas: saldo inicial + 3 movimientos",
+     "detalle": "esperado ['opening', 'move', 'move', 'move'], obtenido ['opening', 'move', 'move', 'move']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo inicial con operación 16",
+     "detalle": "esperado '16', obtenido '16'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compra: operación 02 (tabla 12)",
+     "detalle": "esperado '02', obtenido '02'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compra: comprobante de la factura (tabla 10)",
+     "detalle": "esperado ('01', 'F001', '00020123'), obtenido ('01', 'F001', '00020123')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costo promedio tras la 2.ª compra",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "venta: operación 01",
+     "detalle": "esperado '01', obtenido '01'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "salida 5 × 15 = 75 (AVCO)",
+     "detalle": "esperado 75.0, obtenido 75.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "venta sin comprobante → guía (09)",
+     "detalle": "esperado '09', obtenido '09'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo final 15 u",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo final S/ 225",
+     "detalle": "esperado 225.0, obtenido 225.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo del kardex = valor de inventario de Odoo",
+     "detalle": "esperado 225.0, obtenido 225.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo del kardex = cantidad a mano",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XLSX 13.1 generado",
+     "detalle": "esperado b'PK', obtenido b'PK'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDF formato 13.1 con el producto",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14160,
+     "nombre": "[QA20-KDX-001] QA20 Producto Kardex",
+     "nota": ""
+    },
+    {
+     "modelo": "purchase.order",
+     "id": 958,
+     "nombre": "P00958",
+     "nota": "compra 10 @ 10"
+    },
+    {
+     "modelo": "purchase.order",
+     "id": 959,
+     "nombre": "P00959",
+     "nota": "compra 10 @ 20"
+    },
+    {
+     "modelo": "sale.order",
+     "id": 323,
+     "nombre": "S00323",
+     "nota": "venta 5"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31534,
+     "nombre": "F F001-00020123",
+     "nota": "factura de proveedor F001-00020123"
+    },
+    {
+     "modelo": "l10n_pe.kardex.report",
+     "id": 24,
+     "nombre": "Kardex 13.1 · 2026-10-01 a 2026-10-31",
+     "nota": "kardex en segundo plano (XLSX)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "ol_stock_kardex_pe",
+   "titulo": "Kardex 12.1 en unidades físicas por almacén",
+   "pasos": "Generar el formato 12.1 agrupado por almacén: solo cantidades, sin costos.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "hay bloques por almacén",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo físico sumado por almacén = 15",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "12.1 sin costos",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "vista SQL del kardex interactivo: 3 movimientos",
+     "detalle": "esperado 3, obtenido 3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo corrido en el kardex interactivo",
+     "detalle": "esperado 225.0, obtenido 225.0"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "ol_stock_kardex_pe",
+   "titulo": "TXT del PLE 13.1 con el comprobante del kardex",
+   "pasos": "Generar el libro electrónico 13.1 (PLE) de octubre 2026: la fila de la compra lleva tipo 01, serie F001 y número 00020123; la unidad es la del producto.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "fila de la compra en el TXT (CUO = id del movimiento)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT: comprobante de la compra",
+     "detalle": "esperado ('01', 'F001', '00020123'), obtenido ('01', 'F001', '00020123')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT: fecha del periodo en hora de Lima",
+     "detalle": "esperado '10/2026', obtenido '10/2026'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT: unidad del producto (campo 16)",
+     "detalle": "esperado 'NIU', obtenido 'NIU'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT: 3 filas de movimientos del producto QA20",
+     "detalle": "esperado 3, obtenido 3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TXT: código del producto saneado (campo 7)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 17 (tabla 14): promedio = 1",
+     "detalle": "esperado '1', obtenido '1'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del archivo PLE con el RUC",
+     "detalle": "LE2055791287920261000130100001111.txt"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Presentación del PLE en SUNAT",
+     "detalle": "se valida el TXT generado; la carga al PLE es manual/externa"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_mrp_cost",
+   "titulo": "Costo de OF: materiales + MO + CIF con cierre del periodo",
+   "pasos": "Fabricar 2 mesas (4 tableros a S/10, 2 h de corte con un operario a S/10/h), aplicar el costo hora real del mes (S/15) y repartir una bolsa de CIF de S/300 con el cierre de costos.",
+   "checks": [
+    {
+     "estado": "AVISO",
+     "titulo": "Contrapartida de MO no configurada en la compañía (Ajustes de Fabricación)",
+     "detalle": "se simula 7111000 durante el cierre, sin escribir en res.company"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OF terminada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costo hora del mes aplicado",
+     "detalle": "esperado 'applied', obtenido 'applied'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ajuste de MO: 2 h × (15 − 10) = 10",
+     "detalle": "esperado 10.0, obtenido 10.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CIF repartido a la OF: 300",
+     "detalle": "esperado 300.0, obtenido 300.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cierre validado",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costo en destino validado",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "valor del producto terminado + 310",
+     "detalle": "esperado 430.0, obtenido 430.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento: abono a la 71 por 310",
+     "detalle": "esperado 310.0, obtenido 310.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "análisis: materiales 40",
+     "detalle": "esperado 40.0, obtenido 40.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "análisis: mano de obra 20",
+     "detalle": "esperado 20.0, obtenido 20.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "análisis: ajuste de MO 10",
+     "detalle": "esperado 10.0, obtenido 10.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "análisis: CIF 300",
+     "detalle": "esperado 300.0, obtenido 300.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "análisis: costo de máquina",
+     "detalle": "60.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14161,
+     "nombre": "QA20 Tablero MRP",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14162,
+     "nombre": "QA20 Mesa de centro",
+     "nota": ""
+    },
+    {
+     "modelo": "mrp.workcenter",
+     "id": 29,
+     "nombre": "QA20 Seccionadora",
+     "nota": ""
+    },
+    {
+     "modelo": "mrp.bom",
+     "id": 1542,
+     "nombre": "QA20 Mesa de centro",
+     "nota": ""
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 963,
+     "nombre": "QA20 Juan Pérez MRP",
+     "nota": ""
+    },
+    {
+     "modelo": "mrp.production",
+     "id": 550,
+     "nombre": "Q20TA/MO/00001",
+     "nota": "orden de fabricación"
+    },
+    {
+     "modelo": "l10n_pe.mrp.labor.rate",
+     "id": 23,
+     "nombre": "Costo hora 2026-10-01 – 2026-10-31",
+     "nota": "costo hora real (S/15)"
+    },
+    {
+     "modelo": "l10n_pe.mrp.cost.pool",
+     "id": 23,
+     "nombre": "QA20 Gastos de planta",
+     "nota": "bolsa de CIF"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31535,
+     "nombre": "MISC/2026/10/0011 (QA20 CIF del mes)",
+     "nota": "gasto CIF S/300"
+    },
+    {
+     "modelo": "l10n_pe.mrp.cost.close",
+     "id": 25,
+     "nombre": "Cierre de costos 2026-10-30 – 2026-10-30",
+     "nota": "cierre de costos del día"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_mrp_piece_costing",
+   "titulo": "Orden de corte: costo por área, tablero y tapacanto",
+   "pasos": "Fabricar una orden de corte con dos tableros (S/100 y S/200), 3 m de tapacanto y S/10 de costo extra: cada pieza sale con su costo (lateral 72.37, repisa 35.19, puerta 204.70).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "orden de corte terminada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "lateral: 66.67 tablero + 2 tapacanto + 3.70 general",
+     "detalle": "esperado 72.37, obtenido 72.37"
+    },
+    {
+     "estado": "OK",
+     "titulo": "repisa",
+     "detalle": "esperado 35.19, obtenido 35.19"
+    },
+    {
+     "estado": "OK",
+     "titulo": "puerta (roble)",
+     "detalle": "esperado 204.7, obtenido 204.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "producto principal (área 0.1) ≈ 0.74 (redondeo)",
+     "detalle": "0.75"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costo total de la orden 313",
+     "detalle": "esperado 313.0, obtenido 313.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuadre de piezas vs. consumo",
+     "detalle": "0.01"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no se puede desmontar una orden de corte",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "mrp.bom",
+     "id": 1543,
+     "nombre": "QA20 Corte OP 999",
+     "nota": "LdM de corte"
+    },
+    {
+     "modelo": "mrp.production",
+     "id": 551,
+     "nombre": "Q20TA/MO/00002",
+     "nota": "orden de corte con costeo por pieza"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_mrp_piece_costing",
+   "titulo": "Importar despiece desde XLSX",
+   "pasos": "Importar el despiece de la obra QA20MC (2 piezas) desde Excel: crea las piezas con área, tablero y tapacanto.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "importación terminada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "resumen: 2 piezas creadas",
+     "detalle": "Importación terminada.\nPiezas creadas: 2 · actualizadas: 0\nObras: QA20MC\nÁrea: 1.0340 m² · tapacanto: 2.52 m · unidades: 3\nAvisos (1):\n- Fila 3: area_m2 (0.25) difiere más de 2 % de largo × ancho (0.210000); se usa area_m2."
+    },
+    {
+     "estado": "OK",
+     "titulo": "la pieza queda marcada como pieza de corte",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "área calculada 0.7 × 0.56",
+     "detalle": "esperado 0.392, obtenido 0.392"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tablero de la pieza",
+     "detalle": "esperado product.product(14163,), obtenido product.product(14163,)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14170,
+     "nombre": "[QA20MC-1] Pieza QA20MC 1 700x560",
+     "nota": "pieza importada"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "preparacion",
+   "titulo": "Usuarios y ajustes de farmacia QA20",
+   "pasos": "Crear el técnico y la Q.F. de prueba; categoría Farmacia con salida FEFO.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "estrategia de salida FEFO disponible (product_expiry)",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.users",
+     "id": 3845,
+     "nombre": "QA20 qa20_tecnico_farmacia",
+     "nota": "técnico de farmacia"
+    },
+    {
+     "modelo": "res.users",
+     "id": 3846,
+     "nombre": "QA20 qa20_qf_farmacia",
+     "nota": "Q.F."
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 964,
+     "nombre": "QA20 Q.F. Rosa Quispe",
+     "nota": "Q.F. empleada"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_base",
+   "titulo": "Maestro de medicamentos: composición, equivalentes y alternativas",
+   "pasos": "Registrar Apronax (innovador) y tres genéricos de naproxeno 550 mg: el sistema propone primero los genéricos DCI más baratos y vincula bioequivalentes en ambos sentidos.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "composición rotulada",
+     "detalle": "esperado 'Qa20 paracetamol 500 mg + Qa20 cafeína 65 mg', obtenido 'Qa20 paracetamol 500 mg + Qa20 cafeína 65 mg'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "mismo principio, concentración y forma = equivalente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "otra forma farmacéutica no es equivalente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "alternativas: genéricos DCI por precio y luego genérico de marca",
+     "detalle": "esperado [14115, 14116, 14117], obtenido [14115, 14116, 14117]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "bioequivalencia recíproca",
+     "detalle": "esperado product.template(14114,), obtenido product.template(14114,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el bioequivalente cuenta como equivalente",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14172,
+     "nombre": "QA20 Panadol Extra",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14173,
+     "nombre": "QA20 Apronax 550",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14174,
+     "nombre": "QA20 Naproxeno Genfar 550",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14175,
+     "nombre": "QA20 Naproxeno Portugal 550",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14176,
+     "nombre": "QA20 Naprox 550",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14177,
+     "nombre": "QA20 Naproxeno suspensión",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14178,
+     "nombre": "QA20 Naproxeno 500 base",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_base",
+   "titulo": "Presentaciones, cuaderno de ocurrencias y turnos del Q.F.",
+   "pasos": "Crear la presentación «Caja x 100» de paracetamol, anotar una ocurrencia en el cuaderno y registrar un turno de reemplazo del Q.F.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre de la presentación",
+     "detalle": "esperado 'Caja x 100', obtenido 'Caja x 100'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la presentación crea su unidad de 100",
+     "detalle": "esperado 100, obtenido 100.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la unidad queda en las unidades del producto",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "precio unitario de la caja",
+     "detalle": "esperado 0.12, obtenido 0.12"
+    },
+    {
+     "estado": "OK",
+     "titulo": "300 unidades = 3 cajas",
+     "detalle": "esperado 3, obtenido 3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "una presentación de 1 unidad se rechaza",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "ocurrencia numerada",
+     "detalle": "OC/2026/00097"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cuaderno no se edita",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cuaderno no se borra",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el turno de reemplazo queda en el cuaderno",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "Q.F. de turno en el local",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "reporte del cuaderno de ocurrencias",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14179,
+     "nombre": "QA20 Paracetamol 500 caja",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.presentation",
+     "id": 131,
+     "nombre": "Caja x 100",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.logbook.entry",
+     "id": 97,
+     "nombre": "OC/2026/00097",
+     "nota": "ocurrencia"
+    },
+    {
+     "modelo": "pharmacy.shift",
+     "id": 20,
+     "nombre": "QA20 Q.F. Rosa Quispe · QA20 Botica",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_pharmacy_edi",
+   "titulo": "Presentación en el comprobante electrónico (código SUNAT de la caja)",
+   "pasos": "Facturar 1 «Caja x 100» de amoxicilina: el XML UBL lleva unitCode BX y el precio de la caja.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "Caja → BX (catálogo 03)",
+     "detalle": "esperado 'BX', obtenido 'BX'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Frasco → BO",
+     "detalle": "esperado 'BO', obtenido 'BO'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Blíster → código de la unidad del producto (NIU)",
+     "detalle": "esperado 'NIU', obtenido 'NIU'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML UBL sin errores",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: unitCode BX",
+     "detalle": "esperado 'BX', obtenido 'BX'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: cantidad 1 caja",
+     "detalle": "esperado 1.0, obtenido 1.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: valor de la línea 12.00",
+     "detalle": "esperado 12.0, obtenido 12.0"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío del CPE a SUNAT/OSE",
+     "detalle": "sin credenciales: solo se arma el XML"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14180,
+     "nombre": "QA20 Amoxicilina 500 EDI",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.presentation",
+     "id": 133,
+     "nombre": "Caja x 100",
+     "nota": ""
+    },
+    {
+     "modelo": "account.move",
+     "id": 31537,
+     "nombre": "F FFI-00000004",
+     "nota": "factura con presentación caja"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_stock",
+   "titulo": "Recepción con inspección, cuarentena y salida FEFO",
+   "pasos": "Recibir cetirizina por lote: sin inspección no se valida; con inspección no conforme el lote queda en cuarentena; al despachar se toma primero el lote que vence antes y nunca el de cuarentena.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "sin inspección técnica la recepción no se valida",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "recepción conforme validada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "recepción no conforme → lote en cuarentena",
+     "detalle": "esperado 'quarantine', obtenido 'quarantine'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "FEFO: primero el lote que vence antes",
+     "detalle": "esperado ['QA20-CTZ03', 'QA20-CTZ01'], obtenido ['QA20-CTZ03', 'QA20-CTZ01']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el lote en cuarentena no se reserva (aunque vence antes)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "reserva de 15 en lotes disponibles",
+     "detalle": "esperado 15.0, obtenido 15.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el técnico no libera la cuarentena",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el Q.F. libera el lote",
+     "detalle": "esperado 'available', obtenido 'available'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registro sanitario vencido: la recepción se bloquea",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14181,
+     "nombre": "QA20 Cetirizina 10 mg",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1998,
+     "nombre": "Q20FA/IN/00001",
+     "nota": "recepción conforme"
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1999,
+     "nombre": "Q20FA/IN/00002",
+     "nota": "recepción no conforme"
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2000,
+     "nombre": "Q20FA/IN/00003",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2001,
+     "nombre": "Q20FA/OUT/00001",
+     "nota": "despacho FEFO"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_stock",
+   "titulo": "Alerta sanitaria, baja de lote y canje por vencer",
+   "pasos": "Registrar la alerta DIGEMID de un lote vendido: se bloquea y lista los clientes; dar de baja el lote bloqueado; cargar al canje con la droguería los lotes por vencer y emitir la nota de crédito.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el lote alertado queda bloqueado",
+     "detalle": "esperado 'blocked', obtenido 'blocked'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la alerta identifica a los clientes que lo compraron",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el lote bloqueado no se reserva",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "baja validada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "desecho de inventario hecho",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el lote dado de baja queda en 0",
+     "detalle": "esperado 0.0, obtenido 0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "descuento por vencer a 45 días: 20 %",
+     "detalle": "esperado 20, obtenido 20.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "a 20 días: 40 %",
+     "detalle": "esperado 40, obtenido 40.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cron marca el lote vencido",
+     "detalle": "esperado 'expired', obtenido 'expired'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "canje: lotes por vencer y vencidos",
+     "detalle": "esperado {'QA20-LOR45', 'QA20-LORVEN'}, obtenido {'QA20-LOR45', 'QA20-LORVEN'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "canje valorizado a costo de compra",
+     "detalle": "esperado 5.6000000000000005, obtenido 5.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "devolución a la droguería despachada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nota de crédito de proveedor en borrador",
+     "detalle": "esperado ('in_refund', 'draft'), obtenido ('in_refund', 'draft')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe de la nota de crédito",
+     "detalle": "esperado 5.6, obtenido 5.6"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14182,
+     "nombre": "QA20 Loratadina 10 mg",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2003,
+     "nombre": "Q20FA/OUT/00002",
+     "nota": "venta del lote"
+    },
+    {
+     "modelo": "pharmacy.alert",
+     "id": 18,
+     "nombre": "QA20 ALERTA 105-2026",
+     "nota": "alerta sanitaria"
+    },
+    {
+     "modelo": "pharmacy.destruction",
+     "id": 20,
+     "nombre": "ABD/2026/0020",
+     "nota": "acta de baja"
+    },
+    {
+     "modelo": "pharmacy.supplier.return",
+     "id": 24,
+     "nombre": "CJD/2026/0024",
+     "nota": "canje con la droguería"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31538,
+     "nombre": "Borrador de nota de crédito de proveedor (Canje CJD/2026/0024)",
+     "nota": "nota de crédito del proveedor (borrador)"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_prescription",
+   "titulo": "Receta: validación, dispensación parcial con genérico y tope",
+   "pasos": "Registrar la receta de Zitromax 500 mg × 6, dispensar 3 del genérico (alternativa) y 3 de la marca; una 7.ª unidad se rechaza y la dispensación no se puede borrar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "sin prescriptor ni paciente la receta no se valida",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta validada",
+     "detalle": "esperado 'valid', obtenido 'valid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el genérico se registra como alternativa",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "dispensación parcial",
+     "detalle": "esperado 'partial', obtenido 'partial'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta dispensada por completo",
+     "detalle": "esperado 'dispensed', obtenido 'dispensed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no se dispensa más de lo recetado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la dispensación no se puede borrar",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "libro de recetas imprime",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "alerta de alergia del paciente al principio activo",
+     "detalle": "esperado pharmacy.ingredient(135,), obtenido pharmacy.ingredient(135,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta vencida no se dispensa",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cron marca la receta vencida",
+     "detalle": "esperado 'expired', obtenido 'expired'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14183,
+     "nombre": "QA20 Zitromax 500",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14184,
+     "nombre": "QA20 Azitromicina 500 tableta",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 142,
+     "nombre": "RX/2026/00142",
+     "nota": "receta"
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 144,
+     "nombre": "RX/2026/00144",
+     "nota": "receta vencida"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_prescriber_cmp",
+   "titulo": "Verificación del médico en el CMP",
+   "pasos": "Abrir «Consultar CMP» del médico (portal Conoce a tu médico) y registrar el resultado: solo el Q.F. puede marcarlo; un médico inhabilitado bloquea la receta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "acción abre el portal del CMP",
+     "detalle": "https://conoceatumedico.cmp.org.pe/"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Consulta real al portal del CMP",
+     "detalle": "servicio externo sin API: se verifica la URL generada"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el técnico no puede verificar al médico",
+     "detalle": ""
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "un Q.F. (grupo Químico farmacéutico, sin «Contactos: creación») registra la verificación",
+     "detalle": "AccessError: Estos registros están restringidos.\n\nQA20 qa20_qf_farmacia (id=3846) no tiene acceso 'escribir' a:\n- Contacto (res.partner)\n\nSi necesita acceso, pregúntele a un administrador. — _pharmacy_set_cmp_status escribe el contacto con los permisos del usuario"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Q.F. registra «Habilitado»",
+     "detalle": "esperado 'enabled', obtenido 'enabled'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "queda quién verificó",
+     "detalle": "esperado res.users(3847,), obtenido res.users(3847,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "médico inhabilitado: la receta no se valida",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin colegiatura no se consulta el CMP",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9644,
+     "nombre": "QA20 Dr. Jorge Salazar",
+     "nota": ""
+    },
+    {
+     "modelo": "res.users",
+     "id": 3847,
+     "nombre": "QA20 qa20_qf_contactos",
+     "nota": "Q.F. con derecho a editar contactos (para seguir el flujo)"
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 145,
+     "nombre": "RX/2026/00145",
+     "nota": "receta de médico inhabilitado"
+    }
+   ],
+   "error": null,
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_l10n_pe_pharmacy_controlled",
+   "titulo": "Controlados: lista, receta especial y folio de retención",
+   "pasos": "Registrar clonazepam (lista IVA) y morfina (lista IIA): la lista fija la condición y el libro; la morfina exige receta especial de 3 días y datos del comprador; la receta queda retenida con folio.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "lista IIA → libro de estupefacientes",
+     "detalle": "esperado 'narcotic', obtenido 'narcotic'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "lista IVA → libro de psicotrópicos",
+     "detalle": "esperado 'psychotropic', obtenido 'psychotropic'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la lista fija la condición de venta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta especial: vigencia máxima 3 días",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "lista IIA no se dispensa con receta común",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta especial exige datos del comprador",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta retenida con folio",
+     "detalle": "F-2026-00025"
+    },
+    {
+     "estado": "OK",
+     "titulo": "archivo de la receta retenida por 2 años",
+     "detalle": "esperado datetime.date(2028, 10, 30), obtenido datetime.date(2028, 10, 30)"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14185,
+     "nombre": "QA20 Clonazepam 2 mg",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14186,
+     "nombre": "QA20 Morfina 10 mg/mL",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 147,
+     "nombre": "RX/2026/00147",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 148,
+     "nombre": "RX/2026/00148",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_pharmacy_controlled",
+   "titulo": "Libro de psicotrópicos y balance trimestral",
+   "pasos": "Comprar 100 clonazepam y 50 metilfenidato, vender 10 y 5 con receta; imprimir el libro del 4.º trimestre y presentar el balance trimestral justificando una diferencia de stock.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "trimestre 4 de 2026",
+     "detalle": "esperado (datetime.date(2026, 10, 1), datetime.date(2026, 12, 31)), obtenido (datetime.date(2026, 10, 1), datetime.date(2026, 12, 31))"
+    },
+    {
+     "estado": "OK",
+     "titulo": "libro: ingreso 100 y salida 10, saldo 90",
+     "detalle": "esperado [(100.0, 0.0, 100.0), (0.0, 10.0, 90.0)], obtenido [(100.0, 0.0, 100.0), (0.0, 10.0, 90.0)]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la salida lleva el folio de la receta",
+     "detalle": "esperado 'F-2026-00026', obtenido 'F-2026-00026'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "libro de control impreso",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "libro exportado a XLSX",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "plazo de presentación: 15 días tras el trimestre",
+     "detalle": "esperado datetime.date(2027, 1, 15), obtenido datetime.date(2027, 1, 15)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "balance del metilfenidato (IIIA)",
+     "detalle": "esperado (0.0, 50.0, 5.0, 45.0, 45.0), obtenido (0.0, 50.0, 5.0, 45.0, 45.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la lista IVA no va al balance",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "diferencia con el stock detectada",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin justificar la diferencia no se presenta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "balance presentado",
+     "detalle": "esperado 'submitted', obtenido 'submitted'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Presentación del balance ante DIGEMID/DIRIS",
+     "detalle": "trámite externo; se valida el acta impresa"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14187,
+     "nombre": "QA20 Metilfenidato 10 mg",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2006,
+     "nombre": "Q20FA/IN/00005",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 149,
+     "nombre": "RX/2026/00149",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2007,
+     "nombre": "Q20FA/OUT/00005",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2008,
+     "nombre": "Q20FA/IN/00006",
+     "nota": ""
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 2009,
+     "nombre": "Q20FA/OUT/00006",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.controlled.report",
+     "id": 26,
+     "nombre": "pharmacy.controlled.report,26",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.controlled.balance",
+     "id": 13,
+     "nombre": "Psicotrópicos T4 2026 · QA20 Botica",
+     "nota": "balance trimestral"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_pharmacy_digemid",
+   "titulo": "Observatorio de precios: pendientes y archivo de carga",
+   "pasos": "Cambiar el precio de un medicamento con código DIGEMID y exportar el archivo del Observatorio del local (código 0099920): primera carga completa con precios con IGV.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "precio pendiente de reportar",
+     "detalle": "esperado ('pending', 10.0), obtenido ('pending', 10.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cambio actualiza el mismo pendiente",
+     "detalle": "esperado (1, 12.0), obtenido (1, 12.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "primera carga del mes: completa",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera del formato del Observatorio",
+     "detalle": "esperado ['CodEstab', 'CodProd', 'Precio 1', 'Precio 2'], obtenido ['CodEstab', 'CodProd', 'Precio 1', 'Precio 2']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fila con precio con IGV (12 × 1.18)",
+     "detalle": "esperado [['0099920', 'QA20-DIG-0100', 14.16, 14.16]], obtenido [['0099920', 'QA20-DIG-0100', 14.16, 14.16]]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el precio pasa a reportado",
+     "detalle": "esperado 'reported', obtenido 'reported'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "envío registrado como carga completa",
+     "detalle": "esperado ('sent', 'full'), obtenido ('sent', 'full')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "plazo de rectificación 7 días hábiles",
+     "detalle": "esperado datetime.date(2026, 11, 10), obtenido datetime.date(2026, 11, 10)"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Carga real en el Observatorio de DIGEMID",
+     "detalle": "portal externo sin credenciales; se valida el archivo"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin código de establecimiento no se exporta",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14188,
+     "nombre": "QA20 Sitagliptina 50 mg",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.observatory.submission",
+     "id": 19,
+     "nombre": "10/2026 · QA20 Botica",
+     "nota": "envío al Observatorio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_pharmacy_digemid",
+   "titulo": "Genéricos esenciales y reacción adversa",
+   "pasos": "Calcular el cumplimiento de genéricos del petitorio en el local y registrar una sospecha de reacción adversa grave (plazo 24 h, queda en el cuaderno).",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "con stock del genérico DCI el ítem cumple",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el genérico se lista",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin stock del genérico: incumple",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "grave: notificar en 24 h",
+     "detalle": "esperado datetime.datetime(2026, 10, 31, 12, 51, 1), obtenido datetime.datetime(2026, 10, 31, 12, 51, 1)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la sospecha queda en el cuaderno",
+     "detalle": "esperado 'adverse_event', obtenido 'adverse_event'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "marcada como notificada",
+     "detalle": "esperado 'notified', obtenido 'notified'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Notificación a DIGEMID (e-reporting)",
+     "detalle": "servicio externo"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pharmacy.essential.medicine",
+     "id": 13,
+     "nombre": "pharmacy.essential.medicine,13",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14189,
+     "nombre": "QA20 Glucophage 850",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14190,
+     "nombre": "QA20 Metformina 850 tableta",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.generic.compliance",
+     "id": 13,
+     "nombre": "pharmacy.generic.compliance,13",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.adverse.event",
+     "id": 15,
+     "nombre": "SRA/2026/0015",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_pos",
+   "titulo": "Dispensación en caja: receta, lote FEFO y rótulo fraccionado",
+   "pasos": "Vender en el TPV 10 cápsulas de amoxicilina (venta con receta) indicando receta 000123, prescriptor y lote: se crea la receta dispensada; la caja solo ofrece lotes disponibles, el que vence antes primero.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "lotes ofrecidos: FEFO y sin el bloqueado",
+     "detalle": "esperado ['QA20-AMX-SOON', 'QA20-AMX-LATE'], obtenido ['QA20-AMX-SOON', 'QA20-AMX-LATE']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "precio por vencer sugerido en caja (lote a 30 días)",
+     "detalle": "esperado 40, obtenido 40.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "venta pagada",
+     "detalle": "paid"
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta registrada y dispensada",
+     "detalle": "esperado 'dispensed', obtenido 'dispensed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "prescriptor reconocido por su colegiatura",
+     "detalle": "esperado res.partner(9640,), obtenido res.partner(9640,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "paciente = cliente de la venta",
+     "detalle": "esperado res.partner(9639,), obtenido res.partner(9639,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la dispensación guarda el lote",
+     "detalle": "esperado stock.lot(344,), obtenido stock.lot(344,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "origen de la dispensación = pedido del TPV",
+     "detalle": "esperado 'QA20 Botica - 000001', obtenido 'QA20 Botica - 000001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta incompleta: la venta se guarda y el cuaderno lo anota",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "venta por blíster completo no lleva rótulo",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "venta de unidades sueltas genera un rótulo",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rótulo con la cantidad",
+     "detalle": "esperado 3, obtenido 3.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "rótulo impreso con lote y vencimiento",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Interfaz del TPV (popup de receta, selección de lote, descuento por vencer)",
+     "detalle": "sin navegador: validado en backend"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14191,
+     "nombre": "QA20 Amoxicilina 500 cápsula",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.order",
+     "id": 462,
+     "nombre": "QA20 Botica - 000001",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.prescription",
+     "id": 150,
+     "nombre": "RX/2026/00150",
+     "nota": "receta creada desde el TPV"
+    },
+    {
+     "modelo": "pos.order",
+     "id": 463,
+     "nombre": "QA20 Botica - 000002",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14192,
+     "nombre": "QA20 Loratadina 10 fracc",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.order",
+     "id": 464,
+     "nombre": "QA20 Botica - 000003",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.order",
+     "id": 465,
+     "nombre": "QA20 Botica - 000004",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_loyalty",
+   "titulo": "Club de salud: puntos por DNI sin medicamentos con receta",
+   "pasos": "Crear el programa «Club de Salud» (0.25 punto por sol) y vender a la paciente identificada por DNI un bloqueador (S/8) y amoxicilina con receta (S/40): solo suma 2 puntos; el 10 % de socio no alcanza a la receta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "exclusión de medicamentos con receta activa por defecto",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la regla excluye receta y controlados",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "descuento «sobre el pedido» pasa a productos específicos",
+     "detalle": "esperado 'specific', obtenido 'specific'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el descuento solo alcanza al producto de venta libre",
+     "detalle": "esperado product.product(14193,), obtenido product.product(14193,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no se puede regalar un medicamento con receta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cliente identificado por DNI",
+     "detalle": "{'PE_DNI': '40112233'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "S/ 8 × 0.25 = 2 puntos; la amoxicilina no suma",
+     "detalle": "esperado 2.0, obtenido 2.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "puntos acreditados a la tarjeta del DNI 40112233",
+     "detalle": "esperado 2.0, obtenido 2.0"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Canje de puntos en el TPV (tour)",
+     "detalle": "interfaz del TPV sin navegador"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14193,
+     "nombre": "QA20 Bloqueador FPS 50",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14194,
+     "nombre": "QA20 Amoxicilina 500 club",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14195,
+     "nombre": "QA20 Clonazepam 2 club",
+     "nota": ""
+    },
+    {
+     "modelo": "loyalty.program",
+     "id": 27,
+     "nombre": "QA20 Club de Salud",
+     "nota": "programa de fidelización"
+    },
+    {
+     "modelo": "sale.order",
+     "id": 324,
+     "nombre": "S00324",
+     "nota": "pedido con puntos"
+    },
+    {
+     "modelo": "loyalty.card",
+     "id": 48,
+     "nombre": "QA20 Club de Salud: 0448-7614-47da",
+     "nota": "tarjeta del socio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_insurance",
+   "titulo": "Convenio con aseguradora: copago en caja y factura a la EPS",
+   "pasos": "Vender paracetamol (10 + IGV) y losartán (20 + IGV) a una afiliada de «Salud Andina EPS»: el convenio cubre 19.24 y la paciente paga 16.16; al cerrar la caja se liquida y factura lo cubierto a la EPS.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "método «Convenio» como cuenta de cliente",
+     "detalle": "esperado 'pay_later', obtenido 'pay_later'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cobertura sin error",
+     "detalle": "False"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cubre 80 % de 11.80 + 50 % de 23.60 − copago 2 = 19.24",
+     "detalle": "esperado 19.24, obtenido 19.24"
+    },
+    {
+     "estado": "OK",
+     "titulo": "en caja: un no afiliado se rechaza",
+     "detalle": "QA20 Mario Cárdenas Ríos no es afiliado vigente del convenio QA20 Salud Andina · Plan regular."
+    },
+    {
+     "estado": "OK",
+     "titulo": "la caja no acepta cubrir más de lo calculado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "pedido con la parte cubierta",
+     "detalle": "esperado 19.24, obtenido 19.24"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pedido con la afiliada",
+     "detalle": "esperado pharmacy.insurance.affiliate(30,), obtenido pharmacy.insurance.affiliate(30,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tope mensual: quedan 30 − 19.24",
+     "detalle": "esperado 10.76, obtenido 10.76"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14197,
+     "nombre": "QA20 Paracetamol 500 convenio",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14198,
+     "nombre": "QA20 Losartán 50 convenio",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9648,
+     "nombre": "QA20 Salud Andina EPS S.A.",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9649,
+     "nombre": "QA20 María Torres Quispe",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.insurance.agreement",
+     "id": 34,
+     "nombre": "QA20 Salud Andina · Plan regular",
+     "nota": "convenio"
+    },
+    {
+     "modelo": "pharmacy.insurance.affiliate",
+     "id": 30,
+     "nombre": "QA20 María Torres Quispe · QA20 Salud Andina · Plan regular (QA20-SA-001)",
+     "nota": "afiliada"
+    },
+    {
+     "modelo": "pos.order",
+     "id": 467,
+     "nombre": "QA20 Botica - 000005",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_care",
+   "titulo": "Tratamiento crónico: cobertura, recordatorio y WhatsApp",
+   "pasos": "Registrar el tratamiento de enalapril (1 tableta/día) de la paciente; con compras del genérico hace 40 días y de la marca hace 15 (en el TPV) el tratamiento queda cubierto 20 días más y con PDC 67 %.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "sin compras: «sin compra»",
+     "detalle": "esperado 'no_purchase', obtenido 'no_purchase'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "última compra hace 15 días",
+     "detalle": "esperado datetime.date(2026, 10, 15), obtenido datetime.date(2026, 10, 15)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compras encadenadas: cubierto hasta hoy + 20",
+     "detalle": "esperado datetime.date(2026, 11, 19), obtenido datetime.date(2026, 11, 19)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "próxima reposición (recordatorio 5 días antes)",
+     "detalle": "esperado datetime.date(2026, 11, 14), obtenido datetime.date(2026, 11, 14)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "estado al día",
+     "detalle": "esperado 'ok', obtenido 'ok'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDC 41/61 días",
+     "detalle": "esperado 67.2, obtenido 67.2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDC < 80 %: no adherente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "enlace de WhatsApp con +51",
+     "detalle": "https://wa.me/51987654321?text=Hola%20QA20%20Julia%20Ramos%20Quispe%2C%20le%20escribimos%20de%20OLANO%20IT%20S.A.C.%20%28dev%29.%20Su%20QA20%20Enalabrand%2010%20le%20alcanza%20hasta%20el%2019/11/2026.%20%C2%BFDesea%20que%20se%20lo%20separemos%3F%20Puede%20recogerlo%20o%20pedirlo%20por%20aqu%C3%AD."
+    },
+    {
+     "estado": "OK",
+     "titulo": "un solo tratamiento activo por producto",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "tratamiento atrasado",
+     "detalle": "esperado 'late', obtenido 'late'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "10 días de atraso",
+     "detalle": "esperado 10, obtenido 10"
+    },
+    {
+     "estado": "OK",
+     "titulo": "actividad de recordatorio creada",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el recordatorio no se repite",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el TPV consulta los tratamientos por reponer del cliente",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el tratamiento toma la posología de la receta",
+     "detalle": "esperado '1 tableta cada 24 horas', obtenido '1 tableta cada 24 horas'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío real del recordatorio por WhatsApp/correo",
+     "detalle": "canal externo; se valida enlace y actividad"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14199,
+     "nombre": "QA20 Enalabrand 10",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14200,
+     "nombre": "QA20 Enalapril 10 tableta",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9650,
+     "nombre": "QA20 Julia Ramos Quispe",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.treatment",
+     "id": 34,
+     "nombre": "QA20 Julia Ramos Quispe · QA20 Enalabrand 10",
+     "nota": "tratamiento"
+    },
+    {
+     "modelo": "pos.order",
+     "id": 468,
+     "nombre": "QA20 Botica - 000006",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.order",
+     "id": 469,
+     "nombre": "QA20 Botica - 000007",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9651,
+     "nombre": "QA20 Pedro Atrasado",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.treatment",
+     "id": 36,
+     "nombre": "QA20 Pedro Atrasado · QA20 Enalapril 10 tableta",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.treatment",
+     "id": 37,
+     "nombre": "QA20 Julia Ramos Quispe · QA20 Enalapril 10 tableta",
+     "nota": "tratamiento desde receta"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_replenishment",
+   "titulo": "Pedido sugerido por ventas del TPV y faltantes",
+   "pasos": "Vender 30 losartán en caja, anotar faltantes (2 losartán y 1 insulina) y calcular el pedido sugerido a 15 días: 20 losartán (2 cajas de 10) a la Droguería; crear las órdenes de compra por proveedor.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "fórmula: 1/día × 15 + 2 − 5 = 12 → múltiplo de 10 = 20",
+     "detalle": "esperado 20, obtenido 20"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cubierto por stock y lo que llega: 0",
+     "detalle": "esperado 0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "losartán: vendido 30, faltante 2, stock 5 → 20",
+     "detalle": "esperado (30.0, 1.0, 2.0, 5.0, 10.0, 20.0), obtenido (30.0, 1.0, 2.0, 5.0, 10.0, 20.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "proveedor del losartán",
+     "detalle": "esperado res.partner(9636,), obtenido res.partner(9636,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "insulina sin ventas: pide el faltante",
+     "detalle": "esperado 1.0, obtenido 1.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC en la unidad de compra: 2 cajas de 10",
+     "detalle": "esperado (uom.uom(184,), 2.0), obtenido (uom.uom(184,), 2.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC en borrador",
+     "detalle": "esperado {'draft'}, obtenido {'draft'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "faltante del losartán pasa a pedido",
+     "detalle": "esperado 'ordered', obtenido 'ordered'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "faltante sin producto sigue pendiente",
+     "detalle": "esperado 'pending', obtenido 'pending'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9652,
+     "nombre": "QA20 Distribuidora del Sur",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14201,
+     "nombre": "QA20 Losartán 50 reposición",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14202,
+     "nombre": "QA20 Insulina NPH reposición",
+     "nota": ""
+    },
+    {
+     "modelo": "pos.order",
+     "id": 471,
+     "nombre": "QA20 Botica - 000009",
+     "nota": ""
+    },
+    {
+     "modelo": "pharmacy.shortage",
+     "id": 35,
+     "nombre": "QA20 Losartán 50 reposición",
+     "nota": "faltantes"
+    },
+    {
+     "modelo": "pharmacy.shortage",
+     "id": 36,
+     "nombre": "QA20 Insulina NPH reposición",
+     "nota": "faltantes"
+    },
+    {
+     "modelo": "pharmacy.shortage",
+     "id": 37,
+     "nombre": "QA20 Colirio lubricante 15 ml",
+     "nota": "faltantes"
+    },
+    {
+     "modelo": "purchase.order",
+     "id": 960,
+     "nombre": "P00960",
+     "nota": "orden de compra sugerida"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_pharmacy_insurance",
+   "titulo": "Cierre de caja y liquidación a la aseguradora",
+   "pasos": "Cerrar la caja de la botica (el «Convenio» no queda como cuenta por cobrar de la caja) y crear la liquidación del mes: factura a la EPS por 19.24 con el DNI y número de afiliado.",
+   "checks": [
+    {
+     "estado": "AVISO",
+     "titulo": "Cuenta bancaria no confiable en la compañía",
+     "detalle": "191-9912345-0-71 - QA20 P1 BCP, 1917000123456 - Banco de Crédito del Perú (de otra fase) impide a un usuario real publicar el cierre de caja y las facturas; se cierra como superusuario, que la omite"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sesión de caja cerrada",
+     "detalle": "esperado 'closed', obtenido 'closed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cierre no registra cuenta por cobrar del convenio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la liquidación carga el pedido cubierto",
+     "detalle": "esperado pos.order(467,), obtenido pos.order(467,)"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "Cuenta bancaria de la compañía no confiable en la factura",
+     "detalle": "191-9912345-0-71 - QA20 P1 BCP (creada por otra fase) bloquea la publicación; se quita de la factura"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura de cliente",
+     "detalle": "esperado 'out_invoice', obtenido 'out_invoice'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "facturada a la EPS",
+     "detalle": "esperado res.partner(9648,), obtenido res.partner(9648,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe = lo cubierto",
+     "detalle": "esperado 19.24, obtenido 19.24"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la línea identifica DNI y número de afiliado",
+     "detalle": "QA20 Paracetamol 500 convenio · 260-225-000005 · Comprobante POSC/2026/00003 · DNI 44556677 · Paciente QA20 María Torres Quispe · Afiliado QA20-SA-001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el cierre contabiliza la parte del paciente (y otras ventas de la caja)",
+     "detalle": "16.16"
+    },
+    {
+     "estado": "OK",
+     "titulo": "un pedido se liquida una sola vez",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "reporte de la liquidación",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío del CPE de la factura a la EPS a SUNAT",
+     "detalle": "sin credenciales"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "pharmacy.insurance.liquidation",
+     "id": 32,
+     "nombre": "LIQ/2026/0032",
+     "nota": "liquidación"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31541,
+     "nombre": "F FFI-00000005 (Liquidación LIQ/2026/0032 · QA20 Salud [...])",
+     "nota": "factura a la aseguradora"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_pharmacy_website",
+   "titulo": "Tienda web: genéricos primero, receta adjunta y aprobación del Q.F.",
+   "pasos": "En la tienda, la ficha de Amoxival muestra primero los genéricos; un controlado no entra al carrito; el pedido con receta queda esperando la imagen y la aprobación del Q.F.; la insulina sale con cadena de frío.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "alternativas en la web: genérico DCI y luego de marca",
+     "detalle": "esperado [14145, 14146], obtenido [14145, 14146]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "un controlado no se agrega al carrito",
+     "detalle": "QA20 Clonazepam web es un medicamento controlado: solo se vende en el local, con la receta especial."
+    },
+    {
+     "estado": "OK",
+     "titulo": "el pedido web exige receta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "estado: por subir receta",
+     "detalle": "esperado 'to_upload', obtenido 'to_upload'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin receta no se paga",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta subida: por revisar",
+     "detalle": "esperado 'to_review', obtenido 'to_review'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no se confirma sin la aprobación del Q.F.",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "un vendedor no aprueba recetas",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "receta aprobada",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "queda el Q.F. que revisó",
+     "detalle": "esperado res.users(3846,), obtenido res.users(3846,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pedido confirmado tras la aprobación",
+     "detalle": "esperado 'sale', obtenido 'sale'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pedido con cadena de frío",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el albarán hereda la cadena de frío",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "el albarán impreso avisa «CADENA DE FRÍO»",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Páginas de la tienda y subida de receta por el portal (HTTP)",
+     "detalle": "sin navegador; controladores probados en los tests HttpCase"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 14203,
+     "nombre": "QA20 Amoxival 500",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14204,
+     "nombre": "QA20 Amoxicilina 500 web",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14205,
+     "nombre": "QA20 Amoxil genérico 500",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14206,
+     "nombre": "QA20 Clonazepam web",
+     "nota": ""
+    },
+    {
+     "modelo": "product.product",
+     "id": 14207,
+     "nombre": "QA20 Insulina NPH web",
+     "nota": ""
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9653,
+     "nombre": "QA20 Rosa Quispe web",
+     "nota": ""
+    },
+    {
+     "modelo": "sale.order",
+     "id": 325,
+     "nombre": "S00325",
+     "nota": ""
+    },
+    {
+     "modelo": "sale.order",
+     "id": 326,
+     "nombre": "S00326",
+     "nota": ""
+    },
+    {
+     "modelo": "sale.order",
+     "id": 327,
+     "nombre": "S00327",
+     "nota": ""
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_base",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (4)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (4)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "menús declarados presentes (1)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "modelo del asistente de industrias registrado",
+     "detalle": "['res.partner.industry', 'al.industry']"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_construction",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (9)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (13)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_ecommerce",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (8)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (9)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_furniture",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (2)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (12)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_pharmacy",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (30)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (22)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_restaurant",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (9)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (14)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_industry_retail",
+   "titulo": "Paquete de instalación: módulo y datos declarados presentes",
+   "pasos": "Abrir Aplicaciones y comprobar que el paquete está instalado con sus datos y menús.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "módulo instalado",
+     "detalle": "esperado 'installed', obtenido 'installed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dependencias instaladas (11)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "registros de datos declarados presentes (18)",
+     "detalle": "[]"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Instalación sobre base vacía y datos demo",
+     "detalle": "paquete para bases nuevas: no se reinstala aquí"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}

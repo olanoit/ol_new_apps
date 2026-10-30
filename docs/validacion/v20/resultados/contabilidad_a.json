@@ -1,0 +1,1939 @@
+{
+ "fase": "contabilidad_a",
+ "casos": [
+  {
+   "modulo": "al_account_base",
+   "titulo": "Código SUNAT del banco = clearing_number nativo (ambos sentidos)",
+   "pasos": "Contactos ▸ cuenta bancaria: elegir el banco del catálogo y escribir el código SUNAT; luego cambiar el «clearing number» y ver que el código SUNAT lo sigue.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre del banco tomado del catálogo",
+     "detalle": "esperado 'Banco de Crédito del Perú', obtenido 'Banco de Crédito del Perú'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "BIC tomado del catálogo",
+     "detalle": "esperado 'BCPLPEPL', obtenido 'BCPLPEPL'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_bank_code → clearing_number",
+     "detalle": "esperado '02', obtenido '02'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "clearing_number → l10n_pe_bank_code",
+     "detalle": "esperado '11', obtenido '11'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "código de 3 dígitos rechazado (sin truncar a otro banco)",
+     "detalle": ""
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "El clearing_number nativo acepta un código SUNAT inválido",
+     "detalle": "escribir clearing_number=«AB» no dispara _check_l10n_pe_bank_code (la restricción es sobre el related l10n_pe_bank_code); el PLE 1.2 lo leería tal cual"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuenta del Banco de la Nación: código SUNAT 18",
+     "detalle": "esperado '18', obtenido '18'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se reconoce como Banco de la Nación (BANCPEPL)",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner.bank",
+     "id": 139,
+     "nombre": "19316000010001 - Banco de Crédito del Perú",
+     "nota": "cuenta BCP"
+    },
+    {
+     "modelo": "res.partner.bank",
+     "id": 140,
+     "nombre": "0007131600002 - Banco de la Nación",
+     "nota": "cuenta de detracciones BN"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_account_base",
+   "titulo": "Glosa del asiento y de la línea, anexo y naturaleza del diario",
+   "pasos": "Contabilidad ▸ Asientos ▸ Nuevo: escribir la glosa, publicar y duplicar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "asiento publicado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "glosa conservada al publicar",
+     "detalle": "esperado 'QA20 Provisión de servicios de octubre', obtenido 'QA20 Provisión de servicios de octubre'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "glosa de la línea",
+     "detalle": "esperado 'Glosa de la línea', obtenido 'Glosa de la línea'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la glosa es buscable",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "duplicar no arrastra la glosa",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "l10n_pe_is_pe() en compañía peruana",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "código de anexo de 4 dígitos aceptado",
+     "detalle": "esperado '0001', obtenido '0001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "código de anexo con letras rechazado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "naturaleza del diario por defecto: movimiento",
+     "detalle": "esperado 'movement', obtenido 'movement'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "diario de apertura excluido de libros",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28811,
+     "nombre": "Borrador de asiento",
+     "nota": "asiento con glosa"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 5891,
+     "nombre": "QA20 Apertura",
+     "nota": "diario de apertura"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "l10n_pe_vat_sunat",
+   "titulo": "Consulta de RUC (simulada) actualiza el contacto",
+   "pasos": "Contactos ▸ nuevo contacto con RUC ▸ botón «Actualizar RUC/DNI».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el RUC es el vat del contacto peruano",
+     "detalle": "('ruc', '20609920107')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se consultó el RUC",
+     "detalle": "call('20609920107', 'ruc', quick=False)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "razón social actualizada",
+     "detalle": "esperado 'QA20 EMPRESA CONSULTADA S.A.C.', obtenido 'QA20 EMPRESA CONSULTADA S.A.C.'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dirección actualizada",
+     "detalle": "esperado 'AV. QA 123', obtenido 'AV. QA 123'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "distrito (ubigeo) actualizado",
+     "detalle": "esperado l10n_pe.res.city.district(251,), obtenido l10n_pe.res.city.district(251,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin alerta de consulta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "RUC con dígito verificador inválido no se consulta",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Consulta real a SUNAT/APIs",
+     "detalle": "sin credenciales de prueba: conexión simulada"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9095,
+     "nombre": "QA20 Empresa por consultar",
+     "nota": "contacto RUC"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "l10n_pe_vat_sunat",
+   "titulo": "DNI en identificadores adicionales (Odoo 20) y consulta simulada",
+   "pasos": "Contactos ▸ persona con DNI en «Identificadores adicionales» ▸ «Actualizar RUC/DNI».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "DNI guardado en additional_identifiers",
+     "detalle": "esperado '45678912', obtenido '45678912'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "objetivo de la consulta: DNI",
+     "detalle": "esperado ('dni', '45678912'), obtenido ('dni', '45678912')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo consultable con la validación de DNI activa",
+     "detalle": "esperado 'dni', obtenido 'dni'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se consultó el DNI",
+     "detalle": "call('45678912', 'dni', quick=False)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre actualizado desde la consulta de DNI",
+     "detalle": "esperado 'QA20 PEREZ GOMEZ JUAN', obtenido 'QA20 PEREZ GOMEZ JUAN'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "DNI de 4 dígitos rechazado al consultar",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9096,
+     "nombre": "QA20 Persona con DNI",
+     "nota": "contacto DNI"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_currency",
+   "titulo": "Tipo de cambio compra/venta manual",
+   "pasos": "Contabilidad ▸ Configuración ▸ Monedas ▸ USD ▸ nueva tasa con compra 3.360 y venta 3.370.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "tasa nativa = 1/venta",
+     "detalle": "esperado 0.29673590504451036, obtenido 0.29673590504451036"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compra conservada",
+     "detalle": "esperado 3.36, obtenido 3.36"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tocar la tasa nativa recalcula la venta",
+     "detalle": "esperado 4.0, obtenido 4.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "y la venta vuelve a fijar la nativa",
+     "detalle": "esperado 0.29673590504451036, obtenido 0.29673590504451036"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo de cambio negativo rechazado",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.currency.rate",
+     "id": 881,
+     "nombre": "2026-02-02",
+     "nota": "TC manual 02/02/2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_currency",
+   "titulo": "Descarga BCRP simulada: el cierre de un día es el TC SUNAT del siguiente (fin de semana)",
+   "pasos": "Monedas ▸ «Actualizar tipo de cambio» (BCRP) para 05/02–10/02/2026.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "se llamó a la descarga (simulada)",
+     "detalle": "call(datetime.date(2026, 1, 26), datetime.date(2026, 2, 9))"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fechas cargadas 05..10/02",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TC SUNAT 05/02 = cierre anterior",
+     "detalle": "3.351/3.358 esperado 3.351/3.358"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TC SUNAT 06/02 = cierre anterior",
+     "detalle": "3.362/3.369 esperado 3.362/3.369"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TC SUNAT 07/02 = cierre anterior (fin de semana)",
+     "detalle": "3.371/3.377 esperado 3.371/3.377"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TC SUNAT 08/02 = cierre anterior (fin de semana)",
+     "detalle": "3.371/3.377 esperado 3.371/3.377"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TC SUNAT 09/02 = cierre anterior",
+     "detalle": "3.371/3.377 esperado 3.371/3.377"
+    },
+    {
+     "estado": "OK",
+     "titulo": "TC SUNAT 10/02 = cierre anterior",
+     "detalle": "3.38/3.386 esperado 3.38/3.386"
+    },
+    {
+     "estado": "OK",
+     "titulo": "recargar no duplica",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Descarga real del BCRP/SUNAT",
+     "detalle": "sin red: respuesta simulada"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.currency.rate",
+     "id": 882,
+     "nombre": "2026-02-05",
+     "nota": "TC BCRP 05/02"
+    },
+    {
+     "modelo": "res.currency.rate",
+     "id": 883,
+     "nombre": "2026-02-06",
+     "nota": "TC BCRP 06/02"
+    },
+    {
+     "modelo": "res.currency.rate",
+     "id": 884,
+     "nombre": "2026-02-07",
+     "nota": "TC BCRP 07/02"
+    },
+    {
+     "modelo": "res.currency.rate",
+     "id": 885,
+     "nombre": "2026-02-08",
+     "nota": "TC BCRP 08/02"
+    },
+    {
+     "modelo": "res.currency.rate",
+     "id": 886,
+     "nombre": "2026-02-09",
+     "nota": "TC BCRP 09/02"
+    },
+    {
+     "modelo": "res.currency.rate",
+     "id": 887,
+     "nombre": "2026-02-10",
+     "nota": "TC BCRP 10/02"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_currency",
+   "titulo": "Factura en USD con TC compra vs venta",
+   "pasos": "Ventas ▸ factura en dólares del 09/02/2026 ▸ campo «Tipo de cambio»: compra o venta.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "por defecto se usa la venta",
+     "detalle": "esperado 'sale', obtenido 'sale'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tasa = 1/venta del 09/02",
+     "detalle": "esperado 0.29612081729345574, obtenido 0.29612081729345574"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total en soles con venta",
+     "detalle": "esperado 337.7, obtenido 337.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tasa = 1/compra del 09/02",
+     "detalle": "esperado 0.29664787896766537, obtenido 0.29664787896766537"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total en soles con compra",
+     "detalle": "esperado 337.1, obtenido 337.1"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28813,
+     "nombre": "FQ20-31600003",
+     "nota": "factura USD con TC venta"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28814,
+     "nombre": "Borrador de factura FQ20-31600004",
+     "nota": "factura USD con TC compra"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_move_name_sequence",
+   "titulo": "Numeración por secuencia del diario",
+   "pasos": "Contabilidad ▸ Diarios ▸ marcar «Usar secuencia» con prefijos QSV-/QSN- y publicar facturas.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "secuencia de facturas creada con el prefijo",
+     "detalle": "esperado 'QSV-', obtenido 'QSV-'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "secuencia de NC creada con el prefijo",
+     "detalle": "esperado 'QSN-', obtenido 'QSN-'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "secuencia sin huecos",
+     "detalle": "esperado 'no_gap', obtenido 'no_gap'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre tomado de la secuencia",
+     "detalle": "QSV-00000001, QSV-00000002"
+    },
+    {
+     "estado": "OK",
+     "titulo": "numeración correlativa",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC con la secuencia rectificativa",
+     "detalle": "QSN-00000001"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.journal",
+     "id": 5892,
+     "nombre": "QA20 Ventas por secuencia",
+     "nota": "diario con secuencia"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28815,
+     "nombre": "QSV-00000001",
+     "nota": "factura 1"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28816,
+     "nombre": "QSV-00000002",
+     "nota": "factura 2"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28817,
+     "nombre": "Borrador de nota de crédito",
+     "nota": "NC"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_move_name_sequence",
+   "titulo": "Serie CPE: publicar crea las 3 secuencias; factura y NC",
+   "pasos": "Contabilidad ▸ Series CPE ▸ nueva serie FQ21 ▸ Publicar; asignarla a un diario y facturar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "serie publicada",
+     "detalle": "esperado 'publish', obtenido 'publish'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "secuencias de factura, NC y ND",
+     "detalle": "esperado ('FQ21-', 'FQ2C-', 'FQ2D-'), obtenido ('FQ21-', 'FQ2C-', 'FQ2D-')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "serie «B001» rechazada para facturas",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "serie asignada a la factura",
+     "detalle": "esperado edi.invoice.series(21,), obtenido edi.invoice.series(21,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "numerada con la serie",
+     "detalle": "FQ21-00000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "NC numerada con la serie rectificativa",
+     "detalle": "FQ2C-00000001"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "edi.invoice.series",
+     "id": 21,
+     "nombre": "FQ21",
+     "nota": "serie CPE"
+    },
+    {
+     "modelo": "account.journal",
+     "id": 5893,
+     "nombre": "QA20 Ventas serie CPE",
+     "nota": "diario serie"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28818,
+     "nombre": "FQ21-00000001",
+     "nota": "factura FQ21"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28819,
+     "nombre": "FQ2C-00000001 (Reversión de: FQ21-00000001, QA20 anulación [...])",
+     "nota": "NC de la serie"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_account_destinations",
+   "titulo": "Gasto clase 6 → asiento de destino 9 / 79",
+   "pasos": "Plan contable ▸ cuenta 63 con destinos 94 (60 %) y 95 (40 %) y cuenta 79; publicar un gasto.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "compañía con destinos 6 → 9",
+     "detalle": "esperado '6a9', obtenido '6a9'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "destinos que no suman 100 % rechazados",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la cuenta 6 trabaja con destinos",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "destino generado y publicado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "en el diario de destinos de Ajustes",
+     "detalle": "esperado account.journal(5888,), obtenido account.journal(5888,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "94: 60 % al debe",
+     "detalle": "esperado 600.0, obtenido 600.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "95: 40 % al debe",
+     "detalle": "esperado 400.0, obtenido 400.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "79: 100 % al haber",
+     "detalle": "esperado 1000.0, obtenido 1000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el destino no genera otro destino",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura: 94 = 300",
+     "detalle": "esperado 300.0, obtenido 300.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura: 79 = 500 (sin IGV)",
+     "detalle": "esperado 500.0, obtenido 500.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28821,
+     "nombre": "Borrador de asiento",
+     "nota": "asiento de gasto"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28822,
+     "nombre": "QAD20/2026/10/0001 (Destino: QAG20/2026/10/0002)",
+     "nota": "asiento de destino"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28823,
+     "nombre": "F FQ20-31600008",
+     "nota": "factura con gasto 6"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28824,
+     "nombre": "QAD20/2026/10/0002 (Destino: F FQ20-31600008)",
+     "nota": "destino de la factura"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_detraction",
+   "titulo": "Factura de venta con detracción y reparto de la cuenta 12",
+   "pasos": "Ventas ▸ factura de servicio SPOT 12 % por S/ 1 180 ▸ Publicar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el producto sincroniza el código y % nativos del catálogo 54",
+     "detalle": "esperado ('037', 12.0), obtenido ('037', 12.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aplica detracción (> S/ 700)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "detracción 12 % de 1 180 redondeada a 142",
+     "detalle": "esperado 142.0, obtenido 142.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "neto a cobrar 1 038",
+     "detalle": "esperado 1038.0, obtenido 1038.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo de operación 1001 (sujeta a detracción)",
+     "detalle": "esperado '1001', obtenido '1001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dos líneas de cobro (neto + detracción)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detracción a la 12 propia",
+     "detalle": "esperado 142.0, obtenido 142.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el XML UBL lleva el bloque de detracción",
+     "detalle": "Detraccion/142.00"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28825,
+     "nombre": "FQ20-31600009",
+     "nota": "factura con detracción"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_detraction",
+   "titulo": "Depósito de la detracción de una compra",
+   "pasos": "Compras ▸ factura SPOT ▸ «Depositar detracción» con número de constancia.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "detracción 12 % de 2 360 = 283",
+     "detalle": "esperado 283.0, obtenido 283.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el asistente propone el importe de la detracción",
+     "detalle": "esperado 283.0, obtenido 283.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "constancia registrada en la factura",
+     "detalle": "esperado 'QA31600011', obtenido 'QA31600011'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago de 283 vinculado",
+     "detalle": "[{'id': 1275, 'amount': 283.0, 'state': 'paid'}]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "solo se paga la detracción: queda el neto 2 077",
+     "detalle": "esperado 2077.0, obtenido 2077.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28826,
+     "nombre": "F FQ20-31600010",
+     "nota": "compra con detracción"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1275,
+     "nombre": "PQAB20/2026/00001",
+     "nota": "depósito de detracción"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_detraction",
+   "titulo": "TXT de depósito masivo del Banco de la Nación",
+   "pasos": "Perú ▸ Detracciones ▸ «Generar TXT BN» (adquirente) para setiembre 2026.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "estructura válida para el banco",
+     "detalle": "esperado [], obtenido []"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera de 68 posiciones",
+     "detalle": "esperado 68, obtenido 68"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cabecera de adquirente",
+     "detalle": "esperado '*', obtenido '*'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "detalle del proveedor de 107 posiciones",
+     "detalle": "['620609920034                                            037000712345670000000000708000120260901FQ2031600012']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importe de la detracción en el detalle",
+     "detalle": "708.0"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío del TXT al Banco de la Nación",
+     "detalle": "sin credenciales bancarias"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28828,
+     "nombre": "F FQ20-31600012",
+     "nota": "compra SPOT de setiembre"
+    },
+    {
+     "modelo": "l10n_pe.detraction.txt.wizard",
+     "id": 40,
+     "nombre": "l10n_pe.detraction.txt.wizard,40",
+     "nota": "asistente TXT"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_retention",
+   "titulo": "Pago con retención 3 %: CRE numerado y XML generado sin enviar",
+   "pasos": "Compras ▸ factura de S/ 1 180 ▸ Registrar pago ▸ retención 3 % ▸ «Generar XML del CRE».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "impuesto de retención = el nativo de l10n_pe_edi_withholding",
+     "detalle": "3% IGV Withholding"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aplica retención",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "estimación 3 % de 1 180",
+     "detalle": "esperado 35.4, obtenido 35.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "impuesto de retención inyectado al publicar",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin alterar el total",
+     "detalle": "esperado 1180.0, obtenido 1180.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea de retención del asistente",
+     "detalle": "esperado 35.4, obtenido 35.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "retención en el pago",
+     "detalle": "esperado 35.4, obtenido 35.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CRE numerado con serie R___",
+     "detalle": "RRR1-00000010"
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "La serie del CRE no es R001",
+     "detalle": "número RRR1-00000010: la secuencia nativa (account.1_l10n_pe_edi_withholding_sunat_sequence) conserva el prefijo «RRR1-»; el R001- del módulo solo se aplica al cargar el plan en compañías nuevas"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura pagada (neto + retención)",
+     "detalle": "esperado True, obtenido True"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: RUC del agente",
+     "detalle": "20557912879"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: RUC del proveedor",
+     "detalle": "20609920026"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: número del CRE",
+     "detalle": "RRR1-00000010"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: tasa 3 %",
+     "detalle": "<sac:SUNATRetentionPercent>3"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: importe retenido",
+     "detalle": "35.40"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: factura referenciada",
+     "detalle": "FQ20-31600013"
+    },
+    {
+     "estado": "OK",
+     "titulo": "raíz del UBL: Retention",
+     "detalle": "esperado 'Retention', obtenido 'Retention'"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío del CRE a SUNAT/OSE",
+     "detalle": "sin credenciales de prueba"
+    },
+    {
+     "estado": "OK",
+     "titulo": "PDT 626: fila del proveedor con 35.40",
+     "detalle": "[['20609920026', 'QA20 Proveedor Servicios SAC', 'F FQ20-31600013', '2026-10-30', '1180.00', 'RRR1-00000010', '35.40']]"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28829,
+     "nombre": "Borrador de factura F FQ20-31600013",
+     "nota": "factura sujeta a retención"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1276,
+     "nombre": "PQAB20/2026/00002",
+     "nota": "pago con retención"
+    },
+    {
+     "modelo": "ir.attachment",
+     "id": 68601,
+     "nombre": "20557912879-20-RRR1-00000010.xml",
+     "nota": "XML del CRE"
+    },
+    {
+     "modelo": "l10n_pe.retention.summary.wizard",
+     "id": 45,
+     "nombre": "l10n_pe.retention.summary.wizard,45",
+     "nota": "resumen 626"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_l10n_pe_retention",
+   "titulo": "Anulación del CRE (resumen RR): reversing → cancelled (servicio simulado)",
+   "pasos": "Pagos ▸ CRE aceptado ▸ «Revertir retención» con motivo ▸ «Consultar reversión».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "retención 3 % de 2 360",
+     "detalle": "esperado 70.8, obtenido 70.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "un CRE aceptado bloquea pasar el pago a borrador",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "tras enviar el resumen: reversing",
+     "detalle": "esperado 'reversing', obtenido 'reversing'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tras consultar el ticket: cancelled",
+     "detalle": "esperado 'cancelled', obtenido 'cancelled'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del resumen RR",
+     "detalle": "20557912879-RR-20261030-67"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML de reversión: SummaryDocuments",
+     "detalle": "esperado 'SummaryDocuments', obtenido 'SummaryDocuments'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el resumen referencia el CRE anulado (serie y número)",
+     "detalle": "RRR1-00000011"
+    },
+    {
+     "estado": "OK",
+     "titulo": "al volver a publicar recibe un número nuevo",
+     "detalle": "RRR1-00000012"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío real del resumen RR a SUNAT",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28831,
+     "nombre": "F FQ20-31600014",
+     "nota": "factura"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1277,
+     "nombre": "PQAB20/2026/00003",
+     "nota": "pago con CRE a anular"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_retention",
+   "titulo": "Excepciones: monto mínimo y buen contribuyente",
+   "pasos": "Compras ▸ facturas por S/ 590 y de un buen contribuyente: no muestran retención.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "no aplica por debajo de S/ 700",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "no aplica a buen contribuyente",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "no aplica si la compañía no es agente",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28833,
+     "nombre": "Borrador de factura F FQ20-31600015",
+     "nota": "factura de S/ 590"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28834,
+     "nombre": "Borrador de factura F FQ20-31600016",
+     "nota": "factura de buen contribuyente"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_perception",
+   "titulo": "Factura con percepción 2 % y XML de la factura",
+   "pasos": "Ventas ▸ factura de 10 bolsas de cemento ▸ Publicar: percepción 51 al 2 %.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "régimen 51 (venta interna)",
+     "detalle": "esperado '51', obtenido '51'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tasa 2 %",
+     "detalle": "esperado 2.0, obtenido 2.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "percepción 2 % de 1 180",
+     "detalle": "esperado 23.6, obtenido 23.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "operación 2001 (sujeta a percepción)",
+     "detalle": "esperado '2001', obtenido '2001'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: cargo 51 de 23.60 sobre 1 180.00",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: total con percepción 1 203.60",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28836,
+     "nombre": "FQ20-31600018",
+     "nota": "factura con percepción"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_perception",
+   "titulo": "Comprobante de percepción (tipo 40) desde el cobro",
+   "pasos": "Ventas ▸ cobrar 1 203.60 ▸ en el pago «Crear comprobante de percepción» ▸ Publicar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "percepción calculada con el factor (1 203.60)",
+     "detalle": "esperado 23.6, obtenido 23.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comprobante publicado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "número P___",
+     "detalle": "P001-00000001"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento: percepción por pagar al haber",
+     "detalle": "esperado 23.6, obtenido 23.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la factura registra la percepción cobrada",
+     "detalle": "esperado 23.6, obtenido 23.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: raíz Perception",
+     "detalle": "esperado 'Perception', obtenido 'Perception'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: total percibido",
+     "detalle": "esperado '23.60', obtenido '23.60'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XML: total cobrado",
+     "detalle": "esperado '1203.60', obtenido '1203.60'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del archivo tipo 40",
+     "detalle": "20557912879-40-P001-00000001"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Envío del comprobante de percepción a SUNAT",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28837,
+     "nombre": "FQ20-31600019",
+     "nota": "factura"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1278,
+     "nombre": "PQAB20/2026/00004",
+     "nota": "cobro con percepción"
+    },
+    {
+     "modelo": "l10n_pe.perception",
+     "id": 44,
+     "nombre": "Borrador",
+     "nota": "comprobante de percepción"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_fourth_category",
+   "titulo": "Recibos por honorarios: retención 8 % sobre S/ 1 500",
+   "pasos": "Compras ▸ recibo por honorarios E001 de S/ 2 000 y otro de S/ 1 200 ▸ Publicar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "estado: retenido",
+     "detalle": "esperado 'withheld', obtenido 'withheld'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "retención 8 % = 160",
+     "detalle": "esperado 160.0, obtenido 160.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se paga el neto 1 840",
+     "detalle": "esperado 1840.0, obtenido 1840.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "retención a la 40172",
+     "detalle": "4017200"
+    },
+    {
+     "estado": "OK",
+     "titulo": "S/ 1 200: no se retiene",
+     "detalle": "esperado 'under_threshold', obtenido 'under_threshold'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28840,
+     "nombre": "R E001-31600020",
+     "nota": "RH con retención"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28841,
+     "nombre": "R E001-31600021",
+     "nota": "RH bajo el umbral"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_fourth_category",
+   "titulo": "Reporte mensual (PDT 601) y TXT .4ta",
+   "pasos": "Perú ▸ Cuarta categoría ▸ reporte de octubre 2026 ▸ Calcular ▸ Exportar TXT.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "los dos recibos pagados en el reporte",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "retenido del prestador: 160",
+     "detalle": "esperado 160.0, obtenido 160.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "nombre del archivo PDT 601",
+     "detalle": "esperado '060120261020557912879.4ta', obtenido '060120261020557912879.4ta'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fila del recibo: tipo 06, RUC, R, E001, 2000.00",
+     "detalle": "[['06', '10473920013', 'R', 'E001', '31600020', '2000.00', '15/10/2026', '15/10/2026', '1', '3', '', '']]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "indicador de retención = 1",
+     "detalle": "1"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.fourth.category.report",
+     "id": 8,
+     "nombre": "l10n_pe.fourth.category.report,8",
+     "nota": "reporte 4ta oct-2026"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_itf",
+   "titulo": "ITF al confirmar pagos y cobros en un banco afecto",
+   "pasos": "Contabilidad ▸ Pagos ▸ pago de S/ 2 000 y cobro de S/ 5 000 desde el banco con ITF ▸ Confirmar.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "redondeo del art. 13 (12 345.67 → 0.60)",
+     "detalle": "esperado 0.6, obtenido 0.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ITF 0.005 % de 2 000 = 0.10",
+     "detalle": "esperado 0.1, obtenido 0.1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asiento del ITF publicado en el banco",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "gasto ITF en la 6412000",
+     "detalle": "esperado 0.1, obtenido 0.1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cobro de 5 000: ITF 0.25",
+     "detalle": "esperado 0.25, obtenido 0.25"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago marcado exonerado: sin ITF",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "menos de S/ 1 000: sin ITF",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "al pasar el pago a borrador se anula el ITF",
+     "detalle": "esperado 'cancel', obtenido 'cancel'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "al republicar vuelve el ITF",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.payment",
+     "id": 1281,
+     "nombre": "PQAI20/2026/00001",
+     "nota": "pago con ITF"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28846,
+     "nombre": "QAI20/2026/00001 (ITF PQAI20/2026/00001)",
+     "nota": "asiento del ITF"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1282,
+     "nombre": "PQAI20/2026/00002",
+     "nota": "cobro con ITF"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1283,
+     "nombre": "PQAI20/2026/00003",
+     "nota": "pago exonerado"
+    },
+    {
+     "modelo": "account.payment",
+     "id": 1284,
+     "nombre": "PQAI20/2026/00004",
+     "nota": "pago < S/ 1 000"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_monthly_tax",
+   "titulo": "UIT desde el parámetro de reglas nativo l10n_pe_uit",
+   "pasos": "Ajustes ▸ Perú ▸ UIT: con la planilla instalada se usa el parámetro del año.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "parámetro l10n_pe_uit con valores",
+     "detalle": "{2026: 5500.0, 2025: 5350.0, 2024: 5150.0}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "UIT 2024 = parámetro nativo",
+     "detalle": "esperado 5150.0, obtenido 5150.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "UIT 2025 = parámetro nativo",
+     "detalle": "esperado 5350.0, obtenido 5350.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "UIT 2026 = parámetro nativo",
+     "detalle": "esperado 5500.0, obtenido 5500.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "para 2025 no usa el valor fijo de la compañía (5500.0)",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_monthly_tax",
+   "titulo": "Resumen 621 de setiembre: IGV y pago a cuenta (variación por mis comprobantes)",
+   "pasos": "Perú ▸ Declaraciones ▸ 621 setiembre 2026 ▸ Calcular; registrar facturas y recalcular.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "periodo calculado",
+     "detalle": "esperado 'calculated', obtenido 'calculated'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "base de ventas +10 000",
+     "detalle": "esperado 10000.0, obtenido 10000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "IGV de ventas +1 800",
+     "detalle": "esperado 1800.0, obtenido 1800.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "IGV de compras +720",
+     "detalle": "esperado 720.0, obtenido 720.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "resultado del IGV +1 080",
+     "detalle": "esperado 1080.0, obtenido 1080.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ingresos netos +10 000",
+     "detalle": "esperado 10000.0, obtenido 10000.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pago a cuenta = max(coeficiente, 1.5 %) × ingresos",
+     "detalle": "coef 0.0, ingresos 10000.0, renta 150.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total = IGV + renta",
+     "detalle": "esperado 330.0, obtenido 330.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.tax.regime",
+     "id": 7,
+     "nombre": "l10n_pe.tax.regime,7",
+     "nota": "régimen general 2026"
+    },
+    {
+     "modelo": "l10n_pe.monthly.tax",
+     "id": 34,
+     "nombre": "621 09/2026",
+     "nota": "621 setiembre"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28852,
+     "nombre": "FQ20-31600022",
+     "nota": "venta setiembre 10 000"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28853,
+     "nombre": "F FQ20-31600023",
+     "nota": "compra setiembre 4 000"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "PLE 5.1 Libro Diario (TXT oficial + XLSX del módulo)",
+   "pasos": "Contabilidad ▸ Libro mayor ▸ setiembre 2026 ▸ botones «PLE 5.1» y «XLSX 5.1».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre del TXT 5.1",
+     "detalle": "LE2055791287920260900050100001111"
+    },
+    {
+     "estado": "OK",
+     "titulo": "dos líneas del asiento (CUO = id)",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "21 campos por línea (cierra con «|»)",
+     "detalle": "esperado 21, obtenido 21"
+    },
+    {
+     "estado": "OK",
+     "titulo": "periodo AAAAMM00",
+     "detalle": "esperado '20260900', obtenido '20260900'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cuentas del asiento",
+     "detalle": "['6599920', '4699920']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "debe y haber 321.00",
+     "detalle": ""
+    },
+    {
+     "estado": "AVISO",
+     "titulo": "La glosa peruana (l10n_pe_gloss) no llega al 5.1 oficial",
+     "detalle": "campo 16 = 'QAG20/2026/09/0001': el exportador nativo usa el nombre del asiento"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XLSX 5.1 con las mismas líneas del TXT",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28854,
+     "nombre": "QAG20/2026/09/0001",
+     "nota": "asiento de setiembre"
+    }
+   ],
+   "error": null,
+   "estado": "AVISO"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "PLE 6.1 Libro Mayor",
+   "pasos": "Libro mayor ▸ setiembre 2026 ▸ «PLE 6.1».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre del TXT 6.1",
+     "detalle": "LE2055791287920260900060100001111"
+    },
+    {
+     "estado": "OK",
+     "titulo": "líneas del asiento en el mayor",
+     "detalle": "esperado 2, obtenido 2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "21 campos por línea",
+     "detalle": "esperado 21, obtenido 21"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el 6.1 no lleva la referencia del libro (campo 20)",
+     "detalle": "esperado '', obtenido ''"
+    },
+    {
+     "estado": "OK",
+     "titulo": "XLSX 6.1 generado",
+     "detalle": "esperado 'xlsx', obtenido 'xlsx'"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "PLE 8.1 → RCE 8.4 (Registro de Compras)",
+   "pasos": "Informes ▸ RCE Registro de Compras 8.4 ▸ setiembre 2026 ▸ «TXT».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre oficial LE…080400",
+     "detalle": "LE2055791287920260900080400021112"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la compra está en el 8.4",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "37 campos",
+     "detalle": "esperado 37, obtenido 37"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 13: RUC del proveedor",
+     "detalle": "esperado '20609920026', obtenido '20609920026'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 5: fecha de emisión",
+     "detalle": "esperado '15/09/2026', obtenido '15/09/2026'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "base e IGV de la adquisición gravada",
+     "detalle": "esperado ('4000.00', '720.00'), obtenido ('4000.00', '720.00')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 25: total",
+     "detalle": "esperado '4720.00', obtenido '4720.00'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28853,
+     "nombre": "F FQ20-31600023",
+     "nota": "compra de setiembre"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_ple",
+   "titulo": "PLE 14.1 → RVIE 14.4 (Registro de Ventas)",
+   "pasos": "Informes ▸ RVIE Registro de Ventas 14.4 ▸ setiembre 2026 ▸ «TXT».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "nombre oficial LE…140400…2",
+     "detalle": "LE2055791287920260900140400021112"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la venta está en el 14.4",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "33 campos (sin los 34-40)",
+     "detalle": "esperado 33, obtenido 33"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 12: RUC del cliente",
+     "detalle": "esperado '20609920018', obtenido '20609920018'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "base, IGV y total",
+     "detalle": "esperado ('10000.00', '1800.00', '11800.00'), obtenido ('10000.00', '1800.00', '11800.00')"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28852,
+     "nombre": "FQ20-31600022",
+     "nota": "venta de setiembre"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_sire",
+   "titulo": "RVIE setiembre: comprobantes del sistema",
+   "pasos": "Perú ▸ SIRE ▸ RVIE setiembre 2026 ▸ «Cargar del sistema».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "la venta aparece en la propuesta del sistema",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cliente con RUC",
+     "detalle": "esperado ('6', '20609920018'), obtenido ('6', '20609920018')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importes",
+     "detalle": "esperado (10000.0, 1800.0, 11800.0), obtenido (10000.0, 1800.0, 11800.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "CAR de 27 caracteres",
+     "detalle": "2055791287901FQ200031600022"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Descarga de la propuesta y envío al SIRE",
+     "detalle": "sin credenciales SOL de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.sire.rvie",
+     "id": 39,
+     "nombre": "RVIE-09-2026",
+     "nota": "RVIE 2026-09"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_sire",
+   "titulo": "RCE con proveedor no domiciliado (8.5): país, modalidad y tipo de renta nativos",
+   "pasos": "Compras ▸ factura tipo 91 de proveedor de EE. UU. con tipo de renta 18 y modalidad 3 ▸ SIRE ▸ RCE setiembre ▸ «Cargar no domiciliados».",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "tipo de renta guardado en l10n_pe_usage_type_id nativo",
+     "detalle": "esperado '18', obtenido '18'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "modalidad = l10n_pe_service_modality nativo",
+     "detalle": "esperado '3', obtenido '3'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "marcado como no domiciliado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "sale del RCE y va al registro de no domiciliados",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la compra doméstica sí está en el RCE",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea del no domiciliado desplegada",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sin observaciones",
+     "detalle": "False"
+    },
+    {
+     "estado": "OK",
+     "titulo": "35 campos del anexo 9",
+     "detalle": "esperado 35, obtenido 35"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 17: país desde res.country.l10n_pe_code (9249)",
+     "detalle": "esperado '9249', obtenido '9249'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 32: tipo de renta",
+     "detalle": "esperado '18', obtenido '18'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 33: modalidad del servicio",
+     "detalle": "esperado '3', obtenido '3'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 25: renta bruta",
+     "detalle": "esperado '500.00', obtenido '500.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "campo 29: impuesto retenido 30 %",
+     "detalle": "esperado '150.00', obtenido '150.00'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no se envía sin aceptar la propuesta",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Carga del 8.5 al SIRE",
+     "detalle": "sin credenciales SOL de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.partner",
+     "id": 9104,
+     "nombre": "QA20 Cloud Services Inc",
+     "nota": "proveedor no domiciliado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28855,
+     "nombre": "Borrador de factura C INV-31600024",
+     "nota": "factura de no domiciliado"
+    },
+    {
+     "modelo": "l10n_pe.sire.rce",
+     "id": 24,
+     "nombre": "RCE-09-2026",
+     "nota": "RCE 2026-09"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_cpe_validation",
+   "titulo": "Consulta integrada de comprobantes (SUNAT simulada)",
+   "pasos": "Compras ▸ factura de proveedor ▸ «Validar en SUNAT»: válido, observado y no válido.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "datos de la consulta según el manual",
+     "detalle": "esperado ('20609920026', '01', 'FQ20'), obtenido ('20609920026', '01', 'FQ20')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "resultado: válido",
+     "detalle": "esperado ('valid', '1'), obtenido ('valid', '1')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se pidió token OAuth2 (simulado)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "domicilio no habido: observado",
+     "detalle": "esperado 'observed', obtenido 'observed'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "no informado: no válido",
+     "detalle": "esperado 'invalid', obtenido 'invalid'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "mensaje de SUNAT guardado",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "Consulta real a la API de SUNAT",
+     "detalle": "sin credenciales de prueba"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 28856,
+     "nombre": "Borrador de factura F FQ20-31600025",
+     "nota": "CPE válido"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28858,
+     "nombre": "Borrador de factura F FQ20-31600026",
+     "nota": "CPE observado"
+    },
+    {
+     "modelo": "account.move",
+     "id": 28859,
+     "nombre": "Borrador de factura F FQ20-31600027",
+     "nota": "CPE no válido"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_financial_reports",
+   "titulo": "Hoja de trabajo (formato 1) 2026 con mis cuentas",
+   "pasos": "Contabilidad ▸ Informes ▸ Perú ▸ Hoja de trabajo ▸ 2026.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "fila de la cuenta 94 de destino",
+     "detalle": "['1049920 QA20 Pagos pendientes', '1213000 Facturas, boletas y otros comprobantes por cobrar - En cobranza', '1219920 QA20 Detracciones por cobrar']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sumas del debe de la 94 = mayor",
+     "detalle": "esperado 900.0, obtenido 900.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la 94 va a pérdidas por función",
+     "detalle": "esperado 900.0, obtenido 900.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "totales cuadrados: sum_debit = sum_credit",
+     "detalle": "esperado 65528.35, obtenido 65528.35"
+    },
+    {
+     "estado": "OK",
+     "titulo": "totales cuadrados: balance_debit = balance_credit",
+     "detalle": "esperado 31526.149999999998, obtenido 31526.15"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_financial_reports",
+   "titulo": "Estado de cambios en el patrimonio (3.19) = patrimonio del balance",
+   "pasos": "Informes ▸ Perú ▸ Estado de cambios en el patrimonio neto ▸ 2026.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "columnas del formato 3.19",
+     "detalle": "esperado ['movement_note', 'opening', 'movement', 'closing'], obtenido ['movement_note', 'opening', 'movement', 'closing']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "saldo final del 3.19 = patrimonio del balance",
+     "detalle": "esperado -5946.55, obtenido -5946.55"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_l10n_pe_dashboard",
+   "titulo": "Tablero Perú: vista de IGV y armado de la hoja",
+   "pasos": "Tableros ▸ Perú: ventas, compras e IGV del mes.",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "venta: base 10 000, IGV 1 800",
+     "detalle": "esperado ('sale', 10000.0, 1800.0), obtenido ('sale', 10000.0, 1800.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compra: base 4 000, IGV 720",
+     "detalle": "esperado ('purchase', 4000.0, 720.0), obtenido ('purchase', 4000.0, 720.0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "sección «Ventas, compras e IGV» en la hoja",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "todas las fuentes del tablero se pueden consultar (28)",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}

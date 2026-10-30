@@ -1,0 +1,395 @@
+2026-10-30 12:25:48,147 516300 WARNING ce20_db_ol odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)
+2026-10-30 12:25:58,119 516300 WARNING ce20_db_ol odoo.fields: res.config.settings.l10n_pe_cpe_post_mode: selection attribute will be ignored as the field is related
+2026-10-30 12:25:59,473 516300 WARNING ce20_db_ol odoo.fields: Field l10n_pe.retention.edi.mixin.l10n_pe_edi_reversal_reason: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:25:59,476 516300 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.year: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:25:59,476 516300 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.month: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:25:59,476 516300 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:25:59,947 516300 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:616: UserWarning: pharmacy.insurance.liquidation: inconsistent 'compute_sudo' for computed fields order_count, amount_total. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 616, in field_computed
+    warnings.warn(
+
+2026-10-30 12:25:59,949 516300 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:633: UserWarning: pharmacy.insurance.liquidation: inconsistent 'store' for computed fields, accessing order_count may recompute and update amount_total. Use distinct compute methods for stored and non-stored fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 633, in field_computed
+    warnings.warn(
+
+
+== [al_account_base] Código SUNAT del banco = clearing_number nativo (ambos sentidos)
+  OK      nombre del banco tomado del catálogo — esperado 'Banco de Crédito del Perú', obtenido 'Banco de Crédito del Perú'
+  OK      BIC tomado del catálogo — esperado 'BCPLPEPL', obtenido 'BCPLPEPL'
+  OK      l10n_pe_bank_code → clearing_number — esperado '02', obtenido '02'
+  OK      clearing_number → l10n_pe_bank_code — esperado '11', obtenido '11'
+  OK      código de 3 dígitos rechazado (sin truncar a otro banco)
+  AVISO   El clearing_number nativo acepta un código SUNAT inválido — escribir clearing_number=«AB» no dispara _check_l10n_pe_bank_code (la restricción es sobre el related l10n_pe_bank_code); el PLE 1.2 lo leería tal cual
+  OK      cuenta del Banco de la Nación: código SUNAT 18 — esperado '18', obtenido '18'
+  OK      se reconoce como Banco de la Nación (BANCPEPL)
+
+== [al_account_base] Glosa del asiento y de la línea, anexo y naturaleza del diario
+  OK      asiento publicado — esperado 'posted', obtenido 'posted'
+  OK      glosa conservada al publicar — esperado 'QA20 Provisión de servicios de octubre', obtenido 'QA20 Provisión de servicios de octubre'
+  OK      glosa de la línea — esperado 'Glosa de la línea', obtenido 'Glosa de la línea'
+  OK      la glosa es buscable
+  OK      duplicar no arrastra la glosa
+  OK      l10n_pe_is_pe() en compañía peruana
+  OK      código de anexo de 4 dígitos aceptado — esperado '0001', obtenido '0001'
+  OK      código de anexo con letras rechazado
+  OK      naturaleza del diario por defecto: movimiento — esperado 'movement', obtenido 'movement'
+  OK      diario de apertura excluido de libros
+
+== [l10n_pe_vat_sunat] Consulta de RUC (simulada) actualiza el contacto
+  OK      el RUC es el vat del contacto peruano — ('ruc', '20609920107')
+  OK      se consultó el RUC — call('20609920107', 'ruc', quick=False)
+  OK      razón social actualizada — esperado 'QA20 EMPRESA CONSULTADA S.A.C.', obtenido 'QA20 EMPRESA CONSULTADA S.A.C.'
+  OK      dirección actualizada — esperado 'AV. QA 123', obtenido 'AV. QA 123'
+  OK      distrito (ubigeo) actualizado — esperado l10n_pe.res.city.district(251,), obtenido l10n_pe.res.city.district(251,)
+  OK      sin alerta de consulta
+  OK      RUC con dígito verificador inválido no se consulta
+  OMITIDO Consulta real a SUNAT/APIs — sin credenciales de prueba: conexión simulada
+
+== [l10n_pe_vat_sunat] DNI en identificadores adicionales (Odoo 20) y consulta simulada
+  OK      DNI guardado en additional_identifiers — esperado '45678912', obtenido '45678912'
+  OK      objetivo de la consulta: DNI — esperado ('dni', '45678912'), obtenido ('dni', '45678912')
+  OK      tipo consultable con la validación de DNI activa — esperado 'dni', obtenido 'dni'
+  OK      se consultó el DNI — call('45678912', 'dni', quick=False)
+  OK      nombre actualizado desde la consulta de DNI — esperado 'QA20 PEREZ GOMEZ JUAN', obtenido 'QA20 PEREZ GOMEZ JUAN'
+  OK      DNI de 4 dígitos rechazado al consultar
+
+== [al_l10n_pe_currency] Tipo de cambio compra/venta manual
+  OK      tasa nativa = 1/venta — esperado 0.29673590504451036, obtenido 0.29673590504451036
+  OK      compra conservada — esperado 3.36, obtenido 3.36
+  OK      tocar la tasa nativa recalcula la venta — esperado 4.0, obtenido 4.0
+  OK      y la venta vuelve a fijar la nativa — esperado 0.29673590504451036, obtenido 0.29673590504451036
+  OK      tipo de cambio negativo rechazado
+
+== [al_l10n_pe_currency] Descarga BCRP simulada: el cierre de un día es el TC SUNAT del siguiente (fin de semana)
+  OK      se llamó a la descarga (simulada) — call(datetime.date(2026, 1, 26), datetime.date(2026, 2, 9))
+  OK      fechas cargadas 05..10/02 — esperado 6, obtenido 6
+  OK      TC SUNAT 05/02 = cierre anterior — 3.351/3.358 esperado 3.351/3.358
+  OK      TC SUNAT 06/02 = cierre anterior — 3.362/3.369 esperado 3.362/3.369
+  OK      TC SUNAT 07/02 = cierre anterior (fin de semana) — 3.371/3.377 esperado 3.371/3.377
+  OK      TC SUNAT 08/02 = cierre anterior (fin de semana) — 3.371/3.377 esperado 3.371/3.377
+  OK      TC SUNAT 09/02 = cierre anterior — 3.371/3.377 esperado 3.371/3.377
+  OK      TC SUNAT 10/02 = cierre anterior — 3.38/3.386 esperado 3.38/3.386
+  OK      recargar no duplica — esperado 1, obtenido 1
+  OMITIDO Descarga real del BCRP/SUNAT — sin red: respuesta simulada
+
+== [al_l10n_pe_currency] Factura en USD con TC compra vs venta
+  OK      por defecto se usa la venta — esperado 'sale', obtenido 'sale'
+  OK      tasa = 1/venta del 09/02 — esperado 0.29612081729345574, obtenido 0.29612081729345574
+  OK      total en soles con venta — esperado 337.7, obtenido 337.7
+  OK      tasa = 1/compra del 09/02 — esperado 0.29664787896766537, obtenido 0.29664787896766537
+  OK      total en soles con compra — esperado 337.1, obtenido 337.1
+
+== [al_account_move_name_sequence] Numeración por secuencia del diario
+  OK      secuencia de facturas creada con el prefijo — esperado 'QSV-', obtenido 'QSV-'
+  OK      secuencia de NC creada con el prefijo — esperado 'QSN-', obtenido 'QSN-'
+  OK      secuencia sin huecos — esperado 'no_gap', obtenido 'no_gap'
+  OK      nombre tomado de la secuencia — QSV-00000001, QSV-00000002
+  OK      numeración correlativa
+  OK      NC con la secuencia rectificativa — QSN-00000001
+
+== [al_account_move_name_sequence] Serie CPE: publicar crea las 3 secuencias; factura y NC
+  OK      serie publicada — esperado 'publish', obtenido 'publish'
+  OK      secuencias de factura, NC y ND — esperado ('FQ21-', 'FQ2C-', 'FQ2D-'), obtenido ('FQ21-', 'FQ2C-', 'FQ2D-')
+  OK      serie «B001» rechazada para facturas
+  OK      serie asignada a la factura — esperado edi.invoice.series(21,), obtenido edi.invoice.series(21,)
+  OK      numerada con la serie — FQ21-00000001
+  OK      NC numerada con la serie rectificativa — FQ2C-00000001
+
+== [al_account_destinations] Gasto clase 6 → asiento de destino 9 / 79
+  OK      compañía con destinos 6 → 9 — esperado '6a9', obtenido '6a9'
+  OK      destinos que no suman 100 % rechazados
+  OK      la cuenta 6 trabaja con destinos
+  OK      destino generado y publicado
+  OK      en el diario de destinos de Ajustes — esperado account.journal(5888,), obtenido account.journal(5888,)
+  OK      94: 60 % al debe — esperado 600.0, obtenido 600.0
+  OK      95: 40 % al debe — esperado 400.0, obtenido 400.0
+  OK      79: 100 % al haber — esperado 1000.0, obtenido 1000.0
+  OK      el destino no genera otro destino
+  OK      factura: 94 = 300 — esperado 300.0, obtenido 300.0
+  OK      factura: 79 = 500 (sin IGV) — esperado 500.0, obtenido 500.0
+
+== [al_l10n_pe_detraction] Factura de venta con detracción y reparto de la cuenta 12
+  OK      el producto sincroniza el código y % nativos del catálogo 54 — esperado ('037', 12.0), obtenido ('037', 12.0)
+  OK      aplica detracción (> S/ 700)
+  OK      detracción 12 % de 1 180 redondeada a 142 — esperado 142.0, obtenido 142.0
+  OK      neto a cobrar 1 038 — esperado 1038.0, obtenido 1038.0
+  OK      tipo de operación 1001 (sujeta a detracción) — esperado '1001', obtenido '1001'
+  OK      dos líneas de cobro (neto + detracción) — esperado 2, obtenido 2
+  OK      detracción a la 12 propia — esperado 142.0, obtenido 142.0
+  OK      el XML UBL lleva el bloque de detracción — Detraccion/142.00
+
+== [al_l10n_pe_detraction] Depósito de la detracción de una compra
+  OK      detracción 12 % de 2 360 = 283 — esperado 283.0, obtenido 283.0
+  OK      el asistente propone el importe de la detracción — esperado 283.0, obtenido 283.0
+  OK      constancia registrada en la factura — esperado 'QA31600011', obtenido 'QA31600011'
+  OK      pago de 283 vinculado — [{'id': 1275, 'amount': 283.0, 'state': 'paid'}]
+  OK      solo se paga la detracción: queda el neto 2 077 — esperado 2077.0, obtenido 2077.0
+
+== [al_l10n_pe_detraction] TXT de depósito masivo del Banco de la Nación
+  OK      estructura válida para el banco — esperado [], obtenido []
+  OK      cabecera de 68 posiciones — esperado 68, obtenido 68
+  OK      cabecera de adquirente — esperado '*', obtenido '*'
+  OK      detalle del proveedor de 107 posiciones — ['620609920034                                            037000712345670000000000708000120260901FQ2031600012']
+  OK      importe de la detracción en el detalle — 708.0
+  OMITIDO Envío del TXT al Banco de la Nación — sin credenciales bancarias
+
+== [al_l10n_pe_retention] Pago con retención 3 %: CRE numerado y XML generado sin enviar
+  OK      impuesto de retención = el nativo de l10n_pe_edi_withholding — 3% IGV Withholding
+  OK      aplica retención
+  OK      estimación 3 % de 1 180 — esperado 35.4, obtenido 35.4
+  OK      impuesto de retención inyectado al publicar
+  OK      sin alterar el total — esperado 1180.0, obtenido 1180.0
+  OK      línea de retención del asistente — esperado 35.4, obtenido 35.4
+  OK      retención en el pago — esperado 35.4, obtenido 35.4
+  OK      CRE numerado con serie R___ — RRR1-00000010
+  AVISO   La serie del CRE no es R001 — número RRR1-00000010: la secuencia nativa (account.1_l10n_pe_edi_withholding_sunat_sequence) conserva el prefijo «RRR1-»; el R001- del módulo solo se aplica al cargar el plan en compañías nuevas
+  OK      factura pagada (neto + retención) — esperado True, obtenido True
+  OK      XML: RUC del agente — 20557912879
+  OK      XML: RUC del proveedor — 20609920026
+  OK      XML: número del CRE — RRR1-00000010
+  OK      XML: tasa 3 % — <sac:SUNATRetentionPercent>3
+  OK      XML: importe retenido — 35.40
+  OK      XML: factura referenciada — FQ20-31600013
+  OK      raíz del UBL: Retention — esperado 'Retention', obtenido 'Retention'
+  OMITIDO Envío del CRE a SUNAT/OSE — sin credenciales de prueba
+  OK      PDT 626: fila del proveedor con 35.40 — [['20609920026', 'QA20 Proveedor Servicios SAC', 'F FQ20-31600013', '2026-10-30', '1180.00', 'RRR1-00000010', '35.40']]
+
+== [al_l10n_pe_retention] Anulación del CRE (resumen RR): reversing → cancelled (servicio simulado)
+  OK      retención 3 % de 2 360 — esperado 70.8, obtenido 70.8
+  OK      un CRE aceptado bloquea pasar el pago a borrador
+  OK      tras enviar el resumen: reversing — esperado 'reversing', obtenido 'reversing'
+  OK      tras consultar el ticket: cancelled — esperado 'cancelled', obtenido 'cancelled'
+  OK      nombre del resumen RR — 20557912879-RR-20261030-67
+  OK      XML de reversión: SummaryDocuments — esperado 'SummaryDocuments', obtenido 'SummaryDocuments'
+  OK      el resumen referencia el CRE anulado (serie y número) — RRR1-00000011
+  OK      al volver a publicar recibe un número nuevo — RRR1-00000012
+  OMITIDO Envío real del resumen RR a SUNAT — sin credenciales de prueba
+
+== [al_l10n_pe_retention] Excepciones: monto mínimo y buen contribuyente
+  OK      no aplica por debajo de S/ 700
+  OK      no aplica a buen contribuyente
+  OK      no aplica si la compañía no es agente
+
+== [al_l10n_pe_perception] Factura con percepción 2 % y XML de la factura
+  OK      régimen 51 (venta interna) — esperado '51', obtenido '51'
+  OK      tasa 2 % — esperado 2.0, obtenido 2.0
+  OK      percepción 2 % de 1 180 — esperado 23.6, obtenido 23.6
+  OK      operación 2001 (sujeta a percepción) — esperado '2001', obtenido '2001'
+  OK      XML: cargo 51 de 23.60 sobre 1 180.00
+  OK      XML: total con percepción 1 203.60
+
+== [al_l10n_pe_perception] Comprobante de percepción (tipo 40) desde el cobro
+  OK      percepción calculada con el factor (1 203.60) — esperado 23.6, obtenido 23.6
+  OK      comprobante publicado — esperado 'posted', obtenido 'posted'
+  OK      número P___ — P001-00000001
+  OK      asiento: percepción por pagar al haber — esperado 23.6, obtenido 23.6
+  OK      la factura registra la percepción cobrada — esperado 23.6, obtenido 23.6
+  OK      XML: raíz Perception — esperado 'Perception', obtenido 'Perception'
+  OK      XML: total percibido — esperado '23.60', obtenido '23.60'
+  OK      XML: total cobrado — esperado '1203.60', obtenido '1203.60'
+  OK      nombre del archivo tipo 40 — 20557912879-40-P001-00000001
+  OMITIDO Envío del comprobante de percepción a SUNAT — sin credenciales de prueba
+
+== [al_l10n_pe_fourth_category] Recibos por honorarios: retención 8 % sobre S/ 1 500
+  OK      estado: retenido — esperado 'withheld', obtenido 'withheld'
+  OK      retención 8 % = 160 — esperado 160.0, obtenido 160.0
+  OK      se paga el neto 1 840 — esperado 1840.0, obtenido 1840.0
+  OK      retención a la 40172 — 4017200
+  OK      S/ 1 200: no se retiene — esperado 'under_threshold', obtenido 'under_threshold'
+
+== [al_l10n_pe_fourth_category] Reporte mensual (PDT 601) y TXT .4ta
+  OK      los dos recibos pagados en el reporte — esperado 2, obtenido 2
+  OK      retenido del prestador: 160 — esperado 160.0, obtenido 160.0
+  OK      nombre del archivo PDT 601 — esperado '060120261020557912879.4ta', obtenido '060120261020557912879.4ta'
+  OK      fila del recibo: tipo 06, RUC, R, E001, 2000.00 — [['06', '10473920013', 'R', 'E001', '31600020', '2000.00', '15/10/2026', '15/10/2026', '1', '3', '', '']]
+  OK      indicador de retención = 1 — 1
+
+== [al_l10n_pe_itf] ITF al confirmar pagos y cobros en un banco afecto
+  OK      redondeo del art. 13 (12 345.67 → 0.60) — esperado 0.6, obtenido 0.6
+  OK      ITF 0.005 % de 2 000 = 0.10 — esperado 0.1, obtenido 0.1
+  OK      asiento del ITF publicado en el banco
+  OK      gasto ITF en la 6412000 — esperado 0.1, obtenido 0.1
+  OK      cobro de 5 000: ITF 0.25 — esperado 0.25, obtenido 0.25
+  OK      pago marcado exonerado: sin ITF
+  OK      menos de S/ 1 000: sin ITF
+  OK      al pasar el pago a borrador se anula el ITF — esperado 'cancel', obtenido 'cancel'
+  OK      al republicar vuelve el ITF
+
+== [al_l10n_pe_monthly_tax] UIT desde el parámetro de reglas nativo l10n_pe_uit
+  OK      parámetro l10n_pe_uit con valores — {2026: 5500.0, 2025: 5350.0, 2024: 5150.0}
+  OK      UIT 2024 = parámetro nativo — esperado 5150.0, obtenido 5150.0
+  OK      UIT 2025 = parámetro nativo — esperado 5350.0, obtenido 5350.0
+  OK      UIT 2026 = parámetro nativo — esperado 5500.0, obtenido 5500.0
+  OK      para 2025 no usa el valor fijo de la compañía (5500.0)
+
+== [al_l10n_pe_monthly_tax] Resumen 621 de setiembre: IGV y pago a cuenta (variación por mis comprobantes)
+  OK      periodo calculado — esperado 'calculated', obtenido 'calculated'
+  OK      base de ventas +10 000 — esperado 10000.0, obtenido 10000.0
+  OK      IGV de ventas +1 800 — esperado 1800.0, obtenido 1800.0
+  OK      IGV de compras +720 — esperado 720.0, obtenido 720.0
+  OK      resultado del IGV +1 080 — esperado 1080.0, obtenido 1080.0
+  OK      ingresos netos +10 000 — esperado 10000.0, obtenido 10000.0
+  OK      pago a cuenta = max(coeficiente, 1.5 %) × ingresos — coef 0.0, ingresos 10000.0, renta 150.0
+  OK      total = IGV + renta — esperado 330.0, obtenido 330.0
+
+== [al_l10n_pe_ple] PLE 5.1 Libro Diario (TXT oficial + XLSX del módulo)
+  OK      nombre del TXT 5.1 — LE2055791287920260900050100001111
+  OK      dos líneas del asiento (CUO = id) — esperado 2, obtenido 2
+  OK      21 campos por línea (cierra con «|») — esperado 21, obtenido 21
+  OK      periodo AAAAMM00 — esperado '20260900', obtenido '20260900'
+  OK      cuentas del asiento — ['6599920', '4699920']
+  OK      debe y haber 321.00
+  AVISO   La glosa peruana (l10n_pe_gloss) no llega al 5.1 oficial — campo 16 = 'QAG20/2026/09/0001': el exportador nativo usa el nombre del asiento
+  OK      XLSX 5.1 con las mismas líneas del TXT
+
+== [al_l10n_pe_ple] PLE 6.1 Libro Mayor
+  OK      nombre del TXT 6.1 — LE2055791287920260900060100001111
+  OK      líneas del asiento en el mayor — esperado 2, obtenido 2
+  OK      21 campos por línea — esperado 21, obtenido 21
+  OK      el 6.1 no lleva la referencia del libro (campo 20) — esperado '', obtenido ''
+  OK      XLSX 6.1 generado — esperado 'xlsx', obtenido 'xlsx'
+
+== [al_l10n_pe_ple] PLE 8.1 → RCE 8.4 (Registro de Compras)
+  OK      nombre oficial LE…080400 — LE2055791287920260900080400021112
+  OK      la compra está en el 8.4 — esperado 1, obtenido 1
+  OK      37 campos — esperado 37, obtenido 37
+  OK      campo 13: RUC del proveedor — esperado '20609920026', obtenido '20609920026'
+  OK      campo 5: fecha de emisión — esperado '15/09/2026', obtenido '15/09/2026'
+  OK      base e IGV de la adquisición gravada — esperado ('4000.00', '720.00'), obtenido ('4000.00', '720.00')
+  OK      campo 25: total — esperado '4720.00', obtenido '4720.00'
+
+== [al_l10n_pe_ple] PLE 14.1 → RVIE 14.4 (Registro de Ventas)
+  OK      nombre oficial LE…140400…2 — LE2055791287920260900140400021112
+  OK      la venta está en el 14.4 — esperado 1, obtenido 1
+  OK      33 campos (sin los 34-40) — esperado 33, obtenido 33
+  OK      campo 12: RUC del cliente — esperado '20609920018', obtenido '20609920018'
+  OK      base, IGV y total — esperado ('10000.00', '1800.00', '11800.00'), obtenido ('10000.00', '1800.00', '11800.00')
+
+== [al_l10n_pe_sire] RVIE setiembre: comprobantes del sistema
+  OK      la venta aparece en la propuesta del sistema — esperado 1, obtenido 1
+  OK      cliente con RUC — esperado ('6', '20609920018'), obtenido ('6', '20609920018')
+  OK      importes — esperado (10000.0, 1800.0, 11800.0), obtenido (10000.0, 1800.0, 11800.0)
+  OK      CAR de 27 caracteres — 2055791287901FQ200031600022
+  OMITIDO Descarga de la propuesta y envío al SIRE — sin credenciales SOL de prueba
+
+== [al_l10n_pe_sire] RCE con proveedor no domiciliado (8.5): país, modalidad y tipo de renta nativos
+  OK      tipo de renta guardado en l10n_pe_usage_type_id nativo — esperado '18', obtenido '18'
+  OK      modalidad = l10n_pe_service_modality nativo — esperado '3', obtenido '3'
+  OK      marcado como no domiciliado
+  OK      sale del RCE y va al registro de no domiciliados
+  OK      la compra doméstica sí está en el RCE
+  OK      línea del no domiciliado desplegada — esperado 1, obtenido 1
+  OK      sin observaciones
+  OK      35 campos del anexo 9 — esperado 35, obtenido 35
+  OK      campo 17: país desde res.country.l10n_pe_code (9249) — esperado '9249', obtenido '9249'
+  OK      campo 32: tipo de renta — esperado '18', obtenido '18'
+  OK      campo 33: modalidad del servicio — esperado '3', obtenido '3'
+  OK      campo 25: renta bruta — esperado '500.00', obtenido '500.00'
+  OK      campo 29: impuesto retenido 30 % — esperado '150.00', obtenido '150.00'
+  OK      no se envía sin aceptar la propuesta
+  OMITIDO Carga del 8.5 al SIRE — sin credenciales SOL de prueba
+
+== [al_l10n_pe_cpe_validation] Consulta integrada de comprobantes (SUNAT simulada)
+  OK      datos de la consulta según el manual — esperado ('20609920026', '01', 'FQ20'), obtenido ('20609920026', '01', 'FQ20')
+  OK      resultado: válido — esperado ('valid', '1'), obtenido ('valid', '1')
+  OK      se pidió token OAuth2 (simulado)
+  OK      domicilio no habido: observado — esperado 'observed', obtenido 'observed'
+  OK      no informado: no válido — esperado 'invalid', obtenido 'invalid'
+  OK      mensaje de SUNAT guardado
+  OMITIDO Consulta real a la API de SUNAT — sin credenciales de prueba
+
+== [al_l10n_pe_financial_reports] Hoja de trabajo (formato 1) 2026 con mis cuentas
+  OK      fila de la cuenta 94 de destino — ['1049920 QA20 Pagos pendientes', '1213000 Facturas, boletas y otros comprobantes por cobrar - En cobranza', '1219920 QA20 Detracciones por cobrar']
+  OK      sumas del debe de la 94 = mayor — esperado 900.0, obtenido 900.0
+  OK      la 94 va a pérdidas por función — esperado 900.0, obtenido 900.0
+  OK      totales cuadrados: sum_debit = sum_credit — esperado 65528.35, obtenido 65528.35
+  OK      totales cuadrados: balance_debit = balance_credit — esperado 31526.149999999998, obtenido 31526.15
+
+== [al_l10n_pe_financial_reports] Estado de cambios en el patrimonio (3.19) = patrimonio del balance
+  OK      columnas del formato 3.19 — esperado ['movement_note', 'opening', 'movement', 'closing'], obtenido ['movement_note', 'opening', 'movement', 'closing']
+  OK      saldo final del 3.19 = patrimonio del balance — esperado -5946.55, obtenido -5946.55
+
+== [al_l10n_pe_dashboard] Tablero Perú: vista de IGV y armado de la hoja
+  OK      venta: base 10 000, IGV 1 800 — esperado ('sale', 10000.0, 1800.0), obtenido ('sale', 10000.0, 1800.0)
+  OK      compra: base 4 000, IGV 720 — esperado ('purchase', 4000.0, 720.0), obtenido ('purchase', 4000.0, 720.0)
+  OK      sección «Ventas, compras e IGV» en la hoja
+  OK      todas las fuentes del tablero se pueden consultar (28)
+
+COMMIT
+RESUMEN contabilidad_a: {'AVISO': 3, 'OK': 30}

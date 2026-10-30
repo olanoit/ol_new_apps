@@ -3,6 +3,14 @@
 Material para verificar, módulo a módulo, los desarrollos de localización
 peruana sobre Odoo 19 (configuración `cfg/my/pe.cfg`, base `ol_pe_v19`).
 
+## Odoo 20 (rama `20.0`)
+
+| Archivo | Para qué sirve |
+| --- | --- |
+| [`v20/GUIA_VALIDACION_FUNCIONAL_20.md`](v20/GUIA_VALIDACION_FUNCIONAL_20.md) | Cómo se validó cada módulo tras la migración a 20: método, resultados, defectos corregidos y cómo repetirlo. |
+| [`v20/ANEXO_CASOS.md`](v20/ANEXO_CASOS.md) | Cada caso: pasos, comprobaciones con esperado/obtenido y registros creados. |
+| `v20/run_qa.sh`, `v20/fase_*.py` | Scripts de la validación funcional sobre `ce20_db_ol`. |
+
 ## Qué hay aquí
 
 | Archivo | Para qué sirve |

@@ -1,0 +1,612 @@
+2026-10-30 12:50:29,195 537266 WARNING ce20_db_ol odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)
+2026-10-30 12:50:34,712 537266 WARNING ce20_db_ol odoo.fields: res.config.settings.l10n_pe_cpe_post_mode: selection attribute will be ignored as the field is related
+2026-10-30 12:50:35,289 537266 WARNING ce20_db_ol odoo.fields: Field l10n_pe.retention.edi.mixin.l10n_pe_edi_reversal_reason: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:50:35,291 537266 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.year: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:50:35,291 537266 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.month: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:50:35,291 537266 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:50:35,586 537266 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:616: UserWarning: pharmacy.insurance.liquidation: inconsistent 'compute_sudo' for computed fields order_count, amount_total. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 616, in field_computed
+    warnings.warn(
+
+2026-10-30 12:50:35,586 537266 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:633: UserWarning: pharmacy.insurance.liquidation: inconsistent 'store' for computed fields, accessing order_count may recompute and update amount_total. Use distinct compute methods for stored and non-stored fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 633, in field_computed
+    warnings.warn(
+
+2026-10-30 12:50:42,130 537266 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7c793ba903a0, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 401, in <module>
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 393, in _transfer_third_party
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<6037>", line 1100, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037
+  File "<6037>", line 366, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+2026-10-30 12:50:42,132 537266 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7c793ba90040, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 401, in <module>
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 393, in _transfer_third_party
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<6037>", line 1100, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037
+  File "<6037>", line 483, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+
+== [preparacion] Datos maestros QA20 de la fase
+  OK      almacenes QA20 disponibles — Q20TA, Q20TB, Q20FA
+
+== [preparacion] Caja «QA20 Botica» del local Q20FA
+  OK      el administrador es responsable del TPV
+  OK      sesión del TPV abierta — opened
+
+== [al_stock_base] Tipo de operación SUNAT (tabla 12) y página «Logística PE»
+  OK      recepción validada — esperado 'done', obtenido 'done'
+  OK      recepción: tabla 12 = 02 (compra) — esperado '2', obtenido '2'
+  OK      salida: tabla 12 = 01 (venta) — esperado '1', obtenido '1'
+  OK      traslado interno: tabla 12 = 21 — esperado '21', obtenido '21'
+  OK      página «Logística PE» en el formulario
+  OK      el tipo de operación (tabla 12) vive en la página Logística PE
+  OK      el campo aparece una sola vez en el formulario — esperado 1, obtenido 1
+
+== [al_stock_base] Planchas enteras: producto indivisible y redondeo
+  OK      el tablero con unidad «Plancha entera» es indivisible
+  OK      área de la plancha en m² desde el factor — esperado 5.246, obtenido 5.246
+  OK      necesidad 7.3 → planchas enteras (tolerancia 0.0) — esperado 8.0, obtenido 8.0
+  OK      7.000001 no sube a 8 (redondeo de la UdM) — esperado 7.0, obtenido 7.0
+  OK      forzado «No» en el producto anula la regla de la unidad
+  OK      resumen de inventario sin la etiqueta «Late» en inglés
+
+== [al_l10n_pe_stock_transfer] Traslado interno entre establecimientos con GRE motivo 04
+  OK      el traslado admite guía de remisión
+  OK      punto de partida = dirección del almacén origen — esperado res.partner(9633,), obtenido res.partner(9633,)
+  OK      punto de llegada = dirección del almacén destino — esperado res.partner(9634,), obtenido res.partner(9634,)
+  OK      motivo propuesto 04 — esperado '04', obtenido '04'
+  OK      GRE marcada como enviada (firma simulada) — esperado 'sent', obtenido 'sent'
+  OK      XML: HandlingCode 04 — esperado '04', obtenido '04'
+  OK      XML: destinatario = RUC de la empresa — esperado '20557912879', obtenido '20557912879'
+  OK      XML: partida con anexo 0091 y RUC — esperado ('0091', '20557912879'), obtenido ('0091', '20557912879')
+  OK      XML: llegada con anexo 0092 y RUC — esperado ('0092', '20557912879'), obtenido ('0092', '20557912879')
+  OMITIDO Envío real de la GRE a SUNAT/OSE — sin credenciales: firma y envío simulados como en los tests
+  OK      traslado dentro del mismo establecimiento no admite guía
+  OK      enviar la guía de un traslado sin salida del local se bloquea
+
+== [al_l10n_pe_stock_transfer] Bienes de terceros: guía con propietario y sin valorizar
+  OK      recepción de terceros validada — esperado 'done', obtenido 'done'
+  OK      la recepción se marca «Con bienes de terceros»
+  OK      la recepción de bienes de terceros no se valoriza (value = 0) — esperado 0.0, obtenido 0.0
+  OK      existencias de terceros separadas por propietario — esperado 5.0, obtenido 5.0
+  OK      los bienes de terceros no entran al kardex valorizado
+  OK      traslado con bienes de terceros
+  OK      propietario detectado en la transferencia — esperado res.partner(9638,), obtenido res.partner(9638,)
+  OK      XML de la GRE: propietario en las observaciones — Bienes de propiedad de QA20 Alquileres del Sur S.A.C. (20601234565).
+  OK      PDF de la guía con el propietario
+  OK      la propia compañía no cuenta como tercero
+
+== [ol_stock_kardex_pe] Kardex 13.1 valorizado (AVCO) cuadra con el valor de inventario
+  OK      filas: saldo inicial + 3 movimientos — esperado ['opening', 'move', 'move', 'move'], obtenido ['opening', 'move', 'move', 'move']
+  OK      saldo inicial con operación 16 — esperado '16', obtenido '16'
+  OK      compra: operación 02 (tabla 12) — esperado '02', obtenido '02'
+  OK      compra: comprobante de la factura (tabla 10) — esperado ('01', 'F001', '00020123'), obtenido ('01', 'F001', '00020123')
+  OK      costo promedio tras la 2.ª compra — esperado 15.0, obtenido 15.0
+  OK      venta: operación 01 — esperado '01', obtenido '01'
+  OK      salida 5 × 15 = 75 (AVCO) — esperado 75.0, obtenido 75.0
+  OK      venta sin comprobante → guía (09) — esperado '09', obtenido '09'
+  OK      saldo final 15 u — esperado 15.0, obtenido 15.0
+  OK      saldo final S/ 225 — esperado 225.0, obtenido 225.0
+  OK      saldo del kardex = valor de inventario de Odoo — esperado 225.0, obtenido 225.0
+  OK      saldo del kardex = cantidad a mano — esperado 15.0, obtenido 15.0
+  OK      XLSX 13.1 generado — esperado b'PK', obtenido b'PK'
+  OK      PDF formato 13.1 con el producto
+
+== [ol_stock_kardex_pe] Kardex 12.1 en unidades físicas por almacén
+  OK      hay bloques por almacén
+  OK      saldo físico sumado por almacén = 15 — esperado 15.0, obtenido 15.0
+  OK      12.1 sin costos
+  OK      vista SQL del kardex interactivo: 3 movimientos — esperado 3, obtenido 3
+  OK      saldo corrido en el kardex interactivo — esperado 225.0, obtenido 225.0
+
+== [ol_stock_kardex_pe] TXT del PLE 13.1 con el comprobante del kardex
+  OK      fila de la compra en el TXT (CUO = id del movimiento)
+  OK      TXT: comprobante de la compra — esperado ('01', 'F001', '00020123'), obtenido ('01', 'F001', '00020123')
+  OK      TXT: fecha del periodo en hora de Lima — esperado '10/2026', obtenido '10/2026'
+  OK      TXT: unidad del producto (campo 16) — esperado 'NIU', obtenido 'NIU'
+    fila TXT: 20261000|004620|M1|0000|1|01|QA20KDX001|1||30/10/2026|01|F001|00020123|02|QA20 Producto Kardex|NIU|1|10.00|10.00|100.00|0.00|0.00|0.00|10.00|10.00|100.00|1|
+  OK      TXT: 3 filas de movimientos del producto QA20 — esperado 3, obtenido 3
+  OK      TXT: código del producto saneado (campo 7)
+  OK      campo 17 (tabla 14): promedio = 1 — esperado '1', obtenido '1'
+  OK      nombre del archivo PLE con el RUC — LE2055791287920261000130100001111.txt
+  OMITIDO Presentación del PLE en SUNAT — se valida el TXT generado; la carga al PLE es manual/externa
+
+== [al_l10n_pe_mrp_cost] Costo de OF: materiales + MO + CIF con cierre del periodo
+  AVISO   Contrapartida de MO no configurada en la compañía (Ajustes de Fabricación) — se simula 7111000 durante el cierre, sin escribir en res.company
+  OK      OF terminada — esperado 'done', obtenido 'done'
+  OK      costo hora del mes aplicado — esperado 'applied', obtenido 'applied'
+  OK      ajuste de MO: 2 h × (15 − 10) = 10 — esperado 10.0, obtenido 10.0
+  OK      CIF repartido a la OF: 300 — esperado 300.0, obtenido 300.0
+  OK      cierre validado — esperado 'done', obtenido 'done'
+  OK      costo en destino validado — esperado 'done', obtenido 'done'
+  OK      valor del producto terminado + 310 — esperado 430.0, obtenido 430.0
+  OK      asiento: abono a la 71 por 310 — esperado 310.0, obtenido 310.0
+  OK      análisis: materiales 40 — esperado 40.0, obtenido 40.0
+  OK      análisis: mano de obra 20 — esperado 20.0, obtenido 20.0
+  OK      análisis: ajuste de MO 10 — esperado 10.0, obtenido 10.0
+  OK      análisis: CIF 300 — esperado 300.0, obtenido 300.0
+  OK      análisis: costo de máquina — 60.0
+
+== [al_mrp_piece_costing] Orden de corte: costo por área, tablero y tapacanto
+  OK      orden de corte terminada — esperado 'done', obtenido 'done'
+  OK      lateral: 66.67 tablero + 2 tapacanto + 3.70 general — esperado 72.37, obtenido 72.37
+  OK      repisa — esperado 35.19, obtenido 35.19
+  OK      puerta (roble) — esperado 204.7, obtenido 204.7
+  OK      producto principal (área 0.1) ≈ 0.74 (redondeo) — 0.75
+  OK      costo total de la orden 313 — esperado 313.0, obtenido 313.0
+  OK      cuadre de piezas vs. consumo — 0.01
+  OK      no se puede desmontar una orden de corte
+
+== [al_mrp_piece_costing] Importar despiece desde XLSX
+  OK      importación terminada — esperado 'done', obtenido 'done'
+  OK      resumen: 2 piezas creadas — Importación terminada.
+Piezas creadas: 2 · actualizadas: 0
+Obras: QA20MC
+Área: 1.0340 m² · tapacanto: 2.52 m · unidades: 3
+Avisos (1):
+- Fila 3: area_m2 (0.25) difiere más de 2 % de largo × ancho (0.210000); se usa area_m2.
+  OK      la pieza queda marcada como pieza de corte
+  OK      área calculada 0.7 × 0.56 — esperado 0.392, obtenido 0.392
+  OK      tablero de la pieza — esperado product.product(14163,), obtenido product.product(14163,)
+
+== [preparacion] Usuarios y ajustes de farmacia QA20
+  OK      estrategia de salida FEFO disponible (product_expiry)
+
+== [al_pharmacy_base] Maestro de medicamentos: composición, equivalentes y alternativas
+  OK      composición rotulada — esperado 'Qa20 paracetamol 500 mg + Qa20 cafeína 65 mg', obtenido 'Qa20 paracetamol 500 mg + Qa20 cafeína 65 mg'
+  OK      mismo principio, concentración y forma = equivalente
+  OK      otra forma farmacéutica no es equivalente
+  OK      alternativas: genéricos DCI por precio y luego genérico de marca — esperado [14115, 14116, 14117], obtenido [14115, 14116, 14117]
+  OK      bioequivalencia recíproca — esperado product.template(14114,), obtenido product.template(14114,)
+  OK      el bioequivalente cuenta como equivalente
+
+== [al_pharmacy_base] Presentaciones, cuaderno de ocurrencias y turnos del Q.F.
+  OK      nombre de la presentación — esperado 'Caja x 100', obtenido 'Caja x 100'
+  OK      la presentación crea su unidad de 100 — esperado 100, obtenido 100.0
+  OK      la unidad queda en las unidades del producto
+  OK      precio unitario de la caja — esperado 0.12, obtenido 0.12
+  OK      300 unidades = 3 cajas — esperado 3, obtenido 3
+  OK      una presentación de 1 unidad se rechaza
+  OK      ocurrencia numerada — OC/2026/00097
+  OK      el cuaderno no se edita
+  OK      el cuaderno no se borra
+  OK      el turno de reemplazo queda en el cuaderno
+  OK      Q.F. de turno en el local
+  OK      reporte del cuaderno de ocurrencias
+
+== [al_l10n_pe_pharmacy_edi] Presentación en el comprobante electrónico (código SUNAT de la caja)
+  OK      Caja → BX (catálogo 03) — esperado 'BX', obtenido 'BX'
+  OK      Frasco → BO — esperado 'BO', obtenido 'BO'
+  OK      Blíster → código de la unidad del producto (NIU) — esperado 'NIU', obtenido 'NIU'
+  OK      XML UBL sin errores
+  OK      XML: unitCode BX — esperado 'BX', obtenido 'BX'
+  OK      XML: cantidad 1 caja — esperado 1.0, obtenido 1.0
+  OK      XML: valor de la línea 12.00 — esperado 12.0, obtenido 12.0
+  OMITIDO Envío del CPE a SUNAT/OSE — sin credenciales: solo se arma el XML
+
+== [al_pharmacy_stock] Recepción con inspección, cuarentena y salida FEFO
+  OK      sin inspección técnica la recepción no se valida
+  OK      recepción conforme validada — esperado 'done', obtenido 'done'
+  OK      recepción no conforme → lote en cuarentena — esperado 'quarantine', obtenido 'quarantine'
+  OK      FEFO: primero el lote que vence antes — esperado ['QA20-CTZ03', 'QA20-CTZ01'], obtenido ['QA20-CTZ03', 'QA20-CTZ01']
+  OK      el lote en cuarentena no se reserva (aunque vence antes)
+  OK      reserva de 15 en lotes disponibles — esperado 15.0, obtenido 15.0
+  OK      el técnico no libera la cuarentena
+  OK      el Q.F. libera el lote — esperado 'available', obtenido 'available'
+  OK      registro sanitario vencido: la recepción se bloquea
+
+== [al_pharmacy_stock] Alerta sanitaria, baja de lote y canje por vencer
+  OK      el lote alertado queda bloqueado — esperado 'blocked', obtenido 'blocked'
+  OK      la alerta identifica a los clientes que lo compraron
+  OK      el lote bloqueado no se reserva
+  OK      baja validada — esperado 'done', obtenido 'done'
+  OK      desecho de inventario hecho — esperado 'done', obtenido 'done'
+  OK      el lote dado de baja queda en 0 — esperado 0.0, obtenido 0
+  OK      descuento por vencer a 45 días: 20 % — esperado 20, obtenido 20.0
+  OK      a 20 días: 40 % — esperado 40, obtenido 40.0
+  OK      el cron marca el lote vencido — esperado 'expired', obtenido 'expired'
+  OK      canje: lotes por vencer y vencidos — esperado {'QA20-LOR45', 'QA20-LORVEN'}, obtenido {'QA20-LOR45', 'QA20-LORVEN'}
+  OK      canje valorizado a costo de compra — esperado 5.6000000000000005, obtenido 5.6
+  OK      devolución a la droguería despachada — esperado 'done', obtenido 'done'
+  OK      nota de crédito de proveedor en borrador — esperado ('in_refund', 'draft'), obtenido ('in_refund', 'draft')
+  OK      importe de la nota de crédito — esperado 5.6, obtenido 5.6
+
+== [al_pharmacy_prescription] Receta: validación, dispensación parcial con genérico y tope
+  OK      sin prescriptor ni paciente la receta no se valida
+  OK      receta validada — esperado 'valid', obtenido 'valid'
+  OK      el genérico se registra como alternativa
+  OK      dispensación parcial — esperado 'partial', obtenido 'partial'
+  OK      receta dispensada por completo — esperado 'dispensed', obtenido 'dispensed'
+  OK      no se dispensa más de lo recetado
+  OK      la dispensación no se puede borrar
+  OK      libro de recetas imprime
+  OK      alerta de alergia del paciente al principio activo — esperado pharmacy.ingredient(135,), obtenido pharmacy.ingredient(135,)
+  OK      receta vencida no se dispensa
+  OK      el cron marca la receta vencida — esperado 'expired', obtenido 'expired'
+
+== [al_l10n_pe_prescriber_cmp] Verificación del médico en el CMP
+  OK      acción abre el portal del CMP — https://conoceatumedico.cmp.org.pe/
+  OMITIDO Consulta real al portal del CMP — servicio externo sin API: se verifica la URL generada
+  OK      el técnico no puede verificar al médico
+  FALLA   un Q.F. (grupo Químico farmacéutico, sin «Contactos: creación») registra la verificación — AccessError: Estos registros están restringidos.
+
+QA20 qa20_qf_farmacia (id=3846) no tiene acceso 'escribir' a:
+- Contacto (res.partner)
+
+Si necesita acceso, pregúntele a un administrador. — _pharmacy_set_cmp_status escribe el contacto con los permisos del usuario
+  OK      Q.F. registra «Habilitado» — esperado 'enabled', obtenido 'enabled'
+  OK      queda quién verificó — esperado res.users(3847,), obtenido res.users(3847,)
+  OK      médico inhabilitado: la receta no se valida
+  OK      sin colegiatura no se consulta el CMP
+
+== [al_l10n_pe_pharmacy_controlled] Controlados: lista, receta especial y folio de retención
+  OK      lista IIA → libro de estupefacientes — esperado 'narcotic', obtenido 'narcotic'
+  OK      lista IVA → libro de psicotrópicos — esperado 'psychotropic', obtenido 'psychotropic'
+  OK      la lista fija la condición de venta
+  OK      receta especial: vigencia máxima 3 días
+  OK      lista IIA no se dispensa con receta común
+  OK      receta especial exige datos del comprador
+  OK      receta retenida con folio — F-2026-00025
+  OK      archivo de la receta retenida por 2 años — esperado datetime.date(2028, 10, 30), obtenido datetime.date(2028, 10, 30)
+
+== [al_l10n_pe_pharmacy_controlled] Libro de psicotrópicos y balance trimestral
+  OK      trimestre 4 de 2026 — esperado (datetime.date(2026, 10, 1), datetime.date(2026, 12, 31)), obtenido (datetime.date(2026, 10, 1), datetime.date(2026, 12, 31))
+  OK      libro: ingreso 100 y salida 10, saldo 90 — esperado [(100.0, 0.0, 100.0), (0.0, 10.0, 90.0)], obtenido [(100.0, 0.0, 100.0), (0.0, 10.0, 90.0)]
+  OK      la salida lleva el folio de la receta — esperado 'F-2026-00026', obtenido 'F-2026-00026'
+  OK      libro de control impreso
+  OK      libro exportado a XLSX
+  OK      plazo de presentación: 15 días tras el trimestre — esperado datetime.date(2027, 1, 15), obtenido datetime.date(2027, 1, 15)
+  OK      balance del metilfenidato (IIIA) — esperado (0.0, 50.0, 5.0, 45.0, 45.0), obtenido (0.0, 50.0, 5.0, 45.0, 45.0)
+  OK      la lista IVA no va al balance
+  OK      diferencia con el stock detectada — esperado 1, obtenido 1
+  OK      sin justificar la diferencia no se presenta
+  OK      balance presentado — esperado 'submitted', obtenido 'submitted'
+  OMITIDO Presentación del balance ante DIGEMID/DIRIS — trámite externo; se valida el acta impresa
+
+== [al_l10n_pe_pharmacy_digemid] Observatorio de precios: pendientes y archivo de carga
+  OK      precio pendiente de reportar — esperado ('pending', 10.0), obtenido ('pending', 10.0)
+  OK      el cambio actualiza el mismo pendiente — esperado (1, 12.0), obtenido (1, 12.0)
+  OK      primera carga del mes: completa
+  OK      cabecera del formato del Observatorio — esperado ['CodEstab', 'CodProd', 'Precio 1', 'Precio 2'], obtenido ['CodEstab', 'CodProd', 'Precio 1', 'Precio 2']
+  OK      fila con precio con IGV (12 × 1.18) — esperado [['0099920', 'QA20-DIG-0100', 14.16, 14.16]], obtenido [['0099920', 'QA20-DIG-0100', 14.16, 14.16]]
+  OK      el precio pasa a reportado — esperado 'reported', obtenido 'reported'
+  OK      envío registrado como carga completa — esperado ('sent', 'full'), obtenido ('sent', 'full')
+  OK      plazo de rectificación 7 días hábiles — esperado datetime.date(2026, 11, 10), obtenido datetime.date(2026, 11, 10)
+  OMITIDO Carga real en el Observatorio de DIGEMID — portal externo sin credenciales; se valida el archivo
+  OK      sin código de establecimiento no se exporta
+
+== [al_l10n_pe_pharmacy_digemid] Genéricos esenciales y reacción adversa
+  OK      con stock del genérico DCI el ítem cumple
+  OK      el genérico se lista
+  OK      sin stock del genérico: incumple
+  OK      grave: notificar en 24 h — esperado datetime.datetime(2026, 10, 31, 12, 51, 1), obtenido datetime.datetime(2026, 10, 31, 12, 51, 1)
+  OK      la sospecha queda en el cuaderno — esperado 'adverse_event', obtenido 'adverse_event'
+  OK      marcada como notificada — esperado 'notified', obtenido 'notified'
+  OMITIDO Notificación a DIGEMID (e-reporting) — servicio externo
+
+== [al_pharmacy_pos] Dispensación en caja: receta, lote FEFO y rótulo fraccionado
+  OK      lotes ofrecidos: FEFO y sin el bloqueado — esperado ['QA20-AMX-SOON', 'QA20-AMX-LATE'], obtenido ['QA20-AMX-SOON', 'QA20-AMX-LATE']
+  OK      precio por vencer sugerido en caja (lote a 30 días) — esperado 40, obtenido 40.0
+  OK      venta pagada — paid
+  OK      receta registrada y dispensada — esperado 'dispensed', obtenido 'dispensed'
+  OK      prescriptor reconocido por su colegiatura — esperado res.partner(9640,), obtenido res.partner(9640,)
+  OK      paciente = cliente de la venta — esperado res.partner(9639,), obtenido res.partner(9639,)
+  OK      la dispensación guarda el lote — esperado stock.lot(344,), obtenido stock.lot(344,)
+  OK      origen de la dispensación = pedido del TPV — esperado 'QA20 Botica - 000001', obtenido 'QA20 Botica - 000001'
+  OK      receta incompleta: la venta se guarda y el cuaderno lo anota
+  OK      venta por blíster completo no lleva rótulo
+  OK      venta de unidades sueltas genera un rótulo — esperado 1, obtenido 1
+  OK      rótulo con la cantidad — esperado 3, obtenido 3.0
+  OK      rótulo impreso con lote y vencimiento
+  OMITIDO Interfaz del TPV (popup de receta, selección de lote, descuento por vencer) — sin navegador: validado en backend
+
+== [al_pharmacy_loyalty] Club de salud: puntos por DNI sin medicamentos con receta
+  OK      exclusión de medicamentos con receta activa por defecto
+  OK      la regla excluye receta y controlados
+  OK      descuento «sobre el pedido» pasa a productos específicos — esperado 'specific', obtenido 'specific'
+  OK      el descuento solo alcanza al producto de venta libre — esperado product.product(14193,), obtenido product.product(14193,)
+  OK      no se puede regalar un medicamento con receta
+  OK      cliente identificado por DNI — {'PE_DNI': '40112233'}
+  OK      S/ 8 × 0.25 = 2 puntos; la amoxicilina no suma — esperado 2.0, obtenido 2.0
+  OK      puntos acreditados a la tarjeta del DNI 40112233 — esperado 2.0, obtenido 2.0
+  OMITIDO Canje de puntos en el TPV (tour) — interfaz del TPV sin navegador
+
+== [al_pharmacy_insurance] Convenio con aseguradora: copago en caja y factura a la EPS
+  OK      método «Convenio» como cuenta de cliente — esperado 'pay_later', obtenido 'pay_later'
+  OK      cobertura sin error
+  OK      cubre 80 % de 11.80 + 50 % de 23.60 − copago 2 = 19.24 — esperado 19.24, obtenido 19.24
+  OK      en caja: un no afiliado se rechaza — QA20 Mario Cárdenas Ríos no es afiliado vigente del convenio QA20 Salud Andina · Plan regular.
+  OK      la caja no acepta cubrir más de lo calculado
+  OK      pedido con la parte cubierta — esperado 19.24, obtenido 19.24
+  OK      pedido con la afiliada — esperado pharmacy.insurance.affiliate(30,), obtenido pharmacy.insurance.affiliate(30,)
+  OK      tope mensual: quedan 30 − 19.24 — esperado 10.76, obtenido 10.76
+
+== [al_pharmacy_care] Tratamiento crónico: cobertura, recordatorio y WhatsApp
+  OK      sin compras: «sin compra» — esperado 'no_purchase', obtenido 'no_purchase'
+  OK      última compra hace 15 días — esperado datetime.date(2026, 10, 15), obtenido datetime.date(2026, 10, 15)
+  OK      compras encadenadas: cubierto hasta hoy + 20 — esperado datetime.date(2026, 11, 19), obtenido datetime.date(2026, 11, 19)
+  OK      próxima reposición (recordatorio 5 días antes) — esperado datetime.date(2026, 11, 14), obtenido datetime.date(2026, 11, 14)
+  OK      estado al día — esperado 'ok', obtenido 'ok'
+  OK      PDC 41/61 días — esperado 67.2, obtenido 67.2
+  OK      PDC < 80 %: no adherente
+  OK      enlace de WhatsApp con +51 — https://wa.me/51987654321?text=Hola%20QA20%20Julia%20Ramos%20Quispe%2C%20le%20escribimos%20de%20OLANO%20IT%20S.A.C.%20%28dev%29.%20Su%20QA20%20Enalabrand%2010%20le%20alcanza%20hasta%20el%2019/11/2026.%20%C2%BFDesea%20que%20se%20lo%20separemos%3F%20Puede%20recogerlo%20o%20pedirlo%20por%20aqu%C3%AD.
+  OK      un solo tratamiento activo por producto
+  OK      tratamiento atrasado — esperado 'late', obtenido 'late'
+  OK      10 días de atraso — esperado 10, obtenido 10
+  OK      actividad de recordatorio creada — esperado 1, obtenido 1
+  OK      el recordatorio no se repite — esperado 1, obtenido 1
+  OK      el TPV consulta los tratamientos por reponer del cliente
+  OK      el tratamiento toma la posología de la receta — esperado '1 tableta cada 24 horas', obtenido '1 tableta cada 24 horas'
+  OMITIDO Envío real del recordatorio por WhatsApp/correo — canal externo; se valida enlace y actividad
+
+== [al_pharmacy_replenishment] Pedido sugerido por ventas del TPV y faltantes
+  OK      fórmula: 1/día × 15 + 2 − 5 = 12 → múltiplo de 10 = 20 — esperado 20, obtenido 20
+  OK      cubierto por stock y lo que llega: 0 — esperado 0, obtenido 0.0
+  OK      losartán: vendido 30, faltante 2, stock 5 → 20 — esperado (30.0, 1.0, 2.0, 5.0, 10.0, 20.0), obtenido (30.0, 1.0, 2.0, 5.0, 10.0, 20.0)
+  OK      proveedor del losartán — esperado res.partner(9636,), obtenido res.partner(9636,)
+  OK      insulina sin ventas: pide el faltante — esperado 1.0, obtenido 1.0
+    sin proveedor (se quitan del sugerido): ['QA20 Enalabrand 10', 'QA20 Losartán 50 convenio', 'QA20 Paracetamol 500 convenio']
+  OK      OC en la unidad de compra: 2 cajas de 10 — esperado (uom.uom(184,), 2.0), obtenido (uom.uom(184,), 2.0)
+  OK      OC en borrador — esperado {'draft'}, obtenido {'draft'}
+  OK      faltante del losartán pasa a pedido — esperado 'ordered', obtenido 'ordered'
+  OK      faltante sin producto sigue pendiente — esperado 'pending', obtenido 'pending'
+
+== [al_pharmacy_insurance] Cierre de caja y liquidación a la aseguradora
+  AVISO   Cuenta bancaria no confiable en la compañía — 191-9912345-0-71 - QA20 P1 BCP, 1917000123456 - Banco de Crédito del Perú (de otra fase) impide a un usuario real publicar el cierre de caja y las facturas; se cierra como superusuario, que la omite
+  OK      sesión de caja cerrada — esperado 'closed', obtenido 'closed'
+  OK      el cierre no registra cuenta por cobrar del convenio
+  OK      la liquidación carga el pedido cubierto — esperado pos.order(467,), obtenido pos.order(467,)
+  AVISO   Cuenta bancaria de la compañía no confiable en la factura — 191-9912345-0-71 - QA20 P1 BCP (creada por otra fase) bloquea la publicación; se quita de la factura
+  OK      factura de cliente — esperado 'out_invoice', obtenido 'out_invoice'
+  OK      facturada a la EPS — esperado res.partner(9648,), obtenido res.partner(9648,)
+  OK      importe = lo cubierto — esperado 19.24, obtenido 19.24
+  OK      la línea identifica DNI y número de afiliado — QA20 Paracetamol 500 convenio · 260-225-000005 · Comprobante POSC/2026/00003 · DNI 44556677 · Paciente QA20 María Torres Quispe · Afiliado QA20-SA-001
+  OK      el cierre contabiliza la parte del paciente (y otras ventas de la caja) — 16.16
+  OK      un pedido se liquida una sola vez
+  OK      reporte de la liquidación
+  OMITIDO Envío del CPE de la factura a la EPS a SUNAT — sin credenciales
+
+== [al_pharmacy_website] Tienda web: genéricos primero, receta adjunta y aprobación del Q.F.
+  OK      alternativas en la web: genérico DCI y luego de marca — esperado [14145, 14146], obtenido [14145, 14146]
+  OK      un controlado no se agrega al carrito — QA20 Clonazepam web es un medicamento controlado: solo se vende en el local, con la receta especial.
+  OK      el pedido web exige receta
+  OK      estado: por subir receta — esperado 'to_upload', obtenido 'to_upload'
+  OK      sin receta no se paga
+  OK      receta subida: por revisar — esperado 'to_review', obtenido 'to_review'
+  OK      no se confirma sin la aprobación del Q.F.
+  OK      un vendedor no aprueba recetas
+  OK      receta aprobada — esperado 'approved', obtenido 'approved'
+  OK      queda el Q.F. que revisó — esperado res.users(3846,), obtenido res.users(3846,)
+  OK      pedido confirmado tras la aprobación — esperado 'sale', obtenido 'sale'
+  OK      pedido con cadena de frío
+  OK      el albarán hereda la cadena de frío
+  OK      el albarán impreso avisa «CADENA DE FRÍO»
+  OMITIDO Páginas de la tienda y subida de receta por el portal (HTTP) — sin navegador; controladores probados en los tests HttpCase
+
+== [al_industry_base] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (4)
+  OK      registros de datos declarados presentes (4)
+  OK      menús declarados presentes (1)
+  OK      modelo del asistente de industrias registrado — ['res.partner.industry', 'al.industry']
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+== [al_industry_construction] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (9)
+  OK      registros de datos declarados presentes (13)
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+== [al_industry_ecommerce] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (8)
+  OK      registros de datos declarados presentes (9)
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+== [al_industry_furniture] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (2)
+  OK      registros de datos declarados presentes (12)
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+== [al_industry_pharmacy] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (30)
+  OK      registros de datos declarados presentes (22)
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+== [al_industry_restaurant] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (9)
+  OK      registros de datos declarados presentes (14)
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+== [al_industry_retail] Paquete de instalación: módulo y datos declarados presentes
+  OK      módulo instalado — esperado 'installed', obtenido 'installed'
+  OK      dependencias instaladas (11)
+  OK      registros de datos declarados presentes (18)
+  OMITIDO Instalación sobre base vacía y datos demo — paquete para bases nuevas: no se reinstala aquí
+
+COMMIT
+RESUMEN inventario_farmacia: {'OK': 35, 'AVISO': 2, 'FALLA': 1}

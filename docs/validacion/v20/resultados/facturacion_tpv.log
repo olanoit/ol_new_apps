@@ -1,0 +1,975 @@
+2026-10-30 12:46:13,353 533871 WARNING ce20_db_ol odoo.addons.attachment_indexation.models.ir_attachment: Attachment indexation of PDF documents is unavailable because the 'pdfminer.six' Python library cannot be found on the system. You may install it from https://pypi.org/project/pdfminer.six/ (e.g. `pip3 install pdfminer.six`)
+2026-10-30 12:46:19,677 533871 WARNING ce20_db_ol odoo.fields: res.config.settings.l10n_pe_cpe_post_mode: selection attribute will be ignored as the field is related
+2026-10-30 12:46:20,240 533871 WARNING ce20_db_ol odoo.fields: Field l10n_pe.retention.edi.mixin.l10n_pe_edi_reversal_reason: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:46:20,242 533871 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.year: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:46:20,242 533871 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.month: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:46:20,242 533871 WARNING ce20_db_ol odoo.fields: Field l10n_pe.sire.mixin.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it
+2026-10-30 12:46:20,529 533871 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:616: UserWarning: pharmacy.insurance.liquidation: inconsistent 'compute_sudo' for computed fields order_count, amount_total. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 616, in field_computed
+    warnings.warn(
+
+2026-10-30 12:46:20,530 533871 WARNING ce20_db_ol py.warnings: /home/och/odoo/ce20/odoo/orm/registry.py:633: UserWarning: pharmacy.insurance.liquidation: inconsistent 'store' for computed fields, accessing order_count may recompute and update amount_total. Use distinct compute methods for stored and non-stored fields.
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 136, in shell
+    registry = Registry(dbname)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 111, in __new__
+    return cls.new(db_name)
+  File "/home/och/odoo/ce20/odoo/tools/func.py", line 67, in locked
+    return func(inst, *args, **kwargs)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 230, in new
+    contextvars.Context().run(
+  File "/home/och/odoo/ce20/odoo/modules/loading.py", line 588, in load_modules
+    model._register_hook()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 239, in _register_hook
+    self._refresh_dashboard()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 255, in _refresh_dashboard
+    content = json.dumps(self._build_snapshot(), ensure_ascii=False, sort_keys=True)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 299, in _build_snapshot
+    for method in self._active_sections():
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in _active_sections
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 295, in <genexpr>
+    return [method for method, needs in self._sections() if all(self._has(m, f) for m, f in needs)]
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 268, in _has
+    and self._readable(model)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_dashboard/models/dashboard_builder.py", line 278, in _readable
+    groups = group | group.all_implied_ids
+  File "/home/och/odoo/ce20/odoo/orm/fields_relational.py", line 44, in __get__
+    return super().__get__(records, owner)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2089, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+  File "/home/och/odoo/ce20/odoo/orm/registry.py", line 633, in field_computed
+    warnings.warn(
+
+2026-10-30 12:46:25,649 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbabfcc2c20, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 325, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 312, in _factura
+  File "<string>", line 159, in pdf_ok
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-PAYROLL/al_hr_pe_reports/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    content, report_type = super()._render_qweb_pdf(
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_check_printing/models/ir_actions_report.py", line 26, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock_delivery/models/ir_actions_report.py", line 87, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids, data=data)
+  File "/home/och/odoo/ce20/ee20/planning/models/ir_actions_report.py", line 41, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    result = super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 684, in _render_qweb_pdf
+    collected_streams, report_type = self._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 74, in _pre_render_qweb_pdf
+    return super()._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 675, in _pre_render_qweb_pdf
+    return self._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids), 'pdf'
+  File "/home/och/odoo/ce20/addons/sale_pdf_quote_builder/models/ir_actions_report.py", line 23, in _render_qweb_pdf_prepare_streams
+    result = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/ee20/account_followup/models/ir_actions_report.py", line 13, in _render_qweb_pdf_prepare_streams
+    res = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/sale/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(
+  File "/home/och/odoo/ce20/addons/purchase/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 15, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/account_edi_ubl_cii/models/ir_actions_report.py", line 11, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 21, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 534, in _render_qweb_pdf_prepare_streams
+    html = self.with_context(**additional_context)._render_qweb_html(report_ref, all_res_ids_wo_stream, data=data)[0]
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<4401>", line 2098, in template_al_l10n_pe_invoice_report_cpe_invoice_a4_document_4401
+  File "<4401>", line 154, in template_al_l10n_pe_invoice_report_cpe_invoice_a4_document_4401_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+2026-10-30 12:46:31,790 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbac051b880, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 356, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 350, in _boleta
+  File "<string>", line 159, in pdf_ok
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-PAYROLL/al_hr_pe_reports/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    content, report_type = super()._render_qweb_pdf(
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_check_printing/models/ir_actions_report.py", line 26, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock_delivery/models/ir_actions_report.py", line 87, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids, data=data)
+  File "/home/och/odoo/ce20/ee20/planning/models/ir_actions_report.py", line 41, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    result = super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 684, in _render_qweb_pdf
+    collected_streams, report_type = self._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 74, in _pre_render_qweb_pdf
+    return super()._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 675, in _pre_render_qweb_pdf
+    return self._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids), 'pdf'
+  File "/home/och/odoo/ce20/addons/sale_pdf_quote_builder/models/ir_actions_report.py", line 23, in _render_qweb_pdf_prepare_streams
+    result = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/ee20/account_followup/models/ir_actions_report.py", line 13, in _render_qweb_pdf_prepare_streams
+    res = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/sale/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(
+  File "/home/och/odoo/ce20/addons/purchase/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 15, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/account_edi_ubl_cii/models/ir_actions_report.py", line 11, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 21, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 534, in _render_qweb_pdf_prepare_streams
+    html = self.with_context(**additional_context)._render_qweb_html(report_ref, all_res_ids_wo_stream, data=data)[0]
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<4401>", line 2098, in template_al_l10n_pe_invoice_report_cpe_invoice_a4_document_4401
+  File "<4401>", line 154, in template_al_l10n_pe_invoice_report_cpe_invoice_a4_document_4401_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+2026-10-30 12:46:35,865 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbac2cdd6c0, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 401, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 381, in _notas
+  File "<string>", line 159, in pdf_ok
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-PAYROLL/al_hr_pe_reports/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    content, report_type = super()._render_qweb_pdf(
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_check_printing/models/ir_actions_report.py", line 26, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock_delivery/models/ir_actions_report.py", line 87, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids, data=data)
+  File "/home/och/odoo/ce20/ee20/planning/models/ir_actions_report.py", line 41, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    result = super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 684, in _render_qweb_pdf
+    collected_streams, report_type = self._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 74, in _pre_render_qweb_pdf
+    return super()._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 675, in _pre_render_qweb_pdf
+    return self._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids), 'pdf'
+  File "/home/och/odoo/ce20/addons/sale_pdf_quote_builder/models/ir_actions_report.py", line 23, in _render_qweb_pdf_prepare_streams
+    result = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/ee20/account_followup/models/ir_actions_report.py", line 13, in _render_qweb_pdf_prepare_streams
+    res = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/sale/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(
+  File "/home/och/odoo/ce20/addons/purchase/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 15, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/account_edi_ubl_cii/models/ir_actions_report.py", line 11, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 21, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 534, in _render_qweb_pdf_prepare_streams
+    html = self.with_context(**additional_context)._render_qweb_html(report_ref, all_res_ids_wo_stream, data=data)[0]
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<4401>", line 2098, in template_al_l10n_pe_invoice_report_cpe_invoice_a4_document_4401
+  File "<4401>", line 154, in template_al_l10n_pe_invoice_report_cpe_invoice_a4_document_4401_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+2026-10-30 12:46:46,096 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbac0326320, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 605, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 575, in _lce_case
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-INVOICING/al_l10n_pe_edi_purchase_settlement/models/account_move.py", line 545, in _l10n_pe_lce_generate_xml
+    xml_content = self.env['account.edi.xml.ubl_pe_lce']._export_purchase_settlement(self)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-INVOICING/al_l10n_pe_edi_purchase_settlement/models/account_edi_xml_ubl_pe_lce.py", line 61, in _export_purchase_settlement
+    values = move._l10n_pe_lce_values()
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-INVOICING/al_l10n_pe_edi_purchase_settlement/models/account_move.py", line 500, in _l10n_pe_lce_values
+    'seller_doc_name': partner.l10n_pe_document_label,
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+
+== [preparacion] Datos maestros QA20 de la fase (contactos, productos, diarios)
+  OK      IGV 18 % de ventas del plan pe — IGV 18%
+  OK      Cliente RUC: código SUNAT 6 — esperado '6', obtenido '6'
+  OK      Cliente DNI (identificador adicional PE_DNI): código SUNAT 1 — esperado ('1', '46027897'), obtenido ('1', '46027897')
+  OK      Diario de ventas QV20 con documentos LATAM
+
+== [al_l10n_pe_invoice] Factura electrónica a crédito a cliente RUC: XML, PDF A4/ticket y envío
+  OK      Tipo de documento 01 (factura) por cliente RUC — esperado '01', obtenido '01'
+  OK      Numeración de factura serie F — F FQV-00000001
+  OK      Detalle tributario: base gravada — esperado 1000.0, obtenido 1000.0
+  OK      Detalle tributario: IGV — esperado 180.0, obtenido 180.0
+  OK      Total de la factura — esperado 1180.0, obtenido 1180.0
+  OK      Plazo 30 días: es crédito
+  OK      Forma de pago impresa CRÉDITO — esperado 'CRÉDITO', obtenido 'CRÉDITO'
+  OK      Una cuota de crédito — esperado 1, obtenido 1
+  OK      Importe de la cuota = neto pendiente — esperado 1180.0, obtenido 1180.0
+  OK      Etiqueta del IGV con la tasa aplicada — esperado 'IGV (18%)', obtenido 'IGV (18%)'
+  OK      Moneda en letras — esperado 'SOLES', obtenido 'SOLES'
+  OK      Monto en letras — MIL CIENTO OCHENTA Y 00/100 SOL
+  OK      Dirección del cliente en una línea — Av. Javier Prado Este 123, San Isidro, Lima
+  OK      XML UBL generado sin errores — 7391 bytes
+  OK      XML: InvoiceTypeCode 01 — esperado '01', obtenido '01'
+  OK      XML: serie-número — esperado 'FFQV-00000001', obtenido 'FFQV-00000001'
+  OK      XML: RUC del adquirente — esperado '20100070970', obtenido '20100070970'
+  OK      XML: schemeID 6 (RUC) — esperado '6', obtenido '6'
+  OK      XML: IGV total — esperado '180.00', obtenido '180.00'
+  OK      XML: importe a pagar — esperado '1180.00', obtenido '1180.00'
+  OK      XML: forma de pago Credito con cuota — ['Credito', 'Cuota001']
+  OK      PDF A4 de la factura renderizado — 27780 bytes
+  OK      PDF ticket 80 mm de la factura renderizado — 26202 bytes
+  OK      HTML A4: forma de pago e importe impresos
+  OK      Envío a SUNAT pasa por el operador (IAP simulado)
+  OK      Sin respuesta real el comprobante no queda aceptado — to_send
+  OMITIDO Envío a OSE/SUNAT real — sin credenciales de prueba (IAP simulado)
+
+== [al_l10n_pe_invoice] Boleta a cliente con DNI (identificador adicional): XML y PDF
+  OK      Cliente con DNI → boleta (03) por defecto
+  OK      Numeración de boleta serie B — B BQV-00000001
+  OK      Total de la boleta — esperado 177.0, obtenido 177.0
+  OK      Forma de pago CONTADO — esperado 'CONTADO', obtenido 'CONTADO'
+  OK      XML UBL generado sin errores — 6480 bytes
+  OK      XML: InvoiceTypeCode 03 — esperado '03', obtenido '03'
+  OK      XML: DNI del adquirente desde PE_DNI — esperado '46027897', obtenido '46027897'
+  OK      XML: schemeID 1 (DNI) — esperado '1', obtenido '1'
+  OK      PDF A4 de la boleta renderizado — 27231 bytes
+  OK      Ticket: imprime el DNI del cliente
+
+== [al_l10n_pe_invoice] Nota de crédito y nota de débito de la factura: XML y PDF
+  OK      NC: tipo 07 — esperado '07', obtenido '07'
+  OK      NC: documento que modifica — esperado account.move(31483,), obtenido account.move(31483,)
+  OK      NC: sin forma de pago impresa — esperado '', obtenido ''
+  OK      XML UBL generado sin errores — 7243 bytes
+  OK      XML raíz CreditNote
+  OK      XML NC: referencia a la factura — esperado 'FFQV-00000001', obtenido 'FFQV-00000001'
+  OK      XML NC: motivo 01 — esperado '01', obtenido '01'
+  OK      PDF A4 de la NC renderizado — 27607 bytes
+  OK      ND: tipo 08 — esperado '08', obtenido '08'
+  OK      ND: documento que modifica — esperado account.move(31483,), obtenido account.move(31483,)
+  OK      ND: total — esperado 59.0, obtenido 59.0
+  OK      XML UBL generado sin errores — 7207 bytes
+  OK      XML raíz DebitNote
+  OK      XML ND: motivo 01 — esperado '01', obtenido '01'
+  OK      PDF A4 de la ND renderizado — 27821 bytes
+
+== [al_l10n_pe_edi_downpayment_discount] Anticipo y factura final desde el pedido de venta
+  OK      XML exportado sin errores
+  OK      Reglas de validación SUNAT sin observaciones
+  OK      PayableAmount = total del asiento — esperado 118.0, obtenido 118.0
+  OK      al_l10n_pe_invoice: la factura enlaza el pedido (sale_id) — esperado sale.order(305,), obtenido sale.order(305,)
+  OK      al_l10n_pe_invoice: OC externa del pedido — esperado 'QA20 OC-ANT-001', obtenido 'QA20 OC-ANT-001'
+  OK      XML exportado sin errores
+  OK      Reglas de validación SUNAT sin observaciones
+  OK      PayableAmount = total del asiento — esperado 1062.0, obtenido 1062.0
+  OK      Cargo/descuento global 04 (anticipo) — esperado ['04'], obtenido ['04']
+  OK      XML: PrepaidPayment del anticipo
+  OK      Factura final: 1180 − 118 — esperado 1062.0, obtenido 1062.0
+
+== [al_l10n_pe_edi_downpayment_discount] Descuento por línea y descuento global
+  OK      XML exportado sin errores
+  OK      Reglas de validación SUNAT sin observaciones
+  OK      PayableAmount = total del asiento — esperado 3186.0, obtenido 3186.0
+  OK      Descuento global código 02 — ['02']
+  OK      Descuento por línea código 00
+  OK      al_l10n_pe_invoice: descuento total impreso (300 + 100) — esperado 400.0, obtenido 400.0
+
+== [al_l10n_pe_edi_free] Convertir factura en transferencia gratuita (botón)
+  OK      Afectaciones 11 (retiro gravado) y 37 (inafecto gratuito) — esperado ['11', '37'], obtenido ['11', '37']
+  OK      No se cobra — esperado 0.0, obtenido 0.0
+  OK      Leyenda 1002 — esperado '1002', obtenido '1002'
+  OK      XML exportado sin errores
+  OK      Reglas de validación SUNAT sin observaciones
+  OK      PayableAmount = total del asiento — esperado 0.0, obtenido 0.0
+  OK      IGV gratuito del retiro (18.00) en el XML
+
+== [al_l10n_pe_edi_free] Bloqueo de ítem gratuito con valor referencial 0
+  OK      No se confirma: regla SUNAT 2641 — SUNAT rechazaría los ítems gratuitos de Borrador de factura:
+· [QA20-IBU] QA20 Ibuprofeno 400 mg: el precio unitario de un ítem gratuito es su valor referencial y no puede ser 0 (2641, 3224).
+
+== [al_l10n_pe_edi_purchase_settlement] Liquidación de compra: retenciones, XML anexo 6 y envío
+  OK      Diario LCE: es liquidación de compra
+  OK      Tipo de documento 04 — esperado '04', obtenido '04'
+  OK      IGV retenido — esperado 180.0, obtenido 180.0
+  OK      Retención de renta 1,5 % — esperado 15.0, obtenido 15.0
+  OK      Importe neto a pagar — esperado 985.0, obtenido 985.0
+  OK      Estado por enviar — esperado 'to_send', obtenido 'to_send'
+  OK      XML: SelfBilledInvoice — esperado 'SelfBilledInvoice', obtenido 'SelfBilledInvoice'
+  OK      XML: tipo 04 — esperado '04', obtenido '04'
+  OK      XML: vendedor con DNI — esperado ('41020304', '1'), obtenido ('41020304', '1')
+  OK      XML: neto 985.00 — esperado '985.00', obtenido '985.00'
+  OK      XML: retención de renta (3000) 15.00 — esperado '15.00', obtenido '15.00'
+  OK      XML: placa del vehículo — esperado 'QA2-020', obtenido 'QA2-020'
+  OK      PDF de la liquidación de compra renderizado — 30751 bytes
+  OK      al_l10n_pe_edi_service: sendBill IAP con tipo 04 — https://l10n-pe-edi.api.odoo.com/iap/l10n_pe_edi/1/send_bill
+  OK      Liquidación aceptada (CDR simulado) — esperado 'sent', obtenido 'sent'
+  OK      ZIP con XML y CDR adjunto
+  OMITIDO Envío real a SUNAT — sin credenciales de prueba (IAP simulado)
+
+== [al_l10n_pe_edi_purchase_settlement] UIT desde el parámetro de nómina l10n_pe_uit y tope de renta
+  OK      Parámetro de reglas nativo l10n_pe_uit con valores — [('2026-01-01', '5500'), ('2025-01-01', '5350'), ('2024-01-01', '5150')]
+  OK      UIT 2026 desde hr.rule.parameter — esperado 5500.0, obtenido 5500.0
+  OK      UIT 2025 = 5,350 del parámetro (no el 5,500 de ajustes): lee la nómina — esperado 5350.0, obtenido 5350.0
+  OK      Aviso del vendedor sobre 75 UIT — Las liquidaciones de compra a QA20 Productor Juana Quispe en 2026 suman S/ 413600.00 y pasan de 75 UIT (S/ 412500.00). Si sus ventas del año superan ese límite ya no corresponde emitirle liquidaciones: consúltelo en SUNAT Operaciones en Línea.2026-10-30 12:46:50,300 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbabf3ddc60, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 683, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 670, in _guia
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<6037>", line 1100, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037
+  File "<6037>", line 366, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+2026-10-30 12:46:50,306 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbac2cdc3a0, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 683, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 670, in _guia
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<6037>", line 1100, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037
+  File "<6037>", line 754, in template_al_l10n_pe_delivery_guide_report_report_guia_remision_page_6037_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+
+  OK      Hasta S/ 700 no se retiene renta — esperado 0.0, obtenido 0.0
+  OK      Neto = 700 (IGV retenido) — esperado 700.0, obtenido 700.0
+
+== [al_l10n_pe_delivery_guide_report] Guía de remisión: entrega validada y representación impresa
+  OK      Entrega validada — esperado 'done', obtenido 'done'
+  OK      Líneas agrupadas por producto — esperado [(product.product(14000,), 5.0)], obtenido [(product.product(14000,), 5.0)]
+  OK      Peso bruto calculado (5 × 0,5 kg) — esperado 2.5, obtenido 2.5
+  OK      Remitente = compañía (RUC y razón social)
+  OK      Licencia y DNI del conductor impresos
+  OK      Unidad de peso no fija
+  OK      Placa del vehículo impresa
+  OK      PDF de la guía renderizado — 26821 bytes
+  OK      Aparece en Perú ▸ Guías de remisión ▸ Por enviar
+  OMITIDO Envío de la guía a SUNAT (GRE) — sin credenciales de prueba; el botón de imprimir exige estado sent
+
+== [al_l10n_pe_complaints_book] Libro de reclamaciones: registro, constancia, plazo y respuesta
+  OK      Correlativo por libro y año — 000000001-2026
+  OK      Plazo de 15 días hábiles — esperado datetime.date(2026, 11, 20), obtenido datetime.date(2026, 11, 20)
+  OK      Constancia por correo con la hoja en PDF — ['Hoja de reclamación 000000001-2026 - OLANO IT S.A.C. (dev)']
+  OK      Fecha de constancia registrada
+  OK      DNI de 7 dígitos rechazado — El DNI debe tener 8 dígitos.
+  OK      En atención — esperado 'in_progress', obtenido 'in_progress'
+  OK      Sin observaciones no se responde — Escriba las observaciones y acciones adoptadas antes de responder.
+  OK      Respondido — esperado 'answered', obtenido 'answered'
+  OK      Cerrado — esperado 'closed', obtenido 'closed'
+  OK      PDF de la hoja de reclamación — 29539 bytes
+
+== [al_website_sale_pe] Checkout: boleta/factura y consulta RUC/DNI (consulta simulada)
+  OK      Cliente con DNI: boleta marcada — esperado 'boleta', obtenido 'boleta'
+  OK      Cliente con RUC: factura marcada — esperado 'factura', obtenido 'factura'
+  OK      Consulta RUC devuelve datos — {'found': True, 'values': {'name': 'QA20 EMPRESA CONSULTADA SAC', 'street': 'AV. 1'}, 'message': ''}
+  OK      Pasaporte: no se consulta
+  OK      Límite de consultas por sesión — Alcanzó el límite de consultas. Complete sus datos a mano.
+  OK      Formulario de dirección muestra el selector y el botón de consulta
+  OMITIDO Interfaz del checkout — requiere navegador; cubierto por tests HttpCase del módulo
+
+== [al_l10n_pe_edi_pos] Configurar TPV QA20 con diarios de boletas y facturas
+  OK      CPE en el TPV activo (ambos diarios configurados)
+  OK      TPV sin diarios CPE: flujo estándar
+  OK      El TPV carga el código SUNAT del cliente
+  OK      El TPV carga QR, importe en letras y totales del comprobante
+
+== [al_pos_pe_wallet_qr] Método Yape: QR de la billetera en la pantalla de pago
+  OK      Método QR «billetera» ofrecido
+  OK      QR en data URI PNG
+  OK      Es la imagen de la cuenta — esperado 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII=', obtenido 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII='
+  OK      Mismo QR sin conexión (default_qr) — esperado 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII=', obtenido 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAIAAAADnC86AAAAMklEQVR4nO3NAQ0AMAgAoPtAhrOpjYzh5qAAUdlvw19ZxWKxWCwWi8VisVgsFovFR+MBRhEBwWJ0EjUAAAAASUVORK5CYII='
+  OK      Solo en soles — El siguiente error impidió generar el código QR de QR de billetera (Yape, Plin) aunque se detectó que es elegible:Yape y Plin solo cobran en soles.
+  OK      Cuenta sin imagen de QR rechazada — Suba la imagen del QR de billetera en la cuenta bancaria QA20-SIN-QR.
+
+== [al_pos_network_printer] Impresora ESC/POS de red: lista blanca y ticket de prueba (simulado)
+  OK      Destino de la caja permitido
+  OK      Destino de la impresora de cocina permitido
+  OK      IP no configurada rechazada (anti-SSRF)
+  OK      Puerto distinto rechazado
+  OK      Ticket de prueba enviado con el nombre de la caja
+  OK      Notificación de éxito — esperado 'success', obtenido 'success'
+  OK      Modo agente: la prueba no se hace en el servidor — El método de impresión está en 'Agente local' — use el botón 'Probar agente' de más abajo para confirmar que el agente responde. El backend de Odoo no tiene ruta de red directa a la impresora en ese m
+  OK      Imprimir al pagar activa iface_print_auto
+  OMITIDO Impresión física — sin impresora; conexión TCP simulada
+
+== [al_pos_theme] Tema del TPV: marca, colores y variables CSS
+  OK      Título de la pestaña — esperado 'QA20 Botica · QA20 TPV CPE', obtenido 'QA20 Botica · QA20 TPV CPE'
+  OK      Color primario en las variables CSS
+  OK      Marca en las variables CSS
+  OK      Color inválido rechazado (red) — Color primario debe ser un color hexadecimal como #2563EB (se recibió red).
+  OK      Color inválido rechazado (#0F766E; } b) — Color primario debe ser un color hexadecimal como #2563EB (se recibió #0F766E; } body { display:none).
+  OK      Variables del modo oscuro
+  OK      El TPV recibe el botón de categorías, no las imágenes del tema
+  OK      Pantalla del cliente con título y variables sin comillas
+
+== [al_pos_product_view] Vista de productos: stock del almacén del TPV y preferencia del cajero
+  OK      qty_available viaja al TPV
+  OK      Stock del almacén del TPV (WH/Existencias) — esperado 95.0, obtenido 95.0
+  AVISO   Un solo almacén en la base — no se compara contra otro almacén
+  OK      Etiquetas filtro en el TPV
+  OK      El cajero guarda su vista (sin sudo)
+  OK      Preferencia guardada — esperado 'list', obtenido 'list'
+  OK      No cambia la preferencia de otro usuario — Solo puedes cambiar tu propia preferencia de vista del TPV.
+  OK      Preferencia cargada en el TPV
+
+== [al_pos_vendedor] Vendedores autorizados de la caja (sin PIN ni inicio de sesión)
+  OK      El TPV carga empleados (vendedores)
+
+== [al_pos_payment_gateway] Pasarelas en línea: método por pasarela y logo
+  OK      Tarjeta 240 × 160 de Niubiz para el TPV — esperado (240, 160), obtenido (240, 160)
+  FALLA   Crear el método del TPV desde Niubiz (botón de la pasarela) — TypeError: pos.payment.method.image: use BinaryValue instead of bytes
+  OK      Método creado desde la pasarela — esperado payment.provider(4702,), obtenido payment.provider(4702,)
+  OK      El método lleva el logo de la pasarela
+  OK      Dos métodos en línea en la misma caja — esperado 2, obtenido 2
+  OK      Una pasarela no puede estar en dos métodos de la caja — La pasarela QA20 Pasarela A está en dos métodos de pago en línea de la caja QA20 TPV CPE: cada pasarela va en un solo método.
+  OK      El pago de la pasarela B va a su método — esperado pos.payment.method(840,), obtenido pos.payment.method(840,)
+
+== [al_l10n_pe_edi_pos] Venta en caja con boleta a cliente DNI (CPE desde el TPV)
+  OK      Orden pagada — esperado 'paid', obtenido 'paid'
+  OK      La orden generó su comprobante — B BQB-00000001
+  OK      Comprobante en el diario de boletas del TPV — esperado account.journal(6114,), obtenido account.journal(6114,)
+  OK      Tipo 03 (boleta) — esperado '03', obtenido '03'
+  OK      Total de la boleta — esperado 118.0, obtenido 118.0
+  OK      Boleta pagada con el cobro de caja — paid
+  OK      QR de la representación impresa (RUC|03|serie|folio|igv|total|fecha|1|DNI) — 20557912879|03|BQB|00000001|18.00|118.00|2026-10-30|1|46027897
+  OK      Importe en letras del ticket — CIENTO DIECIOCHO Y 00/100 SOL
+  OK      Etiqueta del IGV del ticket — esperado 'IGV (18%)', obtenido 'IGV (18%)'
+  OK      El TPV intentó enviar el CPE a SUNAT (IAP simulado)
+  OK      XML UBL generado sin errores — 6503 bytes
+  OK      XML de la boleta del TPV: 03 — esperado '03', obtenido '03'2026-10-30 12:47:07,061 533871 WARNING ce20_db_ol odoo.tools.translate: no translation language detected, skipping translation <frame at 0x7fbabe40a9e0, file '/home/och/odoo/ce20/odoo/orm/fields_textual.py', line 137, code convert_to_cache>
+Stack (most recent call last):
+  File "/home/och/odoo/ce20/odoo-bin", line 6, in <module>
+    odoo.cli.main()
+  File "/home/och/odoo/ce20/odoo/cli/command.py", line 139, in main
+    command().run(args)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 161, in run
+    self.shell(dbnames[0])
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 147, in shell
+    self.console(local_vars)
+  File "/home/och/odoo/ce20/odoo/cli/shell.py", line 82, in console
+    exec(sys.stdin.read(), local_vars)
+  File "<string>", line 1139, in <module>
+  File "<string>", line 203, in ejecutar
+  File "<string>", line 72, in ejecutar
+  File "<string>", line 1133, in _pos_boleta
+  File "<string>", line 159, in pdf_ok
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-PAYROLL/al_hr_pe_reports/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    content, report_type = super()._render_qweb_pdf(
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_l10n_pe_check_printing/models/ir_actions_report.py", line 26, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock_delivery/models/ir_actions_report.py", line 87, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids, data=data)
+  File "/home/och/odoo/ce20/ee20/planning/models/ir_actions_report.py", line 41, in _render_qweb_pdf
+    return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/stock/models/ir_actions_report.py", line 19, in _render_qweb_pdf
+    result = super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 684, in _render_qweb_pdf
+    collected_streams, report_type = self._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 74, in _pre_render_qweb_pdf
+    return super()._pre_render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 675, in _pre_render_qweb_pdf
+    return self._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids), 'pdf'
+  File "/home/och/odoo/ce20/addons/sale_pdf_quote_builder/models/ir_actions_report.py", line 23, in _render_qweb_pdf_prepare_streams
+    result = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/ee20/account_followup/models/ir_actions_report.py", line 13, in _render_qweb_pdf_prepare_streams
+    res = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/sale/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(
+  File "/home/och/odoo/ce20/addons/purchase/models/ir_actions_report.py", line 12, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 15, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/addons/account_edi_ubl_cii/models/ir_actions_report.py", line 11, in _render_qweb_pdf_prepare_streams
+    collected_streams = super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids)
+  File "/home/och/odoo/ce20/addons/account/models/ir_actions_report.py", line 21, in _render_qweb_pdf_prepare_streams
+    return super()._render_qweb_pdf_prepare_streams(report_ref, data, res_ids=res_ids)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 534, in _render_qweb_pdf_prepare_streams
+    html = self.with_context(**additional_context)._render_qweb_html(report_ref, all_res_ids_wo_stream, data=data)[0]
+  File "/home/och/odoo/ce20/addons/hr_expense/models/ir_actions_report.py", line 89, in _render_qweb_html
+    return super()._render_qweb_html(report_ref, docids, data)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 763, in _render_qweb_html
+    return self._render_template(report.report_name, data), 'html'
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_actions_report.py", line 422, in _render_template
+    return view_obj._render_template(template, values).encode()
+  File "/home/och/odoo/ce20/addons/website/models/ir_ui_view.py", line 469, in _render_template
+    return super()._render_template(template, values=values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_ui_view.py", line 2611, in _render_template
+    return self.env['ir.qweb']._render(template, values)
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 762, in _render
+    return Markup(''.join(iterator))
+  File "/home/och/odoo/ce20/odoo/addons/base/models/ir_qweb.py", line 792, in _render_iterall
+    for item in frame.iterator:
+  File "<4403>", line 1676, in template_al_l10n_pe_invoice_report_cpe_ticket_document_4403
+  File "<4403>", line 215, in template_al_l10n_pe_invoice_report_cpe_ticket_document_4403_content
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1924, in __get__
+    self.compute_value(recs)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2102, in compute_value
+    records._compute_field_value(self)
+  File "/home/och/odoo/ce20/addons/mail/models/mail_thread.py", line 507, in _compute_field_value
+    return super()._compute_field_value(field)
+  File "/home/och/odoo/ce20/odoo/orm/models.py", line 4453, in _compute_field_value
+    determine(field.compute, self)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 82, in determine
+    return needle(*args)
+  File "/home/och/odoo/ce20/myapps/ol_new_apps/OL-ACCOUNTING/al_account_base/models/res_partner.py", line 53, in _compute_l10n_pe_document_label
+    partner.l10n_pe_document_label = labels.get(code) or (
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 2010, in __set__
+    self.write(protected_records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 322, in write
+    super().write(records, value)
+  File "/home/och/odoo/ce20/odoo/orm/fields.py", line 1686, in write
+    cache_value = self.convert_to_cache(value, records)
+  File "/home/och/odoo/ce20/odoo/orm/fields_textual.py", line 137, in convert_to_cache
+    value = value.decode() if isinstance(value, bytes) else str(value)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1189, in __str__
+    return self._translate()
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1179, in _translate
+    module, lang = _get_translation_source(2, self._module, lang, default_lang=self._default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1130, in _get_translation_source
+    lang = lang or _get_lang(frame, default_lang)
+  File "/home/och/odoo/ce20/odoo/tools/translate.py", line 1123, in _get_lang
+    _logger.log(log_level, 'no translation language detected, skipping translation %s', frame, stack_info=True)
+
+  OK      Ticket 80 mm de la boleta del TPV — 25767 bytes
+  OK      al_pos_vendedor: vendedor guardado en la orden — esperado hr.employee(955,), obtenido hr.employee(955,)
+  OMITIDO Envío a OSE — sin credenciales de prueba (IAP simulado)
+
+== [al_l10n_pe_edi_pos] Factura desde la caja a cliente RUC, retenida («Emitir a SUNAT: No») y NC por devolución
+  OK      Factura en el diario de facturas del TPV — esperado account.journal(6115,), obtenido account.journal(6115,)
+  OK      Tipo 01 (factura) — esperado '01', obtenido '01'
+  OK      Factura marcada «Emisión SUNAT retenida»
+  OK      El envío de la retenida no se hace — Emisión SUNAT retenida desde el TPV: desmarque «Emisión SUNAT retenida» en F FQF-00000002 (Customer invoice from QA20 TPV CPE - 000003) para enviarla.
+  OK      La devolución enlaza la orden original — esperado pos.order(432,), obtenido pos.order(432,)
+  OK      NC de factura en el diario de facturas (aunque la caja marque boleta) — esperado account.journal(6115,), obtenido account.journal(6115,)
+  OK      NC tipo 07 — esperado '07', obtenido '07'
+  OK      NC enlazada a la factura — esperado account.move(31497,), obtenido account.move(31497,)
+  OK      Factura a cliente sin RUC rechazada — La factura electrónica requiere un cliente con RUC (tipo de documento RUC y 11 dígitos). Seleccione el cliente o emita una boleta.
+
+== [al_l10n_pe_pos_loyalty] Tarjeta de regalo: venta sola sin comprobante y venta mixta
+  OK      Producto tarjeta de regalo marcado como vale
+  OK      Producto normal no es vale
+  OK      Cuenta 496 de vales configurada — 4960000
+  OK      Venta solo de tarjeta: sin comprobante
+  OK      Queda como recibo — esperado 'recibo', obtenido 'recibo'
+  OK      La boleta no incluye la tarjeta (59.00) — esperado 59.0, obtenido 59.0
+  OK      Solo el producto en la boleta — esperado product.product(14000,), obtenido product.product(14000,)
+  OK      Boleta saldada
+  OK      Pasivo con el cliente por la tarjeta (−50.00) — esperado -50.0, obtenido -50.0
+
+== [al_pos_pe_wallet_qr] Cobro con Yape en caja
+  OK      Pago registrado con Yape — esperado pos.payment.method(836,), obtenido pos.payment.method(836,)
+  OK      El TPV carga los datos del QR del método
+
+== [al_pos_payment_gateway] Revisión del comprobante antes del QR de la pasarela
+  OK      Boleta emitible: se puede cobrar
+  OK      La factura de prueba se deshace — esperado 533, obtenido 533
+  OK      Factura a cliente sin RUC: el cajero ve el motivo antes del QR — No se puede emitir el comprobante de esta venta; corrija esto antes de cobrar:
+
+La factura electrónica requiere un cliente con RUC (tipo de documento RUC y 11 dígitos). Seleccione el cliente o emita una boleta.
+  OK      El cajero elige el método B para el QR — esperado pos.payment.method(840,), obtenido pos.payment.method(840,)
+  OK      El pago que llega por la pasarela B va a su método — esperado pos.payment.method(840,), obtenido pos.payment.method(840,)
+  OMITIDO Cobro real en la pasarela — requiere navegador y credenciales de la pasarela
+
+== [al_pos_vendedor] Vendedor en la orden y en el análisis de ventas; cierre de caja
+  OK      Sin pos_hr solo viajan los vendedores de la lista
+  OK      Vendedor sin PIN ni código de barras, marcado solo-vendedor
+  OK      Cierre de caja sin errores — {'status': True}
+  OK      Sesión cerrada — esperado 'closed', obtenido 'closed'
+  OK      Asientos de cierre de la sesión — ['POSC/2026/00001']
+  OK      Análisis del TPV: ventas por vendedor — 1
+
+== [al_pos_product_view] Cajero QA20 (no admin) vende producto con lote: sin y con grupo Inventario/Usuario
+  OK      Cajero sin grupo Inventario/Usuario
+   [sin grupo] {'lots': ['QA20-LOTE-A1'], 'error': "AccessError: No puede acceder a los registros 'Número de serie/lote' (stock.lot). | en pos_stock/models/stock_picking.py:139 _create_move_from_pos_order_lines > pos_stock/models/stock_move.py:100 _add_mls_related_to_order > pos_stock/models/stock_move.py:44 _create_production_lots_for_pos_order > /home/och/odoo/ce20/ee20/stock_barcode/models/stock_lot.py:15 _search"}
+  AVISO   Sin grupo Inventario/Usuario el cajero NO completa la venta con lote — AccessError: No puede acceder a los registros 'Número de serie/lote' (stock.lot). | en pos_stock/models/stock_picking.py:139 _create_move_from_pos_order_lines > pos_stock/models/stock_move.py:100 _add_mls_related_to_order > pos_stock/models/stock_move.py:44 _create_production_lots_for_pos_order > /home/och/odoo/ce20/ee20/stock_barcode/models/stock_lot.py:15 _search
+   [con grupo] {'lots': ['QA20-LOTE-A1'], 'close_note': 'cierre por el cajero bloqueado por una cuenta bancaria ajena no confiable; se cierra como sistema', 'close': {'status': True}, 'state': 'closed', 'lot_ok': True}
+  OK      Con grupo Inventario/Usuario: lotes visibles, venta con lote y caja cerrada — ['QA20-LOTE-A1']
+  AVISO   Cierre de caja del cajero — cierre por el cajero bloqueado por una cuenta bancaria ajena no confiable; se cierra como sistema
+
+== [al_pos_pe_partner_lookup] Crear cliente en caja desde RUC o DNI (consulta simulada)
+  OK      Consulta como RUC (código 6) — esperado '6', obtenido '6'
+  OK      Cliente RUC creado — esperado ('20600009002', '6', True), obtenido ('20600009002', '6', True)
+  OK      Cliente DNI creado (identificador adicional) — esperado ('1', '70123456'), obtenido ('1', '70123456')
+  OK      DNI existente: devuelve el cliente sin consultar — esperado 9558, obtenido 9558
+  OK      Sin consulta para cliente existente
+  OK      Formato inválido rechazado — Escriba un RUC (11 dígitos) o un DNI (8 dígitos).
+  OK      Usuario sin permiso de crear contactos rechazado — No puede crear registros 'Contacto' (res.partner).
+
+Esta operación está permitida para los siguientes grupos:
+	- Ventas / Administrador
+	- Manufactura / Administrador
+	- Compras / Administrador
+	- Pun
+  OMITIDO Consulta real SUNAT/RENIEC — sin token de consulta; respuesta simulada
+
+== [al_pos_theme] Assets del TPV: los bundles compilan e incluyen los módulos QA
+  OK      Bundle JS point_of_sale.assets_prod generado — 961 archivos
+  OK      Bundle CSS/SCSS point_of_sale.assets_prod compilado — 306 hojas
+  OK      Bundle CSS/SCSS point_of_sale.assets_prod_dark compilado — 339 hojas
+  OK      Bundle JS point_of_sale.customer_display_assets generado — 254 archivos
+  OK      Bundle CSS/SCSS point_of_sale.customer_display_assets compilado — 127 hojas
+  OK      Todos los módulos OL-POS presentes en los bundles del TPV — 3849
+  OMITIDO Interfaz al_pos_theme — requiere navegador; cubierto por tours/estático
+  OMITIDO Interfaz al_pos_product_view — requiere navegador; cubierto por tours/estático
+  OMITIDO Interfaz al_pos_online_payment — requiere navegador; cubierto por tours/estático
+  OMITIDO Interfaz al_pos_network_printer — requiere navegador; cubierto por tours/estático
+
+== [al_sale_approval] Pedido con producto que exige aprobación: pendiente hasta aprobar
+  OK      Cotización: aprobación por solicitar — esperado 'to_request', obtenido 'to_request'
+  OK      No se confirma sin aprobación — La orden S00307 necesita una solicitud aprobada en Aprobaciones («Solicitar aprobación») antes de confirmarse.
+  OK      Solicitud enlazada al pedido — esperado (sale.order(307,), 'S00307'), obtenido (sale.order(307,), 'S00307')
+  OK      Pendiente de aprobación — esperado 'pending', obtenido 'pending'
+  OK      Pendiente: no se confirma — La orden S00307 necesita una solicitud aprobada en Aprobaciones («Solicitar aprobación») antes de confirmarse.
+  OK      Aprobada por el gerente — esperado 'approved', obtenido 'approved'
+  OK      Pedido confirmado tras aprobar — esperado 'sale', obtenido 'sale'
+  OK      Producto sin marca: no requiere aprobación — esperado 'not_required', obtenido 'not_required'
+  AVISO   El módulo aprueba por producto marcado, no por límite de importe — no hay regla de monto en al_sale_approval (approvals nativo)
+
+== [al_ose_factory_hka] Operador Factory HKA: envío, consulta CDR y baja (OSE simulado)
+  OK      Operador Factory HKA disponible
+  OK      Entorno de prueba usa el WSDL demo de HKA — esperado 'https://demoose.thefactoryhka.com.pe/ol-ti-itcpfegem/billService?wsdl', obtenido 'https://demoose.thefactoryhka.com.pe/ol-ti-itcpfegem/billService?wsdl'
+  OK      Nombre de archivo con número en 8 dígitos — 20557912879-01-FFQH-00000001
+  OK      Envío sin errores
+  OK      Aceptada (CDR simulado) — esperado 'sent', obtenido 'sent'
+  OK      sendBill con el usuario de HKA — esperado ('sendBill', 'QA20HKA'), obtenido ('sendBill', 'QA20HKA')
+  OK      ZIP enviado con el nombre HKA — 20557912879-01-FFQH-00000001.zip
+  OK      XML firmado con el certificado (SignatureValue)
+  OK      Consulta de CDR (getStatusCdr) — esperado '0004', obtenido '0004'
+  OK      Baja por comunicación (sendSummary + getStatus) — esperado 'cancelled', obtenido 'cancelled'
+  OK      Operaciones de baja — esperado ['sendSummary', 'getStatus'], obtenido ['sendSummary', 'getStatus']
+  OK      Factura: baja por RA, no por resumen
+  OK      Sin contraseña: queda pendiente y no llama al OSE
+  OK      Configuración de la compañía restaurada — esperado 'iap', obtenido 'iap'
+  OMITIDO Envío real a Factory HKA — sin credenciales de prueba; cliente SOAP simulado
+
+COMMIT
+RESUMEN facturacion_tpv: {'OK': 27, 'AVISO': 3, 'FALLA': 1}

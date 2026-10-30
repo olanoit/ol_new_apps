@@ -1,0 +1,1625 @@
+{
+ "fase": "proyectos",
+ "casos": [
+  {
+   "modulo": "al_construction_planner",
+   "titulo": "Obra QA20: tipologías, árbol del piso 05 y generación del plan (W-01)",
+   "pasos": "planner_demo_data.py con prefijo QA20: 8 tipologías, árbol Piso › Dpto › Ambiente › Módulo, asistente de generación y costo del maestro",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "material planificado",
+     "detalle": "esperado 6642.91, obtenido 6642.91"
+    },
+    {
+     "estado": "OK",
+     "titulo": "contrata planificada",
+     "detalle": "esperado 2301.53, obtenido 2301.53"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total del plan",
+     "detalle": "esperado 8944.44, obtenido 8944.44"
+    },
+    {
+     "estado": "OK",
+     "titulo": "módulos generados en el árbol",
+     "detalle": "esperado 66, obtenido 66"
+    },
+    {
+     "estado": "OK",
+     "titulo": "líneas del plan generadas",
+     "detalle": "226"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "project.project",
+     "id": 1891,
+     "nombre": "QA20 MOMEN-35-26",
+     "nota": "obra"
+    },
+    {
+     "modelo": "construction.resource.plan",
+     "id": 733,
+     "nombre": "PLR/2026/00733 · v1",
+     "nota": "plan v1"
+    },
+    {
+     "modelo": "project.task",
+     "id": 19244,
+     "nombre": "Piso 05",
+     "nota": "piso"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9382,
+     "nombre": "QA20 Leandro (instalación)",
+     "nota": "contratas"
+    },
+    {
+     "modelo": "res.partner",
+     "id": 9383,
+     "nombre": "QA20 Armado Gonza",
+     "nota": "contratas"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_approvals",
+   "titulo": "Aprobación por niveles del plan y versión 2 (replan, W-12)",
+   "pasos": "planner_demo_baseline.py: reglas tier.definition (restringidas a la obra QA20), solicitar aprobación, validar tier, replanificar (v2), precio ponderado 6 meses",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "el plan generó revisiones tier",
+     "detalle": "['QA20 Nivel 1: jefatura de proyectos']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v1 aprobada tras validar el nivel 1",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v1 con presupuesto analítico",
+     "detalle": "QA20 MOMEN-35-26 · PLR/2026/00733 · v1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v2 en borrador",
+     "detalle": "esperado 'draft', obtenido 'draft'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v2 desciende de v1",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "v2: costo ponderado de compras aplicado a la melamina",
+     "detalle": "121.62"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "construction.resource.plan",
+     "id": 733,
+     "nombre": "PLR/2026/00733 · v1",
+     "nota": "v1 aprobada"
+    },
+    {
+     "modelo": "construction.resource.plan",
+     "id": 734,
+     "nombre": "PLR/2026/00734 · v2",
+     "nota": "v2 borrador"
+    },
+    {
+     "modelo": "tier.definition",
+     "id": 3512,
+     "nombre": "QA20 Nivel 1: jefatura de proyectos",
+     "nota": "reglas del plan"
+    },
+    {
+     "modelo": "tier.definition",
+     "id": 3513,
+     "nombre": "QA20 Nivel 2: gerencia (más de S/ 100 000)",
+     "nota": "reglas del plan"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_purchase",
+   "titulo": "Compra masiva, requerimiento de obra, exceso y OF desde el plan",
+   "pasos": "planner_demo_supply.py: W-02 (purchase.request), W-03 (construction.material.request), W-10 (exceso con justificación), W-04 (mrp.production)",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "solicitud de compra con líneas",
+     "detalle": "2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "requerimiento enviado a aprobación",
+     "detalle": "to_approve"
+    },
+    {
+     "estado": "OK",
+     "titulo": "requerimiento marca exceso sobre el plan",
+     "detalle": "esperado 'exceeded', obtenido 'exceeded'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OF creada",
+     "detalle": "WH/MO/00390 draft"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el plan registra asignaciones",
+     "detalle": "38"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "purchase.request",
+     "id": 440,
+     "nombre": "PR00440",
+     "nota": "solicitud de compra"
+    },
+    {
+     "modelo": "construction.material.request",
+     "id": 762,
+     "nombre": "RQO/2026/00762",
+     "nota": "requerimiento"
+    },
+    {
+     "modelo": "construction.material.request",
+     "id": 763,
+     "nombre": "RQO/2026/00763",
+     "nota": "requerimiento con exceso"
+    },
+    {
+     "modelo": "mrp.production",
+     "id": 536,
+     "nombre": "WH/MO/00390",
+     "nota": "OF"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_subcontract",
+   "titulo": "Contrata (W-05), avance validado y liquidación semanal (P-08)",
+   "pasos": "planner_demo_contracts.py: asignar instalación a Leandro, OC de servicio, avance con foto, liquidación del 05/11 (bruto 380.88, neto 342.79)",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "OC de servicio confirmada",
+     "detalle": "esperado 'purchase', obtenido 'purchase'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC de servicio por la instalación del piso",
+     "detalle": "esperado 941.17, obtenido 941.17"
+    },
+    {
+     "estado": "OK",
+     "titulo": "bruto de la liquidación",
+     "detalle": "esperado 380.88, obtenido 380.88"
+    },
+    {
+     "estado": "OK",
+     "titulo": "neto de la liquidación (retención 10 %)",
+     "detalle": "esperado 342.79, obtenido 342.79"
+    },
+    {
+     "estado": "OK",
+     "titulo": "liquidación enviada",
+     "detalle": "submitted"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "purchase.order",
+     "id": 938,
+     "nombre": "P00938",
+     "nota": "OC de servicio"
+    },
+    {
+     "modelo": "construction.contract.settlement",
+     "id": 202,
+     "nombre": "LIQ/2026/00207",
+     "nota": "liquidación"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_crew",
+   "titulo": "Cuadrilla (W-06) y hoja de horas con costo de personal",
+   "pasos": "planner_demo_control.py: actividad en horas, 2 obreros a S/ 9.50, cuadrilla 2 semanas, 6 h registradas",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "horas ejecutadas en la línea de personal propio",
+     "detalle": "esperado 6.0, obtenido 6.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costo real = 6 h × S/ 9.50",
+     "detalle": "esperado 57.0, obtenido 57.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comprometido por la cuadrilla",
+     "detalle": "95.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "turnos de planificación de la cuadrilla",
+     "detalle": "esperado 4, obtenido 4"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "hr.employee",
+     "id": 928,
+     "nombre": "QA20 Obrero propio 1",
+     "nota": "obreros"
+    },
+    {
+     "modelo": "hr.employee",
+     "id": 929,
+     "nombre": "QA20 Obrero propio 2",
+     "nota": "obreros"
+    },
+    {
+     "modelo": "construction.labor.activity",
+     "id": 4343,
+     "nombre": "QA20 Instalación con personal propio",
+     "nota": "actividad propia"
+    },
+    {
+     "modelo": "planning.slot",
+     "id": 68,
+     "nombre": "QA20 Instalador propio - QA20 MOMEN-35-26 💬",
+     "nota": "turnos de la cuadrilla"
+    },
+    {
+     "modelo": "planning.slot",
+     "id": 66,
+     "nombre": "QA20 Instalador propio - QA20 MOMEN-35-26 💬",
+     "nota": "turnos de la cuadrilla"
+    },
+    {
+     "modelo": "planning.slot",
+     "id": 67,
+     "nombre": "QA20 Instalador propio - QA20 MOMEN-35-26 💬",
+     "nota": "turnos de la cuadrilla"
+    },
+    {
+     "modelo": "planning.slot",
+     "id": 65,
+     "nombre": "QA20 Instalador propio - QA20 MOMEN-35-26 💬",
+     "nota": "turnos de la cuadrilla"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_sale",
+   "titulo": "OV del contrato, entregas semanales y valorización 1 facturada",
+   "pasos": "planner_demo_income.py: OV, calendario de ingresos, 3 entregas, valorización enviada/observada/confirmada con acta y factura publicada",
+   "checks": [
+    {
+     "estado": "FALLA",
+     "titulo": "t_income lanzó una excepción",
+     "detalle": "RedirectWarning: ('La cuenta bancaria de la empresa (191-9912345-0-71 - QA20 P1 BCP) vinculada a esta factura no es de confianza. Ve a los Ajustes bancarios, verifica que sea tuya o corrige el número y haz clic en \"Enviar dinero\" para indicar que es de confianza.', {'type': 'ir.actions.act_window', 'res_model': 'res.partner.bank', 'target': 'current', 'context': {'lang': 'es_PE', 'tz': False, 'uid': 1, 'allowed_company_ids': [1], 'tracking_disable': True, 'skip_is_manually_modified': True}, 'views': [(False, 'form')], 'res_id': 171}, 'Ajustes bancarios', None)"
+    }
+   ],
+   "registros": [],
+   "error": "RedirectWarning: ('La cuenta bancaria de la empresa (191-9912345-0-71 - QA20 P1 BCP) vinculada a esta factura no es de confianza. Ve a los Ajustes bancarios, verifica que sea tuya o corrige el número y haz clic en \"Enviar dinero\" para indicar que es de confianza.', {'type': 'ir.actions.act_window', 'res_model': 'res.partner.bank', 'target': 'current', 'context': {'lang': 'es_PE', 'tz': False, 'uid': 1, 'allowed_company_ids': [1], 'tracking_disable': True, 'skip_is_manually_modified': True}, 'views': [(False, 'form')], 'res_id': 171}, 'Ajustes bancarios', None)",
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_construction_planner_sale",
+   "titulo": "Cronograma valorizado (plan y real) con cobro conciliado",
+   "pasos": "planner_demo_schedule.py: cobro conciliado y construction.schedule.report.get_schedule",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "cronograma: costo planificado",
+     "detalle": "{'cost': 9328.44, 'revenue': 0.0, 'valuation': 0.0, 'invoice': 0.0, 'collection': 0.0, 'guarantee': 0.0, 'collection_total': 0.0, 'margin': -9328.44, 'max_gap': 9328.44, 'max_gap_week': '2026-11-05'}"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "cronograma: ingreso real",
+     "detalle": "{'cost': 437.88, 'revenue': 0.0, 'valuation': 0.0, 'invoice': 0.0, 'collection': 0.0, 'guarantee': 0.0, 'collection_total': 0.0, 'margin': -437.88, 'max_gap': 437.88, 'max_gap_week': '2026-11-05'}"
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "t_schedule lanzó una excepción",
+     "detalle": "KeyError: 'invoice'"
+    }
+   ],
+   "registros": [],
+   "error": "KeyError: 'invoice'",
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_construction_material_request",
+   "titulo": "Requerimiento de obra aprobado (tier), procesado y despachado a la obra",
+   "pasos": "RQO del piso (W-03): validar revisión, «Procesar» (logística) → solicitud de compra del faltante, recepción en el central y despacho a la ubicación de obra",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "requerimiento aprobado tras las revisiones",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "requerimiento en proceso",
+     "detalle": "esperado 'in_progress', obtenido 'in_progress'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el faltante generó solicitud de compra",
+     "detalle": "['PR00441']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "transferencias hacia la obra creadas",
+     "detalle": "['OBRA00429']"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "construction.material.request",
+     "id": 762,
+     "nombre": "RQO/2026/00762",
+     "nota": "requerimiento"
+    },
+    {
+     "modelo": "purchase.request",
+     "id": 441,
+     "nombre": "PR00441",
+     "nota": "solicitud de compra del faltante"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "purchase_request",
+   "titulo": "Solicitud de compra: aprobar y generar OC con el asistente",
+   "pasos": "purchase.request (W-02 compra masiva): to_approve → approved; asistente purchase.request.line.make.purchase.order con proveedor QA20",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "solicitudes aprobadas",
+     "detalle": "['approved', 'approved']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC generadas desde la solicitud",
+     "detalle": "['P00940']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cada línea de la solicitud enlazada a la OC",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "purchase.order",
+     "id": 940,
+     "nombre": "P00940",
+     "nota": "OC desde la solicitud"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "purchase_tier_validation",
+   "titulo": "OC con aprobación por niveles (regla QA20 por proveedor)",
+   "pasos": "tier.definition sobre purchase.order con dominio del proveedor QA20: confirmar sin validar falla, request_validation, validate_tier y confirmar",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "la OC del proveedor QA20 necesita validación",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "confirmar sin validar está bloqueado",
+     "detalle": "Esta acción necesita ser validada para al menos un registro. Revisiones pendientes:\n - QA2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "revisión creada en P00940",
+     "detalle": "['QA20 OC: jefatura de compras']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC P00940 validada",
+     "detalle": "esperado 'validated', obtenido 'validated'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC P00940 confirmada tras la validación",
+     "detalle": "purchase"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "tier.definition",
+     "id": 3514,
+     "nombre": "QA20 OC: jefatura de compras",
+     "nota": "regla de aprobación de OC"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "base_tier_validation",
+   "titulo": "Motor de revisiones: estados, revisores y bloqueo de escritura",
+   "pasos": "tier.review de la OC y del plan QA20; escribir en un documento en revisión queda bloqueado",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "revisiones de OC aprobadas",
+     "detalle": "['approved', 'approved']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cada revisión registra quién la hizo",
+     "detalle": "['QA20 Jefe de obra']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "requerimiento con exceso queda con revisiones pendientes",
+     "detalle": "['Exceso sobre el plan: jefatura del planificador']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "escritura en documento en revisión bloqueada",
+     "detalle": "No puedes editar estos campos durante la validación.\n- Notas\n\nSolo estos campos "
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_purchase",
+   "titulo": "Recepción de la OC y despacho a la obra; tablero de abastecimiento",
+   "pasos": "validar recepción de la OC, luego la transferencia pendiente a la obra; construction.supply.board.get_board (pantalla OWL)",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "recepción WH/IN/00381 validada",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cantidad recibida en obra registrada en el requerimiento",
+     "detalle": "1800.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "estado del requerimiento",
+     "detalle": "done"
+    },
+    {
+     "estado": "OK",
+     "titulo": "obra QA20 en el selector del tablero",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "tablero de abastecimiento con datos",
+     "detalle": "['alerts', 'currency_symbol', 'horizon_end', 'plan_id', 'plan_name', 'plan_state', 'project_id', 'rows']"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "render OWL del tablero de abastecimiento",
+     "detalle": "sin navegador"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "stock.picking",
+     "id": 1769,
+     "nombre": "WH/IN/00381",
+     "nota": "recepción"
+    },
+    {
+     "modelo": "stock.picking",
+     "id": 1768,
+     "nombre": "OBRA00429",
+     "nota": "despacho a obra"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_mrp",
+   "titulo": "OF desde el plan (W-04): componentes por etapa y enlace al plan",
+   "pasos": "OF del Dpto 502 creada por planner_demo_supply; confirmar y revisar etapa de consumo y plan",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "OF enlazada al plan vigente",
+     "detalle": "PLR/2026/00733 · v1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OF con componentes de la BOM de la tipología",
+     "detalle": "7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "asignación del plan registra la OF",
+     "detalle": "115"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "mrp.production",
+     "id": 536,
+     "nombre": "WH/MO/00390",
+     "nota": "OF Dpto 502"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_production",
+   "titulo": "Accesorios de armado pedidos desde la OF",
+   "pasos": "quitar la bisagra (Armado) de la OF, confirmar, «Pedir accesorios» y enviar sin cambios → el accesorio entra a la OF",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "OF confirmada",
+     "detalle": "confirmed"
+    },
+    {
+     "estado": "OK",
+     "titulo": "propone la bisagra del plan",
+     "detalle": "[('QA20 Bisagra lateral Danco', 12.0)]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "pedido sin cambios aplicado a la OF",
+     "detalle": "esperado 'done', obtenido 'done'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "bisagras agregadas a la OF",
+     "detalle": "esperado 12.0, obtenido 12.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "construction.accessory.request",
+     "id": 28,
+     "nombre": "ACC/2026/00028",
+     "nota": "pedido de accesorios"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_approvals_mrp",
+   "titulo": "Exceso de la OF frente a lo presupuestado: aprueba el jefe de producción",
+   "pasos": "OF Dpto 503, +0.2 de melamina blanca, margen del jefe 5 % (temporal en la compañía) → exceso aprobado con motivo y registrado en construction.exceed.log",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "OF marcada con exceso",
+     "detalle": "esperado 'exceeded', obtenido 'exceeded'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "monto del exceso",
+     "detalle": "33.6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "comparativo: cambio de cantidad en la melamina",
+     "detalle": "esperado 'quantity', obtenido 'quantity'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el jefe de producción puede aprobar (dentro del margen)",
+     "detalle": "esperado 'approve', obtenido 'approve'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "exceso aprobado",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "exceso registrado en el log",
+     "detalle": "['QA20 Melamina MDP blanco fantasía']"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "mrp.production",
+     "id": 537,
+     "nombre": "WH/MO/00391",
+     "nota": "OF Dpto 503"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_mrp_request",
+   "titulo": "Planchas enteras en el despacho del requerimiento",
+   "pasos": "UdM plancha (construction_whole_sheet), 10.6 en stock, requerimiento de 13.3 → despacha 10 y compra 4 (opción de compañía activada solo durante el caso)",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "requerimiento aprobado",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "despacha planchas enteras",
+     "detalle": "esperado 10.0, obtenido 10.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "compra lo que falta en planchas enteras",
+     "detalle": "esperado 4.0, obtenido 4.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "redondeo a plancha entera",
+     "detalle": "esperado 0.7, obtenido 0.7"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "product.product",
+     "id": 13829,
+     "nombre": "QA20 Melamina RH 18 mm (plancha)",
+     "nota": "tablero en planchas"
+    },
+    {
+     "modelo": "construction.material.request",
+     "id": 764,
+     "nombre": "RQO/2026/00764",
+     "nota": "requerimiento de planchas"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_furniture",
+   "titulo": "Tipología de mueble: módulos, piezas y clasificación",
+   "pasos": "tipología QA20-C04 con módulos de microondas y zócalo, piezas PUERTA y materiales por etapa",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "microondas es módulo especial",
+     "detalle": "esperado 'special', obtenido 'special'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo especial microondas",
+     "detalle": "esperado 'microwave', obtenido 'microwave'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "zócalo detectado",
+     "detalle": "esperado 'plinth', obtenido 'plinth'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "zócalo sin unión",
+     "detalle": "esperado 'none', obtenido 'none'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "módulo con piezas y materiales",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "construction.typology",
+     "id": 1202,
+     "nombre": "QA20 COCINA 04 a medida",
+     "nota": "tipología de mueble"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_subcontract",
+   "titulo": "Liquidación semanal: validar, aprobar (tier), recepción en la OC y factura",
+   "pasos": "LIQ del 05/11: action_validate, validate_tier de la jefatura, recepción en la OC de servicio y factura de proveedor con vencimiento el sábado 07/11",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "liquidación aprobada",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura de proveedor",
+     "detalle": "esperado 'in_invoice', obtenido 'in_invoice'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "base de la factura = bruto de la liquidación",
+     "detalle": "esperado 380.88, obtenido 380.88"
+    },
+    {
+     "estado": "OK",
+     "titulo": "vence el sábado de pago",
+     "detalle": "esperado '2026-11-07', obtenido '2026-11-07'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "recepción registrada en la OC de servicio",
+     "detalle": "52.85"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura enlazada a la OC de servicio",
+     "detalle": ""
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "account.move",
+     "id": 31393,
+     "nombre": "Borrador de factura (LIQ/2026/00207)",
+     "nota": "factura de la contrata"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_subcontract_purchase",
+   "titulo": "Material extra descontado a la contrata en su siguiente liquidación",
+   "pasos": "requerimiento extra (reposición) con «Descontar a la contrata» Leandro; liquidación del 12/11 lo toma como descuento",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "monto a descontar = estimado",
+     "detalle": "5.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "extra aprobado",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "el extra entra como descuento en la liquidación",
+     "detalle": "['RQO/2026/00765']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "descuento en la liquidación",
+     "detalle": "esperado 5.0, obtenido 5.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "construction.material.request",
+     "id": 765,
+     "nombre": "RQO/2026/00765",
+     "nota": "material extra"
+    },
+    {
+     "modelo": "construction.contract.settlement",
+     "id": 203,
+     "nombre": "LIQ/2026/00208",
+     "nota": "liquidación 12/11"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_subcontract",
+   "titulo": "Valorización del contratista con condiciones (adelanto, deductivo, fondo de garantía)",
+   "pasos": "obra QA20 OBR-01 tabiquería: condición de la compañía (data), adelanto, 1 000 m² + adicional 100 u, deductivo 650 → Valorizado 01 por 35 532.75 a pagar",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "plan de la obra con condiciones aprobado",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total contractual con el esquema de la condición",
+     "detalle": "esperado 94121.52, obtenido 94121.52"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la OC lleva condiciones copiadas",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "adelanto 20 % del subtotal contractual",
+     "detalle": "esperado 15952.8, obtenido 15952.8"
+    },
+    {
+     "estado": "OK",
+     "titulo": "adelanto publicado",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "título de la valorización",
+     "detalle": "Valorizado 01 - Arquitectura"
+    },
+    {
+     "estado": "OK",
+     "titulo": "costo directo valorizado",
+     "detalle": "esperado 38200.0, obtenido 38200.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "adicionales",
+     "detalle": "esperado 1800.0, obtenido 1800.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total con IGV",
+     "detalle": "esperado 47377.0, obtenido 47377.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "amortización del adelanto",
+     "detalle": "esperado 9475.4, obtenido 9475.4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fondo de garantía",
+     "detalle": "esperado 2368.85, obtenido 2368.85"
+    },
+    {
+     "estado": "OK",
+     "titulo": "total a pagar",
+     "detalle": "esperado 35532.75, obtenido 35532.75"
+    },
+    {
+     "estado": "OK",
+     "titulo": "valorización aprobada",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura de la valorización",
+     "detalle": "esperado 37901.6, obtenido 37901.6"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "project.project",
+     "id": 1892,
+     "nombre": "QA20 OBR-01 Tabiquería",
+     "nota": "obra con condiciones"
+    },
+    {
+     "modelo": "construction.resource.plan",
+     "id": 735,
+     "nombre": "PLR/2026/00735 · v1",
+     "nota": "plan OBR-01"
+    },
+    {
+     "modelo": "purchase.order",
+     "id": 941,
+     "nombre": "P00941",
+     "nota": "OC de contrata con condiciones"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31394,
+     "nombre": "F F001-00031394 (Adelanto P00941)",
+     "nota": "factura de adelanto"
+    },
+    {
+     "modelo": "construction.contract.settlement",
+     "id": 204,
+     "nombre": "LIQ/2026/00209 · Valorizado 01 - Arquitectura",
+     "nota": "Valorizado 01"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31395,
+     "nombre": "Borrador de factura (Valorizado 01 - Arquitectura)",
+     "nota": "factura de la valorización"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_subcontract_sale",
+   "titulo": "Adicional de obra agregado a la OC de la contrata",
+   "pasos": "construction.change.order «additional» aprobado y «Agregar a la orden de contrata»",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "cambio aprobado se puede agregar a la OC",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea agregada a la OC de la contrata",
+     "detalle": "P00941"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea marcada como adicional",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "cantidad del adicional",
+     "detalle": "esperado 50.0, obtenido 50.0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "construction.change.order",
+     "id": 36,
+     "nombre": "CAM/2026/00036",
+     "nota": "cambio de obra"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_budget",
+   "titulo": "Presupuesto analítico del plan y control de la OC contra el presupuesto",
+   "pasos": "budget.analytic de la v1 con líneas; OC de material con analítica de la obra: estado del control",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "presupuesto con líneas",
+     "detalle": "1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "presupuesto con montos",
+     "detalle": "esperado True, obtenido True"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC con estado del control de presupuesto",
+     "detalle": "ok"
+    },
+    {
+     "estado": "OK",
+     "titulo": "importes de la OC por línea de presupuesto calculados",
+     "detalle": "0"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "budget.analytic",
+     "id": 436,
+     "nombre": "QA20 MOMEN-35-26 · PLR/2026/00733 · v1",
+     "nota": "presupuesto analítico"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_sale_furniture",
+   "titulo": "Partida del contrato por familia de la tipología",
+   "pasos": "OV del contrato con una partida «Cocinas» sin familia: el resolver de partidas asigna las líneas del plan de cocinas a esa partida; con familia «kitchen» también",
+   "checks": [
+    {
+     "estado": "FALLA",
+     "titulo": "t_sale_furniture lanzó una excepción",
+     "detalle": "KeyError: 'sale_order'"
+    }
+   ],
+   "registros": [],
+   "error": "KeyError: 'sale_order'",
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_construction_planner_spreadsheet",
+   "titulo": "Hoja de presupuesto de la cotización (documents.spreadsheet)",
+   "pasos": "action_construction_open_spreadsheet en la OV QA20: documento «budget» con sus hojas y filas Odoo",
+   "checks": [
+    {
+     "estado": "FALLA",
+     "titulo": "t_budget_sheet lanzó una excepción",
+     "detalle": "KeyError: 'sale_order'"
+    }
+   ],
+   "registros": [],
+   "error": "KeyError: 'sale_order'",
+   "estado": "FALLA"
+  },
+  {
+   "modulo": "al_construction_planner_spreadsheet_furniture",
+   "titulo": "Hoja de trabajo de la obra con el maestro de mobiliario",
+   "pasos": "project.action_construction_open_spreadsheet: hojas del maestro (ARBOL, TIPOLOGIAS…) y listas Odoo",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "acción abre la hoja de la obra",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "hojas del maestro de mobiliario",
+     "detalle": "['LEEME', 'RESUMEN', 'CATALOGO', 'TIPOLOGIAS', 'MUEBLES', 'MODULOS', 'ACTIVIDADES', 'BOM', 'PIEZAS', 'PRODUCTOS NUEVOS', 'TARIFAS', 'OBRA', 'CONTRATOS', 'HITOS', 'VENTA', 'MO PROPIA', 'ARBOL', 'VARIANTES', 'ETO', 'REFERENCIAS', '_LISTAS']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "listas ODOO.LIST enlazadas",
+     "detalle": "['construction.labor.activity', 'construction.typology', 'product.category', 'product.product']"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "documents.document",
+     "id": 7176,
+     "nombre": "Maestro de planificación · QA20 MOMEN-35-26",
+     "nota": "hoja de la obra"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_attendance",
+   "titulo": "Sede de la obra, marcación de contrata y de personal propio, avance con asistencia",
+   "pasos": "l10n_pe.hr.construction.site de la obra QA20, trabajador de contrata con SCTR vencido, hr.attendance con GPS → sede y distancia; avance con attendance_ok",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "distancia a la sede",
+     "detalle": "esperado 0.0, obtenido 0.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "a ~400 m queda fuera del radio",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "7:55 en Lima es tardanza",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "trabajador con SCTR vencido marcado (el aviso «al marcar» lo pone el quiosco)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "marcación toma la sede más cercana",
+     "detalle": "esperado l10n_pe.hr.construction.site(54,), obtenido l10n_pe.hr.construction.site(54,)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "distancia registrada",
+     "detalle": "66.7"
+    },
+    {
+     "estado": "OK",
+     "titulo": "avance de la contrata con asistencia ese día",
+     "detalle": "AVN/2026/01458"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "quiosco /obra/quiosco (HTTP)",
+     "detalle": "controlador web: sin servidor de pruebas en el shell"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "l10n_pe.hr.construction.site",
+     "id": 54,
+     "nombre": "QA20 Sede MOMEN",
+     "nota": "sede de obra"
+    },
+    {
+     "modelo": "construction.contractor.worker",
+     "id": 8,
+     "nombre": "QA20 Juan Gonza",
+     "nota": "trabajador de contrata"
+    },
+    {
+     "modelo": "construction.contractor.attendance",
+     "id": 7,
+     "nombre": "construction.contractor.attendance,7",
+     "nota": "marcación de contrata"
+    },
+    {
+     "modelo": "hr.attendance",
+     "id": 347,
+     "nombre": "HE - 8h",
+     "nota": "marcación personal propio"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_portal",
+   "titulo": "Portal de obra: contrata reporta avance, maestro envía parte diario, valorizaciones",
+   "pasos": "usuarios portal QA20 (contrata y maestro de obra) en la obra OBR-01; construction.portal.service sync/progress/daily_report/valuations",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "rol en el portal",
+     "detalle": "esperado ['contractor'], obtenido ['contractor']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la contrata ve su partida",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "avance del portal en borrador",
+     "detalle": "esperado ('portal', 25.0, 'draft'), obtenido ('portal', 25.0, 'draft')"
+    },
+    {
+     "estado": "OK",
+     "titulo": "reenvío no duplica (uuid)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "parte diario con personal",
+     "detalle": "esperado 6, obtenido 6"
+    },
+    {
+     "estado": "OK",
+     "titulo": "valorizaciones visibles para la contrata",
+     "detalle": "{'partner': 'QA20 Tabiquería Demo SAC', 'orders': [{'id': 941, 'name': 'P00941', 'amount_untaxed': 79100.0, 'valued': 38"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "PWA del portal (OWL/HTML)",
+     "detalle": "sin navegador"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.users",
+     "id": 3812,
+     "nombre": "QA20 Supervisor de la contrata",
+     "nota": "usuarios portal"
+    },
+    {
+     "modelo": "res.users",
+     "id": 3813,
+     "nombre": "QA20 Maestro de obra",
+     "nota": "usuarios portal"
+    },
+    {
+     "modelo": "construction.task.progress",
+     "id": 1446,
+     "nombre": "AVN/2026/01462",
+     "nota": "avance desde el portal"
+    },
+    {
+     "modelo": "construction.daily.report",
+     "id": 5,
+     "nombre": "QA20 OBR-01 Tabiquería · 2026-10-30",
+     "nota": "parte diario"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_project_gantt_base",
+   "titulo": "Gantt: tareas con dependencias, mover con reprogramación en cadena, línea base y ruta crítica",
+   "pasos": "proyecto QA20 Gantt con A→B→C y una paralela; apply_gantt_changes(reschedule_chain), create_baseline, al_gantt_get_data(critical_path, baseline_id), export_xlsx",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "A, B y C en la ruta crítica",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "la paralela tiene holgura",
+     "detalle": "336.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "línea base capturada",
+     "detalle": "4"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cambio aplicado",
+     "detalle": "[19355]"
+    },
+    {
+     "estado": "OK",
+     "titulo": "la sucesora B empieza al terminar A",
+     "detalle": "esperado datetime.datetime(2026, 11, 9, 8, 0), obtenido datetime.datetime(2026, 11, 9, 8, 0)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "B conserva su duración",
+     "detalle": "esperado True, obtenido True"
+    },
+    {
+     "estado": "OK",
+     "titulo": "C se empuja detrás de B (transitivo)",
+     "detalle": "2026-11-19 08:00:00"
+    },
+    {
+     "estado": "OK",
+     "titulo": "desvío contra la línea base aplicado",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "desvío de A contra la línea base (días)",
+     "detalle": "esperado 2.0, obtenido 2.0"
+    },
+    {
+     "estado": "OK",
+     "titulo": "vínculo creado desde el Gantt",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "ciclo rechazado",
+     "detalle": "ValidationError"
+    },
+    {
+     "estado": "OK",
+     "titulo": "exportación a Excel",
+     "detalle": "7201"
+    },
+    {
+     "estado": "OK",
+     "titulo": "Gantt de la obra QA20 MOMEN (filas por etapa, modo por defecto del planificador)",
+     "detalle": "17"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "project.project",
+     "id": 1893,
+     "nombre": "QA20 Gantt de obra",
+     "nota": "proyecto Gantt"
+    },
+    {
+     "modelo": "project.task",
+     "id": 19355,
+     "nombre": "QA20 A Trazo",
+     "nota": "tareas"
+    },
+    {
+     "modelo": "project.task",
+     "id": 19356,
+     "nombre": "QA20 B Tabiquería",
+     "nota": "tareas"
+    },
+    {
+     "modelo": "project.task",
+     "id": 19357,
+     "nombre": "QA20 C Acabados",
+     "nota": "tareas"
+    },
+    {
+     "modelo": "project.task",
+     "id": 19358,
+     "nombre": "QA20 Paralela corta",
+     "nota": "tareas"
+    },
+    {
+     "modelo": "al.gantt.baseline",
+     "id": 34,
+     "nombre": "QA20 Línea base 1",
+     "nota": "línea base"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_project_gantt_backend",
+   "titulo": "Acción cliente del Gantt en el backend",
+   "pasos": "ir.actions.client al_project_gantt.backend y menús restringidos a los grupos del Gantt",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "tag de la acción cliente",
+     "detalle": "esperado 'al_project_gantt.backend', obtenido 'al_project_gantt.backend'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "menú restringido al grupo del Gantt",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "RPC al_gantt_get_data que usa la pantalla devuelve tareas",
+     "detalle": "4"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "render OWL del Gantt backend",
+     "detalle": "sin navegador"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_project_gantt_website",
+   "titulo": "Página /gantt del sitio: controlador y contrato de datos",
+   "pasos": "rutas /gantt, /gantt/data, /gantt/apply, /gantt/baseline delegan en el módulo base; un usuario portal no tiene acceso a los datos",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "rutas del sitio declaradas",
+     "detalle": "['/gantt', '/gantt/apply', '/gantt/baseline', '/gantt/data']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "usuario portal rechazado por la capa de datos",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "página /gantt por HTTP",
+     "detalle": "el shell no levanta servidor HTTP; datos sin confirmar en el servidor del usuario"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_project_gantt_ai",
+   "titulo": "Asistente IA del Gantt con el proveedor simulado",
+   "pasos": "ai_provider.call_provider mockeado; ask() con las tareas QA20 propone mover A; la propuesta se aplica por apply_gantt_changes",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "panel IA habilitado y sin exponer la clave",
+     "detalle": "anthropic"
+    },
+    {
+     "estado": "OK",
+     "titulo": "se llamó al proveedor (simulado)",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "respuesta del modelo",
+     "detalle": "esperado 'Propongo adelantar A.', obtenido 'Propongo adelantar A.'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "una propuesta válida",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "propuesta aplicada a la tarea",
+     "detalle": "esperado '2026-11-06', obtenido '2026-11-06'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "propuesta sobre tarea desconocida descartada",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner",
+   "titulo": "RPC de las pantallas: inicio, árbol del plan, matriz E/S y carga del cronograma",
+   "pasos": "construction.planner.home.get_home_data, plan.get_tree_nodes/get_selection_summary, get_io_matrix_options/get_io_matrix, get_schedule_load",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "tablero de inicio con datos",
+     "detalle": "['can_plan', 'has_schedule_report', 'pending', 'show_amounts', 'today', 'today_label', 'works']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "árbol: nodo raíz de la obra",
+     "detalle": "{'material': 6642.91, 'contract': 2685.53, 'other': 0.0, 'total': 9328.44}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "árbol: pisos",
+     "detalle": "1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "resumen de la selección",
+     "detalle": "['contract', 'empty', 'groups', 'material', 'ml', 'modules']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "matriz E/S: niveles",
+     "detalle": "['level_1_id', 'level_2_id', 'level_3_id', 'level_4_id']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "matriz E/S con datos",
+     "detalle": "['cells', 'column_totals', 'columns', 'groups', 'level', 'level_name']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "carga semanal del cronograma",
+     "detalle": "{'weeks': ['2026-10-19', '2026-10-26', '2026-11-02'], 'rows': [{'label': 'QA20 Armado Gonza', 'stage"
+    },
+    {
+     "estado": "OK",
+     "titulo": "reporte de programación lista la obra QA20",
+     "detalle": ""
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "render OWL de inicio, árbol, matriz E/S, programación y cronograma",
+     "detalle": "sin navegador"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_approvals",
+   "titulo": "Motor «Aplicación Aprobaciones»: requerimiento con más cantidad que el saldo y plan v2",
+   "pasos": "motor de la compañía en «approvals» y rutas QA20 solo durante el caso (se restauran): requerimiento que excede → solicitud en Aprobaciones → aprobada; plan v2 aprobado en Aprobaciones",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "requerimiento a la espera de Aprobaciones",
+     "detalle": "esperado 'to_approve', obtenido 'to_approve'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "solicitud abierta en Aprobaciones",
+     "detalle": "pending"
+    },
+    {
+     "estado": "OK",
+     "titulo": "aprobador de la ruta",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "requerimiento aprobado desde Aprobaciones",
+     "detalle": "esperado 'approved', obtenido 'approved'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v2 a la espera de Aprobaciones",
+     "detalle": "esperado 'to_approve', obtenido 'to_approve'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v2 aprobada; pasa a ser el plan vigente",
+     "detalle": "approved"
+    },
+    {
+     "estado": "OK",
+     "titulo": "v1 reemplazada por la v2",
+     "detalle": "esperado 'replaced', obtenido 'replaced'"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "res.users",
+     "id": 3820,
+     "nombre": "QA20 Jefatura de proyectos (aprobador)",
+     "nota": "aprobador"
+    },
+    {
+     "modelo": "construction.approval.route",
+     "id": 80,
+     "nombre": "QA20 Cantidad: jefe de obra",
+     "nota": "rutas de aprobación (archivadas al final)"
+    },
+    {
+     "modelo": "construction.approval.route",
+     "id": 81,
+     "nombre": "QA20 Plan: jefe de obra",
+     "nota": "rutas de aprobación (archivadas al final)"
+    },
+    {
+     "modelo": "construction.material.request",
+     "id": 766,
+     "nombre": "RQO/2026/00766",
+     "nota": "requerimiento por Aprobaciones"
+    },
+    {
+     "modelo": "approval.request",
+     "id": 138,
+     "nombre": "Aprobación de obra · RQO/2026/00766",
+     "nota": "approval.request"
+    },
+    {
+     "modelo": "approval.request",
+     "id": 139,
+     "nombre": "Aprobación de obra · PLR/2026/00734 · v2",
+     "nota": "approval.request del plan"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_suite",
+   "titulo": "Suite instalada: puentes y obra QA20 de punta a punta",
+   "pasos": "todos los puentes instalados; resumen de la obra QA20 (plan vigente, OC, liquidaciones, valorizaciones)",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "puentes del planificador instalados",
+     "detalle": "18"
+    },
+    {
+     "estado": "OK",
+     "titulo": "plan vigente de la obra",
+     "detalle": "PLR/2026/00734 · v2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC de la obra (servicio)",
+     "detalle": "['P00939', 'P00938']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "liquidaciones de la obra",
+     "detalle": ""
+    },
+    {
+     "estado": "FALLA",
+     "titulo": "valorizaciones al cliente",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "FALLA"
+  }
+ ]
+}

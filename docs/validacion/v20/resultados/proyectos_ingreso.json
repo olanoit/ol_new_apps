@@ -1,0 +1,181 @@
+{
+ "fase": "proyectos_ingreso",
+ "casos": [
+  {
+   "modulo": "al_construction_planner_sale",
+   "titulo": "OV del contrato, entregas semanales y valorización 1 facturada",
+   "pasos": "planner_demo_income.py: OV, calendario de ingresos, 3 entregas, valorización enviada/observada/confirmada con acta y factura publicada",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "OV confirmada",
+     "detalle": "esperado 'sale', obtenido 'sale'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "valorización facturada",
+     "detalle": "esperado 'invoiced', obtenido 'invoiced'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura publicada",
+     "detalle": "esperado 'posted', obtenido 'posted'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "fondo de garantía retenido",
+     "detalle": "2.43"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "sale.order",
+     "id": 292,
+     "nombre": "S00292 (Contrato MOMEN-35-26)",
+     "nota": "OV del contrato"
+    },
+    {
+     "modelo": "construction.valuation",
+     "id": 74,
+     "nombre": "VAL/2026/00074 · Valorización 1",
+     "nota": "valorización 1"
+    },
+    {
+     "modelo": "account.move",
+     "id": 31448,
+     "nombre": "F FFI-00000001 (VAL/2026/00074)",
+     "nota": "factura"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_sale",
+   "titulo": "Cronograma valorizado (plan y real) con cobro conciliado",
+   "pasos": "planner_demo_schedule.py: cobro conciliado y construction.schedule.report.get_schedule",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "cronograma: costo planificado",
+     "detalle": "{'cost': 8142.38, 'revenue': 7592.47, 'valuation': 7592.47, 'invoice': 7592.47, 'collection': 7212.85, 'guarantee': 379.62, 'collection_total': 7592.47, 'margin': -549.91, 'max_gap': 8142.38, 'max_gap_week': '2026-11-26'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "cronograma: ingreso real",
+     "detalle": "{'cost': 52.2, 'revenue': 48.67, 'valuation': 48.67, 'invoice': 48.67, 'collection': 48.67, 'guarantee': 0.0, 'collection_total': 48.67, 'margin': -3.53, 'max_gap': 52.2, 'max_gap_week': '2026-12-10'}"
+    },
+    {
+     "estado": "OK",
+     "titulo": "factura cobrada",
+     "detalle": "esperado True, obtenido True"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_sale_furniture",
+   "titulo": "Partida del contrato por familia de la tipología",
+   "pasos": "OV del contrato con una partida «Cocinas» sin familia: el resolver de partidas asigna las líneas del plan de cocinas a esa partida; con familia «kitchen» también",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "línea del plan asignada a la partida «Cocinas»",
+     "detalle": "S00292 - Cocinas (QA20 Inmobiliaria MOMEN)"
+    },
+    {
+     "estado": "OK",
+     "titulo": "con familia kitchen la partida toma las cocinas",
+     "detalle": "S00292 - Cocinas (QA20 Inmobiliaria MOMEN)"
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_spreadsheet",
+   "titulo": "Hoja de presupuesto de la cotización (documents.spreadsheet)",
+   "pasos": "action_construction_open_spreadsheet en la OV QA20: documento «budget» con sus hojas y filas Odoo",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "un documento de hoja por cotización",
+     "detalle": "esperado 1, obtenido 1"
+    },
+    {
+     "estado": "OK",
+     "titulo": "tipo de hoja presupuesto",
+     "detalle": "esperado 'budget', obtenido 'budget'"
+    },
+    {
+     "estado": "OK",
+     "titulo": "plantilla con las hojas del libro",
+     "detalle": "['INSTRUCCIONES', 'OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO', 'PLAN', 'LISTAS', 'REFERENCIAS', 'ERRORES']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "filas Odoo de la hoja (RPC de la pantalla)",
+     "detalle": "['OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PLAN']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "validación de la hoja responde",
+     "detalle": "4"
+    },
+    {
+     "estado": "OMITIDO",
+     "titulo": "edición visual de la hoja (o-spreadsheet)",
+     "detalle": "sin navegador"
+    }
+   ],
+   "registros": [
+    {
+     "modelo": "documents.document",
+     "id": 7235,
+     "nombre": "Presupuesto y plan · S00292",
+     "nota": "hoja de presupuesto"
+    }
+   ],
+   "error": null,
+   "estado": "OK"
+  },
+  {
+   "modulo": "al_construction_planner_suite",
+   "titulo": "Suite instalada: puentes y obra QA20 de punta a punta",
+   "pasos": "todos los puentes instalados; resumen de la obra QA20 (plan vigente, OC, liquidaciones, valorizaciones)",
+   "checks": [
+    {
+     "estado": "OK",
+     "titulo": "puentes del planificador instalados",
+     "detalle": "18"
+    },
+    {
+     "estado": "OK",
+     "titulo": "plan vigente de la obra",
+     "detalle": "PLR/2026/00734 · v2"
+    },
+    {
+     "estado": "OK",
+     "titulo": "OC de la obra (servicio)",
+     "detalle": "['P00939', 'P00938']"
+    },
+    {
+     "estado": "OK",
+     "titulo": "liquidaciones de la obra",
+     "detalle": ""
+    },
+    {
+     "estado": "OK",
+     "titulo": "valorizaciones al cliente",
+     "detalle": ""
+    }
+   ],
+   "registros": [],
+   "error": null,
+   "estado": "OK"
+  }
+ ]
+}
