@@ -87,7 +87,7 @@
                                         t-att-title="hcell.group ? 'Plegar o desplegar' : ''"
                                         t-on-click="() => this.toggleGroup(hcell.key)">
                                         <t t-if="hcell.group">
-                                            <i t-att-class="'fa fa-fw ' + (this.state.collapsed[hcell.key] ? 'fa-plus-square-o' : 'fa-minus-square-o')"/>
+                                            <i class="oi oi-fw" t-att-data-icon="this.state.collapsed[hcell.key] ? 'add_box' : 'indeterminate_check_box'"/>
                                             <t t-out="hcell.group.label"/>
                                         </t>
                                     </th>

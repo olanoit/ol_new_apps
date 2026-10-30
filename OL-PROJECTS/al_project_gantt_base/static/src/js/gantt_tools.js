@@ -244,7 +244,8 @@ export function attachContextMenu(gantt, containerEl, buildActions) {
             item.textContent = action.label;
             if (action.icon) {
                 const icon = document.createElement("i");
-                icon.className = `fa ${action.icon} me-2`;
+                icon.className = "oi me-2";
+                icon.dataset.icon = action.icon;
                 item.prepend(icon);
             }
             item.addEventListener("click", () => {

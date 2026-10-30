@@ -174,7 +174,7 @@
                                     t-att-disabled="button.disabled"
                                     t-att-title="button.title or button.label"
                                     t-on-click="() => button.run()">
-                                <i t-if="button.icon" t-att-class="'fa ' + button.icon + ' me-1'"/>
+                                <i t-if="button.icon" class="oi me-1" t-att-data-icon="button.icon"/>
                                 <t t-out="button.label"/>
                             </button>
                         </t>

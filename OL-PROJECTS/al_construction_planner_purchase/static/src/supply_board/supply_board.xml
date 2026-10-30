@@ -52,7 +52,7 @@
                         <div class="fw-bold small mb-1">Alertas de abastecimiento</div>
                         <ul class="list-unstyled small mb-0">
                             <t t-foreach="this.alertLines" t-as="alert" t-key="alert_index">
-                                <li><i t-att-class="'fa me-1 ' + this.alertIcon(alert.type)"/><t t-out="alert.message"/></li>
+                                <li><i t-attf-class="oi me-1 {{ this.alertIcon(alert.type).class }}" t-att-data-icon="this.alertIcon(alert.type).icon"/><t t-out="alert.message"/></li>
                             </t>
                         </ul>
                     </div>

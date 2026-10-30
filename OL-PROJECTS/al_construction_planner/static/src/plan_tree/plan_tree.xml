@@ -91,7 +91,7 @@
                 <div class="ms-auto d-flex flex-wrap gap-1">
                     <t t-foreach="this.state.actions" t-as="act" t-key="act.xmlid">
                         <button class="btn btn-sm btn-primary" t-on-click="() => this.runAction(act.xmlid)">
-                            <i t-att-class="'fa me-1 ' + act.icon"/><t t-out="act.name"/>
+                            <i class="oi me-1" t-att-data-icon="act.icon"/><t t-out="act.name"/>
                         </button>
                     </t>
                     <button class="btn btn-sm btn-secondary o_cp_clear" t-on-click="this.clearSelection">Quitar selección</button>
@@ -130,9 +130,9 @@
                                     t-att-class="{'o_cp_row_sel': cs === 'on', 'fw-bold': node.level !== 'module'}">
                                     <td class="o_cp_name text-nowrap" t-att-style="'padding-left:' + (4 + row.depth * 18) + 'px'">
                                         <span class="o_cp_caret" t-on-click="() => this.toggleExpand(node.key)">
-                                            <i t-if="node.has_children"
-                                               t-att-class="'fa fa-fw ' + (this.state.expanded[node.key] ? 'fa-caret-down' : 'fa-caret-right')"/>
-                                            <i t-else="" class="fa fa-fw"/>
+                                            <i t-if="node.has_children" class="oi oi-fw"
+                                               t-att-data-icon="this.state.expanded[node.key] ? 'arrow_drop_down' : 'arrow_right'"/>
+                                            <i t-else="" class="oi oi-fw"/>
                                         </span>
                                         <span t-att-class="'o_cp_check o_cp_' + cs" role="checkbox"
                                               t-att-aria-checked="cs === 'on' ? 'true' : (cs === 'part' ? 'mixed' : 'false')"

@@ -31,13 +31,13 @@ TREE_ACTION_FEATURES = {
 # está instalado no se muestran; las de una función apagada en Ajustes,
 # tampoco (TREE_ACTION_FEATURES).
 TREE_ACTIONS = [
-    ('al_construction_planner_purchase.action_plan_purchase_wizard', 'Compra masiva', 'fa-shopping-cart'),
-    ('al_construction_planner_purchase.action_plan_request_wizard', 'Requerimiento de obra', 'fa-truck'),
-    ('al_construction_planner_mrp.action_plan_production_wizard', 'Orden de fabricación', 'fa-industry'),
-    ('al_construction_planner_subcontract.action_plan_contract_wizard', 'Asignar contrata', 'fa-handshake-o'),
-    ('al_construction_planner_crew.action_plan_crew_wizard', 'Asignar cuadrilla', 'fa-users'),
-    ('al_construction_planner.action_plan_progress_wizard', 'Registrar avance', 'fa-check-square-o'),
-    ('al_construction_planner.action_plan_reschedule_wizard', 'Cambiar fechas', 'fa-calendar'),
+    ('al_construction_planner_purchase.action_plan_purchase_wizard', 'Compra masiva', 'shopping_cart'),
+    ('al_construction_planner_purchase.action_plan_request_wizard', 'Requerimiento de obra', 'local_shipping'),
+    ('al_construction_planner_mrp.action_plan_production_wizard', 'Orden de fabricación', 'factory'),
+    ('al_construction_planner_subcontract.action_plan_contract_wizard', 'Asignar contrata', 'handshake'),
+    ('al_construction_planner_crew.action_plan_crew_wizard', 'Asignar cuadrilla', 'groups'),
+    ('al_construction_planner.action_plan_progress_wizard', 'Registrar avance', 'check_box'),
+    ('al_construction_planner.action_plan_reschedule_wizard', 'Cambiar fechas', 'calendar_month'),
 ]
 
 

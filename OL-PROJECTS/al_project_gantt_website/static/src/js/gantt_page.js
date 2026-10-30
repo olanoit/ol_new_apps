@@ -434,9 +434,9 @@ export class GanttPage extends Interaction {
             this.addListener(this.expandEl, "click", () => {
                 this.expanded = !this.expanded;
                 toggleAllBranches(this.gantt, this.expanded);
-                this.expandEl.querySelector("i").className = this.expanded
-                    ? "fa fa-compress"
-                    : "fa fa-expand";
+                this.expandEl.querySelector("i").dataset.icon = this.expanded
+                    ? "close_fullscreen"
+                    : "open_in_full";
             });
         }
         if (this.hideDoneEl) {

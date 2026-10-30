@@ -206,9 +206,9 @@ export class ConstructionSupplyBoard extends Component {
 
     alertIcon(type) {
         return {
-            price: "fa-arrow-up text-danger",
-            no_po: "fa-clock-o text-warning",
-            no_supplier: "fa-user-times text-muted",
+            price: { icon: "arrow_upward", class: "text-danger" },
+            no_po: { icon: "schedule", class: "text-warning" },
+            no_supplier: { icon: "person_remove", class: "text-muted" },
         }[type];
     }
 }
