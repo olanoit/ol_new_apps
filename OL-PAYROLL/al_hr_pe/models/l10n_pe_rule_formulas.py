@@ -111,3 +111,15 @@ L10N_PE_AUDIT_RULES['salary_rule_REAQ'] = (
     "result = BONI_EX+UTIL",
     "result = BONI_EX+UTIL+INDVAC",
 )
+
+
+# Odoo 20: la tasa de EsSalud sale del parámetro de reglas «l10n_pe_essalud_rate»
+# (antes 0.09 escrito en la fórmula).
+_ESSALUD_OLD, _ESSALUD_PREV = L10N_PE_AUDIT_RULES['salary_rule_ESSALUD']
+L10N_PE_AUDIT_RULES['salary_rule_ESSALUD'] = (
+    (_ESSALUD_OLD if isinstance(_ESSALUD_OLD, tuple) else (_ESSALUD_OLD,)) + (
+        _ESSALUD_PREV,
+        "if version.l10n_pe_labor_regime != 'practicante':\n    if version.social_insurance_id.name == 'EPS':\n        # base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS\n        result = max(AESSALUD, payslip.rmv) * version.social_insurance_id.percent/100\n    else:\n        if AESSALUD > payslip.rmv:\n            result = AESSALUD * 0.09\n        else:\n            result = payslip.rmv * 0.09\nelse:\n    result = 0",
+    ),
+    "if version.l10n_pe_labor_regime != 'practicante':\n    # Base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS.\n    base = max(AESSALUD, payslip.rmv)\n    if version.social_insurance_id.name == 'EPS':\n        result = base * version.social_insurance_id.percent/100\n    else:\n        # Tasa de EsSalud (Ley 26790): parámetro de reglas nativo.\n        result = base * payslip._rule_parameter('l10n_pe_essalud_rate')/100\nelse:\n    result = 0",
+)

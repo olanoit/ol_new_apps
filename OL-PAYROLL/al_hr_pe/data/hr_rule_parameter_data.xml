@@ -52,5 +52,17 @@
             <field name="date_from">2026-10-01</field>
             <field name="parameter_value">1230</field>
         </record>
+
+        <record id="rule_parameter_l10n_pe_essalud_rate" model="hr.rule.parameter">
+            <field name="name">Perú: tasa de EsSalud (%)</field>
+            <field name="code">l10n_pe_essalud_rate</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="description">Aporte del empleador al Seguro Social de Salud (Ley 26790, art. 6), sobre la remuneración con base mínima la RMV.</field>
+        </record>
+        <record id="rule_parameter_value_l10n_pe_essalud_rate" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_essalud_rate"/>
+            <field name="date_from">1997-05-01</field>
+            <field name="parameter_value">9.0</field>
+        </record>
     </data>
 </odoo>
