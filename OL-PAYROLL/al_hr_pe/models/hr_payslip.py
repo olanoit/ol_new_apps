@@ -238,13 +238,26 @@ class HrPayslip(models.Model):
         # nativo también las excluye de las horas de asistencia. Si
         # contaran aquí, cada 8 h extra restarían un día de descanso y el
         # básico se prorratearía a la baja.
+        # Ingreso o cese a mitad de mes: el periodo se acota al contrato y
+        # los días «fuera de contrato» (000.00) no cuentan. El motor nativo
+        # solo marca así los días laborables, de modo que sin acotar los
+        # fines de semana posteriores al cese terminarían como DOM.
         dom = self.env.ref('al_hr_pe.wd_DOM', raise_if_not_found=False)
         if dom and self.date_from and self.date_to:
-            period_days = (self.date_to - self.date_from).days + 1
+            date_from, date_to = self.date_from, self.date_to
+            contracts = versions or self.version_id
+            starts = [d for d in contracts.mapped('contract_date_start') if d]
+            if starts and len(starts) == len(contracts):
+                date_from = max(date_from, min(starts))
+            ends = contracts.mapped('contract_date_end')
+            if ends and all(ends):
+                date_to = min(date_to, max(ends))
+            period_days = max(0, (date_to - date_from).days + 1)
             WorkEntryType = self.env['hr.work.entry.type']
             other_days = sum(
                 vals.get('number_of_days', 0.0) for vals in res
                 if vals.get('work_entry_type_id') != dom.id
+                and WorkEntryType.browse(vals.get('work_entry_type_id')).code != '000.00'
                 and not WorkEntryType.browse(
                     vals.get('work_entry_type_id')).is_extra_hours)
             for vals in res:

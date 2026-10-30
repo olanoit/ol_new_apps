@@ -258,6 +258,30 @@ class TestFase2Engine(TransactionCase):
                        if v['work_entry_type_id'] == dom.id)
         self.assertEqual(dom_days, 31 - 22, 'las 8 h extra no son un día')
 
+    def test_dom_bounded_to_contract_on_termination(self):
+        """Cese a mitad de mes: DLAB + DOM suman solo los días de contrato;
+        los fines de semana posteriores al cese no se pagan como descanso."""
+        employee = self.env['hr.employee'].create({
+            'names': 'Diego', 'last_name': 'Cesado', 'm_last_name': 'Mes',
+            'company_id': self.company.id,
+            'date_version': date(2025, 1, 1),
+            'contract_date_start': date(2025, 1, 1),
+            'contract_date_end': date(2026, 3, 10),
+            'wage': 3000.0,
+            'structure_type_id': self.structure.type_id.id,
+        })
+        employee.version_id.membership_id = self.afp
+        slip = self.env['hr.payslip'].create({
+            'name': 'Boleta PE cese',
+            'employee_id': employee.id,
+            'struct_id': self.structure.id,
+            'date_from': date(2026, 3, 1),
+            'date_to': date(2026, 3, 31),
+        })
+        slip.compute_sheet()
+        days = {wd.code: wd.number_of_days for wd in slip.worked_days_line_ids}
+        self.assertEqual(days.get('DLAB', 0.0) + days.get('DOM', 0.0), 10.0, days)
+
     def test_family_allowance_snapshot_on_closed_slip(self):
         """Cargar un hijo después no reescribe una boleta ya cerrada."""
         slip = self._compute_slip()
