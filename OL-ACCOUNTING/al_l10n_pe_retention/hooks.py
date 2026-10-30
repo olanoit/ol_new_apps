@@ -21,6 +21,9 @@ def _l10n_pe_retention_load_template(env):
                 _bind_xmlid(env, company, SEQUENCE_XMLID, tax.withholding_sequence_id)
             continue
         if ChartTemplate.ref(TAX_XMLID, raise_if_not_found=False):
+            # El nativo ya creó impuesto y secuencia (serie RRR1-): se pone
+            # la serie peruana mientras no se haya emitido ningún CRE.
+            _l10n_pe_retention_set_prefix(ChartTemplate)
             continue
         # Impuesto y secuencia del módulo nativo, con la serie peruana.
         sequences = ChartTemplate._get_pe_withholding_ir_sequence()
@@ -34,6 +37,13 @@ def _l10n_pe_retention_load_template(env):
         ChartTemplate._load_data(data)
         company.l10n_pe_retention_tax_id = ChartTemplate.ref(TAX_XMLID)
         _logger.info('al_l10n_pe_retention: impuesto de retención creado en %s', company.name)
+
+
+def _l10n_pe_retention_set_prefix(ChartTemplate):
+    sequence = ChartTemplate.ref(SEQUENCE_XMLID, raise_if_not_found=False)
+    prefix = ChartTemplate._get_pe_retention_ir_sequence()[SEQUENCE_XMLID]['prefix']
+    if sequence and sequence.prefix != prefix and sequence.number_next_actual == 1:
+        sequence.prefix = prefix
 
 
 def _bind_xmlid(env, company, name, record):

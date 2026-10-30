@@ -663,3 +663,22 @@ class TestRetentionApplies(TransactionCase):
         with self.assertRaises(ValidationError):
             branch.l10n_pe_retention_agent = False
         self.company.l10n_pe_retention_min_amount = 700.0
+
+
+@tagged('post_install', '-at_install')
+class TestRetentionSequencePrefix(TransactionCase):
+    """El hook pasa la serie nativa RRR1- a R001- solo si no se emitió ningún CRE."""
+
+    def test_native_prefix_replaced_while_unused(self):
+        from odoo.addons.al_l10n_pe_retention.hooks import _l10n_pe_retention_set_prefix
+        use_pe_company(self)
+        ChartTemplate = self.env['account.chart.template'].with_company(self.env.company)
+        sequence = ChartTemplate.ref('l10n_pe_edi_withholding_sunat_sequence', raise_if_not_found=False)
+        if not sequence:
+            self.skipTest('la compañía no tiene la secuencia del CRE')
+        sequence.write({'prefix': 'RRR1-', 'number_next_actual': 5})
+        _l10n_pe_retention_set_prefix(ChartTemplate)
+        self.assertEqual(sequence.prefix, 'RRR1-', 'con CRE emitidos no se cambia la serie')
+        sequence.number_next_actual = 1
+        _l10n_pe_retention_set_prefix(ChartTemplate)
+        self.assertEqual(sequence.prefix, 'R001-')
