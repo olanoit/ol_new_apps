@@ -20,8 +20,6 @@ hr_contributions_company_rule,Aporte: global o de la compañía,hr.contributions
 access_hr_membership_user,hr.membership user,hr.membership,base.group_user,r,
 access_hr_membership_manager,hr.membership manager,hr.membership,hr_payroll.group_hr_payroll_manager,crud,
 hr_membership_company_rule,Afiliación: global o de la compañía,hr.membership,,crud,"['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
-access_l10n_pe_hr_uit_user,l10n_pe.hr.uit user,l10n_pe.hr.uit,base.group_user,r,
-access_l10n_pe_hr_uit_manager,l10n_pe.hr.uit manager,l10n_pe.hr.uit,hr_payroll.group_hr_payroll_manager,crud,
 access_hr_period_user,hr.period user,hr.period,base.group_user,r,
 access_hr_period_manager,hr.period manager,hr.period,hr_payroll.group_hr_payroll_manager,crud,
 hr_period_company_rule,Periodo: multicompañía,hr.period,,crud,"[('company_id', 'in', company_ids)]"
@@ -77,7 +75,5 @@ l10n_pe_fin_entity_company_rule,Entidad financiera: global o de la compañía,l1
 access_l10n_pe_employee_education_user,l10n_pe.hr.employee.education user,l10n_pe.hr.employee.education,hr_payroll.group_hr_payroll_user,cru,
 access_l10n_pe_employee_education_manager,l10n_pe.hr.employee.education manager,l10n_pe.hr.employee.education,hr_payroll.group_hr_payroll_manager,crud,
 l10n_pe_employee_education_company_rule,Estudios concluidos: solo de la compañía,l10n_pe.hr.employee.education,,crud,"[('company_id', 'in', company_ids)]"
-access_l10n_pe_hr_rmv_user,l10n_pe.hr.rmv user,l10n_pe.hr.rmv,base.group_user,r,
-access_l10n_pe_hr_rmv_manager,l10n_pe.hr.rmv manager,l10n_pe.hr.rmv,hr_payroll.group_hr_payroll_manager,crud,
 access_l10n_pe_hr_document_type_user,l10n_pe.hr.document.type user,l10n_pe.hr.document.type,base.group_user,r,
 access_l10n_pe_hr_document_type_manager,l10n_pe.hr.document.type manager,l10n_pe.hr.document.type,hr_payroll.group_hr_payroll_manager,crud,

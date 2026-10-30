@@ -52,9 +52,9 @@ class TestFase1Masters(TransactionCase):
         self.assertNotIn(other, visible)
 
     def test_uit(self):
-        self.assertEqual(self.env['l10n_pe.hr.uit'].get_uit(2026), 5500)
+        self.assertEqual(self.env['hr.rule.parameter']._l10n_pe_get_uit(2026), 5500)
         with self.assertRaises(UserError):
-            self.env['l10n_pe.hr.uit'].get_uit(1990)
+            self.env['hr.rule.parameter']._l10n_pe_get_uit(1990)
 
     def test_period_generator_multicompany(self):
         gen = self.env['hr.period.generator'].create({

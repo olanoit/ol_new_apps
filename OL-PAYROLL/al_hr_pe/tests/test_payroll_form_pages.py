@@ -15,7 +15,7 @@ from odoo.tests.common import TransactionCase
 
 # Modelos de la suite sin campo «name» que definen su display_name.
 DISPLAY_NAME_MODELS = (
-    'l10n_pe.hr.uit', 'l10n_pe.hr.rmv', 'hr.work.suspension',
+    'hr.work.suspension',
     'l10n_pe.hr.employee.education', 'l10n_pe.hr.attendance.monitor',
     'hr.loan.line', 'hr.cts.line', 'hr.cts.line.detalle', 'hr.rate.limit',
     'hr.fifth.category.line', 'hr.fifth.category.line.excluidos',
@@ -65,9 +65,6 @@ class TestPayrollFormPages(TransactionCase):
                 self.assertIsNot(type(self.env[model])._compute_display_name, base)
 
     def test_display_name_values(self):
-        uit = self.env['l10n_pe.hr.uit'].search([], limit=1)
-        if uit:
-            self.assertEqual(uit.display_name, 'UIT %s' % uit.year)
         employee = self.env['hr.employee'].create({'name': 'Trabajador nombre legible'})
         suspension_type = self.env['hr.suspension.type'].search([], limit=1)
         if not suspension_type:

@@ -2,7 +2,7 @@
 from odoo import fields, models
 
 # UIT vigente en 2026 (D.S. 301-2025-EF). Con la planilla peruana instalada se
-# toma la del año de su catálogo (``l10n_pe.hr.uit``).
+# toma la del año de su parámetro de reglas nativo (``l10n_pe_uit``).
 DEFAULT_UIT = 5500.0
 
 
@@ -50,12 +50,16 @@ class ResCompany(models.Model):
 
     def _l10n_pe_tax_uit(self, year):
         self.ensure_one()
-        if 'l10n_pe.hr.uit' in self.env:
-            # La UIT es un valor público, pero el catálogo de planillas solo lo
-            # leen los usuarios de nómina: el contable no tiene acceso.
-            uit_sudo = self.env['l10n_pe.hr.uit'].sudo().search([('year', '=', year)], limit=1)
-            if uit_sudo.amount:
-                return uit_sudo.amount
+        if 'hr.rule.parameter' in self.env:
+            # Odoo 20: con la nómina instalada, la UIT es el parámetro nativo
+            # «l10n_pe_uit» (valor público; el contable no tiene acceso a la
+            # nómina, de ahí el sudo).
+            value_sudo = self.env['hr.rule.parameter.value'].sudo().search([
+                ('code', '=', 'l10n_pe_uit'),
+                ('date_from', '>=', '%s-01-01' % year), ('date_from', '<=', '%s-12-31' % year),
+            ], limit=1)
+            if value_sudo:
+                return float(value_sudo.parameter_value)
         return self.l10n_pe_tax_uit_amount or DEFAULT_UIT
 
     def _l10n_pe_tax_regime_at(self, date):

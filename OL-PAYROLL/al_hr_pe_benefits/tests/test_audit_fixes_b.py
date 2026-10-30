@@ -24,7 +24,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         super().setUpClass()
         cls.Line = cls.env['hr.fifth.category.line']
         cls.quinta_rule = cls.Line._get_quinta_rule(cls.company)
-        cls.uit_2026 = cls.env['l10n_pe.hr.uit'].get_uit(2026)
+        cls.uit_2026 = cls.env['hr.rule.parameter']._l10n_pe_get_uit(2026)
 
     # ------------------------------------------------------------------
     # Helpers

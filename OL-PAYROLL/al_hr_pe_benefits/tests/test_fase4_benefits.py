@@ -8,6 +8,7 @@ las fórmulas legales, no números mágicos.
 """
 from datetime import date
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 
 from .test_fase3_benefits import BenefitsCaseBase
@@ -19,11 +20,16 @@ class TestFase4Benefits(BenefitsCaseBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        Uit = cls.env['l10n_pe.hr.uit']
+        # Odoo 20: la UIT es el parámetro de reglas nativo «l10n_pe_uit».
         year = date.today().year
-        cls.uit = Uit.search([('year', '=', year)], limit=1)
-        if not cls.uit:
-            cls.uit = Uit.create({'year': year, 'amount': 5350.0})
+        Parameter = cls.env['hr.rule.parameter']
+        try:
+            Parameter._l10n_pe_get_uit(year)
+        except UserError:
+            cls.env['hr.rule.parameter.value'].create({
+                'rule_parameter_id': cls.env.ref('al_hr_pe.rule_parameter_l10n_pe_uit').id,
+                'date_from': date(year, 1, 1), 'parameter_value': '5350.0'})
+        cls.uit_amount = Parameter._l10n_pe_get_uit(year)
 
     def test_generate_tramos_uit(self):
         """Tramos IR 5ta: [8, 14, 17, 20, 30] % sobre
@@ -32,7 +38,7 @@ class TestFase4Benefits(BenefitsCaseBase):
         tramos = self.param.rate_limit_ids.sorted('range')
         self.assertEqual(len(tramos), 5)
         self.assertEqual(tramos.mapped('rate'), [8, 14, 17, 20, 30])
-        amount = self.uit.amount
+        amount = self.uit_amount
         self.assertEqual(
             tramos.mapped('limit'),
             [int(5 * amount), int(20 * amount), int(35 * amount),
@@ -43,7 +49,7 @@ class TestFase4Benefits(BenefitsCaseBase):
         """Impuesto proyectado: 8 % hasta 5 UIT y 14 % por el exceso
         (renta neta dentro del 2º tramo)."""
         self.param.action_generate_brackets()
-        uit = self.uit.amount
+        uit = self.uit_amount
         net_rent = 8 * uit  # entre 5 y 20 UIT
         tax = self.env['hr.fifth.category.line'].get_tax_proy(
             net_rent, self.param.rate_limit_ids.sorted('range'))

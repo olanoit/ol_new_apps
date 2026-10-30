@@ -3020,9 +3020,9 @@
         <field name="section">Perú</field>
     </record>
     <record id="help_l10n_pe_hr_rmv" model="al.docs.help">
-        <field name="key">l10n_pe.hr.rmv</field>
+        <field name="key">hr.rule.parameter.value</field>
         <field name="kind">model</field>
-        <field name="name">Remuneración Mínima Vital</field>
+        <field name="name">UIT y Remuneración Mínima Vital</field>
         <field name="module">al_hr_pe</field>
         <field name="path">applications/hr/payroll/peru/</field>
         <field name="section">Perú</field>
@@ -3058,14 +3058,6 @@
         <field name="module">al_hr_pe_attendance</field>
         <field name="path">applications/hr/payroll/peru/attendance/#ciclos-atípicos-y-turnos</field>
         <field name="section">Ciclos atípicos y turnos</field>
-    </record>
-    <record id="help_l10n_pe_hr_uit" model="al.docs.help">
-        <field name="key">l10n_pe.hr.uit</field>
-        <field name="kind">model</field>
-        <field name="name">UIT por año</field>
-        <field name="module">al_hr_pe</field>
-        <field name="path">applications/hr/payroll/peru/</field>
-        <field name="section">Perú</field>
     </record>
     <record id="help_l10n_pe_hr_zone_type" model="al.docs.help">
         <field name="key">l10n_pe.hr.zone.type</field>

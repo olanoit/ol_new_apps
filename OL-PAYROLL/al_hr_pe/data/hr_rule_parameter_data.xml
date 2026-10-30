@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Odoo 20: los valores legales fechados son parámetros de reglas
+         nativos (Nómina ▸ Configuración ▸ Parámetros de reglas), que las
+         fórmulas leen con payslip._rule_parameter('l10n_pe_…'). -->
+    <data noupdate="1">
+        <record id="rule_parameter_l10n_pe_uit" model="hr.rule.parameter">
+            <field name="name">Perú: UIT (Unidad Impositiva Tributaria)</field>
+            <field name="code">l10n_pe_uit</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="description">Valor de la UIT del año, vigente desde el 1 de enero (D.S. del MEF).</field>
+        </record>
+        <record id="rule_parameter_value_l10n_pe_uit_2024" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_uit"/>
+            <field name="date_from">2024-01-01</field>
+            <field name="parameter_value">5150</field>
+        </record>
+        <record id="rule_parameter_value_l10n_pe_uit_2025" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_uit"/>
+            <field name="date_from">2025-01-01</field>
+            <field name="parameter_value">5350</field>
+        </record>
+        <!-- D.S. N.° 301-2025-EF -->
+        <record id="rule_parameter_value_l10n_pe_uit_2026" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_uit"/>
+            <field name="date_from">2026-01-01</field>
+            <field name="parameter_value">5500</field>
+        </record>
+
+        <record id="rule_parameter_l10n_pe_rmv" model="hr.rule.parameter">
+            <field name="name">Perú: Remuneración Mínima Vital</field>
+            <field name="code">l10n_pe_rmv</field>
+            <field name="country_id" ref="base.pe"/>
+            <field name="description">RMV del régimen laboral de la actividad privada, por fecha de vigencia del decreto supremo.</field>
+        </record>
+        <!-- D.S. 003-2022-TR -->
+        <record id="rule_parameter_value_l10n_pe_rmv_20220501" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_rmv"/>
+            <field name="date_from">2022-05-01</field>
+            <field name="parameter_value">1025</field>
+        </record>
+        <!-- D.S. 006-2024-TR -->
+        <record id="rule_parameter_value_l10n_pe_rmv_20250101" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_rmv"/>
+            <field name="date_from">2025-01-01</field>
+            <field name="parameter_value">1130</field>
+        </record>
+        <!-- D.S. 015-2026-TR: primera etapa del aumento a S/ 1 300; la
+             segunda (S/ 70) la fijará otro decreto en 2027. -->
+        <record id="rule_parameter_value_l10n_pe_rmv_20261001" model="hr.rule.parameter.value">
+            <field name="rule_parameter_id" ref="rule_parameter_l10n_pe_rmv"/>
+            <field name="date_from">2026-10-01</field>
+            <field name="parameter_value">1230</field>
+        </record>
+    </data>
+</odoo>

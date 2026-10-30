@@ -3,7 +3,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 # UIT vigente en 2026 (D.S. 301-2025-EF). Si está instalada la planilla
-# peruana, se toma la del año de su catálogo (``l10n_pe.hr.uit``).
+# peruana, se toma la del año de su parámetro de reglas nativo (``l10n_pe_uit``).
 DEFAULT_UIT = 5500.0
 
 
@@ -63,10 +63,14 @@ class ResCompany(models.Model):
         """UIT del año: la del catálogo de la planilla si está instalada; si
         no, la de los ajustes."""
         self.ensure_one()
-        if 'l10n_pe.hr.uit' in self.env:
-            # La UIT es un valor público, pero el catálogo de planillas solo lo
-            # leen los usuarios de nómina: el contable no tiene acceso.
-            uit_sudo = self.env['l10n_pe.hr.uit'].sudo().search([('year', '=', year)], limit=1)
-            if uit_sudo.amount:
-                return uit_sudo.amount
+        if 'hr.rule.parameter' in self.env:
+            # Odoo 20: con la nómina instalada, la UIT es el parámetro nativo
+            # «l10n_pe_uit» (valor público; el contable no tiene acceso a la
+            # nómina, de ahí el sudo).
+            value_sudo = self.env['hr.rule.parameter.value'].sudo().search([
+                ('code', '=', 'l10n_pe_uit'),
+                ('date_from', '>=', '%s-01-01' % year), ('date_from', '<=', '%s-12-31' % year),
+            ], limit=1)
+            if value_sudo:
+                return float(value_sudo.parameter_value)
         return self.l10n_pe_lce_uit_amount or DEFAULT_UIT

@@ -127,7 +127,7 @@ class HrPayslip(models.Model):
             param = params.get(slip.company_id)
             # RMV vigente al cierre del periodo de la boleta (tabla por
             # fecha); el parámetro de la compañía solo como respaldo.
-            rmv = self.env['l10n_pe.hr.rmv'].get_rmv(slip.date_to or slip.date_from) \
+            rmv = self.env['hr.rule.parameter']._l10n_pe_get_rmv(slip.date_to or slip.date_from) \
                 if (slip.date_to or slip.date_from) else 0.0
             slip.rmv = rmv or (param.rmv if param else 0.0)
             # Ley 25129: 10 % de la RMV vigente

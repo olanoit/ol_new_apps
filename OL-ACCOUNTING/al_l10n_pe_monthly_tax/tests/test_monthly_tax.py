@@ -152,8 +152,10 @@ class TestMonthlyTax(TransactionCase):
         self.regime.regime = 'mype'
         self.company.root_id.l10n_pe_tax_uit_amount = 10.0
         self.env.invalidate_all()
-        if 'l10n_pe.hr.uit' in self.env:
-            self.env['l10n_pe.hr.uit'].sudo().search([('year', '=', YEAR)]).unlink()
+        if 'hr.rule.parameter.value' in self.env:
+            self.env['hr.rule.parameter.value'].sudo().search([
+                ('code', '=', 'l10n_pe_uit'), ('date_from', '>=', date(YEAR, 1, 1)),
+                ('date_from', '<=', date(YEAR, 12, 31))]).unlink()
         self._invoice('out_invoice', 10000.0, date(YEAR, 4, 10))
         april = self._period(4)
         self.assertEqual(april.income_tax_to_pay, 200.0, 'más de 300 UIT: coeficiente')

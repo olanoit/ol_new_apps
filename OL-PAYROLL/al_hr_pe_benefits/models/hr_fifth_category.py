@@ -9,7 +9,7 @@ D.S. 122-94-EF Art. 40:
    (12 − mes) + remuneración del mes + gratificaciones (proyectadas con
    el % del seguro social o reales si ya se liquidaron) + remuneraciones
    de meses anteriores + otros empleadores = renta bruta anual.
-2. Deducción de 7 UIT (catálogo ``l10n_pe.hr.uit`` por año).
+2. Deducción de 7 UIT (parámetro de reglas ``l10n_pe_uit`` por año).
 3. Tabla escalonada de tramos ``hr.rate.limit`` (8/14/17/20/30 % sobre
    5/20/35/45/∞ UIT — se generan con ``generate_tramos``).
 4. Impuesto anual − retenciones previas (según ventanas del Art. 40) ÷
@@ -24,7 +24,7 @@ D.S. 122-94-EF Art. 40:
 ``exported`` (volcado a los inputs del payslip).
 
 Portado de ``hr_fifth_category`` (v18). Cambios v19: ``hr.contract`` →
-``hr.version``; UIT vía ``l10n_pe.hr.uit`` (``account.fiscal.year``
+``hr.version``; UIT vía el parámetro ``l10n_pe_uit`` (``account.fiscal.year``
 eliminado); SQL con ``.format()`` → ORM; certificado PDF/Excel quedan
 para la Fase 7.
 """
@@ -68,7 +68,7 @@ class HrMainParameter(models.Model):
         """Regenera los tramos del IR 5ta: tasas [8, 14, 17, 20, 30] %
         sobre límites [5, 20, 35, 45, ∞] × UIT (∞ se guarda como 0,
         semántica v18 de ``get_tax_proy``). La UIT sale del catálogo
-        ``l10n_pe.hr.uit`` del año indicado (por defecto, el en curso).
+        parámetro ``l10n_pe_uit`` del año indicado (por defecto, el en curso).
 
         Los límites quedan multiplicados por la UIT de ese año; el cálculo
         de cada boleta los reescala a la UIT del año de la boleta (ver
@@ -76,7 +76,7 @@ class HrMainParameter(models.Model):
         mezcla dos UIT."""
         self.ensure_one()
         year = year or fields.Date.context_today(self).year
-        uit = self.env['l10n_pe.hr.uit'].get_uit(year)
+        uit = self.env['hr.rule.parameter']._l10n_pe_get_uit(year)
         self.rate_limit_ids.unlink()
         tasas = [8, 14, 17, 20, 30]
         tramos = [5, 20, 35, 45, 0]
@@ -93,7 +93,7 @@ class HrMainParameter(models.Model):
     def check_fifth_values(self):
         """Valida la configuración de la pestaña Quinta antes de
         calcular o exportar (paridad v18; la UIT se valida en
-        ``l10n_pe.hr.uit.get_uit``)."""
+        ``hr.rule.parameter._l10n_pe_get_uit``)."""
         self.ensure_one()
         missing = []
         if not self.fifth_afect_sr_id:
@@ -631,7 +631,7 @@ class HrFifthCategoryLine(models.Model):
                       self.slip_id.company_id.ids),
                      ('id', 'not in', self.ids)]).unlink()
         GratLine = self.env['hr.gratification.line']
-        Uit = self.env['l10n_pe.hr.uit']
+        Uit = self.env['hr.rule.parameter']
         for record in self:
             slip = record.slip_id
             company = record.fifth_category_id.company_id \
@@ -643,7 +643,7 @@ class HrFifthCategoryLine(models.Model):
             proy_month = self.get_month_equivalence_proy(month)
             rent_month = self.get_month_equivalence_rent(month)
             year = slip.date_to.year
-            uit = Uit.get_uit(year)
+            uit = Uit._l10n_pe_get_uit(year)
             year_start = date(year, 1, 1)
             employee, version = slip.employee_id, slip.version_id
             # Mes del cese: nada que proyectar y se liquida el año como en

@@ -10,7 +10,7 @@ Portado de ``hr_fifth_category_certificate`` (v18). Cambios v19:
 * PDF por QWeb — desaparecen reportlab, ``dir_create_file`` y
   ``popup.it``.
 * ``account.fiscal.year`` no existe: el ejercicio es un entero y la UIT
-  sale del catálogo ``l10n_pe.hr.uit`` (``al_hr_pe``).
+  sale del parámetro de reglas ``l10n_pe_uit`` (``al_hr_pe``).
 * Los SQL con ``.format()`` del v18 se sustituyen por los helpers ORM
   de ``hr.fifth.category.line`` (``al_hr_pe_benefits``):
   ``_sum_payslip_rule_totals`` y ``_get_quinta_rule``.
@@ -90,7 +90,7 @@ class HrFifthCertificateWizard(models.TransientModel):
             self.company_id)
         param.check_fifth_values()
         # Valida temprano que exista la UIT del ejercicio.
-        self.env['l10n_pe.hr.uit'].get_uit(self.year)
+        self.env['hr.rule.parameter']._l10n_pe_get_uit(self.year)
         return self.env.ref(
             'al_hr_pe_reports.action_report_fifth_certificate'
         ).report_action(self)
@@ -148,7 +148,7 @@ class HrFifthCertificateWizard(models.TransientModel):
         ])
         other_emp_rem = sum(fifth_lines.mapped('other_emp_proy_rem'))
 
-        uit = self.env['l10n_pe.hr.uit'].get_uit(year)
+        uit = self.env['hr.rule.parameter']._l10n_pe_get_uit(year)
         rem_total = rem_bruta + other_emp_rem
         seven_uit = 7 * uit
         retencion = Line._sum_payslip_rule_totals(

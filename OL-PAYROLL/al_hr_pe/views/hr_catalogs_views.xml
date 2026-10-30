@@ -136,30 +136,20 @@
         </field>
     </record>
 
+    <!-- Odoo 20: UIT y RMV son versiones de parámetros de reglas nativos. -->
     <record id="l10n_pe_hr_uit_view_list" model="ir.ui.view">
-        <field name="name">l10n_pe.hr.uit.list</field>
-        <field name="model">l10n_pe.hr.uit</field>
+        <field name="name">hr.rule.parameter.value.list.l10n_pe</field>
+        <field name="model">hr.rule.parameter.value</field>
+        <field name="priority">90</field>
         <field name="arch" type="xml">
             <list editable="bottom">
-                <field name="year" widget="year_selection" options="{'years_back': 15}"/>
-                <field name="amount"/>
+                <field name="rule_parameter_id" column_invisible="1"/>
+                <field name="date_from" string="Vigente desde"/>
+                <field name="parameter_value" string="Valor (S/)"/>
             </list>
         </field>
     </record>
 
-    <record id="l10n_pe_hr_rmv_view_list" model="ir.ui.view">
-        <field name="name">l10n_pe.hr.rmv.list</field>
-        <field name="model">l10n_pe.hr.rmv</field>
-        <field name="arch" type="xml">
-            <list editable="bottom">
-                <field name="date_from"/>
-                <field name="amount"/>
-                <field name="legal_reference"/>
-            </list>
-        </field>
-    </record>
-
-    <!-- Acciones -->
     <record id="hr_worker_type_action" model="ir.actions.act_window">
         <field name="name">Tipos de trabajador (T08)</field>
         <field name="res_model">hr.worker.type</field>
@@ -197,14 +187,20 @@
     </record>
     <record id="l10n_pe_hr_rmv_action" model="ir.actions.act_window">
         <field name="name">Remuneración Mínima Vital</field>
-        <field name="res_model">l10n_pe.hr.rmv</field>
+        <field name="res_model">hr.rule.parameter.value</field>
         <field name="view_mode">list</field>
+        <field name="view_id" ref="l10n_pe_hr_uit_view_list"/>
+        <field name="domain">[('code', '=', 'l10n_pe_rmv')]</field>
+        <field name="context" eval="{'default_rule_parameter_id': ref('rule_parameter_l10n_pe_rmv')}"/>
     </record>
 
     <record id="l10n_pe_hr_uit_action" model="ir.actions.act_window">
         <field name="name">UIT por año</field>
-        <field name="res_model">l10n_pe.hr.uit</field>
+        <field name="res_model">hr.rule.parameter.value</field>
         <field name="view_mode">list</field>
+        <field name="view_id" ref="l10n_pe_hr_uit_view_list"/>
+        <field name="domain">[('code', '=', 'l10n_pe_uit')]</field>
+        <field name="context" eval="{'default_rule_parameter_id': ref('rule_parameter_l10n_pe_uit')}"/>
     </record>
 
 </odoo>
