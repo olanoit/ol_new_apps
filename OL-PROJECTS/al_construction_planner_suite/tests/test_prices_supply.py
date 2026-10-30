@@ -382,7 +382,7 @@ class TestPricesSupply(PlannerCommon):
         line(white, self.floor, 'installation', 52.02, 122.79, week0 + timedelta(days=21))
         line(white, self.floor, 'finishing', 138.69, 122.79, week0 + timedelta(days=35))
         line(cognac, self.space_501, 'production', 18.24, 228.07)
-        # Sin compras ni proveedor (confirmar una OC registra al proveedor).
+        # Sin compras ni proveedor (una compra previa cuenta como proveedor).
         line(self.p_rh, self.space_502, 'finishing', 5.0, 10.0)
         white.is_storable = True
         self.env['stock.quant']._update_available_quantity(
@@ -417,7 +417,7 @@ class TestPricesSupply(PlannerCommon):
         self.assertAlmostEqual(white['price_last'], 123.89, places=2)
         self.assertFalse(white['price_alert'])
         self.assertAlmostEqual(white['amount'], 6999.03, places=2)
-        self.assertFalse(white['no_supplier_alert'], 'La OC registró al proveedor.')
+        self.assertFalse(white['no_supplier_alert'], 'Ya se le compró a Novopan.')
         self.assertFalse(white['no_po_alert'])
         self.assertTrue(rows[self.p_rh.id]['no_supplier_alert'])
         # Alerta de precio: 239.42 sobre 228.07 es +5.0 %.

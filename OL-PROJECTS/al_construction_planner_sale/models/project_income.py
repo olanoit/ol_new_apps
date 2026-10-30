@@ -171,8 +171,16 @@ class ProjectProject(models.Model):
         """Líneas de la OV del contrato que son partidas: las de producto
         (sin secciones, notas ni anticipos)."""
         self.ensure_one()
-        return self.construction_sale_order_id.order_line.filtered(
+        return self._construction_contract_lines().filtered(
             lambda l: not l.display_type and not l.is_downpayment and l.product_id)
+
+    def _construction_contract_lines(self):
+        """Líneas de la OV del contrato (en sudo), solo para leerlas."""
+        self.ensure_one()
+        # sudo: quien prepara o presenta la valorización (Proyectos) no lee
+        # ventas; de las líneas del contrato solo se leen la partida, su rol y
+        # su precio, y se escribe en la valorización con su propio usuario.
+        return self.construction_sale_order_id.sudo().order_line
 
     def _construction_lines_by_partida(self, plan=None):
         """{línea de la OV: líneas del plan de su partida}."""

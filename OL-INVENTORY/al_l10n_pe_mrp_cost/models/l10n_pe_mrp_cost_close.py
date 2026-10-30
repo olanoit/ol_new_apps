@@ -169,7 +169,8 @@ class L10nPeMrpCostClose(models.Model):
             return qty * production.product_id.weight
         if pool.split_basis == 'volume':
             return qty * production.product_id.volume
-        return sum(production.move_raw_ids.filtered(lambda m: m.state == 'done').mapped('value')) \
+        # En Odoo 20 los consumos (salidas) valen en negativo.
+        return abs(sum(production.move_raw_ids.filtered(lambda m: m.state == 'done').mapped('value'))) \
             + sum(production.workorder_ids.mapped(lambda w: w._cal_cost()))
 
     # ------------------------------------------------------------------

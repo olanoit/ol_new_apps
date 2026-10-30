@@ -212,7 +212,10 @@ class TestPackage111V3Request(TestProcess):
         production = production.with_user(head).sudo(False)
         production.action_confirm()
         self.assertEqual(replacement.state, 'in_production')
+        # Odoo 20 ya no tiene consumo «flexible»: cerrar sin consumir el
+        # cemento abre el aviso de consumo. Se registra como en el formulario.
         production.qty_producing = 1
+        production.set_qty_producing()
         production.move_raw_ids.picked = True
         production.button_mark_done()
         self.assertEqual(production.state, 'done')

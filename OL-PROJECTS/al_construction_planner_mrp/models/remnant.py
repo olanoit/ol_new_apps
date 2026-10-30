@@ -581,7 +581,8 @@ class MrpProduction(models.Model):
                 lambda m: m.product_id == self.product_id and m.state not in ('done', 'cancel'))
             qty = sum(m.uom_id._compute_quantity(m.quantity, m.product_id.uom_id)
                       for m in finished)
-            total = sum(consumed_moves.mapped('value')) \
+            # En Odoo 20 el consumo vale en negativo: el costo es su valor absoluto.
+            total = abs(sum(consumed_moves.mapped('value'))) \
                 + sum(wo._cal_cost() for wo in self.workorder_ids) + self.extra_cost * qty
             if total:
                 for move in fixed:

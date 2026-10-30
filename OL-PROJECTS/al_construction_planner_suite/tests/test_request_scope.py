@@ -106,11 +106,14 @@ class TestRequestScope(PlannerCommon):
         self.assertEqual(hinges.mapped('product_qty'),
                          [self._hinge_qty(self.space_501), self._hinge_qty(self.space_502)])
         # Cada línea queda enlazada a sus líneas del plan y dentro del saldo.
+        # Quien pide no ve el plan (Odoo 20 filtra el one2many por permisos):
+        # las asignaciones se leen sin sus permisos.
         for line in lines:
-            self.assertTrue(line.construction_allocation_ids)
+            allocations = line.sudo().construction_allocation_ids
+            self.assertTrue(allocations)
             self.assertEqual(line.construction_plan_control, 'En plan')
-            self.assertEqual(line.construction_allocation_ids.plan_line_id.mapped('stage'),
-                             ['assembly'] * len(line.construction_allocation_ids))
+            self.assertEqual(allocations.plan_line_id.mapped('stage'),
+                             ['assembly'] * len(allocations))
         # Pulsar otra vez no duplica: ya no queda saldo.
         count = len(lines)
         with self.assertRaises(UserError):
@@ -128,7 +131,7 @@ class TestRequestScope(PlannerCommon):
         hinge = request.line_ids.filtered(lambda l: l.product_id == self.p_hinge)
         self.assertEqual(hinge.task_id, self.floor)
         self.assertEqual(hinge.product_qty, self._hinge_qty(self.floor))
-        self.assertEqual(set(hinge.construction_allocation_ids.plan_line_id.space_task_id.ids),
+        self.assertEqual(set(hinge.sudo().construction_allocation_ids.plan_line_id.space_task_id.ids),
                          {self.space_501.id, self.space_502.id})
         self.assertNotIn(self.p_white, request.line_ids.product_id)
 

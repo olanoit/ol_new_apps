@@ -333,7 +333,8 @@ class TestRemnantV111(TestWholeSheetV111):
         self.assertEqual(production.state, 'done')
         remnant_move = production.move_finished_ids.filtered(lambda m: m.product_id == r50)
         main = production.move_finished_ids.filtered(lambda m: m.product_id == self.kitchen)
-        consumed = sum(production.move_raw_ids.filtered(lambda m: m.state == 'done').mapped('value'))
+        # En Odoo 20 el consumo vale en negativo.
+        consumed = -sum(production.move_raw_ids.filtered(lambda m: m.state == 'done').mapped('value'))
         self.assertAlmostEqual(remnant_move.value, cost, places=1)
         self.assertAlmostEqual(main.value + remnant_move.value, consumed, places=1)
 

@@ -119,7 +119,10 @@ class TestExtraDiscount(ExtraCommon, TestContracts):
                 lambda l: l.resource_type == 'material' and l.product_id)[:1].product_id.id,
                 'product_qty': 2})],
         })
-        cls.extra.action_request_approval()
+        # Las 2 planchas pasan el saldo del plan (1.96): como en el asistente
+        # de exceso, se envía con el motivo.
+        cls.extra.construction_exceed_reason = 'Merma en el corte (test)'
+        cls.extra.with_context(construction_exceed_checked=True).action_request_approval()
         cls.extra.with_user(cls.manager).write({
             'construction_discount': True,
             'construction_discount_partner_id': cls.leandro.id,

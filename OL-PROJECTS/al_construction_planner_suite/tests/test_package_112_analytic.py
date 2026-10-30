@@ -115,7 +115,8 @@ class TestPackage112Analytic(TransactionCase):
     def test_intermediate_keeps_stock_value(self):
         production = self._produce(self.bom_asm)
         package_move = production.move_raw_ids.filtered(lambda m: m.product_id == self.package)
-        self.assertAlmostEqual(package_move.value, 200.0, msg='la valorización no cambia')
+        # En Odoo 20 el consumo vale en negativo.
+        self.assertAlmostEqual(package_move.value, -200.0, msg='la valorización no cambia')
 
     def test_setting_off_behaves_as_before(self):
         self.company.construction_intermediate_no_analytic = False

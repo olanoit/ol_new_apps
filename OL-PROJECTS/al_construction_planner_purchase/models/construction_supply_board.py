@@ -160,7 +160,9 @@ class ConstructionSupplyBoard(models.AbstractModel):
                 'amount': purchase_uom._compute_quantity(qty_to_buy, uom, round=False) * cost_plan,
                 'need_soon_missing': soon_missing,
                 'no_po_alert': not uom.is_zero(soon_missing),
-                'no_supplier_alert': not sellers,
+                # Odoo 20 ya no registra al proveedor al confirmar la OC: una
+                # compra previa también cuenta como proveedor habitual.
+                'no_supplier_alert': not sellers and not last_date,
             })
         return result
 

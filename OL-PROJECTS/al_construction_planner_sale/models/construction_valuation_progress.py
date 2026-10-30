@@ -93,7 +93,7 @@ class ProjectProject(models.Model):
         """{línea de la venta: su sección (la línea de sección anterior)}."""
         self.ensure_one()
         result, section = {}, None
-        for line in self.construction_sale_order_id.order_line.sorted(lambda l: (l.sequence, l.id)):
+        for line in self._construction_contract_lines().sorted(lambda l: (l.sequence, l.id)):
             if line.display_type == 'line_section':
                 section = line
             elif not line.display_type:
@@ -110,7 +110,7 @@ class ProjectProject(models.Model):
     def _construction_proportional_lines(self):
         """Líneas de la venta que se valorizan en proporción al costo directo."""
         self.ensure_one()
-        return self.construction_sale_order_id.order_line.filtered(
+        return self._construction_contract_lines().filtered(
             lambda l: not l.display_type and not l.is_downpayment
             and l.construction_line_role != 'partida')
 
@@ -138,7 +138,9 @@ class ConstructionValuation(models.Model):
             currency = valuation.currency_id
             tax = 0.0
             for line in valuation.line_ids:
-                taxes = line.sale_line_id.tax_ids
+                # sudo: quien prepara la valorización (Proyectos) no lee ventas;
+                # de la línea del contrato solo se leen sus impuestos.
+                taxes = line.sale_line_id.sudo().tax_ids
                 if taxes and line.amount_confirmed:
                     res = taxes.compute_all(line.amount_confirmed, currency=currency)
                     tax += res['total_included'] - res['total_excluded']

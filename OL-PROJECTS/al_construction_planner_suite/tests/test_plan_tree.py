@@ -155,6 +155,10 @@ class TestPlanTree(TransactionCase):
 class TestPlanTreeTour(HttpCase):
 
     def test_plan_tree_tour(self):
+        # Niveles por defecto (Piso › Departamento › Ambiente › Módulo): un
+        # perfil vertical aplicado en la base deja otra plantilla en la
+        # compañía (p. ej. «Edificio», con el nivel Mueble bajo el ambiente).
+        self.env.company.construction_level_template_id = False
         plan = load_demo(self.env, 'TEST TOUR')['plan']
         self.start_tour(
             f'/odoo/{plan.id}/action-al_construction_planner.action_construction_plan_tree',
