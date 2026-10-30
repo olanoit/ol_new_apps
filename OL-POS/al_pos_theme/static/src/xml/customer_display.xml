@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
-    <!-- Pantalla del cliente: se quitan los dos "Powered by <OdooLogo/>". -->
-    <t t-name="al_pos_theme.CustomerDisplay" t-inherit="point_of_sale.CustomerDisplay" t-inherit-mode="extension">
-        <xpath expr="//div[hasclass('o_customer_display_sidebar')]/div[OdooLogo]" position="replace"/>
-        <xpath expr="//div[hasclass('o_customer_display_main')]//div[OdooLogo]" position="replace"/>
+    <!-- Pantalla del cliente: sin el pie «Powered by <OdooLogo/>» (en Odoo 20
+         es una plantilla propia que la pantalla llama donde lo muestra). -->
+    <t t-name="al_pos_theme.CustomerDisplayFooter" t-inherit="point_of_sale.CustomerDisplayFooter" t-inherit-mode="extension">
+        <xpath expr="//div" position="replace"><div/></xpath>
     </t>
 
 </templates>

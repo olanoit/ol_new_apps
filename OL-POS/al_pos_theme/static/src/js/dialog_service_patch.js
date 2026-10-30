@@ -1,5 +1,5 @@
 import { patch } from "@web/core/utils/patch";
-import { dialogService } from "@web/core/dialog/dialog_service";
+import { DialogPlugin } from "@web/core/dialog/dialog_plugin";
 import { isMarkup } from "@web/core/utils/html";
 import { htmlEscape, markup } from "@odoo/owl";
 
@@ -41,22 +41,18 @@ export function rebrandValue(value, brand) {
     return value;
 }
 
-patch(dialogService, {
-    start(env, deps) {
-        const service = super.start(env, deps);
-        const originalAdd = service.add;
-        service.add = (dialogClass, props, options) => {
-            if (props) {
-                const brand = brandName();
-                props = { ...props };
-                for (const key of TEXT_PROPS) {
-                    if (key in props) {
-                        props[key] = rebrandValue(props[key], brand);
-                    }
+// Odoo 20: los diálogos son un plugin (DialogPlugin.add), no un servicio.
+patch(DialogPlugin.prototype, {
+    add(dialogClass, props, options) {
+        if (props) {
+            const brand = brandName();
+            props = { ...props };
+            for (const key of TEXT_PROPS) {
+                if (key in props) {
+                    props[key] = rebrandValue(props[key], brand);
                 }
             }
-            return originalAdd(dialogClass, props, options);
-        };
-        return service;
+        }
+        return super.add(dialogClass, props, options);
     },
 });

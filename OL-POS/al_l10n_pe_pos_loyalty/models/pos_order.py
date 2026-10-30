@@ -81,47 +81,6 @@ class PosOrder(models.Model):
                 '(Informe SUNAT 097-2010): el comprobante se emite cuando el cliente las canjea.'))
         return super()._prepare_invoice_vals()
 
-    def _create_invoice(self, move_vals):
-        """El redondeo de efectivo de Odoo iguala el comprobante a lo cobrado
-        en caja. Con tarjetas, lo cobrado no es el total del comprobante: el
-        canje lo paga en parte y la tarjeta vendida se cobra fuera de él. Se
-        corrige la diferencia por el importe del vale."""
-        invoice = super()._create_invoice(move_vals)
-        voucher_total = sum(self.lines._l10n_pe_pos_voucher_lines().mapped('price_subtotal_incl'))
-        if (self.currency_id.is_zero(voucher_total) or not self.config_id.cash_rounding
-                or not invoice.invoice_cash_rounding_id):
-            return invoice
-        rounding_line = invoice.line_ids.filtered(
-            lambda line: line.display_type == 'rounding' and not line.tax_line_id)
-        terms_line = invoice.line_ids.filtered(lambda line: line.display_type == 'payment_term')\
-            .sorted(lambda line: -abs(line.amount_currency))[:1]
-        if not rounding_line or not terms_line:
-            return invoice
-        amount_sign = -1 if sum(self.mapped('amount_total')) < 0.0 else 1
-        difference_currency = -invoice.direction_sign * amount_sign * voucher_total
-        rate = invoice.invoice_currency_rate
-        difference_balance = invoice.company_currency_id.round(difference_currency / rate) if rate else 0.0
-        rounding_amount = rounding_line.amount_currency + difference_currency
-        if self.currency_id.is_zero(rounding_amount):
-            rounding_command = Command.delete(rounding_line.id)
-        else:
-            cash_rounding = invoice.invoice_cash_rounding_id
-            rounding_command = Command.update(rounding_line.id, {
-                'amount_currency': rounding_amount,
-                'balance': rounding_line.balance + difference_balance,
-                'account_id': (cash_rounding.loss_account_id if rounding_amount > 0.0
-                               else cash_rounding.profit_account_id).id,
-            })
-        with self.env['account.move']._check_balanced({'records': invoice}):
-            invoice.with_context(skip_invoice_sync=True).line_ids = [
-                rounding_command,
-                Command.update(terms_line.id, {
-                    'amount_currency': terms_line.amount_currency - difference_currency,
-                    'balance': terms_line.balance - difference_balance,
-                }),
-            ]
-        return invoice
-
     def _reconcile_invoice_payments(self, invoice, payment_moves):
         super()._reconcile_invoice_payments(invoice, payment_moves)
         voucher_move = self._l10n_pe_pos_create_voucher_move(invoice)

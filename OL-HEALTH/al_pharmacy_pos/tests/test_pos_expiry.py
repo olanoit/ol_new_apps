@@ -10,6 +10,13 @@ from odoo.tests import tagged
 class TestPosExpiryDiscount(TestPointOfSaleHttpCommon):
     """Precio por vencer en la caja (mejora E11)."""
 
+    def start_tour(self, url_path, tour_name, step_delay=None, **kwargs):
+        # Los pasos de los tours del núcleo usan los textos en inglés; la base
+        # de migración está en es_PE y los usuarios de prueba lo heredan.
+        if kwargs.get('login'):
+            self.env['res.users'].search([('login', '=', kwargs['login'])]).lang = 'en_US'
+        return super().start_tour(url_path, tour_name, step_delay=step_delay, **kwargs)
+
     def _setup_product(self):
         self.env['pharmacy.expiry.discount'].search([]).unlink()
         self.env['pharmacy.expiry.discount'].create([

@@ -13,7 +13,7 @@ class PosConfig(models.Model):
         el pago que llega se asigna al método por su pasarela."""
         for config in self:
             seen = self.env['payment.provider']
-            for method in config.payment_method_ids.filtered('is_online_payment'):
+            for method in config.payment_method_ids.filtered(lambda m: m.type == 'online'):
                 if not method._get_online_payment_providers(config.id, error_if_invalid=True):
                     raise ValidationError(_(
                         'El método %(method)s de la caja %(config)s necesita al menos una pasarela '
@@ -31,4 +31,4 @@ class PosConfig(models.Model):
         """Método de pago en línea de la caja que cobra con esta pasarela."""
         self.ensure_one()
         return self.payment_method_ids.filtered(
-            lambda method: method.is_online_payment and provider in method.online_payment_provider_ids)[:1]
+            lambda method: (method.type == 'online') and provider in method.online_payment_provider_ids)[:1]

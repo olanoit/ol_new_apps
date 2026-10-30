@@ -2,6 +2,7 @@
 
 import { Component, t, useProps } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
+import { usePos } from "@point_of_sale/app/hooks/pos_hook";
 
 /**
  * Fila individual usada por la vista "lista" del catálogo de productos del TPV.
@@ -12,6 +13,7 @@ import { _t } from "@web/core/l10n/translation";
  */
 export class ProductListRow extends Component {
     static template = "al_pos_product_view.ProductListRow";
+    pos = usePos();
     props = useProps({
         product: t.object(),
         name: t.string(),
@@ -54,7 +56,7 @@ export class ProductListRow extends Component {
     }
 
     get stockQty() {
-        return this.env.utils.formatProductQty(this.props.product?.qty_available ?? 0, false);
+        return this.pos.formatProductQty(this.props.product?.qty_available ?? 0, false);
     }
 
     get outOfStock() {

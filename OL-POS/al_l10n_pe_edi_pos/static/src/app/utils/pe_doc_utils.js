@@ -17,7 +17,8 @@ export function isValidPeRuc(vat) {
 export function partnerCanInvoice(partner) {
     return (
         Boolean(partner) &&
-        partner.l10n_latam_identification_type_id?.l10n_pe_vat_code === "6" &&
+        // Odoo 20: el RUC va en vat y su código SUNAT en l10n_pe_sunat_id_code.
+        partner.l10n_pe_sunat_id_code === "6" &&
         isValidPeRuc(partner.vat)
     );
 }

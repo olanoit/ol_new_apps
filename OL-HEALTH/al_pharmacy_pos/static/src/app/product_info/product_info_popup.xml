@@ -26,7 +26,7 @@
                         <span t-foreach="ph.presentations" t-as="presentation" t-key="presentation_index"
                               class="alph-pill">
                             <strong t-out="presentation.name"/> x <t t-out="presentation.factor"/>
-                            · <t t-out="this.env.utils.formatCurrency(presentation.price)"/>
+                            · <t t-out="this.pos.formatCurrency(presentation.price)"/>
                         </span>
                     </div>
                 </div>
@@ -63,7 +63,7 @@
                                 <span class="text-muted" t-out="equivalent.type"/>
                                 <span t-if="equivalent.bioequivalent" class="alph-badge alph-badge--bioequivalent">Bioequivalente</span>
                             </span>
-                            <span class="alph-equivalent__price" t-out="this.env.utils.formatCurrency(equivalent.price)"/>
+                            <span class="alph-equivalent__price" t-out="this.pos.formatCurrency(equivalent.price)"/>
                             <span t-attf-class="small {{ equivalent.qty > 0 ? 'text-success' : 'text-danger' }}">
                                 <t t-if="equivalent.qty > 0"><t t-out="equivalent.qty"/> en stock</t>
                                 <t t-else="">Sin stock</t>

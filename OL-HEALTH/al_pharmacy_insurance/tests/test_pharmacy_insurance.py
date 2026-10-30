@@ -325,6 +325,13 @@ class TestPharmacyInsurance(TestPoSCommon):
 @tagged('post_install', '-at_install')
 class TestPharmacyInsuranceTour(TestPointOfSaleHttpCommon):
 
+    def start_tour(self, url_path, tour_name, step_delay=None, **kwargs):
+        # Los pasos de los tours del núcleo usan los textos en inglés; la base
+        # de migración está en es_PE y los usuarios de prueba lo heredan.
+        if kwargs.get('login'):
+            self.env['res.users'].search([('login', '=', kwargs['login'])]).lang = 'en_US'
+        return super().start_tour(url_path, tour_name, step_delay=step_delay, **kwargs)
+
     def test_pos_pays_covered_part_with_agreement(self):
         product = self.env['product.product'].create({
             'name': 'Losartán 50 mg', 'type': 'consu', 'available_in_pos': True,
@@ -366,7 +373,7 @@ class TestPharmacyInsurancePeXml(TestPoSCommon):
         # TestPoSCommon pisa el país de la compañía con uno ficticio.
         company.write({'country_id': cls.env.ref('base.pe').id, 'vat': '20557912879'})
         cls.config = cls.basic_config
-        cls.config.invoice_journal_id.l10n_latam_use_documents = True
+        cls.config.journal_id.l10n_latam_use_documents = True
         cls.igv = cls.env['account.chart.template'].with_company(company).ref('sale_tax_igv_18')
         cls.analgesic = cls.create_product('Paracetamol 500 mg', cls.categ_basic, 10.0, tax_ids=cls.igv.ids)
         cls.losartan = cls.create_product('Losartán 50 mg', cls.categ_basic, 20.0, tax_ids=cls.igv.ids)

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!-- Vendedor de la venta en el recibo (Odoo 20: plantilla de servidor
+             que también dibuja el TPV; el dato va en extra_data['al_seller_name']). -->
+        <template id="al_pos_vendedor.pos_order_receipt_header" inherit_id="point_of_sale.pos_order_receipt_header">
+            <xpath expr="//div[@name='cashier_name']" position="after">
+                <div class="w-100 text-center mb-2" t-if="extra_data.get('al_seller_name')" name="al_seller_name">
+                    <span>Vendedor:</span> <span t-out="extra_data['al_seller_name']"/>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

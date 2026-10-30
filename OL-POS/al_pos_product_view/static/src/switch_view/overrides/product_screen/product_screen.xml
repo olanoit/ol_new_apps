@@ -49,7 +49,7 @@
         -->
         <xpath expr="//div[hasclass('product-list')]" position="attributes">
             <attribute name="class">product-list gap-1 gap-lg-2 px-2 pt-0 pb-2</attribute>
-            <attribute name="t-att-class">{ 'd-grid': state.viewMode !== 'list', 'product-list--rows': state.viewMode === 'list' }</attribute>
+            <attribute name="t-att-class">{ 'd-grid': this.state.viewMode !== 'list', 'product-list--rows': this.state.viewMode === 'list' }</attribute>
         </xpath>
 
         <!--
@@ -58,7 +58,7 @@
             renderizado, no los datos.
         -->
         <xpath expr="//ProductCard" position="attributes">
-            <attribute name="t-if">state.viewMode !== 'list'</attribute>
+            <attribute name="t-if">this.state.viewMode !== 'list'</attribute>
         </xpath>
 
         <!--
@@ -72,9 +72,9 @@
                 t-if="this.state.viewMode === 'list'"
                 t-foreach="productCateg[1]" t-as="product" t-key="'list-' + product.id"
                 product="product"
-                name="getProductName(product)"
-                priceLabel="getProductListPrice(product)"
-                imageUrl="pos.config.show_product_images and this.getProductImage(product)"
+                name="this.getProductName(product)"
+                priceLabel="this.getProductListPrice(product)"
+                imageUrl="this.pos.config.show_product_images and this.getProductImage(product)"
                 productCartQty="this.state.quantityByProductTmplId[product.id]"
                 onClick="() => this.addProductToOrder(product)"
                 onInfoClick="() => this.pos.onProductInfoClick(product)"/>

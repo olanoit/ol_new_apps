@@ -9,6 +9,13 @@ from odoo.tests import tagged
 @tagged('post_install', '-at_install')
 class TestPharmacyTreatmentTour(TestPointOfSaleHttpCommon):
 
+    def start_tour(self, url_path, tour_name, step_delay=None, **kwargs):
+        # Los pasos de los tours del núcleo usan los textos en inglés; la base
+        # de migración está en es_PE y los usuarios de prueba lo heredan.
+        if kwargs.get('login'):
+            self.env['res.users'].search([('login', '=', kwargs['login'])]).lang = 'en_US'
+        return super().start_tour(url_path, tour_name, step_delay=step_delay, **kwargs)
+
     def test_refill_offered_when_choosing_the_customer(self):
         product = self.env['product.product'].create({
             'name': 'Levotiroxina 100 mcg tableta', 'type': 'consu', 'available_in_pos': True,

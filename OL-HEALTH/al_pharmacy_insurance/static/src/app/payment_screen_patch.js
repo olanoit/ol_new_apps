@@ -73,7 +73,7 @@ patch(PaymentScreen.prototype, {
         this.notification.add(
             _t("%(agreement)s cubre %(amount)s (afiliado %(affiliate)s).", {
                 agreement: coverage.agreement,
-                amount: this.env.utils.formatCurrency(amount),
+                amount: this.pos.formatCurrency(amount),
                 affiliate: coverage.affiliate,
             }),
             { type: "info" }
@@ -96,7 +96,7 @@ patch(OrderPaymentValidation.prototype, {
                     title: _t("Convenio"),
                     body: _t(
                         "Devuelva %(amount)s con el método del convenio: es la parte que pagó la aseguradora.",
-                        { amount: this.pos.env.utils.formatCurrency(expected) }
+                        { amount: this.pos.formatCurrency(expected) }
                     ),
                 });
                 return false;

@@ -15,7 +15,9 @@ class PharmacyIngredient(models.Model):
     _inherit = ['pharmacy.ingredient', 'pos.load.mixin']
 
     @api.model
-    def _load_pos_data_domain(self, data, config):
+    def _load_pos_data_domain(self, data):
+        # Odoo 20: sin argumento config; la configuración va en data['pos.config'].
+        config = data['pos.config']
         # Solo los que llevan los productos cargados (dominio sobre esos productos).
         ingredient_ids = {ingredient_id for template in data['product.template']
                           for ingredient_id in template.get('pharmacy_ingredient_ids') or []}

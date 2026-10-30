@@ -20,7 +20,7 @@
     <!-- Asistentes (acciones en ventana): «?» junto al botón de cerrar. -->
     <t t-inherit="web.ActionDialog.header" t-inherit-mode="extension">
         <xpath expr="//h4[contains(concat(' ',normalize-space(@class),' '),' modal-title ')]" position="after">
-            <DocsHelpButton helpKey="props.actionProps and props.actionProps.resModel"/>
+            <DocsHelpButton helpKey="this.props.actionProps and this.props.actionProps.resModel"/>
         </xpath>
     </t>
 

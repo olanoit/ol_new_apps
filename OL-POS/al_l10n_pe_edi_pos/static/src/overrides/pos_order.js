@@ -31,14 +31,14 @@ patch(PosOrder.prototype, {
             ? PE_DOC_LABELS["01"]
             : PE_DOC_LABELS["03"];
     },
+    /** Etiqueta del documento del cliente según su código SUNAT
+     * (Odoo 20: el DNI ya no va en vat, sino en additional_identifiers). */
     get peVatLabel() {
-        const vat = this.partner_id?.vat || "";
-        if (vat.length === 11) {
-            return "RUC";
-        }
-        if (vat.length === 8) {
-            return "DNI";
-        }
-        return "Doc.";
+        const labels = { 6: "RUC", 1: "DNI", 4: "C.E.", 7: "Pasaporte" };
+        return labels[this.partner_id?.l10n_pe_sunat_id_code] || "Doc.";
+    },
+    /** Número del documento SUNAT del cliente. */
+    get peVatNumber() {
+        return this.partner_id?.l10n_pe_sunat_id_value || this.partner_id?.vat || "";
     },
 });

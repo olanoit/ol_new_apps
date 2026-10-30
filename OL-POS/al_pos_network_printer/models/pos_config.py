@@ -128,7 +128,6 @@ class PosConfig(models.Model):
     def _inverse_escpos_auto_print(self):
         for config in self:
             config.iface_print_auto = config.escpos_auto_print
-            config.iface_print_skip_screen = config.escpos_auto_print
 
     # Cola de reintento en background (ver
     # controllers/main.py::_enqueue_escpos_retry) — opt-in, inactiva por
@@ -356,7 +355,7 @@ class PosConfig(models.Model):
         self.ensure_one()
         return bool(self.escpos_network_printer_enabled and self.escpos_printer_ip)
 
-    @api.constrains("epson_printer_ip", "escpos_printer_ip", "escpos_network_printer_enabled")
+    @api.constrains("receipt_printer_ids", "escpos_printer_ip", "escpos_network_printer_enabled")
     def _check_single_receipt_printer_backend(self):
         # Si se configuran ambos campos a la vez, el POS igual tendría que
         # elegir uno solo para el recibo principal (ver la rama nueva en
@@ -366,8 +365,10 @@ class PosConfig(models.Model):
         # reflejada en la UI.
         # Solo cuenta la ESC/POS si está ACTIVA: con el toggle apagado se
         # puede usar Epson aunque la IP de la ESC/POS siga guardada.
+        # Odoo 20: la Epson de recibos es una impresora de recibo (pos.printer).
         for config in self:
-            if config.epson_printer_ip and config._escpos_receipt_printer_active():
+            epson = config.receipt_printer_ids.filtered(lambda p: p.printer_type == 'epson_epos')
+            if epson and config._escpos_receipt_printer_active():
                 raise ValidationError(
                     "Configure solo una impresora de recibo principal: Epson "
                     "(ePOS) o una impresora ESC/POS genérica de red, no ambas "

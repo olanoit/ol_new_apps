@@ -45,3 +45,14 @@ class ResPartnerBank(models.Model):
             return super()._get_qr_code_base64(
                 qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
         return image_data_uri(self.l10n_pe_wallet_qr_image)
+
+    def _get_qr_code_generation_params(self, qr_method, amount, currency, debtor_partner,
+                                       free_communication, structured_communication):
+        # Odoo 20: el TPV pide el «valor» del QR (get_qr_code_value) y lo dibuja
+        # él mismo. El de la billetera es una imagen fija: el valor es la propia
+        # imagen y el TPV la muestra sin volver a codificarla
+        # (static/src/app/pos_store.js).
+        if qr_method != QR_METHOD:
+            return super()._get_qr_code_generation_params(
+                qr_method, amount, currency, debtor_partner, free_communication, structured_communication)
+        return {'value': image_data_uri(self.l10n_pe_wallet_qr_image)}

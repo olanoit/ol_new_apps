@@ -33,6 +33,7 @@ Adaptación a la suite AL del tema del TPV de Mobilize
     # genéricos del core (ver compat_al.scss).
     'depends': ['point_of_sale'],
     'data': [
+        'receipt/pos_order_receipt.xml',
         'views/pos_index_templates.xml',
         'views/res_config_settings_views.xml',
     ],
@@ -47,12 +48,10 @@ Adaptación a la suite AL del tema del TPV de Mobilize
             'al_pos_theme/static/src/scss/_base.scss',
             'al_pos_theme/static/src/scss/components/*.scss',
             'al_pos_theme/static/src/js/**/*.js',
-            'al_pos_theme/static/src/xml/order_receipt.xml',
             'al_pos_theme/static/src/xml/navbar.xml',
             'al_pos_theme/static/src/xml/product_screen.xml',
             'al_pos_theme/static/src/xml/order_summary.xml',
             'al_pos_theme/static/src/xml/payment_screen.xml',
-            'al_pos_theme/static/src/xml/receipt_screen.xml',
             'al_pos_theme/static/src/xml/ticket_screen.xml',
             'al_pos_theme/static/src/xml/inline_payment.xml',
         ],

@@ -42,4 +42,4 @@ class TestPosProductViewData(TestPoSCommon):
         path = file_path('al_pos_product_view/static/src/switch_view/'
                          'overrides/product_info_popup/product_info_popup.xml')
         arch = etree.parse(path)
-        self.assertTrue(arch.xpath("//div[@t-if='alShowFinancials']"))
+        self.assertTrue(arch.xpath("//div[@t-if='this.alShowFinancials']"))  # Owl 3

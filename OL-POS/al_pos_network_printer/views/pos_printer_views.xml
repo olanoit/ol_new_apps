@@ -10,7 +10,12 @@
         <field name="model">pos.printer</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_printer_form" />
         <field name="arch" type="xml">
-            <field name="epson_printer_ip" position="after">
+            <!-- Odoo 20: el tipo viene oculto «para ser sobrescrito» y la IP
+                 de ePoS es printer_ip. -->
+            <field name="printer_type" position="attributes">
+                <attribute name="invisible">False</attribute>
+            </field>
+            <field name="printer_ip" position="after">
                 <field name="escpos_printer_ip"
                        placeholder="192.168.1.87"
                        invisible="printer_type != 'escpos_network'" />
@@ -26,7 +31,7 @@
         <field name="model">pos.printer</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_printer" />
         <field name="arch" type="xml">
-            <field name="proxy_ip" position="after">
+            <field name="printer_type" position="after">
                 <field name="escpos_printer_ip" optional="hide" />
             </field>
         </field>

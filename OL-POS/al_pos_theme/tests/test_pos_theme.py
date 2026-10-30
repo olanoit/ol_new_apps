@@ -1,6 +1,8 @@
+import base64
 import json
 
 from odoo.exceptions import ValidationError
+from odoo.tools import BinaryBytes
 from odoo.tests import HttpCase, TransactionCase, tagged
 
 from odoo.addons.al_pos_theme.models.pos_config import DARK_BG, AL_THEME_PAYLOAD_EXCLUDED, _contrast
@@ -58,8 +60,8 @@ class TestPosThemeConfig(TransactionCase):
 
     def test_company_logo_is_used(self):
         # Sin logo de caja, el de la compañía (data URI: funciona sin conexión).
-        self.company.logo = self.env.ref("base.main_company").logo or \
-            b"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+        self.company.logo = self.env.ref("base.main_company").logo or BinaryBytes(base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="))
         css = self.config._al_theme_css_vars()
         self.assertIn('--alpt-logo: url("data:image/', css)
         self.assertIn("--alpt-brand-text-display: none;", css)

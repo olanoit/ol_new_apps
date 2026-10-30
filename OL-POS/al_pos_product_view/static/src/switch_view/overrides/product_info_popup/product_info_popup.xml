@@ -230,14 +230,14 @@
                              style="grid-template-columns: max-content 1fr;">
 
                             <label class="fw-bold text-muted">Precio sin impuestos:</label>
-                            <span t-out="this.env.utils.formatCurrency(this.props.info.productInfo.all_prices.price_without_tax)"/>
+                            <span t-out="this.pos.formatCurrency(this.props.info.productInfo.all_prices.price_without_tax)"/>
                             <label class="fw-bold text-muted"><t t-out="this.vatLabel"/></label>
                             <span>
                                 <t t-out="this.props.info.taxAmount"/>
                                 (<t t-out="this.props.info.taxName"/>)
                             </span>
                             <label class="fw-bold text-muted">Precio con impuestos:</label>
-                            <span t-out="this.env.utils.formatCurrency(this.props.info.productInfo.all_prices.price_with_tax)"/>
+                            <span t-out="this.pos.formatCurrency(this.props.info.productInfo.all_prices.price_with_tax)"/>
                             <t t-if="this._hasMarginsCostsAccessRights()">
                                 <label class="fw-bold text-muted">Costo:</label>
                                 <span t-out="this.props.info.costCurrency"/>
@@ -246,7 +246,7 @@
                             </t>
                             <t t-foreach="this.props.info.productInfo.pricelists" t-as="pricelist" t-key="pricelist.name">
                                 <label class="fw-bold text-muted" t-out="pricelist.name"/>
-                                <span t-out="this.env.utils.formatCurrency(pricelist.price)"/>
+                                <span t-out="this.pos.formatCurrency(pricelist.price)"/>
                             </t>
 
                             <label class="fw-bold text-muted">Precio total sin impuestos:</label>

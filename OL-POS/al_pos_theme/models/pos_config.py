@@ -1,4 +1,3 @@
-import base64
 import re
 
 from odoo import _, api, fields, models
@@ -157,10 +156,11 @@ class PosConfig(models.Model):
 
     @staticmethod
     def _al_theme_data_uri(b64_value):
+        # Odoo 20: los campos Image son BinaryValue (bytes crudos).
         if not b64_value:
             return ""
-        raw = base64.b64decode(b64_value)
-        return f"data:{guess_mimetype(raw)};base64,{b64_value.decode() if isinstance(b64_value, bytes) else b64_value}"
+        raw = b64_value.content
+        return f"data:{guess_mimetype(raw)};base64,{b64_value.to_base64()}"
 
     def _al_theme_logo_src(self, inverse=False):
         """Logo como data URI (funciona sin conexión: la página índice queda

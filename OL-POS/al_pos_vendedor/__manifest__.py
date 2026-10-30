@@ -44,6 +44,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
     'data': [
         'views/pos_config_view.xml',
         'views/pos_order_views.xml',
+        'receipt/pos_order_receipt.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': [
@@ -53,7 +54,7 @@ del TPV, restringiendo la selección a una lista blanca por punto de venta:
             'al_pos_vendedor/static/src/js/selection_popup_custom.js',
             'al_pos_vendedor/static/src/js/payment_screen.js',
             'al_pos_vendedor/static/src/xml/payment_screen.xml',
-            'al_pos_vendedor/static/src/xml/order_receipt.xml',
+            'al_pos_vendedor/static/src/js/generate_printer_data.js',
             'al_pos_vendedor/static/src/xml/selection_popup_custom.xml',
             'al_pos_vendedor/static/src/xml/cashier_selection_popup.xml',
         ],

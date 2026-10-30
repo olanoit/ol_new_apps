@@ -19,7 +19,7 @@ class PosOrder(models.Model):
         super()._compute_online_payment_method_id()
         provider = self.env['payment.provider'].browse(self.env.context.get('al_pos_online_provider_id'))
         for order in self:
-            methods = order.config_id.payment_method_ids.filtered('is_online_payment')
+            methods = order.config_id.payment_method_ids.filtered(lambda m: m.type == 'online')
             by_provider = provider and order.config_id._al_online_payment_method_for_provider(provider)
             if by_provider:
                 order.online_payment_method_id = by_provider
@@ -31,7 +31,7 @@ class PosOrder(models.Model):
         solo sus pasarelas."""
         self.ensure_one()
         method = self.config_id.payment_method_ids.filtered(
-            lambda pm: pm.is_online_payment and pm.id == payment_method_id)
+            lambda pm: (pm.type == 'online') and pm.id == payment_method_id)
         if not method:
             raise UserError(_('El método de pago no es un método en línea de esta caja.'))
         self.al_online_payment_method_id = method
@@ -58,12 +58,17 @@ class PosOrder(models.Model):
         try:
             with self.env.cr.savepoint() as savepoint:
                 # El cajero crea las facturas del TPV con sudo (como Odoo en
-                # _create_invoice): aquí solo se revisan y se deshacen.
-                invoice_sudo = self.sudo()._create_invoice(self.sudo()._prepare_invoice_vals())
-                for edi_format in invoice_sudo.journal_id._fields.get('edi_format_ids') and \
-                        invoice_sudo.journal_id.edi_format_ids or []:
-                    if edi_format._get_move_applicability(invoice_sudo):
-                        errors += edi_format._check_move_configuration(invoice_sudo)
+                # _generate_pos_order_invoice): aquí solo se revisan y se deshacen.
+                vals = self.sudo()._prepare_invoice_vals()
+                invoice_sudo = self.env['account.move'].sudo().with_company(self.company_id).with_context(
+                    default_move_type=vals['move_type'], linked_to_pos=True).create(vals)
+                # Odoo 20: las revisiones del comprobante electrónico son avisos
+                # de la factura (nivel «danger» bloquea el envío).
+                if hasattr(invoice_sudo, '_l10n_pe_edi_check_move_constraints') \
+                        and invoice_sudo.l10n_pe_edi_is_required:
+                    errors += [alert['message'] for alert in
+                               invoice_sudo._l10n_pe_edi_check_move_constraints().values()
+                               if alert.get('level') == 'danger']
                 savepoint.rollback()
         except (UserError, ValidationError) as error:
             errors.append(error.args[0] if error.args else str(error))
@@ -91,7 +96,7 @@ class PosOrder(models.Model):
             devolución (el TPV la guarda en su línea de pago) o ``{'error': ...}``.
         """
         method = self.env['pos.payment.method'].browse(payment_method_id).exists()
-        if not method.is_online_payment:
+        if not (method.type == 'online'):
             raise UserError(_('El método de pago no es un método de pago en línea.'))
         refunded_orders = self.browse(refunded_order_ids).exists()
         refunded_orders.check_access('read')
@@ -131,5 +136,6 @@ class PosOrder(models.Model):
             # puede confirmarla después) y el cajero ve el motivo.
             return {'error': refund_tx_sudo.state_message or _(
                 'La pasarela no confirmó la devolución (referencia %s).', refund_tx_sudo.reference)}
-        refund_tx_sudo._post_process()  # pago contable de la devolución
+        # Pago contable de la devolución en el acto (la pasarela ya la confirmó).
+        refund_tx_sudo.with_context(payment_safe_write=True)._post_process()
         return {'reference': refund_tx_sudo.reference}

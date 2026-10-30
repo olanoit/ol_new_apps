@@ -14,7 +14,7 @@ patch(ControlButtons.prototype, {
         if (!result) {
             return;
         }
-        const cashier = this.pos.getCashier();
+        const cashier = this.pos.accessRight.loggedCashier;
         try {
             await this.pos.data.call("pharmacy.shortage", "create_from_pos", [
                 {

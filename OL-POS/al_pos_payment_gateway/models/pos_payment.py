@@ -15,7 +15,7 @@ class PosPayment(models.Model):
             if vals.get('online_account_payment_id') or not vals.get('transaction_id'):
                 continue
             method = Method.browse(vals.get('payment_method_id'))
-            if method.is_online_payment and (vals.get('amount') or 0) < 0:
+            if (method.type == 'online') and (vals.get('amount') or 0) < 0:
                 account_payment = self._al_refund_account_payment(method, vals)
                 if account_payment:
                     vals['online_account_payment_id'] = account_payment.id

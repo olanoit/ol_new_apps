@@ -64,7 +64,7 @@ patch(OrderPaymentValidation.prototype, {
         }
         const lines = this.paymentLines.filter(
             (line) =>
-                line.payment_method_id.is_online_payment &&
+                (line.payment_method_id.type === "online") &&
                 line.getAmount() < 0 &&
                 line.getPaymentStatus() !== "done"
         );

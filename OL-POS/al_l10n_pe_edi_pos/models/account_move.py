@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 
 class AccountMove(models.Model):
@@ -7,10 +7,9 @@ class AccountMove(models.Model):
 
     l10n_pe_edi_hold = fields.Boolean(
         string='Emisión SUNAT retenida', copy=False,
-        help='Marcado desde el TPV («Emitir a SUNAT: No»): el cron de EDI '
-             'no envía este comprobante. Desmarque la casilla para liberar '
-             'el envío (lo procesa el siguiente cron o el botón Procesar '
-             'ahora).')
+        help='Marcado desde el TPV («Emitir a SUNAT: No»): el comprobante '
+             'no se envía a SUNAT. Desmarque la casilla para liberar el '
+             'envío (Enviar e imprimir).')
 
     # Campos que el recibo del TPV lee tras la sincronización de la orden
     # (read_pos_data devuelve el account.move de la orden facturada).
@@ -45,7 +44,7 @@ class AccountMove(models.Model):
 
     @api.depends('state', 'name', 'amount_total', 'invoice_date',
                  'l10n_pe_edi_amount_igv', 'commercial_partner_id.vat',
-                 'commercial_partner_id.l10n_latam_identification_type_id',
+                 'commercial_partner_id.l10n_pe_sunat_id_code',
                  'l10n_latam_document_number', 'l10n_latam_document_type_id',
                  'company_id.vat')
     def _compute_l10n_pe_pos_qr_str(self):
@@ -75,6 +74,28 @@ class AccountMove(models.Model):
                 move.commercial_partner_id.l10n_pe_sunat_id_code or '',
                 move.commercial_partner_id.l10n_pe_sunat_id_value or '',
             ])
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        """El compute de la serie se dispara al calcularse el tipo de documento
+        latam y puede pisar la serie elegida en caja: en la factura que crea
+        el TPV (Odoo 20: _generate_pos_order_invoice) se reafirma."""
+        moves = super().create(vals_list)
+        if self.env.context.get('linked_to_pos'):
+            for move, vals in zip(moves, vals_list):
+                if vals.get('edi_series_id') and move.state == 'draft' \
+                        and move.edi_series_id.id != vals['edi_series_id']:
+                    move.edi_series_id = vals['edi_series_id']
+        return moves
+
+    def _l10n_pe_edi_post_invoice(self):
+        # Odoo 20: el envío es un método de la factura (sin account.edi.document).
+        # Retenido desde el TPV: no se envía hasta que alguien lo libere.
+        if self.l10n_pe_edi_hold:
+            return {'message': _('Emisión SUNAT retenida desde el TPV: desmarque «Emisión SUNAT '
+                                 'retenida» en %s para enviarla.', self.display_name),
+                    'level': 'warning'}
+        return super()._l10n_pe_edi_post_invoice()
 
     @api.model
     def _load_pos_data_fields(self, config):

@@ -8,14 +8,16 @@ class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
     @api.model
-    def _load_pos_data_domain(self, data, config):
+    def _load_pos_data_domain(self, data):
         """Empleados cargados en el TPV.
 
         Con pos_hr activo: los de pos_hr (quienes pueden iniciar sesión) más
         los vendedores autorizados. Sin pos_hr: SOLO los vendedores
         autorizados (el dominio de pos_hr traería a todos los empleados de
         la compañía)."""
-        domain = super()._load_pos_data_domain(data, config)
+        # Odoo 20: sin argumento config; la configuración va en data['pos.config'].
+        config = data['pos.config']
+        domain = super()._load_pos_data_domain(data)
         sellers = config.seller_ids if config.authorized_seller else self.browse()
         seller_domain = Domain.AND([
             Domain('id', 'in', sellers.ids),

@@ -73,14 +73,18 @@ class TestAllowList(TestPointOfSaleHttpCommon):
     def test_epson_allowed_when_escpos_toggle_disabled(self):
         # Con la ESC/POS apagada se puede configurar Epson aunque la IP de
         # la ESC/POS siga guardada; con la ESC/POS activa, sigue prohibido.
+        # Odoo 20: la Epson de recibos es un pos.printer de uso «receipt».
         from odoo.exceptions import ValidationError
+        epson = self.env['pos.printer'].create({
+            'name': 'Epson recibos', 'use_type': 'receipt',
+            'printer_type': 'epson_epos', 'printer_ip': '203.0.113.99'})
         self.main_pos_config.escpos_network_printer_enabled = False
-        self.main_pos_config.epson_printer_ip = '203.0.113.99'
-        self.main_pos_config.epson_printer_ip = False
+        self.main_pos_config.receipt_printer_ids = epson
+        self.main_pos_config.receipt_printer_ids = False
         with self.assertRaises(ValidationError):
             self.main_pos_config.write({
                 'escpos_network_printer_enabled': True,
-                'epson_printer_ip': '203.0.113.99',
+                'receipt_printer_ids': epson.ids,
             })
 
     def test_rejects_unconfigured_ip(self):

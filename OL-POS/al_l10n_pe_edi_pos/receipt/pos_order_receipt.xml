@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!-- Ticket CPE del TPV (Odoo 20). El recibo es una plantilla de
+             servidor que también dibuja el navegador: los datos van en
+             extra_data['al_pe'] (GeneratePrinterData en JS y pos.order.receipt
+             en Python). El recibo nativo NO se reemplaza (otros módulos se
+             anclan a sus nodos): se oculta y el ticket CPE va como hermano.
+             Mismo diseño que el ticket 80 mm de al_l10n_pe_invoice. -->
+        <template id="al_l10n_pe_edi_pos.pos_order_receipt" inherit_id="point_of_sale.pos_order_receipt">
+            <xpath expr="//html/div" position="attributes">
+                <attribute name="t-if">not conditions.get('al_pe_cpe')</attribute>
+            </xpath>
+            <xpath expr="//html/div" position="after">
+                <div t-if="conditions.get('al_pe_cpe')" class="alpe-receipt" style="padding-left: 3px; padding-right: 3px;">
+                    <t t-set="pe" t-value="extra_data['al_pe']"/>
+
+                    <!-- ENCABEZADO -->
+                    <div class="alpe-center alpe-header" name="alpe_header">
+                        <img t-if="image.get('logo')" t-att-src="image['logo']" alt="Logo"/>
+                        <div><strong t-out="pe['company_name']"/></div>
+                        <div><strong>RUC: <t t-out="pe['company_vat']"/></strong></div>
+                        <div t-if="pe['company_street']" t-out="pe['company_street']"/>
+                        <div t-if="pe['company_phone']">Tel: <t t-out="pe['company_phone']"/></div>
+                    </div>
+
+                    <!-- TIPO Y NÚMERO DE DOCUMENTO -->
+                    <div class="alpe-doc" t-if="pe['issued']">
+                        <t t-out="pe['doc_label']"/><br/>
+                        <t t-out="pe['doc_number']"/>
+                    </div>
+                    <div class="alpe-doc" t-else="">
+                        COMPROBANTE ELECTRÓNICO PENDIENTE<br/>
+                        <small>Este ticket no es un comprobante de pago: solicite el
+                        comprobante emitido.</small>
+                    </div>
+
+                    <!-- DATOS DEL CLIENTE -->
+                    <ul class="alpe-info" name="alpe_partner">
+                        <li><strong>Señor(es):</strong> <t t-out="pe['partner_name']"/></li>
+                        <li t-if="pe['partner_vat']">
+                            <strong><t t-out="pe['partner_vat_label']"/>:</strong> <t t-out="pe['partner_vat']"/>
+                        </li>
+                        <li t-if="pe['partner_street']"><strong>Dirección:</strong> <t t-out="pe['partner_street']"/></li>
+                        <li><strong>Emisión:</strong> <t t-out="pe['date']"/></li>
+                        <li><strong>Moneda:</strong> <t t-out="pe['currency_label']"/></li>
+                    </ul>
+
+                    <!-- DETALLE DE LÍNEAS -->
+                    <table class="alpe-lines" name="alpe_lines">
+                        <thead>
+                            <tr>
+                                <th class="alpe-ctr">Cant.</th>
+                                <th>Descripción</th>
+                                <th class="alpe-num">P.U.</th>
+                                <th class="alpe-num">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="pe['lines']" t-as="line">
+                                <td class="alpe-ctr" t-out="line['qty']"/>
+                                <td>
+                                    <t t-out="line['name']"/>
+                                    <div t-if="line['discount']" class="alpe-discount">Desc. <t t-out="line['discount']"/>%</div>
+                                    <div t-if="line['note']" class="alpe-discount" t-out="line['note']"/>
+                                </td>
+                                <td class="alpe-num" t-out="line['unit']"/>
+                                <td class="alpe-num" t-out="line['total']"/>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- TOTALES SUNAT -->
+                    <table class="alpe-totals" name="alpe_totals">
+                        <tr t-foreach="pe['totals']" t-as="row" t-att-class="{'alpe-total-row': row.get('total')}">
+                            <td class="alpe-label" t-out="row['label']"/>
+                            <td class="alpe-num" t-out="row['amount']"/>
+                        </tr>
+                    </table>
+
+                    <div class="alpe-words" t-if="pe['words']">SON: <t t-out="pe['words']"/></div>
+
+                    <!-- PAGOS -->
+                    <ul class="alpe-info" name="alpe_payments">
+                        <li t-foreach="pe['payments']" t-as="payment">
+                            <strong><t t-out="payment['name']"/>:</strong> <t t-out="payment['amount']"/>
+                        </li>
+                        <li t-if="pe['change']"><strong>Vuelto:</strong> <t t-out="pe['change']"/></li>
+                        <li t-if="pe['cashier']"><strong>Usuario:</strong> <t t-out="pe['cashier']"/></li>
+                        <li t-if="pe['seller']"><strong>Vendedor:</strong> <t t-out="pe['seller']"/></li>
+                    </ul>
+
+                    <div class="alpe-words" t-foreach="pe['notes']" t-as="note" t-out="note"/>
+
+                    <!-- QR DE REPRESENTACIÓN IMPRESA -->
+                    <div class="alpe-qr" t-if="pe['qr']"><img t-att-src="pe['qr']" alt="QR SUNAT"/></div>
+
+                    <div class="alpe-footer" name="alpe_footer">
+                        <t t-if="pe['issued']">
+                            <div>Representación impresa de la <t t-out="pe['doc_label_lower']"/>.</div>
+                            <div>Consulte en www.sunat.gob.pe</div>
+                        </t>
+                        <div>Gracias por su preferencia.</div>
+                        <div t-if="pe['footer']" style="white-space:pre-line" t-out="pe['footer']"/>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+
+        <!-- Estilos del ticket CPE: el recibo se rasteriza fuera del CSS del
+             TPV, así que van en la hoja del propio recibo. Blanco y negro,
+             reglas continuas para el detalle y discontinuas entre secciones. -->
+        <template id="al_l10n_pe_edi_pos.pos_order_receipt_style" inherit_id="point_of_sale.pos_order_receipt_style">
+            <xpath expr="//style" position="inside">
+                #pos-receipt .alpe-center { text-align: center; }
+                #pos-receipt .alpe-header img { max-width: 45% !important; display: block; margin: 0 auto 4px auto; }
+                #pos-receipt .alpe-doc { text-align: center; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 0; margin: 6px 0; }
+                #pos-receipt .alpe-info { list-style: none; padding: 0; margin: 4px 0; text-align: left; }
+                #pos-receipt .alpe-info li { margin-bottom: 1px; }
+                #pos-receipt .alpe-lines { width: 100%; border-collapse: collapse; margin: 6px 0; font-size: 90%; }
+                #pos-receipt .alpe-lines th { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 3px 2px; text-align: left; text-transform: uppercase; }
+                #pos-receipt .alpe-lines td { padding: 3px 2px; vertical-align: top; word-break: break-word; }
+                #pos-receipt .alpe-lines tbody tr:last-child td { border-bottom: 1px dashed #000; padding-bottom: 5px; }
+                #pos-receipt .alpe-num { text-align: right !important; white-space: nowrap; }
+                #pos-receipt .alpe-ctr { text-align: center !important; }
+                #pos-receipt .alpe-discount { font-size: 90%; padding-left: 1em; }
+                #pos-receipt .alpe-totals { width: 100%; border-collapse: collapse; font-size: 95%; }
+                #pos-receipt .alpe-totals td { padding: 1px 3px; }
+                #pos-receipt .alpe-totals .alpe-label { text-align: right; font-weight: bold; }
+                #pos-receipt .alpe-totals .alpe-total-row td { border-top: 1px solid #000; font-weight: bold; font-size: 110%; padding-top: 3px; }
+                #pos-receipt .alpe-words { border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 3px 0; margin: 5px 0; font-weight: bold; text-transform: uppercase; font-size: 85%; text-align: left; }
+                #pos-receipt .alpe-qr { text-align: center; margin-top: 8px; }
+                #pos-receipt .alpe-qr img { width: 110px; height: 110px; }
+                #pos-receipt .alpe-footer { text-align: center; margin-top: 8px; padding-top: 5px; border-top: 1px dashed #000; font-size: 90%; }
+            </xpath>
+        </template>
+    </data>
+</odoo>

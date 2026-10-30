@@ -20,18 +20,19 @@
             <div class="alpt-inline-payment__body d-flex flex-column flex-grow-1 overflow-y-auto">
                 <t t-call="point_of_sale.PaymentScreenDue"/>
                 <t t-call="point_of_sale.PaymentScreenMethods"/>
+                <!-- Mismas props que el PaymentScreen nativo de Odoo 20. -->
                 <PaymentScreenPaymentLines
-                    t-if="this.paymentLines.length"
-                    paymentLines="this.paymentLines"
+                    t-if="this.sortedPaymentLines.length"
+                    paymentLines="this.sortedPaymentLines"
                     deleteLine.bind="this.deletePaymentLine"
                     sendForceDone.bind="this.sendForceDone"
-                    sendPaymentReverse.bind="this.sendPaymentReverse"
+                    sendForceCancel.bind="this.sendForceCancel"
                     sendPaymentCancel.bind="this.sendPaymentCancel"
                     sendPaymentRequest.bind="this.sendPaymentRequest"
                     selectLine.bind="this.selectPaymentLine"
                     updateSelectedPaymentline.bind="this.updateSelectedPaymentline"
                     isRefundOrder="this.isRefundOrder"/>
-                <PaymentScreenStatus t-if="this.paymentLines.length" order="this.currentOrder"/>
+                <PaymentScreenStatus t-if="this.sortedPaymentLines.length" order="this.currentOrder"/>
                 <t t-call="point_of_sale.PaymentScreenButtons"/>
             </div>
             <div class="alpt-inline-payment__footer d-flex flex-column">
@@ -53,7 +54,7 @@
             <attribute name="t-if">!alptInlinePayment</attribute>
         </xpath>
         <xpath expr="//div[hasclass('pads')]" position="after">
-            <AlptInlinePayment t-if="this.alptInlinePayment" t-key="this.currentOrder.uuid" orderUuid="currentOrder.uuid"/>
+            <AlptInlinePayment t-if="this.alptInlinePayment" t-key="this.currentOrder.uuid" orderUuid="this.currentOrder.uuid"/>
         </xpath>
     </t>
 

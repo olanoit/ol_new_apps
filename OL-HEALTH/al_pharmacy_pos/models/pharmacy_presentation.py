@@ -7,8 +7,9 @@ class PharmacyPresentation(models.Model):
     _inherit = ['pharmacy.presentation', 'pos.load.mixin']
 
     @api.model
-    def _load_pos_data_domain(self, data, config):
-        template_ids = [template['id'] for template in data['product.template']]
+    def _load_pos_data_domain(self, data):
+        # Odoo 20: data trae recordsets (antes, listas de diccionarios).
+        template_ids = data['product.template'].ids
         return [('product_tmpl_id', 'in', template_ids)]
 
     @api.model

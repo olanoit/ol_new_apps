@@ -16,7 +16,8 @@ patch(ProductInfoPopup.prototype, {
     /** Finanzas/Pedido: ocultos al rol «minimal» de pos_hr, igual que el
      * bloque nativo `.financials-order` que este módulo reubica. */
     get alShowFinancials() {
-        return this.pos.getCashier()?._role !== "minimal";
+        // Odoo 20: el cajero conectado está en pos.accessRight.loggedCashier.
+        return this.pos.accessRight?.loggedCashier?._role !== "minimal";
     },
 
     getDisplayPrice(product) {

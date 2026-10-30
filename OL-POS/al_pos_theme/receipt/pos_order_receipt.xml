@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <!-- Recibo (Odoo 20: plantilla de servidor que también dibuja el TPV):
+             se quita el pie «Powered by Odoo». El pie de texto propio ya existe
+             en el core (pos.config.receipt_footer, Ajustes PdV > Recibos). El
+             recibo queda en monocromo a propósito: las impresoras térmicas lo
+             rasterizan en blanco y negro (ESC/POS). -->
+        <template id="al_pos_theme.pos_order_receipt_footer" inherit_id="point_of_sale.pos_order_receipt_footer">
+            <xpath expr="//div[@name='footer_powered_by']" position="replace"/>
+        </template>
+    </data>
+</odoo>

@@ -46,7 +46,7 @@ class TestPosSeller(TestPoSCommon):
         decide quién puede iniciar sesión como cajero."""
         self.config.write({
             'module_pos_hr': True,
-            'basic_employee_ids': [Command.set(self.ajeno.ids)],
+            'cashier_employee_ids': [Command.set(self.ajeno.ids)],
             'authorized_seller': True,
             'seller_ids': [Command.set(self.vendedor_a.ids)],
         })
@@ -62,7 +62,7 @@ class TestPosSeller(TestPoSCommon):
         # sin usuario, como los vendedores de este test).
         self.open_new_session()
         Employee = self.env['hr.employee']
-        domain = Employee._load_pos_data_domain({}, self.config)
+        domain = Employee._load_pos_data_domain({'pos.config': self.config})  # Odoo 20
         records = Employee.sudo().search(domain)
         return {vals['id']: vals for vals in Employee._load_pos_data_read(records, self.config)}
 
@@ -73,7 +73,7 @@ class TestPosSeller(TestPoSCommon):
         self.ajeno.sudo().write({'pin': '9876'})
         self.config.write({
             'module_pos_hr': True,
-            'basic_employee_ids': [Command.set(self.ajeno.ids)],
+            'cashier_employee_ids': [Command.set(self.ajeno.ids)],
             'authorized_seller': True,
             'seller_ids': [Command.set(self.vendedor_a.ids)],
         })

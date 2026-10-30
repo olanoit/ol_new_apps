@@ -12,7 +12,7 @@ patch(PosStore.prototype, {
         if (order.id && next_online_payment_amount) {
             const line = order.payment_ids.find(
                 (payment) =>
-                    payment.payment_method_id?.is_online_payment &&
+                    (payment.payment_method_id?.type === "online") &&
                     payment.getPaymentStatus() !== "done" &&
                     payment.getAmount() > 0
             );
@@ -40,7 +40,7 @@ patch(PosStore.prototype, {
             return super.processOnlinePaymentsDataFromServer(...arguments);
         }
         const refundLines = order.payment_ids.filter(
-            (payment) => payment.payment_method_id?.is_online_payment && payment.getAmount() < 0
+            (payment) => (payment.payment_method_id?.type === "online") && payment.getAmount() < 0
         );
         const statuses = refundLines.map((line) => line.getPaymentStatus());
         refundLines.forEach((line) => line.setPaymentStatus(undefined));

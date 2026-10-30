@@ -1,7 +1,8 @@
 import * as Chrome from "@point_of_sale/../tests/pos/tours/utils/chrome_util";
 import * as PaymentScreen from "@point_of_sale/../tests/pos/tours/utils/payment_screen_util";
 import * as ProductScreen from "@point_of_sale/../tests/pos/tours/utils/product_screen_util";
-import * as ReceiptScreen from "@point_of_sale/../tests/pos/tours/utils/receipt_screen_util";
+// Odoo 20: la pantalla de recibo es FeedbackScreen.
+import * as ReceiptScreen from "@point_of_sale/../tests/pos/tours/utils/feedback_screen_util";
 import * as TicketScreen from "@point_of_sale/../tests/pos/tours/utils/ticket_screen_util";
 import { registry } from "@web/core/registry";
 
@@ -33,7 +34,7 @@ registry.category("web_tour.tours").add("al_pos_payment_gateway_choose_method", 
             PaymentScreen.clickValidate(),
             {
                 content: "el QR de la segunda pasarela está en pantalla",
-                trigger: ".modal img[alt='QR Code to pay']",
+                trigger: ".modal .qr-code img, .modal img.qr-code",
             },
         ].flat(),
 });

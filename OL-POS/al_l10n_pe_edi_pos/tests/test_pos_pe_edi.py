@@ -27,7 +27,7 @@ class TestPosPeEdi(TestPoSCommon):
             ('type', '=', 'sale'),
             ('l10n_latam_use_documents', '=', True),
         ], limit=1)
-        base_journal = latam_journals or cls.config.invoice_journal_id
+        base_journal = latam_journals or cls.config.journal_id
         cls.journal_boleta = base_journal.copy({
             'name': 'Boletas TPV', 'code': 'BPOS',
             'l10n_latam_use_documents': True,
@@ -75,6 +75,12 @@ class TestPosPeEdi(TestPoSCommon):
         vals = order._prepare_invoice_vals()
         self.assertEqual(vals['journal_id'], self.journal_factura.id)
 
+    def _invoice_from_vals(self, vals):
+        # Odoo 20 quitó pos.order._create_invoice: la factura se crea dentro de
+        # _generate_pos_order_invoice con este mismo contexto.
+        return self.env['account.move'].with_context(
+            default_move_type=vals['move_type'], linked_to_pos=True).create(vals)
+
     def test_boleta_a_cliente_con_ruc_es_boleta(self):
         """Boleta elegida en caja para un cliente con RUC: tipo 03, no 01.
 
@@ -86,14 +92,14 @@ class TestPosPeEdi(TestPoSCommon):
         self.assertEqual(vals['journal_id'], self.journal_boleta.id)
         boleta = self.env.ref('l10n_pe.document_type02')
         self.assertEqual(vals['l10n_latam_document_type_id'], boleta.id)
-        invoice = order._create_invoice(vals)
+        invoice = self._invoice_from_vals(vals)
         self.assertEqual(invoice.l10n_latam_document_type_id.code, '03')
         self.assertEqual(invoice.journal_id, self.journal_boleta)
 
     def test_factura_lleva_tipo_01(self):
         self.open_new_session()
         order = self._order_with_line(self.partner_ruc, l10n_pe_doc_type='factura')
-        invoice = order._create_invoice(order._prepare_invoice_vals())
+        invoice = self._invoice_from_vals(order._prepare_invoice_vals())
         self.assertEqual(invoice.l10n_latam_document_type_id.code, '01')
         self.assertEqual(invoice.journal_id, self.journal_factura)
 
@@ -110,10 +116,11 @@ class TestPosPeEdi(TestPoSCommon):
             order._prepare_invoice_vals()
 
     def test_factura_requiere_tipo_ruc(self):
-        """11 dígitos con tipo «VAT» (código 0) no es RUC: SUNAT rechazaría la factura."""
+        """11 dígitos de un NIF extranjero (código SUNAT 0) no es RUC: SUNAT
+        rechazaría la factura."""
         self.open_new_session()
         partner = self.env['res.partner'].create({
-            'name': 'Cliente VAT 11', 'vat': '20557912879'})
+            'name': 'Cliente VAT 11', 'vat': '20557912879', 'country_id': self.env.ref('base.us').id})
         order = self.env['pos.order'].create({
             'session_id': self.pos_session.id, 'partner_id': partner.id,
             'l10n_pe_doc_type': 'factura',
@@ -144,9 +151,10 @@ class TestPosPeEdi(TestPoSCommon):
         invoice.action_post()
         self.assertIn(self.partner_ruc.vat, invoice.l10n_pe_pos_qr_str)
 
-    def test_tipo_de_identificacion_lleva_el_codigo_sunat(self):
-        fields = self.env['l10n_latam.identification.type']._load_pos_data_fields(self.config)
-        self.assertIn('l10n_pe_vat_code', fields)
+    def test_cliente_lleva_el_codigo_sunat(self):
+        # Odoo 20: el código SUNAT del documento está en el propio contacto.
+        fields = self.env['res.partner']._load_pos_data_fields(self.config)
+        self.assertIn('l10n_pe_sunat_id_code', fields)
 
     def test_serie_cpe_en_factura(self):
         """La serie elegida en caja viaja a la factura generada."""
@@ -192,34 +200,19 @@ class TestPosPeEdi(TestPoSCommon):
         self.assertTrue(vals.get('l10n_pe_edi_hold'))
 
     def test_documentos_retenidos_no_se_procesan(self):
-        """_process_documents_web_services (cron y botón «Procesar ahora»)
-        no procesa los documentos EDI de facturas retenidas."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
-        Doc = self.env['account.edi.document']
-        docs = Doc
-        for hold in (True, False):
-            move = self.env['account.move'].create({
-                'move_type': 'out_invoice',
-                'partner_id': self.partner_dni.id,
-                'l10n_pe_edi_hold': hold,
-            })
-            docs |= Doc.create({
-                'move_id': move.id,
-                'edi_format_id': edi_format.id,
-                'state': 'to_send',
-            })
-        held = docs.filtered(lambda d: d.move_id.l10n_pe_edi_hold)
-        prepared = []
-
-        def fake_prepare_jobs(recs):
-            prepared.append(recs)
-            return []
-
-        with patch.object(type(Doc), '_prepare_jobs', fake_prepare_jobs):
-            docs._process_documents_web_services(with_commit=False)
-        self.assertEqual(len(prepared), 1)
-        self.assertNotIn(held, prepared[0])
-        self.assertEqual(prepared[0], docs - held)
+        """Odoo 20 (sin account.edi.document): una factura retenida desde el
+        TPV no se envía; devuelve el aviso y queda por enviar."""
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_dni.id,
+            'l10n_pe_edi_hold': True,
+        })
+        with patch.object(type(self.env['account.move']), '_l10n_pe_edi_sign_invoices_sunat_estela') as sunat, \
+                patch.object(type(self.env['account.move']), '_l10n_pe_edi_sign_invoices_iap') as iap:
+            result = move._l10n_pe_edi_post_invoice()
+        self.assertIn('retenida', result['message'])
+        sunat.assert_not_called()
+        iap.assert_not_called()
 
     def _order_with_line(self, partner, qty=1, **vals):
         """Orden con una línea: `refunded_order_id` es un compute que sale

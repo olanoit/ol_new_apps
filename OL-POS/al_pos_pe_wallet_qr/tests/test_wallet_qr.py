@@ -39,8 +39,8 @@ class TestWalletQr(TransactionCase):
 
     def _payment_method(self, **values):
         return self.env['pos.payment.method'].create({
-            'name': 'Yape', 'journal_id': self.journal.id, 'company_id': self.company.id,
-            'payment_method_type': 'qr_code', 'qr_code_method': 'l10n_pe_wallet', **values,
+            'name': 'Yape', 'type': 'bank', 'journal_id': self.journal.id, 'company_id': self.company.id,
+            'payment_method_type': 'bank_qr_code', 'qr_code_method': 'l10n_pe_wallet', **values,
         })
 
     def test_method_is_offered(self):
@@ -49,9 +49,10 @@ class TestWalletQr(TransactionCase):
 
     def test_pos_shows_the_wallet_image(self):
         method = self._payment_method()
-        qr = method.get_qr_code(25.5, 'Orden 0001', '', self.pen.id, False)
+        qr = method.get_qr_code_value(25.5, 'Orden 0001', '', self.pen.id, False)
         self.assertTrue(qr.startswith('data:image/png;base64,'))
-        self.assertEqual(qr.split(',', 1)[1], self.bank_account.l10n_pe_wallet_qr_image.decode())
+        # Odoo 20: el campo Image es un BinaryValue (bytes crudos).
+        self.assertEqual(qr.split(',', 1)[1], self.bank_account.l10n_pe_wallet_qr_image.to_base64())
         # Sin conexión, el TPV usa el mismo QR.
         self.assertEqual(method.default_qr, qr)
 
@@ -64,7 +65,7 @@ class TestWalletQr(TransactionCase):
         method = self._payment_method()
         usd = self.env.ref('base.USD')
         with self.assertRaisesRegex(UserError, 'soles'):
-            method.get_qr_code(10.0, 'Orden 0002', '', usd.id, False)
+            method.get_qr_code_value(10.0, 'Orden 0002', '', usd.id, False)
 
     def test_other_qr_methods_untouched(self):
         self.assertIsNone(self.bank_account._get_error_messages_for_qr('unknown_method', False, self.pen))

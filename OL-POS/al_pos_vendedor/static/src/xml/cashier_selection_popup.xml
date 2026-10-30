@@ -6,8 +6,9 @@
     <t t-name="al_pos_vendedor.CashierSelectionPopup"
        t-inherit="pos_hr.CashierSelectionPopup"
        t-inherit-mode="extension">
-        <xpath expr="//button[@t-foreach='props.employees']" position="attributes">
-            <attribute name="t-foreach">props.employees.filter((employee) => !employee._al_seller_only)</attribute>
+        <!-- Odoo 20: la lista sale de displayableOptions (con «ver todos»). -->
+        <xpath expr="//button[@t-foreach='this.displayableOptions']" position="attributes">
+            <attribute name="t-foreach">this.displayableOptions.filter((employee) => !employee._al_seller_only)</attribute>
         </xpath>
     </t>
 

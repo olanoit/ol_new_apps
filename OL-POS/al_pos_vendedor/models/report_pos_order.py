@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models
+from odoo.tools import SQL
 
 
 class ReportPosOrder(models.Model):
@@ -12,7 +13,5 @@ class ReportPosOrder(models.Model):
     )
 
     def _select(self):
-        return super()._select() + ", s.seller_id as seller_id"
-
-    def _group_by(self):
-        return super()._group_by() + ", s.seller_id"
+        # Odoo 20: la consulta es SQL y el informe ya no agrupa (una fila por línea).
+        return SQL("%s, s.seller_id AS seller_id", super()._select())

@@ -39,6 +39,11 @@ Solo admite soles: Yape y Plin no cobran en dólares.
     'data': [
         'views/res_partner_bank_views.xml',
     ],
+    'assets': {
+        'point_of_sale._assets_pos': [
+            'al_pos_pe_wallet_qr/static/src/app/**/*',
+        ],
+    },
     'installable': True,
     'application': False,
 }

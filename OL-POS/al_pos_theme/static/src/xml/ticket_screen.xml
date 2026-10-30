@@ -10,17 +10,18 @@
         <xpath expr="//div[hasclass('ticket-screen')]" position="attributes">
             <attribute name="class" remove="bg-100" add="alpt-ticket-screen" separator=" "/>
         </xpath>
-        <xpath expr="//CenteredIcon[@icon=&quot;'fa-shopping-cart fa-4x'&quot;]" position="attributes">
-            <attribute name="icon">'fa-file-text-o'</attribute>
-            <attribute name="class">'h-100 alpt-empty-state'</attribute>
+        <!-- Odoo 20: iconos Material (oi) y el texto de «sin órdenes» en el propio CenteredIcon. -->
+        <xpath expr="//CenteredIcon[@text=&quot;this.pos.data.network.loading ? 'Loading...' : 'No orders found'&quot;]" position="attributes">
+            <attribute name="icon">this.pos.data.network.loading ? 'autorenew' : 'receipt_long'</attribute>
+            <attribute name="class">'w-100 h-100 alpt-empty-state'</attribute>
         </xpath>
         <!-- Total de cada orden: clase propia (escritorio y móvil) para
              darle su peso sin depender de la posición de la columna, que
              cambia según presets/direcciones. -->
-        <xpath expr="//table//div[hasclass('fw-bolder')][t[@t-out='getTotal(order)']]" position="attributes">
+        <xpath expr="//table//div[hasclass('fw-bolder')][t[@t-out='this.getTotal(order)']]" position="attributes">
             <attribute name="class" add="alpt-order-total" separator=" "/>
         </xpath>
-        <xpath expr="//div[hasclass('mobileOrderList')]//div[hasclass('fw-bolder')][t[@t-out='getTotal(order)']]" position="attributes">
+        <xpath expr="//div[hasclass('mobileOrderList')]//div[hasclass('fw-bolder')][t[@t-out='this.getTotal(order)']]" position="attributes">
             <attribute name="class" add="alpt-order-total" separator=" "/>
         </xpath>
     </t>

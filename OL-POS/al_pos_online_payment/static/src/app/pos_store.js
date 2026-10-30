@@ -20,7 +20,7 @@ patch(PosStore.prototype, {
             return;
         }
         const onlineLines = order.payment_ids.filter(
-            (line) => line.payment_method_id?.is_online_payment
+            (line) => (line.payment_method_id?.type === "online")
         );
         if (!onlineLines.some((line) => line.isSynced)) {
             return;

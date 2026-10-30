@@ -76,14 +76,3 @@ class PosOrder(models.Model):
         if not self.l10n_pe_edi_send:
             vals['l10n_pe_edi_hold'] = True
         return vals
-
-    def _create_invoice(self, move_vals):
-        """El compute de la serie en account.move se dispara al calcularse
-        el tipo de documento latam y puede pisar la serie elegida en caja:
-        se reafirma tras crear la factura."""
-        invoice = super()._create_invoice(move_vals)
-        if (len(self) == 1 and self.edi_series_id
-                and move_vals.get('edi_series_id')
-                and invoice.state == 'draft'):
-            invoice.edi_series_id = self.edi_series_id
-        return invoice

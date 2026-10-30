@@ -120,6 +120,7 @@ class PharmacyInsuranceAgreement(models.Model):
             agreement.payment_method_id = self.env['pos.payment.method'].create({
                 'name': agreement.name,
                 'company_id': agreement.company_id.id,
+                'type': 'pay_later',  # Odoo 20: el tipo es obligatorio
                 'journal_id': False,
                 'split_transactions': False,
                 'receivable_account_id': receivable.id,

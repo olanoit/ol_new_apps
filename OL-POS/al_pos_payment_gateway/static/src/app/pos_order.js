@@ -16,7 +16,7 @@ patch(PosOrder.prototype, {
         const refundLines = this.payment_ids.filter(
             (payment) =>
                 !payment.isSynced &&
-                payment.payment_method_id?.is_online_payment &&
+                (payment.payment_method_id?.type === "online") &&
                 payment.getAmount() < 0 &&
                 payment.transaction_id &&
                 payment.getPaymentStatus() === "done"

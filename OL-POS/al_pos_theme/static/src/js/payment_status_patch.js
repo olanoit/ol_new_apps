@@ -13,7 +13,7 @@ import { PaymentScreenStatus } from "@point_of_sale/app/screens/payment_screen/p
 patch(PaymentScreenStatus.prototype, {
     get amountText() {
         if (!this.isRemaining) {
-            return this.env.utils.formatCurrency(Math.abs(this.order.change));
+            return this.pos.formatCurrency(Math.abs(this.order.change));
         }
         return super.amountText;
     },

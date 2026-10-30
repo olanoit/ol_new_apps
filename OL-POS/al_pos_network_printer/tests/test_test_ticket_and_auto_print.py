@@ -89,19 +89,16 @@ class TestEscposAutoPrintToggle(TestPointOfSaleHttpCommon):
         super().setUpClass()
         cls.main_pos_config.write({
             'iface_print_auto': False,
-            'iface_print_skip_screen': False,
         })
 
     def test_enabling_sets_core_auto_print_fields(self):
         self.main_pos_config.escpos_auto_print = True
         self.assertTrue(self.main_pos_config.iface_print_auto)
-        self.assertTrue(self.main_pos_config.iface_print_skip_screen)
 
     def test_disabling_reverts_to_manual_process(self):
         self.main_pos_config.escpos_auto_print = True
         self.main_pos_config.escpos_auto_print = False
         self.assertFalse(self.main_pos_config.iface_print_auto)
-        self.assertFalse(self.main_pos_config.iface_print_skip_screen)
 
     def test_reflects_iface_print_auto_set_elsewhere(self):
         # El toggle no es un campo propio desincronizable — es compute()
@@ -117,4 +114,3 @@ class TestEscposAutoPrintToggle(TestPointOfSaleHttpCommon):
         })
         settings.execute()
         self.assertTrue(self.main_pos_config.iface_print_auto)
-        self.assertTrue(self.main_pos_config.iface_print_skip_screen)

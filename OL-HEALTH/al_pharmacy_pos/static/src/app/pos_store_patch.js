@@ -137,7 +137,7 @@ patch(PosStore.prototype, {
     // Receta y químico farmacéutico en la caja
     // ------------------------------------------------------------------
     isPharmacistCashier() {
-        const cashier = this.getCashier();
+        const cashier = this.accessRight.loggedCashier;
         return Boolean(cashier?.pharmacy_role === "pharmacist" || cashier?.pharmacy_is_pharmacist);
     },
 
@@ -193,7 +193,7 @@ patch(PosStore.prototype, {
                 pharmacy_patient_name: result.patientName,
             });
         } else if (result.action === "exception") {
-            const cashier = this.getCashier();
+            const cashier = this.accessRight.loggedCashier;
             // Con «Iniciar sesión con empleados» (pos_hr) quien atiende es un
             // empleado; si no, el usuario.
             if (this.config.module_pos_hr) {

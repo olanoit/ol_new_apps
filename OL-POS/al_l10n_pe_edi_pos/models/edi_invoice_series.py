@@ -11,6 +11,8 @@ class EdiInvoiceSeries(models.Model):
         return ['name', 'edi_type_code', 'state', 'company_id', 'write_date']
 
     @api.model
-    def _load_pos_data_domain(self, data, config):
+    def _load_pos_data_domain(self, data):
+        # Odoo 20: sin argumento config; la configuración va en data['pos.config'].
+        config = data['pos.config']
         return [('company_id', '=', config.company_id.id),
                 ('state', '=', 'publish')]

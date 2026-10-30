@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-"""El recibo CPE no reemplaza nodos del recibo nativo.
+"""El ticket CPE no reemplaza nodos del recibo nativo.
 
-Un ``position="replace"`` sobre ``div.pos-receipt`` borraba lo que otros
-módulos (pos_loyalty, pos_restaurant, l10n_pe_edi_pos de EE, al_pos_vendedor)
-insertan en el recibo y rompía sus xpath. Se comprueba sobre el archivo
-fuente porque el recibo es una plantilla OWL del frontend.
+En Odoo 20 el recibo es una plantilla de servidor
+(``point_of_sale.pos_order_receipt``) que también dibuja el navegador. Un
+``position="replace"`` borraría lo que otros módulos (pos_loyalty,
+pos_restaurant, l10n_pe_edi_pos de EE, al_pos_vendedor) insertan en él: el
+nativo se oculta con un ``t-if`` y el ticket CPE va como hermano.
 """
 from lxml import etree
 
@@ -16,31 +17,44 @@ from odoo.tools.misc import file_path
 class TestReceiptTemplate(TransactionCase):
 
     def _arch(self):
-        path = file_path('al_l10n_pe_edi_pos/static/src/overrides/order_receipt.xml')
-        return etree.parse(path)
+        return etree.parse(file_path('al_l10n_pe_edi_pos/receipt/pos_order_receipt.xml'))
 
-    def test_no_replace_en_plantillas_owl(self):
-        arch = self._arch()
-        self.assertFalse(arch.xpath("//xpath[@position='replace']"),
+    def test_no_replace_en_el_recibo(self):
+        self.assertFalse(self._arch().xpath("//xpath[@position='replace']"),
                          'el recibo nativo no debe reemplazarse')
 
     def test_recibo_cpe_es_hermano_condicional(self):
         arch = self._arch()
         attrs = arch.xpath("//xpath[@position='attributes']/attribute[@name='t-if']")
-        self.assertEqual([a.text for a in attrs], ['!peActive'])
-        after = arch.xpath("//xpath[@position='after']/div[@t-if='peActive']")
+        self.assertEqual([a.text for a in attrs], ["not conditions.get('al_pe_cpe')"])
+        after = arch.xpath("//xpath[@position='after']/div[@t-if=\"conditions.get('al_pe_cpe')\"]")
         self.assertEqual(len(after), 1)
-        self.assertIn('pos-receipt', after[0].get('class').split())
 
-    def test_encabezado_ee_sin_factura(self):
-        """El encabezado de l10n_pe_edi_pos (EE) se lee con «?.»: con el pago
-        en línea el ticket se dibuja antes de que llegue la factura. Si EE
-        cambia ese nodo, el xpath deja de encontrarlo y hay que revisarlo."""
-        ours = etree.parse(file_path('al_l10n_pe_edi_pos/static/src/overrides/receipt_header.xml'))
-        node = ours.xpath("//xpath/attribute[@name='t-out']")[0]
-        self.assertTrue(node.text.startswith('order.account_move?.'))
-        expr = ours.xpath('//xpath/@expr')[0]
-        ee = etree.parse(file_path(
-            'l10n_pe_edi_pos/static/src/app/components/receipt/receipt_header/receipt_header.xml'))
-        self.assertEqual(len(ee.xpath(expr)), 1,
-                         'el nodo de l10n_pe_edi_pos que se corrige ya no existe')
+    def test_render_ticket_cpe(self):
+        """La plantilla heredada se compila y dibuja el ticket CPE con los
+        datos del bloque ``al_pe``."""
+        values = {
+            'order': {'general_customer_note': False, 'state': 'paid', 'amount_return': 0,
+                      'amount_return_currency': 0, 'ticket_code': 'X'},
+            'lines': [], 'payments': [], 'partner': False, 'preset': False, 'config': {}, 'company': {},
+            'image': {'logo': False, 'invoice_qr_code': False},
+            'conditions': {'al_pe_cpe': True, 'basic_receipt': False, 'use_self_invoicing': False,
+                           'display_qr_code': False, 'display_url': False},
+            'extra_data': {'prices': {}, 'total_item_count': 0, 'al_pe': {
+                'company_name': 'EMPRESA SAC', 'company_vat': '20100070970', 'company_street': '',
+                'company_phone': '', 'issued': True, 'doc_label': 'BOLETA DE VENTA ELECTRÓNICA',
+                'doc_label_lower': 'boleta de venta electrónica', 'doc_number': 'B001-00000001',
+                'partner_name': 'CLIENTE VARIOS', 'partner_vat_label': 'DNI', 'partner_vat': '45678912',
+                'partner_street': '', 'date': '30/10/2026', 'currency_label': 'SOLES',
+                'lines': [{'qty': 1, 'name': 'Agua', 'discount': False, 'note': False,
+                           'unit': 'S/ 1.18', 'total': 'S/ 1.18'}],
+                'totals': [{'label': 'IMPORTE TOTAL', 'amount': 'S/ 1.18', 'total': True}],
+                'words': 'UNO CON 18/100 SOLES', 'payments': [{'name': 'Efectivo', 'amount': 'S/ 1.18'}],
+                'change': False, 'cashier': 'Caja', 'seller': False, 'notes': [], 'qr': False,
+                'footer': False}},
+        }
+        html = str(self.env['ir.qweb']._render('point_of_sale.pos_order_receipt', values))
+        self.assertIn('B001-00000001', html)
+        self.assertIn('alpe-total-row', html)
+        self.assertIn('UNO CON 18/100 SOLES', html)
+        self.assertNotIn('Subtotal:', html, 'el recibo nativo queda oculto')

@@ -16,7 +16,7 @@ class PaymentProvider(models.Model):
         Method = self.env['pos.payment.method']
         for provider in self:
             provider.al_pos_payment_method_ids = Method.search([
-                ('is_online_payment', '=', True), ('online_payment_provider_ids', 'in', provider.ids)])
+                ('type', '=', 'online'), ('online_payment_provider_ids', 'in', provider.ids)])
 
     def _al_pos_payment_logo(self):
         """Imagen del método de pago del TPV: la tarjeta de 240 × 160 de la
@@ -39,7 +39,7 @@ class PaymentProvider(models.Model):
         if not method:
             method = self.env['pos.payment.method'].create({
                 'name': self.name,
-                'is_online_payment': True,
+                'type': 'online',
                 'online_payment_provider_ids': [Command.set(self.ids)],
                 'company_id': self.company_id.id,
             })

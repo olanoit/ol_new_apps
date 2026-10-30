@@ -49,8 +49,8 @@ patch(PosStore.prototype, {
             const order = this.models["pos.order"].getBy("uuid", orderUuid);
             if (order && !order.finalized) {
                 if (
-                    this.router.state.current !== "ProductScreen" ||
-                    this.router.state.params?.orderUuid !== orderUuid
+                    this.router.currentScreen() !== "ProductScreen" ||
+                    this.router.currentScreenParams()?.orderUuid !== orderUuid
                 ) {
                     super.navigate("ProductScreen", { orderUuid });
                 }

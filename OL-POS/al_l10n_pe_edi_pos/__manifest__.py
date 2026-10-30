@@ -45,6 +45,8 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
         'views/res_config_settings_views.xml',
         'views/pos_order_views.xml',
         'views/account_move_views.xml',
+        # Ticket CPE: plantilla de servidor que también dibuja el TPV (Odoo 20).
+        'receipt/pos_order_receipt.xml',
     ],
     'assets': {
         'point_of_sale._assets_pos': [
@@ -56,10 +58,7 @@ Basado en el análisis del módulo v18 ``al_l10n_pe_edi_pos``
             'al_l10n_pe_edi_pos/static/src/overrides/order_payment_validation.js',
             'al_l10n_pe_edi_pos/static/src/overrides/payment_screen.js',
             'al_l10n_pe_edi_pos/static/src/overrides/payment_screen.xml',
-            'al_l10n_pe_edi_pos/static/src/overrides/order_receipt.js',
-            'al_l10n_pe_edi_pos/static/src/overrides/order_receipt.xml',
-            'al_l10n_pe_edi_pos/static/src/overrides/receipt_screen.xml',
-            'al_l10n_pe_edi_pos/static/src/overrides/receipt_header.xml',
+            'al_l10n_pe_edi_pos/static/src/app/utils/generate_printer_data.js',
             'al_l10n_pe_edi_pos/static/src/overrides/order_receipt.scss',
         ],
     },

@@ -31,11 +31,12 @@
         -->
         <xpath expr="//div[hasclass('pos-leftheader')]" position="inside">
             <Input t-if="!this.ui.isSmall and this.pos.showSearchButton()"
-                   tModel="[pos, 'searchProductWord']"
+                   tModel="[this.pos, 'searchProductWord']"
                    class="'alpt-navbar-search'"
                    isSmall="false"
                    placeholder.translate="Buscar productos..."
-                   icon="{type: 'fa', value: 'fa-search fa-lg fa-fw'}"
+                   icon="'search'"
+                   iconClass="'oi-lg oi-fw'"
                    debounceMillis="500"
                    getRef="(ref) => this.inputRef = ref"/>
         </xpath>
@@ -52,7 +53,7 @@
             </button>
         </xpath>
         <xpath expr="//div[hasclass('pos-rightheader')]//Input" position="attributes">
-            <attribute name="t-if" add="ui.isSmall" separator=" and "/>
+            <attribute name="t-if" add="this.ui.isSmall" separator=" and "/>
         </xpath>
     </t>
 
