@@ -232,6 +232,21 @@ class TestPeruPublicHolidays(TransactionCase):
             ('calendar_id', '=', calendar.id)])
         self.assertEqual(leave.work_entry_type_id, dom)
 
+    def test_holiday_without_concept_gets_a_type_on_apply(self):
+        """Un feriado del catálogo sin concepto no deja el descanso sin tipo
+        (rompía la boleta): toma el de por defecto o el nativo."""
+        calendar = self._calendar()
+        holiday = self._holiday()
+        holiday.work_entry_type_id = False
+        holiday.action_apply_to_calendars()
+        leave = self.Leaves.search([
+            ('pe_public_holiday_id', '=', holiday.id),
+            ('calendar_id', '=', calendar.id)])
+        self.assertTrue(leave.work_entry_type_id)
+        default = self.Holiday._default_work_entry_type_id()
+        if default:
+            self.assertEqual(leave.work_entry_type_id, default)
+
     def test_delete_holiday_removes_its_leaves(self):
         """Borrar el feriado arrastra sus descansos (ondelete cascade)."""
         calendar = self._calendar()

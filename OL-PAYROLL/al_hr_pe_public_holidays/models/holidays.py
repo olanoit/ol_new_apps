@@ -142,6 +142,11 @@ class PeruPublicHoliday(models.Model):
         for holiday in self:
             holiday_calendars = holiday._target_calendars()
             calendars |= holiday_calendars
+            # Un feriado sin concepto (los del catálogo se cargaron antes de
+            # que existiera el DOM de al_hr_pe) toma el de por defecto; sin
+            # ninguno se deja el tipo nativo: un descanso sin tipo rompe el
+            # cálculo de la boleta (worked_days.work_entry_type_id NOT NULL).
+            work_entry_type = holiday.work_entry_type_id or holiday._default_work_entry_type_id()
             for cal in holiday_calendars:
                 date_from, date_to = holiday._holiday_datetime_range(cal)
                 vals = {
@@ -150,9 +155,10 @@ class PeruPublicHoliday(models.Model):
                     "company_id": cal.company_id.id or self.env.company.id,
                     "date_from": date_from,
                     "date_to": date_to,
-                    "work_entry_type_id": holiday.work_entry_type_id.id or False,
                     "pe_public_holiday_id": holiday.id,
                 }
+                if work_entry_type:
+                    vals["work_entry_type_id"] = work_entry_type.id
                 # La clave es feriado+calendario, no las fechas exactas:
                 # con la clave anterior, cambiar la zona horaria del
                 # calendario duplicaba el descanso en vez de corregirlo.
@@ -177,7 +183,7 @@ class PeruPublicHoliday(models.Model):
                     # se vuelve a fijar el del feriado.
                     leave.write({
                         "date_from": date_from, "date_to": date_to,
-                        "work_entry_type_id": holiday.work_entry_type_id.id or False,
+                        **({"work_entry_type_id": work_entry_type.id} if work_entry_type else {}),
                     })
                     created += 1
         return {
