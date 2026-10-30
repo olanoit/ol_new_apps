@@ -225,6 +225,30 @@ class PeruPublicHoliday(models.Model):
 class ResourceCalendarLeaves(models.Model):
     _inherit = "resource.calendar.leaves"
 
+    @api.model
+    def _prepare_public_holidays_data(self, start_date, end_date):
+        """Odoo 20 genera los feriados de cada país desde su CSV
+        (``hr_holidays/data/public_holidays``). En Perú, los días que cubre el
+        catálogo ``pe.public.holiday`` los aplica este módulo, por calendario
+        y con el concepto de descanso de la planilla: el nativo solo crea los
+        que el catálogo no tiene (p. ej. años posteriores), sin duplicarlos."""
+        data = super()._prepare_public_holidays_data(start_date, end_date)
+        prepared = data.get('prepared_public_holidays') or {}
+        Holiday = self.env['pe.public.holiday'].sudo()
+        for company_id, values in list(prepared.items()):
+            company = self.env['res.company'].browse(company_id)
+            if company.country_code != 'PE':
+                continue
+            covered = set(Holiday.search([
+                ('date', '>=', start_date), ('date', '<=', end_date)]).mapped('date'))
+            # El inicio del descanso nativo cae en el día del feriado (UTC-5).
+            kept = [vals for vals in values if vals['date_from'].date() not in covered]
+            if kept:
+                prepared[company_id] = kept
+            else:
+                prepared.pop(company_id)
+        return data
+
     pe_public_holiday_id = fields.Many2one(
         "pe.public.holiday",
         string="Feriado (PE)",

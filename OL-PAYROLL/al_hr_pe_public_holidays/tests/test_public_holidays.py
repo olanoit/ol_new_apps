@@ -341,3 +341,25 @@ class TestPeruPublicHolidays(TransactionCase):
                                 labor_regime='construccion')
         holiday.action_apply_to_calendars()
         self.assertEqual(holiday.leave_ids.calendar_id & (obra | oficina), obra)
+
+
+@tagged('post_install', '-at_install')
+class TestNativePublicHolidays(TransactionCase):
+    """Odoo 20 trae los feriados de Perú: el catálogo propio manda en los
+    años que cubre y el nativo completa el resto, sin duplicar."""
+
+    def test_native_generation_skips_catalog_days(self):
+        company = self.env['res.company'].create({
+            'name': 'Feriados nativos SAC', 'country_id': self.env.ref('base.pe').id,
+            'tz': 'America/Lima'})
+        Leaves = self.env['resource.calendar.leaves'].with_company(company).with_context(
+            allowed_company_ids=company.ids)
+        catalog = self.env['pe.public.holiday'].search([('year', '=', 2026)])
+        self.assertTrue(catalog, 'el catálogo trae 2026')
+        prepared = Leaves._prepare_public_holidays_data(date(2026, 1, 1), date(2026, 12, 31))
+        self.assertFalse(prepared['prepared_public_holidays'].get(company.id),
+                         'los feriados de 2026 los aplica el catálogo propio')
+        self.env['pe.public.holiday'].search([('year', '=', 2049)]).unlink()
+        prepared = Leaves._prepare_public_holidays_data(date(2049, 1, 1), date(2049, 12, 31))
+        self.assertTrue(prepared['prepared_public_holidays'].get(company.id),
+                        'sin catálogo, el nativo genera los feriados del año')
