@@ -15,6 +15,8 @@ from collections import defaultdict
 from odoo import _, fields, models
 from odoo.tools import SQL
 
+from odoo.addons.account_reports.utils.report_data_objects import AccountReportLineData
+
 PNL_GROUPS = ('income', 'expense')
 # Resultados por naturaleza: gastos 60-68 e ingresos 70-78 del PCGE, más el
 # impuesto a la renta (88). La 69 (costo de ventas), la 79 y la clase 9 son
@@ -72,13 +74,13 @@ class AccountPeWorksheetReportHandler(models.AbstractModel):
             ('pe_ws_result', _('Resultado del ejercicio'), result),
             ('pe_ws_totals', _('Totales'), grand),
         ):
-            lines.append((0, {
-                'id': report._get_generic_line_id(None, None, markup=markup),
-                'name': name,
-                'level': 1,
-                'class': 'total',
-                'columns': self._l10n_pe_columns(report, options, values),
-            }))
+            lines.append((0, AccountReportLineData(
+                id=report._get_generic_line_id(None, None, markup=markup),
+                name=name,
+                level=1,
+                css_class='total',
+                columns=self._l10n_pe_columns(report, options, values),
+            )))
         return lines
 
     def _l10n_pe_line(self, report, options, row):
@@ -89,17 +91,17 @@ class AccountPeWorksheetReportHandler(models.AbstractModel):
         else:
             line_id = report._get_generic_line_id(None, None, markup='pe_ws_prior_results')
             name = _('Resultados de ejercicios anteriores')
-        return {
-            'id': line_id,
-            'name': name,
-            'level': 2,
-            'caret_options': 'account.account' if account else None,
-            'columns': self._l10n_pe_columns(report, options, row),
-        }
+        return AccountReportLineData(
+            id=line_id,
+            name=name,
+            level=2,
+            caret_options='account.account' if account else None,
+            columns=self._l10n_pe_columns(report, options, row),
+        )
 
     def _l10n_pe_columns(self, report, options, values):
         return [
-            report._build_column_dict(values.get(column['expression_label'], 0.0), column, options=options)
+            report._build_column_data(values.get(column['expression_label'], 0.0), column, options=options)
             for column in options['columns']
         ]
 
@@ -121,17 +123,16 @@ class AccountPeWorksheetReportHandler(models.AbstractModel):
                    SUM(CASE WHEN account_move_line.date >= %(date_from)s
                             THEN %(credit)s ELSE 0 END) AS period_credit
               FROM %(table_references)s
-                   %(currency_table_join)s
              WHERE %(search_condition)s
           GROUP BY account_move_line.account_id
             """,
             date_from=date_from,
             fiscalyear_start=fiscalyear_start,
-            balance=report._currency_table_apply_rate(SQL('account_move_line.balance')),
-            debit=report._currency_table_apply_rate(SQL('account_move_line.debit')),
-            credit=report._currency_table_apply_rate(SQL('account_move_line.credit')),
+            # Odoo 20: el importe convertido (multicompañía) lo da la tabla del query.
+            balance=query.table.consolidation_balance,
+            debit=query.table.consolidation_debit,
+            credit=query.table.consolidation_credit,
             table_references=query.from_clause,
-            currency_table_join=report._currency_table_aml_join(options),
             search_condition=query.where_clause,
         ))
         results = self.env.cr.dictfetchall()

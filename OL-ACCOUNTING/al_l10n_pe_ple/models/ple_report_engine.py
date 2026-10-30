@@ -116,7 +116,8 @@ class L10nPePleReportHandler(models.AbstractModel):
             'document_type_related': mod_type,
             'related_document': '-'.join(filter(None, (mod_serie, mod_folio))),
             'status': 'cancel' if rejected else move.state,
-            'edi_state': 'cancelled' if rejected else move.edi_state,
+            # Odoo 20: el estado del CPE es l10n_pe_edi_status.
+            'edi_state': 'cancelled' if rejected else move.l10n_pe_edi_status,
             'invoice_dua_name': dua.name if dua else '',
             'invoice_dua_document_type': (
                 dua.l10n_latam_document_type_id.code or '') if dua else '',

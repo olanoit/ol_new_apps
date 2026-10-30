@@ -11,6 +11,15 @@ from odoo.addons.al_account_base.tests.common import use_pe_company
 RUC_TEST = '20512528458'
 
 
+def _depreciation_model(env, years):
+    """Odoo 20: el método y la vida útil van en un modelo de depreciación
+    (único por combinación de valores)."""
+    values = {'method': 'linear', 'method_number': years, 'method_period': '12'}
+    Model = env['account.depreciation.model']
+    return Model.search([(key, '=', value) for key, value in values.items()], limit=1) \
+        or Model.create(values)
+
+
 @tagged('post_install', '-at_install')
 class TestPleAssetReport(TransactionCase):
 
@@ -38,9 +47,7 @@ class TestPleAssetReport(TransactionCase):
             'original_value': value,
             'acquisition_date': acquisition,
             'prorata_date': acquisition,
-            'method': 'linear',
-            'method_number': 5,
-            'method_period': '12',
+            'model_id': _depreciation_model(self.env, 5).id,
             'account_asset_id': self.account_asset.id,
             'account_depreciation_id': self.account_dep.id,
             'account_depreciation_expense_id': self.account_exp.id,
@@ -48,7 +55,7 @@ class TestPleAssetReport(TransactionCase):
             'l10n_pe_ple_code': code,
             'l10n_pe_asset_type': '1',
         })
-        asset.write({'state': 'open'})
+        asset.main_variant_id.write({'state': 'open'})
         return asset
 
     def _depreciate(self, asset, amount, move_date, move_type=None):
@@ -56,7 +63,7 @@ class TestPleAssetReport(TransactionCase):
             'move_type': 'entry',
             'date': move_date,
             'journal_id': self.journal.id,
-            'asset_id': asset.id,
+            'asset_variant_id': asset.main_variant_id.id,
             'line_ids': [
                 (0, 0, {'account_id': self.account_exp.id,
                         'debit': amount, 'credit': 0.0}),

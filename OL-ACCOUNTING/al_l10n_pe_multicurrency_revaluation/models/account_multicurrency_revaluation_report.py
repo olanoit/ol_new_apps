@@ -42,12 +42,13 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
         # compra o venta: se detecta igual que el nativo (``custom_rate``).
         custom = set()
         if options.get('custom_rate'):
+            # Odoo 20: _get_rates devuelve (tasa, fecha de la tasa).
             db_rates = (currencies | company.currency_id)._get_rates(company, date_to)
-            company_rate = db_rates[company.currency_id.id]
+            company_rate = db_rates[company.currency_id.id][0]
             custom = {
                 key for key, values in options['currency_rates'].items()
                 if not float_is_zero(
-                    float(values['rate']) - db_rates[int(key)] / company_rate, 20)
+                    float(values['rate']) - db_rates[int(key)][0] / company_rate, 20)
             }
         # Art. 34 del Reglamento de la LIR: compra y venta al cierre de
         # operaciones de la fecha del informe. Las tasas llevan la fecha en que
@@ -121,19 +122,21 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
     # ------------------------------------------------------------------
     # Motor
     # ------------------------------------------------------------------
-    def _multi_currency_revaluation_get_custom_lines(self, options, line_code, current_groupby, next_groupby, offset=0, limit=None):
+    def _multi_currency_revaluation_get_custom_lines(self, options, line_code, formulas_dict, current_groupby):
+        # Odoo 20: el motor devuelve {fórmula: resultado} y ya no pagina.
+        key_formula = next(iter(formulas_dict.values()))
         if not current_groupby:
             # Línea principal: el nativo no calcula nada.
             result = super()._multi_currency_revaluation_get_custom_lines(
-                options, line_code, current_groupby, next_groupby, offset=offset, limit=limit)
-            return {**result, RATE_COLUMN: ''}
+                options, line_code, formulas_dict, current_groupby)
+            return {key_formula: {**result[key_formula], RATE_COLUMN: ''}}
 
         groups = options.get('l10n_pe_revaluation_groups') or []
         if not groups:
             result = super()._multi_currency_revaluation_get_custom_lines(
-                options, line_code, current_groupby, next_groupby, offset=offset, limit=limit)
-            return [(key, self._l10n_pe_add_rate(options, vals, {}))
-                    for key, vals in result]
+                options, line_code, formulas_dict, current_groupby)
+            return {key_formula: [(key, self._l10n_pe_add_rate(options, vals, {}))
+                                  for key, vals in result[key_formula]]}
 
         forced_domain = list(options.get('forced_domain') or [])
         grouped_ids = [account_id for group in groups for account_id in group['account_ids']]
@@ -154,18 +157,14 @@ class AccountMulticurrencyRevaluationReportHandler(models.AbstractModel):
 
         merged = {}
         for pass_options, overrides in passes:
-            # Sin paginar: la paginación se aplica tras sumar los resultados.
             result = super()._multi_currency_revaluation_get_custom_lines(
-                pass_options, line_code, current_groupby, next_groupby)
-            for key, vals in result:
+                pass_options, line_code, formulas_dict, current_groupby)
+            for key, vals in result[key_formula]:
                 vals = self._l10n_pe_add_rate(options, vals, overrides)
                 merged[key] = self._l10n_pe_merge(merged[key], vals) if key in merged else vals
 
         keys = sorted(merged, key=lambda key: (key is None, key))
-        keys = keys[offset:]
-        if limit:
-            keys = keys[:limit]
-        return [(key, merged[key]) for key in keys]
+        return {key_formula: [(key, merged[key]) for key in keys]}
 
     @api.model
     def _l10n_pe_add_rate(self, options, vals, overrides):

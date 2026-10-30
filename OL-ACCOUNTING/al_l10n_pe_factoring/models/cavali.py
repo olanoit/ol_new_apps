@@ -26,7 +26,7 @@ import zipfile
 
 import requests
 
-from odoo import api, fields, models
+from odoo import SUPERUSER_ID, api, fields, models, modules
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -202,8 +202,13 @@ class L10nPeCavaliLog(models.Model):
         except requests.RequestException as error:
             _logger.warning('CAVALI %s: %s', operation, error)
             vals.update(state='error', message=str(error)[:500])
-        # El registro queda aunque la operación falle después.
-        return self.sudo().create(vals).sudo(False)
+        log = self.sudo().create(vals).sudo(False)
+        if log.state != 'ok' and not modules.module.current_test:
+            # El envío fallido termina en un UserError que deshace la
+            # transacción: el registro se guarda aparte para que quede.
+            with self.env.registry.cursor() as cr:
+                api.Environment(cr, SUPERUSER_ID, {})['l10n_pe.cavali.log'].create(vals)
+        return log
 
 
 class AccountMove(models.Model):

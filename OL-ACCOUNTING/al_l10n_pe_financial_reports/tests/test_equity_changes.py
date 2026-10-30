@@ -107,11 +107,11 @@ class TestEquityChanges(AccountTestInvoicingCommon):
         codes = {line.id: line.code for line in report.line_ids}
         result = {}
         for line in lines:
-            line_id = report._get_res_id_from_line_id(line['id'], 'account.report.line')
-            if line_id in codes and not report._get_res_id_from_line_id(line['id'], 'account.account'):
+            line_id = report._get_res_id_from_line_id(line.id, 'account.report.line')
+            if line_id in codes and not report._get_res_id_from_line_id(line.id, 'account.account'):
                 result[codes[line_id]] = {
-                    column['expression_label']: column.get('no_format')
-                    for column in line['columns']}
+                    column.expression_label: column.no_format
+                    for column in line.columns}
         return result
 
     def _equity(self, **dates):

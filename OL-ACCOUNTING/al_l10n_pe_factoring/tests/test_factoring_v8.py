@@ -350,8 +350,12 @@ class TestFactoringV8(FactoringCommon):
         with patch(CAVALI_POST, return_value=FakeResponse({'codigo': '45', 'mensaje': 'RUC no habido'}, 400)):
             with self.assertRaisesRegex(UserError, 'RUC no habido'):
                 invoice.action_l10n_pe_cavali_register()
+            # Odoo 20: assertRaises deshace lo hecho en su bloque; el registro
+            # del envío fallido (que fuera de pruebas se guarda en otro
+            # cursor) se comprueba con la llamada directa.
+            log = self.env['l10n_pe.cavali.log']._call(
+                invoice.company_id, 'register', invoice._l10n_pe_cavali_payload(), move=invoice)
         self.assertEqual(invoice.l10n_pe_negotiable_state, 'none')
-        log = self.env['l10n_pe.cavali.log'].search([('move_id', '=', invoice.id)])
         self.assertEqual((log.state, log.http_status), ('error', 400))
 
     def test_cavali_status_query(self):

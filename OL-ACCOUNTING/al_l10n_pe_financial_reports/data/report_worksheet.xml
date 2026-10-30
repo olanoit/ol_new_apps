@@ -18,7 +18,6 @@
         <field name="filter_growth_comparison" eval="False"/>
         <field name="filter_unfold_all" eval="False"/>
         <field name="filter_journals" eval="True"/>
-        <field name="filter_analytic" eval="True"/>
         <field name="filter_analytic_groupby" eval="False"/>
         <field name="filter_multi_company">selector</field>
         <field name="filter_show_draft" eval="True"/>
@@ -117,7 +116,6 @@
         <field name="filter_growth_comparison" eval="False"/>
         <field name="filter_unfold_all" eval="False"/>
         <field name="filter_journals" eval="True"/>
-        <field name="filter_analytic" eval="True"/>
         <field name="filter_analytic_groupby" eval="False"/>
         <field name="filter_multi_company">selector</field>
         <field name="filter_show_draft" eval="True"/>

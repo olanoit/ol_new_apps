@@ -66,16 +66,19 @@ class AccountAsset(models.Model):
     l10n_pe_leasing_total = fields.Monetary(
         string='Monto total del contrato', currency_field='currency_id')
 
-    @api.depends('method')
+    # Odoo 20: el método y la vida útil son de la variante (modelo de
+    # depreciación); el PLE informa la principal (la contable).
+    @api.depends('main_variant_id.method')
     def _compute_l10n_pe_depre_method(self):
         for asset in self:
             asset.l10n_pe_depre_method = (
-                '1' if asset.method == 'linear' else '9')
+                '1' if asset.main_variant_id.method == 'linear' else '9')
 
-    @api.depends('method_number', 'method_period')
+    @api.depends('main_variant_id.method_number', 'main_variant_id.method_period')
     def _compute_l10n_pe_depre_rate(self):
         for asset in self:
-            years = asset.method_number * (
-                1.0 if asset.method_period == '12' else 1.0 / 12.0)
+            variant = asset.main_variant_id
+            years = variant.method_number * (
+                1.0 if variant.method_period == '12' else 1.0 / 12.0)
             # 7.1 campo 28: entre 0 y 100 (vida útil menor a un año → 100).
             asset.l10n_pe_depre_rate = min(100.0, 100.0 / years) if years else 0.0

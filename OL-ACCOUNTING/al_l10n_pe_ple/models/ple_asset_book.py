@@ -47,11 +47,12 @@ class L10nPePleAssetBook(models.AbstractModel):
         date_from, date_to = self._asset_year_range(year)
         domain = [
             ('company_id', 'child_of', company.root_id.id),
-            ('state', 'in', ASSET_BOOK_STATES),
-            ('parent_id', '=', False),
+            # Odoo 20: estado, jerarquía y baja son de la variante principal.
+            ('main_variant_id.state', 'in', ASSET_BOOK_STATES),
+            ('main_variant_id.parent_id', '=', False),
             ('acquisition_date', '<=', date_to),
-            '|', ('disposal_date', '=', False),
-            ('disposal_date', '>=', date_from),
+            '|', ('main_variant_id.disposal_date', '=', False),
+            ('main_variant_id.disposal_date', '>=', date_from),
         ]
         # active_test=False: Odoo 19 permite archivar un activo cerrado, y
         # con eso desaparecían su saldo inicial y su retiro del ejercicio.
@@ -71,20 +72,23 @@ class L10nPePleAssetBook(models.AbstractModel):
         Los asientos de baja o venta no son depreciación: su total ronda el
         valor original del activo y antes inflaba el campo 30.
         """
-        children = assets.with_context(active_test=False).children_ids
-        root_of = {asset.id: asset.id for asset in assets}
-        root_of.update({child.id: child.parent_id.id for child in children})
+        # Odoo 20: los asientos y los aumentos de valor (variantes hijas)
+        # cuelgan de la variante principal de cada activo.
+        variants = assets.main_variant_id
+        children = variants.with_context(active_test=False).children_ids
+        root_of = {asset.main_variant_id.id: asset.id for asset in assets}
+        root_of.update({child.id: root_of[child.parent_id.id] for child in children})
         result = {asset.id: dict.fromkeys(('prior', 'year', 'other'), 0.0)
                   for asset in assets}
         moves = self.env['account.move'].search_read(
-            [('asset_id', 'in', (assets | children).ids),
+            [('asset_variant_id', 'in', (variants | children).ids),
              ('state', '=', 'posted'),
              ('asset_move_type', 'in',
               ('depreciation', 'negative_revaluation', False)),
              ('date', '<=', date_to)],
-            ['asset_id', 'date', 'depreciation_value', 'asset_move_type'])
+            ['asset_variant_id', 'date', 'depreciation_value', 'asset_move_type'])
         for move in moves:
-            sums = result[root_of[move['asset_id'][0]]]
+            sums = result[root_of[move['asset_variant_id'][0]]]
             if move['date'] < date_from:
                 sums['prior'] += move['depreciation_value']
             elif move['asset_move_type'] != 'negative_revaluation':
@@ -95,7 +99,7 @@ class L10nPePleAssetBook(models.AbstractModel):
             # Depreciación importada de un sistema previo: es acumulada
             # anterior solo si el activo es de un ejercicio pasado; si se
             # adquirió en este, es depreciación del ejercicio (campo 30).
-            imported = asset.already_depreciated_amount_import
+            imported = asset.main_variant_id.already_depreciated_amount_import
             if asset.acquisition_date and asset.acquisition_date >= date_from:
                 result[asset.id]['year'] += imported
             else:
@@ -128,7 +132,7 @@ class L10nPePleAssetBook(models.AbstractModel):
         dep_sums = self._asset_depreciation_sums(assets, date_from, date_to)
         result = []
         for asset in assets:
-            children = asset.with_context(
+            children = asset.main_variant_id.with_context(
                 active_test=False).children_ids.filtered(
                 lambda c: c.state in ASSET_BOOK_STATES)
             prior_children = sum(
@@ -147,7 +151,8 @@ class L10nPePleAssetBook(models.AbstractModel):
 
             dep = dep_sums[asset.id]
             retirements = dep_retirements = 0.0
-            if asset.disposal_date and date_from <= asset.disposal_date <= date_to:
+            disposal = asset.main_variant_id.disposal_date
+            if disposal and date_from <= disposal <= date_to:
                 # Sale del registro todo lo que entró: valor y depreciación.
                 retirements = -(initial + additions + improvements)
                 dep_retirements = -(dep['prior'] + dep['year'] + dep['other'])
@@ -176,7 +181,7 @@ class L10nPePleAssetBook(models.AbstractModel):
                 'acquisition_date': asset.acquisition_date,
                 # Sin prorrateo Odoo pone el inicio del año fiscal en
                 # prorata_date: el uso no puede empezar antes de la compra.
-                'start_date': max(filter(None, (asset.prorata_date,
+                'start_date': max(filter(None, (asset.main_variant_id.prorata_date,
                                                 asset.acquisition_date))),
                 'method': asset.l10n_pe_depre_method or '9',
                 'auth_doc': asset.l10n_pe_depre_auth_doc or '-',
@@ -281,8 +286,8 @@ class L10nPePleAssetBook(models.AbstractModel):
                 # 13: depreciación de los retiros del ejercicio (cuadra con
                 # el campo 31 del 7.1).
                 self._ple_amount(-sum(dep_sums[asset.id].values())
-                                 if asset.disposal_date
-                                 and date_from <= asset.disposal_date <= date_to
+                                 if asset.main_variant_id.disposal_date
+                                 and date_from <= asset.main_variant_id.disposal_date <= date_to
                                  else 0.0),                        # 13
                 self._ple_amount(dep_sums[asset.id]['other']),     # 14
                 '1',                                               # 15 estado

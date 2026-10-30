@@ -143,8 +143,16 @@ class L10nPeRetentionEdiMixin(models.AbstractModel):
         xml_content = self._l10n_pe_edi_cpe_export()
         edi_tree = objectify.fromstring(xml_content)
         ubl_version = edi_tree.find('.//{*}UBLVersionID')
-        ubl_version.addprevious(objectify.fromstring(self.env['ir.qweb']._render(
-            'l10n_pe_edi.ubl_pe_21_ubl_extensions_empty_signature')))
+        # Hueco de la firma (ext:UBLExtensions con ds:Signature vacía). Se arma
+        # aquí: en Odoo 20 la plantilla de l10n_pe_edi se renderiza sin sus
+        # declaraciones de espacio de nombres.
+        ext_ns = 'urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2'
+        ds_ns = 'http://www.w3.org/2000/09/xmldsig#'
+        extensions = etree.Element('{%s}UBLExtensions' % ext_ns, nsmap={'ext': ext_ns})
+        content = etree.SubElement(etree.SubElement(extensions, '{%s}UBLExtension' % ext_ns),
+                                   '{%s}ExtensionContent' % ext_ns)
+        etree.SubElement(content, '{%s}Signature' % ds_ns, Id='placeholder', nsmap={'ds': ds_ns})
+        ubl_version.addprevious(extensions)
         return etree.tostring(edi_tree, xml_declaration=True, encoding='ISO-8859-1',
                               pretty_print=True)
 

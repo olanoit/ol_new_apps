@@ -251,14 +251,12 @@ class TestPerception(AccountTestInvoicingCommon):
 
     def test_cpe_send_uses_type_40(self):
         perception = self._posted_cpe()
-        edi = type(self.env['account.edi.format'])
+        # Odoo 20: el envío pasa por l10n_pe.edi.cpe.service (al_l10n_pe_edi_service).
+        service = type(self.env['l10n_pe.edi.cpe.service'])
         result = {'success': True, 'xml_document': b'<signed/>', 'cdr': b'<cdr/>'}
-        with patch.object(edi, '_l10n_pe_edi_sign_service_iap', autospec=True,
-                          return_value=result) as iap, \
-                patch.object(edi, '_l10n_pe_edi_sign_service_sunat_digiflow_common',
-                             autospec=True, return_value=result) as direct:
+        with patch.object(service, '_send_bill', autospec=True, return_value=result) as send:
             perception.action_l10n_pe_edi_send_retention()
-        self.assertEqual((iap.call_args or direct.call_args).args[-1], '40')
+        self.assertEqual(send.call_args.args[4], '40')
         self.assertEqual(perception.l10n_pe_edi_status, 'sent')
         with self.assertRaises(UserError):
             perception.action_cancel()
@@ -362,7 +360,10 @@ class TestPerception(AccountTestInvoicingCommon):
         self.assertAlmostEqual(debit.debit, 23.60, 2)
         self.assertEqual(bill.l10n_pe_perception_received_line_ids.received_id, received)
         with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'), self.cr.savepoint():
-            received.copy()  # mismo documento: único
+            # mismo documento: único (los datos del documento no se copian solos)
+            received.copy({'l10n_pe_series': received.l10n_pe_series,
+                           'l10n_pe_number': received.l10n_pe_number,
+                           'document_kind': received.document_kind, 'name': received.name})
         received.action_cancel()
         self.assertEqual(received.move_id.state, 'cancel')
 

@@ -40,9 +40,8 @@ reapertura del balance (`l10n_pe_closing_step`), así el Balance ve la 59. El
 cierre corre en la compañía raíz con `allowed_company_ids` de todas sus
 sucursales (la regla de apuntes solo deja ver las activas). Activo en la hoja de
 trabajo y en el Balance y el Estado de resultados de `l10n_pe_reports`
-(`data/report_variants.xml`, que además activa `filter_analytic`). Si se
-actualiza `l10n_pe_reports` solo, su XML vuelve a poner `filter_analytic` en
-falso: actualice también este módulo.
+(`data/report_variants.xml`). En Odoo 20 el filtro analítico ya no es una
+opción de cada reporte (`filter_analytic` se eliminó).
 
 ## 3.19 Estado de Cambios en el Patrimonio Neto
 

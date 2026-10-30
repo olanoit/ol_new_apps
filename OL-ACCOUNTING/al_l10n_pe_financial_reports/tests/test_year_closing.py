@@ -208,7 +208,6 @@ class TestYearClosing(AccountTestInvoicingCommon):
             report = self.env.ref(xmlid)
             options = report.get_options({})
             self.assertIn(condition, options['forced_domain'], xmlid)
-            self.assertTrue(report.filter_analytic, xmlid)
 
     def test_balance_sheet_shows_result_in_59(self):
         # Con el cierre publicado (resultado y balance), el Balance al 31/12
@@ -295,9 +294,9 @@ class TestYearClosing(AccountTestInvoicingCommon):
         })
         values = {}
         for line in report._get_lines(options):
-            values[line['name']] = {
-                column['expression_label']: column.get('no_format') or 0.0
-                for column in line['columns']
+            values[line.name] = {
+                column.expression_label: column.no_format or 0.0
+                for column in line.columns
             }
         return values
 

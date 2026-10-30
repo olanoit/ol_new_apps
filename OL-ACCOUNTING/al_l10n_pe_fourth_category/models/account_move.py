@@ -145,4 +145,9 @@ class AccountMove(models.Model):
         payable = self.line_ids.filtered(
             lambda l: l.account_id.account_type == 'liability_payable')
         partials = payable.matched_debit_ids | payable.matched_credit_ids
-        return max(partials.mapped('max_date')) if partials else False
+        if partials:
+            return max(partials.mapped('max_date'))
+        # Odoo 20: un pago sin cuenta de pendientes no genera asiento; queda
+        # vinculado al recibo (en pago) sin conciliación contable.
+        payments = self.matched_payment_ids.filtered(lambda p: p.state in ('paid', 'reconciled'))
+        return max(payments.mapped('date')) if payments else False

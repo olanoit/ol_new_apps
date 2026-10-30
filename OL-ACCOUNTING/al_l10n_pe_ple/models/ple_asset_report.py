@@ -12,6 +12,8 @@ pantalla, TXT y XLSX no pueden descuadrar.
 """
 from odoo import _, api, fields, models
 
+from odoo.addons.account_reports.utils.report_data_objects import AccountReportLineData
+
 from .ple_asset_book import ASSET_71_AMOUNTS
 
 # Botones de exportación: (código de libro, etiqueta, formato, secuencia).
@@ -108,7 +110,6 @@ class L10nPePleAssetReportHandler(models.AbstractModel):
                         'account.asset', asset.id,
                         parent_line_id=account_line_id),
                     'name': name,
-                    'title_hover': name,
                     'level': 2,
                     'unfoldable': False,
                     'caret_options': 'l10n_pe_ple_asset',
@@ -124,7 +125,8 @@ class L10nPePleAssetReportHandler(models.AbstractModel):
             'columns': self._l10n_pe_asset_columns(
                 report, options, grand_total, currency),
         })
-        return [(0, line) for line in lines]
+        # Odoo 20: los handlers devuelven AccountReportLineData.
+        return [(0, AccountReportLineData(**line)) for line in lines]
 
     @api.model
     def _l10n_pe_asset_columns(self, report, options, values, currency):
@@ -132,7 +134,7 @@ class L10nPePleAssetReportHandler(models.AbstractModel):
         columns = []
         for column in options['columns']:
             value = values.get(column['expression_label'])
-            columns.append(report._build_column_dict(
+            columns.append(report._build_column_data(
                 value, column if value is not None else None,
                 options=options, currency=currency))
         return columns

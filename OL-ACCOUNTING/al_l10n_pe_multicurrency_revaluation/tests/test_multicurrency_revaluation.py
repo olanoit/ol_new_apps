@@ -104,8 +104,9 @@ class TestMulticurrencyRevaluation(TransactionCase):
         return self.report.with_company(self.company)._get_lines(options)
 
     def _account_line(self, lines, account):
+        # Odoo 20 agrupa por código de cuenta («{"groupby": "account_code"}~~121201»).
         for line in lines:
-            if self.report._get_res_id_from_line_id(line['id'], 'account.account') == account.id:
+            if line.id.endswith('{"groupby": "account_code"}~~%s' % account.code):
                 return line
         return None
 

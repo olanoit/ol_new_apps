@@ -123,6 +123,14 @@ class ResCurrency(models.Model):
     # Conversión con el tipo de cambio peruano                            #
     # ------------------------------------------------------------------ #
 
+    def _get_rates(self, company, date):
+        # El núcleo toma la última tasa *anterior* a la fecha (name < date).
+        # En Perú el T.C. publicado por SUNAT para el día D rige las
+        # operaciones de ese día: se incluye la tasa del mismo día.
+        if company.root_id.account_fiscal_country_id.code == 'PE' and date:
+            date = fields.Date.to_date(date) + timedelta(days=1)
+        return super()._get_rates(company, date)
+
     def _get_conversion_rate(self, from_currency, to_currency, company=None,
                              date=None):
         """Respeta el tipo de cambio pactado o compra/venta indicado en el contexto.

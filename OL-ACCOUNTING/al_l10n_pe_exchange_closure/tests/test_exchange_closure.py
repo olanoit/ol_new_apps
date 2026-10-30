@@ -794,4 +794,4 @@ class TestExchangeClosure(TransactionCase):
         for xmlid in ('rule_exchange_closure_company',
                       'rule_exchange_closure_line_company'):
             rule = self.env.ref('al_l10n_pe_exchange_closure.%s' % xmlid)
-            self.assertIn('company_ids', rule.domain_force)
+            self.assertIn('company_ids', rule.domain)

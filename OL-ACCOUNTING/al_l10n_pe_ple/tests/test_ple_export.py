@@ -9,6 +9,15 @@ from odoo.addons.al_account_base.tests.common import use_pe_company
 RUC_TEST = '20512528458'
 
 
+def _depreciation_model(env, years):
+    """Odoo 20: el método y la vida útil van en un modelo de depreciación
+    (único por combinación de valores)."""
+    values = {'method': 'linear', 'method_number': years, 'method_period': '12'}
+    Model = env['account.depreciation.model']
+    return Model.search([(key, '=', value) for key, value in values.items()], limit=1) \
+        or Model.create(values)
+
+
 @tagged('post_install', '-at_install')
 class TestPleExport(TransactionCase):
 
@@ -39,9 +48,7 @@ class TestPleExport(TransactionCase):
             'original_value': 12000.0,
             'acquisition_date': date(2025, 1, 10),
             'prorata_date': date(2025, 1, 10),
-            'method': 'linear',
-            'method_number': 5,
-            'method_period': '12',
+            'model_id': _depreciation_model(cls.env, 5).id,
             'account_asset_id': cls.account_asset.id,
             'account_depreciation_id': cls.account_dep.id,
             'account_depreciation_expense_id': cls.account_exp.id,
@@ -52,7 +59,7 @@ class TestPleExport(TransactionCase):
             'l10n_pe_model': 'Hilux',
             'l10n_pe_plate': 'ABC-123',
         })
-        cls.asset.write({'state': 'open'})
+        cls.asset.main_variant_id.write({'state': 'open'})
 
     def _wizard(self, **kwargs):
         values = {'year': 2025, 'month': '03', 'export_71': False,
@@ -136,7 +143,7 @@ class TestPleExport(TransactionCase):
             'move_type': 'entry',
             'date': date(2025, 12, 31),
             'journal_id': self.journal.id,
-            'asset_id': self.asset.id,
+            'asset_variant_id': self.asset.main_variant_id.id,
             'line_ids': [
                 (0, 0, {'account_id': self.account_exp.id,
                         'debit': 2400.0, 'credit': 0.0}),
@@ -333,15 +340,13 @@ class TestPleExport(TransactionCase):
             'original_value': 8000.0,
             'acquisition_date': date(2024, 6, 1),
             'prorata_date': date(2024, 6, 1),
-            'method': 'linear',
-            'method_number': 4,
-            'method_period': '12',
+            'model_id': _depreciation_model(self.env, 4).id,
             'account_asset_id': account_34.id,
             'account_depreciation_id': self.account_dep.id,
             'account_depreciation_expense_id': self.account_exp.id,
             'journal_id': self.journal.id,
         })
-        intangible.write({'state': 'open'})
+        intangible.main_variant_id.write({'state': 'open'})
         wizard = self._wizard(
             export_39=True, balance_date=date(2025, 12, 31))
         wizard.action_export()
@@ -757,7 +762,7 @@ class TestPleExport(TransactionCase):
         self.assertEqual(values['dep_prior'], 0.0)
         self.assertGreaterEqual(values['dep_year'], 500.0)
         # Odoo 19 solo archiva activos cerrados.
-        self.asset.write({'state': 'close'})
+        self.asset.main_variant_id.write({'state': 'close'})
         self.asset.active = False
         assets = [asset for asset, _vals in
                   Book._asset_71_values(self.company, 2025)]

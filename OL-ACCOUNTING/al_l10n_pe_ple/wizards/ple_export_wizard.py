@@ -833,13 +833,14 @@ class L10nPePleExportWizard(models.TransientModel):
         assets = self.env['account.asset'].with_context(
             active_test=False).search([
             ('company_id', 'child_of', self.company_id.root_id.id),
-            ('state', 'in', ('open', 'paused', 'close')),
-            ('parent_id', '=', False),
+            # Odoo 20: estado, jerarquía y baja son de la variante principal.
+            ('main_variant_id.state', 'in', ('open', 'paused', 'close')),
+            ('main_variant_id.parent_id', '=', False),
             ('account_asset_id.code', '=like',
              self.INTANGIBLE_ACCOUNT_PREFIX + '%'),
             ('acquisition_date', '<=', self.balance_date),
-            '|', ('disposal_date', '=', False),
-            ('disposal_date', '>', self.balance_date),
+            '|', ('main_variant_id.disposal_date', '=', False),
+            ('main_variant_id.disposal_date', '>', self.balance_date),
         ], order='acquisition_date, id')
         dep_sums = self.env['l10n_pe.ple.asset.book']._asset_depreciation_sums(
             assets, date(self.balance_date.year, 1, 1), self.balance_date)
@@ -855,7 +856,7 @@ class L10nPePleExportWizard(models.TransientModel):
                 self._ple_text(asset.name, 40),              # 6
                 # 7: con los aumentos de valor (hijos), como su amortización
                 self._ple_amount(asset.original_value + sum(
-                    child.original_value for child in asset.with_context(
+                    child.original_value for child in asset.main_variant_id.with_context(
                         active_test=False).children_ids
                     if child.state in ('open', 'paused', 'close'))),
                 self._ple_amount(-abs(total_dep)),           # 8 amortización (−)
