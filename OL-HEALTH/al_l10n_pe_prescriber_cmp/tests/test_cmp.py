@@ -30,6 +30,15 @@ class TestCmpVerification(TransactionCase):
         self.assertEqual(self.doctor.pharmacy_prescriber_checked_by_id, self.env.user)
         self.assertTrue(self.doctor.pharmacy_prescriber_checked)
 
+    def test_pharmacist_without_contact_rights_records_verification(self):
+        """El Q.F. no tiene derecho a editar contactos y aun así registra la verificación."""
+        pharmacist = new_test_user(self.env, login='qf_cmp',
+                                   groups='al_pharmacy_base.group_pharmacy_pharmacist')
+        self.assertFalse(pharmacist.has_group('base.group_partner_manager'))
+        self.doctor.with_user(pharmacist).action_pharmacy_cmp_enabled()
+        self.assertEqual(self.doctor.pharmacy_prescriber_status, 'enabled')
+        self.assertEqual(self.doctor.pharmacy_prescriber_checked_by_id, pharmacist)
+
     def test_technician_cannot_verify(self):
         technician = new_test_user(self.env, login='tecnico_cmp',
                                    groups='al_pharmacy_base.group_pharmacy_technician')

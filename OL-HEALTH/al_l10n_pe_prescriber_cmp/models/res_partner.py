@@ -35,7 +35,9 @@ class ResPartner(models.Model):
         for partner in self:
             if not partner.pharmacy_prescriber_license:
                 raise UserError(self.env._('%s no tiene colegiatura.', partner.name))
-        self.write({
+        # sudo: el Q.F. ya se validó arriba; en Odoo 20 editar contactos exige
+        # «Contactos: creación», que el químico farmacéutico no tiene.
+        self.sudo().write({
             'pharmacy_is_prescriber': True,
             'pharmacy_prescriber_status': status,
             'pharmacy_prescriber_checked': fields.Datetime.now(),
