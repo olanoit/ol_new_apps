@@ -17,8 +17,10 @@ class ResPartnerBank(models.Model):
         'l10n_pe.bank', string='Banco (catálogo)', index='btree_not_null',
         help='Banco de la cuenta, para lo que depende de él: formato de pago '
              'masivo, plantillas de cobranza y de cheques, tesorería.')
+    # Odoo 20: es el clearing_number nativo de la cuenta, que el PLE de
+    # l10n_pe_reports ya lee como código SUNAT del banco.
     l10n_pe_bank_code = fields.Char(
-        string='Código SUNAT del banco',
+        string='Código SUNAT del banco', related='clearing_number', readonly=False,
         help='Código de la entidad financiera donde está la cuenta, según la '
              'tabla 3 del Anexo 2 del PLE. Es obligatorio en el Libro Caja y '
              'Bancos, formato 1.2.')
