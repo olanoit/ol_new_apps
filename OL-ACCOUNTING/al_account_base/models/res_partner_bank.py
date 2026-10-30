@@ -67,9 +67,12 @@ class ResPartnerBank(models.Model):
             account.bank_name = account.l10n_pe_bank_id.name
             account.bank_bic = account.bank_bic or account.l10n_pe_bank_id.bic
 
-    @api.constrains('l10n_pe_bank_code')
+    # Sobre el campo nativo: un constrains del related no se dispara si se
+    # escribe clearing_number directamente. Solo cuentas peruanas, para no
+    # validar los números de otros países con la tabla del PLE.
+    @api.constrains('clearing_number', 'country_id', 'l10n_pe_bank_id')
     def _check_l10n_pe_bank_code(self):
-        for account in self:
+        for account in self.filtered(lambda a: a.l10n_pe_bank_id or a.country_code == 'PE'):
             code = (account.l10n_pe_bank_code or '').strip()
             if code and not (code.isdigit() and len(code) == 2):
                 raise ValidationError(_(

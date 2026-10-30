@@ -57,6 +57,28 @@ class TestPeBaseFields(TransactionCase):
                                    msg='«%s» no es un código válido' % wrong):
                 account.l10n_pe_bank_code = wrong
 
+    def test_native_clearing_number_is_validated(self):
+        """Odoo 20: escribir el clearing_number nativo también se valida."""
+        account = self.env['res.partner.bank'].create({
+            'account_number': '00555666777',
+            'partner_id': self.partner.id,
+        })
+        with self.assertRaises(ValidationError):
+            account.clearing_number = 'AB'
+        account.clearing_number = '11'
+        self.assertEqual(account.l10n_pe_bank_code, '11')
+
+    def test_foreign_clearing_number_not_validated(self):
+        """Una cuenta extranjera conserva su número de ruta sin la tabla del PLE."""
+        partner = self.env['res.partner'].create({
+            'name': 'PROVEEDOR US', 'country_id': self.env.ref('base.us').id})
+        account = self.env['res.partner.bank'].create({
+            'account_number': '000123456789',
+            'partner_id': partner.id,
+            'clearing_number': '021000021',
+        })
+        self.assertEqual(account.clearing_number, '021000021')
+
     # ------------------------------------------------------------------
     # Naturaleza del diario
     # ------------------------------------------------------------------
