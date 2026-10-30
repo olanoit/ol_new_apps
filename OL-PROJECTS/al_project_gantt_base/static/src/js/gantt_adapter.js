@@ -2,7 +2,7 @@
 
 /**
  * Adaptador compartido: traduce el formato neutral que devuelve
- * `project.project.get_gantt_data()` al formato que consume dhtmlxGantt.
+ * `project.project.al_gantt_get_data()` al formato que consume dhtmlxGantt.
  *
  * Vive en el módulo base para que las dos interfaces (backend y website) usen
  * exactamente la misma traducción. Es código puro, sin dependencias de OWL ni
@@ -212,7 +212,7 @@ export function linkToRow(link) {
 /**
  * Traduce la respuesta completa.
  *
- * @param {Object} payload respuesta de `get_gantt_data`
+ * @param {Object} payload respuesta de `al_gantt_get_data`
  * @param {Object} [options] `groupByProject` (por defecto true si hay más de
  *        un proyecto), `includeMilestones` (por defecto true)
  * @returns {{data: Array, links: Array, undated: Array, meta: Object, colors: Object}}

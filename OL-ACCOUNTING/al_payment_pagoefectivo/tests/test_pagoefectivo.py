@@ -138,7 +138,8 @@ class TestPagoEfectivo(PagoEfectivoCommon, PaymentHttpCommon):
         self.assertIn('508', tx.state_message)
 
     def test_dni_is_sent_as_document(self):
-        self.partner.write({'additional_identifiers': {'PE_DNI': '45678912'}})
+        # Odoo 20: un contacto con DNI no tiene RUC (vat).
+        self.partner.write({'vat': False, 'additional_identifiers': {'PE_DNI': '45678912'}})
         tx = self._create_transaction('redirect', reference=self.reference)
         payload = tx._pagoefectivo_prepare_cip_payload()
         self.assertEqual((payload['userDocumentType'], payload['userDocumentNumber']), ('DNI', '45678912'))
@@ -155,6 +156,7 @@ class TestPagoEfectivo(PagoEfectivoCommon, PaymentHttpCommon):
         tx, _values = self._create_cip_tx()
         response = self._post_notification(self._notification())
         self.assertEqual(response.status_code, 200)
+        self._run_processing()  # Odoo 20: la notificación se encola con _record()
         self.assertEqual(tx.state, 'done')
 
     @mute_logger('odoo.addons.al_payment_pagoefectivo.controllers.main')
@@ -168,6 +170,7 @@ class TestPagoEfectivo(PagoEfectivoCommon, PaymentHttpCommon):
         response = self.url_open(WEBHOOK, data=pretty, headers={
             'Content-Type': 'application/json', 'PE-Signature': signature})
         self.assertEqual(response.status_code, 200)
+        self._run_processing()  # Odoo 20: la notificación se encola con _record()
         self.assertEqual(tx.state, 'done')
 
     @mute_logger('odoo.addons.al_payment_pagoefectivo.controllers.main', 'odoo.http')
@@ -191,17 +194,20 @@ class TestPagoEfectivo(PagoEfectivoCommon, PaymentHttpCommon):
     def test_notification_with_altered_amount_sets_error(self):
         tx, _values = self._create_cip_tx()
         self._post_notification(self._notification(amount=12.05))
+        self._run_processing()
         self.assertEqual(tx.state, 'error')
 
     @mute_logger('odoo.addons.al_payment_pagoefectivo.controllers.main')
     def test_expired_notification_cancels(self):
         tx, _values = self._create_cip_tx()
         self._post_notification(self._notification(event='cip.expired'))
+        self._run_processing()
         self.assertEqual(tx.state, 'cancel')
 
     # ------------------------------------------------------------ vencimiento
     def test_cron_cancels_expired_cip_and_late_payment_still_confirms(self):
         tx, _values = self._create_cip_tx()
+        tx = tx.with_context(payment_safe_write=True)
         tx.pagoefectivo_date_expiry = fields.Datetime.now() - timedelta(hours=1)
         self.env['payment.transaction']._cron_pagoefectivo_cancel_expired()
         self.assertEqual(tx.state, 'pending', 'Dentro del margen no se cancela.')

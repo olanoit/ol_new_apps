@@ -375,7 +375,7 @@ class L10nPeSireApi(models.AbstractModel):
         Cada archivo de ``archivoReporte`` se pide con su nombre, su tipo y
         el ``codLibro`` del registro, como exige el servicio. SUNAT entrega
         la propuesta «zipeada y particionada»: se unen todos los TXT de
-        todos los ZIP, sin repetir la cabecera. Devuelve el TXT en base64.
+        todos los ZIP, sin repetir la cabecera. Devuelve el TXT (bytes).
         """
         register = self._sire_ticket_register(token, period, num_ticket)
         reports = register.get('archivoReporte') or []
@@ -400,7 +400,7 @@ class L10nPeSireApi(models.AbstractModel):
                 elif text_lines[0] == header:
                     text_lines = text_lines[1:]
                 lines.extend(line for line in text_lines if line.strip())
-        return base64.b64encode('\n'.join(lines).encode('utf-8'))
+        return '\n'.join(lines).encode('utf-8')
 
     # ------------------------------------------------------------------
     # Procesos sobre la propuesta

@@ -95,7 +95,7 @@ def _rce_row(car='20131312955010F00200000000034', serie='F002', nro='34',
 
 def _as_proposal(rows):
     header = 'CABECERA'
-    return base64.b64encode(('\n'.join([header] + rows)).encode('utf-8'))
+    return BinaryBytes(('\n'.join([header] + rows)).encode('utf-8'))
 
 
 @tagged('post_install', '-at_install')
@@ -674,16 +674,10 @@ class TestSire(TransactionCase):
         self.assertAlmostEqual(vals['igv_ipm'], 0.0, places=2)
 
     def _reject_cdr(self, move, code='2800'):
-        """Deja el CPE como lo deja l10n_pe_edi con un CDR de rechazo."""
-        edi_format = self.env.ref('l10n_pe_edi.edi_pe_ubl_2_1')
-        document = move.edi_document_ids.filtered(lambda d: d.edi_format_id == edi_format)
-        vals = {'state': 'to_send', 'blocking_level': 'error',
-                'error': 'Error del OSE.<br/><br/><b>Original message:</b><br/>%s|Rechazo' % code}
-        if document:
-            document.write(vals)
-        else:
-            self.env['account.edi.document'].create(
-                dict(vals, move_id=move.id, edi_format_id=edi_format.id))
+        """Deja el CPE como lo deja l10n_pe_edi 20 con un CDR de rechazo."""
+        move.write({'l10n_pe_edi_status': 'to_send', 'l10n_pe_edi_warnings': move._l10n_pe_edi_transform_error({
+            'message': 'Error del OSE.<br/><br/><b>Original message:</b><br/>%s|Rechazo' % code,
+            'level': 'danger'})})
 
     def test_rejected_cdr_goes_with_zero(self):
         invoice = self._make_invoice('out_invoice')

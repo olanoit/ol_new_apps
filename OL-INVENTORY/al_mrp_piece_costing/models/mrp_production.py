@@ -127,7 +127,8 @@ class MrpProduction(models.Model):
         # Costo total con los sumandos del nativo (en Enterprise, _cal_cost de
         # la orden de trabajo ya incluye la mano de obra de los empleados).
         main_qty = sum(self._piece_product_qty(m) for m in main)
-        total_cost = (sum(m.value for m in consumed_moves)
+        # Odoo 20: el valor de los consumos es negativo (salida de stock).
+        total_cost = (abs(sum(m.value for m in consumed_moves))
                       + sum(wo._cal_cost() for wo in self.workorder_ids)
                       + self.extra_cost * main_qty)
         measures = {move: self._piece_measures(move) for move in outputs}
@@ -137,7 +138,7 @@ class MrpProduction(models.Model):
         if self.company_id.currency_id.is_zero(total_cost) or total_area <= 0:
             return {}
 
-        edge_pool = sum(m.value for m in consumed_moves if m.product_id.piece_is_edge_banding)
+        edge_pool = abs(sum(m.value for m in consumed_moves if m.product_id.piece_is_edge_banding))
         if total_edge <= 0:
             # Hay tapacanto consumido pero ninguna pieza declara metros: va a
             # la bolsa general para no perder costo.
@@ -152,7 +153,7 @@ class MrpProduction(models.Model):
         for move in consumed_moves:
             product = move.product_id
             if not product.piece_is_edge_banding and area_by_material.get(product):
-                material_pools[product] = material_pools.get(product, 0.0) + move.value
+                material_pools[product] = material_pools.get(product, 0.0) + abs(move.value)
         # Los retazos salen del valor de su tablero (o de la bolsa general si
         # ninguna pieza se corta de él) y no entran al reparto.
         fixed_costs = {move: move.construction_fixed_cost for move in fixed}
@@ -207,7 +208,7 @@ class MrpProduction(models.Model):
                 outputs = production.move_finished_ids.filtered(lambda m: m.state == 'done')
                 main_qty = sum(production._piece_product_qty(m) for m in outputs
                                if m.product_id == production.product_id)
-                total = (sum(consumed.mapped('value'))
+                total = (abs(sum(consumed.mapped('value')))
                          + sum(wo._cal_cost() for wo in production.workorder_ids)
                          + production.extra_cost * main_qty)
                 output_value = sum(outputs.mapped('value'))

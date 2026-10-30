@@ -21,7 +21,7 @@ export function emptyFilters() {
 
 /**
  * Traduce el estado de filtros a las `options` que espera
- * `project.project.get_gantt_data()`. Solo se envía lo que está informado.
+ * `project.project.al_gantt_get_data()`. Solo se envía lo que está informado.
  */
 export function filtersToOptions(filters) {
     const options = {};

@@ -209,7 +209,7 @@ class TestSireValidation(TestSire):
                 patch.object(type(record), '_sire_ticket_register', return_value={
                     'detalleTicket': {'codEstadoEnvio': status[0]}, 'archivoReporte': []}), \
                 patch.object(type(record), '_sire_download_report',
-                             return_value=base64.b64encode(b'CABECERA')) as download:
+                             return_value=b'CABECERA') as download:
             record._sire_poll_once()
         return download
 

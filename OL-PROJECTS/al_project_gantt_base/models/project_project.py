@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Fachada pública del servicio de datos.
 
-Las UIs llaman siempre a ``project.project.get_gantt_data`` (un modelo con ACL
+Las UIs llaman siempre a ``project.project.al_gantt_get_data`` (un modelo con ACL
 propia y reglas de registro), nunca al ``AbstractModel`` interno.
 """
 from odoo import api, fields, models
@@ -32,7 +32,8 @@ class ProjectProject(models.Model):
             project.gantt_task_count = counts.get(project, 0)
 
     @api.model
-    def get_gantt_data(self, project_ids=None, options=None):
+    # Odoo 20: web_gantt/project_enterprise ya usan get_gantt_data (otra firma).
+    def al_gantt_get_data(self, project_ids=None, options=None):
         """Punto de entrada RPC de lectura. Ver ``al.gantt.data.get_data``."""
         return self.env['al.gantt.data'].get_data(project_ids=project_ids, options=options)
 

@@ -77,6 +77,9 @@ bandera de función de forma predeterminada. Aislado a la ruta de addons configu
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_mcp_server/static/description/icon.png',
     'license': 'OPL-1',
+    # Odoo 20 trae ai_mcp con las mismas rutas (/mcp, /oauth/authorize,
+    # /oauth/token, /oauth/revoke): no pueden convivir.
+    'excludes': ['ai_mcp'],
     'depends': ['base', 'web', 'mail'],
     'data': [
         'data/mcp_cron.xml',

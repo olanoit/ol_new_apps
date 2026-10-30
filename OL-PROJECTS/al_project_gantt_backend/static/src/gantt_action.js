@@ -5,7 +5,7 @@
  *
  * Monta dhtmlxGantt en un contenedor propio; no hereda `web_gantt` ni ningún
  * tipo de vista de Odoo. Los datos vienen siempre del módulo base a través de
- * `project.project.get_gantt_data()`.
+ * `project.project.al_gantt_get_data()`.
  */
 import { Component, onMounted, onWillStart, onWillUnmount, proxy, t, usePlugin, useProps } from "@odoo/owl";
 import { NotificationPlugin } from "@web/core/notifications/notification_plugin";
@@ -51,7 +51,7 @@ import { ActionManagerPlugin } from "@web/webclient/actions/action_plugin";
  * heredándolo (`class MiPantalla extends GanttAction`). Todos son opcionales
  * y, sin sobrescribir, el Gantt se comporta exactamente igual:
  *
- * - `getOptions()`: opciones extra para `get_gantt_data` (el servidor las
+ * - `getOptions()`: opciones extra para `al_gantt_get_data` (el servidor las
  *   recibe en `options` y una herencia de `al.gantt.data` puede usarlas).
  * - `transformGanttData(ganttData, payload)`: filas y enlaces ya adaptados a
  *   dhtmlxGantt, para añadir o retocar filas antes de pintarlas.
@@ -167,7 +167,7 @@ export class GanttAction extends Component {
         try {
             // Los errores (p. ej. AccessError) suben al gestor de errores de
             // Odoo, que ya muestra el diálogo estándar: no se silencian aquí.
-            const payload = await this.orm.call("project.project", "get_gantt_data", [
+            const payload = await this.orm.call("project.project", "al_gantt_get_data", [
                 this.state.selectedIds.length ? this.state.selectedIds : null,
                 this.getOptions(),
             ]);

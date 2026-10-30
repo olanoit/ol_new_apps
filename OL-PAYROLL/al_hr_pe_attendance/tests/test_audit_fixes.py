@@ -195,7 +195,7 @@ class TestTareajeAuditFixes(TransactionCase):
         rule = self.env.ref(
             'al_hr_pe_attendance.'
             'l10n_pe_hr_attendance_monitor_planning_user_rule')
-        self.assertEqual(rule.domain_force, "[('user_id', '=', user.id)]")
+        self.assertEqual(rule.domain, "[('user_id', '=', user.id)]")
         self.assertIn(self.env.ref('planning.group_planning_user'),
                       rule.groups)
         # La vista SQL expone el usuario del trabajador para la regla.

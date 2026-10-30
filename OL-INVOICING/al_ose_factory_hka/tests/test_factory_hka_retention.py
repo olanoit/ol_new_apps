@@ -6,8 +6,7 @@ from lxml import etree
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
-from odoo.addons.l10n_pe_edi.tests.common import TestPeEdiCommon
-from .test_factory_hka import FakeHkaClient
+from .test_factory_hka import FactoryHkaCommon, FakeHkaClient
 
 NS = {'cbc': 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2',
       'cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
@@ -15,25 +14,7 @@ NS = {'cbc': 'urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents
 
 
 @tagged('post_install_l10n', 'post_install', '-at_install')
-class TestFactoryHkaRetention(TestPeEdiCommon):
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.company = cls.company_data['company']
-        cls.company.write({
-            'l10n_pe_edi_provider': 'factory_hka',
-            'l10n_pe_edi_factory_hka_username': '20557912879HKA',
-            'l10n_pe_edi_factory_hka_password': 'secreto',
-        })
-        FakeHkaClient.edi_format = cls.edi_format
-
-    def setUp(self):
-        super().setUp()
-        FakeHkaClient.calls = []
-        patcher = patch('odoo.addons.l10n_pe_edi.models.account_edi_format.Client', FakeHkaClient)
-        patcher.start()
-        self.addCleanup(patcher.stop)
+class TestFactoryHkaRetention(FactoryHkaCommon):
 
     def _sent_cre(self):
         payment = self.env['account.payment'].create({
@@ -49,23 +30,31 @@ class TestFactoryHkaRetention(TestPeEdiCommon):
     # ------------------------------------------------------------------
 
     def _sign(self, payment):
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_sign_service_sunat_digiflow_common', autospec=True,
-                          return_value={'success': True}) as common:
-            payment._l10n_pe_edi_sign_retention(self.edi_format, '20557912879-20-R001-5', b'<cre/>')
-        return common.call_args.args
+        """Envía el CRE y devuelve (archivo, credenciales usadas). Odoo 20:
+        el envío pasa por l10n_pe.edi.cpe.service."""
+        service = type(self.env['l10n_pe.edi.cpe.service'])
+        sent = {}
+
+        def send_bill(_self, company, filename, edi_str, cpe_type, sunat_wsdl):
+            sent.update(company=company, filename=filename, cpe_type=cpe_type,
+                        credentials=company._l10n_pe_edi_get_credentials(sunat_wsdl=sunat_wsdl))
+            return {'success': True}
+
+        with patch.object(service, '_send_bill', send_bill):
+            payment._l10n_pe_edi_sign_retention('20557912879-20-R001-5', b'<cre/>')
+        return sent
 
     def test_cre_goes_to_factory_hka(self):
-        _self, company, filename, _edi_str, credentials, doc_type = self._sign(self._sent_cre())
-        self.assertEqual(company, self.company)
-        self.assertEqual(doc_type, '20', 'tipo de documento del CRE')
-        self.assertEqual(filename, '20557912879-20-R001-00000005', 'número en 8 dígitos')
-        self.assertEqual(credentials['wsdl'], self.company.l10n_pe_edi_factory_hka_wsdl_demo)
-        self.assertEqual(credentials['token'].username, '20557912879HKA')
+        sent = self._sign(self._sent_cre())
+        self.assertEqual(sent['company'], self.company)
+        self.assertEqual(sent['cpe_type'], '20', 'tipo de documento del CRE')
+        self.assertEqual(sent['filename'], '20557912879-20-R001-00000005', 'número en 8 dígitos')
+        self.assertEqual(sent['credentials']['wsdl'], self.company.l10n_pe_edi_factory_hka_wsdl_demo)
+        self.assertEqual(sent['credentials']['token'].username, '20557912879HKA')
 
     def test_cre_disabled_goes_to_sunat(self):
         self.company.l10n_pe_edi_factory_hka_retention = False
-        credentials = self._sign(self._sent_cre())[4]
+        credentials = self._sign(self._sent_cre())['credentials']
         self.assertIn('otroscpe', credentials['wsdl'], 'directo a SUNAT por el servicio de otros CPE')
 
     # ------------------------------------------------------------------
@@ -106,8 +95,8 @@ class TestFactoryHkaRetention(TestPeEdiCommon):
     def test_reversal_retry_keeps_the_number(self):
         payment = self._sent_cre()
         payment.l10n_pe_edi_reversal_reason = 'Duplicado'
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_1_factory_hka', autospec=True,
+        service = type(self.env['l10n_pe.edi.cpe.service'])
+        with patch.object(service, '_send_summary', autospec=True,
                           return_value={'error': 'Servicio no disponible', 'blocking_level': 'warning'}):
             payment.action_l10n_pe_edi_reverse_retention()
         first = payment.l10n_pe_edi_reversal_filename
@@ -136,12 +125,15 @@ class TestFactoryHkaRetention(TestPeEdiCommon):
         payment.invalidate_recordset(['l10n_pe_edi_reversal_available'])
         self.assertTrue(payment.l10n_pe_edi_reversal_available)
         payment.l10n_pe_edi_reversal_reason = 'Duplicado'
-        edi = type(self.env['account.edi.format'])
-        with patch.object(edi, '_l10n_pe_edi_cancel_invoices_step_1_sunat_digiflow_common', autospec=True,
-                          return_value={'xml_document': b'<x/>', 'cdr_number': '202610110009'}) as sunat, \
-                patch.object(edi, '_l10n_pe_edi_get_sunat_credentials', lambda s, c: {}):
+        service = type(self.env['l10n_pe.edi.cpe.service'])
+        used = {}
+
+        def send_summary(_self, company, filename, edi_str, sunat_wsdl):
+            used['credentials'] = company._l10n_pe_edi_get_credentials(sunat_wsdl=sunat_wsdl)
+            return {'xml_document': b'<x/>', 'cdr_number': '202610110009'}
+
+        with patch.object(service, '_send_summary', send_summary):
             payment.action_l10n_pe_edi_reverse_retention()
-        self.assertTrue(sunat.called)
-        self.assertIn('otroscpe', sunat.call_args.args[-1]['wsdl'])
+        self.assertIn('otroscpe', used['credentials']['wsdl'])
         self.assertFalse(FakeHkaClient.calls, 'nada pasa por HKA')
         self.assertEqual(payment.l10n_pe_edi_reversal_ticket, '202610110009')

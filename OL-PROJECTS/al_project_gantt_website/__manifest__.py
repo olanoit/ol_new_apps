@@ -18,7 +18,7 @@ compartidos internamente, tableros).
 * el endpoint de datos aplica los mismos controles antes de delegar en el
   módulo base.
 
-No reimplementa lógica: los datos salen de ``project.project.get_gantt_data()``
+No reimplementa lógica: los datos salen de ``project.project.al_gantt_get_data()``
 y el render usa el adaptador y la configuración compartidos del módulo base.
     """,
     'author': 'CRISTÓBAL OCH <olanoit@gmail.com>',

@@ -60,7 +60,7 @@ class GanttCommon(TransactionCase):
 
     def _get_data(self, user=None, project_ids=None, options=None):
         env = self.env(user=user) if user else self.env
-        return env['project.project'].get_gantt_data(
+        return env['project.project'].al_gantt_get_data(
             project_ids=project_ids, options=options,
         )
 

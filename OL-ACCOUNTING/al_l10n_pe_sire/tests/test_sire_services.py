@@ -167,7 +167,7 @@ class TestSireServices(TestSire):
         with patch.object(type(self.rce), '_sire_receipt_request', side_effect=receipt):
             operation = self.rce.action_sire_receipt()
         self.assertEqual(calls[0], 'LE%s%s00080400011112.pdf' % (RUC_TEST, PERIOD))
-        self.assertEqual(operation.report_ids.raw, pdf)
+        self.assertEqual(operation.report_ids.raw.content, pdf)
         self.assertEqual(self.rce.receipt_name, calls[2])
 
     def test_receipt_base64_rvie(self):
@@ -176,7 +176,7 @@ class TestSireServices(TestSire):
         response = _response(json_data={'archivoPdf': base64.b64encode(pdf).decode()})
         with patch.object(type(self.rvie), '_sire_receipt_request', return_value=response):
             operation = self.rvie.action_sire_receipt()
-        self.assertEqual(operation.report_ids.raw, pdf)
+        self.assertEqual(operation.report_ids.raw.content, pdf)
 
     def test_receipt_not_found(self):
         self._done(self.rvie)

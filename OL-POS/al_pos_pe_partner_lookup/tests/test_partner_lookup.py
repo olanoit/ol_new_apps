@@ -29,7 +29,7 @@ class TestPartnerLookup(TransactionCase):
             if not cls.Partner.with_context(active_test=False).search_count([('vat', '=', number)]))
         cls.ruc_values = {
             'name': 'SUPERINTENDENCIA NACIONAL DE ADUANAS Y DE ADMINISTRACION TRIBUTARIA',
-            'company_type': 'company', 'street': 'AV. GARCILASO DE LA VEGA NRO. 1472',
+            'street': 'AV. GARCILASO DE LA VEGA NRO. 1472',
         }
 
     def setUp(self):
@@ -48,7 +48,7 @@ class TestPartnerLookup(TransactionCase):
         self.assertEqual(partner.street, 'AV. GARCILASO DE LA VEGA NRO. 1472')
 
     def test_dni_with_spaces(self):
-        with patch(LOOKUP, return_value={'name': 'ROSA QUISPE HUAMAN', 'company_type': 'person'}) as lookup:
+        with patch(LOOKUP, return_value={'name': 'ROSA QUISPE HUAMAN'}) as lookup:
             partner = self.Partner.browse(self.Partner.l10n_pe_pos_create_from_document(' 4567 8901 '))
         self.assertEqual(lookup.call_args.args[-1], '1')
         self.assertEqual(partner.l10n_pe_sunat_id_value, '45678901')

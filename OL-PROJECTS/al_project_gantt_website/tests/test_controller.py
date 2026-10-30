@@ -71,9 +71,9 @@ class TestGanttWebsiteController(HttpCase):
         # bases (y sin dbfilter) la petición no elige base y la ruta ni
         # siquiera existe (404), así que no se estaría probando nada.
         self.authenticate(None, None)
-        response = self.url_open('/gantt', allow_redirects=False)
-        self.assertIn(response.status_code, (302, 303))
-        self.assertIn('/web/login', response.headers.get('Location', ''))
+        # El sitio puede redirigir antes al prefijo de idioma (/en/gantt).
+        response = self.url_open('/gantt')
+        self.assertIn('/web/login', response.url)
 
     def test_menu_is_only_for_gantt_users(self):
         """El menú no se ofrece a visitantes ni a portal: solo al grupo."""

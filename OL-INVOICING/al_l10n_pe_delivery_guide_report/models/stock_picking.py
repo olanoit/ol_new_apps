@@ -45,7 +45,7 @@ class StockPicking(models.Model):
         ], limit=1, order='id desc') if self.l10n_latam_document_number else False
         if attachment and attachment.raw:
             try:
-                tree = etree.fromstring(attachment.raw)
+                tree = etree.fromstring(attachment.raw.content)
                 issue = tree.findtext('{*}IssueDate')
                 if issue:
                     return fields.Date.to_date(issue)

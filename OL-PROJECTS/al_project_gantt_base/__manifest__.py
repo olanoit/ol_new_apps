@@ -10,7 +10,7 @@ Módulo *sin interfaz de usuario*: contiene todo lo que comparten las dos UIs de
 la suite (``al_project_gantt_backend`` y ``al_project_gantt_website``).
 
 * **Capa de datos única** (``al.gantt.data``, expuesta como
-  ``project.project.get_gantt_data()``): devuelve proyectos, tareas,
+  ``project.project.al_gantt_get_data()``): devuelve proyectos, tareas,
   dependencias e hitos ya normalizados, en un formato **neutral** respecto de la
   librería de renderizado. Es el único punto de acceso a datos: ninguna UI
   consulta el ORM por su cuenta.

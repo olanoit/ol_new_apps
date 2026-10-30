@@ -11,7 +11,7 @@ Aplicación propia (``ir.actions.client`` + menú raíz) que renderiza el Gantt 
 
 * **No es una vista Gantt heredada**: es un componente OWL propio que monta la
   librería en su contenedor, sin depender de ``web_gantt`` (Enterprise).
-* Toda la lectura pasa por ``project.project.get_gantt_data()``, del módulo
+* Toda la lectura pasa por ``project.project.al_gantt_get_data()``, del módulo
   base: aquí no hay lógica de datos ni de seguridad.
 * La librería (627 KB) se carga con ``loadJS``/``loadCSS`` **solo al abrir la
   vista**; no entra en el bundle general del backend.

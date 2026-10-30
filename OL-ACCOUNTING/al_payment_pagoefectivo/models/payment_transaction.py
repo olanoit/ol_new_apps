@@ -35,6 +35,9 @@ class PaymentTransaction(models.Model):
         hasta la notificación de pago."""
         if self.provider_code != 'pagoefectivo':
             return super()._get_specific_rendering_values(processing_values)
+        # El CIP se genera aquí mismo (llamada síncrona): su respuesta, o el
+        # error, se registra en el acto.
+        self = self.with_context(payment_safe_write=True)
         try:
             provider = self.provider_id
             token = provider._pagoefectivo_authorize(reference=self.reference)
@@ -181,5 +184,6 @@ class PaymentTransaction(models.Model):
             ('pagoefectivo_date_expiry', '!=', False),
             ('pagoefectivo_date_expiry', '<', limit),
         ])
-        for tx in expired:
+        # Sin llamada externa: la cancelación se puede repetir sin riesgo.
+        for tx in expired.with_context(payment_safe_write=True):
             tx._set_canceled(state_message=_('El código de pago (CIP) venció sin pagarse.'))

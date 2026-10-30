@@ -5,7 +5,7 @@ Todas las rutas exigen **usuario interno autenticado**: ``auth='user'`` cubre la
 autenticación, y el chequeo explícito de ``user.share`` y del grupo cubre el
 resto (un usuario de portal está autenticado, pero no debe entrar).
 
-Aquí no hay lógica de datos: se delega en ``project.project.get_gantt_data()``.
+Aquí no hay lógica de datos: se delega en ``project.project.al_gantt_get_data()``.
 """
 import logging
 
@@ -47,7 +47,7 @@ class GanttWebsiteController(http.Controller):
     def gantt_data(self, project_ids=None, options=None, **kwargs):
         """Único punto de datos de esta interfaz: delega en el módulo base."""
         self._ensure_internal_gantt_user()
-        return request.env['project.project'].get_gantt_data(
+        return request.env['project.project'].al_gantt_get_data(
             project_ids=project_ids, options=options or {},
         )
 

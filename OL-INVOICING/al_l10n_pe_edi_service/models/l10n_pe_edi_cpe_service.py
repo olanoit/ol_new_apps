@@ -18,7 +18,7 @@ from requests.exceptions import (
     ConnectionError as ReqConnectionError, HTTPError, InvalidSchema, InvalidURL, ReadTimeout,
     RequestException,
 )
-from zeep import Client, Settings
+from odoo.tools.zeep import Client, Settings
 
 from odoo import api, models
 from odoo.tools import BinaryBytes

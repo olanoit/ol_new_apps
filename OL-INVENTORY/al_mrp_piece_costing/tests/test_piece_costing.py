@@ -52,6 +52,8 @@ class TestPieceCosting(TransactionCase):
             Quant._update_available_quantity(component, stock, qty)
         cls.bom = cls.env['mrp.bom'].create({
             'product_tmpl_id': cls.main.product_tmpl_id.id, 'product_qty': 1,
+            # Odoo 20: la OP toma el costo extra de la LdM al crearse.
+            'extra_cost': 10.0,
             'bom_line_ids': [
                 Command.create({'product_id': cls.white.id, 'product_qty': 1}),
                 Command.create({'product_id': cls.oak.id, 'product_qty': 1}),
@@ -66,7 +68,7 @@ class TestPieceCosting(TransactionCase):
     def _production(self, **vals):
         production = self.env['mrp.production'].create(dict({
             'product_id': self.main.id, 'bom_id': self.bom.id, 'product_qty': 1,
-            'picking_type_id': self.picking_type.id, 'extra_cost': 10.0,
+            'picking_type_id': self.picking_type.id,
             'piece_costing': True}, **vals))
         return production
 
@@ -87,7 +89,7 @@ class TestPieceCosting(TransactionCase):
         self.assertAlmostEqual(self._value(production, self.side), 72.37, places=2)
         self.assertAlmostEqual(self._value(production, self.shelf), 35.19, places=2)
         self.assertAlmostEqual(self._value(production, self.door), 204.70, places=2)
-        self.assertAlmostEqual(self._value(production, self.main), 0.74, places=2)
+        self.assertAlmostEqual(self._value(production, self.main), 0.74, delta=0.011)  # redondeo de 20
         self.assertAlmostEqual(production.piece_total_cost, 313.0, places=2)
         self.assertLessEqual(abs(production.piece_balance_diff), 1.0)
         self.assertFalse(production.piece_has_manual_value)

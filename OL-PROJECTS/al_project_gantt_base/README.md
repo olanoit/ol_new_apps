@@ -29,7 +29,7 @@ empaquetada en `static/lib/dhtmlx/`.
 Punto de entrada único, llamado por las dos UIs:
 
 ```python
-env['project.project'].get_gantt_data(project_ids=None, options=None)
+env['project.project'].al_gantt_get_data(project_ids=None, options=None)
 ```
 
 `options` admite `date_from`, `date_to`, `user_ids`, `states`,
@@ -186,7 +186,7 @@ detección automática. Otros parámetros: `al_gantt.task_limit` (2000, tope dur
   **Administrador** (`group_gantt_manager`). Ambos implican
   `project.group_project_user`, es decir, son **usuarios internos**; los
   administradores de proyecto reciben el acceso al instalar.
-- `get_gantt_data` rechaza con `AccessError` a los usuarios de portal/público
+- `al_gantt_get_data` rechaza con `AccessError` a los usuarios de portal/público
   (`user.share`) y a quien no tenga el grupo.
 - **No se redefinen reglas sobre `project.project` / `project.task`** a
   propósito. Toda la lectura se hace **sin `sudo()`**, de modo que las reglas

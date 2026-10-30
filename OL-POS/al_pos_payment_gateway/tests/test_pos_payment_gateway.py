@@ -35,7 +35,7 @@ class TestPosPaymentGateway(TestUi):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.provider_2 = cls.payment_provider.copy({'name': 'Segunda pasarela', 'state': 'test', 'is_published': True})
+        cls.provider_2 = cls.payment_provider.copy({'name': 'Segunda pasarela', 'is_live': False, 'is_published': True})
         cls.online_payment_method_2 = cls.env['pos.payment.method'].create({
             'name': 'Segunda pasarela',
             'is_online_payment': True,
@@ -72,7 +72,7 @@ class TestPosPaymentGateway(TestUi):
     def test_method_takes_provider_logo(self):
         """El método creado desde la pasarela lleva su logo."""
         logo = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
-        provider = self.payment_provider.copy({'name': 'Pasarela con logo', 'state': 'test', 'image_128': logo})
+        provider = self.payment_provider.copy({'name': 'Pasarela con logo', 'is_live': False, 'image_128': logo})
         action = provider.action_al_pos_payment_method()
         method = self.env['pos.payment.method'].browse(action['res_id'])
         self.assertEqual(method.online_payment_provider_ids, provider)

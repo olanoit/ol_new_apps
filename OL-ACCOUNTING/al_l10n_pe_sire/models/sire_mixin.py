@@ -387,7 +387,7 @@ class L10nPeSireMixin(models.AbstractModel):
             token, self._sire_period(), self.ticket_number,
             self._sire_upload_book_code())
         self.write({
-            'proposal_file': content,
+            'proposal_file': BinaryBytes(content),
             'proposal_filename': 'Propuesta_%s_%s.txt' % (
                 self._sire_book_type(), self._sire_period()),
             'state': 'downloaded',

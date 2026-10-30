@@ -5,7 +5,7 @@
  *
  * Usa el framework de «interactions» del frontend de Odoo 19. Igual que la
  * interfaz de backend, no consulta el ORM: pide los datos al endpoint
- * `/gantt/data`, que delega en `project.project.get_gantt_data()`.
+ * `/gantt/data`, que delega en `project.project.al_gantt_get_data()`.
  */
 import { Interaction } from "@web/public/interaction";
 import { registry } from "@web/core/registry";

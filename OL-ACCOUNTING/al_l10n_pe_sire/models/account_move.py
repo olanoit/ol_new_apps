@@ -102,20 +102,19 @@ class AccountMove(models.Model):
     def _l10n_pe_cdr_rejected(self):
         """El comprobante tiene un CDR de rechazo de SUNAT (códigos 2000-3999).
 
-        En v19 ``l10n_pe_edi`` deja el documento EDI «por enviar» con error
-        bloqueante, igual que uno que todavía no se envió; solo el código
-        del mensaje («2800|…») los distingue. Los códigos 0100-1999 son
-        excepciones (no se recibió: se reenvía) y los 4000+ observaciones
-        (aceptado).
+        En Odoo 20 ``l10n_pe_edi`` deja la factura «por enviar» con el error
+        en ``l10n_pe_edi_warnings``, igual que una que todavía no se envió;
+        solo el código del mensaje («2800|…») los distingue. Los códigos
+        0100-1999 son excepciones (no se recibió: se reenvía) y los 4000+
+        observaciones (aceptado).
         """
         self.ensure_one()
-        if 'edi_document_ids' not in self._fields:
+        if 'l10n_pe_edi_warnings' not in self._fields or self.l10n_pe_edi_status != 'to_send':
             return False
-        for document in self.edi_document_ids:
-            if document.state != 'to_send' or document.blocking_level != 'error' \
-                    or not document.error:
+        for warning in (self.l10n_pe_edi_warnings or {}).values():
+            if warning.get('level') != 'danger':
                 continue
-            codes = re.findall(r'(?<!\d)(\d{4})\|', document.error)
+            codes = re.findall(r'(?<!\d)(\d{4})\|', warning.get('message') or '')
             if any(2000 <= int(code) <= 3999 for code in codes):
                 return True
         return False

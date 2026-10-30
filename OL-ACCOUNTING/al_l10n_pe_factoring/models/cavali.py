@@ -444,7 +444,7 @@ class AccountMove(models.Model):
                 data = move._l10n_pe_cavali_payload()
                 xml = move._l10n_pe_cavali_xml()
                 if xml and xml.raw:
-                    archive.writestr('xml/%s' % xml.name, xml.raw)
+                    archive.writestr('xml/%s' % xml.name, xml.raw.content)
                 sheet.write_row(row, 0, [
                     data['rucProveedor'], data['tipoComprobante'], data['serie'], data['numero'],
                     data['fechaEmision'], data['fechaVencimiento'], data['fechaPago'], data['moneda'],

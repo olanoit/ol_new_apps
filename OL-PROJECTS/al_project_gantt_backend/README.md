@@ -107,7 +107,7 @@ sin sobrescribirlos el Gantt funciona igual):
 
 | Punto | Para qué |
 |---|---|
-| `getOptions()` | Opciones extra para `get_gantt_data`; una herencia de `al.gantt.data` las lee en `options` |
+| `getOptions()` | Opciones extra para `al_gantt_get_data`; una herencia de `al.gantt.data` las lee en `options` |
 | `transformGanttData(ganttData, payload)` | Añadir o retocar filas y enlaces ya adaptados a dhtmlxGantt |
 | `extraColumns()` | Columnas añadidas a la rejilla |
 | `editorOptions()` | Opciones extra del editor; `canDragRow(id, mode, event)` deja arrastrar filas que no son tareas (la pantalla las guarda con su propio `onAfterTaskUpdate`) |

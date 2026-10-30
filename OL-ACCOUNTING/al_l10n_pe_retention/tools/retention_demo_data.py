@@ -115,7 +115,7 @@ action = payment.action_l10n_pe_generate_cre_xml()
 attachment = env['ir.attachment'].search(
     [('res_model', '=', 'account.payment'), ('res_id', '=', payment.id),
      ('mimetype', '=', 'application/xml')], limit=1, order='id desc')
-xml = attachment.raw.decode()
+xml = attachment.raw.content.decode()
 log('XML CRE generado', xml.startswith('<?xml')
     and 'SUNATRetentionDocumentReference' in xml
     and (company.vat or '') in xml, attachment.name)

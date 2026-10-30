@@ -164,6 +164,11 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
+    def action_construction_create_remnant(self):
+        # El formulario de la variante hereda el de la plantilla (y en
+        # Odoo 20 valida sus botones contra product.product).
+        return self.product_tmpl_id.action_construction_create_remnant()
+
     construction_remnant_band = fields.Selection(
         [band for band in REMNANT_BANDS if band[0] in VARIANT_BANDS], string='Banda',
         compute='_compute_construction_remnant_band', store=True)
