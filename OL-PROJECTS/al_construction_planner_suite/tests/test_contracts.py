@@ -23,6 +23,9 @@ class TestContracts(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Niveles por defecto: un perfil vertical aplicado en la base deja
+        # otra plantilla en la compañía.
+        cls.env.company.construction_level_template_id = False
         cls.env['tier.definition'].search(
             [('model', '=', 'construction.resource.plan')]).active = False
         demo = load_demo(cls.env, 'TEST PLAN')

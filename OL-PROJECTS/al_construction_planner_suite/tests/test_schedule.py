@@ -31,6 +31,9 @@ class TestSchedule(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Niveles por defecto: un perfil vertical aplicado en la base deja
+        # otra plantilla en la compañía.
+        cls.env.company.construction_level_template_id = False
         # Días hábiles de lunes a viernes: la cadena cuenta los del calendario.
         # Odoo 20: la zona horaria es de la compañía, no del calendario.
         cls.env.company.tz = 'America/Lima'

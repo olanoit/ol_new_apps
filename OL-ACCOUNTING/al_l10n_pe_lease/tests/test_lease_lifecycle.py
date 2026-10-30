@@ -3,8 +3,11 @@
 con el libro, remedición, terminación, moneda extranjera y diferencias
 temporales del impuesto a la renta.
 
-Las fechas se fijan con ``freeze_time`` al 10/10/2026: el contrato empieza el
-01/01/2026 y los asientos de enero a setiembre ya están contabilizados."""
+Las fechas se fijan con ``freeze_time`` al 30/09/2026: el contrato empieza el
+01/01/2026 y los asientos de enero a setiembre ya están contabilizados. En Odoo
+20 la cuota del préstamo se fecha el primer día de su mes y la depreciación el
+último: una operación desde el 01/10 se hace con la depreciación de setiembre
+contabilizada y la cuota de octubre aún sin contabilizar."""
 from datetime import date
 
 from freezegun import freeze_time
@@ -17,7 +20,7 @@ from odoo.addons.al_account_base.tests.common import use_pe_company
 
 
 @tagged('post_install', '-at_install')
-@freeze_time('2026-10-10')
+@freeze_time('2026-09-30')
 class TestLeaseLifecycle(TransactionCase):
 
     @classmethod
@@ -112,7 +115,7 @@ class TestLeaseLifecycle(TransactionCase):
         new_lines = lease.line_ids.filtered(lambda l: l.date >= date(2026, 10, 1))
         self.assertEqual((new_lines[0].number, new_lines[0].interest, new_lines[0].payment), (10, 0.0, 1100.0))
         self.assertEqual(new_lines[-1].balance, 0.0)
-        increase = lease.asset_id.children_ids
+        increase = lease.asset_id.main_variant_id.children_ids
         self.assertEqual(increase.original_value, difference, 'aumento bruto del derecho de uso')
         self.assertAlmostEqual(lease.asset_id.book_value, rou_before + difference, places=2)
         self.assertEqual(lease.event_ids.kind, 'remeasurement')
@@ -131,14 +134,16 @@ class TestLeaseLifecycle(TransactionCase):
         self.assertLess(difference, 0.0)
         wizard.action_apply()
         self.assertEqual(lease.term_months, 24)
-        self.assertEqual(lease.asset_id.method_number, 24, 'se deprecia en el plazo nuevo')
+        self.assertEqual(lease.asset_id.main_variant_id.method_number, 24, 'se deprecia en el plazo nuevo')
         self.assertAlmostEqual(lease.asset_id.book_value, rou_before + difference, places=2,
                                msg='el derecho de uso baja lo mismo que el pasivo')
-        expense = lease.asset_id.account_depreciation_expense_id
+        expense = lease.asset_id.main_variant_id.account_depreciation_expense_id
         net_expense = sum(lease.event_ids.move_ids.line_ids.filtered(
             lambda l: l.account_id == expense).mapped('balance'))
         self.assertEqual(net_expense, 0.0, 'la disminución no pasa por resultados')
-        self.assertEqual(lease.liability_difference, 0.0)
+        # El día de la prueba (30/09) la tabla aún no tiene la remedición del
+        # 01/10, que el libro ya registra el 30/09: se compara desde el 01/10.
+        self.assertEqual(lease._liability_book(date(2026, 10, 1)), lease._liability_at(date(2026, 10, 1)))
 
     def test_remeasurement_rejects_posted_period(self):
         lease = self._lease()
@@ -157,7 +162,7 @@ class TestLeaseLifecycle(TransactionCase):
         lease = self._lease()
         lease.action_confirm()
         carrying = lease._principal_before(date(2026, 10, 1))
-        book_value = lease.asset_id._get_residual_value_at_date(date(2026, 9, 30))
+        book_value = lease.asset_id.main_variant_id._get_residual_value_at_date(date(2026, 9, 30))
         self.env['l10n_pe.lease.terminate'].with_context(default_lease_id=lease.id).create({
             'date': date(2026, 10, 1), 'reason': 'Mudanza'}).action_apply()
         self.assertEqual(lease.state, 'closed')
@@ -212,7 +217,7 @@ class TestLeaseLifecycle(TransactionCase):
         report = self.env['l10n_pe.lease.tax.report'].create({'year': 2026, 'tax_rate': 29.5})
         report.action_compute()
         line = report.line_ids.filtered(lambda l: l.lease_id == lease)
-        depreciation = sum(lease.asset_id.depreciation_move_ids.filtered(
+        depreciation = sum(lease.asset_id.main_variant_id.depreciation_move_ids.filtered(
             lambda m: m.state == 'posted' and m.date.year == 2026).mapped('depreciation_value'))
         self.assertAlmostEqual(line.depreciation, depreciation, places=2)
         self.assertEqual(line.tax_expense, sum(bills.mapped('amount_untaxed_signed')) * -1)

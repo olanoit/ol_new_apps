@@ -13,6 +13,9 @@ class TestPlanTree(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # Niveles por defecto: un perfil vertical aplicado en la base deja
+        # otra plantilla en la compañía.
+        cls.env.company.construction_level_template_id = False
         # Copia propia del piso 05 (otra obra): los datos demo de la base
         # pueden tener ya contratas y avances (planner_demo_contracts.py).
         demo = load_demo(cls.env, 'TEST TREE')

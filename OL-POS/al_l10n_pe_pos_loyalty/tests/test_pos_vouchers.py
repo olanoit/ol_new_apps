@@ -40,9 +40,12 @@ class TestPosPeVouchers(TestPoSCommon):
     def _redemption(self, amount, taxes=None):
         """Línea de canje como la arma el TPV: con los impuestos del producto
         de descuento y el precio con impuestos incluidos."""
+        # Odoo 20 comprueba el saldo de la tarjeta al guardar la venta.
+        card = self.env['loyalty.card'].sudo().create({
+            'program_id': self.reward.program_id.id, 'points': amount})
         values = {'product': self.reward.discount_line_product_id, 'quantity': 1,
                   'price_unit': -amount, 'price_subtotal': -amount, 'price_subtotal_incl': -amount,
-                  'is_reward_line': True, 'reward_id': self.reward.id}
+                  'is_reward_line': True, 'reward_id': self.reward.id, 'card_id': card.id}
         if taxes:
             values.update({'tax_ids': [Command.set(taxes.ids)],
                            'price_subtotal': -round(amount / 1.18, 2)})
@@ -93,7 +96,7 @@ class TestPosPeVouchers(TestPoSCommon):
             ('ref', '=', f'Tarjeta de regalo y monedero: {invoice.name}')])
         self.assertEqual(voucher_move.state, 'posted')
         self.assertAlmostEqual(self._voucher_balance(voucher_move), 20.0)
-        self.pos_session.action_pos_session_validate()
+        self.pos_session.close_session_from_ui()
         self.assertEqual(self.pos_session.state, 'closed')
 
     def test_gift_card_sold_with_products_is_outside_the_invoice(self):
@@ -108,7 +111,7 @@ class TestPosPeVouchers(TestPoSCommon):
             ('ref', '=', f'Tarjeta de regalo y monedero: {invoice.name}')])
         # Los 50,00 de la tarjeta son deuda con el cliente, no ingreso.
         self.assertAlmostEqual(self._voucher_balance(voucher_move), -50.0)
-        self.pos_session.action_pos_session_validate()
+        self.pos_session.close_session_from_ui()
         self.assertEqual(self.pos_session.state, 'closed')
 
     def test_gift_card_only_sale_has_no_invoice(self):
@@ -125,7 +128,7 @@ class TestPosPeVouchers(TestPoSCommon):
         self._sync([(self.gift_product, 1)], [(self.cash_pm1, 50.0)])
         # Aunque el producto de descuento lleve el IGV, el canje no lo rebaja.
         self._sync([(self.ibuprofen, 1), self._redemption(20.0, self.igv)], [(self.cash_pm1, 39.0)])
-        self.pos_session.action_pos_session_validate()
+        self.pos_session.close_session_from_ui()
         move = self.pos_session.sale_move_ids
         tax_lines = move.line_ids.filtered(lambda line: line.tax_line_id == self.igv)
         self.assertAlmostEqual(-sum(tax_lines.mapped('balance')), 9.0)
@@ -201,3 +204,8 @@ class TestPosPeVouchersTour(TestPointOfSaleHttpCommon):
         order = self.env['pos.order'].search([('session_id', '=', config.current_session_id.id)], limit=1)
         self.assertTrue(order.account_move)
         self.assertNotIn(program.trigger_product_ids, order.account_move.invoice_line_ids.product_id)
+        # El ticket CPE (plantilla de servidor) deja la tarjeta fuera del
+        # comprobante y la explica en las notas.
+        self.assertNotIn(program.trigger_product_ids, order._l10n_pe_receipt_line_records().product_id)
+        self.assertTrue(any('no forma parte del comprobante' in note
+                            for note in order._l10n_pe_receipt_notes()))

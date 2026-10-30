@@ -34,17 +34,11 @@ registry.category("web_tour.tours").add("al_l10n_pe_pos_gift_card_mixed", {
             PaymentScreen.clickValidate(),
             {
                 // El comprobante intenta enviarse a SUNAT y la prueba no tiene red.
-                content: "Ticket emitido",
-                trigger: ".pos .receipt-screen",
+                // Odoo 20: tras pagar se muestra FeedbackScreen; el ticket se
+                // revisa en el servidor (test_mixed_sale_receipt_shows_the_card_outside).
+                content: "Venta registrada",
+                trigger: ".pos .feedback-screen",
                 timeout: 30000,
-            },
-            {
-                content: "La tarjeta vendida va fuera del comprobante",
-                trigger: ".alpe-receipt .alpe-words:contains('no forma parte del comprobante')",
-            },
-            {
-                content: "La tarjeta no figura entre las líneas del comprobante",
-                trigger: ".alpe-receipt .alpe-lines:not(:contains('Gift Card'))",
             },
         ].flat(),
 });

@@ -29,7 +29,7 @@ class L10nPeLeaseOperationMixin(models.AbstractModel):
         # reversión de una reclasificación anterior lleva fecha del mes siguiente.
         posted = lease.loan_id.line_ids.generated_move_ids.filtered(
             lambda m: m.state == 'posted' and m.generating_loan_line_id.date >= date)
-        posted |= lease.asset_id.depreciation_move_ids.filtered(lambda m: m.state == 'posted' and m.date >= date)
+        posted |= lease._rou_variant().depreciation_move_ids.filtered(lambda m: m.state == 'posted' and m.date >= date)
         if posted:
             raise UserError(self.env._(
                 'Ya hay asientos contabilizados desde %(date)s (%(moves)s): elija el primer día del mes siguiente '
@@ -148,20 +148,17 @@ class L10nPeLeaseRemeasure(models.TransientModel):
         """Aumento: «Reevaluar» del activo crea el aumento bruto contra el
         pasivo. Disminución: se rebaja el valor del activo contra el pasivo
         (no contra gasto) y lo que exceda su valor en libros va a resultados."""
-        asset = lease.asset_id
+        asset = lease._rou_variant()
         move = self.env['account.move']
         currency = lease.company_currency_id
         if currency.compare_amounts(amount, 0) < 0:
             residual = asset._get_residual_value_at_date(date)
             decrease = min(-amount, residual)
             if not currency.is_zero(decrease):
-                vals = self.env['account.move']._prepare_move_for_asset_depreciation({
-                    'amount': decrease, 'asset_id': asset, 'date': date,
-                    'depreciation_beginning_date': date, 'depreciation_end_date': date,
-                    'asset_number_days': 0, 'asset_value_change': True,
-                    'asset_move_type': 'negative_revaluation',
-                    'move_ref': self.env._('Remedición %s: disminución del derecho de uso', lease.name),
-                })
+                vals = self.env['account.move']._prepare_move_for_asset_depreciation(
+                    asset_variant=asset, amount=decrease, date=date,
+                    depreciation_beginning_date=date, asset_number_days=0,
+                    asset_value_change=True, asset_move_type='negative_revaluation')
                 label = self.env._('Remedición %s: disminución del derecho de uso', lease.name)
                 vals.update(ref=label, l10n_pe_lease_id=lease.id)
                 # El activo mide la disminución por su línea de gasto: se registra
@@ -181,18 +178,17 @@ class L10nPeLeaseRemeasure(models.TransientModel):
                                                        lease._move_line(gain, -excess, label)])
             amount = 0.0
         wizard = self.env['asset.modify'].create({
-            'asset_id': asset.id,
+            'asset_variant_id': asset.id,
             'name': self.reason,
             'modify_action': 'modify',
             'date': date,
+            'method_mode': 'duration',
             'method_number': new_term,
             'method_period': asset.method_period,
             'value_residual': currency.round(asset._get_residual_value_at_date(date) + max(amount, 0.0)),
             'salvage_value': asset.salvage_value,
             'account_asset_id': lease.rou_account_id.id,
             'account_asset_counterpart_id': lease.liability_long_account_id.id,
-            'account_depreciation_id': asset.account_depreciation_id.id,
-            'account_depreciation_expense_id': asset.account_depreciation_expense_id.id,
         })
         children_before = asset.children_ids
         wizard.modify()
@@ -243,9 +239,10 @@ class L10nPeLeaseTerminate(models.TransientModel):
         lease.line_ids.filtered(lambda l: l.date >= date).unlink()
 
         # Derecho de uso: baja al valor en libros (pérdida) ...
-        action = lease.asset_id.set_to_close(self.env['account.move.line'], date=day_before, message=self.reason)
+        variant = lease._rou_variant()
+        action = variant.set_to_close(self.env['account.move.line'], date=day_before, message=self.reason)
         disposal = self.env['account.move'].browse(action.get('res_id') if isinstance(action, dict) else [])
-        disposal |= lease.asset_id.depreciation_move_ids.filtered(
+        disposal |= variant.depreciation_move_ids.filtered(
             lambda m: m.state == 'draft' and m.asset_move_type == 'disposal')
         disposal._post()
         # ... y el pasivo pendiente a resultados (ganancia).
@@ -326,7 +323,7 @@ class L10nPeLeaseTaxReport(models.TransientModel):
             ('initial_move_id', '!=', False)])
         lines = []
         for lease in leases:
-            assets = lease.asset_id | lease.asset_id.children_ids
+            assets = lease._rou_variant() | lease._rou_variant().children_ids
             depreciation = sum(assets.depreciation_move_ids.filtered(
                 lambda m: in_year(m) and m.asset_move_type == 'depreciation').mapped('depreciation_value'))
             interest = sum(line.interest for line in lease._loans().line_ids

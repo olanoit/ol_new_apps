@@ -45,8 +45,10 @@ LIABILITY_SUBACCOUNTS = [
 ]
 
 
-def _end_of_month(date):
-    return date + relativedelta(day=31)
+def _accrual_date(day):
+    """Fecha del asiento de la cuota en account.loan (Odoo 20): el primer
+    día de su mes."""
+    return day.replace(day=1)
 
 
 class L10nPeLease(models.Model):
@@ -441,20 +443,27 @@ class L10nPeLease(models.Model):
         self.initial_move_id = self._post_move(self.date_start, label, lines)
 
     def _create_asset(self):
+        """Odoo 20: el método y la vida útil van en un modelo de depreciación
+        y el cálculo en la variante principal del activo; las cuentas de
+        depreciación salen de la cuenta del derecho de uso."""
         self.ensure_one()
         rou_line = self.initial_move_id.line_ids.filtered(lambda l: l.account_id == self.rou_account_id)
+        model_vals = {'method': 'linear', 'method_number': self.term_months, 'method_period': '1'}
+        Model = self.env['account.depreciation.model']
+        model = Model.search([(key, '=', value) for key, value in model_vals.items()], limit=1) \
+            or Model.create(model_vals)
         vals = {
             'name': '%s - %s' % (self.name, self.property_description),
             'company_id': self.company_id.id,
+            'account_asset_id': self.rou_account_id.id,
             'original_move_line_ids': [Command.set(rou_line.ids)],
+            # Odoo 20 solo lo calcula de las líneas con la variante en
+            # borrador: se da el valor del asiento inicial.
+            'original_value': sum(rou_line.mapped('balance')),
             'acquisition_date': self.date_start,
-            'prorata_date': self.date_start,
-            'method': 'linear',
-            'method_number': self.term_months,
-            'method_period': '1',
-            'prorata_computation_type': 'constant_periods',
-            'account_depreciation_id': self.depreciation_account_id.id,
-            'account_depreciation_expense_id': self.depreciation_expense_account_id.id,
+            'model_id': model.id,
+            'import_account_depreciation_id': self.depreciation_account_id.id,
+            'import_account_depreciation_expense_id': self.depreciation_expense_account_id.id,
             'journal_id': self.journal_id.id,
             'asset_group_id': self.asset_group_id.id,
         }
@@ -463,8 +472,27 @@ class L10nPeLease(models.Model):
         if 'l10n_pe_asset_type' in self.env['account.asset']._fields:
             vals['l10n_pe_asset_type'] = '1'
         asset = self.env['account.asset'].create(vals)
-        asset.validate()
+        variant = asset.main_variant_id
+        variant.write({
+            'model_id': model.id,
+            'prorata_date': self.date_start,
+            'prorata_computation_type': 'constant_periods',
+            'account_depreciation_id': self.depreciation_account_id.id,
+            'account_depreciation_expense_id': self.depreciation_expense_account_id.id,
+            'journal_id': self.journal_id.id,
+        })
+        variant.validate()
+        # Odoo 20 deja en borrador (los publica el cron) los asientos ya
+        # vencidos: se contabilizan como hacía 19 al validar.
+        variant.depreciation_move_ids.filtered(
+            lambda m: m.state == 'draft' and m.date <= fields.Date.context_today(self))._post()
         self.asset_id = asset
+
+    def _rou_variant(self):
+        """Variante principal del derecho de uso: ahí viven en Odoo 20 la
+        tabla, el valor en libros y las operaciones del activo."""
+        self.ensure_one()
+        return self.asset_id.main_variant_id
 
     def _create_loan(self, lines, date, rate, suffix=''):
         """El pasivo va a ``account.loan`` con la tabla ya calculada (sus
@@ -542,14 +570,15 @@ class L10nPeLease(models.Model):
 
     def _liability_at(self, date):
         """Pasivo según la tabla al ``date`` (moneda del contrato): capital
-        pendiente tras las cuotas ya devengadas (su asiento es de fin de mes)
-        más las cuotas devengadas aún sin factura del arrendador."""
+        pendiente tras las cuotas ya devengadas más las cuotas devengadas aún
+        sin factura del arrendador. Odoo 20 fecha el asiento de cada cuota el
+        primer día de su mes (account.loan), que es cuando se devenga."""
         self.ensure_one()
         candidates = [(self.date_start, 0, self.liability_amount)]
         candidates += [(event.date, 1, event.new_liability) for event in self.event_ids
                        if event.kind == 'remeasurement']
-        due = self.line_ids.filtered(lambda l: _end_of_month(l.date) <= date)
-        candidates += [(_end_of_month(line.date), 2, line.balance) for line in due]
+        due = self.line_ids.filtered(lambda l: _accrual_date(l.date) <= date)
+        candidates += [(_accrual_date(line.date), 2, line.balance) for line in due]
         candidates = [c for c in candidates if c[0] <= date]
         if not candidates:
             return 0.0
@@ -577,7 +606,7 @@ class L10nPeLease(models.Model):
         candidates += [(line.date, 2, line.balance) for line in self.line_ids if line.date < date]
         return max(candidates, key=lambda c: (c[0], c[1]))[2]
 
-    @api.depends('line_ids', 'event_ids', 'bill_ids.state', 'asset_id.book_value')
+    @api.depends('line_ids', 'event_ids', 'bill_ids.state', 'asset_id.main_variant_id.book_value')
     def _compute_balances(self):
         today = fields.Date.context_today(self)
         for lease in self:
@@ -590,7 +619,7 @@ class L10nPeLease(models.Model):
             lease.liability_balance = table
             lease.liability_book_balance = book
             lease.liability_difference = lease.company_currency_id.round(book - lease._to_company(table, today))
-            lease.rou_book_value = lease.asset_id.book_value
+            lease.rou_book_value = lease.asset_id.main_variant_id.book_value
 
     # ------------------------------------------------------------------
     # Diferencia de cambio (contratos en moneda extranjera)
@@ -732,7 +761,7 @@ class L10nPeLease(models.Model):
         self.ensure_one()
         return {'type': 'ir.actions.act_window', 'name': self.env._('Asientos del arrendamiento'),
                 'res_model': 'account.move', 'view_mode': 'list,form',
-                'domain': [('id', 'in', (self._liability_moves() | self.asset_id.depreciation_move_ids).ids)]}
+                'domain': [('id', 'in', (self._liability_moves() | self._rou_variant().depreciation_move_ids).ids)]}
 
     def action_open_asset(self):
         self.ensure_one()

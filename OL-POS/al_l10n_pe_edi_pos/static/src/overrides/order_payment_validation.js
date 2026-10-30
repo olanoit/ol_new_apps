@@ -9,7 +9,23 @@ patch(OrderPaymentValidation.prototype, {
     // cobro no procede sin RUC válido, así el UserError equivalente de
     // _prepare_invoice_vals queda solo como red de seguridad.
     async isOrderValid(isForceValidate) {
-        const res = await super.isOrderValid(...arguments);
+        // Odoo 20: l10n_pe_pos exige `vat`, pero el DNI (boleta) va en
+        // additional_identifiers. Mientras se valida, el número del
+        // documento SUNAT cuenta como identificación del cliente.
+        const partner = this.order.getPartner();
+        const borrowedVat =
+            this.pos.isPeruvianCompany() && partner && !partner.vat && partner.l10n_pe_sunat_id_value;
+        if (borrowedVat) {
+            partner.vat = partner.l10n_pe_sunat_id_value;
+        }
+        let res;
+        try {
+            res = await super.isOrderValid(...arguments);
+        } finally {
+            if (borrowedVat) {
+                partner.vat = false;
+            }
+        }
         if (!res || !this.pos.isPeruvianCompany() || !this.pos.config.l10n_pe_cpe_enabled) {
             return res;
         }

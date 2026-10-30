@@ -79,10 +79,12 @@ class TestLease(TransactionCase):
         self.assertEqual(clearing.credit, 1500.0, 'cuota adelantada 1 000 + costos 500')
 
         asset = lease.asset_id
-        self.assertEqual(asset.state, 'open')
+        # Odoo 20: el estado, el método y la tabla están en la variante principal.
+        variant = asset.main_variant_id
+        self.assertEqual(variant.state, 'open')
         self.assertEqual(asset.original_value, lease.rou_amount)
-        self.assertEqual((asset.method, asset.method_number, asset.method_period), ('linear', 36, '1'))
-        self.assertAlmostEqual(sum(asset.depreciation_move_ids.mapped('depreciation_value')), lease.rou_amount, 2)
+        self.assertEqual((variant.method, variant.method_number, variant.method_period), ('linear', 36, '1'))
+        self.assertAlmostEqual(sum(variant.depreciation_move_ids.mapped('depreciation_value')), lease.rou_amount, 2)
 
         loan = lease.loan_id
         self.assertEqual(loan.state, 'running')
