@@ -129,3 +129,72 @@ L10N_PE_AUDIT_RULES['salary_rule_ESSALUD'] = (
     ),
     "if version.l10n_pe_labor_regime != 'practicante':\n    # Base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS.\n    base = max(AESSALUD, payslip.rmv)\n    if version.social_insurance_id.name == 'EPS':\n        result = base * version.social_insurance_id.percent/100\n    else:\n        # Tasa de EsSalud (Ley 26790): parámetro de reglas nativo.\n        result = base * payslip._rule_parameter('l10n_pe_essalud_rate')/100\nelse:\n    result = 0",
 )
+
+
+# ----------------------------------------------------------------------
+# Revisión del núcleo en Odoo 20 (31/10/2026).
+# ----------------------------------------------------------------------
+def _add(xmlid, old, new):
+    """Regla que entra por primera vez en la lista: «antes» es la fórmula
+    que trae el XML hasta ahora."""
+    L10N_PE_AUDIT_RULES[xmlid] = (old, new)
+
+
+# B1 + C1. EsSalud/EPS: sin remuneración en el mes (subsidio o licencia sin
+# goce todo el mes) no hay aporte, ni con la base mínima de la RMV; la EPS
+# se reconoce por el código de la tabla 32 del T-Registro (01: EsSalud +
+# EPS), no por el nombre del registro.
+_EPS_BY_CODE = "version.social_insurance_id.l10n_pe_tregistro_code == '01'"
+_chain('salary_rule_ESSALUD', lambda code: code.replace(
+    "    # Base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS.\n"
+    "    base = max(AESSALUD, payslip.rmv)\n"
+    "    if version.social_insurance_id.name == 'EPS':",
+    "    # Base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS. Sin\n"
+    "    # remuneración en el mes (subsidio o licencia sin goce todo el mes) no\n"
+    "    # hay aporte.\n"
+    "    base = max(AESSALUD, payslip.rmv) if AESSALUD > 0 else 0\n"
+    "    # EPS por el código de la tabla 32 del T-Registro, no por el nombre.\n"
+    "    if %s:" % _EPS_BY_CODE))
+_chain('salary_rule_EPS225', lambda code: code.replace(
+    "if version.social_insurance_id.name == 'EPS':\n"
+    "    # base mínima: la RMV (D.S. 009-97-SA, art. 6)\n"
+    "    result = max(AESSALUD, payslip.rmv) * 0.0225",
+    "if %s:\n"
+    "    # base mínima: la RMV (D.S. 009-97-SA, art. 6); sin remuneración en el\n"
+    "    # mes no hay aporte\n"
+    "    result = (max(AESSALUD, payslip.rmv) if AESSALUD > 0 else 0) * 0.0225"
+    % _EPS_BY_CODE))
+
+# B2. Los subsidios (0915/0916) están afectos al SNP igual que al SPP: AAFP
+# ya los sumaba y AONP no.
+_add('salary_rule_AONP',
+     "result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI",
+     "result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI")
+
+# B3. Asignación familiar: se anula si en todo el periodo (acotado al
+# contrato) no hay remuneración, no solo con 30 días exactos de subsidio
+# (febrero tiene 28, otros meses 31) y también con licencia sin goce.
+_chain('salary_rule_AF', lambda code: code.replace(
+    "    if worked_days['SENF'].number_of_days ==30 or worked_days['SMAR'].number_of_days ==30:\n",
+    "    # Sin remuneración en todo el periodo (subsidio o licencia sin goce\n"
+    "    # todos los días de contrato del mes) no hay asignación.\n"
+    "    dias = worked_days['DLAB'].number_of_days+worked_days['DOM'].number_of_days+worked_days['FAL'].number_of_days+worked_days['DVAC'].number_of_days+worked_days['DMED'].number_of_days+worked_days['DPAT'].number_of_days+worked_days['LCGH'].number_of_days+worked_days['LSGH'].number_of_days+worked_days['SMAR'].number_of_days+worked_days['SENF'].number_of_days\n"
+    "    sin_rem = worked_days['SENF'].number_of_days+worked_days['SMAR'].number_of_days+worked_days['LSGH'].number_of_days\n"
+    "    if dias and sin_rem >= dias:\n"))
+
+# B4. Valor hora = remuneración diaria / horas de la jornada ordinaria
+# (D.S. 007-2002-TR): las del calendario de la versión, no 8 fijas.
+_HOUR_COMMENT = ("# Valor hora: remuneración diaria entre las horas de la jornada ordinaria\n"
+                 "# (D.S. 007-2002-TR), las del calendario de la versión.\n")
+_HOURS = "(version.resource_calendar_id.hours_per_day or 8)"
+for _code, _rate in (('HE25', 25), ('HE35', 35), ('HE100', 100)):
+    _add('salary_rule_%s' % _code,
+         "result = (((version.wage+AF)/30/8) * (1+%s/100)) * worked_days['%s'].number_of_hours"
+         % (_rate, _code),
+         _HOUR_COMMENT
+         + "result = (((version.wage+AF)/30/%s) * (1+%s/100)) * worked_days['%s'].number_of_hours"
+         % (_HOURS, _rate, _code))
+_add('salary_rule_TAR',
+     "result = worked_days['TAR'].number_of_hours * (version.wage/30/8)",
+     _HOUR_COMMENT
+     + "result = worked_days['TAR'].number_of_hours * (version.wage/30/%s)" % _HOURS)

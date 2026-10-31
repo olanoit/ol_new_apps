@@ -88,7 +88,9 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = worked_days['TAR'].number_of_hours * (version.wage/30/8)
+# Valor hora: remuneración diaria entre las horas de la jornada ordinaria
+# (D.S. 007-2002-TR), las del calendario de la versión.
+result = worked_days['TAR'].number_of_hours * (version.wage/30/(version.resource_calendar_id.hours_per_day or 8))
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('DES_AFE')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -202,7 +204,11 @@ result = BAS + FER + NOCT - FAL - TAR + DMED + DPAT + LCGH - LSGH
 # Ley 25129: no alcanza a los practicantes (modalidades formativas, Ley
 # 28518), que perciben una subvención y no una remuneración.
 if payslip.l10n_pe_family_allowance_ok and version.l10n_pe_labor_regime != 'practicante':
-    if worked_days['SENF'].number_of_days ==30 or worked_days['SMAR'].number_of_days ==30:
+    # Sin remuneración en todo el periodo (subsidio o licencia sin goce
+    # todos los días de contrato del mes) no hay asignación.
+    dias = worked_days['DLAB'].number_of_days+worked_days['DOM'].number_of_days+worked_days['FAL'].number_of_days+worked_days['DVAC'].number_of_days+worked_days['DMED'].number_of_days+worked_days['DPAT'].number_of_days+worked_days['LCGH'].number_of_days+worked_days['LSGH'].number_of_days+worked_days['SMAR'].number_of_days+worked_days['SENF'].number_of_days
+    sin_rem = worked_days['SENF'].number_of_days+worked_days['SMAR'].number_of_days+worked_days['LSGH'].number_of_days
+    if dias and sin_rem &gt;= dias:
         result=0
     else:
         result = payslip.family_allowance
@@ -221,7 +227,9 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = (((version.wage+AF)/30/8) * (1+25/100)) * worked_days['HE25'].number_of_hours
+# Valor hora: remuneración diaria entre las horas de la jornada ordinaria
+# (D.S. 007-2002-TR), las del calendario de la versión.
+result = (((version.wage+AF)/30/(version.resource_calendar_id.hours_per_day or 8)) * (1+25/100)) * worked_days['HE25'].number_of_hours
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -235,7 +243,9 @@ result = (((version.wage+AF)/30/8) * (1+25/100)) * worked_days['HE25'].number_of
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = (((version.wage+AF)/30/8) * (1+35/100)) * worked_days['HE35'].number_of_hours
+# Valor hora: remuneración diaria entre las horas de la jornada ordinaria
+# (D.S. 007-2002-TR), las del calendario de la versión.
+result = (((version.wage+AF)/30/(version.resource_calendar_id.hours_per_day or 8)) * (1+35/100)) * worked_days['HE35'].number_of_hours
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -249,7 +259,9 @@ result = (((version.wage+AF)/30/8) * (1+35/100)) * worked_days['HE35'].number_of
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = (((version.wage+AF)/30/8) * (1+100/100)) * worked_days['HE100'].number_of_hours
+# Valor hora: remuneración diaria entre las horas de la jornada ordinaria
+# (D.S. 007-2002-TR), las del calendario de la versión.
+result = (((version.wage+AF)/30/(version.resource_calendar_id.hours_per_day or 8)) * (1+100/100)) * worked_days['HE100'].number_of_hours
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -569,7 +581,7 @@ result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
+result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+COMI
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -913,9 +925,12 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 if version.l10n_pe_labor_regime != 'practicante':
-    # Base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS.
-    base = max(AESSALUD, payslip.rmv)
-    if version.social_insurance_id.name == 'EPS':
+    # Base mínima: la RMV (D.S. 009-97-SA, art. 6), también con EPS. Sin
+    # remuneración en el mes (subsidio o licencia sin goce todo el mes) no
+    # hay aporte.
+    base = max(AESSALUD, payslip.rmv) if AESSALUD &gt; 0 else 0
+    # EPS por el código de la tabla 32 del T-Registro, no por el nombre.
+    if version.social_insurance_id.l10n_pe_tregistro_code == '01':
         result = base * version.social_insurance_id.percent/100
     else:
         # Tasa de EsSalud (Ley 26790): parámetro de reglas nativo.
@@ -935,9 +950,10 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-if version.social_insurance_id.name == 'EPS':
-    # base mínima: la RMV (D.S. 009-97-SA, art. 6)
-    result = max(AESSALUD, payslip.rmv) * 0.0225
+if version.social_insurance_id.l10n_pe_tregistro_code == '01':
+    # base mínima: la RMV (D.S. 009-97-SA, art. 6); sin remuneración en el
+    # mes no hay aporte
+    result = (max(AESSALUD, payslip.rmv) if AESSALUD &gt; 0 else 0) * 0.0225
 else:
     result = 0
             </field>

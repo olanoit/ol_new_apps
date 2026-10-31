@@ -271,3 +271,87 @@ class TestReviewCore(TransactionCase):
         slip.compute_sheet()
         self.assertEqual(slip.rmv, 1500.0)
         self.assertAlmostEqual(slip.family_allowance, 150.0)
+
+    # ------------------------------------------------------------------
+    # B1, B3. Mes sin remuneración (subsidio o licencia sin goce todo el mes)
+    # ------------------------------------------------------------------
+    def _whole_month(self, slip, code):
+        """Todos los días del mes en el concepto ``code``."""
+        days = {wd.code: wd for wd in slip.worked_days_line_ids}
+        for wd in slip.worked_days_line_ids:
+            wd.write({'number_of_days': 0.0, 'number_of_hours': 0.0})
+        days[code].write({'number_of_days': 31.0, 'number_of_hours': 248.0})
+        slip.compute_sheet()
+
+    def test_b1_no_essalud_without_remuneration(self):
+        """Subsidio por enfermedad los 31 días: no hay aporte a EsSalud
+        (antes, la base mínima de la RMV daba 9 % de la RMV)."""
+        slip = self._slip()
+        self.assertTrue(self._line(slip, 'ESSALUD').total)
+        self._whole_month(slip, 'SENF')
+        self.assertFalse(self._line(slip, 'AESSALUD').total)
+        self.assertFalse(self._line(slip, 'ESSALUD').total)
+
+    def test_b3_no_family_allowance_without_remuneration(self):
+        """Sin remuneración en todo el mes no hay asignación familiar,
+        aunque el mes tenga 31 días (antes solo con 30 exactos) o sea una
+        licencia sin goce."""
+        for code in ('SENF', 'LSGH'):
+            slip = self._slip()
+            slip.l10n_pe_family_allowance_ok = True
+            slip.compute_sheet()
+            self.assertTrue(self._line(slip, 'AF').total)
+            self._whole_month(slip, code)
+            self.assertFalse(self._line(slip, 'AF').total, code)
+
+    # ------------------------------------------------------------------
+    # B2. Los subsidios están afectos al SNP
+    # ------------------------------------------------------------------
+    def test_b2_onp_includes_subsidies(self):
+        onp = self.env['hr.membership'].search(
+            [('is_afp', '=', False), ('company_id', '=', False),
+             ('retirement_fund', '>', 0)], limit=1)
+        self.employee.version_id.membership_id = onp
+        slip = self._slip(compute=False)
+        slip.write({'input_line_ids': [(0, 0, {
+            'salary_rule_id': self.env.ref('al_hr_pe.salary_rule_SENF').id,
+            'amount': 500.0})]})
+        slip.compute_sheet()
+        base = self._line(slip, 'BAS_M').total + self._line(slip, 'SENF').total
+        self.assertAlmostEqual(
+            abs(self._line(slip, 'ONP').total),
+            round(onp.retirement_fund / 100 * base, 2))
+
+    # ------------------------------------------------------------------
+    # B4. Valor hora con las horas de la jornada
+    # ------------------------------------------------------------------
+    def test_b4_hour_value_uses_the_calendar(self):
+        """Con jornada de 6 h el valor hora es sueldo/30/6, no /8."""
+        calendar = self.env['resource.calendar'].create({
+            'name': 'Jornada 6 h', 'company_id': self.company.id,
+            'hours_per_day': 6.0,
+        })
+        self.employee.version_id.resource_calendar_id = calendar
+        slip = self._slip()
+        self.assertEqual(slip.version_id.resource_calendar_id.hours_per_day, 6.0)
+        for code in ('HE25', 'TAR'):
+            slip.worked_days_line_ids.filtered(
+                lambda l, c=code: l.code == c).number_of_hours = 6.0
+        slip.compute_sheet()
+        hour = 3000.0 / 30 / 6
+        self.assertAlmostEqual(self._line(slip, 'HE25').total, round(hour * 1.25 * 6, 2))
+        self.assertAlmostEqual(self._line(slip, 'TAR').total, round(hour * 6, 2))
+
+    # ------------------------------------------------------------------
+    # C1. EPS por el código de la tabla 32, no por el nombre
+    # ------------------------------------------------------------------
+    def test_c1_eps_by_tregistro_code(self):
+        eps = self.env.ref('al_hr_pe.insurance_EPS')
+        eps.name = 'EPS Pacífico'
+        self.employee.version_id.social_insurance_id = eps
+        slip = self._slip()
+        base = self._line(slip, 'BAS_M').total
+        self.assertAlmostEqual(
+            self._line(slip, 'ESSALUD').total, round(base * eps.percent / 100, 2))
+        self.assertAlmostEqual(
+            self._line(slip, 'EPS225').total, round(base * 0.0225, 2))
