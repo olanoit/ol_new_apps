@@ -183,12 +183,17 @@ class AlImportHrSalaryRuleWizard(models.TransientModel):
 
     @staticmethod
     def _to_int(value, default=5):
+        """Entero de la celda; ``default`` si está vacía y ``False`` si
+        no es un número entero (p. ej. «1a» o 1.5)."""
         if value in (None, '', False):
             return default
         try:
-            return int(value)
+            number = float(str(value).strip())
         except (TypeError, ValueError):
-            return default
+            return False
+        if not number.is_integer():
+            return False
+        return int(number)
 
     # --------------------------------------------------------------------- #
     # Procesamiento de una fila                                             #
@@ -227,24 +232,11 @@ class AlImportHrSalaryRuleWizard(models.TransientModel):
                 notes.append(self.env._('adaptado v19: %s') % ', '.join(
                     sorted(set(changes))))
 
-        vals = {
-            'code': code,
-            'name': name,
-            'sequence': self._to_int(row.get('sequence')),
-            'category_ids': [Command.set(category.ids)],
-            'struct_ids': [Command.set(self.struct_id.ids)],
-            'amount_select': 'code',
-        }
-        if amount_python:
-            vals['amount_python_compute'] = amount_python
-        if condition_python:
-            vals['condition_select'] = 'python'
-            vals['condition_python'] = condition_python
-        else:
-            # Explícito: al actualizar una regla existente hay que
-            # devolverla a "Siempre verdadero" si el Excel no trae
-            # condición (o si era la de por defecto).
-            vals['condition_select'] = 'none'
+        sequence = self._to_int(row.get('sequence'), default=None)
+        if sequence is False:
+            return 'error', self.env._(
+                'secuencia "%s" no es un número entero'
+            ) % (row.get('sequence'),), empty
 
         # Clave funcional: código + estructura. active_test=False para
         # recuperar también reglas archivadas con el mismo código.
@@ -255,16 +247,44 @@ class AlImportHrSalaryRuleWizard(models.TransientModel):
 
         suffix = ' [%s]' % '; '.join(notes) if notes else ''
 
+        vals = {
+            'code': code,
+            'name': name,
+            'category_ids': [Command.set(category.ids)],
+        }
+        if sequence is not None:
+            vals['sequence'] = sequence
+        if amount_python:
+            vals['amount_select'] = 'code'
+            vals['amount_python_compute'] = amount_python
+        if condition_python:
+            vals['condition_select'] = 'python'
+            vals['condition_python'] = condition_python
+
         if existing:
             if not self.update_existing:
                 return 'skipped', self.env._(
                     'la regla "%(c)s" ya existe en la estructura '
                     '(actualización deshabilitada)') % {'c': code}, existing
+            # La regla puede estar en otras estructuras: se enlaza a la
+            # destino sin quitarla de las demás. Las celdas vacías de
+            # código o condición conservan el modo de cálculo y la
+            # condición actuales (importe fijo, porcentaje, input, rango).
+            vals['struct_ids'] = [Command.link(self.struct_id.id)]
+            if (not condition_python and existing.condition_select == 'python'
+                    and self._is_boilerplate_condition(
+                        existing.condition_python)):
+                # La condición por defecto de Odoo nunca es intencional.
+                vals['condition_select'] = 'none'
             existing.write(vals)
             return 'updated', self.env._(
                 'actualizada regla "%(c)s" — %(n)s') % {
                 'c': code, 'n': name} + suffix, existing
 
+        vals['struct_ids'] = [Command.set(self.struct_id.ids)]
+        vals.setdefault('sequence', 5)
+        vals['amount_select'] = 'code'
+        vals.setdefault('condition_select', 'none')
         record = Rule.create(vals)
         return 'created', self.env._(
             'creada regla "%(c)s" — %(n)s') % {

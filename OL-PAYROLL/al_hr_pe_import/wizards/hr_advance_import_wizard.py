@@ -87,15 +87,6 @@ class AlImportHrAdvanceWizard(models.TransientModel):
                 return None
         return None
 
-    @staticmethod
-    def _to_float(value):
-        if value in (None, '', False):
-            return None
-        try:
-            return float(str(value).replace(',', '.'))
-        except (TypeError, ValueError):
-            return None
-
     def _find_employee_by_doc(self, identification):
         # Sin sudo: el asistente es de nómina (implica RR. HH.) y ya lee
         # empleados; la compañía del asistente se valida en el mixin.
@@ -180,13 +171,19 @@ class AlImportHrAdvanceWizard(models.TransientModel):
         }
 
         # Clave funcional: empleado + tipo + fecha de descuento, solo
-        # sobre adelantos aún no aplicados.
+        # sobre adelantos aún no aplicados. Dos adelantos legítimos con
+        # la misma clave en el archivo (S/ 300 y S/ 200 en la misma
+        # boleta) son dos registros: cada fila toma un adelanto que no
+        # haya tocado ya otra fila de esta importación, así que la
+        # primera importación crea ambos y reimportar los actualiza.
+        touched = ctx.setdefault('advance_ids', set())
         existing = Advance.search([
             ('employee_id', '=', employee.id),
             ('advance_type_id', '=', advance_type.id),
             ('discount_date', '=', discount_date),
             ('state', '=', 'not payed'),
-        ], limit=1)
+            ('id', 'not in', list(touched)),
+        ], order='id', limit=1)
 
         if existing:
             if not self.update_existing:
@@ -196,12 +193,14 @@ class AlImportHrAdvanceWizard(models.TransientModel):
                     'e': employee.name, 't': advance_type.name,
                     'f': discount_date}, existing
             existing.write(vals)
+            touched.add(existing.id)
             return 'updated', self.env._(
                 'actualizado adelanto de %(e)s: %(t)s S/ %(a)s') % {
                 'e': employee.name, 't': advance_type.name,
                 'a': amount}, existing
 
         record = Advance.create(vals)
+        touched.add(record.id)
         return 'created', self.env._(
             'creado adelanto de %(e)s: %(t)s S/ %(a)s (descuento %(f)s)'
         ) % {'e': employee.name, 't': advance_type.name,

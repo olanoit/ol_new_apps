@@ -85,15 +85,6 @@ class AlImportVacationRestWizard(models.TransientModel):
                 return None
         return None
 
-    @staticmethod
-    def _to_float(value):
-        if value in (None, '', False):
-            return None
-        try:
-            return float(str(value).replace(',', '.'))
-        except (TypeError, ValueError):
-            return None
-
     def _find_employee_by_doc(self, identification):
         # ``identification_id`` vive en hr.version; hr.employee lo expone
         # por _inherits sobre la versión vigente.
@@ -132,8 +123,19 @@ class AlImportVacationRestWizard(models.TransientModel):
                 'los días de saldo "%s" no son numéricos'
             ) % (row.get('days'),), empty
 
-        amount = self._to_float(row.get('amount'))
-        amount = custom_round(amount, 2) if amount is not None else 0.0
+        # Celda vacía → S/ 0; un texto no numérico es error: convertirlo
+        # en 0 borraría (unlink abajo) un saldo válido sin avisar.
+        raw_amount = row.get('amount')
+        if raw_amount is None or (isinstance(raw_amount, str)
+                                  and not raw_amount.strip()):
+            amount = 0.0
+        else:
+            amount = self._to_float(row.get('amount'))
+            if amount is None:
+                return 'error', self.env._(
+                    'el importe "%s" no es numérico'
+                ) % (row.get('amount'),), empty
+            amount = custom_round(amount, 2)
 
         employee = self._find_employee_by_doc(identification)
         if not employee:
@@ -145,6 +147,16 @@ class AlImportVacationRestWizard(models.TransientModel):
             return 'error', self.env._(
                 'hay %(k)d empleados con el documento %(d)s') % {
                 'k': len(employee), 'd': identification}, empty
+
+        # El saldo inicial es uno por trabajador: una segunda fila del
+        # mismo documento en el archivo reemplazaría en silencio a la
+        # primera recién importada.
+        seen = ctx.setdefault('rest_employee_ids', set())
+        if employee.id in seen:
+            return 'error', self.env._(
+                'el documento %s está repetido en el archivo (el saldo '
+                'inicial es uno por trabajador)') % identification, empty
+        seen.add(employee.id)
 
         existing = Rest.search([
             ('employee_id', '=', employee.id),

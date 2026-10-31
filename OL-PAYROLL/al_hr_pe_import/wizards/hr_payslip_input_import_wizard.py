@@ -82,16 +82,6 @@ class AlImportPayslipInputWizard(models.TransientModel):
     # Helpers                                                                #
     # --------------------------------------------------------------------- #
 
-    @staticmethod
-    def _to_float(value):
-        """``None`` si no es numérico; float en caso contrario."""
-        if value in (None, '', False):
-            return None
-        try:
-            return float(str(value).replace(',', '.'))
-        except (TypeError, ValueError):
-            return None
-
     def _find_slip(self, identification, ctx=None):
         """Boleta del lote cuyo empleado tiene ese documento.
 
@@ -104,7 +94,10 @@ class AlImportPayslipInputWizard(models.TransientModel):
         slips_by_doc = ctx.get('slips_by_doc')
         if slips_by_doc is None:
             slips_by_doc = defaultdict(lambda: self.env['hr.payslip'])
-            for slip in self.payslip_run_id.slip_ids:
+            # Las anuladas no cuentan: con una anulada y otra en
+            # borrador del mismo trabajador la fila daba «hay 2 boletas».
+            for slip in self.payslip_run_id.slip_ids.filtered(
+                    lambda slip: slip.state != 'cancel'):
                 doc = (slip.employee_id.identification_id or '').strip()
                 slips_by_doc[doc] |= slip
             ctx['slips_by_doc'] = slips_by_doc
@@ -144,7 +137,8 @@ class AlImportPayslipInputWizard(models.TransientModel):
                 'hay %(k)d boletas en el lote para el documento %(d)s'
             ) % {'k': len(slips), 'd': identification}, empty
         slip = slips
-        if slip.state not in ('draft', 'verify'):
+        # Odoo 20: draft/validated/paid/cancel (ya no existe «verify»).
+        if slip.state != 'draft':
             return 'error', self.env._(
                 'la boleta de %(e)s no está en borrador (estado: %(s)s)'
             ) % {'e': slip.employee_id.name, 's': slip.state}, empty

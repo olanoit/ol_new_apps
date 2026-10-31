@@ -47,6 +47,10 @@ EXCEL_EXTS = ('.xlsx', '.xlsm')
 # bomba de descompresión) agota la memoria del worker.
 MAX_FILE_SIZE_MB = 20
 MAX_ROWS = 50000
+# Tope de filas RECORRIDAS (vacías incluidas): un xlsx de pocos KB puede
+# declarar la dimensión A1:XFD1048576 y obligar a iterar un millón de
+# filas vacías dentro de la petición HTTP.
+MAX_SCANNED_ROWS = 4 * MAX_ROWS
 
 
 def _run_import_thread(dbname, uid, wizard_model, wizard_id, progress_id,
@@ -445,10 +449,19 @@ class ImportPayrollMixin(models.AbstractModel):
             ws = wb[sheet_name]
             col_map = self._get_column_map()
             rows = []
-            for line_no, row in enumerate(
-                ws.iter_rows(min_row=self.start_row, values_only=True),
+            # Solo las columnas del mapa: una celda suelta en la columna
+            # XFD no convierte cada fila en una tupla de 16 384 valores.
+            max_col = max(col_map.values(), default=1)
+            for scanned, (line_no, row) in enumerate(enumerate(
+                ws.iter_rows(min_row=self.start_row, max_col=max_col,
+                             values_only=True),
                 start=self.start_row,
-            ):
+            ), start=1):
+                if scanned > MAX_SCANNED_ROWS:
+                    raise UserError(self.env._(
+                        'La hoja tiene más de %s filas (contando las '
+                        'vacías). Elimine las filas sobrantes al final '
+                        'de la hoja o divida el archivo.') % MAX_SCANNED_ROWS)
                 if not any(c not in (None, '') for c in row):
                     continue
                 if len(rows) >= MAX_ROWS:
@@ -479,6 +492,20 @@ class ImportPayrollMixin(models.AbstractModel):
             v = value.strip()
             return v or False
         return value
+
+    @staticmethod
+    def _to_float(value):
+        """Celda numérica → ``float``; ``None`` si está vacía o no es un
+        número finito («nan» o «inf», frecuentes en exports de pandas,
+        se rechazan: grabarían NaN en la boleta). El 0 es un número
+        (``0 in (None, '', False)`` es verdadero en Python)."""
+        if value is None or value is False or value == '':
+            return None
+        try:
+            number = float(str(value).replace(',', '.'))
+        except (TypeError, ValueError):
+            return None
+        return number if math.isfinite(number) else None
 
     @staticmethod
     def _clean_code(value):

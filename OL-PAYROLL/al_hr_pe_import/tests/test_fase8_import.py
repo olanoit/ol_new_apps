@@ -503,8 +503,9 @@ class TestFase8Import(TransactionCase):
         prog_a.created_res_ids_csv = '5,7, 9'
         self.assertEqual(prog_a._created_ids_list(), [5, 7, 9])
 
-        # Usuario de nómina restringido a la compañía B: la ir.rule del
-        # historial solo le muestra sus importaciones.
+        # Responsable de nómina restringido a la compañía B: la ir.rule
+        # del historial solo le muestra las importaciones de B (un
+        # usuario de nómina, además, solo ve las suyas).
         user_b = self.env['res.users'].create({
             'name': 'Nómina Beta F8',
             'login': 'fase8_import_beta',
@@ -512,7 +513,7 @@ class TestFase8Import(TransactionCase):
             'company_ids': [(6, 0, [self.company_b.id])],
             'group_ids': [(6, 0, [
                 self.env.ref('base.group_user').id,
-                self.env.ref('hr_payroll.group_hr_payroll_user').id,
+                self.env.ref('hr_payroll.group_hr_payroll_manager').id,
             ])],
         })
         visibles = Progress.with_user(user_b).with_context(
