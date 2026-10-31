@@ -29,6 +29,8 @@
                         <group string="Beneficios">
                             <field
                                 name="l10n_pe_construction_grat_bonus_rate"/>
+                            <field
+                                name="l10n_pe_construction_school_age_min"/>
                             <field name="l10n_pe_construction_school_age"/>
                             <field
                                 name="l10n_pe_construction_school_age_study"/>

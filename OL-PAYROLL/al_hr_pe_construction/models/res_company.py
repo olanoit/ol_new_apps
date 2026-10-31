@@ -19,6 +19,12 @@ class ResCompany(models.Model):
     l10n_pe_construction_school_age = fields.Integer(
         string='Edad tope de la asignación escolar', default=18,
         help='Hasta esta edad el hijo genera asignación escolar.')
+    l10n_pe_construction_school_age_min = fields.Integer(
+        string='Edad mínima de la asignación escolar', default=3,
+        help='Desde esta edad el hijo genera asignación escolar: la Tabla '
+             '22 (código 0211) la paga por cada hijo «menor de edad y en '
+             'edad escolar», no por un bebé. Por defecto 3 años, la edad '
+             'de la educación inicial.')
     l10n_pe_conafovicer_rate = fields.Float(
         string='CONAFOVICER (%)', digits=(5, 2), default=2.0,
         help='Retención al trabajador para el Comité Nacional de '

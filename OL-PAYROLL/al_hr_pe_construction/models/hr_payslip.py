@@ -14,6 +14,7 @@ mostrando el jornal de marzo aunque en abril entre un convenio nuevo.
 """
 from datetime import datetime, time, timedelta
 
+from dateutil.relativedelta import relativedelta
 from pytz import UTC, timezone
 
 from odoo import api, fields, models
@@ -400,16 +401,26 @@ class HrPayslip(models.Model):
             self.company_id.l10n_pe_construction_grat_bonus_rate)
 
     def _l10n_pe_construction_school(self):
-        """Asignación escolar: 30 jornales al año por cada hijo con derecho."""
+        """Asignación escolar: 30 jornales al año por cada hijo con derecho.
+
+        Tabla 22, código 0211: «por cada hijo menor de edad y en edad
+        escolar». Además del tope (18, o 24 cursando estudios superiores)
+        el hijo tiene que haber llegado a la edad escolar (parámetro de la
+        compañía, 3 años por defecto: educación inicial); antes contaba
+        cualquier hijo menor de 18, incluso un recién nacido.
+        """
         self.ensure_one()
         if not self.l10n_pe_daily_wage or not self.date_to:
             return 0.0
         company = self.company_id
+        min_age = company.l10n_pe_construction_school_age_min or 0
         children = self.employee_id.sudo().l10n_pe_dependent_ids.filtered(
             lambda dependent: dependent._is_family_allowance_source(
                 self.date_to,
                 age_limit=company.l10n_pe_construction_school_age,
-                studying_limit=company.l10n_pe_construction_school_age_study))
+                studying_limit=company.l10n_pe_construction_school_age_study)
+            and relativedelta(self.date_to, dependent.birthday).years
+            >= min_age)
         if not children:
             return 0.0
         return custom_round(

@@ -274,6 +274,36 @@ class TestConstructionBenefits(TransactionCase):
         self.assertGreater(self._line(payslip, 'AESC'), 0.0,
                            'el tope es un parámetro, no una constante')
 
+    def test_school_allowance_needs_school_age(self):
+        """Tabla 22, código 0211: hijo «menor de edad y en edad escolar».
+
+        Un bebé no genera asignación escolar: desde la edad mínima de la
+        compañía (3 años, educación inicial). Antes contaba cualquier hijo
+        menor de 18.
+        """
+        worker = self._worker()
+        child = self._child(worker, 1)
+        payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
+        self.assertEqual(self.company.l10n_pe_construction_school_age_min, 3)
+        self.assertEqual(self._line(payslip, 'AESC'), 0.0,
+                         'un hijo de un año no está en edad escolar')
+
+        child.birthday = date(2026, 3, 9) - relativedelta(years=3)
+        payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
+        self.assertEqual(self._line(payslip, 'AESC'), 0.0,
+                         'cumple los 3 al día siguiente del cierre')
+
+        child.birthday = date(2026, 3, 8) - relativedelta(years=3)
+        payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
+        self.assertEqual(self._line(payslip, 'AESC'), 52.09,
+                         'con 3 años cumplidos ya cuenta')
+
+        child.birthday = date(2026, 3, 8) - relativedelta(years=1)
+        self.company.l10n_pe_construction_school_age_min = 0
+        payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
+        self.assertEqual(self._line(payslip, 'AESC'), 52.09,
+                         'la edad mínima es un parámetro de la compañía')
+
     # ------------------------------------------------------------------
     # Base afecta
     # ------------------------------------------------------------------
