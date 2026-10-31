@@ -63,6 +63,12 @@ L10N_PE_AUDIT_RULES = {
 
 L10N_PE_EXTRA_HOURS_TYPES = ('wd_HE25', 'wd_HE35', 'wd_HE100')
 
+# Aportes del empleador que suman en el coste del empleado (campo nativo
+# ``employer_cost`` y su tablero): sin la marca, el coste salía en cero.
+L10N_PE_EMPLOYER_COST_RULES = (
+    'salary_rule_ESSALUD', 'salary_rule_EPS225', 'salary_rule_SVLEY',
+    'salary_rule_SCTRS', 'salary_rule_SCTRP')
+
 
 # ----------------------------------------------------------------------
 # Auditoría del 07/10/2026: se encadenan sobre la fórmula vigente.

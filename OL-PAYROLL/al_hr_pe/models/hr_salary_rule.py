@@ -4,7 +4,8 @@ import logging
 from odoo import api, fields, models
 
 from .l10n_pe_rule_formulas import (
-    L10N_PE_AUDIT_RULES, L10N_PE_EXTRA_HOURS_TYPES)
+    L10N_PE_AUDIT_RULES, L10N_PE_EMPLOYER_COST_RULES,
+    L10N_PE_EXTRA_HOURS_TYPES)
 
 _logger = logging.getLogger(__name__)
 
@@ -53,4 +54,8 @@ class HrSalaryRule(models.Model):
                 'al_hr_pe.%s' % xmlid, raise_if_not_found=False)
             if work_entry_type and not work_entry_type.is_extra_hours:
                 work_entry_type.is_extra_hours = True
+        for xmlid in L10N_PE_EMPLOYER_COST_RULES:
+            rule = self.env.ref('al_hr_pe.%s' % xmlid, raise_if_not_found=False)
+            if rule and not rule.appears_on_employee_cost_dashboard:
+                rule.appears_on_employee_cost_dashboard = True
         return True

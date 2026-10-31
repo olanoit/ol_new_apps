@@ -7,6 +7,43 @@ from odoo import api, fields, models
 from odoo.addons.al_hr_pe.tools import round_half_up
 
 
+class _L10nPeWorkedDaysTotal:
+    """Líneas de días de un mismo código vistas como una sola.
+
+    Con dos versiones en el periodo (p. ej. un aumento desde el 16), el
+    motor nativo genera una línea por versión y ``worked_days['DLAB']`` es
+    un recordset de dos: ``.number_of_days`` lanzaría «Expected singleton».
+    Las reglas nativas lo resuelven con ``sum(...mapped(...))``; las PE (y
+    las de beneficios y construcción) leen el atributo directamente, así
+    que aquí se suman días, horas e importe. El resto de atributos
+    (``name``, ``code``, ``rate``…) es el de la primera línea.
+    """
+    _SUMMED = ('number_of_days', 'number_of_hours', 'amount')
+
+    def __init__(self, lines):
+        self._lines = lines
+
+    def __getattr__(self, name):
+        if name in self._SUMMED:
+            return sum(self._lines.mapped(name))
+        return getattr(self._lines[:1], name)
+
+    def __bool__(self):
+        return bool(self._lines)
+
+    def __len__(self):
+        return len(self._lines)
+
+    def __iter__(self):
+        return iter(self._lines)
+
+    def mapped(self, func):
+        return self._lines.mapped(func)
+
+    def filtered(self, func):
+        return self._lines.filtered(func)
+
+
 class HrPayslip(models.Model):
     """Extensión peruana de la boleta.
 
@@ -149,6 +186,50 @@ class HrPayslip(models.Model):
             else:
                 slip.l10n_pe_commission = membership.fixed_commision
 
+    # Códigos PE de los totales nativos (``basic_wage``/``gross_wage``/
+    # ``net_wage``): las reglas peruanas se llaman BAS, TINGR y NETO, no
+    # BASIC/GROSS/NET. Sin ellos, el neto de la boleta, el total del lote,
+    # el reparto en cuentas bancarias y el aviso de neto negativo valían 0.
+    _L10N_PE_BASIC_CODES = {'BAS'}
+    _L10N_PE_GROSS_CODES = {'TINGR'}
+    _L10N_PE_NET_CODES = {'NETO'}
+
+    def _l10n_pe_is_pe_structure(self):
+        """Todas las boletas de ``self`` son de una estructura peruana (un
+        recordset vacío no lo es: los llamadores nativos que piden los
+        códigos con ``env['hr.payslip']`` reciben los de siempre)."""
+        return bool(self) and all(
+            slip.struct_id.country_id.code == 'PE' for slip in self)
+
+    def _get_basic_wage_line_codes(self):
+        codes = super()._get_basic_wage_line_codes()
+        if self._l10n_pe_is_pe_structure():
+            codes = codes | self._L10N_PE_BASIC_CODES
+        return codes
+
+    def _get_gross_wage_line_codes(self):
+        codes = super()._get_gross_wage_line_codes()
+        if self._l10n_pe_is_pe_structure():
+            codes = codes | self._L10N_PE_GROSS_CODES
+        return codes
+
+    def _get_net_wage_line_codes(self):
+        codes = super()._get_net_wage_line_codes()
+        if self._l10n_pe_is_pe_structure():
+            codes = codes | self._L10N_PE_NET_CODES
+        return codes
+
+    def _compute_basic_net(self):
+        # El nativo pide los códigos una vez para todo el recordset: se
+        # separan las boletas PE para que una estructura de otro país con
+        # una regla que casualmente se llame NETO no la sume.
+        pe_slips = self.filtered(lambda s: s.struct_id.country_id.code == 'PE')
+        if pe_slips and pe_slips != self:
+            super(HrPayslip, self - pe_slips)._compute_basic_net()
+            super(HrPayslip, pe_slips)._compute_basic_net()
+        else:
+            super()._compute_basic_net()
+
     def _l10n_pe_sctr(self, coverage, base):
         """Aporte SCTR (D.S. 003-98-SA) de ``coverage`` ('health' o
         'pension') sobre ``base``: solo para quien tiene esa cobertura
@@ -178,10 +259,15 @@ class HrPayslip(models.Model):
             # Igual con los días: una boleta generada antes de que existiera
             # un concepto (p. ej. HTN) no tiene su línea y «Calcular» no
             # regenera los días; el concepto ausente vale cero.
+            # Con varias versiones en el periodo hay una línea por versión:
+            # las de un mismo código se suman (``_L10nPeWorkedDaysTotal``).
+            # El sueldo (``version.wage``) es el de la versión principal de
+            # la boleta, que manda en todo el mes: no se prorratea.
             localdict['worked_days'] = defaultdict(
                 lambda: SimpleNamespace(number_of_days=0.0, number_of_hours=0.0,
                                         amount=0.0, name=''),
-                localdict['worked_days'])
+                {code: lines if len(lines) <= 1 else _L10nPeWorkedDaysTotal(lines)
+                 for code, lines in localdict['worked_days'].items()})
         return localdict
 
     def _round_days(self, work_entry_type, days):
@@ -260,10 +346,13 @@ class HrPayslip(models.Model):
                 and WorkEntryType.browse(vals.get('work_entry_type_id')).code != '000.00'
                 and not WorkEntryType.browse(
                     vals.get('work_entry_type_id')).is_extra_hours)
+            # Con varias versiones puede haber una línea DOM por versión: el
+            # complemento es del periodo entero y va una sola vez.
+            dom_days = max(0.0, period_days - other_days)
             for vals in res:
                 if vals.get('work_entry_type_id') == dom.id:
-                    vals['number_of_days'] = max(
-                        0.0, period_days - other_days)
+                    vals['number_of_days'] = dom_days
+                    dom_days = 0.0
         return res
 
     @api.depends('line_ids.total', 'line_ids.category_ids')
@@ -347,7 +436,10 @@ class HrPayslipRun(models.Model):
         self.ensure_one()
         month = self.l10n_pe_plame_period_id
         if not month or month == self.periodo_id:
-            return self.slip_ids
+            # Solo boletas cerradas, como en la rama semanal: una boleta
+            # cancelada (y rehecha) o en borrador no se declara.
+            return self.slip_ids.filtered(
+                lambda s: s.state in ('validated', 'paid'))
         periods = month | month.child_ids
         return self.env['hr.payslip'].search([
             ('periodo_id', 'in', periods.ids),

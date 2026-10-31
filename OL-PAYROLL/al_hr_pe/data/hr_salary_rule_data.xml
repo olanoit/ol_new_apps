@@ -908,6 +908,7 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+COMI
             <field name="sunat_code">0804</field>
             <field name="sequence">89</field>
             <field name="appears_on_payslip">always</field>
+            <field name="appears_on_employee_cost_dashboard" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -930,6 +931,7 @@ else:
             <field name="code">EPS225</field>
             <field name="sequence">90</field>
             <field name="appears_on_payslip">always</field>
+            <field name="appears_on_employee_cost_dashboard" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -948,6 +950,7 @@ else:
             <field name="sunat_code">0803</field>
             <field name="sequence">92</field>
             <field name="appears_on_payslip">always</field>
+            <field name="appears_on_employee_cost_dashboard" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -972,6 +975,7 @@ for aporte in version.contributions_ids:
             <field name="sunat_code">0806</field>
             <field name="sequence">93</field>
             <field name="appears_on_payslip">always</field>
+            <field name="appears_on_employee_cost_dashboard" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
@@ -986,6 +990,7 @@ result = payslip._l10n_pe_sctr('health', AESSALUD)
             <field name="sunat_code">0814</field>
             <field name="sequence">94</field>
             <field name="appears_on_payslip">always</field>
+            <field name="appears_on_employee_cost_dashboard" eval="True"/>
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">

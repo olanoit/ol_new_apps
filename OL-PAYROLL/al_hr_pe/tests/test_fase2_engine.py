@@ -315,7 +315,7 @@ class TestFase2Engine(TransactionCase):
             'date_end': date(2026, 3, 31),
             'company_id': self.company.id,
         })
-        slip.payslip_run_id = run
+        slip.write({'payslip_run_id': run.id, 'state': 'validated'})
         content = self._attachment_text(run.action_export_plame_rem())
         self.assertNotIn('|0601|', content)
         self.assertIn('|0121|', content)
@@ -418,7 +418,7 @@ class TestFase2Engine(TransactionCase):
             'date_end': date(2026, 3, 31),
             'company_id': self.company.id,
         })
-        slip.payslip_run_id = run
+        slip.write({'payslip_run_id': run.id, 'state': 'validated'})
         text = self._attachment_text(run.action_export_plame_toc())
         self.assertEqual(text, '01|44556677|0|0||1|\r\n')
         self.employee.version_id.l10n_pe_mas_vida = True
@@ -456,11 +456,13 @@ class TestFase2Engine(TransactionCase):
             'company_id': self.company.id,
         })
         for employee in (other, self.employee):
-            self.env['hr.payslip'].create({
+            slip = self.env['hr.payslip'].create({
                 'name': 'Boleta', 'employee_id': employee.id,
                 'struct_id': self.structure.id, 'payslip_run_id': run.id,
                 'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31),
-            }).compute_sheet()
+            })
+            slip.compute_sheet()
+            slip.state = 'validated'
         action = run.action_export_afpnet()
         attachment_id = int(action['url'].split('/')[3].split('?')[0])
         attachment = self.env['ir.attachment'].browse(attachment_id)
@@ -523,7 +525,7 @@ class TestFase2Engine(TransactionCase):
         run = self.env['hr.payslip.run'].create({
             'name': 'Lote SCTR', 'date_start': date(2026, 3, 1),
             'date_end': date(2026, 3, 31), 'company_id': self.company.id})
-        slip.payslip_run_id = run
+        slip.write({'payslip_run_id': run.id, 'state': 'validated'})
         codes = {line.split('|')[2]
                  for line in self._attachment_text(run.action_export_plame_rem()).split('\r\n')
                  if line}
