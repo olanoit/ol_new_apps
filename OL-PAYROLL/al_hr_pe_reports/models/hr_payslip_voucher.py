@@ -239,8 +239,9 @@ class HrPayslip(models.Model):
         neto = custom_round(neto)
         # Un neto negativo (adelanto o préstamo mayor que el ingreso) hacía
         # fallar la boleta entera: se escribe en letras su valor absoluto.
-        neto_letras = 'SON: %s%s SOLES' % (
-            'MENOS ' if neto < 0 else '', param.number_to_letter(abs(neto)))
+        neto_letras = 'SON: %s%s %s' % (
+            'MENOS ' if neto < 0 else '', param.number_to_letter(abs(neto)),
+            self._voucher_currency_words())
 
         # --- Situación / cese (port de la lógica v18: la boleta marca
         # BAJA solo si el cese cae dentro del periodo) ---
@@ -267,6 +268,23 @@ class HrPayslip(models.Model):
                 'motivo': stype.name or '',
                 'dias': days,
             } for stype, days in grouped]
+
+        # D.S. 001-98-TR art. 19 (mod. D.S. 017-2001-TR): si el trabajador
+        # gozó de vacaciones en el periodo, la boleta indica la fecha de
+        # salida y de retorno. Se toman de los descansos aprobados de tipo
+        # vacaciones que se cruzan con el periodo (fechas completas, aunque
+        # empiecen o terminen fuera de él); retorno = día siguiente al
+        # último día de vacaciones.
+        vacaciones = [{
+            'salida': leave.request_date_from,
+            'retorno': leave.request_date_to + timedelta(days=1),
+        } for leave in self.env['hr.leave'].sudo().search([
+            ('employee_id', '=', employee.id),
+            ('state', '=', 'validate'),
+            ('work_entry_type_id', 'in', wd_dvac.ids),
+            ('request_date_from', '<=', self.date_to),
+            ('request_date_to', '>=', self.date_from),
+        ], order='request_date_from')] if wd_dvac else []
 
         # Cuenta de abono de haberes: dato que el trabajador contrasta
         # con su banco y que la boleta peruana suele mostrar.
@@ -296,6 +314,7 @@ class HrPayslip(models.Model):
             'dias_no_laborados': dias_no_laborados,
             'dias_subsidiados': dias_subsidiados,
             'dias_vacaciones': dias_vacaciones,
+            'vacaciones': vacaciones,
             'horas_ordinarias': '%02d:%02d' % (h_ord, m_ord),
             'horas_sobretiempo': '%02d:%02d' % (h_ext, m_ext),
             'horas_extras': horas_extras,
@@ -311,6 +330,15 @@ class HrPayslip(models.Model):
             'neto_letras': neto_letras,
             'suspensiones': suspensiones,
         }
+
+    def _voucher_currency_words(self):
+        """Moneda del neto en letras: la de la boleta (antes siempre
+        «SOLES»)."""
+        currency = self.currency_id or self.company_id.currency_id
+        if not currency or currency.name == 'PEN':
+            return 'SOLES'
+        return (currency.with_context(lang='es_PE').currency_unit_label
+                or currency.name).upper()
 
     # ------------------------------------------------------------------
     # Un solo camino de impresión

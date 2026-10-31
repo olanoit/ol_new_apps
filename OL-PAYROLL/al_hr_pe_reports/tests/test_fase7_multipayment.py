@@ -386,6 +386,32 @@ class TestFase7MultipaymentFormats(TransactionCase):
         self.assertEqual(row[117:137], 'CTS Mayo - Octubre 2026'[0:20])
         self.assertEqual(row[137:139], '05')
 
+    def test_scotiabank_cts_campos_de_ancho_fijo(self):
+        """Concepto corto rellenado a 20; documento o monto que no caben
+        se rechazan en vez de desplazar el registro."""
+        header = make_header(charge_acc='12345678901234', cts_name='CTS')
+        row = rows(scotiabank_cts_txt(
+            header, [make_line(account_number='1234567890')]))[0]
+        self.assertEqual(row[117:137], 'CTS'.ljust(20))
+        self.assertEqual(row[137:139], '05')
+        with self.assertRaises(UserError):
+            scotiabank_cts_txt(header, [make_line(
+                account_number='1234567890', doc_number='PASAPORTE12345')])
+        with self.assertRaises(UserError):
+            scotiabank_cts_txt(header, [make_line(
+                account_number='1234567890', amount_soles=1234567890.0)])
+
+    def test_banbif_cuenta_de_mas_de_20(self):
+        for fn in (banbif_haberes_txt, banbif_cts_txt):
+            with self.assertRaises(UserError):
+                fn(make_header(), [make_line(account_number='1' * 21)])
+
+    def test_txt_de_un_byte_por_caracter(self):
+        Multipayment = self.env['hr.automate.multipayment']
+        self.assertEqual(Multipayment._encode_txt('PEÑA\r\n'), b'PE\xd1A\r\n')
+        with self.assertRaises(UserError):
+            Multipayment._encode_txt('PEREZ \u2192 QUISPE')
+
     # ------------------------------------------------------------------
     # BanBif
     # ------------------------------------------------------------------
@@ -608,6 +634,35 @@ class TestFase7MultipaymentOrigen(TransactionCase):
         self.account.currency_id = other
         self.assertFalse(pago._get_txt_lines(),
                          'una cuenta en otra moneda no cabe en el TXT')
+
+    def test_otra_moneda_bloquea_el_txt(self):
+        """Una línea marcada con cuenta en otra moneda no se omite en
+        silencio: el TXT no se genera hasta desmarcarla."""
+        self.slip.write({'state': 'validated'})
+        pago = self._pago('BMOB')
+        pago.action_load_lines()
+        other = self.env.ref('base.USD')
+        if other == self.company.currency_id:
+            other = self.env.ref('base.EUR')
+        other.active = True
+        self.account.currency_id = other
+        with self.assertRaises(UserError):
+            pago.action_generate_txt()
+        pago.line_ids.is_txt = False
+        self.assertFalse(pago.line_ids.filtered('is_txt') - pago._get_txt_lines())
+
+    def test_borrador_respeta_otro_pago_finalizado(self):
+        """Volver a borrador un pago no desmarca el origen si otro pago
+        del mismo origen sigue finalizado."""
+        pago_a = self._pago('BFA')
+        pago_b = pago_a.copy({'journal_id': pago_a.journal_id.copy({
+            'name': 'Banco BFB', 'code': 'BFB'}).id})
+        pago_a.action_done()
+        pago_b.action_done()
+        pago_b.action_draft()
+        self.assertTrue(self.lote.txt_generated)
+        pago_a.action_draft()
+        self.assertFalse(self.lote.txt_generated)
 
     def _company_bank_account(self):
         return self.env['res.partner.bank'].create({

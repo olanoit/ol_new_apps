@@ -123,6 +123,21 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- Vacaciones gozadas en el periodo (D.S. 001-98-TR art. 19) -->
+                <table t-if="d['vacaciones']" class="pe-doc-table pe-doc-lines" style="margin-top: 4px;">
+                    <thead>
+                        <tr class="pe-doc-thead">
+                            <td class="text-center">Vacaciones: fecha de salida</td>
+                            <td class="text-center">Fecha de retorno</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="d['vacaciones']" t-as="vac">
+                            <td class="text-center"><span t-out="vac['salida']" t-options="{'widget': 'date'}"/></td>
+                            <td class="text-center"><span t-out="vac['retorno']" t-options="{'widget': 'date'}"/></td>
+                        </tr>
+                    </tbody>
+                </table>
                 <!-- Sobretiempo por sobretasa (D.S. 007-2002-TR art. 10) -->
                 <table t-if="d['horas_extras']" class="pe-doc-table pe-doc-lines" style="margin-top: 4px;">
                     <thead>

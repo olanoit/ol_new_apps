@@ -31,9 +31,10 @@ class TestFifthCertificate(TransactionCase):
     def _values(self, rem, retencion):
         Line = type(self.env['hr.fifth.category.line'])
         Param = type(self.env['hr.main.parameter'])
+        Wizard = type(self.wizard)
         totals = iter((rem, retencion))
         with patch.object(Param, 'check_fifth_values', lambda self: True), \
-                patch.object(Line, '_sum_payslip_rule_totals',
+                patch.object(Wizard, '_certificate_rule_total',
                              lambda self, *args: next(totals)), \
                 patch.object(Line, '_get_quinta_rule',
                              lambda self, company: self.env['hr.salary.rule']):
@@ -53,3 +54,31 @@ class TestFifthCertificate(TransactionCase):
         self.assertEqual(vals['renta_imponible'], 0.0)
         self.assertEqual(vals['impuesto'], 0.0)
         self.assertEqual(vals['saldo'], 0.0)
+
+    def test_slip_outside_batch_counts(self):
+        """Una boleta cerrada sin lote (cese, suelta) también es renta y
+        retención del ejercicio; las quincenales no."""
+        rule = self.env['hr.salary.rule'].create({
+            'name': 'Renta afecta cert', 'code': 'CERTAF',
+            'category_ids': [(6, 0, self.env.ref('al_hr_pe.ING').ids)],
+            'struct_ids': [(6, 0, self.env.ref('al_hr_pe.base_structure').ids)],
+            'amount_select': 'fix', 'amount_fix': 0.0,
+        })
+        slip = self.env['hr.payslip'].create({
+            'name': 'Boleta de cese sin lote',
+            'employee_id': self.employee.id,
+            'version_id': self.employee.version_id.id,
+            'company_id': self.company.id,
+            'date_from': date(2026, 8, 1), 'date_to': date(2026, 8, 31),
+        })
+        self.env['hr.payslip.line'].create({
+            'slip_id': slip.id, 'salary_rule_id': rule.id,
+            'name': rule.name, 'code': rule.code, 'amount': 1500.0,
+            'quantity': 1.0, 'rate': 100.0, 'total': 1500.0,
+            'version_id': slip.version_id.id,
+            'employee_id': self.employee.id,
+        })
+        slip.state = 'validated'
+        self.assertFalse(slip.payslip_run_id)
+        self.assertEqual(self.wizard._certificate_rule_total(
+            self.employee, rule, date(2026, 1, 1), date(2027, 1, 1)), 1500.0)

@@ -156,6 +156,18 @@ def txt_field(value, kind, width=1, left=True, decimal_point=False):
     return text + aux[len(text):] if left else aux[:-len(text)] + text
 
 
+def _fixed_width(value, width, label):
+    """Texto de un campo de ancho fijo que no admite truncarse: un valor
+    más largo desplazaría el resto del registro (y truncarlo pagaría a
+    otra cuenta o con otro monto), así que se rechaza."""
+    text = str(value or '')
+    if len(text) > width:
+        raise UserError(
+            'El campo «%s» (%s) excede las %d posiciones del formato del '
+            'banco.' % (label, text, width))
+    return text
+
+
 def _banbif_amount(amount):
     """Monto BanBif: 2 decimales sin punto, 14 posiciones con espacios a
     la izquierda (port literal del bloque ``ap/apf`` v18)."""
@@ -420,7 +432,8 @@ def banbif_haberes_txt(header, lines):
                                        'str', 10),
                        platype='H',
                        codbank=line.get('acc_bic') or '038',
-                       account_number=line['account_number'].rjust(20, ' '),
+                       account_number=_fixed_width(
+                           line['account_number'], 20, 'cuenta').rjust(20, ' '),
                        currency_type='1',
                        amount=_banbif_amount(line['amount']),
                        motdep=header['subtype_banbif'],
@@ -608,8 +621,9 @@ def scotiabank_cts_txt(header, lines):
     """TXT Scotiabank CTS (port de ``get_scotiabank_cts_txt``).
 
     Rarezas v18 conservadas: el nro. de documento va con ``ljust(12)``
-    SIN limpieza; ``rem_amount`` siempre sale de ``amount_soles`` aunque
-    el abono sea en USD; el concepto es un slice crudo de 20 sin pad."""
+    SIN limpieza (pero uno de más de 12 se rechaza); ``rem_amount``
+    siempre sale de ``amount_soles`` aunque el abono sea en USD; el
+    concepto es un slice crudo de 20, ahora rellenado a 20."""
     dollars = header['cts_dollars']
     out = []
     for line in lines:
@@ -621,7 +635,9 @@ def scotiabank_cts_txt(header, lines):
                    '{cts_currency}{concept}{type_payment}\r\n'.format(
                        # mismo mapa que haberes (CE=2, pasaporte=3)
                        type_document=SCOTIABANK_DOC_TYPES.get(line['doc_sunat'], ' '),
-                       number_document=(line['doc_number'] or '').ljust(12),
+                       number_document=_fixed_width(
+                           line['doc_number'], 12,
+                           'número de documento').ljust(12),
                        # limpiar, truncar y rellenar (al revés desplazaba
                        # los campos siguientes)
                        emp_name=txt_field(line['name'] or '', 'str', 60),
@@ -631,11 +647,13 @@ def scotiabank_cts_txt(header, lines):
                            _digits(line['account_number']) if not is_cci else '', 'str', 10),
                        cci_acc=txt_field(
                            _digits(line['account_number']) if is_cci else '', 'str', 20),
-                       rem_amount='{0:.2f}'.format(
+                       rem_amount=_fixed_width('{0:.2f}'.format(
                            line['amount_soles']).replace('.', '')
-                       .zfill(11),
+                           .zfill(11), 11, 'monto'),
                        type_payment='05',  # CTS
-                       concept=(header['cts_name'] or '')[0:20],
+                       # slice crudo de 20 (v18) con relleno: un nombre
+                       # editado más corto desplazaba type_payment
+                       concept=(header['cts_name'] or '')[0:20].ljust(20),
                    ))
     return ''.join(out)
 
@@ -664,7 +682,8 @@ def banbif_cts_txt(header, lines):
                                        'str', 10),
                        platype='C',
                        codbank=line.get('acc_bic') or '038',
-                       account_number=line['account_number'].strip()
+                       account_number=_fixed_width(
+                           line['account_number'].strip(), 20, 'cuenta')
                        .rjust(20, ' '),
                        currency_type='2' if dollars else '1',
                        amount=_banbif_amount(line['amount']),
@@ -763,7 +782,10 @@ class HrMainParameter(models.Model):
     l10n_pe_voucher_encrypt = fields.Boolean(
         string='Cifrar la boleta enviada por correo',
         help='El PDF adjunto al correo se abre con el número de documento '
-             'del trabajador (como en v18). La impresión no cambia.')
+             'del trabajador (como en v18). La impresión no cambia. '
+             'Solo evita la apertura casual: un DNI de 8 dígitos se '
+             'descifra por fuerza bruta en segundos, así que no protege '
+             'la boleta si el correo cae en manos de un tercero.')
 
     journals_banks = fields.Many2many(
         'account.journal', string='Diarios de pago masivo',
@@ -1053,12 +1075,14 @@ class HrAutomateMultipayment(models.Model):
 
     def action_draft(self):
         """Vuelve a borrador y desmarca el origen (port de
-        ``turn_draft`` v18)."""
+        ``turn_draft`` v18), salvo que otro pago masivo del mismo origen
+        siga finalizado."""
         for record in self:
-            origin, _field = record._get_origin()
-            if origin:
-                origin.txt_generated = False
             record.state = 'draft'
+            origin, _field = record._get_origin()
+            if origin and not origin.multipayment_ids.filtered(
+                    lambda payment: payment.state == 'done'):
+                origin.txt_generated = False
         return True
 
     # ------------------------------------------------------------------
@@ -1325,6 +1349,26 @@ class HrAutomateMultipayment(models.Model):
                 'El diario no tiene un banco con formato definido'))
         haberes_fn, cts_fn, label = _BANK_FORMATS[self.format_bank]
         lines = self._get_txt_lines()
+        # Las líneas marcadas cuya cuenta está en otra moneda no caben en
+        # este archivo: omitirlas en silencio dejaba a esos trabajadores
+        # sin pago. Se exige desmarcarlas (y pagarlas por otro medio o en
+        # el proceso de su moneda).
+        other_currency = self.line_ids.filtered('is_txt') - lines
+        if other_currency:
+            raise UserError(self.env._(
+                'Las cuentas de los siguientes trabajadores están en una '
+                'moneda distinta de la del archivo (%(currency)s) y no '
+                'pueden ir en este TXT. Desmárquelos de «Incluir en TXT» '
+                'y páguelos por otro medio o en el proceso de su '
+                'moneda:\n%(lines)s',
+                currency=('USD' if self.cts_dollars else 'PEN')
+                if self.cts_id else (self.charge_account_id.currency_id
+                                     or self.company_id.currency_id).name,
+                lines='\n'.join(
+                    '%s (%s)' % (line.employee_id.name,
+                                 line.bank_account_id.currency_id.name
+                                 or self.company_id.currency_id.name)
+                    for line in other_currency)))
         self._verify_fields(lines)
         header = self._header_dict()
         # Los formatos omiten en el detalle los montos ≤ 0 pero los cuentan
@@ -1346,7 +1390,22 @@ class HrAutomateMultipayment(models.Model):
             ('res_model', '=', self._name), ('res_id', '=', self.id),
             ('name', '=', filename)]).unlink()
         return self._download_attachment(
-            filename, content.encode('utf-8'))
+            filename, self._encode_txt(content))
+
+    @api.model
+    def _encode_txt(self, content):
+        """Bytes del TXT. Ancho fijo: un carácter de 2 bytes en UTF-8 (ñ,
+        tildes en un campo sin limpiar) descuadraba el registro. cp1252 es
+        de un byte por carácter; lo que no quepa en él se rechaza."""
+        try:
+            return content.encode('cp1252')
+        except UnicodeEncodeError as exc:
+            raise UserError(self.env._(
+                'El TXT contiene un carácter no admitido por el banco '
+                '(«%(char)s») en: %(context)s',
+                char=content[exc.start:exc.end],
+                context=content[max(exc.start - 30, 0):exc.end + 30]
+                .strip())) from exc
 
     # ------------------------------------------------------------------
     # Creación desde los orígenes
@@ -1393,6 +1452,24 @@ class HrAutomateMultipayment(models.Model):
         excluded = [raw['employee'].name for raw in raw_lines
                     if raw['account'].l10n_pe_bank_id.format_bank
                     not in journal_formats]
+        # Y, salvo en CTS (la moneda la elige el proceso), quienes tienen
+        # la cuenta en una moneda que ningún diario de su banco carga.
+        if field_name != 'cts_id':
+            company_currency = company.currency_id
+            journal_keys = {
+                (journal.bank_account_id.l10n_pe_bank_id.format_bank,
+                 journal.bank_account_id.currency_id or company_currency)
+                for journal in journals}
+            excluded += [
+                self.env._('%(employee)s (cuenta en %(currency)s)',
+                           employee=raw['employee'].name,
+                           currency=(raw['account'].currency_id
+                                     or company_currency).name)
+                for raw in raw_lines
+                if raw['account'].l10n_pe_bank_id.format_bank in journal_formats
+                and (raw['account'].l10n_pe_bank_id.format_bank,
+                     raw['account'].currency_id or company_currency)
+                not in journal_keys]
         if excluded:
             return {
                 'type': 'ir.actions.client',
@@ -1402,7 +1479,7 @@ class HrAutomateMultipayment(models.Model):
                     'message': self.env._(
                         'Se generó exitosamente, excepto los siguientes '
                         'empleados sin cuenta en un banco con formato y '
-                        'diario de pago masivo:\n%s'
+                        'diario de pago masivo en su moneda:\n%s'
                     ) % '\n'.join(excluded),
                 },
             }

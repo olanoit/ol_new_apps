@@ -98,6 +98,29 @@ class HrFifthCertificateWizard(models.TransientModel):
     # ------------------------------------------------------------------
     # Datos del certificado (uno por empleado)
     # ------------------------------------------------------------------
+    def _certificate_rule_total(self, employee, rules, date_from,
+                                date_before):
+        """Total anual de ``rules`` en las boletas cerradas del trabajador
+        en la compañía del certificado.
+
+        A diferencia del helper de la quinta mensual, no exige lote: una
+        boleta de cese o suelta también es renta (y retención) del
+        ejercicio. Las quincenales siguen fuera: su neto se descuenta en
+        la mensual, que es la que declara.
+        """
+        if not rules:
+            return 0.0
+        lines = self.env['hr.payslip.line'].search([
+            ('slip_id.date_to', '>=', date_from),
+            ('slip_id.date_to', '<', date_before),
+            ('employee_id', '=', employee.id),
+            ('salary_rule_id', 'in', rules.ids),
+            ('slip_id.company_id', '=', self.company_id.id),
+            ('slip_id.state', 'in', ('validated', 'paid')),
+            ('slip_id.fortnightly_id', '=', False),
+        ])
+        return sum(lines.mapped('total'))
+
     def _get_certificate_values(self, employee):
         """Importes del certificado del ejercicio para ``employee``.
 
@@ -105,7 +128,7 @@ class HrFifthCertificateWizard(models.TransientModel):
         ``get_past_months_ret`` de todo el año):
 
         * ``rem_bruta``: reglas afectas ordinaria + extraordinaria de
-          las boletas de lote del año, más las gratificaciones reales
+          las boletas cerradas del año, más las gratificaciones reales
           de julio y diciembre (total + bono EsSalud, Ley 30334).
         * ``other_emp_rem``: rentas de otros empleadores declaradas en
           las quintas mensuales del año.
@@ -126,9 +149,8 @@ class HrFifthCertificateWizard(models.TransientModel):
         date_from = date(year, 1, 1)
         date_before = date(year + 1, 1, 1)
 
-        rem = Line._sum_payslip_rule_totals(
-            employee, company,
-            param.fifth_afect_sr_id + param.fifth_extr_sr_id,
+        rem = self._certificate_rule_total(
+            employee, param.fifth_afect_sr_id + param.fifth_extr_sr_id,
             date_from, date_before)
         grats = GratLine.search([
             ('gratification_id.type', 'in', ('07', '12')),
@@ -151,8 +173,13 @@ class HrFifthCertificateWizard(models.TransientModel):
         uit = self.env['hr.rule.parameter']._l10n_pe_get_uit(year)
         rem_total = rem_bruta + other_emp_rem
         seven_uit = 7 * uit
-        retencion = Line._sum_payslip_rule_totals(
-            employee, company, Line._get_quinta_rule(company),
+        # La retención de cualquier estructura (cese, construcción…), no
+        # solo la regla QUINTA de la estructura BASE: se identifica por el
+        # código de esa regla, como el neto de la boleta.
+        quinta = Line._get_quinta_rule(company)
+        retencion = self._certificate_rule_total(
+            employee, self.env['hr.salary.rule'].search([
+                ('code', '=', quinta.code)]) if quinta else quinta,
             date_from, date_before)
         retencion = max(retencion, 0.0) \
             + sum(fifth_lines.mapped('other_emp_ret'))

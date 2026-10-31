@@ -260,6 +260,11 @@ class HrVersion(models.Model):
         """
         months_by_regime = {'regular': 3, 'confianza': 6, 'direccion': 12}
         for version in self:
+            # La LPCL solo rige en Perú: en una base multipaís las demás
+            # versiones conservan su fecha (campo plano nativo).
+            if version.company_id.country_code != 'PE':
+                version.trial_date_end = version.trial_date_end
+                continue
             if not version.contract_date_start:
                 version.trial_date_end = False
                 continue
