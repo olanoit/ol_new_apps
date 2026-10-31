@@ -282,6 +282,25 @@ class HrPayslip(models.Model):
                  for code, lines in localdict['worked_days'].items()})
         return localdict
 
+    # Categorías de IMPORTE: su total se redondea al céntimo al calcular.
+    # Los subtotales (SUB) y porcentajes (POR) no, porque algunos son
+    # factores (VACAFE, REMAFE) que otras reglas multiplican.
+    _L10N_PE_ROUNDED_CATEGORIES = frozenset((
+        'ING', 'DES_AFE', 'APOR_TRA', 'DES_NET', 'APOR_EMP'))
+
+    def _get_payslip_line_total(self, amount, quantity, rate, rule):
+        """En la boleta PE el total de cada concepto de importe va
+        redondeado (HALF_UP) también en el localdict: así TINGR, TDES y
+        NETO suman exactamente las líneas que se ven en la boleta (antes
+        arrastraban los decimales de ``sueldo * días / 30`` y el neto podía
+        diferir en un céntimo)."""
+        total = super()._get_payslip_line_total(amount, quantity, rate, rule)
+        if self.struct_id.country_id.code == 'PE' and any(
+                code in self._L10N_PE_ROUNDED_CATEGORIES
+                for code in rule.category_ids.mapped('code')):
+            return round_half_up(total, 2)
+        return total
+
     def _round_days(self, work_entry_type, days):
         """La boleta PE no redondea los días: Odoo 20 redondea hacia abajo
         los tipos por días (``request_unit``) y en 19 el valor por defecto

@@ -355,3 +355,24 @@ class TestReviewCore(TransactionCase):
             self._line(slip, 'ESSALUD').total, round(base * eps.percent / 100, 2))
         self.assertAlmostEqual(
             self._line(slip, 'EPS225').total, round(base * 0.0225, 2))
+
+    # ------------------------------------------------------------------
+    # C6. Totales redondeados al céntimo
+    # ------------------------------------------------------------------
+    def test_c6_subtotals_match_the_visible_lines(self):
+        """Sueldo 3 000,45 (100,015 al día), 2 días de descanso médico y 1
+        falta: BAS_M = BAS + DMED − FAL tal como se ven en la boleta (antes
+        se sumaban sin redondear y daba un céntimo más)."""
+        self.employee.version_id.wage = 3000.45
+        slip = self._slip()
+        days = {wd.code: wd for wd in slip.worked_days_line_ids}
+        days['DLAB'].number_of_days -= 3
+        days['FAL'].number_of_days = 1.0
+        days['DMED'].number_of_days = 2.0
+        slip.compute_sheet()
+        line = {code: self._line(slip, code).total
+                for code in ('BAS', 'DMED', 'FAL', 'BAS_M', 'TINGR')}
+        self.assertAlmostEqual(line['FAL'], 100.02)
+        self.assertAlmostEqual(
+            line['BAS_M'], line['BAS'] + line['DMED'] - line['FAL'], places=2)
+        self.assertAlmostEqual(line['BAS_M'], 2900.43)
