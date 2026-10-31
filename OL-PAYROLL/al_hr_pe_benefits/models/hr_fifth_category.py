@@ -559,21 +559,21 @@ class HrFifthCategoryLine(models.Model):
     @api.model
     def _sum_payslip_rule_totals(self, employee, company, rules,
                                  date_from, date_before):
-        """Suma los totales de ``rules`` en boletas de lote del empleado
-        con ``date_to`` en [date_from, date_before). Sustituye al SQL
-        con ``.format()`` del v18 por ORM puro."""
+        """Suma los totales de ``rules`` en las boletas cerradas del
+        empleado con ``date_to`` en [date_from, date_before). Sustituye al
+        SQL con ``.format()`` del v18 por ORM puro."""
         if not rules:
             return 0.0
         # Solo boletas cerradas: una boleta en borrador o cancelada
-        # duplicaría renta y retenciones (también en el certificado de
-        # 5ta, que reutiliza este helper). Las quincenales no cuentan: su
-        # neto se descuenta en la mensual, que es la que declara.
+        # duplicaría renta y retenciones. Una boleta cerrada sin lote
+        # (fuera de ciclo) sí cuenta: lo retenido en ella ya se retuvo.
+        # Las quincenales no cuentan: su neto se descuenta en la mensual,
+        # que es la que declara.
         lines = self.env['hr.payslip.line'].search([
             ('slip_id.date_to', '>=', date_from),
             ('slip_id.date_to', '<', date_before),
             ('employee_id', '=', employee.id),
             ('salary_rule_id', 'in', rules.ids),
-            ('slip_id.payslip_run_id', '!=', False),
             ('slip_id.company_id', '=', company.id),
             ('slip_id.state', 'in', ('validated', 'paid')),
             ('slip_id.fortnightly_id', '=', False),
@@ -591,6 +591,16 @@ class HrFifthCategoryLine(models.Model):
             ('struct_ids', 'in', struct.ids),
             ('code', '=', 'QUINTA'),
         ], limit=1)
+
+    @api.model
+    def _get_quinta_rules(self, company):
+        """Reglas de retención de 5ta de cualquier estructura (cese,
+        construcción…), identificadas por el código de la regla QUINTA de
+        BASE: con solo la de BASE se ignoraba lo retenido en otras
+        estructuras y se volvía a retener."""
+        quinta = self._get_quinta_rule(company)
+        return self.env['hr.salary.rule'].search([
+            ('code', '=', quinta.code or 'QUINTA')])
 
     def get_past_rem(self, slip, date_from, date_before=None):
         """Remuneraciones afectas (ordinarias + extraordinarias) de las
@@ -685,7 +695,7 @@ class HrFifthCategoryLine(models.Model):
         else:
             return other_ret
         ret_ant = self._sum_payslip_rule_totals(
-            slip.employee_id, company, self._get_quinta_rule(company),
+            slip.employee_id, company, self._get_quinta_rules(company),
             date_from, date_before)
         return ret_ant + other_ret
 

@@ -264,3 +264,34 @@ class TestReviewFifth(BenefitsCaseBase):
             'monthly_ret': 80.0, 'ext_ret': 20.0})
         line.compute_quinta_line(self.batch_jun)
         self.assertAlmostEqual(line.quinta, 80.0 / 30 * 15, places=2)
+
+    # ------------------------------------------------------------------
+    # Retenciones previas: boletas sin lote y otras estructuras
+    # ------------------------------------------------------------------
+    def test_retenciones_previas_sin_lote_y_otra_estructura(self):
+        """Una boleta cerrada fuera de lote y la regla QUINTA de otra
+        estructura también son retenciones ya practicadas."""
+        other_struct = self.env['hr.payroll.structure'].create({
+            'name': 'Otra estructura', 'type_id': self.structure.type_id.id})
+        other_quinta = self.quinta_input.copy({
+            'struct_ids': [(6, 0, other_struct.ids)]})
+        # La copia renombra el código: se le devuelve el de la regla.
+        other_quinta.code = 'QUINTA'
+        self.assertEqual(other_quinta.code, 'QUINTA')
+        off_cycle = self.env['hr.payslip'].create({
+            'name': 'Fuera de lote', 'employee_id': self.employee.id,
+            'struct_id': other_struct.id,
+            'date_from': date(2026, 5, 1), 'date_to': date(2026, 5, 31),
+        })
+        self.env['hr.payslip.line'].create({
+            'slip_id': off_cycle.id, 'salary_rule_id': other_quinta.id,
+            'name': 'QUINTA', 'code': 'QUINTA', 'amount': 70.0,
+            'quantity': 1.0, 'rate': 100.0, 'total': 70.0,
+            'employee_id': self.employee.id,
+            'version_id': self.employee.version_id.id})
+        off_cycle.state = 'validated'
+        self._set_rule_amount(self._slip(2026, 5), 'QUINTA', 30.0)
+        june = self._slip(2026, 6)
+        self.assertAlmostEqual(
+            self.Line.get_past_months_ret(june, date(2026, 1, 1),
+                                          final=True), 100.0, places=2)
