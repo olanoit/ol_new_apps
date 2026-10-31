@@ -178,6 +178,51 @@ class HrMainParameter(models.Model):
                 'los Parámetros Principales (pestaña Contabilidad '
                 'BBSS): %(fields)s.', fields=', '.join(missing)))
 
+    # Inputs por los que el motor de BBSS vuelca a la boleta lo que el
+    # asiento de BBSS ya contabiliza (gratificación, CTS, truncos).
+    BENEFITS_INPUT_FIELDS = (
+        'gratification_input_id', 'bonus_nine_input_id', 'cts_input_id',
+        'truncated_gratification_input_id',
+        'truncated_bonus_nine_input_id', 'truncated_cts_input_id',
+        'vacation_input_id', 'truncated_vacation_input_id')
+
+    def _benefits_double_expense_rules(self):
+        """Reglas de input de BBSS cuya cuenta de cargo es un gasto de
+        BBSS de estos parámetros.
+
+        El asiento de BBSS registra el gasto y abona el pasivo por pagar;
+        la boleta que paga ese beneficio debe cargar el pasivo (cancelarlo),
+        no el gasto. Si la regla carga el gasto, contabilizar la boleta y
+        el asiento de BBSS registra el gasto dos veces.
+        """
+        self.ensure_one()
+        expense = (self.cts_debe_account_id | self.grati_debe_account_id
+                   | self.boni_debe_account_id | self.vaca_debe_account_id)
+        rules = self.env['hr.salary.rule']
+        for name in self.BENEFITS_INPUT_FIELDS:
+            rules |= self[name]
+        return rules.filtered(lambda rule: rule.with_company(
+            self.company_id).account_debit in expense) if expense else rules.browse()
+
+    def check_benefits_double_expense(self, slips):
+        """Bloquea si ``slips`` (ya contabilizadas o por contabilizar)
+        cargan al gasto de BBSS un beneficio que el asiento de BBSS
+        también registra."""
+        self.ensure_one()
+        rules = self._benefits_double_expense_rules()
+        lines = slips.line_ids.filtered(
+            lambda line: line.salary_rule_id in rules and line.total)
+        if lines:
+            raise UserError(self.env._(
+                'Doble contabilización de beneficios sociales: las reglas '
+                '%(rules)s cargan en la boleta la cuenta de gasto que el '
+                'asiento de BBSS también usa. Configure como cuenta de '
+                'cargo de esas reglas el pasivo por pagar del beneficio '
+                '(gratificación, CTS o liquidaciones por pagar) para que '
+                'la boleta lo cancele en lugar de registrar el gasto otra '
+                'vez.', rules=', '.join(sorted(set(
+                    lines.salary_rule_id.mapped('code'))))))
+
     def get_benefits_move_config(self):
         """(diario, partner de planillas) para crear el asiento.
 

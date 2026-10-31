@@ -4,3 +4,4 @@ from . import test_batch_move_wizard
 from . import test_account_fixes
 from . import test_state_readonly
 from . import test_rule_accounts
+from . import test_review_fixes

@@ -100,6 +100,21 @@ class HrBenefitsMoveMixin(models.AbstractModel):
         self.ensure_one()
         self.account_move_id = move.id
 
+    def _benefits_paid_slips(self):
+        """Boletas por las que se paga este beneficio (los inputs que
+        vuelca el motor de BBSS). Sin boletas: asiento sin pago por
+        boleta (provisión mensual)."""
+        return self.env['hr.payslip']
+
+    def _check_benefits_double_expense(self):
+        """El asiento de BBSS no se genera si las boletas que pagan el
+        beneficio ya cargaron (asiento nativo o de lote) el mismo gasto."""
+        self.ensure_one()
+        slips = self._benefits_paid_slips().filtered('move_id')
+        if slips:
+            self.env['hr.main.parameter'].get_main_parameter(
+                self.company_id).check_benefits_double_expense(slips)
+
     @api.model
     def _benefits_period_code(self, run):
         """Código de periodo para la glosa/ref (v18: ``periodo_id.code``
@@ -118,6 +133,7 @@ class HrBenefitsMoveMixin(models.AbstractModel):
         if self.account_move_id:
             raise UserError(self.env._(
                 'Elimine el asiento actual para generar uno nuevo.'))
+        self._check_benefits_double_expense()
         move_lines = self._get_move_lines()
         if not move_lines:
             raise UserError(self.env._(
@@ -278,6 +294,9 @@ class HrCts(models.Model):
         return self.deposit_date, \
             'CTS%s' % self._benefits_period_code(self.payslip_run_id)
 
+    def _benefits_paid_slips(self):
+        return self.payslip_run_id.slip_ids
+
 
 class HrCtsLine(models.Model):
     _inherit = 'hr.cts.line'
@@ -366,6 +385,9 @@ class HrGratification(models.Model):
         self.ensure_one()
         return self.deposit_date, \
             'GRA%s' % self._benefits_period_code(self.payslip_run_id)
+
+    def _benefits_paid_slips(self):
+        return self.payslip_run_id.slip_ids
 
 
 class HrGratificationLine(models.Model):
@@ -642,14 +664,14 @@ class HrLiquidationMove(models.Model):
                     credit=concept.amount, partner_id=partner_id))
         return move_lines
 
-    def action_open_move_wizard(self):
-        """Alias v18 del botón por fila (delegado al mixin)."""
-        return self.action_open_move_wizard()
-
     def _benefits_move_date_ref(self):
         self.ensure_one()
         return self.cessation_date, 'LIQUI%s' % self._benefits_period_code(
             self.liquidation_id.payslip_run_id)
+
+    def _benefits_paid_slips(self):
+        return self.liquidation_id.payslip_run_id.slip_ids.filtered(
+            lambda slip: slip.employee_id == self.employee_id)
 
     def _register_benefits_move(self, move):
         super()._register_benefits_move(move)

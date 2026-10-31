@@ -81,6 +81,7 @@ class HrBenefitsMoveWizard(models.TransientModel):
             record.company_id)
         journal, partner = param.get_benefits_move_config()
 
+        record._check_benefits_double_expense()
         # Las líneas se recalculan al generar: las del contexto se
         # calcularon al abrir el asistente, pasan por el cliente y pueden
         # estar obsoletas si el registro cambió entretanto.

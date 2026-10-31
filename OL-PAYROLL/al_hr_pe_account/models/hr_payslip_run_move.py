@@ -196,21 +196,53 @@ class HrPayslipRun(models.Model):
         """Partes ``(importe, distribución, ids analíticos)`` de una línea.
 
         Si la regla tiene cuentas por centro de costo, el importe se reparte
-        por cada clave de la distribución analítica (la última absorbe el
-        redondeo) para elegir la cuenta de cada parte; si no, va entero.
+        según el porcentaje de cada clave de la distribución para elegir la
+        cuenta de cada parte; si no, va entero.
+
+        * Solo se reparte por el plan de los centros de costo de la regla
+          (o el primero): las claves de los demás planes son otra dimensión
+          que suma su propio 100 % y viajan con cada parte.
+        * Lo que el plan no distribuye (``{A: 60}``) queda en una parte sin
+          centro de costo de ese plan; el redondeo lo absorbe la última
+          parte solo cuando el plan suma el 100 %.
         """
         if not distribution or not rule._l10n_pe_uses_analytic_accounts(self.company_id):
             analytic_ids = {int(account_id) for key in (distribution or {})
                             for account_id in str(key).split(',')}
             return [(total, distribution, analytic_ids)]
+
+        def key_ids(key):
+            return [int(account_id) for account_id in str(key).split(',')]
+
+        Analytic = self.env['account.analytic.account'].sudo()
+
+        def key_plans(key):
+            return frozenset(Analytic.browse(key_ids(key)).root_plan_id.ids)
+
+        cost_center_plans = set(rule._l10n_pe_rule_account_lines(
+            self.company_id).analytic_account_id.sudo().root_plan_id.ids)
+        by_plans = {}
+        for key, percent in distribution.items():
+            by_plans.setdefault(key_plans(key), []).append((key, percent))
+        split_plans = next(
+            (plans for plans in by_plans if plans & cost_center_plans),
+            next(iter(by_plans)))
+        items = by_plans.pop(split_plans)
+        others = {key: percent for rest in by_plans.values()
+                  for key, percent in rest}
+        other_ids = {account_id for key in others for account_id in key_ids(key)}
+
         parts, assigned = [], 0.0
-        items = list(distribution.items())
+        full = sum(percent for _key, percent in items) >= 100.0 - 1e-6
         for index, (key, percent) in enumerate(items):
-            amount = (total - assigned if index == len(items) - 1
+            amount = (total - assigned if full and index == len(items) - 1
                       else custom_round(total * percent / 100.0))
             assigned += amount
-            parts.append((amount, {key: 100.0},
-                          {int(account_id) for account_id in str(key).split(',')}))
+            parts.append((amount, dict(others, **{key: 100.0}),
+                          set(key_ids(key)) | other_ids))
+        rest = total - assigned
+        if not full and custom_round(rest):
+            parts.append((rest, others or False, other_ids))
         return parts
 
     def _pe_accumulate_rule_line(self, accumulate, missing_afp_account, slip,
@@ -299,6 +331,21 @@ class HrPayslipRun(models.Model):
     # ------------------------------------------------------------------
     # Generación del asiento
     # ------------------------------------------------------------------
+    def _pe_benefits_moves(self):
+        """Asientos de BBSS ya generados que se pagan con las boletas de
+        este lote (CTS, gratificación y liquidaciones de cese)."""
+        self.ensure_one()
+        moves = self.env['account.move']
+        for model, run_field in (('hr.cts', 'payslip_run_id'),
+                                 ('hr.gratification', 'payslip_run_id'),
+                                 ('hr.liquidation.move',
+                                  'liquidation_id.payslip_run_id')):
+            moves |= self.env[model].search([
+                (run_field, '=', self.id),
+                ('account_move_id', '!=', False),
+            ]).account_move_id
+        return moves
+
     def _pe_get_batch_move_ref(self):
         """Referencia del asiento: ``PLA`` + MM + AAAA (paridad v18).
 
@@ -350,6 +397,10 @@ class HrPayslipRun(models.Model):
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_batch_move_values()
+        # Si el lote ya tiene asientos de BBSS (CTS, gratificación o
+        # liquidación), sus boletas no deben volver a cargar ese gasto.
+        if self._pe_benefits_moves():
+            param.check_benefits_double_expense(self._pe_get_batch_slips())
         drafts = self.slip_ids.filtered(lambda slip: slip.state == 'draft')
         if drafts:
             raise UserError(self.env._(
@@ -411,3 +462,28 @@ class HrPayslipRun(models.Model):
             'date': self.date_end,
         })
         return move
+
+
+class HrPayslip(models.Model):
+    _inherit = 'hr.payslip'
+
+    def action_payslip_cancel(self):
+        """Anular una boleta revierte el asiento compartido del lote
+        completo (nativo ``_unlink_or_reverse``). El lote y las demás
+        boletas quedaban apuntando al asiento revertido y el asistente se
+        negaba a regenerarlo: se desenlazan para poder generar el asiento
+        del lote otra vez sin la boleta anulada."""
+        runs = self.payslip_run_id.filtered(
+            lambda run: run.move_id and run.move_id in self.move_id)
+        shared = {run: run.move_id for run in runs}
+        res = super().action_payslip_cancel()
+        for run, move in shared.items():
+            move = move.sudo().exists()
+            if move and not move.reversal_move_ids \
+                    and move.state != 'cancel':
+                continue
+            others = run.slip_ids.filtered(
+                lambda slip: move and slip.move_id == move) - self
+            others.write({'move_id': False})
+            run.move_id = False
+        return res
