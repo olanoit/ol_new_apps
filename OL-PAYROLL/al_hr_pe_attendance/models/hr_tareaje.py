@@ -53,6 +53,7 @@ import pytz
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 from odoo.addons.al_hr_pe.tools import custom_round
 
@@ -257,6 +258,21 @@ class HrTareajeManager(models.Model):
         trabajadores duplicarían días, horas extra y faltas.
         """
         for record in self:
+            # Una marcación incompleta deja el día con todas las claves a
+            # cero: ni DLAB, ni DOM, ni FAL. Aplicado así, el básico se
+            # prorratea sin ninguna falta a la vista. Se corrige antes el
+            # día (estado y valores) en el detalle.
+            incomplete = record.tareaje_line_ids.attendance_line_ids.filtered(
+                lambda day: day.state == 'incompleto')
+            if incomplete:
+                raise UserError(self.env._(
+                    'El tareaje «%(name)s» tiene %(count)d día(s) con '
+                    'marcación incompleta (p. ej. %(employee)s el '
+                    '%(date)s). Corrija esos días en el detalle antes de '
+                    'aplicarlo.',
+                    name=record.name, count=len(incomplete),
+                    employee=incomplete[0].employee_id.name,
+                    date=incomplete[0].fecha))
             employees = record.tareaje_line_ids.employee_id
             if not employees:
                 continue
@@ -296,6 +312,15 @@ class HrTareajeManager(models.Model):
                     name=record.name))
         self.write({'state': 'draft'})
 
+    def _check_editable(self):
+        """El detalle de un tareaje aplicado no se modifica: las boletas
+        en borrador lo leen al refrescar. La vista ya lo bloquea; esto
+        cierra la puerta a RPC e importaciones (hay que reabrirlo)."""
+        if any(tareaje.state != 'draft' for tareaje in self):
+            raise UserError(self.env._(
+                'El tareaje está aplicado: reábralo para modificar su '
+                'detalle.'))
+
     @api.ondelete(at_uninstall=False)
     def _unlink_if_draft(self):
         if any(tareaje.state != 'draft' for tareaje in self):
@@ -316,7 +341,11 @@ class HrTareajeManager(models.Model):
         if not minutes or minutes <= 0:
             return hours
         step = minutes / 60.0
-        return round(hours / step) * step
+        # Medio paso hacia arriba (HALF-UP): round() de Python redondea al
+        # par y con pasos de 15 min bajaba 37,5 min a 30 pero subía
+        # 22,5 min a 30.
+        return float_round(hours / step, precision_digits=0,
+                           rounding_method='HALF-UP') * step
 
     @api.model
     def _split_night_hours(self, start, stop, night_from=22.0, night_to=6.0):
@@ -361,7 +390,8 @@ class HrTareajeManager(models.Model):
     def _classify_day(self, marks_in, marks_out, sched_in=None, sched_out=None,
                       break_hours=0.0, day_kind='workday', night_from=22.0,
                       night_to=6.0, he25_limit=2.0, tolerance=0.0,
-                      round_minutes=0, compute_overtime=True):
+                      round_minutes=0, compute_overtime=True,
+                      relative_out=False):
         """Clasifica un día de marcaciones en los conceptos del tareaje.
 
         Método puro: sin acceso a registros. Entradas en horas flotantes
@@ -378,6 +408,10 @@ class HrTareajeManager(models.Model):
         :param compute_overtime: si es falso, el sobretiempo no se
             computa (trabajador no sujeto a HE — art. 5 del
             D.S. 007-2002-TR — o tareaje sin HE).
+        :param relative_out: la salida ya viene relativa al día de
+            ingreso (marcaciones reales): no se normaliza, y una salida
+            igual o anterior a la entrada es una marcación inconsistente
+            (no 24 h trabajadas).
         :return: dict con las claves de :data:`TAREAJE_KEYS`.
 
         Reglas (con su norma):
@@ -422,7 +456,13 @@ class HrTareajeManager(models.Model):
             result['incos'] = 1.0
             return result
 
-        out = marks_out + 24.0 if marks_out <= marks_in else marks_out
+        if relative_out:
+            if marks_out <= marks_in:
+                result['incos'] = 1.0
+                return result
+            out = marks_out
+        else:
+            out = marks_out + 24.0 if marks_out <= marks_in else marks_out
         worked = max(0.0, out - marks_in - break_hours)
         if worked <= 0:
             result['incos'] = 1.0
@@ -501,8 +541,8 @@ class HrTareajeManager(models.Model):
 
         Consolida ``hr.attendance`` por empleado y día local (zona
         horaria del trabajador), determina el contexto del día (turno
-        del calendario, feriado, ausencia aprobada) y delega la
-        clasificación en :meth:`_classify_day`.
+        del calendario vigente ese día, feriado, ausencia aprobada,
+        contrato) y delega la clasificación en :meth:`_classify_day`.
 
         Solo tarea a los empleados con al menos una marcación en el
         periodo: la detección de faltas de trabajadores planificados sin
@@ -525,16 +565,27 @@ class HrTareajeManager(models.Model):
             Line = self.env['hr.tareaje.manager.line']
             for employee in employees:
                 day_vals = []
-                calendar = employee.resource_calendar_id \
-                    or record.company_id.resource_calendar_id
-                # Versión vigente al cierre del periodo tareado, no la
-                # actual (el flag puede haber cambiado después).
-                version = employee._get_version(record.date_end)
-                compute_he = record.is_compute_he and bool(
-                    version.l10n_pe_is_overtime)
                 day = record.date_start
                 while day <= record.date_end:
+                    # Versión vigente ESE día (Odoo 20): el horario, el
+                    # flag de HE y el contrato pueden cambiar a mitad del
+                    # periodo, o después de él si se regenera un tareaje
+                    # antiguo.
+                    version = employee._get_version(day).sudo()
+                    calendar = record._get_day_calendar(employee, day)
                     schedule = record._get_day_schedule(calendar, day)
+                    if not record._in_contract(version, day):
+                        # Antes del ingreso o después del cese: ni falta ni
+                        # descanso. Con las claves a cero el básico se
+                        # prorratea en base 30 por los días del contrato,
+                        # y no se declaran inasistencias que no existieron.
+                        day_vals.append(record._prepare_day_vals(
+                            employee, day, None, schedule, 'fuera_contrato',
+                            dict.fromkeys(TAREAJE_KEYS, 0.0)))
+                        day = day + timedelta(days=1)
+                        continue
+                    compute_he = record.is_compute_he and bool(
+                        version.l10n_pe_is_overtime)
                     if day in holidays.get(calendar.id, set()) \
                             or day in holidays.get(False, set()):
                         day_kind = 'feriado'
@@ -564,7 +615,8 @@ class HrTareajeManager(models.Model):
                         he25_limit=param.tareaje_he25_hours,
                         tolerance=record.time_tolerancia,
                         round_minutes=param.tareaje_round_minutes,
-                        compute_overtime=compute_he)
+                        compute_overtime=compute_he,
+                        relative_out=True)
                     state = record._day_state(marks, day_kind, values)
                     day_vals.append(record._prepare_day_vals(
                         employee, day, marks, schedule, state, values))
@@ -585,6 +637,25 @@ class HrTareajeManager(models.Model):
                 })
         return True
 
+    @api.model
+    def _in_contract(self, version, day):
+        """¿El día cae dentro del contrato de la versión? Una versión sin
+        fecha de inicio de contrato no acota (como antes)."""
+        start = version.contract_date_start
+        if not start:
+            return True
+        end = version.contract_date_end
+        return start <= day and (not end or day <= end)
+
+    def _get_day_calendar(self, employee, day):
+        """Horario vigente el día: el de la versión de ese día (Odoo 20:
+        ``employee.resource_calendar_id`` es el de la versión ACTUAL)."""
+        self.ensure_one()
+        version = employee._get_version(day)
+        return version.resource_calendar_id \
+            or employee.resource_calendar_id \
+            or self.company_id.resource_calendar_id
+
     def _prepare_day_vals(self, employee, day, marks, schedule, state,
                           values):
         self.ensure_one()
@@ -598,9 +669,10 @@ class HrTareajeManager(models.Model):
             # Sin salida (marcación abierta u olvidada) → 0.
             'mar_hora_sal': marks[1] if marks and marks[1] is not None
             else 0.0,
-            'worked_hours': custom_round(
-                max(0.0, (marks[1] if marks[1] > marks[0]
-                          else marks[1] + 24.0) - marks[0]))
+            # La salida ya es relativa al día de ingreso (puede pasar de
+            # 24): no se normaliza, o una marca de duración cero serían
+            # 24 h marcadas.
+            'worked_hours': custom_round(max(0.0, marks[1] - marks[0]))
             if marks and marks[1] is not None else 0.0,
             'state': state,
             **{key: values.get(key, 0.0) for key in TAREAJE_KEYS},
@@ -632,7 +704,7 @@ class HrTareajeManager(models.Model):
         domain = [
             ('employee_id.company_id', '=', self.company_id.id),
             ('check_in', '>=', start_dt), ('check_in', '<=', end_dt),
-        ]
+        ] + Attendance._l10n_pe_real_work_domain()
         domain += ['|'] * (len(names) - 1) + [(name, '!=', False) for name in names]
         result = {}
         for att in Attendance.search(domain, order='check_in'):
@@ -642,34 +714,58 @@ class HrTareajeManager(models.Model):
                 continue
             values = result.setdefault((att.employee_id.id, day), {})
             for name in names:
-                if att[name] and not values.get(name):
-                    values[name] = att[name].id
+                value = att[name]
+                # Un centro de costo u obra de otra compañía no pasa al
+                # día (el detalle es check_company y bloquearía TODO el
+                # tareaje): ese día queda con el de la ficha.
+                if 'company_id' in value._fields and value.sudo().company_id \
+                        and value.sudo().company_id != self.company_id:
+                    continue
+                if value and not values.get(name):
+                    values[name] = value.id
         return result
 
     def _get_marks_by_employee_day(self):
         """Consolida las marcaciones del periodo por empleado y día
         local: ``{empleado: {fecha: (hora_ing, hora_sal)}}`` con horas
-        flotantes relativas a la medianoche del día de ingreso (la
-        salida puede superar 24 si cruza la medianoche)."""
+        flotantes relativas a la medianoche del día del turno (la salida
+        puede superar 24 si cruza la medianoche).
+
+        Turno nocturno: quien entra pasada la medianoche al turno que
+        empezó la víspera (lunes 22:00-06:00, entrada el martes a las
+        00:10) marca para el turno del lunes, no para el martes
+        (:meth:`_is_previous_night_mark`). Por eso se leen también las
+        marcaciones del día siguiente al periodo.
+        """
         self.ensure_one()
         start_dt = fields.Datetime.to_datetime(self.date_start) \
             - timedelta(hours=14)
         end_dt = fields.Datetime.to_datetime(self.date_end) \
-            + timedelta(days=1, hours=14)
+            + timedelta(days=2, hours=14)
         # Las marcaciones sin salida también entran: sin ellas, quien
         # olvidó marcar la salida quedaba como falta en vez de como
         # marcación incompleta.
-        attendances = self.env['hr.attendance'].search([
+        Attendance = self.env['hr.attendance']
+        attendances = Attendance.search([
             ('employee_id.company_id', '=', self.company_id.id),
             ('check_in', '<=', end_dt),
             '|', ('check_out', '=', False), ('check_out', '>=', start_dt),
-        ])
+        ] + Attendance._l10n_pe_real_work_domain())
         raw = defaultdict(lambda: defaultdict(list))
+        schedules = {}
+
+        def schedule_of(employee, day):
+            if (employee, day) not in schedules:
+                schedules[employee, day] = self._get_day_schedule(
+                    self._get_day_calendar(employee, day), day)
+            return schedules[employee, day]
+
         for att in attendances:
             tz = pytz.timezone(att.employee_id.tz or 'America/Lima')
             local_in = pytz.utc.localize(att.check_in).astimezone(tz)
             day = local_in.date()
-            if not (self.date_start <= day <= self.date_end):
+            if not (self.date_start <= day <= self.date_end
+                    + timedelta(days=1)):
                 continue
             hour_in = local_in.hour + local_in.minute / 60.0 \
                 + local_in.second / 3600.0
@@ -679,6 +775,15 @@ class HrTareajeManager(models.Model):
                 hour_out = (local_out.date() - day).days * 24.0 \
                     + local_out.hour + local_out.minute / 60.0 \
                     + local_out.second / 3600.0
+            previous = day - timedelta(days=1)
+            if self._is_previous_night_mark(
+                    hour_in, schedule_of(att.employee_id, previous),
+                    schedule_of(att.employee_id, day)):
+                day = previous
+                hour_in += 24.0
+                hour_out = hour_out + 24.0 if hour_out is not None else None
+            if not (self.date_start <= day <= self.date_end):
+                continue
             raw[att.employee_id][day].append((hour_in, hour_out))
         result = defaultdict(dict)
         for employee, days in raw.items():
@@ -691,6 +796,26 @@ class HrTareajeManager(models.Model):
                     min(pair[0] for pair in pairs),
                     None if None in outs else max(outs))
         return result
+
+    @api.model
+    def _is_previous_night_mark(self, hour_in, previous_schedule,
+                                schedule):
+        """¿Una entrada a ``hour_in`` (hora local del día) corresponde al
+        turno nocturno que empezó la víspera?
+
+        Sí cuando la víspera tiene un turno que cruza la medianoche, la
+        entrada cae antes de que ese turno termine y está más cerca de su
+        inicio que del turno del propio día (mismo criterio de cercanía
+        que ``hr.attendance._l10n_pe_match_planning_slot``).
+        """
+        if not previous_schedule or previous_schedule[1] <= 24.0:
+            return False
+        shifted = hour_in + 24.0
+        if shifted >= previous_schedule[1]:
+            return False
+        if not schedule:
+            return True
+        return abs(shifted - previous_schedule[0]) < abs(hour_in - schedule[0])
 
     @api.model
     def _get_day_schedule(self, calendar, day):
@@ -858,29 +983,25 @@ class HrTareajeManager(models.Model):
     # Volcado a boleta
     # ------------------------------------------------------------------
     @api.model
-    def _get_payslip_totals(self, employee, date_from, date_to,
-                            company=None):
-        """Totales del tareaje aplicado para un empleado y periodo.
-
-        Suma los días de los tareajes en estado «Aplicado» cuyo detalle
-        cae dentro del periodo de la boleta (soporta quincenas y
-        tareajes que abarcan más de un periodo). Las horas a compensar
-        de cada día descuentan primero HE 25 % y luego HE 35 %
-        (criterio v18 del volcado a boleta).
-
-        :return: dict ``{concepto: total}`` o ``{}`` si no hay tareaje
-            aplicado (la boleta conserva entonces el cálculo nativo).
-        """
+    def _get_payslip_day_lines(self, employee, date_from, date_to,
+                               company=None):
+        """Días de los tareajes aplicados del empleado dentro del periodo
+        de la boleta (soporta quincenas y tareajes que abarcan más de un
+        periodo)."""
         company = company or employee.company_id
-        day_lines = self.env['hr.tareaje.manager.line.attendance'].search([
+        return self.env['hr.tareaje.manager.line.attendance'].search([
             ('tareaje_line_id.tareaje_id.state', '=', 'done'),
             ('tareaje_line_id.employee_id', '=', employee.id),
             ('company_id', '=', company.id),
             ('fecha', '>=', date_from),
             ('fecha', '<=', date_to),
         ])
-        if not day_lines:
-            return {}
+
+    @api.model
+    def _sum_day_lines(self, day_lines):
+        """Totales de unos días tareados. Las horas a compensar de cada
+        día descuentan primero HE 25 % y luego HE 35 % (criterio v18 del
+        volcado a boleta)."""
         totals = defaultdict(float)
         for day in day_lines:
             he25, he35 = day.he25, day.he35
@@ -895,6 +1016,20 @@ class HrTareajeManager(models.Model):
                     continue
                 totals[key] += day[key]
         return {key: custom_round(value) for key, value in totals.items()}
+
+    @api.model
+    def _get_payslip_totals(self, employee, date_from, date_to,
+                            company=None):
+        """Totales del tareaje aplicado para un empleado y periodo.
+
+        :return: dict ``{concepto: total}`` o ``{}`` si no hay tareaje
+            aplicado (la boleta conserva entonces el cálculo nativo).
+        """
+        day_lines = self._get_payslip_day_lines(
+            employee, date_from, date_to, company=company)
+        if not day_lines:
+            return {}
+        return self._sum_day_lines(day_lines)
 
 
 class HrTareajeManagerLine(models.Model):
@@ -928,6 +1063,23 @@ class HrTareajeManagerLine(models.Model):
     attendance_line_ids = fields.One2many(
         'hr.tareaje.manager.line.attendance', 'tareaje_line_id',
         string='Detalle diario')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines.tareaje_id._check_editable()
+        return lines
+
+    def write(self, vals):
+        self.tareaje_id._check_editable()
+        res = super().write(vals)
+        if 'tareaje_id' in vals:
+            self.tareaje_id._check_editable()
+        return res
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_tareaje_draft(self):
+        self.tareaje_id._check_editable()
 
     def action_show_details(self):
         self.ensure_one()
@@ -979,6 +1131,7 @@ class HrTareajeManagerLineAttendance(models.Model):
             ('descanso_trab', 'Descanso trabajado'),
             ('feriado_trab', 'Feriado trabajado'),
             ('ausencia', 'Ausencia aprobada'),
+            ('fuera_contrato', 'Fuera de contrato'),
         ], string='Estado')
     mar_hora_ing = fields.Float(string='Marcación de ingreso')
     mar_hora_sal = fields.Float(string='Marcación de salida')
@@ -1003,6 +1156,24 @@ class HrTareajeManagerLineAttendance(models.Model):
              'la boleta.')
 
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        days = super().create(vals_list)
+        days.tareaje_line_id.tareaje_id._check_editable()
+        return days
+
+    def write(self, vals):
+        self.tareaje_line_id.tareaje_id._check_editable()
+        res = super().write(vals)
+        if 'tareaje_line_id' in vals:
+            self.tareaje_line_id.tareaje_id._check_editable()
+        return res
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_if_tareaje_draft(self):
+        self.tareaje_line_id.tareaje_id._check_editable()
+
+
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
@@ -1014,8 +1185,20 @@ class HrPayslip(models.Model):
         todos los conceptos PE y calcula el complemento DOM) y después
         SOLO sustituye los valores de los conceptos que el tareaje
         gestiona (DLAB, nocturnidad, DOM, FER, FAL, TAR, HE25/35/100),
-        cuando existe un tareaje «Aplicado» que cubra el periodo del
-        empleado. Sin tareaje aplicado, la boleta queda intacta.
+        cuando existe un tareaje «Aplicado» con días del periodo. Sin
+        tareaje aplicado, la boleta queda intacta.
+
+        * **Varias versiones en el periodo** (Odoo 20 genera una línea de
+          días por versión): cada día tareado va a la versión vigente ese
+          día (``date_version``), igual que el motor nativo reparte las
+          work entries. Así la suma de las líneas de un concepto es la del
+          tareaje, y no el total repetido en cada versión.
+        * **Tareaje que no cubre todo el periodo** (p. ej. solo la primera
+          quincena aplicada, o un trabajador ausente del tareaje parte del
+          mes): los días del periodo (acotado al contrato) sin día tareado
+          conservan el cálculo nativo de esos días; antes el tareaje
+          parcial sustituía el periodo entero y el básico se prorrateaba
+          sin ninguna falta registrada.
 
         Nota: al aplicar tareaje, DLAB/DOM del cálculo nativo se
         sustituyen por los del tareaje (asistencia real manda sobre el
@@ -1026,39 +1209,119 @@ class HrPayslip(models.Model):
         if self.struct_id.country_id.code != 'PE' or not self.employee_id \
                 or not self.date_from or not self.date_to:
             return res
-        totals = self.env['hr.tareaje.manager']._get_payslip_totals(
+        Tareaje = self.env['hr.tareaje.manager']
+        day_lines = Tareaje._get_payslip_day_lines(
             self.employee_id, self.date_from, self.date_to,
             company=self.company_id)
-        if not totals:
+        if not day_lines:
             return res
         param = self.env['hr.main.parameter'].search(
             [('company_id', '=', self.company_id.id)], limit=1)
         if not param:
             return res
         wet_map = param.get_tareaje_wet_map()
-        assignments = self._l10n_pe_tareaje_assignments(totals)
-        for bucket, (days, hours) in assignments.items():
-            wet = wet_map.get(bucket)
+        versions = (versions or self.version_id).sorted('date_version')
+
+        def version_of(day):
+            current = versions[:1]
+            for version in versions:
+                if version.date_version and version.date_version <= day:
+                    current = version
+            return current
+
+        # 1. Tareaje por versión: concepto → (días, horas).
+        values = defaultdict(lambda: [0.0, 0.0])
+        days_by_version = defaultdict(lambda: day_lines.browse())
+        for day in day_lines:
+            days_by_version[version_of(day.fecha)] |= day
+        for version, version_days in days_by_version.items():
+            totals = Tareaje._sum_day_lines(version_days)
+            for bucket, (days, hours) in \
+                    self._l10n_pe_tareaje_assignments(totals).items():
+                wet = wet_map.get(bucket)
+                if wet:
+                    values[version.id, wet.id][0] += days
+                    values[version.id, wet.id][1] += hours
+
+        # 2. Días del periodo sin tareaje: cálculo nativo de esos días.
+        uncovered = self._l10n_pe_tareaje_uncovered_days(
+            versions, set(day_lines.mapped('fecha')))
+        managed = {wet.id for wet in wet_map.values() if wet}
+        if uncovered:
+            native = super()._get_worked_day_lines(
+                versions,
+                [vals for vals in work_entries_vals
+                 if vals.get('date') in uncovered],
+                check_out_of_version=False)
+            dom = wet_map.get('dom')
+            WorkEntryType = self.env['hr.work.entry.type']
+            other_days = defaultdict(float)
+            for vals in native:
+                wet = WorkEntryType.browse(vals.get('work_entry_type_id'))
+                if not wet.is_extra_hours and wet != dom \
+                        and wet.code != '000.00':
+                    other_days[vals.get('version_id')] += \
+                        vals.get('number_of_days', 0.0)
+                if wet.id in managed and wet != dom:
+                    key = (vals.get('version_id'), wet.id)
+                    values[key][0] += vals.get('number_of_days', 0.0)
+                    values[key][1] += vals.get('number_of_hours', 0.0)
+            # El complemento DOM de al_hr_pe es del periodo entero; aquí
+            # solo cuentan los días sin tareaje de cada versión.
+            if dom:
+                uncovered_by_version = defaultdict(int)
+                for day in uncovered:
+                    uncovered_by_version[version_of(day).id] += 1
+                for version_id, count in uncovered_by_version.items():
+                    values[version_id, dom.id][0] += max(
+                        0.0, count - other_days[version_id])
+
+        # 3. Volcado: una línea por versión y concepto con su parte; las
+        # demás líneas del mismo concepto y versión, a cero.
+        for bucket, wet in wet_map.items():
             if not wet:
                 continue  # p. ej. nocturnidad sin tipo configurado
             if bucket == 'noct' and wet == wet_map.get('dlab'):
                 continue  # mismo tipo que DLAB: ya lleva esas horas
-            found = False
-            for vals in res:
-                if vals.get('work_entry_type_id') == wet.id:
-                    vals['number_of_days'] = days
-                    vals['number_of_hours'] = hours
+            for version in versions:
+                days, hours = values.get((version.id, wet.id), (0.0, 0.0))
+                found = False
+                for vals in res:
+                    if vals.get('work_entry_type_id') != wet.id \
+                            or vals.get('version_id') != version.id:
+                        continue
+                    vals['number_of_days'] = 0.0 if found else days
+                    vals['number_of_hours'] = 0.0 if found else hours
                     found = True
-            if not found:
-                res.append({
-                    # Odoo 20: version_id es obligatorio en la línea de días.
-                    'version_id': versions[:1].id or self.version_id.id,
-                    'sequence': wet.sequence,
-                    'work_entry_type_id': wet.id,
-                    'number_of_days': days,
-                    'number_of_hours': hours,
-                })
+                if not found and (days or hours or version == versions[:1]):
+                    res.append({
+                        # Odoo 20: version_id es obligatorio en la línea.
+                        'version_id': version.id,
+                        'sequence': wet.sequence,
+                        'work_entry_type_id': wet.id,
+                        'number_of_days': days,
+                        'number_of_hours': hours,
+                    })
         return res
+
+    def _l10n_pe_tareaje_uncovered_days(self, versions, covered):
+        """Días del periodo de la boleta, dentro del contrato, que ningún
+        tareaje aplicado cubre."""
+        self.ensure_one()
+        date_from, date_to = self.date_from, self.date_to
+        starts = [d for d in versions.mapped('contract_date_start') if d]
+        if starts and len(starts) == len(versions):
+            date_from = max(date_from, min(starts))
+        ends = versions.mapped('contract_date_end')
+        if ends and all(ends):
+            date_to = min(date_to, max(ends))
+        uncovered = set()
+        day = date_from
+        while day <= date_to:
+            if day not in covered:
+                uncovered.add(day)
+            day += timedelta(days=1)
+        return uncovered
 
     def _l10n_pe_tareaje_distribution(self):
         """Distribución analítica según dónde trabajó cada día.

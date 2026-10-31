@@ -19,6 +19,7 @@ descarta del v18:
   manual — corrige el bug TZ señalado en el plan (§5).
 """
 from odoo import api, fields, models
+from odoo.exceptions import ValidationError
 
 # Ventana de búsqueda alrededor del check-in: cubre el turno nocturno
 # más largo posible (12 h, STC 4635-2004-AA/TC) con margen de tardanza.
@@ -41,6 +42,51 @@ class HrAttendance(models.Model):
         help='Obra o centro de costo donde trabajó ese día. El tareaje lo '
              'copia al detalle diario y la planilla reparte el costo del '
              'trabajador entre sus obras. Vacío: el de la ficha del trabajador.')
+
+    @api.constrains('l10n_pe_analytic_account_id', 'employee_id')
+    def _check_l10n_pe_analytic_account_company(self):
+        """hr.attendance no tiene compañía (no hay check_company): el centro
+        de costo debe ser compartido o de la compañía del trabajador."""
+        for attendance in self:
+            analytic = attendance.l10n_pe_analytic_account_id
+            if analytic.company_id \
+                    and analytic.company_id != attendance.employee_id.company_id:
+                raise ValidationError(self.env._(
+                    'El centro de costo «%(analytic)s» es de %(company)s, no '
+                    'de la compañía de %(employee)s.',
+                    analytic=analytic.name, company=analytic.company_id.name,
+                    employee=attendance.employee_id.name))
+
+    @api.model
+    def _l10n_pe_real_work_domain(self):
+        """Marcaciones que son trabajo real para el tareaje.
+
+        Odoo 20 guarda en ``hr.attendance`` registros que no son jornada:
+
+        * la asistencia técnica de 00:00:00 a 00:00:01 que el cron de
+          ``absence_management`` crea por cada ausente (``in_mode`` =
+          ``technical``);
+        * las salidas de **déficit** de las reglas de tiempo
+          (``threshold_operator`` = ``less_than``), que se colocan en los
+          huecos libres del día para contar lo que faltó;
+        * las asistencias rechazadas, y las que esperan aprobación cuando
+          la compañía exige validarlas (la nómina nativa solo cuenta las
+          validadas, ``hr_payroll_attendance``).
+
+        Las salidas de **exceso** y los restos de la fuente sí son tiempo
+        trabajado (la regla recorta la fuente y cuelga el exceso contiguo):
+        se conservan, y la consolidación «primera entrada / última salida»
+        recompone el día. Una marcación abierta (sin salida) en borrador se
+        conserva para que el día quede como marcación incompleta y no como
+        falta.
+        """
+        return [
+            ('in_mode', '!=', 'technical'),
+            '|', ('time_rule_id', '=', False),
+            ('time_rule_id.threshold_operator', '!=', 'less_than'),
+            '|', ('state', '=', 'validated'),
+            '&', ('state', '=', 'draft'), ('check_out', '=', False),
+        ]
 
     @api.model
     def _l10n_pe_day_cost_fields(self):

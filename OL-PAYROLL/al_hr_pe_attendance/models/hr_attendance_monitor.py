@@ -17,8 +17,9 @@ sobre los modelos nativos v19:
 * Ausencias: ``hr.leave`` validadas; vacaciones se distinguen con la
   bandera configurable ``l10n_pe_is_vacation`` del tipo de ausencia
   (el v18 hardcodeaba el código '23' de la T21).
-* Feriados: ``resource.calendar.leaves`` globales (festivos públicos:
-  sin recurso ni calendario), filtrados por compañía.
+* Feriados: ``resource.calendar.leaves`` globales (sin recurso) de un
+  feriado PE, sin calendario o del calendario del trabajador (así los
+  crea ``al_hr_pe_public_holidays``), filtrados por compañía.
 
 Corrección TZ (plan §5): el v18 restaba el literal ``'5 hr'`` (Lima
 UTC−5 cableado). Aquí toda conversión usa
@@ -148,6 +149,14 @@ WITH att AS (
            COALESCE(SUM(ha.worked_hours), 0) AS worked_hours,
            COUNT(*) AS marc_count
       FROM hr_attendance ha
+      LEFT JOIN hr_time_rule tr ON tr.id = ha.time_rule_id
+     -- Solo trabajo real (como hr.attendance._l10n_pe_real_work_domain):
+     -- fuera la asistencia técnica del cron de ausencias, las salidas de
+     -- déficit de las reglas de tiempo y las rechazadas. Las pendientes
+     -- de aprobación sí se ven: el monitor es en tiempo real.
+     WHERE ha.in_mode IS DISTINCT FROM 'technical'
+       AND ha.state <> 'refused'
+       AND tr.threshold_operator IS DISTINCT FROM 'less_than'
      GROUP BY ha.employee_id, ha.date
 ),
 base AS (
@@ -270,6 +279,18 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
           AND v.date_version <= b.fecha
         ORDER BY v.date_version DESC
         LIMIT 1) ver ON TRUE
+  LEFT JOIN LATERAL (
+       -- horario del día: el de la versión vigente o, sin ninguna, el de
+       -- la primera (mismo criterio que hr.employee._get_version)
+       SELECT v.resource_calendar_id
+         FROM hr_version v
+        WHERE v.employee_id = b.employee_id
+          AND v.active
+        ORDER BY (v.date_version <= b.fecha) DESC,
+                 CASE WHEN v.date_version <= b.fecha
+                      THEN v.date_version END DESC,
+                 v.date_version
+        LIMIT 1) cal ON TRUE
   LEFT JOIN att
          ON att.employee_id = b.employee_id AND att.fecha = b.fecha
   LEFT JOIN LATERAL (
@@ -285,12 +306,19 @@ SELECT ROW_NUMBER() OVER (ORDER BY b.employee_id, b.fecha, b.hora_ing)
         ORDER BY hl.id
         LIMIT 1) lv ON TRUE
   LEFT JOIN LATERAL (
-       -- feriados públicos: entradas globales del calendario (sin
-       -- recurso ni calendario), de la compañía o compartidas
+       -- feriados públicos: descansos globales (sin recurso) sin
+       -- calendario o del calendario del trabajador, de la compañía o
+       -- compartidos. Mismos filtros que el tareaje
+       -- (hr.tareaje.manager._get_public_holidays): solo los que vienen
+       -- de un feriado PE (un cierre de la compañía no es feriado) y de
+       -- 20 h o más (el medio feriado no convierte el día).
        SELECT rcl.id AS feriado_id
          FROM resource_calendar_leaves rcl
         WHERE rcl.resource_id IS NULL
-          AND rcl.calendar_id IS NULL
+          AND (rcl.calendar_id IS NULL
+               OR rcl.calendar_id = cal.resource_calendar_id)
+          AND rcl.pe_public_holiday_id IS NOT NULL
+          AND rcl.date_to - rcl.date_from >= interval '20 hours'
           AND (rcl.company_id IS NULL
                OR rcl.company_id = b.company_id)
           AND b.fecha BETWEEN (rcl.date_from AT TIME ZONE 'UTC'

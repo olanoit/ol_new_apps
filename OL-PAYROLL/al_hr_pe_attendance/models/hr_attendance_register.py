@@ -82,12 +82,26 @@ class HrAttendanceRegisterWizard(models.TransientModel):
             (emp for emp in marks_by_employee
              if not self.employee_ids or emp in self.employee_ids),
             key=lambda emp: emp.name or '')
+        Applied = self.env['hr.tareaje.manager'].search([
+            ('company_id', '=', self.company_id.id),
+            ('date_start', '<=', self.date_to),
+            ('date_end', '>=', self.date_from),
+        ], order='state, date_start')  # 'done' antes que 'draft'
         for employee in employees:
-            calendar = employee.resource_calendar_id \
-                or self.company_id.resource_calendar_id
-            version = employee._get_version(self.date_to)
             for day in sorted(marks_by_employee[employee]):
                 marks_in, marks_out = marks_by_employee[employee][day]
+                # Mismo horario (el vigente ese día) y mismos criterios que
+                # el tareaje que cubre el día —tolerancia e interruptor de
+                # HE—, para que el registro cuadre con la boleta. Sin
+                # tareaje, la tolerancia de los parámetros principales.
+                source = Applied.filtered(
+                    lambda t: t.date_start <= day <= t.date_end)[:1]
+                tolerance = source.time_tolerancia if source \
+                    else param.tareaje_late_tolerance
+                version = employee._get_version(day).sudo()
+                compute_he = bool(version.l10n_pe_is_overtime) and (
+                    source.is_compute_he if source else True)
+                calendar = tareaje._get_day_calendar(employee, day)
                 schedule = tareaje._get_day_schedule(calendar, day)
                 if day in holidays.get(calendar.id, set()) \
                         or day in holidays.get(False, set()):
@@ -105,8 +119,10 @@ class HrAttendanceRegisterWizard(models.TransientModel):
                     night_from=param.tareaje_night_from,
                     night_to=param.tareaje_night_to,
                     he25_limit=param.tareaje_he25_hours,
+                    tolerance=tolerance,
                     round_minutes=param.tareaje_round_minutes,
-                    compute_overtime=bool(version.l10n_pe_is_overtime))
+                    compute_overtime=compute_he,
+                    relative_out=True)
                 overtime = values['he25'] + values['he35'] + values['he100']
                 note = ''
                 if marks_out is None:
@@ -115,9 +131,9 @@ class HrAttendanceRegisterWizard(models.TransientModel):
                     note = _('Feriado laborado')
                 elif day_kind == 'descanso':
                     note = _('Descanso laborado')
+                # La salida ya es relativa al día del turno (puede pasar
+                # de 24).
                 out = marks_out
-                if out is not None and out <= marks_in:
-                    out += 24.0
                 worked = max(0.0, out - marks_in - break_hours) \
                     if out is not None else None
                 rows.append([
