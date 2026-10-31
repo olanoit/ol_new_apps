@@ -50,8 +50,15 @@ else:
             <field name="amount_python_compute">
 # Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9): la
 # remuneración del día de descanso ya va en el sueldo (DOM); la labor se
-# paga ADEMÁS con una sobretasa del 100 %, es decir, doble.
-result = worked_days['FER'].number_of_days * (version.wage/30) * 2
+# paga ADEMÁS con una sobretasa del 100 %, es decir, doble, y por las HORAS
+# trabajadas ese día (art. 9: «la retribución correspondiente por la labor
+# efectuada»). Valor hora: remuneración diaria entre las horas de la jornada
+# ordinaria (D.S. 007-2002-TR), las del calendario de la versión.
+if worked_days['FER'].number_of_hours:
+    result = worked_days['FER'].number_of_hours * (version.wage/30/(version.resource_calendar_id.hours_per_day or 8)) * 2
+else:
+    # Línea sin horas (datos anteriores): por días.
+    result = worked_days['FER'].number_of_days * (version.wage/30) * 2
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>

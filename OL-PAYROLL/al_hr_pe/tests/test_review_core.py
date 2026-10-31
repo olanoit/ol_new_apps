@@ -459,3 +459,46 @@ class TestReviewCore(TransactionCase):
         arch = self.env['hr.employee'].get_view(
             self.env.ref('hr.view_employee_form').id)['arch']
         self.assertIn('name="l10n_pe_less_than_four"', arch)
+
+    # ------------------------------------------------------------------
+    # Feriado o descanso laborado unas horas (D.Leg. 713, art. 9): se paga
+    # la labor efectuada, por horas, no el día completo.
+    # ------------------------------------------------------------------
+    def _fer(self, slip, days, hours):
+        slip.worked_days_line_ids.filtered(lambda l: l.code == 'FER').write(
+            {'number_of_days': days, 'number_of_hours': hours})
+        slip.compute_sheet()
+        return self._line(slip, 'FER').total
+
+    def test_worked_holiday_pays_the_hours(self):
+        """2 h en el feriado: 2 × valor hora × 2 (antes, el día completo
+        doble); la jornada completa paga lo mismo que antes y una línea sin
+        horas (datos anteriores) se sigue pagando por días."""
+        slip = self._slip()
+        hour = 3000.0 / 30 / 8
+        self.assertAlmostEqual(self._fer(slip, 1.0, 2.0), round(hour * 2 * 2, 2))
+        self.assertAlmostEqual(self._fer(slip, 1.0, 8.0), 3000.0 / 30 * 2)
+        self.assertAlmostEqual(self._fer(slip, 1.0, 0.0), 3000.0 / 30 * 2)
+        # Con jornada de 6 h el valor hora es sueldo/30/6 (criterio de HE).
+        calendar = self.env['resource.calendar'].create({
+            'name': 'Jornada 6 h', 'company_id': self.company.id,
+            'hours_per_day': 6.0,
+        })
+        self.employee.version_id.resource_calendar_id = calendar
+        slip = self._slip()
+        self.assertAlmostEqual(self._fer(slip, 1.0, 6.0), 3000.0 / 30 * 2)
+        self.assertAlmostEqual(self._fer(slip, 1.0, 3.0), 3000.0 / 30)
+
+    def test_worked_holiday_formula_is_synced(self):
+        """Bases instaladas: la regla FER (noupdate) con la fórmula por días
+        pasa a la fórmula por horas al actualizar."""
+        rule = self.env.ref('al_hr_pe.salary_rule_FER')
+        new_code = rule.amount_python_compute
+        self.assertIn("worked_days['FER'].number_of_hours", new_code)
+        rule.amount_python_compute = (
+            "# Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9): la\n"
+            "# remuneración del día de descanso ya va en el sueldo (DOM); la labor se\n"
+            "# paga ADEMÁS con una sobretasa del 100 %, es decir, doble.\n"
+            "result = worked_days['FER'].number_of_days * (version.wage/30) * 2")
+        self.env['hr.salary.rule']._l10n_pe_sync_formulas()
+        self.assertEqual(rule.amount_python_compute.strip(), new_code.strip())

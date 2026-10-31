@@ -198,3 +198,19 @@ _add('salary_rule_TAR',
      "result = worked_days['TAR'].number_of_hours * (version.wage/30/8)",
      _HOUR_COMMENT
      + "result = worked_days['TAR'].number_of_hours * (version.wage/30/%s)" % _HOURS)
+
+# Feriado o descanso laborado unas horas (D.Leg. 713, art. 9): la labor se
+# paga por las horas trabajadas ese día, no por el día completo. Una línea
+# FER sin horas (tareajes o boletas anteriores) se sigue pagando por días.
+_chain('salary_rule_FER', lambda code: (
+    "# Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9): la\n"
+    "# remuneración del día de descanso ya va en el sueldo (DOM); la labor se\n"
+    "# paga ADEMÁS con una sobretasa del 100 %, es decir, doble, y por las HORAS\n"
+    "# trabajadas ese día (art. 9: «la retribución correspondiente por la labor\n"
+    "# efectuada»). Valor hora: remuneración diaria entre las horas de la jornada\n"
+    "# ordinaria (D.S. 007-2002-TR), las del calendario de la versión.\n"
+    "if worked_days['FER'].number_of_hours:\n"
+    "    result = worked_days['FER'].number_of_hours * (version.wage/30/" + _HOURS + ") * 2\n"
+    "else:\n"
+    "    # Línea sin horas (datos anteriores): por días.\n"
+    "    result = worked_days['FER'].number_of_days * (version.wage/30) * 2"))
