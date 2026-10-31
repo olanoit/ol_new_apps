@@ -207,13 +207,18 @@ class TestReviewMisc(BenefitsCaseBase):
     # C3: migración 19.0.6 sin el catálogo l10n_pe_hr_uit
     # ------------------------------------------------------------------
     def test_migracion_tramos_sin_tabla_uit(self):
-        self.env.cr.execute("SELECT to_regclass('l10n_pe_hr_uit')")
-        if self.env.cr.fetchone()[0]:
-            self.skipTest('la base aún tiene el catálogo de UIT')
+        cr = self.env.cr
         path = Path(__file__).parent.parent / 'migrations' \
             / '19.0.6.20260816' / 'post-migrate.py'
         spec = importlib.util.spec_from_file_location('mig_tramos', path)
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        with self.env.cr.savepoint():
-            module.migrate(self.env.cr, '19.0.5')
+        # Base migrada a Odoo 20 sin el catálogo (si una base vieja aún lo
+        # tiene, se oculta dentro de la transacción de la prueba).
+        with cr.savepoint(flush=False) as savepoint:
+            cr.execute("SELECT to_regclass('l10n_pe_hr_uit')")
+            if cr.fetchone()[0]:
+                cr.execute('ALTER TABLE l10n_pe_hr_uit '
+                           'RENAME TO l10n_pe_hr_uit_test_hidden')
+            module.migrate(cr, '19.0.5')
+            savepoint.rollback()
