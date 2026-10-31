@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        Contabilidad por destino (PCGE): el asiento 9x / 79 es analítico y se
+        anula a sí mismo (saldo acreedor de la 79 = saldo deudor de la clase 9).
+        Los reportes de l10n_pe_reports sumaban la 79 como «Otro ingreso
+        operativo» sin restar la 9, e inflaban el resultado; el Balance tomaba
+        la 79 en los resultados acumulados.
+        * Estado de resultados: «Otro ingreso operativo» sin la 79.
+        * Balance: «Pérdidas y ganancias del año anterior» sin la 79 (si no,
+          aparece como resultado de años anteriores y el balance descuadra).
+        Se sobrescriben aquí y no a mano: l10n_pe_reports no los protege y una
+        actualización suya restaura la fórmula (al actualizarlo se actualiza
+        también este módulo, que depende de él).
+    -->
+    <record id="l10n_pe_reports.account_financial_report_pnl_A_5_balance" model="account.report.expression">
+        <field name="formula" eval="[
+                 '|', ('account_id.code', '=like', '71%'),
+                 '|', ('account_id.code', '=like', '73%'),
+                 '|', ('account_id.code', '=like', '74%'),
+                 '|', '&amp;', ('account_id.code', '=like', '75%'),
+                          '!', ('account_id.code', '=like', '754%'),
+                 '|', ('account_id.code', '=like', '76%'),
+                 '|', ('account_id.code', '=like', '78%'),
+                      '&amp;', ('account_id.code', '=like', '99900%'),
+                               ('account_id.account_type', '=', 'income_other'),
+         ]"/>
+    </record>
+    <record id="l10n_pe_reports.account_financial_report_bs_E_UE_PY_balance_codes" model="account.report.expression">
+        <field name="formula">-6 - 7\(79) - 8\(882) - 999</field>
+    </record>
+</odoo>
