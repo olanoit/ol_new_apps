@@ -29,7 +29,7 @@ from markupsafe import Markup
 from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 
-from odoo.addons.al_construction_planner.models.common import norm
+from odoo.addons.al_construction_planner.models.common import budget_code_levels, norm
 
 from .budget_import_wizard import _number, _text
 
@@ -275,7 +275,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 errors.append((name, 0, '', self.env._('Falta la hoja %s.', name)))
         if errors:
             return {}, errors, warnings
-        book = {'obra': {}, 'aliases': [], 'insumos': {}, 'apus': {}, 'partidas': []}
+        book = {'obra': {}, 'aliases': [], 'insumos': {}, 'apus': {}, 'partidas': [],
+                'titles': {}}
         # OBRA: pares «Campo | Valor».
         for row in sheets.get('OBRA', []):
             if len(row) >= 2 and _text(row[0]):
@@ -368,11 +369,18 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     'El APU %s no existe en la hoja APU.', apu)))
                 continue
             item = _text(row.get('item'))
+            cost_no_apu = _number(row.get('cost_no_apu'))
+            cost_real = _number(row.get('cost_real'))
+            # Fila de título (paquete 1.16, M116-11): ítem y nombre, sin APU,
+            # unidad, metrado ni costo. Agrupa las filas cuyo código cuelga
+            # del suyo (especialidad, sub-especialidad, partida sin APU).
+            if item and not apu and not _text(row.get('uom')) and not _number(
+                    row.get('qty_real')) and cost_no_apu is None and cost_real is None:
+                book['titles'][item] = _text(row.get('name')) or item
+                continue
             if item:
                 items[item] += 1
             mode_text = norm(_text(row.get('mode')))
-            cost_no_apu = _number(row.get('cost_no_apu'))
-            cost_real = _number(row.get('cost_real'))
             # D1: sin receta, el costo lo escribe el presupuestador; nunca se
             # envía un 0 por falta de dato.
             if not apu and cost_no_apu is None and cost_real is None:
@@ -644,11 +652,14 @@ class ConstructionBudgetBookWizard(models.TransientModel):
 
     def _stage_code(self, text):
         Stage = self.env['construction.stage']
+        project = self.project_id
         if text:
             code = Stage._find_by_text(text)
             if code:
+                # Una etapa de otro perfil es error de la fila (1.16, M116-01).
+                Stage._check_project_code(code, project, what=text)
                 return code
-        return self.default_stage_id.code or next(iter(Stage._field_codes()), False)
+        return self.default_stage_id.code or Stage._default_code(project)
 
     def _apply_insumos(self, book):
         """Productos (y actividades de mano de obra y contrata) de los
@@ -677,9 +688,9 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 product = Product.create(values)
             products[code] = product
             if kind in ('labor', 'contract'):
-                activity = Activity.search([
-                    ('code', '=', code), ('company_id', 'in', (self.company_id.id, False))],
-                    limit=1)
+                # También entre las archivadas (CR-22 a): se reactiva.
+                activity = Activity._construction_get_by_code(
+                    code, self.company_id, self.project_id)
                 if not activity:
                     activity = Activity.create({
                         'code': code, 'name': insumo['name'],
@@ -781,9 +792,13 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         touched = Line
         section_key = subsection_key = None
         for partida in book['partidas']:
+            path = self._partida_path(book, partida)
+            names = [name for _code, name in path]
+            specialty = partida['specialty'] or (names[0] if names else False)
+            subspecialty = partida['subspecialty'] or (names[1] if len(names) > 1 else False)
             for display_type, title, key_attr in (
-                    ('line_section', partida['specialty'], 'section'),
-                    ('line_subsection', partida['subspecialty'], 'subsection')):
+                    ('line_section', specialty, 'section'),
+                    ('line_subsection', subspecialty, 'subsection')):
                 if not title:
                     continue
                 key = (display_type, norm(title))
@@ -808,9 +823,14 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             # fórmulas del APU sin redondear, CR-03, o el costo sin APU, D1).
             cost_apu = self._partida_offer(book, partida)[0]
             label = ' '.join(filter(None, [partida['item'], partida['name']]))
+            # La cotización tiene sección y subsección; los títulos más
+            # profundos van en la descripción (M116-11, I-12).
+            if len(names) > 2:
+                label += '\n' + ' › '.join(names[2:])
             values = {
                 'name': label, 'sequence': sequence,
                 'construction_budget_item': partida['item'] or False,
+                'construction_budget_path': path,
                 'construction_qty_real': partida['qty_real'],
                 'construction_qty_slack_pct': partida['qty_slack_pct'],
                 'construction_qty_slack': partida['qty_slack'],
@@ -834,6 +854,23 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         partidas = touched.filtered(lambda l: not l.display_type)
         self._apply_footer(book, sequence)
         return partidas
+
+    @api.model
+    def _partida_path(self, book, partida):
+        """Ruta de la fila en la hoja, sin ella: [[código, nombre]] de cada
+        ancestro. Sale del código de la fila; el nombre, de su fila de título
+        o, en los dos primeros niveles, de las columnas Especialidad y
+        Sub-especialidad. Sin código, esas dos columnas."""
+        codes = budget_code_levels(partida['item'])[:-1]
+        fallback = [partida['specialty'], partida['subspecialty']]
+        if not codes:
+            return [[False, name] for name in fallback if name]
+        path = []
+        for depth, code in enumerate(codes):
+            name = book.get('titles', {}).get(code) or (
+                fallback[depth] if depth < len(fallback) else False) or code
+            path.append([code, name])
+        return path
 
     def _apply_costs_only(self, book, recipes):
         """Cotización confirmada (D3): receta, metrado real y costos de las
@@ -957,11 +994,11 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if recipe:
                 tasks |= task
         if tasks:
-            plan.line_ids.filtered(
-                lambda l: l.task_id in tasks and l.source in ('recipe', 'replan')).unlink()
+            # «Reemplazar lo generado» (CR-23): borra lo de la receta y sus
+            # copias de la versión anterior; conserva lo manual.
             self.env['construction.plan.recipe.wizard'].create({
                 'plan_id': plan.id, 'task_ids': [Command.set(tasks.ids)],
-                'mode': 'add'}).action_generate()
+                'mode': 'replace'}).action_generate()
         # Las fechas de la pestaña PLAN, después de generar (el plan propone
         # las suyas).
         for task, dates in task_dates.items():

@@ -68,19 +68,25 @@ class TestVerticalTerms(TransactionCase):
         self._apply(self.construction)
         fields = self.env['construction.resource.plan.line'].fields_get(
             ['space_task_id', 'module_task_id', 'level_1_id', 'level_3_id'], ['string'])
-        self.assertEqual(fields['space_task_id']['string'], 'Partida')
-        self.assertEqual(fields['module_task_id']['string'], 'Actividad')
-        self.assertEqual(fields['level_1_id']['string'], 'Disciplina')
-        self.assertEqual(fields['level_3_id']['string'], 'Partida')
+        # Los nombres son los de la plantilla del perfil (datos del módulo).
+        lines = self.construction.level_template_id.line_ids.sorted(lambda l: (l.sequence, l.id))
+        space = lines.filtered(lambda l: l.role == 'space').name
+        self.assertEqual(fields['space_task_id']['string'], space)
+        module = lines.filtered(lambda l: l.role == 'module')
+        if module:
+            self.assertEqual(fields['module_task_id']['string'], module.name)
+        self.assertEqual(fields['level_1_id']['string'], lines[0].name)
+        self.assertEqual(fields['level_3_id']['string'], lines[2].name)
         task_fields = self.env['project.task'].fields_get(['construction_space_task_id'], ['string'])
-        self.assertEqual(task_fields['construction_space_task_id']['string'], 'Partida')
+        self.assertEqual(task_fields['construction_space_task_id']['string'], space)
         site = self.env['project.project'].create({'name': 'Obra por partidas (test)',
                                                    'is_construction_site': True})
         plan = self.env['construction.resource.plan'].create({'project_id': site.id})
         terms = plan.get_tree_terms()
-        self.assertEqual(terms['details'], 'Actividades')
-        self.assertEqual(terms['spaces'], 'Partidas')
+        if module:
+            self.assertEqual(terms['details'], 'Actividades')
+        self.assertEqual(terms['spaces'], plan._plural(space))
         self.assertFalse(terms['show_ml'])
         self.assertFalse(terms['show_typology'])
         label = self.env['construction.task.progress'].fields_get(['space_task_id'], ['string'])
-        self.assertEqual(label['space_task_id']['string'], 'Partida')
+        self.assertEqual(label['space_task_id']['string'], space)

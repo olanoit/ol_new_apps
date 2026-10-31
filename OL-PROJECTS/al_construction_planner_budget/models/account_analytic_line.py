@@ -25,6 +25,7 @@ class AccountAnalyticLine(models.Model):
         sites = self.env['project.project'].search([
             ('is_construction_site', '=', True), ('account_id', 'in', lines.account_id.ids)])
         site_accounts = set(sites.account_id.ids)
+        site_by_account = {site.account_id.id: site for site in sites}
         lines = lines.filtered(lambda l: l.account_id.id in site_accounts)
         if not lines:
             return
@@ -51,9 +52,11 @@ class AccountAnalyticLine(models.Model):
                 if line.category == 'manufacturing_order' or (
                         stock_move and 'raw_material_production_id' in stock_move._fields
                         and stock_move.raw_material_production_id):
-                    stage = Stage._consumption_code('production')
+                    stage = Stage._consumption_code(
+                        'production', site_by_account.get(line.account_id.id))
                 elif stock_move:
-                    stage = Stage._consumption_code('site')
+                    # Entre las etapas del perfil de la obra (1.16, C-02).
+                    stage = Stage._consumption_code('site', site_by_account.get(line.account_id.id))
                 else:
                     stage = False
             accounts = Rule._accounts_for(line.company_id, resource_type, stage, product.categ_id)

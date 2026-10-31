@@ -75,6 +75,24 @@ class ConstructionLaborActivity(models.Model):
     _code_company_unique = models.Constraint(
         'UNIQUE(code, company_id)', 'El código de la actividad debe ser único por compañía.')
 
+    @api.model
+    def _construction_get_by_code(self, code, company, project=None):
+        """Actividad de ``code`` en ``company`` (o compartida), también entre
+        las archivadas: el código es único por compañía y crear otra falla
+        (paquete 3 de CREVAL, CR-22 a). Una archivada se reactiva; si su etapa
+        no es del perfil de ``project``, toma la etapa por defecto del perfil
+        (M116-01)."""
+        activity = self.with_context(active_test=False).search([
+            ('code', '=', code), ('company_id', 'in', (company.id, False))],
+            order='active desc, company_id', limit=1)
+        if activity and not activity.active:
+            Stage = self.env['construction.stage']
+            vals = {'active': True}
+            if project and not Stage._in_profile(activity.stage, project):
+                vals['stage'] = Stage._default_code(project) or activity.stage
+            activity.write(vals)
+        return activity
+
     @api.depends('company_id')
     def _compute_currency_id(self):
         for activity in self:
@@ -230,3 +248,10 @@ class ConstructionActivityTranche(models.Model):
         if any(tranche.pct <= 0 or tranche.pct > 100 for tranche in self):
             raise ValidationError(self.env._('El % de un tramo va de 0 a 100.'))
 
+
+
+class ConstructionLaborActivityStageOffer(models.Model):
+    """Etapas que se ofrecen: las del perfil de la obra (paquete 1.16, M116-01)."""
+    _name = 'construction.labor.activity'
+    _inherit = ['construction.labor.activity', 'construction.stage.offer.mixin']
+    _construction_stage_project_path = None

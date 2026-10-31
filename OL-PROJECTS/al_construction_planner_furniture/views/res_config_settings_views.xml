@@ -14,4 +14,32 @@
             </xpath>
         </field>
     </record>
+    <!-- Ajustes ▸ Planificación de obra ▸ Obra: nombres de los estados del
+         ambiente que no son etapas (paquete 1.16, M116-02). -->
+    <record id="res_config_settings_view_form_space_states" model="ir.ui.view">
+        <field name="name">res.config.settings.form.space.states</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="al_construction_planner.res_config_settings_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='construction_planner_contracts']" position="inside">
+                <setting company_dependent="1" id="construction_space_states" string="Estados del ambiente"
+                         help="Los que no son etapas en la etapa actual de cada ambiente del Cronograma. No aparecen en las obras cuyo perfil no mide sus ambientes.">
+                    <div class="content-group">
+                        <div class="row mt-2">
+                            <label for="construction_state_pending_label" class="col-lg-5 o_light_label"/>
+                            <field name="construction_state_pending_label"/>
+                        </div>
+                        <div class="row">
+                            <label for="construction_state_measured_label" class="col-lg-5 o_light_label"/>
+                            <field name="construction_state_measured_label"/>
+                        </div>
+                        <div class="row">
+                            <label for="construction_state_delivered_label" class="col-lg-5 o_light_label"/>
+                            <field name="construction_state_delivered_label"/>
+                        </div>
+                    </div>
+                </setting>
+            </xpath>
+        </field>
+    </record>
 </odoo>

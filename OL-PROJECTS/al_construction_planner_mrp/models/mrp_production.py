@@ -62,7 +62,8 @@ class MrpProduction(models.Model):
         self.ensure_one()
         # El operario de planta no lee el catálogo de etapas del planificador:
         # solo se toman los códigos de las etapas.
-        production_codes = self.env['construction.stage'].sudo()._production_codes()
+        production_codes = self.env['construction.stage'].sudo()._production_codes(
+            self.project_id)
         # La lista la lee quien confirma en planta, aunque no administre listas.
         bom_sudo = self.sudo().bom_id
         stages = set(bom_sudo.bom_line_ids.mapped('construction_consumption_stage'))

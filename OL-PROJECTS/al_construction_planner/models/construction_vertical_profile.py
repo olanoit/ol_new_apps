@@ -45,6 +45,11 @@ class ConstructionVerticalProfile(models.Model):
     stage_ids = fields.Many2many(
         'construction.stage', 'construction_profile_stage_rel', 'profile_id', 'stage_id',
         string='Etapas', help='Las del catálogo que usa el rubro.')
+    default_stage_id = fields.Many2one(
+        'construction.stage', string='Etapa por defecto',
+        domain="[('id', 'in', stage_ids), ('is_group', '=', False)]",
+        help='La que toma una fila importada sin etapa (hoja de trabajo, libro de recetas, '
+             'maestro). Vacía: la primera etapa de campo del perfil.')
     resource_type_ids = fields.Many2many(
         'construction.resource.type', 'construction_profile_resource_type_rel', 'profile_id',
         'type_id', string='Tipos de recurso')
@@ -238,6 +243,66 @@ class ConstructionVerticalProfile(models.Model):
             settings_vals = {k: v for k, v in settings_vals.items() if not k.startswith('module_')}
         settings = self.env['res.config.settings'].create(settings_vals)
         return settings.execute()
+
+    @api.model
+    def _construction_ensure_depth_profiles(self):
+        """Perfiles «Construcción PROF 4» a «PROF 6» (paquete 1.16, M116-11):
+        la plantilla de PROF 3 más una subpartida por nivel, con «Subnivel de
+        obra» y el APU en cualquier nivel. Idempotente: si ya hay un perfil o
+        una plantilla con ese nombre o ese código (por ejemplo, creados a mano
+        en una base), se enlazan sin cambiarlos."""
+        base = self.env.ref('al_construction_planner.profile_construction',
+                            raise_if_not_found=False)
+        stages = base.with_context(active_test=False).stage_ids if base else \
+            self.env['construction.stage']
+        Data = self.env['ir.model.data'].sudo()
+        Template = self.env['construction.level.template'].with_context(active_test=False)
+        Profile = self.with_context(active_test=False)
+
+        def bind(record, name):
+            if not Data.search_count([('module', '=', 'al_construction_planner'),
+                                      ('name', '=', name)]):
+                Data.create({'module': 'al_construction_planner', 'name': name,
+                             'model': record._name, 'res_id': record.id, 'noupdate': True})
+
+        head = [('Especialidad (N1)', 'group'), ('Sub-especialidad (N2)', 'group'),
+                ('Partida (N3)', 'space')]
+        for depth in (4, 5, 6):
+            name = 'Construcción PROF %s' % depth
+            code = 'construction_prof%s' % depth
+            levels = head + [('Subpartida %s (N%s)' % (n - 3, n), 'work_sublevel')
+                             for n in range(4, depth + 1)]
+            template = Template.search([('name', '=', name)], limit=1)
+            if not template:
+                template = Template.create({
+                    'name': name, 'sequence': 30 + depth, 'purchase_destination': 'project',
+                    'apu_any_level': True,
+                    'line_ids': [Command.create({
+                        'sequence': 10 * index, 'name': level_name, 'role': role,
+                        'is_billable': role == 'space',
+                        'stage_ids': [Command.set(stages.ids)] if role == 'space' else False,
+                    }) for index, (level_name, role) in enumerate(levels, start=1)],
+                })
+            bind(template, 'level_template_works_prof%s' % depth)
+            profile = Profile.search(['|', ('code', '=', code), ('name', '=', name)], limit=1)
+            if not profile:
+                profile = Profile.create({
+                    'name': name, 'code': code, 'sequence': 10 + depth,
+                    'description': self.env._(
+                        'Constructoras con %s niveles: especialidad, sub-especialidad, partida '
+                        'y subpartidas, con el APU en el nivel que defina el proyecto.', depth),
+                    'level_template_id': template.id,
+                    'stage_ids': [Command.set(stages.ids)],
+                    'default_stage_id': base.default_stage_id.id if base else False,
+                    'resource_type_ids': [Command.set(base.resource_type_ids.ids)] if base else [],
+                    'module_ids': [Command.set(base.module_ids.ids)] if base else [],
+                    'analytic_plan_names': ', '.join(level for level, _role in levels),
+                    'feature_measurement': False,
+                    'parameter_ids': [Command.create({'name': param.name, 'value': param.value})
+                                      for param in base.parameter_ids] if base else [],
+                })
+            bind(profile, 'profile_construction_prof%s' % depth)
+        return True
 
     @api.model
     def _assign_legacy_companies(self):

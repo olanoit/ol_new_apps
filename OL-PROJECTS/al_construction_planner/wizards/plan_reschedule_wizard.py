@@ -138,7 +138,7 @@ class ConstructionPlanRescheduleWizard(models.TransientModel):
             same.write({'date_needed': new})
         # Las barras del cronograma (P-15) de las etapas elegidas se mueven
         # igual; sus líneas ya se movieron arriba.
-        spaces = lines.space_task_id | tasks.filtered(lambda t: t.construction_level == 'space')
+        spaces = lines.space_task_id | tasks.filtered('construction_has_apu')
         stages = self.env['construction.space.stage'].search([
             ('space_task_id', 'in', spaces.ids), ('stage', 'in', self._get_stages())])
         for stage in stages:

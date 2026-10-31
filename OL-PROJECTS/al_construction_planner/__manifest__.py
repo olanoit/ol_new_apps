@@ -266,7 +266,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_planner/static/description/icon.png',
-    'version': '57.20261027',
+    'version': '58.20261031',
     # LGPL-3 y no OPL-1: depende de base_tier_validation (AGPL-3), como
     # al_construction_material_request.
     'license': 'LGPL-3',
@@ -288,6 +288,7 @@ plan por fases: docs/planificador/DISENO_TECNICO.md.
         'data/construction_level_template_data.xml',
         'data/construction_stage_data.xml',
         'data/construction_vertical_profile_data.xml',
+        'data/construction_depth_profile_data.xml',
         'data/tier_definition_data.xml',
         'data/ir_cron_data.xml',
         'wizards/plan_replan_wizard_views.xml',

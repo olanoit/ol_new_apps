@@ -402,9 +402,19 @@ class ConstructionMaterialRequestLine(models.Model):
         stage_selection, string='Etapa',
         help='Etapa del plan para la que es el material. La de fabricación va a la '
              'preproducción de la planta.')
+    # Las etapas que se pueden elegir: las del requerimiento, que son las del
+    # perfil de la obra (paquete 1.16, M116-01).
+    construction_stage_codes = fields.Json(
+        string='Etapas que se ofrecen', compute='_compute_construction_stage_codes')
     construction_level_label = fields.Char(
         string='Nivel', compute='_compute_construction_level_label',
         help='El nivel de la línea y el de arriba, por ejemplo «Dpto 102 / Cocina».')
+
+    @api.depends('request_id.construction_allowed_stage_ids')
+    def _compute_construction_stage_codes(self):
+        for line in self:
+            line.construction_stage_codes = \
+                line.request_id.construction_allowed_stage_ids.mapped('code')
 
     @api.depends('task_id.name', 'task_id.parent_id.name', 'task_id.construction_level')
     def _compute_construction_level_label(self):

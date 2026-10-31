@@ -42,8 +42,13 @@ class ConstructionPortal(CustomerPortal):
                   ('resource_type', 'in', DRIVER_TYPES), ('activity_id', '!=', False),
                   ('task_id', '!=', False), ('plan_id.state', 'in', OPEN_STATES),
                   ('stage', 'in', field_stages + [False]),
+                  # Con «APU en cualquier nivel», los nodos que llevan APU
+                  # (paquete 1.16, I-11); si no, «Recibe avance» del nivel.
                   '|', ('task_id.construction_level_line_id', '=', False),
-                  ('task_id.construction_level_line_id.receives_progress', '=', True)]
+                  '|', '&', ('task_id.construction_apu_any_level', '=', False),
+                  ('task_id.construction_level_line_id.receives_progress', '=', True),
+                  '&', ('task_id.construction_apu_any_level', '=', True),
+                  ('task_id.construction_has_apu', '=', True)]
         return Line_sudo.search(domain + (extra_domain or []))
 
     def _construction_progress(self):

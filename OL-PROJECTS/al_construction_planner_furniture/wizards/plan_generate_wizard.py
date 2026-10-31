@@ -9,14 +9,6 @@ from odoo.exceptions import UserError
 from ..models.construction_furniture_model import rate_family_for
 
 
-STAGE_FIELDS = {
-    'production': 'stage_production',
-    'assembly': 'stage_assembly',
-    'installation': 'stage_installation',
-    'finishing': 'stage_finishing',
-}
-
-
 class ConstructionPlanGenerateWizard(models.TransientModel):
     """W-01 «Generar plan»: crea las tareas de módulo y las líneas del plan
     desde las tipologías de los ambientes elegidos."""
@@ -43,10 +35,16 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
         help='Armado, instalación y demás actividades de mano de obra: como contrata o como '
              'personal propio según su modalidad (la del ambiente, la de la actividad o la de su '
              'etapa).')
-    stage_production = fields.Boolean(string='Producción de piezas', default=True)
-    stage_assembly = fields.Boolean(string='Armado', default=True)
-    stage_installation = fields.Boolean(string='Instalación', default=True)
-    stage_finishing = fields.Boolean(string='Acabado', default=True)
+    # Las etapas del perfil de la obra, sin lista fija (paquete 1.16, M116-01;
+    # antes cuatro casillas que dejaban fuera «2.3 Limpieza»).
+    available_stage_ids = fields.Many2many(
+        'construction.stage', string='Etapas del perfil', compute='_compute_available_stage_ids')
+    stage_ids = fields.Many2many(
+        'construction.stage', 'construction_plan_generate_wizard_stage_rel', 'wizard_id',
+        'stage_id', string='Etapas', compute='_compute_stage_ids', store=True, readonly=False,
+        domain="[('id', 'in', available_stage_ids)]",
+        help='Las del perfil de la obra. Toda actividad o material de una etapa elegida entra '
+             'al plan.')
     mode = fields.Selection(
         [('replace', 'Reemplazar lo generado'), ('add', 'Agregar')], string='Si ya hay líneas',
         default='replace', required=True,
@@ -85,8 +83,20 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
             ('project_id', '=', self.plan_id.project_id.id),
             ('construction_level', '=', 'space')], order='construction_floor_task_id, id')
 
+    @api.depends('plan_id')
+    def _compute_available_stage_ids(self):
+        Stage = self.env['construction.stage']
+        for wizard in self:
+            wizard.available_stage_ids = Stage._offered_stages(wizard.plan_id.project_id)
+
+    @api.depends('plan_id')
+    def _compute_stage_ids(self):
+        Stage = self.env['construction.stage']
+        for wizard in self:
+            wizard.stage_ids = Stage._offered_stages(wizard.plan_id.project_id)
+
     def _selected_stages(self):
-        return {stage for stage, field in STAGE_FIELDS.items() if self[field]}
+        return set(self.stage_ids.mapped('code'))
 
     def _existing_prices(self):
         """Costos ya escritos en el plan por producto y por actividad: se
@@ -362,8 +372,7 @@ class ConstructionPlanGenerateWizard(models.TransientModel):
     # Vista previa
     # ------------------------------------------------------------------
     @api.depends('plan_id', 'space_task_ids', 'create_modules', 'include_material',
-                 'include_contract', 'stage_production', 'stage_assembly',
-                 'stage_installation', 'stage_finishing', 'mode')
+                 'include_contract', 'stage_ids', 'mode')
     def _compute_preview(self):
         labels = [
             ('assembly_module', self.env._('Líneas de armado por módulo'), self.env._('Módulo')),

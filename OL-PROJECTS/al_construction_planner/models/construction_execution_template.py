@@ -150,3 +150,10 @@ class ConstructionExecutionTemplateLine(models.Model):
     @api.constrains('stage')
     def _check_stage_code(self):
         self.env['construction.stage']._check_codes(self)
+
+
+class ConstructionExecutionTemplateLineStageOffer(models.Model):
+    """Etapas que se ofrecen: las del perfil de la obra (paquete 1.16, M116-01)."""
+    _name = 'construction.execution.template.line'
+    _inherit = ['construction.execution.template.line', 'construction.stage.offer.mixin']
+    _construction_stage_project_path = 'template_id.project_id'

@@ -133,7 +133,9 @@ class ProjectProject(models.Model):
         n_products, n_categories = self._construction_reference_counts()
         last_product = n_products + 2
         last_category = n_categories + 2
-        stage_labels = [label for _code, label in self.env['construction.stage']._get_selection()]
+        # Las etapas del perfil de la obra (paquete 1.16, M116-01).
+        stage_labels = [stage._label() for stage in
+                        self.env['construction.stage']._offered_stages(self)]
         sheets, pivots = [], {}
         sheet_ids = {}
 

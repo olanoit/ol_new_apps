@@ -10,7 +10,8 @@
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
-                <field name="stage"/>
+                <field name="construction_stage_codes" column_invisible="1"/>
+                <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
                 <field name="execution_mode" optional="show" placeholder="La de la etapa"/>
                 <field name="uom_id"/>
                 <field name="driver_source" optional="show"/>
@@ -39,7 +40,8 @@
                     <group>
                         <group string="Actividad">
                             <field name="code"/>
-                            <field name="stage"/>
+                            <field name="construction_stage_codes" invisible="1"/>
+                            <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
                             <field name="execution_mode" placeholder="La de la etapa"/>
                             <field name="uom_id" options="{'no_create': True}"/>
                             <field name="driver_source" widget="radio" options="{'horizontal': True}"/>

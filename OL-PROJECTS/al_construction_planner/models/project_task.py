@@ -60,6 +60,18 @@ class ProjectTask(models.Model):
         domain="['|', ('project_id', '=', False), ('project_id', '=', project_id)]",
         help='Plantilla de ejecución del nivel: «Generar plan desde la receta» multiplica sus '
              'recursos por la cantidad presupuestada.')
+    # Paquete 1.16, M116-11: el nodo que lleva el APU es la unidad de receta,
+    # etapas, metrado, avance y valorización, en cualquier nivel. Sin «APU en
+    # cualquier nivel» en la plantilla, lo es el nivel con etapas.
+    construction_has_apu = fields.Boolean(
+        string='Lleva APU', compute='_compute_construction_has_apu', store=True,
+        readonly=False, index=True,
+        help='El nodo tiene receta (APU): en él van las etapas, el metrado, el avance y la '
+             'valorización. Los niveles de arriba solo agrupan. Con «APU en cualquier nivel» se '
+             'enciende al poner la receta; si no, es el nivel con etapas.')
+    construction_apu_any_level = fields.Boolean(
+        related='construction_level_line_id.template_id.apu_any_level',
+        string='APU en cualquier nivel')
     construction_qty = fields.Float(
         string='Cantidad presupuestada', digits='Product Unit',
         help='Cantidad del nivel en su driver, la unidad de su receta (m², und, ml, kg): '
@@ -107,7 +119,41 @@ class ProjectTask(models.Model):
         help='Σ ejecutado × costo unitario entre Σ monto planificado de las líneas de contrata '
              'y personal propio del nivel y sus descendientes.')
 
-    @api.depends('parent_id', 'construction_level',
+    @api.depends('construction_level', 'construction_execution_template_id',
+                 'construction_level_line_id.template_id.apu_any_level')
+    def _compute_construction_has_apu(self):
+        for task in self:
+            if task.construction_level_line_id.template_id.apu_any_level:
+                # Se enciende con la receta; el envío de la hoja también la
+                # marca en las filas con precio sin receta.
+                task.construction_has_apu = bool(task.construction_execution_template_id) \
+                    or task.construction_has_apu
+            else:
+                task.construction_has_apu = task.construction_level == 'space'
+
+    @api.constrains('construction_has_apu', 'parent_id')
+    def _check_construction_apu_nesting(self):
+        """Un nodo con APU no puede tener debajo otro con APU (M116-11)."""
+        for task in self.filtered(lambda t: t.construction_apu_any_level):
+            if not task.construction_has_apu:
+                continue
+            node, seen = task.parent_id, set()
+            while node and node.id not in seen:
+                seen.add(node.id)
+                if node.construction_has_apu:
+                    raise ValidationError(self.env._(
+                        '%(task)s lleva APU y cuelga de %(parent)s, que también lo lleva: un nodo '
+                        'con APU no puede tener hijos con APU.', task=task.display_name,
+                        parent=node.display_name))
+                node = node.parent_id
+            below = self.search_count([('id', 'child_of', task.id), ('id', '!=', task.id),
+                                       ('construction_has_apu', '=', True)], limit=1)
+            if below:
+                raise ValidationError(self.env._(
+                    '%s tiene debajo nodos con APU: un nodo con APU no puede tener hijos con '
+                    'APU.', task.display_name))
+
+    @api.depends('parent_id', 'construction_level', 'construction_has_apu',
                  'parent_id.construction_floor_task_id',
                  'parent_id.construction_apartment_task_id',
                  'parent_id.construction_space_task_id',
@@ -116,11 +162,18 @@ class ProjectTask(models.Model):
         for task in self:
             ancestors = {'floor': False, 'apartment': False, 'space': False, 'furniture': False}
             node = task
+            # Con «APU en cualquier nivel», el «ambiente» es el nodo con APU más
+            # cercano de la ruta (M116-11, I-10): los puentes que lo leen no
+            # cambian.
+            apu_mode = task.construction_level_line_id.template_id.apu_any_level
             # Hasta seis niveles bajo la obra y los agrupadores de la plantilla.
             for _depth in range(10):
                 if not node:
                     break
                 level = node.construction_level
+                if apu_mode:
+                    level = 'space' if node.construction_has_apu else (
+                        False if level == 'space' else level)
                 if level in ancestors and not ancestors[level]:
                     ancestors[level] = node
                 node = node.parent_id
@@ -330,15 +383,19 @@ class ProjectTask(models.Model):
         en Producido o Instalado baja a lo que justifica el avance que queda
         o, si es mayor, al estado que tenía antes del avance."""
         modules = self.filtered(lambda t: t.construction_level == 'module')
-        spaces = self.filtered(lambda t: t.construction_level == 'space')
+        spaces = self.filtered('construction_has_apu')
         if spaces:
             modules |= self.search([('construction_space_task_id', 'in', spaces.ids),
                                     ('construction_level', '=', 'module')])
         Line = self.env['construction.resource.plan.line']
         Stage = self.env['construction.stage']
-        production_stages = Stage._production_codes()
-        site_stage = Stage._consumption_code('site')
+        stage_codes = {}
         for module in modules:
+            project = module.project_id
+            if project.id not in stage_codes:
+                stage_codes[project.id] = (Stage._production_codes(project),
+                                           Stage._consumption_code('site', project))
+            production_stages, site_stage = stage_codes[project.id]
             plan = module.project_id._construction_current_plan()
             space = module.construction_space_task_id
             lines = Line.search([

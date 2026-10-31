@@ -181,6 +181,10 @@ class ConstructionResourcePlan(models.Model):
                 children = children.filtered(
                     lambda t: t.construction_level != 'module'
                     or t.construction_unit_state in filters['unit_states'])
+        # Con «APU en cualquier nivel» (paquete 1.16, M116-11) la profundidad
+        # es libre: cada nodo suma lo de su ruta.
+        if self.project_id.construction_level_template_id.apu_any_level:
+            return mask_amounts(self.env, self._tree_path_nodes(children, filters))
         # Hermanos de distinto nivel (p. ej. módulos sueltos junto a muebles):
         # cada nivel se resuelve con sus propias consultas, en el orden de las tareas.
         nodes = {}
@@ -198,7 +202,7 @@ class ConstructionResourcePlan(models.Model):
             domain, ['resource_type'], ['amount_planned:sum', 'qty_planned:sum']))
         modules = Task.search_count(self._tree_module_domain(filters))
         spaces = Task.search([('project_id', '=', self.project_id.id),
-                              ('construction_level', '=', 'space')])
+                              ('construction_has_apu', '=', True)])
         has_children = bool(Task.search_count([
             ('project_id', '=', self.project_id.id), ('construction_level', '!=', False),
             ('parent_id', '=', False)]))
@@ -252,6 +256,31 @@ class ConstructionResourcePlan(models.Model):
         no está entero en ella)."""
         return 0.0
 
+    def _tree_path_nodes(self, children, filters):
+        """Nodos de un árbol de profundidad libre: lo acumulado de cada nodo
+        son las líneas cuya ruta empieza por la suya (``task_path``)."""
+        Line = self.env['construction.resource.plan.line']
+        Task = self.env['project.task']
+        has_children = {task.id: count for task, count in Task._read_group(
+            [('parent_id', 'in', children.ids), ('construction_level', '!=', False)],
+            ['parent_id'], ['__count'])}
+        nodes = []
+        for task in children:
+            domain = self._tree_line_domain(filters) + [
+                ('task_path', '=like', '%s%%' % (task.construction_path or '%s/' % task.id))]
+            node = self._tree_amounts(Line._read_group(
+                domain, ['resource_type'], ['amount_planned:sum', 'qty_planned:sum']))
+            node.update({
+                'key': str(task.id), 'task_id': task.id, 'name': task.name,
+                'level': task.construction_level, 'level_name': task.construction_level_name,
+                'has_apu': task.construction_has_apu, 'typology': '', 'modules': 0, 'ml': 0.0,
+                'progress': self._progress_ratio(self._progress_amounts(domain), False),
+                'unit_state': False, 'unit_state_label': '',
+                'has_children': bool(has_children.get(task.id)),
+            })
+            nodes.append(node)
+        return nodes
+
     def _tree_nodes(self, children, level, filters):
         if not children:
             return []
@@ -279,7 +308,7 @@ class ConstructionResourcePlan(models.Model):
                 [task_field], ['__count'])}
             if level == 'furniture':
                 ml.update(self._tree_furniture_ml(children, task_field))
-            spaces = Task.search([('construction_level', '=', 'space'), (task_field, 'in', ids)])
+            spaces = Task.search([('construction_has_apu', '=', True), (task_field, 'in', ids)])
             space_ml = self._tree_space_ml(spaces)
             codes = {}
             for space in spaces:
@@ -393,7 +422,7 @@ class ConstructionResourcePlan(models.Model):
         totals = self._tree_amounts(Line._read_group(
             line_domain, ['resource_type'], ['amount_planned:sum', 'qty_planned:sum']))
         module_domain = self._tree_module_domain(filters)
-        space_domain = [('project_id', '=', self.project_id.id), ('construction_level', '=', 'space')]
+        space_domain = [('project_id', '=', self.project_id.id), ('construction_has_apu', '=', True)]
         if tasks is not None:
             module_domain.append(('id', 'in', tasks.ids))
             space_domain.append(('id', 'in', tasks.ids))
@@ -516,6 +545,10 @@ class ConstructionResourcePlan(models.Model):
         """Plural español sencillo de un nombre de nivel (Módulo → Módulos,
         Actividad → Actividades, Mueble → Muebles)."""
         name = (name or '').strip()
+        # «Partida (N3)» → «Partidas (N3)» (nombres numerados del 1.16).
+        base, sep, suffix = name.partition(' (')
+        if sep and suffix.endswith(')'):
+            return '%s (%s' % (self._plural(base), suffix)
         if not name or name[-1].lower() == 's':
             return name
         return name + ('s' if name[-1].lower() in 'aeiouáéíóú' else 'es')
