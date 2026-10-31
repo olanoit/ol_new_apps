@@ -110,6 +110,11 @@ class L10nPeHrDependent(models.Model):
     country_id = fields.Many2one(
         'res.country', string='País emisor del documento',
         help='Obligatorio para carné de extranjería y pasaporte.')
+    l10n_pe_country_emitter = fields.Char(
+        string='País emisor (T26)', size=4,
+        help='Código de la tabla 26 del T-Registro, solo para carné de '
+             'extranjería o pasaporte. Para documentos peruanos SUNAT exige '
+             '604 y se pone solo.')
     birthday = fields.Date(string='Fecha de nacimiento')
     gender = fields.Selection(
         selection=[('male', 'Masculino'), ('female', 'Femenino')],

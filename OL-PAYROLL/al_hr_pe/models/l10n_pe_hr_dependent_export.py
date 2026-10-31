@@ -69,6 +69,22 @@ class L10nPeHrDependent(models.Model):
                     self.l10n_pe_document_type_id),
                 self.identification_id or '')
 
+    def _l10n_pe_dependent_country(self, doc_type):
+        """País emisor con el código de la tabla 26 (no el ISO «PE»), como
+        el del trabajador (``hr.employee._l10n_pe_doc_pair``): 604 para
+        los documentos peruanos; el informado, para carné de extranjería
+        o pasaporte."""
+        # Import diferido: ese archivo hereda modelos que se registran
+        # después de este (orden de models/__init__.py).
+        from .l10n_pe_hr_tregistro_export import (
+            COUNTRY_PE, DOC_TYPES_NEED_COUNTRY)
+        self.ensure_one()
+        if not doc_type:
+            return ''
+        if doc_type in DOC_TYPES_NEED_COUNTRY:
+            return self.l10n_pe_country_emitter or ''
+        return COUNTRY_PE
+
     @staticmethod
     def _l10n_pe_fmt_date(value):
         return value.strftime('%d/%m/%Y') if value else ''
@@ -80,7 +96,7 @@ class L10nPeHrDependent(models.Model):
         return [
             worker_type, worker_number, self.employee_id.name or '',
             self.type_id.name or '', self.type_id.code or '',
-            dep_type, dep_number, self.country_id.code or '',
+            dep_type, dep_number, self._l10n_pe_dependent_country(dep_type),
             self.last_name or '', self.m_last_name or '', self.names or '',
             self._l10n_pe_fmt_date(self.birthday),
             SEX_CODE.get(self.gender, ''),

@@ -82,6 +82,7 @@
                                    required="not is_unborn"/>
                             <field name="country_id"
                                    options="{'no_create': True}"/>
+                            <field name="l10n_pe_country_emitter"/>
                             <field name="birthday" required="not is_unborn"/>
                             <field name="age" invisible="not birthday"/>
                             <field name="gender"/>

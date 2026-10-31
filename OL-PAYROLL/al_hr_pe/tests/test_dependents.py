@@ -295,3 +295,11 @@ class TestDependents(TransactionCase):
         })
         with self.assertRaises(UserError):
             (first | second).action_export_tregistro_xlsx()
+
+    def test_country_emitter_is_table_26(self):
+        """El país emisor del derechohabiente va con la tabla 26 (604 para
+        un DNI), no con el código ISO «PE»."""
+        dependent = self._dependent(years=6)
+        dependent.country_id = self.env.ref('base.pe')
+        row = dependent._l10n_pe_alta_row()
+        self.assertEqual(row[7], '604')
