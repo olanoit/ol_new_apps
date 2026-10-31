@@ -149,8 +149,12 @@ class HrFifthCertificateWizard(models.TransientModel):
         date_from = date(year, 1, 1)
         date_before = date(year + 1, 1, 1)
 
+        # Reglas de la quinta de todas las estructuras (construcción civil
+        # añade las suyas): con solo las configuradas, de BASE, la renta
+        # del obrero no entraba en su certificado.
         rem = self._certificate_rule_total(
-            employee, param.fifth_afect_sr_id + param.fifth_extr_sr_id,
+            employee, param._l10n_pe_fifth_rules('ordinary')
+            | param._l10n_pe_fifth_rules('extraordinary'),
             date_from, date_before)
         grats = GratLine.search([
             ('gratification_id.type', 'in', ('07', '12')),

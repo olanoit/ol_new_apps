@@ -207,9 +207,13 @@ class HrPayslipRun(models.Model):
                     'amount_earn': 0.0,
                     'amount_paid': 0.0,
                 })
-                # v18: amount_earn = amount_paid = hpl.total.
-                vals['amount_earn'] += line.total
-                vals['amount_paid'] += line.total
+                # v18: amount_earn = amount_paid = hpl.total. Los aportes y
+                # descuentos del trabajador (06xx/07xx) se declaran en
+                # positivo; construcción civil los calcula en negativo.
+                amount = abs(line.total) if code[:2] in ('06', '07') \
+                    else line.total
+                vals['amount_earn'] += amount
+                vals['amount_paid'] += amount
 
         # ORDER BY dni, sunat del SQL original.
         output = io.StringIO()

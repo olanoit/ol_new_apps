@@ -197,3 +197,45 @@ class TestConstructionFifth(TransactionCase):
             lambda l: l.employee_id == self.operario)
         self.assertAlmostEqual(line.past_rem, self._line(february, 'ROAQ'),
                                places=2)
+
+    # ------------------------------------------------------------------
+    # Certificado de 5ta y PLAME con boletas de construcción
+    # ------------------------------------------------------------------
+    def _close_march(self, employee):
+        for slip in self.slips[employee]:
+            slip.action_payslip_done()
+
+    def test_certificate_includes_construction_income(self):
+        """El certificado sumaba solo las reglas configuradas (de BASE):
+        la renta del obrero salía en 0."""
+        self._close_march(self.operario)
+        wizard = self.env['hr.fifth.certificate.wizard'].create({
+            'year': 2026, 'company_id': self.company.id,
+            'employee_ids': [Command.set(self.operario.ids)]})
+        values = wizard._get_certificate_values(self.operario)
+        self.assertAlmostEqual(
+            values['rem_bruta'],
+            sum(self._line(slip, 'ROAQ') for slip in self.slips[self.operario]),
+            places=2)
+        self.assertGreater(values['rem_bruta'], 0.0)
+
+    def test_plame_rem_declares_contributions_positive(self):
+        """Los aportes AFP de construcción se calculan en negativo; en el
+        .rem van en positivo, como los de BASE."""
+        self.operario.version_id.membership_id = self.env.ref(
+            'al_hr_pe.membership_AFP_INTEGRA')
+        for slip in self.slips[self.operario]:
+            slip.compute_sheet()
+        self.assertLess(self._line(self.slips[self.operario][0], 'A_JUB'), 0.0)
+        self._close_march(self.operario)
+        action = self.runs[0].action_export_plame_rem()
+        attachment = self.env['ir.attachment'].browse(
+            int(action['url'].split('/')[3].split('?')[0]))
+        rows = [row.split('|') for row in
+                attachment.raw.decode('utf-8').splitlines()
+                if row.split('|')[1:2] == [self.operario.identification_id]]
+        amounts = {row[2]: float(row[3]) for row in rows}
+        self.assertIn('0608', amounts)
+        self.assertGreater(amounts['0608'], 0.0)
+        self.assertTrue(all(amount >= 0 for amount in amounts.values()),
+                        amounts)
