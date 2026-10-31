@@ -466,8 +466,9 @@ class HrFifthCategoryLine(models.Model):
              'real si ya se liquidó, si no proyectada.', tracking=True)
     other_emp_proy_rem = fields.Float(
         string='Rem. otros empleadores',
-        help='Remuneración de otros empleadores del año, declarada por el '
-             'trabajador.', tracking=True)
+        help='Remuneración de otros empleadores que el trabajador declara '
+             'en este mes. Lo declarado en las quintas anteriores del año ya '
+             'se suma solo: no repita el acumulado.', tracking=True)
     past_rem = fields.Float(
         string='Rem. meses previos',
         help='Remuneración afecta ya pagada en los meses anteriores del año.')
@@ -493,7 +494,9 @@ class HrFifthCategoryLine(models.Model):
              'Reglamento manda descontar en este mes.')
     other_emp_ret = fields.Float(
         string='Retenido otros empleadores',
-        help='Retenciones del año efectuadas por otros empleadores.', tracking=True)
+        help='Retenciones de otros empleadores que el trabajador declara '
+             'en este mes. Lo declarado en las quintas anteriores del año ya '
+             'se suma solo: no repita el acumulado.', tracking=True)
     annual_ret = fields.Float(
         string='Impuesto por retener',
         help='Retención anual pendiente (impuesto proyectado menos '
