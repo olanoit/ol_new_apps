@@ -67,6 +67,8 @@ class TestFortnightlyStructure(BenefitsCaseBase):
                 'struct_id': self.structure.id, 'payslip_run_id': lot.id,
                 'date_from': date(2026, 3, 1), 'date_to': date(2026, 3, 31),
             })
+        # Odoo 20 solo exporta a boletas mensuales en borrador.
+        lot.slip_ids.write({'state': 'draft'})
         fortnightly.set_amounts(
             fortnightly.slip_ids, fortnightly.payslip_run_id, self.param)
         monthly = fortnightly.payslip_run_id.slip_ids.filtered(

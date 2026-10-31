@@ -43,6 +43,7 @@ from odoo.exceptions import UserError
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
+from .hr_benefits_engine import ensure_slips_draft, ensure_state
 
 ILLNESS_SUSPENSION_CODE = '21'    # T21-21: enfermedad
 MATERNITY_SUSPENSION_CODE = '22'  # T21-22: maternidad
@@ -104,6 +105,7 @@ class HrSubsidiesLot(models.Model):
         y sus duplicados recalculados se descartan (paridad v18).
         """
         self.ensure_one()
+        ensure_state(self, 'draft')
         self.line_ids.filtered(lambda sub: not sub.preserve_record).unlink()
         suspensions = self.env['hr.work.suspension'].search([
             ('company_id', '=', self.company_id.id),
@@ -484,9 +486,9 @@ class HrSubsidies(models.Model):
             ('state', 'in', ('validated', 'paid')),
             ('fortnightly_id', '=', False),
         ], order='date_to')
-        vacation_sr = getattr(param, 'vacation_sr_id')
-        otros_srs = getattr(param, 'otros_sr_ids')
-        lack_srs = getattr(param, 'lack_sr_ids')
+        vacation_sr = param.vacation_sr_id
+        otros_srs = param.otros_sr_ids
+        lack_srs = param.lack_sr_ids
         history = {}
         for slip in slips:
             bucket = history.setdefault(slip.periodo_id, {
@@ -657,7 +659,10 @@ class HrPayslip(models.Model):
 
     def import_subsidies(self):
         """Vuelca los subsidios ``not payed`` del periodo de la boleta a
-        los inputs de maternidad/enfermedad y los marca ``paid out``."""
+        los inputs de maternidad/enfermedad y los marca ``paid out``
+        (solo boletas en borrador: en una cerrada no llegarían a sus
+        líneas)."""
+        ensure_slips_draft(self)
         log = ''
         for slip in self:
             param = self.env['hr.main.parameter'].get_main_parameter(

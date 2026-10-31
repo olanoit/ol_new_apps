@@ -56,6 +56,19 @@ def ensure_draft(records):
                 for record in closed)))
 
 
+def ensure_state(records, *states):
+    """Los botones se ocultan por estado, pero la regla vive en el
+    servidor: por RPC se podía reprocesar o reexportar un registro
+    cerrado."""
+    wrong = records.filtered(lambda record: record.state not in states)
+    if wrong:
+        raise UserError(records.env._(
+            'La operación no está permitida en el estado actual de '
+            '%(names)s.', names=', '.join(
+                record.display_name or record._description
+                for record in wrong)))
+
+
 def ensure_line_draft(lines, *header_fields):
     """``ensure_draft`` sobre la cabecera (lote o liquidación) de cada
     línea."""
@@ -369,16 +382,42 @@ class HrMainParameter(models.Model):
     # Helpers
     # ------------------------------------------------------------------
     @api.model
-    def get_first_version(self, employee):
-        """Primer «contrato» del empleado: la versión con
-        ``contract_date_start`` más antigua (v18: get_first_contract)."""
+    def get_first_version(self, employee, on_date=None):
+        """Primer «contrato» del vínculo laboral vigente en ``on_date``
+        (por defecto, el último): la versión con ``contract_date_start``
+        más antigua de la cadena de contratos contiguos (v18:
+        get_first_contract).
+
+        Las versiones con el mismo inicio son un mismo contrato. Una
+        renovación sin interrupción continúa el vínculo; un hueco (cese y
+        reingreso) lo corta: el vínculo anterior ya se liquidó y no cuenta
+        para el récord vacacional ni para los promedios."""
         versions = employee.version_ids.filtered('contract_date_start')
         if not versions:
             raise UserError(self.env._(
                 'El empleado %(employee)s no tiene ninguna versión con '
                 'fecha de inicio de contrato.',
                 employee=employee.display_name))
-        return min(versions, key=lambda v: v.contract_date_start)
+        contracts = {}
+        for version in versions:
+            start = version.contract_date_start
+            end = contracts.get(start, version.contract_date_end)
+            contracts[start] = end and version.contract_date_end \
+                and max(end, version.contract_date_end)
+        starts = sorted(contracts)
+        current = [start for start in starts
+                   if not on_date or start <= on_date] or starts[:1]
+        index = starts.index(current[-1])
+        while index > 0:
+            previous_end = contracts[starts[index - 1]]
+            if not previous_end \
+                    or previous_end + relativedelta(days=1) < starts[index]:
+                break
+            index -= 1
+        first = starts[index]
+        return min(versions.filtered(
+            lambda version: version.contract_date_start == first),
+            key=lambda version: version.date_version or first)
 
     @api.model
     def _count_months(self, records):
@@ -707,8 +746,8 @@ class HrMainParameter(models.Model):
                     lambda slip: slip.version_id == employee.version_id)
                 month_slip = (current or month_slip).sorted('date_to')[-1:]
             version = month_slip.version_id
-            admission_date = \
-                self.get_first_version(employee).contract_date_start
+            admission_date = self.get_first_version(
+                employee, month_slip.date_to).contract_date_start
             remaining_wage = remaining_by_employee.get(employee, 0.0)
 
             wage = version.wage

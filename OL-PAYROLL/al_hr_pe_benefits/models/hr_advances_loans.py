@@ -34,6 +34,7 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import ensure_slips_draft
 
 SPECIAL_ADVANCE_FIELDS = ('grat_advance_id', 'cts_advance_id',
                           'liqui_advance_id', 'vaca_advance_id',
@@ -288,15 +289,23 @@ class HrPayslip(models.Model):
     def import_advances(self):
         """Vuelca los adelantos ``not payed`` con ``discount_date`` en
         el rango de la boleta a sus inputs, excluyendo los tipos
-        especiales (BBSS + quincena); esos importes ya pagados en el
-        periodo se suman como regularización (paridad v18). Marca los
-        adelantos importados como ``paid out``."""
+        especiales (BBSS + quincena); los BBSS ya pagados en el periodo
+        se suman como regularización (paridad v18). Marca los adelantos
+        importados como ``paid out``.
+
+        La quincena no entra en la regularización: su exportación ya los
+        descuenta en la mensual por el input de su tipo (se descontaban
+        dos veces). Si ese input es el mismo que el de un tipo ordinario,
+        el importe lleva ambos para que ningún flujo pise al otro. Solo
+        boletas en borrador."""
+        ensure_slips_draft(self)
         log = ''
         for slip in self:
             param = self.env['hr.main.parameter'].get_main_parameter(
                 slip.company_id)
             special = _special_types(param, SPECIAL_ADVANCE_FIELDS)
             special_ids = [record.id for record in special]
+            quin = param.quin_advance_id
             pending = self.env['hr.advance'].search([
                 ('discount_date', '>=', slip.date_from),
                 ('discount_date', '<=', slip.date_to),
@@ -312,6 +321,7 @@ class HrPayslip(models.Model):
                 ('company_id', '=', slip.company_id.id),
                 ('state', '=', 'paid out'),
                 ('advance_type_id', 'in', special_ids),
+                ('advance_type_id', '!=', quin.id),
             ])
             # Solo se aplica (y se marca pagado) lo que tiene input: un
             # tipo sin input nunca llega a descontarse en la boleta.
@@ -332,6 +342,15 @@ class HrPayslip(models.Model):
             amounts = defaultdict(float)
             for advance in pending | imported:
                 amounts[advance.advance_type_id.input_id] += advance.amount
+            if quin.input_id in amounts:
+                amounts[quin.input_id] += sum(self.env['hr.advance'].search([
+                    ('discount_date', '>=', slip.date_from),
+                    ('discount_date', '<=', slip.date_to),
+                    ('employee_id', '=', slip.employee_id.id),
+                    ('company_id', '=', slip.company_id.id),
+                    ('state', '=', 'paid out'),
+                    ('advance_type_id', '=', quin.id),
+                ]).mapped('amount'))
             # La regularización se suma una sola vez (v18 la repetía en
             # cada tipo de input).
             regularization = sum(paid_special.mapped('amount'))
@@ -350,13 +369,16 @@ class HrPayslip(models.Model):
 
     def import_loans(self):
         """Análogo a :meth:`import_advances` para cuotas de préstamo
-        (`hr.loan.line`) con vencimiento en el rango de la boleta."""
+        (`hr.loan.line`) con vencimiento en el rango de la boleta (la
+        quincena tampoco entra en la regularización)."""
+        ensure_slips_draft(self)
         log = ''
         for slip in self:
             param = self.env['hr.main.parameter'].get_main_parameter(
                 slip.company_id)
             special = _special_types(param, SPECIAL_LOAN_FIELDS)
             special_ids = [record.id for record in special]
+            quin = param.quin_loan_id
             pending = self.env['hr.loan.line'].search([
                 ('date', '>=', slip.date_from),
                 ('date', '<=', slip.date_to),
@@ -372,6 +394,7 @@ class HrPayslip(models.Model):
                 ('company_id', '=', slip.company_id.id),
                 ('validation', '=', 'paid out'),
                 ('loan_type_id', 'in', special_ids),
+                ('loan_type_id', '!=', quin.id),
             ])
             pending = pending.filtered(
                 lambda line: line.loan_type_id.input_id)
@@ -389,6 +412,15 @@ class HrPayslip(models.Model):
             amounts = defaultdict(float)
             for line in pending | imported:
                 amounts[line.loan_type_id.input_id] += line.amount
+            if quin.input_id in amounts:
+                amounts[quin.input_id] += sum(self.env['hr.loan.line'].search([
+                    ('date', '>=', slip.date_from),
+                    ('date', '<=', slip.date_to),
+                    ('employee_id', '=', slip.employee_id.id),
+                    ('company_id', '=', slip.company_id.id),
+                    ('validation', '=', 'paid out'),
+                    ('loan_type_id', '=', quin.id),
+                ]).mapped('amount'))
             regularization = sum(paid_special.mapped('amount'))
             for input_type, amount in amounts.items():
                 slip._set_pe_input_amount(

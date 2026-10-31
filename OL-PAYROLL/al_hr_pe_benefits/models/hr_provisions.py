@@ -35,6 +35,7 @@ from odoo.exceptions import UserError
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
+from .hr_benefits_engine import ensure_state
 
 
 class HrProvisiones(models.Model):
@@ -96,6 +97,7 @@ class HrProvisiones(models.Model):
           la gratificación sí se provisiona (antes se saltaba todo).
         """
         self.ensure_one()
+        ensure_state(self, 'draft')
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         lot = self.payslip_run_id
@@ -174,6 +176,7 @@ class HrProvisiones(models.Model):
         * Vacaciones: desde el último aniversario de ingreso.
         """
         self.ensure_one()
+        ensure_state(self, 'draft')
         lot = self.payslip_run_id
         year = lot.date_end.year
         month = lot.date_end.month

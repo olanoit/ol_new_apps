@@ -8,3 +8,4 @@ from . import test_fortnightly_structure
 from . import test_state_readonly
 from . import test_review_fifth
 from . import test_review_benefits
+from . import test_review_misc

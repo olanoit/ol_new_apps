@@ -379,6 +379,7 @@ class TestAuditFixesB(BenefitsCaseBase):
             'amount': 200.0,
             'discount_date': date(2026, 6, 15),
         })
+        self._slip(2026, 6).write({'state': 'draft'})
         self._slip(2026, 6).import_advances()
         self.assertEqual(advance.state, 'not payed')
 
@@ -394,6 +395,7 @@ class TestAuditFixesB(BenefitsCaseBase):
             'name': 'Adelanto', 'company_id': self.company.id,
             'input_id': input_type.id})
         slip = self._slip(2026, 6)
+        slip.write({'state': 'draft'})
 
         def advance(amount):
             return self.env['hr.advance'].create({

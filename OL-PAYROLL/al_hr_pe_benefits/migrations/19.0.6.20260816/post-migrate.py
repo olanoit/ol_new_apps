@@ -16,6 +16,12 @@ OLD_UIT, NEW_UIT = 5350, 5500
 
 
 def migrate(cr, version):
+    # Odoo 20: la UIT vive en hr.rule.parameter y la tabla del catálogo ya
+    # no existe; el cálculo reescala los tramos a la UIT de cada año
+    # (``get_tax_proy``), así que no hay nada que corregir.
+    cr.execute("SELECT to_regclass('l10n_pe_hr_uit')")
+    if not cr.fetchone()[0]:
+        return
     cr.execute("SELECT amount FROM l10n_pe_hr_uit WHERE year = 2026")
     row = cr.fetchone()
     if not row or row[0] != NEW_UIT:

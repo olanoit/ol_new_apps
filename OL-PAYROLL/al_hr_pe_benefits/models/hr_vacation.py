@@ -112,13 +112,10 @@ class HrVacation(models.Model):
                 'No existe el tipo de suspensión T21 con código 23 '
                 '(vacaciones).'))
 
-        working_wd = getattr(param, 'working_wd_ids', False) or param.wd_dlab
-        commission_rules = getattr(
-            param, 'commission_sr_ids', self.env['hr.salary.rule'])
-        bonus_rules = getattr(
-            param, 'bonus_sr_ids', self.env['hr.salary.rule'])
-        extra_hours_rule = getattr(
-            param, 'extra_hours_sr_id', self.env['hr.salary.rule'])
+        working_wd = param.working_wd_ids or param.wd_dlab
+        commission_rules = param.commission_sr_ids
+        bonus_rules = param.bonus_sr_ids
+        extra_hours_rule = param.extra_hours_sr_id
 
         slips = lot.slip_ids.filtered(
             lambda s: s.version_id.l10n_pe_labor_regime
@@ -154,7 +151,7 @@ class HrVacation(models.Model):
                     admission_date, leave.date_from)
 
                 wage = version.wage
-                compute_af = getattr(param, 'compute_af_vac', True)
+                compute_af = param.compute_af_vac
                 # Mismo criterio que la boleta (derechohabientes por edad).
                 household_allowance = month_slip.family_allowance \
                     if compute_af and month_slip.l10n_pe_family_allowance_ok \
@@ -404,13 +401,12 @@ class HrVacation(models.Model):
 
     @api.model
     def _get_admission_date(self, employee):
-        """Fecha de ingreso: versión con ``contract_date_start`` más
-        antigua (regla del refactor contrato → versión)."""
-        version = self.env['hr.version'].search(
-            [('employee_id', '=', employee.id),
-             ('contract_date_start', '!=', False)],
-            order='contract_date_start asc, date_version asc', limit=1)
-        return version.contract_date_start
+        """Fecha de ingreso del vínculo vigente (mismo criterio que el
+        motor y la liquidación, ``get_first_version``)."""
+        if not employee.version_ids.filtered('contract_date_start'):
+            return False
+        return self.env['hr.main.parameter'].get_first_version(
+            employee).contract_date_start
 
     @api.model
     def _calculate_average(self, admission_date, date_from, months, lines):
@@ -424,11 +420,7 @@ class HrVacation(models.Model):
     @api.model
     def _check_configuration(self, param):
         """Valida la configuración de promedios en Parámetros
-        Principales (port de ``check_vacation_values`` v18). Si el campo
-        aún no existe en el hr.main.parameter v19 (lo añade la fase de
-        configuración de beneficios) se omite la validación y el promedio
-        correspondiente vale 0 — mientras tanto todo se lee con
-        ``getattr`` con guard."""
+        Principales (port de ``check_vacation_values`` v18)."""
         missing = [
             label for field_name, label in [
                 ('basic_sr_id', 'R.S. Básico'),
@@ -436,8 +428,7 @@ class HrVacation(models.Model):
                 ('commission_sr_ids', 'R.S. Comisiones'),
                 ('bonus_sr_ids', 'R.S. Bonificaciones regulares'),
                 ('extra_hours_sr_id', 'R.S. Sobretiempo'),
-            ] if field_name in param._fields
-            and not getattr(param, field_name, False)]
+            ] if not param[field_name]]
         if missing:
             raise UserError(self.env._(
                 'Faltan configuraciones de vacaciones en los Parámetros '
@@ -760,13 +751,11 @@ class HrVacationLine(models.Model):
         date_to = date(date_to.year, date_to.month,
                        monthrange(date_to.year, date_to.month)[1])
 
-        basic_rule = getattr(param, 'basic_sr_id', False)
-        af_rule = getattr(param, 'household_allowance_sr_id', False)
-        commission_rules = getattr(
-            param, 'commission_sr_ids', self.env['hr.salary.rule'])
-        extra_hours_rule = getattr(param, 'extra_hours_sr_id', False)
-        bonus_rules = getattr(
-            param, 'bonus_sr_ids', self.env['hr.salary.rule'])
+        basic_rule = param.basic_sr_id
+        af_rule = param.household_allowance_sr_id
+        commission_rules = param.commission_sr_ids
+        extra_hours_rule = param.extra_hours_sr_id
+        bonus_rules = param.bonus_sr_ids
 
         slips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),

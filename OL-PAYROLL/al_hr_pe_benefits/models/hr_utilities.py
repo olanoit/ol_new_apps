@@ -33,6 +33,8 @@ from odoo.exceptions import UserError
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
+from .hr_benefits_engine import (
+    employee_lot_slip, ensure_draft, ensure_slips_draft, recompute_slips)
 
 
 class HrUtilities(models.Model):
@@ -116,24 +118,28 @@ class HrUtilities(models.Model):
         """Genera las líneas del ejercicio (una por trabajador con la
         regla de remuneración afecta) y ejecuta el reparto."""
         self.ensure_one()
+        ensure_draft(self)
         Line = self.env['hr.utilities.line']
         preserved = self.utilities_line_ids.filtered('preserve_record')
         (self.utilities_line_ids - preserved).unlink()
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         self._check_configuration(param)
-        rule = getattr(param, 'rule_total_income')
-        wd_dtrab = getattr(param, 'wd_dtrab')
-        wd_falt = getattr(param, 'wd_falt')
+        rule = param.rule_total_income
+        wd_dtrab = param.wd_dtrab
+        wd_falt = param.wd_falt
         # Solo boletas cerradas y sin las quincenales (su neto ya viaja
-        # en la mensual; contarlas duplicaría sueldo y días).
+        # en la mensual; contarlas duplicaría sueldo y días). Las
+        # modalidades formativas no son trabajadores y no participan en
+        # las utilidades (D.L. 892): sus meses no cuentan.
         slips = self.env['hr.payslip'].search([
             ('date_to', '>=', date(self.year, 1, 1)),
             ('date_to', '<=', date(self.year, 12, 31)),
             ('company_id', '=', self.company_id.id),
             ('state', 'in', ('validated', 'paid')),
             ('fortnightly_id', '=', False),
-        ])
+        ]).filtered(lambda slip:
+                    slip.version_id.l10n_pe_labor_regime != 'practicante')
         data = {}
         for slip in slips:
             rule_lines = slip.line_ids.filtered(
@@ -180,23 +186,30 @@ class HrUtilities(models.Model):
 
     def action_recompute(self):
         """Recalcula el reparto completo tras ajustes manuales."""
+        ensure_draft(self)
         self._distribute()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
     def action_export_to_payslips(self):
         """Vuelca el total de cada línea al input de utilidades de la
-        boleta del trabajador en el lote de pago."""
+        boleta del trabajador en el lote de pago (solo boletas en
+        borrador, que se recalculan)."""
         self.ensure_one()
+        ensure_draft(self)
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         self._check_configuration(param)
-        input_utilities = getattr(param, 'hr_input_for_results')
-        for line in self.utilities_line_ids:
-            slip = self.payslip_run_id.slip_ids.filtered(
-                lambda slip: slip.employee_id == line.employee_id)[:1]
+        input_utilities = param.hr_input_for_results
+        slip_by_line = {
+            line: employee_lot_slip(self.payslip_run_id, line.employee_id)
+            for line in self.utilities_line_ids}
+        slips = self.env['hr.payslip'].union(*slip_by_line.values())
+        ensure_slips_draft(slips)
+        for line, slip in slip_by_line.items():
             if not slip:
                 continue
             slip._set_pe_input_amount(input_utilities, line.total_utilities)
+        recompute_slips(slips)
         self.state = 'exported'
         return notify_success(self.env._(
             'Se envió al lote de nóminas exitosamente.'))

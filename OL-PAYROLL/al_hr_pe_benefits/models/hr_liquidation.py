@@ -325,7 +325,8 @@ class HrLiquidation(models.Model):
                 lambda slip: slip.employee_id == employee)[:1]
             version = month_slip.version_id
             admission_date = self.env['hr.main.parameter'] \
-                .get_first_version(employee).contract_date_start
+                .get_first_version(employee, month_slip.date_to) \
+                .contract_date_start
             if admission_date > month_slip.date_from:
                 continue
             cessation_date = version.contract_date_end
@@ -476,7 +477,8 @@ class HrLiquidation(models.Model):
                 lambda slip: slip.employee_id == employee)[:1]
             version = month_slip.version_id
             admission_date = self.env['hr.main.parameter'] \
-                .get_first_version(employee).contract_date_start
+                .get_first_version(employee, month_slip.date_to) \
+                .contract_date_start
             if admission_date > self.payslip_run_id.date_start:
                 continue
             Concepts.create({

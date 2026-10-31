@@ -40,6 +40,8 @@ from odoo.exceptions import UserError
 from odoo.addons.al_hr_pe.tools import custom_round
 
 from .hr_benefits_engine import notify_success
+from .hr_benefits_engine import (
+    employee_lot_slip, ensure_slips_draft, ensure_state, recompute_slips)
 
 
 class HrFortnightly(models.Model):
@@ -122,6 +124,7 @@ class HrFortnightly(models.Model):
         versión de contrato vigente en la quincena, omitiendo los que
         ya tienen boleta en el lote."""
         self.ensure_one()
+        ensure_state(self, 'draft')
         structure = self._get_quincena_structure()
         versions = self.env['hr.version'].search([
             ('company_id', '=', self.company_id.id),
@@ -152,6 +155,7 @@ class HrFortnightly(models.Model):
 
     def action_recompute(self):
         """Recalcula todas las boletas del lote."""
+        ensure_state(self, 'verify')
         self.slip_ids.compute_sheet()
         return notify_success(self.env._('Se recalculó exitosamente.'))
 
@@ -159,15 +163,18 @@ class HrFortnightly(models.Model):
     # Adelantos/préstamos de quincena
     # ------------------------------------------------------------------
     def action_import_advances(self):
+        ensure_state(self, 'verify')
         return self.slip_ids.import_advance_quin()
 
     def action_import_loans(self):
+        ensure_state(self, 'verify')
         return self.slip_ids.import_loan_quin()
 
     def action_export_to_payslips(self):
         """Cierra el lote quincenal volcando los montos al mensual; las
         boletas quincenales pasan a validadas."""
         self.ensure_one()
+        ensure_state(self, 'verify')
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         self._check_configuration(param)
@@ -179,12 +186,14 @@ class HrFortnightly(models.Model):
 
     def action_draft(self):
         """Vuelve el lote a borrador eliminando sus boletas."""
+        ensure_state(self, 'verify')
         self.slip_ids.action_payslip_cancel()
         self.slip_ids.unlink()
         self.write({'state': 'draft'})
 
     def action_reopen(self):
         """Reabre el lote exportado para corregir y re-exportar."""
+        ensure_state(self, 'exported')
         self.write({'state': 'verify'})
         self.slip_ids.filtered(
             lambda slip: slip.state != 'draft').action_payslip_draft()
@@ -210,14 +219,21 @@ class HrFortnightly(models.Model):
            ``fortnightly_input_id`` de la boleta mensual del empleado.
         2. Los adelantos pagados de tipo ``quin_advance_id`` del rango.
         3. Las cuotas de préstamo pagadas de tipo ``quin_loan_id``.
+
+        Si el input de la quincena es el mismo que el de un tipo ordinario
+        ya importado a la mensual, el importe lleva ambos: escribir solo la
+        quincena borraba el adelanto ordinario (ya marcado como pagado).
+        Solo boletas mensuales en borrador.
         """
-        net_rule = getattr(param, 'net_fortnightly_sr_id')
-        input_quincena = getattr(param, 'fortnightly_input_id')
-        quin_advance = getattr(param, 'quin_advance_id', False)
-        quin_loan = getattr(param, 'quin_loan_id', False)
-        for line in slips:
-            monthly_slip = lot.slip_ids.filtered(
-                lambda slip: slip.employee_id == line.employee_id)[:1]
+        net_rule = param.net_fortnightly_sr_id
+        input_quincena = param.fortnightly_input_id
+        quin_advance = param.quin_advance_id
+        quin_loan = param.quin_loan_id
+        monthly_by_slip = {
+            line: employee_lot_slip(lot, line.employee_id) for line in slips}
+        ensure_slips_draft(
+            self.env['hr.payslip'].union(*monthly_by_slip.values()))
+        for line, monthly_slip in monthly_by_slip.items():
             if not monthly_slip:
                 continue
             net_lines = line.line_ids.filtered(
@@ -240,9 +256,18 @@ class HrFortnightly(models.Model):
                     ('loan_type_id', '=', quin_loan.id),
                 ])
                 if loan_lines:
+                    ordinary = self.env['hr.loan.line'].search([
+                        ('date', '>=', monthly_slip.date_from),
+                        ('date', '<=', monthly_slip.date_to),
+                        ('employee_id', '=', line.employee_id.id),
+                        ('company_id', '=', line.company_id.id),
+                        ('validation', '=', 'paid out'),
+                        ('loan_type_id', '!=', quin_loan.id),
+                        ('loan_type_id.input_id', '=', quin_loan.input_id.id),
+                    ])
                     monthly_slip._set_pe_input_amount(
                         quin_loan.input_id,
-                        sum(loan_lines.mapped('amount')))
+                        sum((loan_lines | ordinary).mapped('amount')))
 
             if quin_advance and quin_advance.input_id:
                 advances = self.env['hr.advance'].search([
@@ -254,9 +279,21 @@ class HrFortnightly(models.Model):
                     ('advance_type_id', '=', quin_advance.id),
                 ])
                 if advances:
+                    ordinary = self.env['hr.advance'].search([
+                        ('discount_date', '>=', monthly_slip.date_from),
+                        ('discount_date', '<=', monthly_slip.date_to),
+                        ('employee_id', '=', line.employee_id.id),
+                        ('company_id', '=', line.company_id.id),
+                        ('state', '=', 'paid out'),
+                        ('advance_type_id', '!=', quin_advance.id),
+                        ('advance_type_id.input_id', '=',
+                         quin_advance.input_id.id),
+                    ])
                     monthly_slip._set_pe_input_amount(
                         quin_advance.input_id,
-                        sum(advances.mapped('amount')))
+                        sum((advances | ordinary).mapped('amount')))
+        recompute_slips(
+            self.env['hr.payslip'].union(*monthly_by_slip.values()))
 
 
 class HrPayslip(models.Model):
@@ -333,7 +370,7 @@ class HrPayslip(models.Model):
         for slip in self:
             param = self.env['hr.main.parameter'].get_main_parameter(
                 slip.company_id)
-            quin_advance = getattr(param, 'quin_advance_id', False)
+            quin_advance = param.quin_advance_id
             if not quin_advance:
                 raise UserError(self.env._(
                     'No se ha configurado el tipo de adelanto de '
@@ -367,7 +404,7 @@ class HrPayslip(models.Model):
         for slip in self:
             param = self.env['hr.main.parameter'].get_main_parameter(
                 slip.company_id)
-            quin_loan = getattr(param, 'quin_loan_id', False)
+            quin_loan = param.quin_loan_id
             if not quin_loan:
                 raise UserError(self.env._(
                     'No se ha configurado el tipo de préstamo de '

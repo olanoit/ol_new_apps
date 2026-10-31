@@ -126,13 +126,17 @@ class HrVacationRest(models.Model):
                 start_date = previous_balance.date_aplication \
                     - relativedelta(years=1)
             else:
-                start_date = version.contract_date_start
+                # Inicio del vínculo (mismo criterio que la liquidación):
+                # la versión actual puede ser de un contrato renovado que
+                # empieza después del ingreso.
+                start_date = param.get_first_version(
+                    employee).contract_date_start
 
             # Asignación familiar de Parámetros Principales (10 % RMV),
             # nunca hardcodeada.
             end_calculation_date = min(
                 today, version.contract_date_end or today)
-            compute_af = getattr(param, 'compute_af_vac', True)
+            compute_af = param.compute_af_vac
             # Mismo criterio que la boleta: derechohabientes por edad
             # (Ley 25129), no el campo manual ``children``.
             family_allowance = param.family_allowance \
