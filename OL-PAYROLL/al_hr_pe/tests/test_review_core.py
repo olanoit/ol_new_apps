@@ -7,6 +7,7 @@ código anterior a su corrección.
 from datetime import date
 from unittest.mock import patch
 
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -376,3 +377,55 @@ class TestReviewCore(TransactionCase):
         self.assertAlmostEqual(
             line['BAS_M'], line['BAS'] + line['DMED'] - line['FAL'], places=2)
         self.assertAlmostEqual(line['BAS_M'], 2900.43)
+
+    # ------------------------------------------------------------------
+    # B6. .snl sin periodo
+    # ------------------------------------------------------------------
+    def test_b6_snl_requires_a_period(self):
+        run = self.env['hr.payslip.run'].create({
+            'name': 'Lote sin periodo', 'date_start': date(2026, 3, 1),
+            'date_end': date(2026, 3, 31), 'company_id': self.company.id})
+        slip = self._slip()
+        slip.write({'payslip_run_id': run.id, 'state': 'validated'})
+        with self.assertRaises(UserError):
+            run.action_export_plame_snl()
+
+    # ------------------------------------------------------------------
+    # B7. Periodo de la boleta al cambiar las fechas
+    # ------------------------------------------------------------------
+    def _month(self, month):
+        last = {3: 31, 4: 30}[month]
+        return self.env['hr.period'].create({
+            'code': '2026%02d' % month, 'name': 'Mes %s' % month,
+            'date_start': date(2026, month, 1),
+            'date_end': date(2026, month, last),
+            'company_id': self.company.id,
+        })
+
+    def test_b7_period_follows_the_dates(self):
+        march, april = self._month(3), self._month(4)
+        slip = self._slip(compute=False)
+        self.assertEqual(slip.periodo_id, march)
+        slip.write({'date_from': date(2026, 4, 1), 'date_to': date(2026, 4, 30)})
+        self.assertEqual(slip.periodo_id, april)
+
+    # ------------------------------------------------------------------
+    # B8. Un PLAME por mes con todos los lotes
+    # ------------------------------------------------------------------
+    def test_b8_plame_takes_every_lot_of_the_month(self):
+        """Un segundo lote del mes (otro trabajador) entra en el PLAME del
+        primero: SUNAT espera un único archivo por periodo."""
+        march = self._month(3)
+        other = self._create_employee('Rosa', '44556699')
+        runs = self.env['hr.payslip.run']
+        for name, employee in (('Lote 1', self.employee), ('Lote 2', other)):
+            run = self.env['hr.payslip.run'].create({
+                'name': name, 'date_start': date(2026, 3, 1),
+                'date_end': date(2026, 3, 31), 'company_id': self.company.id,
+                'periodo_id': march.id})
+            slip = self._slip(employee=employee)
+            slip.write({'payslip_run_id': run.id, 'state': 'validated'})
+            runs |= run
+        text = self._attachment_text(runs[0].action_export_plame_rem())
+        self.assertIn('44556677', text)
+        self.assertIn('44556699', text)

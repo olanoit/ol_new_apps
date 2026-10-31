@@ -340,23 +340,14 @@ class HrPayslipRun(models.Model):
             'Solo se puede procesar una planilla a la vez, '
             'seleccione una sola nómina'))
 
-        # TODO(fase2-revisar): el modelo hr.work.suspension (v18 colgaba de
-        # hr.contract) aún no está migrado a v19; el plan lo ubica en la
-        # Fase 2 asociado a hr.version. Este export asume que existirá con
-        # los campos employee_id, periodo_id, suspension_type_id y days.
-        # Revisar también si el M2O final es version_id en vez de
-        # employee_id y ajustar el domain.
-        if 'hr.work.suspension' not in self.env:
-            raise UserError(self.env._(
-                'El registro de suspensiones de labores '
-                '(hr.work.suspension) aún no está disponible en esta '
-                'versión: se migra con el motor de nómina (Fase 2).'))
         Suspension = self.env['hr.work.suspension']
 
         output = io.StringIO()
         # Suspensiones del mes declarado: un lote semanal toma también las
         # registradas en cualquiera de las semanas del mes.
-        month = self.l10n_pe_plame_period_id or self.periodo_id
+        # Sin periodo no hay suspensiones que buscar: antes salía un .snl
+        # vacío sin avisar (y se perdían vacaciones, subsidios y faltas).
+        month = self.l10n_pe_plame_period_id or self.get_period()
         periods = month | month.child_ids
         for employee in self._l10n_pe_plame_slips().employee_id:
             code = self._l10n_pe_doc_type(employee)

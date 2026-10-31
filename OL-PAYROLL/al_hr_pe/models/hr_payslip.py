@@ -126,7 +126,13 @@ class HrPayslip(models.Model):
     def _compute_periodo_id(self):
         # Un solo search por compañía para todo el lote (antes, uno por
         # boleta); la elección del periodo se hace en memoria.
-        todo = self.filtered(lambda s: not s.periodo_id and s.date_from)
+        # Se recalcula si no hay periodo o si el que tiene ya no contiene
+        # las fechas (boleta pasada de octubre a noviembre); un ajuste
+        # manual coherente con las fechas se respeta.
+        todo = self.filtered(lambda s: s.date_from and not (
+            s.periodo_id
+            and s.periodo_id.date_start <= s.date_from
+            and s.periodo_id.date_end >= (s.date_to or s.date_from)))
         candidates = {}
         for company in todo.company_id:
             slips = todo.filtered(lambda s, c=company: s.company_id == c)
@@ -482,16 +488,17 @@ class HrPayslipRun(models.Model):
     def _l10n_pe_plame_slips(self):
         """Boletas que entran en la PLAME de este lote.
 
-        Si el lote es semanal, la declaración es del **mes entero**: se
-        toman las boletas de todas las semanas de ese mes, no solo las
-        del lote. Declarar una semana suelta dejaría fuera el resto del
-        periodo que SUNAT espera en un único envío.
+        La declaración es del **mes entero**: se toman las boletas
+        validadas o pagadas de la compañía en ese mes (y en sus semanas),
+        no solo las del lote. Un lote semanal o un segundo lote del mes
+        (off-cycle, gratificación, liquidación) generarían si no un archivo
+        parcial, y SUNAT espera un único envío por periodo: importar el
+        segundo pisaría al primero. Una boleta cancelada (y rehecha) o en
+        borrador no se declara.
         """
         self.ensure_one()
         month = self.l10n_pe_plame_period_id
-        if not month or month == self.periodo_id:
-            # Solo boletas cerradas, como en la rama semanal: una boleta
-            # cancelada (y rehecha) o en borrador no se declara.
+        if not month:
             return self.slip_ids.filtered(
                 lambda s: s.state in ('validated', 'paid'))
         periods = month | month.child_ids
