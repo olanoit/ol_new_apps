@@ -200,9 +200,12 @@ céntimos por semana en el oficial — y coincide por casualidad en el
 operario, que es lo que hace el error difícil de ver.
 
 **`TREM` enumera lo afecto en vez de sumar la categoría de ingresos.**
-Los beneficios sociales (`INDEM`, `VAC10`) y la gratificación con su
-bonificación de la Ley 30334 **no aportan**; sumar la categoría entera
-los metería dentro sin que nadie lo note.
+La indemnización (`INDEM`, la CTS del régimen), la gratificación con su
+bonificación de la Ley 30334 y la movilidad **no aportan**; sumar la
+categoría entera los metería dentro sin que nadie lo note. Las vacaciones
+(`VAC10`) **sí**: son remuneración vacacional (código SUNAT 0118, «lo que
+el trabajador hubiera percibido habitualmente en caso de seguir
+laborando») y aportan a EsSalud, ONP y AFP.
 
 **La base del CONAFOVICER incluye el D.S.O.** Las fuentes secundarias
 dicen «2 % del jornal básico», pero la tabla del convenio lo desmiente:

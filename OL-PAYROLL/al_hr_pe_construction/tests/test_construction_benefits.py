@@ -278,28 +278,31 @@ class TestConstructionBenefits(TransactionCase):
     # Base afecta
     # ------------------------------------------------------------------
     def test_social_benefits_are_out_of_the_taxable_base(self):
-        """La CTS, las vacaciones y la gratificación no aportan.
+        """La CTS y la gratificación no aportan; las vacaciones sí.
 
         Si TREM sumara `categories['ING']` los metería dentro sin que
-        nadie lo note; por eso enumera lo afecto.
+        nadie lo note; por eso enumera lo afecto. La remuneración
+        vacacional (VAC10, código 0118) es remuneración y aporta.
         """
         payslip = self._payslip(self._worker(),
                                 date(2026, 11, 2), date(2026, 11, 8))
         total = self._line(payslip, 'TINGR')
         taxable = self._line(payslip, 'TREM')
-        self.assertEqual(taxable, 796.56,
-                         'jornal + D.S.O. + BUC, sin la movilidad')
+        self.assertEqual(taxable, round(796.56 + 53.58, 2),
+                         'jornal + D.S.O. + BUC + vacaciones, sin la '
+                         'movilidad')
         self.assertEqual(
             round(total - taxable, 2),
-            round(self._line(payslip, 'INDEM') + self._line(payslip, 'VAC10')
+            round(self._line(payslip, 'INDEM')
                   + self._line(payslip, 'GRAT') + self._line(payslip, 'BEXT')
                   + self._line(payslip, 'MOV'), 2),
-            'fuera quedan los beneficios sociales y la movilidad, que es '
-            'condición de trabajo y no remuneración')
+            'fuera quedan la indemnización, la gratificación y la '
+            'movilidad, que es condición de trabajo y no remuneración')
 
     def test_school_allowance_is_taxable(self):
         worker = self._worker()
         self._child(worker, 8)
         payslip = self._payslip(worker, date(2026, 3, 2), date(2026, 3, 8))
         self.assertEqual(self._line(payslip, 'TREM'),
-                         round(796.56 + self._line(payslip, 'AESC'), 2))
+                         round(796.56 + self._line(payslip, 'VAC10')
+                               + self._line(payslip, 'AESC'), 2))

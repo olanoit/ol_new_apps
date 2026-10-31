@@ -48,8 +48,9 @@ Fase 3 — beneficios que este régimen paga con la planilla:
   devengo: 210 días hasta julio y 150 desde agosto.
 * Bonificación extraordinaria de la Ley 30334 y asignación escolar, que
   toma los hijos de los derechohabientes de ``al_hr_pe``.
-* Regla ``TREM`` con la base afecta, que **enumera** lo remunerativo: los
-  beneficios sociales y la movilidad quedan fuera.
+* Regla ``TREM`` con la base afecta, que **enumera** lo remunerativo: la
+  indemnización, la gratificación y la movilidad quedan fuera; las
+  vacaciones (remuneración vacacional, 0118) entran.
 
 Fase 4 — periodicidad semanal:
 
@@ -97,7 +98,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_hr_pe_construction/static/description/icon.png',
-    'version': '25.20261027',
+    'version': '26.20261031',
     'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden

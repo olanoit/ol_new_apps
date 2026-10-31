@@ -396,13 +396,20 @@ result = payslip._l10n_pe_construction_sctr('pension', TREM)
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <!-- Base afecta a ONP/AFP y EsSalud. Se enumera lo afecto en
-                 vez de sumar la categoría: los beneficios sociales
-                 (INDEM, VAC10) y la gratificación con su bonificación
-                 (Ley 30334) NO aportan, y sumar `categories['ING']` los
-                 metería dentro sin que nadie lo note. -->
+                 vez de sumar la categoría: la indemnización (INDEM, la CTS
+                 del régimen), la gratificación con su bonificación (Ley
+                 30334) y la movilidad (condición de trabajo) NO aportan, y
+                 sumar `categories['ING']` los metería dentro sin que nadie
+                 lo note. Las vacaciones (VAC10) SÍ: son la remuneración
+                 vacacional, código SUNAT 0118 —«lo que el trabajador
+                 hubiera percibido habitualmente en caso de seguir
+                 laborando» (Tabla 22)—, afecta a EsSalud, ONP y AFP. La
+                 tabla semanal del convenio (ONP 103.55 del operario) es la
+                 de salarios SIN beneficios sociales y por eso no la
+                 incluye. -->
             <field name="amount_python_compute">
 result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
-          + HE60 + HE100 + FER100 + AESC)
+          + HE60 + HE100 + FER100 + VAC10 + AESC)
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>

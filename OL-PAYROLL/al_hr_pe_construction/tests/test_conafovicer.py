@@ -117,7 +117,11 @@ class TestConafovicer(TransactionCase):
             with self.subTest(categoria=category):
                 payslip = self._payslip(
                     self._worker(index, category), self._full_week())
-                self.assertEqual(self._line(payslip, 'TREM'), base)
+                # TREM suma además las vacaciones (VAC10), que la tabla
+                # del convenio —salarios sin beneficios sociales— no trae.
+                self.assertEqual(round(self._line(payslip, 'TREM')
+                                       - self._line(payslip, 'VAC10'), 2),
+                                 base)
                 self.assertEqual(round(base * 0.13, 2), onp,
                                  'el 13 % de la base da el ONP oficial')
                 self.assertNotIn(

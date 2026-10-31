@@ -166,9 +166,10 @@ class TestConstructionReport(TransactionCase):
     # ------------------------------------------------------------------
     def test_essalud_over_the_taxable_base(self):
         payslip = self._payslip(self._worker(4))
-        self.assertEqual(self._line(payslip, 'TREM'), 796.56)
-        self.assertEqual(self._line(payslip, 'ESSALUD'), 71.69,
-                         '9 % de 796.56')
+        self.assertEqual(self._line(payslip, 'TREM'), 850.14,
+                         'jornal + D.S.O. + BUC + vacaciones (53.58)')
+        self.assertEqual(self._line(payslip, 'ESSALUD'), 76.51,
+                         '9 % de 850.14')
 
     def test_sctr_only_for_the_covered_worker(self):
         self.company.write({'l10n_pe_sctr_health_rate': 1.55,
@@ -180,10 +181,10 @@ class TestConstructionReport(TransactionCase):
 
         covered = self._payslip(self._worker(
             6, l10n_pe_sctr_health=True, l10n_pe_sctr_pension=True))
-        self.assertEqual(self._line(covered, 'SCTRS'), 12.35,
-                         '1.55 % de 796.56')
-        self.assertEqual(self._line(covered, 'SCTRP'), 9.80,
-                         '1.23 % de 796.56')
+        self.assertEqual(self._line(covered, 'SCTRS'), 13.18,
+                         '1.55 % de 850.14 (con las vacaciones)')
+        self.assertEqual(self._line(covered, 'SCTRP'), 10.46,
+                         '1.23 % de 850.14 (con las vacaciones)')
 
     def test_sctr_coverages_are_independent(self):
         self.company.write({'l10n_pe_sctr_health_rate': 1.55,

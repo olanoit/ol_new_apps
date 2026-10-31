@@ -279,9 +279,15 @@ class TestConstructionPayslip(TransactionCase):
     # Pensiones: la boleta descuenta ONP o AFP sobre TREM
     # ------------------------------------------------------------------
     def test_onp_matches_the_official_table(self):
-        """La tabla descuenta 103.55 de ONP al operario (13 % de 796.56)."""
+        """La tabla descuenta 103.55 de ONP al operario (13 % de 796.56).
+
+        Es la tabla de salarios sin beneficios sociales: la boleta suma a
+        la base las vacaciones (VAC10, remuneración vacacional afecta), así
+        que el ONP es el 13 % de 796.56 + 53.58 = 850.14 (110.52); en el
+        oficial 613.80 + 41.85 y en el peón 552.64 + 37.68.
+        """
         onp = self.env.ref('al_hr_pe.membership_ONP')
-        expected = {'OPE': -103.55, 'OFI': -79.79, 'PEO': -71.84}
+        expected = {'OPE': -110.52, 'OFI': -85.23, 'PEO': -76.74}
         for code, amount in expected.items():
             with self.subTest(categoria=code):
                 payslip = self._payslip(
@@ -313,7 +319,12 @@ class TestConstructionPayslip(TransactionCase):
                     self._worker(code, membership_id=onp.id))
                 salaries = sum(self._line(payslip, rule)
                                for rule in ('JOR', 'DSO', 'BUC', 'MOV'))
-                deductions = self._line(payslip, 'ONP') + self._line(payslip, 'CONAF')
+                # El convenio publica el neto sin beneficios sociales: se
+                # aparta el ONP de las vacaciones (VAC10), que la boleta sí
+                # suma a la base afecta.
+                deductions = (self._line(payslip, 'ONP')
+                              + round(self._line(payslip, 'VAC10') * 0.13, 2)
+                              + self._line(payslip, 'CONAF'))
                 self.assertEqual(round(salaries + deductions, 2), net)
                 self.assertAlmostEqual(net, published, delta=0.011)
 
@@ -342,7 +353,7 @@ class TestConstructionPayslip(TransactionCase):
         payslip = self._payslip(self._worker(
             'OPE', membership_id=afp.id, l10n_pe_commission_type='flow'))
         base = self._line(payslip, 'TREM')
-        self.assertEqual(base, 796.56)
+        self.assertEqual(base, 850.14, '796.56 + vacaciones 53.58')
         self.assertEqual(self._line(payslip, 'ONP'), 0.0)
         self.assertEqual(
             self._line(payslip, 'A_JUB'),

@@ -181,7 +181,8 @@ class TestConstructionAuditFixes(TransactionCase):
         self.assertEqual(
             round(self._line(payslip, 'TREM') - (
                 self._line(payslip, 'JOR') + self._line(payslip, 'DSO')
-                + self._line(payslip, 'BUC')), 2),
+                + self._line(payslip, 'BUC') + self._line(payslip, 'VAC10')),
+                2),
             89.30, 'la sobretasa es remuneración afecta (entra en TREM)')
 
     def test_worked_holiday_does_not_inflate_the_dso(self):
