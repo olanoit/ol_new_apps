@@ -168,6 +168,8 @@ class TestAuditFixesB(BenefitsCaseBase):
         self.assertAlmostEqual(line.ext_ret, round(tax_ext - tax, 2),
                                places=2)
         self.assertGreater(line.ext_ret, 0.0)
+        # Odoo 20 solo exporta a boletas en borrador.
+        june.write({'state': 'draft'})
         fifth.action_export_to_payslips()
         exported = june.input_line_ids.filtered(
             lambda inp: inp.salary_rule_id == quinta_input)
@@ -202,7 +204,7 @@ class TestAuditFixesB(BenefitsCaseBase):
         self.employee.version_id.contract_date_end = date(2026, 6, 30)
         Line = type(self.Line)
         with patch.object(Line, 'get_past_months_ret',
-                          lambda self, slip, date_from: 500.0):
+                          lambda self, slip, date_from, **kwargs: 500.0):
             fifth, line = self._fifth_line_june()
         self.assertTrue(line, 'la devolución no se excluye')
         self.assertAlmostEqual(line.monthly_ret + line.ext_ret, -500.0,

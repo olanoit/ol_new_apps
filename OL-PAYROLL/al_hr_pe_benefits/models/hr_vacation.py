@@ -38,6 +38,8 @@ from odoo.exceptions import UserError
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import ensure_draft, ensure_line_draft
 from .hr_benefits_engine import compute_has_history, compute_locked
+from .hr_benefits_engine import employee_lot_slip, ensure_slips_draft
+from .hr_benefits_engine import recompute_slips
 
 LABOR_REGIMES_WITH_VACATION = ('general', 'small', 'micro')
 VACATION_SUSPENSION_CODE = '23'  # T21-23: vacaciones
@@ -468,18 +470,30 @@ class HrVacation(models.Model):
         """Acumula por empleado y vuelca a los inputs de su boleta:
         VAC (goce), COMP_VAC (venta), ADE_VAC (adelanto neto) y QUINTA
         (retención proporcional). v18 leía los input types de Parámetros
-        Principales; en v19 son data del módulo base."""
+        Principales; en v19 son data del módulo base.
+
+        Si el lote ya tiene la quinta exportada, QUINTA no se toca: lleva la
+        retención del mes entero (que ya grava las vacaciones) y la
+        proporcional la pisaba, reteniendo de menos. La proporcional ya
+        vuelve a la boleta por ADE_VAC, que es el neto adelantado."""
         inp_vacation = self.env.ref('al_hr_pe.salary_rule_VAC')
         inp_venta_vacation = self.env.ref('al_hr_pe.salary_rule_COMP_VAC')
         inp_ade_vacation = self.env.ref('al_hr_pe.salary_rule_ADE_VAC')
         inp_fifth = self.env.ref('al_hr_pe.salary_rule_QUINTA')
+        fifth_exported = self.env['hr.fifth.category'].search_count([
+            ('payslip_run_id', '=', lot.id), ('state', '=', 'exported'),
+        ], limit=1)
 
+        slip_by_employee = {
+            employee: employee_lot_slip(lot, employee)
+            for employee in lines.employee_id}
+        slips = self.env['hr.payslip'].union(*slip_by_employee.values())
+        ensure_slips_draft(slips)
         total_vacation = total_venta_vacation = 0.0
         total_ade_vaca = total_quinta = 0.0
         previous_employee = self.env['hr.employee']
         for line in lines.sorted(key=lambda l: l.employee_id.id):
-            slip = lot.slip_ids.filtered(
-                lambda s: s.employee_id == line.employee_id)[:1]
+            slip = slip_by_employee[line.employee_id]
             if not slip:
                 continue
             if line.employee_id == previous_employee:
@@ -502,8 +516,10 @@ class HrVacation(models.Model):
             self._set_input_amount(
                 slip, inp_venta_vacation, total_venta_vacation)
             self._set_input_amount(slip, inp_ade_vacation, total_ade_vaca)
-            self._set_input_amount(slip, inp_fifth, total_quinta)
+            if not fifth_exported:
+                self._set_input_amount(slip, inp_fifth, total_quinta)
             previous_employee = line.employee_id
+        recompute_slips(slips)
 
 
 class HrVacationLine(models.Model):
@@ -621,22 +637,40 @@ class HrVacationLine(models.Model):
              'ajustes manuales.', tracking=True)
 
     def compute_quinta_line(self, lot):
-        """Retención de 5ta proporcional: toma la retención QUINTA del
-        mes anterior al lote y la prorratea por los días liquidados."""
+        """Retención de 5ta proporcional: toma la retención ordinaria del
+        mes anterior al lote y la prorratea por los días liquidados.
+
+        Solo boletas de lote cerradas (un borrador o una cancelada
+        duplicaban la retención) y solo la retención ordinaria de la quinta
+        exportada: la extraordinaria de julio o diciembre (gratificación)
+        no se repite en las vacaciones del mes siguiente. Sin quinta
+        exportada, la regla QUINTA de esas boletas."""
         date_from = lot.date_start - relativedelta(months=1)
+        date_from = date(date_from.year, date_from.month, 1)
         date_to = date(date_from.year, date_from.month,
                        monthrange(date_from.year, date_from.month)[1])
         Slip = self.env['hr.payslip']
+        FifthLine = self.env['hr.fifth.category.line']
         for line in self:
             past_slips = Slip.search([
                 ('employee_id', '=', line.employee_id.id),
                 ('company_id', '=', line.company_id.id),
-                ('date_from', '=', date_from),
-                ('date_to', '=', date_to),
+                ('date_to', '>=', date_from),
+                ('date_to', '<=', date_to),
+                ('state', 'in', ('validated', 'paid')),
+                ('payslip_run_id', '!=', False),
+                ('fortnightly_id', '=', False),
             ])
-            ret_quinta = sum(past_slips.mapped('line_ids').filtered(
-                lambda pl: pl.salary_rule_id.code == 'QUINTA'
-            ).mapped('total'))
+            fifth_lines = FifthLine.search([
+                ('slip_id', 'in', past_slips.ids),
+                ('fifth_category_id.state', '=', 'exported'),
+            ])
+            if fifth_lines:
+                ret_quinta = sum(fifth_lines.mapped('monthly_ret'))
+            else:
+                ret_quinta = sum(past_slips.line_ids.filtered(
+                    lambda pl: pl.salary_rule_id.code == 'QUINTA'
+                ).mapped('total'))
             line.quinta = ret_quinta / 30.0 * line.accrued_vacation
             line.total = line.neto_total - line.quinta
         return self.env['hr.vacation']._notify(

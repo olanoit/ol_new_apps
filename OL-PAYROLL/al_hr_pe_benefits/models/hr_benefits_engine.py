@@ -69,6 +69,40 @@ def ensure_line_draft(lines, *header_fields):
 
 
 
+def employee_lot_slip(lot, employee):
+    """Boleta del trabajador en el lote a la que se exportan los importes.
+
+    Odoo 20 genera una boleta por versión: con un cambio de versión en el
+    mes el trabajador tiene varias en el lote. Los importes van a una sola
+    (la de la versión vigente al cierre, la de fecha final más reciente);
+    escribirlos en todas los pagaba dos veces.
+    """
+    slips = lot.slip_ids.filtered(
+        lambda slip: slip.employee_id == employee and slip.state != 'cancel')
+    return slips.sorted(lambda slip: (slip.date_to, slip.id))[-1:]
+
+
+def ensure_slips_draft(slips):
+    """Solo se exporta a boletas en borrador.
+
+    Odoo 20 no recalcula una boleta validada o pagada: el input cambiaría
+    sin llegar a sus líneas y el registro quedaría «exportado» con un
+    importe que la boleta no refleja.
+    """
+    closed = slips.filtered(lambda slip: slip.state != 'draft')
+    if closed:
+        raise UserError(slips.env._(
+            'Solo se puede exportar a boletas en borrador. Vuelva a '
+            'borrador estas boletas: %(slips)s.',
+            slips=', '.join(closed.mapped('display_name'))))
+
+
+def recompute_slips(slips):
+    """Recalcula las boletas a las que se exportó para que sus líneas
+    reflejen los inputs nuevos."""
+    slips.filtered(lambda slip: slip.state == 'draft').compute_sheet()
+
+
 def compute_locked(lines, rules):
     """``l10n_pe_locked`` de las líneas: la cabecera ya no se edita.
 

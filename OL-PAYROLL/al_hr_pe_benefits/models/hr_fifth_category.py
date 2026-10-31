@@ -28,6 +28,7 @@ Portado de ``hr_fifth_category`` (v18). Cambios v19: ``hr.contract`` →
 eliminado); SQL con ``.format()`` → ORM; certificado PDF/Excel quedan
 para la Fase 7.
 """
+import re
 from datetime import date, timedelta
 
 from odoo import Command, api, fields, models
@@ -37,6 +38,15 @@ from odoo.exceptions import UserError
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
+from .hr_benefits_engine import employee_lot_slip
+from .hr_benefits_engine import ensure_slips_draft
+from .hr_benefits_engine import recompute_slips
+
+# Gratificación proyectada por régimen (fracción del sueldo por semestre):
+# la pequeña empresa paga media remuneración (TUO de la Ley MYPE, D.S.
+# 013-2013-PRODUCE) y la microempresa y las modalidades formativas no tienen
+# gratificación. Construcción civil se proyecta como el régimen general.
+GRATIFICATION_FACTOR = {'small': 0.5, 'micro': 0.0, 'practicante': 0.0}
 
 
 class HrMainParameter(models.Model):
@@ -50,7 +60,9 @@ class HrMainParameter(models.Model):
     fifth_extr_sr_id = fields.Many2one(
         'hr.salary.rule', string='R.S. Rem. extraordinaria afecta a quinta',
         help='Regla salarial con las remuneraciones extraordinarias '
-             '(gratificaciones reales, reintegros, utilidades...).')
+             '(reintegros, utilidades...). No debe sumar las gratificaciones '
+             '(GRA/BON9): la quinta las toma de la gratificación, reales o '
+             'proyectadas.')
     proy_afect_sr_id = fields.Many2one(
         'hr.salary.rule', string='R.S. Proyección de ingresos afectos',
         help='Regla salarial cuyo total mensual se proyecta a los meses '
@@ -116,6 +128,43 @@ class HrMainParameter(models.Model):
                 'Faltan configuraciones en la pestaña Quinta categoría '
                 'de los Parámetros Principales:\n\n%(missing)s',
                 missing='\n'.join('• %s' % item for item in missing)))
+        # La gratificación entra en la renta bruta desde hr.gratification
+        # (real) o proyectada: si además la suman las reglas afectas, va
+        # dos veces (en las remuneraciones pasadas y en la del mes).
+        grat_codes = {self.env.ref('al_hr_pe.salary_rule_GRA').code,
+                      self.env.ref('al_hr_pe.salary_rule_BON9').code}
+        for rule in self.fifth_afect_sr_id | self.fifth_extr_sr_id:
+            if self._l10n_pe_rule_codes(rule) & grat_codes:
+                raise UserError(self.env._(
+                    'La regla %(rule)s suma la gratificación (%(codes)s): la '
+                    'quinta ya la toma de la gratificación, real o proyectada, '
+                    'y la contaría dos veces. Quítela de la regla (las reglas '
+                    'ROAQ y REAQ de la estructura BASE no la suman).',
+                    rule=rule.display_name,
+                    codes='/'.join(sorted(grat_codes))))
+
+    @api.model
+    def _l10n_pe_rule_codes(self, rule):
+        """Códigos de las reglas que suma ``rule``, directa o
+        indirectamente (nombres de regla citados en su fórmula Python)."""
+        codes, pending = set(), [rule]
+        Rule = self.env['hr.salary.rule']
+        while pending:
+            current = pending.pop()
+            if not current.code or current.code in codes:
+                continue
+            codes.add(current.code)
+            if current.amount_select != 'code':
+                continue
+            tokens = set(re.findall(r'\b[A-Z][A-Z0-9_]*\b',
+                                    current.amount_python_compute or ''))
+            tokens -= codes
+            if tokens:
+                pending.extend(Rule.search([
+                    ('code', 'in', list(tokens)),
+                    ('struct_ids', 'in', current.struct_ids.ids),
+                ]))
+        return codes
 
 
 class HrRateLimit(models.Model):
@@ -237,15 +286,34 @@ class HrFifthCategory(models.Model):
                         fifth.payslip_run_id.date_end, fifth.id))
             record.previous_fifth_category_id = previous
 
+    def _l10n_pe_check_state(self, *states):
+        """Los botones se ocultan por estado, pero la regla vive en el
+        servidor: por RPC se podía regenerar (duplicando líneas) o
+        reexportar una quinta ya exportada."""
+        wrong = self.filtered(lambda record: record.state not in states)
+        if wrong:
+            raise UserError(self.env._(
+                'La operación no está permitida en el estado actual de '
+                '%(names)s.', names=', '.join(wrong.mapped('display_name'))))
+
     # Botones, en el mismo orden que en la vista
     def action_generate(self):
-        """Crea una línea por boleta del lote y calcula la quinta."""
+        """Crea una línea por trabajador del lote y calcula la quinta.
+
+        Odoo 20 genera una boleta por versión: con un cambio de versión en
+        el mes el trabajador tiene varias boletas en el lote, pero una sola
+        retención. La línea apunta a la de la versión vigente al cierre y
+        suma las remuneraciones de todas (ver ``_l10n_pe_month_slips``).
+        """
         self.ensure_one()
+        self._l10n_pe_check_state('draft')
         Line = self.env['hr.fifth.category.line']
-        for slip in self.payslip_run_id.slip_ids:
+        for employee in self.payslip_run_id.slip_ids.filtered(
+                lambda slip: slip.state != 'cancel').employee_id:
             Line.create({
                 'fifth_category_id': self.id,
-                'slip_id': slip.id,
+                'slip_id': employee_lot_slip(
+                    self.payslip_run_id, employee).id,
             })
         self.line_ids.action_compute()
         self.state = 'verify'
@@ -255,6 +323,7 @@ class HrFifthCategory(models.Model):
     def action_add_excluded_employees(self):
         """Wizard para reincorporar empleados excluidos como afectos."""
         self.ensure_one()
+        self._l10n_pe_check_state('verify')
         wizard = self.env['hr.employee.excluidos.wizard'].create({
             'fifth_category_id': self.id,
             'company_id': self.company_id.id,
@@ -271,6 +340,7 @@ class HrFifthCategory(models.Model):
         }
 
     def action_recompute(self):
+        self._l10n_pe_check_state('verify')
         self.line_ids.action_compute()
 
     def action_export_to_payslips(self):
@@ -284,36 +354,52 @@ class HrFifthCategory(models.Model):
         extraordinaria fuera a un input aparte, nunca se descontaría.
 
         Crea la línea de input si la boleta no la tiene (patrón CTS
-        v19). Marca el lote como ``exported``.
+        v19). Los excluidos quedan en 0: la quinta es dueña del input y un
+        importe previo (p. ej. la quinta proporcional de vacaciones) no
+        debe retenerse. Solo boletas en borrador, que se recalculan. Marca
+        el lote como ``exported``.
         """
         self.ensure_one()
+        self._l10n_pe_check_state('verify')
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         param.check_fifth_values()
         input_type = param.fifth_category_input_id
-        for line in self.line_ids:
-            slip = line.slip_id
-            amount = custom_round(line.monthly_ret + line.ext_ret, 2)
+        amounts = [(line.slip_id,
+                    custom_round(line.monthly_ret + line.ext_ret, 2))
+                   for line in self.line_ids]
+        amounts += [(line.slip_id, 0.0) for line in self.line_excluidos_ids
+                    if line.employee_id not in self.line_ids.employee_id
+                    and line.slip_id.input_line_ids.filtered(
+                        lambda inp: inp.salary_rule_id == input_type)]
+        slips = self.env['hr.payslip'].union(
+            *[slip for slip, _amount in amounts])
+        ensure_slips_draft(slips)
+        for slip, amount in amounts:
             input_line = slip.input_line_ids.filtered(
                 lambda inp: inp.salary_rule_id == input_type)
             if input_line:
-                input_line.amount = amount
+                input_line[:1].amount = amount
+                (input_line - input_line[:1]).unlink()
             else:
                 slip.write({'input_line_ids': [Command.create({
                     'salary_rule_id': input_type.id,
                     'amount': amount,
                 })]})
+        recompute_slips(slips)
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
     def action_draft(self):
         """Vuelve a borrador eliminando líneas afectas y excluidas."""
+        self._l10n_pe_check_state('verify')
         self.line_ids.unlink()
         self.line_excluidos_ids.unlink()
         self.write({'state': 'draft'})
 
     def action_reopen(self):
         """Reabre a «en proceso» para revisar antes de exportar."""
+        self._l10n_pe_check_state('exported')
         self.write({'state': 'verify'})
 
 
@@ -506,20 +592,25 @@ class HrFifthCategoryLine(models.Model):
             ('code', '=', 'QUINTA'),
         ], limit=1)
 
-    def get_past_rem(self, slip, date_from):
+    def get_past_rem(self, slip, date_from, date_before=None):
         """Remuneraciones afectas (ordinarias + extraordinarias) de las
         boletas de lote anteriores del año, más lo declarado de otros
-        empleadores en quintas previas."""
+        empleadores en quintas previas.
+
+        ``date_before`` (exclusivo, por defecto ``slip.date_to``) es el
+        inicio del mes de la quinta cuando el trabajador tiene varias
+        boletas en el lote: las del propio mes no son «meses previos»."""
         company = slip.company_id
         param = self.env['hr.main.parameter'].get_main_parameter(company)
         param.check_fifth_values()
+        date_before = date_before or slip.date_to
         rem_ant = self._sum_payslip_rule_totals(
             slip.employee_id, company,
             param.fifth_afect_sr_id + param.fifth_extr_sr_id,
-            date_from, slip.date_to)
+            date_from, date_before)
         other_past_rem = self.search([
             ('slip_id.date_to', '>=', date_from),
-            ('slip_id.date_to', '<', slip.date_to),
+            ('slip_id.date_to', '<', date_before),
             ('employee_id', '=', slip.employee_id.id),
             ('company_id', '=', company.id),
         ])
@@ -549,7 +640,8 @@ class HrFifthCategoryLine(models.Model):
                 break
         return tax_proy
 
-    def get_past_months_ret(self, slip, date_from):
+    def get_past_months_ret(self, slip, date_from, final=False,
+                            date_before=None):
         """Retenciones previas del año según las ventanas del Art. 40
         del Reglamento:
 
@@ -557,6 +649,14 @@ class HrFifthCategoryLine(models.Model):
         * abr, may, ago, sep, dic: QUINTA retenida hasta el mes previo;
         * jun-jul: QUINTA retenida de enero a abril;
         * oct-nov: QUINTA retenida de enero a agosto.
+
+        Con ``final`` (mes del cese) el impuesto es el del año entero
+        (divisor 1): se descuenta todo lo retenido hasta el mes previo,
+        como en diciembre. Con las ventanas se volvía a retener lo ya
+        retenido (en un cese de marzo, enero y febrero completos).
+
+        ``date_before`` (exclusivo, por defecto ``slip.date_to``) es el
+        inicio del mes de la quinta (ver ``get_past_rem``).
 
         El tope es exclusivo sobre ``date_to``: se usa el día 1 del mes
         siguiente para que entren las boletas de abril (30/04) y agosto
@@ -566,17 +666,18 @@ class HrFifthCategoryLine(models.Model):
         en quintas previas del año.
         """
         company = slip.company_id
+        month_start = date_before or slip.date_to
         other_past_ret = self.search([
             ('slip_id.date_to', '>=', date_from),
-            ('slip_id.date_to', '<', slip.date_to),
+            ('slip_id.date_to', '<', month_start),
             ('employee_id', '=', slip.employee_id.id),
             ('company_id', '=', company.id),
         ])
         other_ret = sum(other_past_ret.mapped('other_emp_ret'))
-        if slip.date_from.month in (1, 2, 3):
+        if final or slip.date_from.month in (4, 5, 8, 9, 12):
+            date_before = month_start
+        elif slip.date_from.month in (1, 2, 3):
             return 0 + other_ret
-        if slip.date_from.month in (4, 5, 8, 9, 12):
-            date_before = slip.date_to
         elif slip.date_to.month in (6, 7):
             date_before = date(date_from.year, 5, 1)
         elif slip.date_to.month in (10, 11):
@@ -634,6 +735,10 @@ class HrFifthCategoryLine(models.Model):
         Uit = self.env['hr.rule.parameter']
         for record in self:
             slip = record.slip_id
+            # Todas las boletas del trabajador en el lote (una por versión
+            # en Odoo 20): una sola retención por mes.
+            month_slips = record._l10n_pe_month_slips()
+            month_start = min(month_slips.mapped('date_from'))
             company = record.fifth_category_id.company_id \
                 or slip.company_id
             param = self.env['hr.main.parameter'].get_main_parameter(
@@ -671,9 +776,12 @@ class HrFifthCategoryLine(models.Model):
                     ('gratification_id.company_id', '=', company.id),
                 ])
 
-            record.monthly_rem = sum(slip.line_ids.filtered(
+            record.monthly_rem = sum(month_slips.line_ids.filtered(
                 lambda line: line.salary_rule_id == param.fifth_afect_sr_id
             ).mapped('total'))
+            # La proyección sale de la boleta de la versión vigente al
+            # cierre (la regla de proyección usa el sueldo de la versión,
+            # no el prorrateado).
             if not record.edit_proy:
                 record.contrac_proy_rem = sum(slip.line_ids.filtered(
                     lambda line:
@@ -684,9 +792,12 @@ class HrFifthCategoryLine(models.Model):
 
             # Gratificaciones: reales si ya se liquidaron (incluye bono
             # extraordinario EsSalud); proyectadas con el % del seguro
-            # social de la versión en caso contrario.
+            # social de la versión en caso contrario, y según el régimen
+            # (media remuneración en la pequeña empresa; ninguna en la
+            # microempresa ni en las modalidades formativas).
             insurance_percent = version.social_insurance_id.percent or 0.0
             grat_proy = record.contrac_proy_rem \
+                * GRATIFICATION_FACTOR.get(version.l10n_pe_labor_regime, 1.0) \
                 * (1 + insurance_percent / 100)
             # Proyección por meses completos del semestre desde el ingreso
             # (Ley 27735): quien entró el 01/08 no cobra la de julio.
@@ -717,7 +828,8 @@ class HrFifthCategoryLine(models.Model):
                 + sum(grat_december.mapped('bonus_essalud'))
             ) if month == 12 and grat_december else grat_december_proy
 
-            record.past_rem = self.get_past_rem(slip, year_start)
+            record.past_rem = self.get_past_rem(
+                slip, year_start, date_before=month_start)
             record.total_proy = (record.proy_rem + record.grat_july
                                  + record.grat_december
                                  + record.other_emp_proy_rem
@@ -728,11 +840,11 @@ class HrFifthCategoryLine(models.Model):
                 record.net_rent, param.rate_limit_ids, uit=uit)
             record.tax_proy = 0 if tax_proy < 0 else tax_proy
             record.past_months_ret = self.get_past_months_ret(
-                slip, year_start)
+                slip, year_start, final=ceased, date_before=month_start)
             record.annual_ret = record._get_renta_anual_proyecta()
             record.monthly_rent = custom_round(
                 record.annual_ret / rent_month, 2)
-            record.ext_rem = sum(slip.line_ids.filtered(
+            record.ext_rem = sum(month_slips.line_ids.filtered(
                 lambda line: line.salary_rule_id == param.fifth_extr_sr_id
             ).mapped('total'))
             record.total_net_rent = record.ext_rem + record.net_rent
@@ -772,6 +884,15 @@ class HrFifthCategoryLine(models.Model):
                     'net_rent': record.net_rent,
                 })
                 record.unlink()
+
+    def _l10n_pe_month_slips(self):
+        """Boletas del trabajador en el lote de la quinta (Odoo 20 crea una
+        por versión); sin lote, la propia boleta de la línea."""
+        self.ensure_one()
+        slips = self.fifth_category_id.payslip_run_id.slip_ids.filtered(
+            lambda slip: slip.employee_id == self.employee_id
+            and slip.state != 'cancel')
+        return slips or self.slip_id
 
     @api.depends('fifth_category_id', 'employee_id')
     def _compute_display_name(self):
