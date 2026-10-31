@@ -52,6 +52,15 @@ Fase 3 — beneficios que este régimen paga con la planilla:
   indemnización, la gratificación y la movilidad quedan fuera; las
   vacaciones (remuneración vacacional, 0118) entran.
 
+Renta de 5ta categoría:
+
+* Reglas ``ROAQ`` (renta afecta de la semana: todo salvo movilidad e
+  indemnización), ``PIAQ`` (mes tipo que se proyecta, con la
+  gratificación proporcional dentro: no se proyectan gratificaciones
+  aparte) y ``QUINTA`` (0605, lee el input de la quinta).
+* La quinta del mes incluye a los obreros con boletas semanales en el
+  mes, suma todas sus semanas y exporta la retención a la última.
+
 Fase 4 — periodicidad semanal:
 
 * Generador de periodos semanales colgados de su mes, **cortados en el
@@ -98,7 +107,7 @@ Datos cargados: tabla de la R.M. N.° 197-2025-TR (01/01/2026-31/12/2026).
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_hr_pe_construction/static/description/icon.png',
-    'version': '27.20261031',
+    'version': '28.20261031',
     'license': 'OPL-1',
     # `al_hr_pe_reports` no es opcional: la boleta del régimen hereda su
     # plantilla y el módulo extiende sus datos. Sin declararla, el orden

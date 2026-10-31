@@ -129,7 +129,8 @@ sus trabajadores la cobran sin marcarla uno por uno.
 | CONAFOVICER (%) | 2.00 |
 | Cuenta CONAFOVICER | — |
 | Bonif. extraordinaria (%) | 9.00 |
-| Edad tope asignación escolar | 18 (21 con estudios superiores) |
+| Edad mínima asignación escolar | 3 (educación inicial) |
+| Edad tope asignación escolar | 18 (24 con estudios superiores) |
 
 Las tasas del SCTR vienen **en cero a propósito**: no las fija la norma
 sino el contrato con la aseguradora. Sin tasa no se calcula el aporte —
@@ -221,6 +222,16 @@ trabajo.
 **Las gratificaciones se devengan en ventanas distintas**: Fiestas
 Patrias en 7 meses (210 días) y Navidad en 5 (150). Por eso la diaria de
 Navidad es mayor con el mismo jornal.
+
+**La renta de 5ta usa el motor de `al_hr_pe_benefits`.** La quinta del
+mes (de cualquier lote del mes) incluye a los obreros con boletas
+semanales: la renta del mes es la regla `ROAQ` de todas sus semanas
+(todo salvo movilidad e indemnización), la proyección es la regla `PIAQ`
+—un mes tipo de 30 días: jornal × 30, BUC, vacaciones, bonificaciones,
+gratificación proporcional con su bonificación y asignación escolar— y
+**no se proyectan gratificaciones aparte**, porque ya se pagan en cada
+planilla. La retención se exporta a la última boleta semanal del mes, que
+la descuenta con su regla `QUINTA` (0605, en positivo como en BASE).
 
 ## 5. Validación
 

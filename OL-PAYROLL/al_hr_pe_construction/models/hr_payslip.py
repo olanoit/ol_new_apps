@@ -423,20 +423,74 @@ class HrPayslip(models.Model):
         self.ensure_one()
         if not self.l10n_pe_daily_wage or not self.date_to:
             return 0.0
+        children = self._l10n_pe_construction_school_children()
+        if not children:
+            return 0.0
+        return custom_round(
+            self._l10n_pe_construction_effective_wage() * 30.0 / 360.0
+            * self._l10n_pe_construction_accrual_days() * children)
+
+    def _l10n_pe_construction_school_children(self):
+        """Hijos con derecho a la asignación escolar a la fecha de cierre."""
+        self.ensure_one()
         company = self.company_id
         min_age = company.l10n_pe_construction_school_age_min or 0
-        children = self.employee_id.sudo().l10n_pe_dependent_ids.filtered(
+        return len(self.employee_id.sudo().l10n_pe_dependent_ids.filtered(
             lambda dependent: dependent._is_family_allowance_source(
                 self.date_to,
                 age_limit=company.l10n_pe_construction_school_age,
                 studying_limit=company.l10n_pe_construction_school_age_study)
             and relativedelta(self.date_to, dependent.birthday).years
-            >= min_age)
-        if not children:
+            >= min_age))
+
+    #: Reglas de bonificación del catálogo (importe fijo o % del jornal).
+    CONSTRUCTION_BONUS_CODES = ('BAE', 'BALTI', 'BAGUA', 'BCOTA', 'BALTU')
+
+    def _l10n_pe_construction_fifth_projection(self):
+        """Remuneración mensual afecta a 5ta que se proyecta (regla PIAQ).
+
+        El motor de la quinta la multiplica por los meses que faltan del
+        año. Es un mes tipo de 30 días calendario del convenio, no la suma
+        de la semana (una semana partida por el fin de mes la deformaría):
+
+        * jornal + D.S.O.: 30 jornales (6 trabajados y 1 de descanso por
+          cada 7 días);
+        * BUC, vacaciones 10 % y bonificaciones del catálogo sobre los
+          días trabajados del mes (30 × 6 / 7);
+        * gratificación proporcional: la de los 30 días de devengo,
+          promediada en los meses que faltan (40 jornales en 210 días hasta
+          julio y en 150 desde agosto), con su bonificación de la Ley
+          30334, y asignación escolar por los hijos con derecho a la fecha.
+
+        Como la gratificación ya va aquí y en cada planilla, la quinta no
+        proyecta gratificaciones aparte. El sobretiempo y la sobretasa de
+        feriado no se proyectan (son variables: entran cuando se pagan);
+        la movilidad y la indemnización (CTS) son inafectas.
+        """
+        self.ensure_one()
+        wage = self._l10n_pe_construction_effective_wage()
+        if not wage or not self.date_to:
             return 0.0
-        return custom_round(
-            self._l10n_pe_construction_effective_wage() * 30.0 / 360.0
-            * self._l10n_pe_construction_accrual_days() * len(children))
+        line = self.l10n_pe_wage_line_id
+        worked = 30.0 * 6.0 / 7.0
+        buc_rate = line._buc_rate() if line else 0.0
+        remaining = range(self.date_to.month + 1, 13) \
+            or [self.date_to.month]
+        grat_days = sum(30.0 / (210.0 if month <= 7 else 150.0)
+                        for month in remaining) / len(remaining)
+        gratification = wage * 40.0 * grat_days
+        total = (
+            wage * 30.0
+            + wage * worked * buc_rate / 100.0
+            + wage * worked * 0.10
+            + sum(self._l10n_pe_construction_bonus(code, days=worked)
+                  for code in self.CONSTRUCTION_BONUS_CODES)
+            + gratification * (
+                1 + self.company_id.l10n_pe_construction_grat_bonus_rate
+                / 100.0)
+            + wage * 30.0 / 360.0 * 30.0
+            * self._l10n_pe_construction_school_children())
+        return custom_round(total)
 
     # ------------------------------------------------------------------
     # Redondeo SUNAT para las reglas

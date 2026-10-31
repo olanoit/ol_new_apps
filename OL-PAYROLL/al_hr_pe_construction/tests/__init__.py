@@ -10,4 +10,5 @@ from . import test_construction_audit_fixes
 from . import test_state_readonly
 from . import test_construction_cost
 from . import test_review_construction
+from . import test_construction_fifth
 from . import test_construction_holiday_tareaje

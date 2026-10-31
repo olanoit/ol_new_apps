@@ -527,6 +527,73 @@ else:
             <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
         </record>
 
+        <!-- ============ RENTA DE 5TA CATEGORÍA ============
+             La quinta (al_hr_pe_benefits) liquida el mes con estas reglas
+             además de las de BASE: ROAQ suma la renta afecta de cada
+             semana, PIAQ el mes tipo que se proyecta y QUINTA descuenta lo
+             que la quinta exporta a la última boleta semanal del mes. -->
+
+        <record id="rule_ROAQ" model="hr.salary.rule">
+            <field name="name">Remuneración afecta a quinta</field>
+            <field name="code">ROAQ</field>
+            <field name="sequence">185</field>
+            <field name="appears_on_payslip">never</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Todo lo que paga la boleta salvo la movilidad (condición
+                 de trabajo) y la indemnización (CTS), inafectas. La
+                 gratificación y su bonificación van aquí, como renta
+                 ordinaria del mes en que se pagan: en este régimen se
+                 pagan con cada planilla. -->
+            <field name="amount_python_compute">
+result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
+          + HE60 + HE100 + FER100 + VAC10 + GRAT + BEXT + AESC)
+            </field>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
+        </record>
+
+        <record id="rule_PIAQ" model="hr.salary.rule">
+            <field name="name">Proyección de ingresos afectos a quinta</field>
+            <field name="code">PIAQ</field>
+            <field name="sequence">186</field>
+            <field name="appears_on_payslip">never</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <!-- Mes tipo de 30 días del convenio (jornal × 30, BUC,
+                 vacaciones, bonificaciones, gratificación proporcional con
+                 su bonificación y asignación escolar): ver
+                 _l10n_pe_construction_fifth_projection. -->
+            <field name="amount_python_compute">
+result = payslip._l10n_pe_construction_fifth_projection()
+            </field>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
+        </record>
+
+        <!-- Mismo código, código SUNAT e input que la QUINTA de BASE: la
+             quinta exporta el importe a la regla de la estructura de la
+             boleta con ese código. A diferencia del resto de descuentos de
+             esta estructura va en POSITIVO, como en BASE: la PLAME (0605),
+             el certificado y las retenciones previas de la quinta leen lo
+             retenido con ese signo (negativo = devolución). TDES lo
+             compensa. -->
+        <record id="rule_QUINTA" model="hr.salary.rule">
+            <field name="name">Quinta Categoría</field>
+            <field name="code">QUINTA</field>
+            <field name="input_usage_payslip" eval="True"/>
+            <field name="sunat_code">0605</field>
+            <field name="sequence">198</field>
+            <field name="appears_on_payslip">always</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['QUINTA'].amount if inputs['QUINTA'] else 0
+            </field>
+            <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.APOR_TRA')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
+        </record>
+
         <record id="rule_TINGR" model="hr.salary.rule">
             <field name="name">Total ingresos</field>
             <field name="code">TINGR</field>
@@ -550,9 +617,11 @@ result = categories['ING']
             <field name="amount_select">code</field>
             <!-- Las reglas de descuento ya vienen en negativo, así que se
                  invierte el signo para publicar un total positivo, igual
-                 que el `TDES` del régimen general. -->
+                 que el `TDES` del régimen general. La QUINTA es la
+                 excepción: va en positivo como en BASE (ver su regla), así
+                 que se saca de la categoría y se suma tal cual. -->
             <field name="amount_python_compute">
-result = -(categories['APOR_TRA'] + categories['DES_NET'])
+result = -(categories['APOR_TRA'] - QUINTA + categories['DES_NET']) + QUINTA
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>
