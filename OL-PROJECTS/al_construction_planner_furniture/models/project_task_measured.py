@@ -86,3 +86,48 @@ class ProjectTask(models.Model):
         for task in tasks_sudo:
             task.message_post(body=self.env._('Medición desmarcada.'))
         return True
+
+
+class ResCompany(models.Model):
+    """Nombres de los estados del ambiente que no son etapas (paquete 1.16,
+    M116-02): los usa la etapa actual de cada ambiente del Cronograma
+    (M115-04). «Medido» y no «Metrado»: en construcción por partidas el
+    metrado es la medición con aprobación."""
+    _inherit = 'res.company'
+
+    construction_state_pending_label = fields.Char(
+        string='Estado sin empezar', default='Pendiente', translate=True)
+    construction_state_measured_label = fields.Char(
+        string='Estado del ambiente medido', default='Medido', translate=True)
+    construction_state_delivered_label = fields.Char(
+        string='Estado del ambiente entregado', default='Entregado', translate=True)
+
+
+class ResConfigSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    construction_state_pending_label = fields.Char(
+        related='company_id.construction_state_pending_label', readonly=False)
+    construction_state_measured_label = fields.Char(
+        related='company_id.construction_state_measured_label', readonly=False)
+    construction_state_delivered_label = fields.Char(
+        related='company_id.construction_state_delivered_label', readonly=False)
+
+
+class ProjectProject(models.Model):
+    _inherit = 'project.project'
+
+    def _construction_space_state_labels(self):
+        """{'pending', 'measured', 'delivered': nombre} de los estados del
+        ambiente que no son etapas, o vacío si el perfil de la obra no los
+        usa (M116-02). Los usa el perfil que mide sus ambientes (función
+        «Metrado» del perfil): una obra sin perfil es de mobiliario."""
+        self.ensure_one()
+        profile = self.construction_profile_id
+        if profile and not profile.feature_measurement:
+            return {}
+        company = self.company_id or self.env.company
+        return {'pending': company.construction_state_pending_label or self.env._('Pendiente'),
+                'measured': company.construction_state_measured_label or self.env._('Medido'),
+                'delivered': company.construction_state_delivered_label
+                or self.env._('Entregado')}

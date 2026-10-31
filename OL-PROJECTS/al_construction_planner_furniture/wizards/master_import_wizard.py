@@ -196,7 +196,9 @@ class ConstructionMasterImportWizard(models.TransientModel):
         # Etapas hoja por su número y nombre, su nombre y sus otros nombres
         # («Producción» es 1.1 Producción de piezas: v1.8, M18-14).
         stage_values = {}
-        for stage in self.env['construction.stage'].search([('is_group', '=', False)]):
+        # Solo las etapas del perfil de la obra: una de otro perfil es error de
+        # la fila (paquete 1.16, M116-01).
+        for stage in self.env['construction.stage']._offered_stages(project):
             aliases = [alias.strip() for alias in (stage.alias_names or '').split(',')
                        if alias.strip()]
             stage_values[stage.code] = (stage._label(), stage.name, *aliases,

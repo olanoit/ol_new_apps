@@ -222,10 +222,18 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         return Type
 
     def _stage_code(self, text):
+        """Código de la etapa de la fila; ``None`` si no existe o no es del
+        perfil de la obra (paquete 1.16, M116-01). Vacía: la por defecto
+        del asistente o la del perfil."""
+        Stage = self.env['construction.stage']
         text = _text(text)
         if not text:
-            return self.default_stage_id.code or False
-        return self.env['construction.stage']._find_by_text(text)
+            return self.default_stage_id.code or (
+                Stage._default_code(self.project_id) if self.project_id else False)
+        code = Stage._find_by_text(text)
+        if code and not Stage._in_profile(code, self.project_id):
+            return None
+        return code
 
     # ------------------------------------------------------------------
     # Recetas
@@ -234,10 +242,9 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         """Actividad (driver) de la mano de obra del APU: una por producto."""
         Activity = self.env['construction.labor.activity']
         code = product.default_code or 'MO-%s' % product.id
-        activity = Activity.search([('code', '=', code),
-                                    ('company_id', 'in', (self.company_id.id, False))], limit=1)
+        activity = Activity._construction_get_by_code(code, self.company_id, self.project_id)
         if not activity:
-            stage = stage or next(iter(self.env['construction.stage']._field_codes()), False)
+            stage = stage or self.env['construction.stage']._default_code(self.project_id)
             if not stage:
                 raise UserError(self.env._(
                     'Elija la etapa por defecto: la mano de obra %s necesita una actividad con '
@@ -257,7 +264,7 @@ class ConstructionRecipeImportWizard(models.TransientModel):
         if not code:
             return Activity, self.env['product.product']
         company_domain = [('company_id', 'in', (self.company_id.id, False))]
-        activity = Activity.search([('code', '=', code)] + company_domain, limit=1) \
+        activity = Activity._construction_get_by_code(code, self.company_id, self.project_id) \
             or Activity.search([('product_id.default_code', '=', code)] + company_domain,
                                limit=1)
         product = self.env['product.product'].search([('default_code', '=', code)], limit=1) \
@@ -338,8 +345,9 @@ class ConstructionRecipeImportWizard(models.TransientModel):
             qty = _number(row.get('qty'))
             stage = self._stage_code(row.get('stage'))
             if not rtype or qty is None or stage is None:
-                errors.append(self.env._('RECETAS fila %(row)s: tipo, cantidad o etapa no válidos.',
-                                         row=row['_row']))
+                errors.append(self.env._(
+                    'RECETAS fila %(row)s: tipo, cantidad o etapa no válidos (la etapa debe ser '
+                    'del perfil de la obra).', row=row['_row']))
                 continue
             resource_code = _text(row.get('code'))
             vals = {'resource_type_id': rtype.id, 'resource_type': rtype.behavior, 'qty': qty,

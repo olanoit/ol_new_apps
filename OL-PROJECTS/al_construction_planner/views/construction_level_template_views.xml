@@ -26,6 +26,7 @@
                     <group>
                         <field name="summary"/>
                         <field name="purchase_destination"/>
+                        <field name="apu_any_level"/>
                         <field name="active" invisible="1"/>
                     </group>
                     <field name="line_ids">

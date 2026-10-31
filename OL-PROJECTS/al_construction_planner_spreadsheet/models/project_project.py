@@ -495,7 +495,9 @@ class ProjectProject(models.Model):
                               'orderBy': [{'name': order_by, 'asc': True}], 'fieldMatching': {}}
         ref_cells['P1'] = 'Especialidades'
         ref_styles['P1'] = TITLE_STYLE
-        stage_labels = [label for _code, label in self.env['construction.stage']._get_selection()]
+        # Las etapas del perfil de la obra (paquete 1.16, M116-01).
+        stage_labels = [stage._label() for stage in
+                        self.env['construction.stage']._offered_stages(project)]
         for number, label in enumerate(stage_labels, start=3):
             ref_cells['P%s' % number] = label
         sheets.append({'id': 'sheet_referencias', 'name': 'REFERENCIAS', 'colNumber': 26,

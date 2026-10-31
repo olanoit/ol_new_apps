@@ -225,31 +225,99 @@ class ConstructionStage(models.Model):
         domain = [('code', 'in', list(codes))] if codes is not None else []
         return self.with_context(active_test=False).search(domain)
 
+    # ------------------------------------------------------------------
+    # Etapas del perfil de la obra (paquete 1.16, M116-01)
+    # ------------------------------------------------------------------
     @api.model
-    def _production_codes(self):
-        """Etapas cuyos materiales consume la orden de fabricación."""
-        return tuple(self.with_context(active_test=False).search([
-            ('is_group', '=', False),
-            '|', ('kind', '=', 'production'), ('production_consumption', '=', True),
-        ]).mapped('code'))
+    def _profile_leaves(self, project=None):
+        """Etapas hoja del perfil de ``project``, con las archivadas: lo que la
+        obra puede tener registrado. ``None`` si no hay obra o su perfil no
+        dice sus etapas: entonces vale todo el catálogo, como antes."""
+        project = project or self.env['project.project']
+        profile = project[:1].construction_profile_id
+        stages = profile.with_context(active_test=False).stage_ids if profile else self.browse()
+        if not stages:
+            return None
+        return stages._leaf_stages()
 
     @api.model
-    def _consumption_code(self, where):
+    def _restrict_to_project(self, stages, project=None):
+        """``stages`` sin las que no son del perfil de ``project``."""
+        leaves = self._profile_leaves(project)
+        return stages if leaves is None else stages & leaves
+
+    @api.model
+    def _offered_stages(self, project=None):
+        """Etapas que se ofrecen para elegir en ``project``: las hojas activas
+        de su perfil (sin obra o sin perfil: las activas del catálogo), en el
+        orden del árbol. Lo ya registrado con otra etapa se sigue leyendo."""
+        stages = self._tree_sorted(self.search([('is_group', '=', False)]))
+        return self._restrict_to_project(stages, project)
+
+    @api.model
+    def _offered_codes(self, project=None):
+        return self._offered_stages(project).mapped('code')
+
+    @api.model
+    def _in_profile(self, code, project=None):
+        """Si ``code`` es una etapa del perfil de la obra (sin perfil: sí)."""
+        leaves = self._profile_leaves(project)
+        return leaves is None or code in leaves.mapped('code')
+
+    @api.model
+    def _default_code(self, project=None):
+        """Etapa que toma una fila importada sin etapa: la por defecto del
+        perfil de la obra; si no la dice, la primera de campo del perfil."""
+        project = project or self.env['project.project']
+        profile = project[:1].construction_profile_id
+        default = profile.default_stage_id if profile else self.browse()
+        if default and not default.is_group:
+            return default.code
+        return next(iter(self._field_codes(project)), False)
+
+    @api.model
+    def _check_project_code(self, code, project, what=None):
+        """Error de importación: la etapa ``code`` no es del perfil de la obra."""
+        if code and not self._in_profile(code, project):
+            stage = self._by_code([code])[:1]
+            raise UserError(self.env._(
+                '%(what)sLa etapa «%(stage)s» no es del perfil «%(profile)s» de la obra '
+                '%(project)s. Use una de: %(stages)s.',
+                what='%s: ' % what if what else '', stage=stage._label() if stage else code,
+                profile=project.construction_profile_id.display_name,
+                project=project.display_name,
+                stages=', '.join(self._offered_stages(project).mapped(lambda s: s._label()))))
+
+    @api.model
+    def _production_codes(self, project=None):
+        """Etapas cuyos materiales consume la orden de fabricación (con
+        ``project``, las de su perfil)."""
+        stages = self.with_context(active_test=False).search([
+            ('is_group', '=', False),
+            '|', ('kind', '=', 'production'), ('production_consumption', '=', True),
+        ])
+        return tuple(self._restrict_to_project(stages, project).mapped('code'))
+
+    @api.model
+    def _consumption_code(self, where, project=None):
         """Etapa del consumo sin etapa propia: ``production`` la de la OF (la
         primera de fabricación), ``site`` la del consumo en obra (la primera
-        de campo cuyos materiales no salen con la OF)."""
+        de campo cuyos materiales no salen con la OF). Con ``project``, entre
+        las etapas de su perfil (C-02)."""
         if where == 'production':
             domain = [('kind', '=', 'production')]
         else:
             domain = [('kind', '=', 'field'), ('production_consumption', '=', False)]
         stages = self._tree_sorted(self.search(domain + [('is_group', '=', False)]))
-        return stages[:1].code or False
+        return self._restrict_to_project(stages, project)[:1].code or False
 
     @api.model
-    def _field_codes(self):
-        """Etapas que se asignan a una contrata o a una cuadrilla."""
-        return tuple(self._tree_sorted(self.search(
-            [('kind', '=', 'field'), ('is_group', '=', False)])).mapped('code'))
+    def _field_codes(self, project=None):
+        """Etapas que se asignan a una contrata o a una cuadrilla (con
+        ``project``, las de su perfil)."""
+        stages = self._tree_sorted(self.search(
+            [('kind', '=', 'field'), ('is_group', '=', False)]))
+        return tuple(self._restrict_to_project(stages, project).mapped('code'))
 
     @api.model
     def _check_codes(self, records, fname='stage'):
@@ -324,6 +392,42 @@ class ConstructionStage(models.Model):
             if records_sudo.search_count([('stage', 'in', codes)], limit=1):
                 return True
         return False
+
+
+class ConstructionStageOfferMixin(models.AbstractModel):
+    """Etapas que se ofrecen en un registro (paquete 1.16, M116-01).
+
+    El campo ``stage`` sigue guardando el código. La vista lo muestra con el
+    widget nativo ``filterable_selection`` y ``whitelist_fname`` apuntando a
+    ``construction_stage_codes``: solo se eligen las etapas activas del perfil
+    de la obra; la que ya tiene el registro se sigue mostrando aunque esté
+    archivada o sea de otro perfil."""
+    _name = 'construction.stage.offer.mixin'
+    _description = 'Etapas que se ofrecen según la obra'
+
+    # Ruta de la obra en el modelo («plan_id.project_id»); vacía: sin obra.
+    _construction_stage_project_path = None
+
+    construction_stage_codes = fields.Json(
+        string='Etapas que se ofrecen', compute='_compute_construction_stage_codes')
+
+    def _construction_stage_project(self):
+        """Obra del registro; vacía: se ofrecen las activas de todo el catálogo."""
+        self.ensure_one()
+        path = self._construction_stage_project_path
+        project = self.mapped(path) if path else self.env['project.project']
+        return project[:1]
+
+    @api.depends(lambda self: [self._construction_stage_project_path]
+                 if self._construction_stage_project_path else [])
+    def _compute_construction_stage_codes(self):
+        Stage = self.env['construction.stage']
+        cache = {}
+        for record in self:
+            project = record._construction_stage_project()
+            if project.id not in cache:
+                cache[project.id] = Stage._offered_codes(project)
+            record.construction_stage_codes = cache[project.id]
 
 
 class ConstructionResourceType(models.Model):

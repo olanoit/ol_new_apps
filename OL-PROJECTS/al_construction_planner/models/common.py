@@ -22,6 +22,7 @@ LEVELS = [
     ('space', 'Ambiente'),
     ('furniture', 'Mueble'),
     ('module', 'Módulo'),
+    ('work_sublevel', 'Subnivel de obra'),
 ]
 
 # Función de cada nivel de la plantilla (construction.level.template.line).
@@ -35,6 +36,9 @@ LEVEL_ROLES = [
     ('space', 'Nivel con etapas'),
     ('furniture', 'Subnivel'),
     ('module', 'Nivel de detalle'),
+    # Paquete 1.16, M116-11: debajo del nivel con etapas, repetible, solo con
+    # «APU en cualquier nivel» (subpartidas de construcción).
+    ('work_sublevel', 'Subnivel de obra'),
 ]
 
 # Tipo de unidad (M15-02): casuística de las 29 obras vendidas.
@@ -300,3 +304,30 @@ def mask_amounts(env, data, keys=PANEL_AMOUNT_KEYS):
             return [visit(item) for item in value]
         return value
     return visit(data)
+
+
+def budget_code_levels(code):
+    """Códigos de cada nivel de un ítem del presupuesto, de arriba abajo, el
+    propio al final (paquete 1.16, M116-11: la profundidad sale del código).
+
+    Admite los dos estilos de los presupuestos: con puntos (``1 · 1.01 ·
+    1.01.01 · 1.01.01.01``) y compacto, dos dígitos por nivel después del
+    primer punto (``13 · 13.01 · 13.0102``). Un segmento con un número impar de
+    dígitos cuenta como un nivel. Sin código, lista vacía."""
+    code = (code or '').strip().rstrip('.')
+    if not code:
+        return []
+    segments = code.split('.')
+    levels, prefix = [segments[0]], segments[0]
+    for segment in segments[1:]:
+        if len(segment) > 2 and len(segment) % 2 == 0 and segment.isdigit():
+            parts = [segment[i:i + 2] for i in range(0, len(segment), 2)]
+            current = prefix + '.'
+            for part in parts:
+                current += part
+                levels.append(current)
+            prefix = current
+        else:
+            prefix = '%s.%s' % (prefix, segment)
+            levels.append(prefix)
+    return levels

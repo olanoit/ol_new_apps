@@ -379,11 +379,13 @@ class ConstructionResourcePlan(models.Model):
         action['name'] = self.env._('Análisis de control · %s', self.display_name)
         action['domain'] = [('plan_id', '=', self.id)]
         # Filas por los niveles de la plantilla hasta el nivel con etapas
-        # (disciplina › subpartida › partida; piso › departamento › ambiente).
-        lines = self.project_id.construction_level_template_id.line_ids.sorted(
-            lambda l: (l.sequence, l.id))
-        depth = next((index for index, line in enumerate(lines, start=1)
-                      if line.role == 'space'), 3)
+        # (piso › departamento › ambiente); con «APU en cualquier nivel», hasta
+        # el nivel más profundo (especialidad › sub-especialidad › partida ›
+        # subpartidas; paquete 1.16, M116-11).
+        template = self.project_id.construction_level_template_id
+        lines = template.line_ids.sorted(lambda l: (l.sequence, l.id))
+        depth = len(lines) if template.apu_any_level and lines else next(
+            (index for index, line in enumerate(lines, start=1) if line.role == 'space'), 3)
         action['context'] = {
             'pivot_row_groupby': ['level_%s_id' % depth for depth in range(1, min(depth, 6) + 1)],
             'pivot_column_groupby': ['resource_type_id'],
@@ -1388,6 +1390,32 @@ class ConstructionResourcePlanLine(models.Model):
         for ids in split_every(1000, lines.ids):
             self.browse(ids)._refresh_control()
 
+    def _construction_root_source(self):
+        """Origen de la primera línea de la cadena de versiones: una línea
+        «Replanificación» recorre ``previous_line_id`` hasta la línea que no
+        es copia (paquete 1.16, CR-23)."""
+        self.ensure_one()
+        line, seen = self, set()
+        while line.source == 'replan' and line.previous_line_id and line.id not in seen:
+            seen.add(line.id)
+            line = line.previous_line_id
+        return line.source
+
+    def _construction_recipe_generated(self):
+        """Líneas que «Reemplazar lo generado» puede borrar: las de la receta y
+        las copias de una versión anterior que vienen de una receta. Las
+        manuales y sus copias se conservan (CR-23)."""
+        return self.filtered(lambda l: l.source == 'recipe' or (
+            l.source == 'replan' and l._construction_root_source() == 'recipe'))
+
+    def _construction_successor_key(self):
+        """Clave con la que la línea regenerada hereda la línea anterior de la
+        que reemplaza, para que las asignaciones y los avances pasen a ella
+        al aprobar la versión (``_transfer_to_new_version``)."""
+        self.ensure_one()
+        return (self.task_id.id, self.resource_type, self.product_id.id or False,
+                self.activity_id.id or False, self.stage or False)
+
     def _get_consumed_qty(self):
         """Cantidad ya pedida o ejecutada de la línea que se queda en esta
         versión: la base de «copiar solo saldos» al replanificar. Son las
@@ -1576,3 +1604,10 @@ class ConstructionResourcePlanLine(models.Model):
     def unlink(self):
         self._check_plan_editable()
         return super().unlink()
+
+
+class ConstructionResourcePlanLineStageOffer(models.Model):
+    """Etapas que se ofrecen: las del perfil de la obra (paquete 1.16, M116-01)."""
+    _name = 'construction.resource.plan.line'
+    _inherit = ['construction.resource.plan.line', 'construction.stage.offer.mixin']
+    _construction_stage_project_path = 'plan_id.project_id'

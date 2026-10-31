@@ -373,3 +373,10 @@ class ProjectTask(models.Model):
             task.construction_contract_id = Contract.search([
                 ('task_ids', 'in', unit_ids), ('state', 'in', ('active', 'draft'))],
                 order='state, id', limit=1) if unit_ids else Contract
+
+
+class ConstructionChangeOrderLineStageOffer(models.Model):
+    """Etapas que se ofrecen: las del perfil de la obra (paquete 1.16, M116-01)."""
+    _name = 'construction.change.order.line'
+    _inherit = ['construction.change.order.line', 'construction.stage.offer.mixin']
+    _construction_stage_project_path = 'project_id'

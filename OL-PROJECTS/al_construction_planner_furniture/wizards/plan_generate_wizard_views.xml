@@ -22,13 +22,9 @@
                     <group string="Qué generar">
                         <field name="include_material"/>
                         <field name="include_contract"/>
-                        <label for="stage_production" string="Etapas"/>
-                        <div class="d-flex flex-wrap gap-3">
-                            <span><field name="stage_production" class="oe_inline"/> 1.1 Producción de piezas</span>
-                            <span><field name="stage_assembly" class="oe_inline"/> 1.2 Armado</span>
-                            <span><field name="stage_installation" class="oe_inline"/> 2.1 Instalación</span>
-                            <span><field name="stage_finishing" class="oe_inline"/> 2.2 Acabado</span>
-                        </div>
+                        <field name="available_stage_ids" invisible="1"/>
+                        <field name="stage_ids" widget="many2many_checkboxes"
+                               domain="[('id', 'in', available_stage_ids)]"/>
                     </group>
                 </group>
                 <group string="Ritmo de programación">

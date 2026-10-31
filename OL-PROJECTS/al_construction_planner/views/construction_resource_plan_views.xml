@@ -23,7 +23,8 @@
                 <field name="module_task_id" optional="hide"/>
                 <field name="resource_type_id" options="{'no_create': True}"/>
                 <field name="resource_type" column_invisible="True"/>
-                <field name="stage"/>
+                <field name="construction_stage_codes" column_invisible="True"/>
+                <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
                 <field name="product_id" options="{'no_create': True}"
                        required="resource_type in ('material', 'service', 'equipment', 'production')"/>
                 <field name="activity_id" options="{'no_create': True}"
@@ -113,7 +114,8 @@
                         <group string="Qué">
                             <field name="resource_type_id" options="{'no_create': True}"/>
                             <field name="resource_type"/>
-                            <field name="stage"/>
+                            <field name="construction_stage_codes" invisible="1"/>
+                            <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
                             <field name="product_id" options="{'no_create': True}"/>
                             <field name="activity_id" options="{'no_create': True}"/>
                             <field name="uses_level_driver"

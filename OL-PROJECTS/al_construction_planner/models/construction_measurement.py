@@ -61,7 +61,7 @@ class ConstructionMeasurement(models.Model):
     name = fields.Char(string='Número', required=True, readonly=True, copy=False, default='/')
     task_id = fields.Many2one(
         'project.task', string='Nivel', required=True, index=True, check_company=True,
-        domain="[('construction_level', '=', 'space')]", tracking=True,
+        domain="[('construction_has_apu', '=', True)]", tracking=True,
         help='El nivel con etapas de la plantilla: ambiente, partida, spool.')
     project_id = fields.Many2one(
         related='task_id.project_id', string='Obra', store=True, index=True)

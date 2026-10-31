@@ -16,7 +16,8 @@
                         <field name="plan_id" options="{'no_create': True}" readonly="context.get('default_plan_id')"/>
                         <field name="whole_project"/>
                         <field name="task_ids" widget="many2many_tags" invisible="whole_project" options="{'no_create': True}"/>
-                        <field name="stage"/>
+                        <field name="construction_stage_codes" invisible="1"/>
+                        <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
                         <field name="activity_ids" widget="many2many_tags" options="{'no_create': True}" placeholder="Todas"/>
                     </group>
                     <group string="Contrata">

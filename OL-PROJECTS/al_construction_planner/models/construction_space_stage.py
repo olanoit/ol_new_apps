@@ -29,7 +29,7 @@ class ConstructionSpaceStage(models.Model):
 
     space_task_id = fields.Many2one(
         'project.task', string='Ambiente', required=True, index=True, ondelete='cascade',
-        check_company=True, domain="[('construction_level', '=', 'space')]")
+        check_company=True, domain="[('construction_has_apu', '=', True)]")
     project_id = fields.Many2one(
         related='space_task_id.project_id', string='Obra', store=True, index=True)
     company_id = fields.Many2one(
@@ -99,10 +99,12 @@ class ConstructionSpaceStage(models.Model):
     @api.constrains('space_task_id')
     def _check_space(self):
         for record in self:
-            if record.space_task_id.construction_level != 'space':
+            # El nodo con APU (paquete 1.16, M116-11); sin «APU en cualquier
+            # nivel», el nivel con etapas.
+            if not record.space_task_id.construction_has_apu:
                 raise ValidationError(self.env._(
-                    'Las etapas del cronograma son de un ambiente: %s no lo es.',
-                    record.space_task_id.display_name))
+                    'Las etapas del cronograma son de un nodo con APU (el ambiente o la '
+                    'partida): %s no lo es.', record.space_task_id.display_name))
 
     # ------------------------------------------------------------------
     # Líneas del plan de la etapa
@@ -275,7 +277,7 @@ class ConstructionSpaceStage(models.Model):
 
         while nodes:
             for node in nodes:
-                if node.construction_level == 'space':
+                if node.construction_has_apu:
                     stages = self.search([('space_task_id', '=', node.id)])
                     starts = stages.mapped('date_start')
                     ends = stages.mapped('date_end')

@@ -64,7 +64,7 @@ class StockMove(models.Model):
         # planificador: los lee el sistema por quien confirma en planta.
         Stage = self.env['construction.stage'].sudo()
         stage = self.bom_line_id.sudo().construction_consumption_stage \
-            or Stage._consumption_code('production')
+            or Stage._consumption_code('production', production.project_id)
         product = self.product_id
         resource_type = 'material' if product.type == 'consu' else 'service'
         rule_accounts = self.env['construction.analytic.rule'].sudo()._accounts_for(

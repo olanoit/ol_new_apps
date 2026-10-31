@@ -237,6 +237,10 @@ class SaleOrderLine(models.Model):
     construction_budget_item = fields.Char(
         string='Ítem del presupuesto', copy=True,
         help='Número de la partida en el presupuesto importado (CREVAL v1.0, 6.4).')
+    construction_budget_path = fields.Json(
+        string='Ruta en la hoja', copy=True,
+        help='Código y nombre de cada nivel por encima de la partida en la hoja de presupuesto '
+             '(paquete 1.16, M116-11): el envío crea los niveles del árbol con esta ruta.')
 
 
 class SaleOrder(models.Model):
@@ -262,6 +266,84 @@ class SaleOrder(models.Model):
                 result.append((section, subsection, line))
         return result
 
+    def _construction_partida_values(self, line, project, own_recipes):
+        """Receta, metrado y línea de venta del nodo de la partida."""
+        recipes = self.env['construction.execution.template']
+        recipe = line.construction_execution_template_id
+        if recipe and recipe.project_id != project:
+            recipe = own_recipes.get(recipe.code) or (recipe if not recipe.project_id
+                                                      else recipes)
+        if not recipe and line.construction_budget_item:
+            recipe = recipes.search([('code', '=', line.construction_budget_item),
+                                     ('construction_sale_order_id', '=', False),
+                                     ('project_id', 'in', (project.id, False))],
+                                    order='project_id', limit=1)
+        # El plan va con el metrado real; la cantidad de la cotización es
+        # el ofertado, con su holgura (CREVAL v1.0, 6.5).
+        values = {'construction_qty': line.construction_qty_real or line.product_uom_qty,
+                  'sale_line_id': line.id}
+        if recipe:
+            values['construction_execution_template_id'] = recipe.id
+        return values
+
+    def _construction_line_path(self, section, subsection, line):
+        """Ruta de la línea: la de la hoja o, sin ella, sección y subsección."""
+        path = line.construction_budget_path
+        if path:
+            return [(code or False, name) for code, name in path]
+        return [(False, title.name) for title in (section, subsection) if title]
+
+    def _construction_create_levels_by_path(self, project, levels):
+        """Envío con «APU en cualquier nivel» (paquete 1.16, M116-11, I-12):
+        un nodo por cada elemento de la ruta de la hoja, en el nivel de la
+        plantilla de su profundidad; la fila con precio queda como nodo con
+        APU, con su receta, su metrado y su línea de venta. Una fila más
+        profunda que la plantilla detiene el envío sin crear nada."""
+        Task = self.env['project.task']
+        groups = [(self._construction_line_path(section, subsection, line), line)
+                  for section, subsection, line in self._construction_budget_groups()]
+        too_deep = [(path, line) for path, line in groups if len(path) + 1 > len(levels)]
+        if too_deep:
+            path, line = too_deep[0]
+            raise UserError(self.env._(
+                'La fila %(row)s está en el nivel %(depth)s y la plantilla %(template)s de '
+                '%(project)s tiene %(levels)s niveles (%(names)s). Use una plantilla más profunda '
+                'o suba la fila.', row=line.construction_budget_item or line.name.splitlines()[0],
+                depth=len(path) + 1, template=project.construction_level_template_id.name,
+                project=project.display_name, levels=len(levels),
+                names=' › '.join(levels.mapped('name'))))
+        own_recipes = self._construction_copy_quote_recipes(project)
+        cache = {}
+
+        def node(code, name, level, parent):
+            label = ' '.join(filter(None, [code, name])) if code and not (
+                name or '').startswith(code) else name
+            key = (parent.id, level.id, label)
+            if key not in cache:
+                cache[key] = Task.search([
+                    ('project_id', '=', project.id), ('parent_id', '=', parent.id),
+                    ('construction_level_line_id', '=', level.id), ('name', '=', label)],
+                    limit=1) or Task.create({
+                        'name': label, 'project_id': project.id, 'parent_id': parent.id,
+                        'construction_level_line_id': level.id, 'user_ids': False})
+            return cache[key]
+
+        created = Task
+        for path, line in groups:
+            parent = Task
+            for depth, (code, name) in enumerate(path):
+                parent = node(code, name, levels[depth], parent)
+            apu_node = node(False, line.name.splitlines()[0], levels[len(path)], parent)
+            apu_node.write(dict(self._construction_partida_values(line, project, own_recipes),
+                                construction_has_apu=True))
+            created |= apu_node
+        self.message_post(body=self.env._(
+            '%(count)s nodos con APU creados o actualizados en los niveles de %(project)s.',
+            count=len(created), project=project.display_name))
+        return {'type': 'ir.actions.act_window', 'res_model': 'project.task',
+                'view_mode': 'list,form', 'domain': [('id', 'in', created.ids)],
+                'name': self.env._('Partidas de %s', project.display_name)}
+
     def action_construction_create_levels(self):
         """De la cotización al plan: sección → nivel 1, subsección → nivel 2 y
         partida → nivel 3 de la plantilla de la obra, con su metrado y la línea
@@ -272,12 +354,13 @@ class SaleOrder(models.Model):
             raise UserError(self.env._('Indique la obra de la cotización %s.', self.name))
         template = project.construction_level_template_id
         levels = template.line_ids.sorted(lambda l: (l.sequence, l.id)) if template else []
+        if template.apu_any_level:
+            return self._construction_create_levels_by_path(project, levels)
         if len(levels) < 3:
             raise UserError(self.env._(
                 'La plantilla de niveles de %s necesita al menos tres niveles (sección, '
                 'subsección y partida).', project.display_name))
         Task = self.env['project.task']
-        recipes = self.env['construction.execution.template']
         # Las recetas de la cotización pasan a la obra una sola vez (CR-18, D4).
         own_recipes = self._construction_copy_quote_recipes(project)
         cache = {}
@@ -301,22 +384,7 @@ class SaleOrder(models.Model):
             if subsection:
                 parent = node(subsection.name, levels[1], parent)
             partida = node(line.name.splitlines()[0], levels[2], parent)
-            recipe = line.construction_execution_template_id
-            if recipe and recipe.project_id != project:
-                recipe = own_recipes.get(recipe.code) or (recipe if not recipe.project_id
-                                                          else recipes)
-            if not recipe and line.construction_budget_item:
-                recipe = recipes.search([('code', '=', line.construction_budget_item),
-                                         ('construction_sale_order_id', '=', False),
-                                         ('project_id', 'in', (project.id, False))],
-                                        order='project_id', limit=1)
-            # El plan va con el metrado real; la cantidad de la cotización es
-            # el ofertado, con su holgura (CREVAL v1.0, 6.5).
-            values = {'construction_qty': line.construction_qty_real or line.product_uom_qty,
-                      'sale_line_id': line.id}
-            if recipe:
-                values['construction_execution_template_id'] = recipe.id
-            partida.write(values)
+            partida.write(self._construction_partida_values(line, project, own_recipes))
             created |= partida
         self.message_post(body=self.env._(
             '%(count)s partidas creadas o actualizadas en los niveles de %(project)s.',

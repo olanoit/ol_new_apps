@@ -15,8 +15,10 @@ from ..models.construction_contract_condition import compute_cascade
 
 class ConstructionPlanContractWizard(models.TransientModel):
     _name = 'construction.plan.contract.wizard'
-    _inherit = 'construction.plan.supply.mixin'
+    _inherit = ['construction.plan.supply.mixin', 'construction.stage.offer.mixin']
     _description = 'Asignar contrata desde el plan'
+    # Etapas del perfil de la obra (paquete 1.16, M116-01).
+    _construction_stage_project_path = 'plan_id.project_id'
 
     stage = fields.Selection(
         stage_selection, string='Etapa',
@@ -153,7 +155,8 @@ class ConstructionPlanContractWizard(models.TransientModel):
 
     def _get_stages(self):
         self.ensure_one()
-        return [self.stage] if self.stage else list(self.env['construction.stage']._field_codes())
+        return [self.stage] if self.stage else list(
+            self.env['construction.stage']._field_codes(self.plan_id.project_id))
 
     def _get_candidate_lines(self):
         """Líneas de contrata de la selección con saldo por asignar."""

@@ -56,8 +56,10 @@ class ConstructionResourcePlan(models.Model):
         if not space and self.project_id.construction_level_template_id:
             lines = self.project_id.construction_level_template_id.line_ids.sorted(
                 lambda l: (l.sequence, l.id))
-            index = next((i for i, line in enumerate(lines[:6], start=1)
-                          if line.role == 'space'), len(levels))
+            index = min(len(lines), 6) \
+                if self.project_id.construction_level_template_id.apu_any_level else next(
+                    (i for i, line in enumerate(lines[:6], start=1) if line.role == 'space'),
+                    len(levels))
             space = 'level_%s_id' % index
         return {
             'levels': [{'field': field, 'name': name} for field, name in levels],

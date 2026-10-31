@@ -19,7 +19,10 @@ from odoo.exceptions import ValidationError
 
 from .common import LEVEL_ROLES, LEVELS, PURCHASE_DESTINATIONS
 
-ROLE_ORDER = {'group': 0, 'unit': 1, 'space': 2, 'furniture': 3, 'module': 4}
+ROLE_ORDER = {'group': 0, 'unit': 1, 'space': 2, 'furniture': 3, 'work_sublevel': 3, 'module': 4}
+#: Tope de niveles debajo de la obra: el que admite el control (level_1_id a
+#: level_6_id de la línea del plan).
+MAX_LEVELS = 6
 
 
 class ConstructionLevelTemplate(models.Model):
@@ -33,6 +36,12 @@ class ConstructionLevelTemplate(models.Model):
     line_ids = fields.One2many(
         'construction.level.template.line', 'template_id', string='Niveles', copy=True)
     summary = fields.Char(string='Niveles en orden', compute='_compute_summary')
+    apu_any_level = fields.Boolean(
+        string='APU en cualquier nivel',
+        help='Construcción (paquete 1.16, M116-11): el APU (receta) puede estar en cualquier '
+             'nivel. El nodo que «Lleva APU» tiene las etapas, la receta, el metrado, el avance y '
+             'la valorización; los niveles de arriba solo agrupan. Apagada (mobiliario): lo '
+             'decide la función «Nivel con etapas».')
     purchase_destination = fields.Selection(
         PURCHASE_DESTINATIONS, string='Destino de la compra masiva', default='general',
         required=True,
@@ -45,11 +54,26 @@ class ConstructionLevelTemplate(models.Model):
         for template in self:
             template.summary = ' › '.join(template.line_ids.sorted('sequence').mapped('name'))
 
-    @api.constrains('line_ids')
+    @api.constrains('line_ids', 'apu_any_level')
     def _check_lines(self):
         for template in self:
-            lines = template.line_ids.sorted('sequence')
+            lines = template.line_ids.sorted(lambda l: (l.sequence, l.id))
             roles = lines.mapped('role')
+            if len(lines) > MAX_LEVELS:
+                raise ValidationError(self.env._(
+                    'La plantilla %(template)s tiene %(count)s niveles: el tope es %(max)s debajo '
+                    'de la obra.', template=template.name, count=len(lines), max=MAX_LEVELS))
+            if 'work_sublevel' in roles:
+                if not template.apu_any_level:
+                    raise ValidationError(self.env._(
+                        'La función %(role)s solo se usa con «APU en cualquier nivel» '
+                        '(plantilla %(template)s).', template=template.name,
+                        role=dict(LEVEL_ROLES)['work_sublevel']))
+                if {'furniture', 'module'} & set(roles):
+                    raise ValidationError(self.env._(
+                        'La plantilla %(template)s mezcla %(role)s con Subnivel o Nivel de '
+                        'detalle: use solo %(role)s debajo del nivel con etapas.',
+                        template=template.name, role=dict(LEVEL_ROLES)['work_sublevel']))
             if roles.count('space') != 1:
                 raise ValidationError(self.env._(
                     'La plantilla %(template)s debe tener un solo nivel con la función '
@@ -153,7 +177,7 @@ class ConstructionLevelTemplateLine(models.Model):
     @api.depends('role', 'sequence', 'template_id.line_ids.role', 'template_id.line_ids.sequence')
     def _compute_level(self):
         mapping = {'unit': 'apartment', 'space': 'space', 'furniture': 'furniture',
-                   'module': 'module'}
+                   'module': 'module', 'work_sublevel': 'work_sublevel'}
         for line in self:
             if line.role != 'group':
                 line.level = mapping.get(line.role, False)
@@ -161,6 +185,13 @@ class ConstructionLevelTemplateLine(models.Model):
             groups = line.template_id.line_ids.filtered(lambda l: l.role == 'group')
             last = max(groups, key=lambda l: (l.sequence, l.id), default=line)
             line.level = 'floor' if last == line else 'group'
+
+    @api.constrains('role', 'sequence', 'template_id')
+    def _check_template_order(self):
+        """La validación de la plantilla corre también al crear o cambiar un
+        nivel suelto, por programa o por importación (M116-11): antes solo
+        corría al guardar la plantilla desde su formulario."""
+        self.template_id._check_lines()
 
     def _previous(self):
         """Nivel inmediatamente superior en la plantilla (vacío: la obra)."""

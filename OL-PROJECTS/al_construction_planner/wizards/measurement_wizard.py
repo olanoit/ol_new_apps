@@ -37,7 +37,7 @@ class ConstructionMeasurementGenerateWizard(models.TransientModel):
 
     def _get_spaces(self):
         self.ensure_one()
-        domain = [('project_id', '=', self.project_id.id), ('construction_level', '=', 'space')]
+        domain = [('project_id', '=', self.project_id.id), ('construction_has_apu', '=', True)]
         if self.task_ids:
             ids = self.task_ids.ids
             domain += ['|', '|', '|', ('id', 'in', ids),

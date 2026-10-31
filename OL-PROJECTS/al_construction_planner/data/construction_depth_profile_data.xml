@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Perfiles «Construcción PROF 4» a «PROF 6» (paquete 1.16, M116-11). Se
+     crean solo si no hay ya un perfil o una plantilla con su nombre o su
+     código: no cambia la configuración que cada base ya tiene. -->
+<odoo>
+    <function model="construction.vertical.profile" name="_construction_ensure_depth_profiles"/>
+</odoo>

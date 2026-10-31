@@ -30,7 +30,8 @@ class TestProfiles(TransactionCase):
         self.assertEqual(self.company.construction_level_template_id,
                          self.env.ref(REF + 'level_template_works'))
         plans = self.env['account.analytic.plan'].search([]).mapped('name')
-        for name in ('Disciplina', 'Subpartida', 'Partida'):
+        # Los nombres son datos del perfil (Especialidad (N1)… desde el 1.16).
+        for name in [n.strip() for n in self.construction.analytic_plan_names.split(',')]:
             self.assertIn(name, plans)
         # Volver a aplicar no duplica los planes.
         count = len(plans)
@@ -39,8 +40,8 @@ class TestProfiles(TransactionCase):
         site = self.env['project.project'].create({
             'name': 'Obra de constructora (test)', 'is_construction_site': True})
         self.assertEqual(site.construction_profile_id, self.construction)
-        self.assertEqual(site.construction_level_template_id.summary,
-                         'Disciplina › Subpartida › Partida › Actividad')
+        self.assertEqual(site.construction_level_template_id,
+                         self.construction.level_template_id)
         self.assertEqual(site.construction_purchase_destination, 'project')
         deviations = [row[0] for row in self.construction._get_deviations()]
         self.assertNotIn('Plantilla de niveles', deviations)
@@ -60,7 +61,7 @@ class TestProfiles(TransactionCase):
                                'duration_days': 1, 'color': False})
         copy = self.env['construction.vertical.profile']._import_data(data)
         self.assertEqual(copy.level_template_id.summary,
-                         'Disciplina › Subpartida › Partida › Actividad')
+                         self.construction.level_template_id.summary)
         self.assertEqual(copy.module_ids, self.construction.module_ids)
         # v1.8: también la unidad de las cuadrillas y la sede creada con la obra.
         self.assertEqual(sorted(copy.parameter_ids.mapped('name')),

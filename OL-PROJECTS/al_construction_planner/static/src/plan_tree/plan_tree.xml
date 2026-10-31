@@ -141,6 +141,7 @@
                                            t-out="node.name"/>
                                         <span t-else="" t-out="node.name"/>
                                         <span class="o_cp_lvl" t-out="node.level_name || this.levelLabel(node.level)"/>
+                                        <span t-if="node.has_apu" class="badge text-bg-info ms-1" title="Lleva APU">APU</span>
                                     </td>
                                     <td t-if="this.state.terms.show_typology" t-out="node.typology"/>
                                     <td class="text-end" t-out="node.modules"/>

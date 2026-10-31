@@ -159,12 +159,24 @@ class ConstructionPlanRecipeWizard(models.TransientModel):
             raise UserError(self.env._(
                 'No hay tareas con receta en la selección. Asigne la receta y la cantidad '
                 'planificado a las partidas.'))
-        if self.mode == 'replace':
-            plan.line_ids.filtered(
-                lambda l: l.source == 'recipe' and l.task_id in tasks).unlink()
         vals_list, warnings = self._collect()
         if warnings['no_activity']:
             raise UserError(self._no_activity_message(warnings['no_activity']))
+        predecessors = {}
+        if self.mode == 'replace':
+            # CR-23: también las copias de la versión anterior que vienen de
+            # la receta; la línea nueva hereda su línea anterior.
+            replaced = plan.line_ids.filtered(
+                lambda l: l.task_id in tasks)._construction_recipe_generated()
+            for line in replaced.filtered('previous_line_id'):
+                predecessors.setdefault(line._construction_successor_key(), line.previous_line_id)
+            replaced.unlink()
+            for vals in vals_list:
+                previous = predecessors.pop((
+                    vals.get('task_id'), vals.get('resource_type'), vals.get('product_id') or False,
+                    vals.get('activity_id') or False, vals.get('stage') or False), False)
+                if previous:
+                    vals['previous_line_id'] = previous.id
         lines = self.env['construction.resource.plan.line'].with_context(
             construction_plan_generating=True).create(vals_list)
         lines._apply_analytic_rules()

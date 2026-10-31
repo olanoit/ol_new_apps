@@ -40,40 +40,43 @@
         <field name="color">#6aa84f</field>
     </record>
 
+    <!-- Paquete 1.16, M116-11: el árbol de construcción es Especialidad (N1) ›
+         Sub-especialidad (N2) › Partida (N3) › Subpartidas (N4 a N6), con el
+         APU en cualquier nivel. Este es «Construcción PROF 3»; PROF 4 a PROF 6
+         los crea _construction_ensure_depth_profiles sin duplicar los que ya
+         existan con su nombre o su código. -->
     <record id="level_template_works" model="construction.level.template">
-        <field name="name">Construcción por partidas</field>
+        <field name="name">Construcción PROF 3</field>
         <field name="sequence">30</field>
         <field name="purchase_destination">project</field>
+        <field name="apu_any_level" eval="True"/>
     </record>
     <record id="level_template_works_discipline" model="construction.level.template.line">
         <field name="template_id" ref="level_template_works"/>
-        <field name="sequence">10</field><field name="name">Disciplina</field><field name="role">group</field>
+        <field name="sequence">10</field><field name="name">Especialidad (N1)</field><field name="role">group</field>
     </record>
     <record id="level_template_works_subpartida" model="construction.level.template.line">
         <field name="template_id" ref="level_template_works"/>
-        <field name="sequence">20</field><field name="name">Subpartida</field><field name="role">group</field>
+        <field name="sequence">20</field><field name="name">Sub-especialidad (N2)</field><field name="role">group</field>
     </record>
     <record id="level_template_works_partida" model="construction.level.template.line">
         <field name="template_id" ref="level_template_works"/>
-        <field name="sequence">30</field><field name="name">Partida</field><field name="role">space</field>
+        <field name="sequence">30</field><field name="name">Partida (N3)</field><field name="role">space</field>
         <field name="is_billable" eval="True"/>
         <field name="stage_ids" eval="[Command.set([ref('stage_works_layout'), ref('stage_works_execution'), ref('stage_works_finishing'), ref('stage_works_test')])]"/>
     </record>
-    <record id="level_template_works_activity" model="construction.level.template.line">
-        <field name="template_id" ref="level_template_works"/>
-        <field name="sequence">40</field><field name="name">Actividad</field><field name="role">module</field>
-    </record>
 
     <record id="profile_construction" model="construction.vertical.profile">
-        <field name="name">Construcción por partidas</field>
+        <field name="name">Construcción PROF 3</field>
         <field name="code">construction</field>
         <field name="sequence">10</field>
-        <field name="description">Constructoras que planifican por disciplina, subpartida y partida, con el APU de cada partida (CREVAL, Montegrande). Sin fabricación.</field>
+        <field name="description">Constructoras que planifican por especialidad, sub-especialidad y partida, con el APU en el nivel que defina el proyecto (cualquier nivel). Sin fabricación.</field>
         <field name="level_template_id" ref="level_template_works"/>
+        <field name="default_stage_id" ref="stage_works_execution"/>
         <field name="stage_ids" eval="[Command.set([ref('stage_works_layout'), ref('stage_works_execution'), ref('stage_works_finishing'), ref('stage_works_test')])]"/>
         <field name="resource_type_ids" eval="[Command.set([ref('resource_type_material'), ref('resource_type_service'), ref('resource_type_equipment'), ref('resource_type_contract'), ref('resource_type_labor')])]"/>
         <field name="module_ids" eval="[Command.set(ref('base.module_al_construction_planner_purchase', False) and [ref('base.module_al_construction_planner_purchase'), ref('base.module_al_construction_planner_subcontract'), ref('base.module_al_construction_planner_crew'), ref('base.module_al_construction_planner_budget'), ref('base.module_al_construction_planner_sale')] or [])]"/>
-        <field name="analytic_plan_names">Disciplina, Subpartida, Partida</field>
+        <field name="analytic_plan_names">Especialidad (N1), Sub-especialidad (N2), Partida (N3)</field>
         <!-- El metrado es de mobiliario (M18-01): la partida avanza por su driver. -->
         <field name="feature_measurement" eval="False"/>
         <field name="note">Por decidir con CREVAL y Montegrande: la semana y el día de liquidación de las contratas, la forma de valorizar (por avance de partida) y si la receta sale de los Work Items o de la receta del planificador.</field>

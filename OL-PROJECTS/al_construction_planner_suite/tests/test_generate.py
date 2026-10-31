@@ -92,7 +92,10 @@ class TestGenerate(PlannerCommon):
         self.assertEqual(self.plan.line_count, 35 + 11)
 
     def test_filters_by_stage_and_type(self):
-        self._generate(stage_production=False, stage_finishing=False, include_material=True,
+        Stage = self.env['construction.stage']
+        kept = Stage._offered_stages(self.project).filtered(
+            lambda s: s.code not in ('production', 'finishing'))
+        self._generate(stage_ids=[(6, 0, kept.ids)], include_material=True,
                        space_task_ids=[(6, 0, self.space_501.ids)])
         stages = set(self.plan.line_ids.mapped('stage'))
         self.assertNotIn('production', stages)
@@ -100,8 +103,7 @@ class TestGenerate(PlannerCommon):
         # La melamina RH no tiene etapa: entra igual para que se vea la advertencia.
         self.assertIn(False, stages)
         with self.assertRaises(UserError):
-            self._generate(stage_production=False, stage_assembly=False,
-                           stage_installation=False, stage_finishing=False)
+            self._generate(stage_ids=[(5, 0, 0)])
 
     def test_existing_eto_modules(self):
         """Ambiente con módulos del ETO: no se duplican; el que falta se avisa
