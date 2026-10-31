@@ -6,7 +6,8 @@ requerimiento de obra). Elegir la obra en la marcación o en el día del
 tareaje fija el centro de costo del día, y la planilla reparte el costo
 del obrero entre sus obras según los días u horas del periodo.
 """
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class L10nPeHrConstructionSite(models.Model):
@@ -24,10 +25,28 @@ class HrAttendance(models.Model):
     l10n_pe_construction_site_id = fields.Many2one(
         'l10n_pe.hr.construction.site', string='Obra', index='btree_not_null',
         ondelete='restrict',
+        domain="[('company_id', 'in', [employee_company_id, False])]",
         help='Obra donde trabajó ese día: fija el centro de costo de la marcación.')
     l10n_pe_analytic_account_id = fields.Many2one(
         compute='_compute_l10n_pe_analytic_account_id', store=True, readonly=False,
         precompute=True)
+    employee_company_id = fields.Many2one(
+        related='employee_id.company_id', string='Compañía del empleado')
+
+    @api.constrains('l10n_pe_construction_site_id', 'employee_id')
+    def _check_l10n_pe_construction_site_company(self):
+        """hr.attendance no tiene compañía (no hay check_company): la obra
+        debe ser de la compañía del trabajador. Una obra ajena pasaba al
+        día del tareaje (check_company) y bloqueaba TODO el tareaje, y su
+        centro de costo era de otra compañía."""
+        for attendance in self:
+            site = attendance.l10n_pe_construction_site_id
+            if site.company_id and site.company_id != attendance.employee_id.company_id:
+                raise ValidationError(_(
+                    'La obra «%(site)s» es de %(company)s, no de la compañía '
+                    'de %(employee)s.', site=site.name,
+                    company=site.company_id.name,
+                    employee=attendance.employee_id.name))
 
     @api.depends('l10n_pe_construction_site_id')
     def _compute_l10n_pe_analytic_account_id(self):

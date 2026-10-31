@@ -197,6 +197,8 @@ class TestConstructionWeekly(TransactionCase):
         month = self._month('202604')
         payslip = self._payslip(worker, date(2026, 4, 1), date(2026, 4, 30),
                                 days=26)
+        # La PLAME solo declara boletas cerradas (al_hr_pe).
+        payslip.action_payslip_done()
         run = self.env['hr.payslip.run'].create({
             'name': 'Abril', 'company_id': self.company.id, 'structure_id': self.structure.id,
             'periodo_id': month.id})

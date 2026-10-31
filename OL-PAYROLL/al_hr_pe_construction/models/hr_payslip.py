@@ -228,7 +228,63 @@ class HrPayslip(models.Model):
                 'buc_percent': line.buc_percent,
                 'category_id': line.category_id.id,
             })
-        return line._period_amounts(days).get(concept, 0.0)
+            return line._period_amounts(days).get(concept, 0.0)
+        # Periodo que cruza el inicio de un convenio: cada tramo con su
+        # tabla (redondeo del convenio una vez por tramo).
+        return custom_round(sum(
+            segment._period_amounts(days * share).get(concept, 0.0)
+            for segment, share in self._l10n_pe_construction_wage_segments()))
+
+    def _l10n_pe_construction_wage_segments(self):
+        """Filas del convenio del periodo con su peso: ``[(fila, parte)]``.
+
+        Una semana que cruza el inicio de un convenio nuevo (29/12 al 04/01
+        con la tabla 2026 desde el 01/01) no se paga entera con el jornal
+        nuevo: los días de cada tabla van con la suya. Los días trabajados
+        de la boleta no llevan fecha, así que se reparten en proporción a
+        los días laborables del horario en cada tramo (los naturales si no
+        hay horario), como la gratificación entre sus dos ventanas. Fuera
+        de esa transición devuelve la fila del snapshot con peso 1.
+        """
+        self.ensure_one()
+        line = self.l10n_pe_wage_line_id
+        version = self.version_id
+        single = [(line, 1.0)] if line else []
+        if not line or not self.date_from or not self.date_to \
+                or self.date_from >= self.date_to \
+                or self.state in FROZEN_STATES \
+                or (self.l10n_pe_daily_wage
+                    and self.l10n_pe_daily_wage != line.daily_wage) \
+                or not version.l10n_pe_is_construction:
+            return single
+        first = version._l10n_pe_get_wage_line(self.date_from)
+        if not first or first == line:
+            return single
+        days = [self.date_from + timedelta(days=offset)
+                for offset in range((self.date_to - self.date_from).days + 1)]
+        weekdays = set(version.resource_calendar_id
+                       .attendance_ids.mapped('dayofweek'))
+        if weekdays:
+            days = [day for day in days if str(day.weekday()) in weekdays] \
+                or days
+        counts = {}
+        for day in days:
+            day_line = version._l10n_pe_get_wage_line(day) or line
+            counts[day_line] = counts.get(day_line, 0) + 1
+        return [(day_line, count / len(days))
+                for day_line, count in counts.items()]
+
+    def _l10n_pe_construction_effective_wage(self):
+        """Jornal del periodo para los conceptos que no van por tabla
+        (sobretiempo, sobretasa de feriado, indemnización, gratificación,
+        asignación escolar, bonificaciones porcentuales): el del snapshot
+        o, si el periodo cruza el inicio de un convenio, el promedio de los
+        jornales de cada tramo ponderado por sus días."""
+        self.ensure_one()
+        segments = self._l10n_pe_construction_wage_segments()
+        if len(segments) <= 1:
+            return self.l10n_pe_daily_wage
+        return sum(segment.daily_wage * share for segment, share in segments)
 
     def _l10n_pe_construction_overtime(self, code, rate):
         """Sobretiempo: horas × valor hora × sobretasa.
@@ -240,7 +296,8 @@ class HrPayslip(models.Model):
         hours = self._l10n_pe_construction_hours(code)
         if not hours or not self.l10n_pe_daily_wage:
             return 0.0
-        return custom_round(hours * (self.l10n_pe_daily_wage / 8.0) * rate)
+        return custom_round(
+            hours * (self._l10n_pe_construction_effective_wage() / 8.0) * rate)
 
     def _l10n_pe_construction_rest_work_surcharge(self):
         """Sobretasa del 100 % por trabajar en feriado o día de descanso.
@@ -256,7 +313,7 @@ class HrPayslip(models.Model):
         days = sum(lines.mapped('number_of_days'))
         if not days or not self.l10n_pe_daily_wage:
             return 0.0
-        return custom_round(self.l10n_pe_daily_wage * days)
+        return custom_round(self._l10n_pe_construction_effective_wage() * days)
 
     # ------------------------------------------------------------------
     # Beneficios que en este régimen se pagan con la planilla
@@ -273,7 +330,7 @@ class HrPayslip(models.Model):
                  + self._l10n_pe_construction_hours('HE100'))
         if not hours or not self.l10n_pe_daily_wage:
             return 0.0
-        return hours * (self.l10n_pe_daily_wage / 8.0)
+        return hours * (self._l10n_pe_construction_effective_wage() / 8.0)
 
     def _l10n_pe_construction_cts(self):
         """Indemnización 15 %: la CTS de este régimen, pagada en planilla.
@@ -284,7 +341,8 @@ class HrPayslip(models.Model):
         line = self.l10n_pe_wage_line_id
         if not line:
             return 0.0
-        base = (self.l10n_pe_daily_wage * self._l10n_pe_construction_days()
+        base = (self._l10n_pe_construction_effective_wage()
+                * self._l10n_pe_construction_days()
                 + self._l10n_pe_construction_overtime_simple())
         return round_percent(base, 15)
 
@@ -327,7 +385,7 @@ class HrPayslip(models.Model):
         share = (first_half / 210.0
                  + (len(days) - first_half) / 150.0) / len(days)
         return custom_round(
-            self.l10n_pe_daily_wage * 40.0
+            self._l10n_pe_construction_effective_wage() * 40.0
             * self._l10n_pe_construction_accrual_days() * share)
 
     def _l10n_pe_construction_extra_bonus(self):
@@ -355,7 +413,7 @@ class HrPayslip(models.Model):
         if not children:
             return 0.0
         return custom_round(
-            self.l10n_pe_daily_wage * 30.0 / 360.0
+            self._l10n_pe_construction_effective_wage() * 30.0 / 360.0
             * self._l10n_pe_construction_accrual_days() * len(children))
 
     # ------------------------------------------------------------------
@@ -452,6 +510,7 @@ class HrPayslip(models.Model):
             else:
                 # Porcentaje sobre el jornal del periodo, redondeando una
                 # sola vez, igual que el BUC.
-                total += round_percent(self.l10n_pe_daily_wage * days,
+                total += round_percent(
+                    self._l10n_pe_construction_effective_wage() * days,
                                        bonus.percent or 0.0)
         return custom_round(total)
