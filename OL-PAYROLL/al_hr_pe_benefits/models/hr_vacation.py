@@ -169,14 +169,18 @@ class HrVacation(models.Model):
                     ('date_end', '<=', leave.date_from),
                 ])
                 total_days = 0
-                for run in lots:
-                    employee_slips = run.slip_ids.filtered(
-                        lambda s: s.employee_id == employee)
-                    worked = sum(employee_slips
-                                 .mapped('worked_days_line_ids')
-                                 .filtered(lambda w: w.work_entry_type_id
-                                           in working_wd)
-                                 .mapped('number_of_days'))
+                # Un mes cuenta una vez aunque tenga varios lotes: vale el
+                # lote con más días trabajados.
+                def worked_in(run):
+                    return sum(run.slip_ids.filtered(
+                        lambda s: s.employee_id == employee
+                    ).worked_days_line_ids.filtered(
+                        lambda w: w.work_entry_type_id in working_wd
+                    ).mapped('number_of_days'))
+
+                for month_lots in param._l10n_pe_lots_by_month(lots):
+                    run = max(month_lots, key=worked_in)
+                    worked = worked_in(run)
                     if worked >= (run.date_end - run.date_start).days + 1:
                         months += 1
                         total_days += worked

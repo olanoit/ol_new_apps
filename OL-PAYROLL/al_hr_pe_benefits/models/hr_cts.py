@@ -27,6 +27,8 @@ from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
     ensure_draft, ensure_line_draft, notify_success)
+from .hr_benefits_engine import (
+    employee_lot_slip, ensure_slips_draft, recompute_slips)
 from .hr_benefits_engine import compute_has_history, compute_locked
 
 
@@ -174,23 +176,32 @@ class HrCts(models.Model):
         Escribe el monto en el input configurado en
         ``hr.main.parameter.cts_input_id``; crea la línea de input si
         el payslip no la tiene. Omite las líneas con menos de un mes.
+
+        Un solo payslip por trabajador (``employee_lot_slip``): con dos
+        boletas en el lote (una por versión) el importe se escribía en el
+        input de todas las que lo tenían y la CTS se pagaba dos veces. Solo
+        boletas en borrador, que se recalculan.
         """
         input_cts = param.cts_input_id
-        for line in line_ids.filtered(
-                lambda line: not line.less_than_one_month):
-            slip = lot.slip_ids.filtered(
-                lambda slip: slip.employee_id == line.employee_id)
+        slip_by_line = {
+            line: employee_lot_slip(lot, line.employee_id)
+            for line in line_ids.filtered(
+                lambda line: not line.less_than_one_month)}
+        slips = self.env['hr.payslip'].union(*slip_by_line.values())
+        ensure_slips_draft(slips)
+        for line, slip in slip_by_line.items():
             if not slip:
                 continue
             cts_input_line = slip.input_line_ids.filtered(
                 lambda inp: inp.salary_rule_id == input_cts)
             if cts_input_line:
-                cts_input_line.amount = line.total_cts
+                cts_input_line[:1].amount = line.total_cts
             else:
-                slip[:1].write({'input_line_ids': [(0, 0, {
+                slip.write({'input_line_ids': [(0, 0, {
                     'salary_rule_id': input_cts.id,
                     'amount': line.total_cts,
                 })]})
+        recompute_slips(slips)
 
 
 class HrCtsLine(models.Model):

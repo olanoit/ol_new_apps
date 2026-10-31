@@ -392,6 +392,20 @@ class HrMainParameter(models.Model):
                     for slip in slips if slip.date_to})
 
     @api.model
+    def _l10n_pe_lots_by_month(self, lots):
+        """Lotes agrupados por mes calendario de ``date_end``.
+
+        Un mes cuenta una sola vez aunque tenga varios lotes con boletas
+        del trabajador (CTS o gratificación en lote aparte, segundo lote,
+        liquidación): contados por lote, ese mes sumaba dos meses (una
+        gratificación de 7/6)."""
+        by_month = {}
+        for lot in lots.sorted(lambda lot: (lot.date_end, lot.id)):
+            key = (lot.date_end.year, lot.date_end.month)
+            by_month[key] = by_month.get(key, lots.browse()) | lot
+        return list(by_month.values())
+
+    @api.model
     def calculate_bonus(self, admission_date, date_from, months, lines):
         """Promedio de variables (regla peruana de las 3 apariciones).
 
@@ -716,10 +730,13 @@ class HrMainParameter(models.Model):
             bonus_months = self._count_months(employee_all_slips.filtered(
                 lambda slip: slip.payslip_run_id in lots))
 
-            for lot in lots_wd:
-                worked_days = lot_slips(lot).worked_days_line_ids
-                counted, lot_lacks, _medical = \
-                    param._l10n_pe_month_computable_days(worked_days)
+            for month_lots in self._l10n_pe_lots_by_month(lots_wd):
+                # Del mes vale el lote con más días computables.
+                counted, lot_lacks, lot = max(
+                    (param._l10n_pe_month_computable_days(
+                        lot_slips(lot).worked_days_line_ids)[:2] + (lot,)
+                     for lot in month_lots),
+                    key=lambda item: item[0])
                 if counted >= (lot.date_end - lot.date_start).days + 1:
                     months += 1
                 else:
@@ -738,9 +755,13 @@ class HrMainParameter(models.Model):
                     == param.extra_hours_sr_id and line.total > 0)
 
             if record_type in ('07', '12'):
+                # Sin días sueltos (Ley 27735: solo meses calendario
+                # completos) se descartan ANTES de normalizar: si no, cada
+                # 30 días sueltos se convertían en un mes.
+                if not record.months_and_days:
+                    days = 0
                 if days >= 30:
                     days, months = param.get_months_of_30_days(days, months)
-                days = days if record.months_and_days else 0
 
             commission = self.calculate_bonus(
                 admission_date, date_from, bonus_months, commissions)

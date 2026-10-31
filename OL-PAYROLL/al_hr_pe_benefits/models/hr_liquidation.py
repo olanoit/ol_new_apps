@@ -37,6 +37,8 @@ from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
     ensure_draft, ensure_line_draft, notify_success)
+from .hr_benefits_engine import (
+    employee_lot_slip, ensure_slips_draft, recompute_slips)
 from .hr_benefits_engine import compute_locked
 
 
@@ -216,10 +218,17 @@ class HrLiquidation(models.Model):
             self.company_id)
         param.check_liquidation_values()
         lot = self.payslip_run_id
+        slip_by_employee = {
+            employee: employee_lot_slip(lot, employee)
+            for employee in self.gratification_line_ids.employee_id
+            | self.cts_line_ids.employee_id
+            | self.vacation_line_ids.employee_id
+            | self.liq_ext_concept_ids.employee_id}
+        slips = self.env['hr.payslip'].union(*slip_by_employee.values())
+        ensure_slips_draft(slips)
 
         def employee_slip(employee):
-            return lot.slip_ids.filtered(
-                lambda slip: slip.employee_id == employee)
+            return slip_by_employee[employee]
 
         # Un cesado de julio puede tener dos truncas (ene-jun y jul): el
         # input lleva la suma, no la última línea.
@@ -232,32 +241,37 @@ class HrLiquidation(models.Model):
             self._set_slip_input(
                 slip, param.truncated_bonus_nine_input_id,
                 sum(lines.mapped('bonus_essalud')))
-        for line in self.cts_line_ids:
-            slip = employee_slip(line.employee_id)
+        # Igual con la CTS: un cese en mayo tiene la trunca de nov-abr y la
+        # de mayo; antes la boleta se quedaba solo con la última.
+        for employee, lines in \
+                self.cts_line_ids.grouped('employee_id').items():
             self._set_slip_input(
-                slip, param.truncated_cts_input_id, line.total_cts)
+                employee_slip(employee), param.truncated_cts_input_id,
+                sum(lines.mapped('total_cts')))
         for line in self.vacation_line_ids:
             slip = employee_slip(line.employee_id)
+            # Las vacaciones adelantadas ya pagaron aportes cuando se
+            # gozaron: se restan de las truncas (y, si no alcanzan, de las
+            # devengadas) en vez de ir como descuento neto ADE_VAC, que
+            # dejaba los aportes de la boleta sobre las truncas completas
+            # y no cuadraba con la línea.
+            truncated = line.truncated_vacation - line.advanced_vacation
+            accrued = line.accrued_vacation + min(truncated, 0.0)
             self._set_slip_input(
-                slip, param.vacation_input_id, line.accrued_vacation)
+                slip, param.vacation_input_id, accrued)
             self._set_slip_input(
                 slip, param.truncated_vacation_input_id,
-                line.truncated_vacation)
+                max(truncated, 0.0))
             if line.vacation_indemnity:
                 self._set_slip_input(
                     slip, self.env.ref('al_hr_pe.salary_rule_INDVAC'),
                     line.vacation_indemnity)
-            # Las vacaciones adelantadas se restaban solo en el total de la
-            # línea: la boleta pagaba las truncas completas.
-            if line.advanced_vacation:
-                self._set_slip_input(
-                    slip, self.env.ref('al_hr_pe.salary_rule_ADE_VAC'),
-                    line.advanced_vacation)
         for line in self.liq_ext_concept_ids:
             slip = employee_slip(line.employee_id)
             for concept in line.conceptos_lines:
                 self._set_slip_input(
                     slip, concept.name_input_id, concept.amount)
+        recompute_slips(slips)
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
 
@@ -340,13 +354,17 @@ class HrLiquidation(models.Model):
                 ('date_end', '<=', month_slip.date_to),
                 ('company_id', '=', self.company_id.id),
             ])
-            for lot in lots:
-                worked_days = lot.slip_ids.filtered(
-                    lambda slip: slip.employee_id == employee
-                ).mapped('worked_days_line_ids')
+            # Un mes cuenta una vez aunque tenga varios lotes: vale el lote
+            # con más días computables.
+            for month_lots in param._l10n_pe_lots_by_month(lots):
                 # Las faltas cuentan para el mes y se descuentan una vez.
-                counted, lot_lacks, _medical = \
-                    param._l10n_pe_month_computable_days(worked_days)
+                counted, lot_lacks, lot = max(
+                    (param._l10n_pe_month_computable_days(
+                        lot.slip_ids.filtered(
+                            lambda slip: slip.employee_id == employee
+                        ).worked_days_line_ids)[:2] + (lot,)
+                     for lot in month_lots),
+                    key=lambda item: item[0])
                 if lot.date_start < compute_date <= lot.date_end:
                     counted -= dias_fracc
                 if counted >= (lot.date_end - lot.date_start).days + 1:

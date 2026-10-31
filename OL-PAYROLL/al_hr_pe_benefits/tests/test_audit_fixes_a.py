@@ -364,9 +364,13 @@ class TestAuditFixesA(BenefitsCaseBase):
                                delta=0.05)
 
     def test_liquidation_exports_advanced_vacation(self):
-        """Las vacaciones adelantadas van a la boleta como descuento
-        (ADE_VAC), no solo restadas en el total de la línea (07/10/2026)."""
+        """Las vacaciones adelantadas se restan de las truncas que van a la
+        boleta, no solo del total de la línea (07/10/2026). No van como
+        descuento neto ADE_VAC: la boleta cobraría aportes sobre las
+        truncas completas, que ya se pagaron al gozarlas (revisión v20)."""
         liquidation = self._cessation_in_july()
+        vatru = self.env.ref('al_hr_pe.salary_rule_VATRU')
+        self.param.truncated_vacation_input_id = vatru
         liquidation.action_process()
         line = liquidation.vacation_line_ids[:1]
         if not line:
@@ -377,7 +381,11 @@ class TestAuditFixesA(BenefitsCaseBase):
             lambda s: s.employee_id == self.employee)
         ade = slip.input_line_ids.filtered(
             lambda i: i.salary_rule_id == self.env.ref('al_hr_pe.salary_rule_ADE_VAC'))
-        self.assertAlmostEqual(ade.amount, 300.0, 2)
+        self.assertFalse(ade)
+        exported = slip.input_line_ids.filtered(
+            lambda i: i.salary_rule_id == vatru)
+        self.assertAlmostEqual(exported.amount,
+                               line.truncated_vacation - 300.0, 2)
 
     def test_liquidation_detail_views_do_not_crash(self):
         liquidation = self._cessation_in_july()

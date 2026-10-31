@@ -26,6 +26,8 @@ from odoo.addons.al_hr_pe.models.display_name import pe_join
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import (
     ensure_draft, ensure_line_draft, notify_success)
+from .hr_benefits_engine import (
+    employee_lot_slip, ensure_slips_draft, recompute_slips)
 from .hr_benefits_engine import compute_has_history, compute_locked
 
 
@@ -174,14 +176,17 @@ class HrGratification(models.Model):
 
         Escribe la gratificación en el input ``gratification_input_id``
         y el bono extraordinario en ``bonus_nine_input_id``; crea las
-        líneas de input si el payslip no las tiene.
+        líneas de input si el payslip no las tiene. Solo boletas en
+        borrador (una por trabajador, ver ``employee_lot_slip``), que se
+        recalculan.
         """
-        for line in line_ids:
-            slip = lot.slip_ids.filtered(
-                lambda slip: slip.employee_id == line.employee_id)
+        slip_by_line = {line: employee_lot_slip(lot, line.employee_id)
+                        for line in line_ids}
+        slips = self.env['hr.payslip'].union(*slip_by_line.values())
+        ensure_slips_draft(slips)
+        for line, slip in slip_by_line.items():
             if not slip:
                 continue
-            slip = slip[:1]
             for input_type, amount in (
                     (param.gratification_input_id, line.total_grat),
                     (param.bonus_nine_input_id, line.bonus_essalud)):
@@ -194,6 +199,7 @@ class HrGratification(models.Model):
                         'salary_rule_id': input_type.id,
                         'amount': amount,
                     })]})
+        recompute_slips(slips)
 
 
 class HrGratificationLine(models.Model):
