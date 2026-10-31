@@ -6,13 +6,13 @@
 
 Calendario completo de 10 años de días festivos en Peru (2026-2035): festivos nacionales y religiosos integrados automáticamente en Odoo HR resource.calendar.
 
-Este módulo carga automáticamente todos los días festivos oficiales de Peru para los años 2026 a 2035 en su sistema Odoo. Se incluyen festivos nacionales (fecha fija) y religiosos (fecha móvil) según las fuentes oficiales del país. Cada festivo está a un clic de ser añadido a todos los registros resource.calendar activos como entradas de ausencia, lo que permite calcular correctamente las asignaciones de vacaciones de los empleados desde el primer momento. Un ir.cron integrado vuelve a aplicar los festivos del nuevo año cada 2 de enero.
+Este módulo carga automáticamente todos los días festivos oficiales de Peru para los años 2026 a 2035 en su sistema Odoo. Se incluyen festivos nacionales (fecha fija) y religiosos (fecha móvil) según las fuentes oficiales del país. Cada festivo está a un clic de ser añadido a todos los registros resource.calendar activos como entradas de ausencia, lo que permite calcular correctamente las asignaciones de vacaciones de los empleados desde el primer momento. Un ir.cron integrado vuelve a aplicar los festivos del año en curso y del siguiente cada mes (idempotente), así los calendarios nuevos también los reciben.
 
 == Características principales ==
 
 * 10 años de datos: Todos los festivos oficiales 2026-2035 a nivel federal / nacional.
 * Integración Resource Calendar: Aplicación con un clic — todos los calendarios laborales activos reciben los festivos como ausencias.
-* Cron anual automático: ir.cron integrado aplica el nuevo año automáticamente cada 2 de enero.
+* Cron mensual automático: ir.cron integrado reaplica los festivos del año en curso y del siguiente (idempotente).
 * Medio día / Día completo: Configurable por festivo, con marcas de tiempo conscientes de la zona horaria.
 * Consciente de zona horaria: Las ausencias se almacenan en UTC pero respetan la zona horaria de cada calendario.
 * Interfaz multilingüe: Traducciones de la interfaz para los idiomas oficiales de Peru.
@@ -29,7 +29,7 @@ Este módulo carga automáticamente todos los días festivos oficiales de Peru p
     'category': 'OL-PAYROLL/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_hr_pe_public_holidays/static/description/icon.png',
-    'version': '12.20261030',
+    'version': '13.20261031',
     'license': 'OPL-1',
     # hr_work_entry: los descansos del calendario llevan el tipo de entrada
     # de trabajo con el que la nómina computa el feriado.

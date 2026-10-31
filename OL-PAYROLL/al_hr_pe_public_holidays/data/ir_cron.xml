@@ -2,14 +2,18 @@
 <odoo>
     <data noupdate="1">
         <record id="ir_cron_apply_yearly_holidays" model="ir.cron">
-            <field name="name">Feriados de Perú: aplicación anual</field>
+            <!-- Mensual (es idempotente): los calendarios creados durante
+                 el año y los trabajadores que pasan al régimen de
+                 construcción reciben los feriados, incluido el del 25 de
+                 octubre, sin esperar al 2 de enero siguiente. -->
+            <field name="name">Feriados de Perú: aplicación mensual</field>
             <field name="model_id" ref="model_pe_public_holiday"/>
             <field name="state">code</field>
             <field name="code">model.cron_apply_yearly_holidays()</field>
             <field name="user_id" ref="base.user_root"/>
-            <field name="interval_number">12</field>
+            <field name="interval_number">1</field>
             <field name="interval_type">months</field>
-            <field name="nextcall" eval="(DateTime.now() + relativedelta(years=1)).strftime('%Y-01-02 02:00:00')"/>
+            <field name="nextcall" eval="(DateTime.now() + relativedelta(months=1)).strftime('%Y-%m-02 02:00:00')"/>
             <field name="active" eval="True"/>
         </record>
     </data>

@@ -149,22 +149,29 @@ class PeruPublicHoliday(models.Model):
             work_entry_type = holiday.work_entry_type_id or holiday._default_work_entry_type_id()
             for cal in holiday_calendars:
                 date_from, date_to = holiday._holiday_datetime_range(cal)
+                # Calendario compartido (sin compañía): un descanso por
+                # compañía. Con uno solo, cada pasada del cron (una por
+                # compañía) le cambiaba la compañía y el feriado dejaba de
+                # existir para las demás (el tareaje y la regla
+                # multicompañía filtran por la compañía del descanso).
+                company = cal.company_id or self.env.company
                 vals = {
                     "name": holiday.name,
                     "calendar_id": cal.id,
-                    "company_id": cal.company_id.id or self.env.company.id,
+                    "company_id": company.id,
                     "date_from": date_from,
                     "date_to": date_to,
                     "pe_public_holiday_id": holiday.id,
                 }
                 if work_entry_type:
                     vals["work_entry_type_id"] = work_entry_type.id
-                # La clave es feriado+calendario, no las fechas exactas:
-                # con la clave anterior, cambiar la zona horaria del
+                # La clave es feriado+calendario+compañía, no las fechas
+                # exactas: con fechas, cambiar la zona horaria del
                 # calendario duplicaba el descanso en vez de corregirlo.
                 existing = Leaves.search([
                     ("pe_public_holiday_id", "=", holiday.id),
                     ("calendar_id", "=", cal.id),
+                    ("company_id", "=", company.id),
                 ], limit=1)
                 if existing:
                     existing.write(vals)
@@ -214,7 +221,10 @@ class PeruPublicHoliday(models.Model):
         """Aplica los feriados del año en curso y del siguiente.
 
         Incluir el año siguiente evita el hueco de enero cuando el cron
-        se salta o la planificación se hace en diciembre.
+        se salta o la planificación se hace en diciembre. Corre cada mes
+        (es idempotente): un calendario creado durante el año, o un
+        trabajador que pasa al régimen de construcción (feriado del 25 de
+        octubre), los recibe sin esperar al 2 de enero.
         """
         this_year = date.today().year
         holidays = self.search([("year", "in", (this_year, this_year + 1))])
