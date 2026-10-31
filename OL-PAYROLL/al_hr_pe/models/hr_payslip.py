@@ -339,13 +339,10 @@ class HrPayslip(models.Model):
             if ends and all(ends):
                 date_to = min(date_to, max(ends))
             period_days = max(0, (date_to - date_from).days + 1)
-            WorkEntryType = self.env['hr.work.entry.type']
             other_days = sum(
                 vals.get('number_of_days', 0.0) for vals in res
-                if vals.get('work_entry_type_id') != dom.id
-                and WorkEntryType.browse(vals.get('work_entry_type_id')).code != '000.00'
-                and not WorkEntryType.browse(
-                    vals.get('work_entry_type_id')).is_extra_hours)
+                if self._l10n_pe_takes_rest_days(self.env['hr.work.entry.type'].browse(
+                    vals.get('work_entry_type_id'))))
             # Con varias versiones puede haber una línea DOM por versión: el
             # complemento es del periodo entero y va una sola vez.
             dom_days = max(0.0, period_days - other_days)
@@ -354,6 +351,32 @@ class HrPayslip(models.Model):
                     vals['number_of_days'] = dom_days
                     dom_days = 0.0
         return res
+
+    # Conceptos PE que OCUPAN días del mes (los que BAS y las reglas de
+    # ausencias pagan o descuentan por día) y los ADICIONALES a la jornada
+    # (FER, TAR, HTN): si estos restaran días de descanso, el básico se
+    # recortaría por un día que ninguna regla paga.
+    _L10N_PE_DAY_CODES = frozenset((
+        'DLAB', 'FAL', 'DVAC', 'DMED', 'DPAT', 'LCGH', 'LSGH', 'SMAR', 'SENF'))
+    _L10N_PE_ADDITIONAL_CODES = frozenset(('FER', 'TAR', 'HTN'))
+
+    @api.model
+    def _l10n_pe_takes_rest_days(self, work_entry_type):
+        """La línea de ese tipo se descuenta del complemento DOM.
+
+        Un tipo sin regla PE (feriado o ausencia nativa no remapeados, o
+        uno creado a mano) no lo paga ninguna regla: si es pagado
+        (``amount_rate``) el día va como descanso remunerado dentro del
+        básico; si no lo es, se descuenta.
+        """
+        code = work_entry_type.code
+        if not work_entry_type or code in ('DOM', '000.00') \
+                or code in self._L10N_PE_ADDITIONAL_CODES \
+                or work_entry_type.is_extra_hours:
+            return False
+        if code in self._L10N_PE_DAY_CODES:
+            return True
+        return not work_entry_type.amount_rate
 
     @api.depends('line_ids.total', 'line_ids.category_ids')
     def _compute_l10n_pe_totals(self):

@@ -5,6 +5,7 @@ Cada test reproduce un hallazgo de la revisión (A1, A2…) y falla con el
 código anterior a su corrección.
 """
 from datetime import date
+from unittest.mock import patch
 
 from odoo.tests import TransactionCase, tagged
 
@@ -187,3 +188,55 @@ class TestReviewCore(TransactionCase):
         self.assertIn('44556677', text)
         self.assertNotIn('44556699', text)
         self.assertNotIn('44556600', text)
+
+    # ------------------------------------------------------------------
+    # A3. El complemento DOM solo descuenta los días que BAS paga o descuenta
+    # ------------------------------------------------------------------
+    def _dom_days(self, values):
+        slip = self.env['hr.payslip'].new({
+            'employee_id': self.employee.id,
+            'version_id': self.employee.version_id.id,
+            'struct_id': self.structure.id,
+            'date_from': date(2026, 3, 1),
+            'date_to': date(2026, 3, 31),
+        })
+        with patch.object(type(self.env['hr.payslip']),
+                          '_get_worked_day_lines_values',
+                          lambda self, version, work_entries_vals: [dict(v) for v in values]):
+            lines = slip._get_worked_day_lines(
+                slip.version_id, [], check_out_of_version=False)
+        dom = self.env.ref('al_hr_pe.wd_DOM')
+        return sum(v['number_of_days'] for v in lines
+                   if v['work_entry_type_id'] == dom.id)
+
+    def _wd(self, work_entry_type, days, hours=None):
+        return {'sequence': 1, 'work_entry_type_id': work_entry_type.id,
+                'number_of_days': days,
+                'number_of_hours': days * 8 if hours is None else hours}
+
+    def test_a3_additional_concepts_keep_rest_days(self):
+        """FER, TAR y HTN son adicionales a la jornada: no restan días de
+        descanso (antes, FER de 1 día dejaba BAS en 29/30)."""
+        dlab = self.env.ref('al_hr_pe.wd_DLAB')
+        values = [self._wd(dlab, 22.0),
+                  self._wd(self.env.ref('al_hr_pe.wd_FER'), 1.0),
+                  self._wd(self.env.ref('al_hr_pe.wd_TAR'), 0.25, 2.0),
+                  self._wd(self.env.ref('al_hr_pe.wd_HTN'), 3.0)]
+        self.assertEqual(self._dom_days(values), 31 - 22)
+        # Las ausencias PE sí ocupan días.
+        values.append(self._wd(self.env.ref('al_hr_pe.wd_DMED'), 2.0))
+        self.assertEqual(self._dom_days(values), 31 - 22 - 2)
+
+    def test_a3_foreign_types(self):
+        """Un tipo de otro país pagado (feriado nativo) va como descanso
+        remunerado; uno sin pago (licencia nativa) se descuenta."""
+        dlab = self.env.ref('al_hr_pe.wd_DLAB')
+        Type = self.env['hr.work.entry.type']
+        paid = Type.create({'name': 'Feriado nativo', 'code': 'TESTHOL',
+                            'amount_rate': 1.0})
+        unpaid = Type.create({'name': 'Licencia nativa', 'code': 'TESTUNP',
+                              'amount_rate': 0.0})
+        self.assertEqual(
+            self._dom_days([self._wd(dlab, 21.0), self._wd(paid, 1.0)]), 31 - 21)
+        self.assertEqual(
+            self._dom_days([self._wd(dlab, 21.0), self._wd(unpaid, 1.0)]), 31 - 22)
