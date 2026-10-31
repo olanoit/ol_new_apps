@@ -5,3 +5,4 @@ from . import test_attendance_register
 from . import test_state_readonly
 from . import test_cost_distribution
 from . import test_review_tareaje
+from . import test_worked_holiday_hours

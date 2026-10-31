@@ -32,6 +32,7 @@
                 <field readonly="tareaje_state == 'done'" name="htn" optional="hide" sum="Total" widget="float_time"/>
                 <field readonly="tareaje_state == 'done'" name="dom" optional="show" sum="Total"/>
                 <field readonly="tareaje_state == 'done'" name="fer" optional="hide" sum="Total"/>
+                <field readonly="tareaje_state == 'done'" name="hfer" optional="hide" sum="Total" widget="float_time"/>
                 <field readonly="tareaje_state == 'done'" name="fal" optional="show" sum="Total"/>
                 <field readonly="tareaje_state == 'done'" name="tar" optional="show" sum="Total" widget="float_time"/>
                 <field readonly="tareaje_state == 'done'" name="he25" optional="show" sum="Total" widget="float_time"/>
@@ -92,6 +93,7 @@
                                     <field name="htn" optional="hide" sum="Total" widget="float_time"/>
                                     <field name="dom" optional="show" sum="Total"/>
                                     <field name="fer" optional="hide" sum="Total"/>
+                                    <field name="hfer" optional="hide" sum="Total" widget="float_time"/>
                                     <field name="fal" optional="show" sum="Total"/>
                                     <field name="tar" optional="show" sum="Total" widget="float_time"/>
                                     <field name="he25" optional="show" sum="Total" widget="float_time"/>

@@ -16,8 +16,9 @@ peruanos de la boleta:
 * **Descanso semanal y feriados** — D.Leg. 713, arts. 3-4 (descanso
   semanal obligatorio) y arts. 5-9 (feriados): el trabajo en día de
   descanso o feriado sin descanso sustitutorio se paga con sobretasa
-  del 100 % (``FER`` computa el día laborado; ``HE100`` las horas que
-  exceden la jornada de referencia).
+  del 100 % (``FER`` computa el día laborado y sus horas —la labor se
+  paga por horas, art. 9—; ``HE100`` las horas que exceden la jornada de
+  referencia).
 * **Tardanzas** (``TAR``): minutos de ingreso posteriores al horario
   más la tolerancia configurada; fuera de tolerancia se computa la
   tardanza completa desde la hora programada (criterio v18).
@@ -68,8 +69,8 @@ LEGAL_WORKDAY_HOURS = 8.0
 NIGHT_SPLIT_HOUR = 12.0
 
 #: Claves de clasificación que produce ``_classify_day``.
-TAREAJE_KEYS = ('dlab', 'dlabn', 'htd', 'htn', 'dom', 'fer', 'fal',
-                'tar', 'he25', 'he35', 'he100', 'incos')
+TAREAJE_KEYS = ('dlab', 'dlabn', 'htd', 'htn', 'dom', 'fer', 'hfer',
+                'fal', 'tar', 'he25', 'he35', 'he100', 'incos')
 
 
 class HrMainParameter(models.Model):
@@ -422,11 +423,13 @@ class HrTareajeManager(models.Model):
           inconsistencia (``incos``), sin clasificar horas.
         * Descanso/feriado trabajado: ``dom`` conserva el día de
           descanso (su remuneración ya está en el sueldo mensual) y
-          ``fer`` computa ADEMÁS el día laborado, que la regla salarial
-          FER paga con la sobretasa (D.Leg. 713 arts. 3-4 y 9: se paga
-          «adicionalmente» la labor con sobretasa del 100 %). Sin
-          ``dom`` el Básico perdía el día y FER solo lo reponía, con lo
-          que la sobretasa salía en cero. ``he100`` computa las horas que
+          ``fer`` computa ADEMÁS el día laborado y ``hfer`` sus horas
+          dentro de la jornada, que la regla salarial FER paga con la
+          sobretasa (D.Leg. 713 arts. 3-4 y 9: se paga «adicionalmente»
+          la labor efectuada con sobretasa del 100 %, es decir, por las
+          horas trabajadas y no por el día completo). Sin ``dom`` el
+          Básico perdía el día y FER solo lo reponía, con lo que la
+          sobretasa salía en cero. ``he100`` computa las horas que
           exceden la salida
           programada o, sin turno de referencia, la jornada legal de
           8 h (:data:`LEGAL_WORKDAY_HOURS`).
@@ -478,13 +481,17 @@ class HrTareajeManager(models.Model):
             # (dom, ya incluido en el sueldo) con sobretasa del 100 %.
             result['dom'] = 1.0
             result['fer'] = 1.0
+            if has_schedule:
+                over = max(0.0, out - sout)
+            else:
+                over = max(0.0, worked - LEGAL_WORKDAY_HOURS)
+            over = self._round_to_minutes(over, round_minutes)
             if compute_overtime:
-                if has_schedule:
-                    he100 = max(0.0, out - sout)
-                else:
-                    he100 = max(0.0, worked - LEGAL_WORKDAY_HOURS)
-                result['he100'] = custom_round(
-                    self._round_to_minutes(he100, round_minutes))
+                result['he100'] = custom_round(over)
+            # Horas de la labor (art. 9) hasta la jornada de referencia: la
+            # regla FER las paga con la sobretasa; el exceso es HE100 (o no
+            # se paga como FER si el trabajador no está sujeto a HE).
+            result['hfer'] = custom_round(max(0.0, worked - over))
             return result
 
         # Día laborable con marcación.
@@ -1055,6 +1062,11 @@ class HrTareajeManagerLine(models.Model):
     htn = fields.Float(string='Horas nocturnas')
     dom = fields.Float(string='Días de descanso')
     fer = fields.Float(string='Feriado/descanso laborado')
+    hfer = fields.Float(
+        string='Horas feriado/descanso laborado',
+        help='Horas trabajadas en el feriado o día de descanso, hasta la '
+             'jornada: la regla FER las paga con la sobretasa del 100 % '
+             '(D.Leg. 713, art. 9). El exceso va a HE 100 %.')
     fal = fields.Float(string='Faltas')
     tar = fields.Float(string='Tardanzas (h)')
     he25 = fields.Float(string='HE 25 %')
@@ -1143,6 +1155,11 @@ class HrTareajeManagerLineAttendance(models.Model):
     htn = fields.Float(string='Horas nocturnas')
     dom = fields.Float(string='Descanso')
     fer = fields.Float(string='Feriado/descanso laborado')
+    hfer = fields.Float(
+        string='Horas feriado/descanso laborado',
+        help='Horas trabajadas en el feriado o día de descanso, hasta la '
+             'jornada: la regla FER las paga con la sobretasa del 100 % '
+             '(D.Leg. 713, art. 9). El exceso va a HE 100 %.')
     fal = fields.Float(string='Falta')
     tar = fields.Float(string='Tardanza (h)')
     he25 = fields.Float(string='HE 25 %')
@@ -1396,7 +1413,10 @@ class HrPayslip(models.Model):
                      totals.get('htd', 0.0) + totals.get('htn', 0.0)),
             'noct': (0.0, totals.get('htn', 0.0)),
             'dom': (totals.get('dom', 0.0), 0.0),
-            'fer': (totals.get('fer', 0.0), 0.0),
+            # Las horas de la labor: la regla FER paga por horas (D.Leg.
+            # 713, art. 9); los días quedan como número de feriados o
+            # descansos laborados.
+            'fer': (totals.get('fer', 0.0), totals.get('hfer', 0.0)),
             'fal': (totals.get('fal', 0.0), 0.0),
             'tar': (0.0, totals.get('tar', 0.0)),
             'he25': (0.0, totals.get('he25', 0.0)),
