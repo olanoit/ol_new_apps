@@ -1258,8 +1258,9 @@ class HrPayslip(models.Model):
             other_days = defaultdict(float)
             for vals in native:
                 wet = WorkEntryType.browse(vals.get('work_entry_type_id'))
-                if not wet.is_extra_hours and wet != dom \
-                        and wet.code != '000.00':
+                # Mismo criterio que el complemento DOM de al_hr_pe: FER,
+                # TAR, HTN y las horas extra no restan días de descanso.
+                if wet != dom and self._l10n_pe_takes_rest_days(wet):
                     other_days[vals.get('version_id')] += \
                         vals.get('number_of_days', 0.0)
                 if wet.id in managed and wet != dom:

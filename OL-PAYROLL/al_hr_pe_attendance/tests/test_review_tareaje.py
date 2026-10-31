@@ -414,6 +414,23 @@ class TestReviewTareajePayslip(TransactionCase):
         self.assertAlmostEqual(
             self._sum(slip, 'HE25', 'number_of_hours'), 1.0, places=2)
 
+    def test_03_uncovered_holiday_keeps_rest_days(self):
+        """Feriado en el tramo sin tareaje: como en al_hr_pe, FER no resta
+        días de descanso (antes, DOM 9 y el básico en 30/31)."""
+        self._tareaje(date(2026, 3, 1), date(2026, 3, 15))
+        self.env['resource.calendar.leaves'].create({
+            'name': 'Feriado de prueba',
+            'calendar_id': self.employee.resource_calendar_id.id,
+            'company_id': self.company.id,
+            'date_from': _lima(date(2026, 3, 25), 0),
+            'date_to': _lima(date(2026, 3, 25), 23, 59),
+            'work_entry_type_id': self.env.ref('al_hr_pe.wd_FER').id,
+        })
+        slip = self._slip()
+        self.assertAlmostEqual(self._sum(slip, 'DLAB'), 21.0, places=2)
+        self.assertAlmostEqual(self._sum(slip, 'FER'), 1.0, places=2)
+        self.assertAlmostEqual(self._sum(slip, 'DOM'), 10.0, places=2)
+
     def test_04_entry_mid_month_prorates_on_base_30(self):
         """Ingreso el 16 con el tareaje del mes: DLAB + DOM solo del
         contrato (16 días), sin faltas antes del ingreso."""
