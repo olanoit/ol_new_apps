@@ -429,3 +429,14 @@ class TestReviewCore(TransactionCase):
         text = self._attachment_text(runs[0].action_export_plame_rem())
         self.assertIn('44556677', text)
         self.assertIn('44556699', text)
+
+    # ------------------------------------------------------------------
+    # Jornada menor a 4 horas (beneficios la usa para quitar CTS y
+    # vacaciones): la etiqueta decía «Empleador con menos de 4 trabajadores»
+    # ------------------------------------------------------------------
+    def test_less_than_four_hours_label_and_form(self):
+        field = self.env['hr.version']._fields['l10n_pe_less_than_four']
+        self.assertEqual(field.string, 'Jornada menor a 4 horas diarias')
+        arch = self.env['hr.employee'].get_view(
+            self.env.ref('hr.view_employee_form').id)['arch']
+        self.assertIn('name="l10n_pe_less_than_four"', arch)

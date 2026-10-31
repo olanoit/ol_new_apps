@@ -68,7 +68,10 @@ class HrVersion(models.Model):
              '(p. ej. SENATI, SCTR).',
         groups='hr.group_hr_user')
     l10n_pe_less_than_four = fields.Boolean(
-        string='Empleador con menos de 4 trabajadores',
+        string='Jornada menor a 4 horas diarias',
+        help='Trabaja en promedio menos de 4 horas diarias: no tiene CTS '
+             '(D.Leg. 650, art. 4) ni vacaciones (D.Leg. 713, art. 12). '
+             'La gratificación sí le corresponde.',
         groups='hr.group_hr_user')
     l10n_pe_other_employers = fields.Boolean(
         string='Ingresos de otros empleadores',
