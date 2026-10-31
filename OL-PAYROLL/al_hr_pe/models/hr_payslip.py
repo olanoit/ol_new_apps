@@ -152,15 +152,27 @@ class HrPayslip(models.Model):
 
     @api.depends('version_id', 'company_id', 'date_from', 'date_to',
                  'version_id.membership_id', 'version_id.l10n_pe_commission_type',
-                 'employee_id.birthday')
+                 'employee_id.birthday',
+                 # Las tasas de la SBS (cron) refrescan las boletas en
+                 # borrador; la RMV, ``hr.rule.parameter.value`` (hr_uit.py).
+                 'version_id.membership_id.retirement_fund',
+                 'version_id.membership_id.prima_insurance',
+                 'version_id.membership_id.insurable_remuneration',
+                 'version_id.membership_id.fixed_commision',
+                 'version_id.membership_id.mixed_commision')
     def _compute_l10n_pe_snapshot(self):
+        # Snapshot: corregir la versión, la fecha de nacimiento o las tasas
+        # no reescribe las boletas cerradas (sin asignar, el campo
+        # almacenado conserva su valor), igual que la asignación familiar.
+        slips = self.filtered(lambda s: not (
+            s.id and s.state in ('validated', 'paid', 'cancel')))
         # Parámetros de todas las compañías del lote en un solo search.
         params = {
             param.company_id: param
             for param in self.env['hr.main.parameter'].search(
-                [('company_id', 'in', self.company_id.ids)])
-        }
-        for slip in self:
+                [('company_id', 'in', slips.company_id.ids)])
+        } if slips else {}
+        for slip in slips:
             param = params.get(slip.company_id)
             # RMV vigente al cierre del periodo de la boleta (tabla por
             # fecha); el parámetro de la compañía solo como respaldo.

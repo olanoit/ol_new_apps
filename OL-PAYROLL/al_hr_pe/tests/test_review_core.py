@@ -240,3 +240,34 @@ class TestReviewCore(TransactionCase):
             self._dom_days([self._wd(dlab, 21.0), self._wd(paid, 1.0)]), 31 - 21)
         self.assertEqual(
             self._dom_days([self._wd(dlab, 21.0), self._wd(unpaid, 1.0)]), 31 - 22)
+
+    # ------------------------------------------------------------------
+    # A5. Snapshot de tasas AFP/RMV
+    # ------------------------------------------------------------------
+    def test_a5_closed_slip_keeps_its_rates(self):
+        """Corregir la fecha de nacimiento o las tasas de la AFP no
+        reescribe una boleta validada."""
+        slip = self._slip()
+        fund = slip.l10n_pe_retirement_fund
+        slip.state = 'validated'
+        self.afp.retirement_fund = fund + 1.0
+        self.employee.birthday = date(1950, 1, 1)
+        self.assertAlmostEqual(slip.l10n_pe_retirement_fund, fund)
+        self.assertFalse(slip.l10n_pe_is_older)
+
+    def test_a5_draft_slip_follows_new_rates(self):
+        """Las tasas que actualiza el cron SBS y una RMV cargada después de
+        crear la boleta llegan a la boleta en borrador al calcular."""
+        slip = self._slip()
+        self.afp.prima_insurance = 2.5
+        slip.compute_sheet()
+        self.assertAlmostEqual(slip.l10n_pe_prima_insurance, 2.5)
+        self.env['hr.rule.parameter.value'].create({
+            'rule_parameter_id':
+                self.env.ref('al_hr_pe.rule_parameter_l10n_pe_rmv').id,
+            'date_from': date(2026, 3, 15),
+            'parameter_value': '1500.0',
+        })
+        slip.compute_sheet()
+        self.assertEqual(slip.rmv, 1500.0)
+        self.assertAlmostEqual(slip.family_allowance, 150.0)

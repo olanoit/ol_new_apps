@@ -39,3 +39,33 @@ class HrRuleParameter(models.Model):
         """RMV vigente a ``on_date``; 0 si la tabla no la cubre."""
         return float(self.sudo()._get_parameter_from_code(
             RMV_CODE, on_date, raise_if_not_found=False) or 0.0)
+
+
+class HrRuleParameterValue(models.Model):
+    _inherit = 'hr.rule.parameter.value'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        values = super().create(vals_list)
+        values._l10n_pe_refresh_rmv_snapshot()
+        return values
+
+    def write(self, vals):
+        res = super().write(vals)
+        self._l10n_pe_refresh_rmv_snapshot()
+        return res
+
+    def _l10n_pe_refresh_rmv_snapshot(self):
+        """Una RMV nueva (D.S. cargado después de crear el lote) llega a
+        las boletas PE en borrador del periodo que cubre; las cerradas
+        conservan la suya."""
+        rmv = self.filtered(lambda value: value.code == RMV_CODE)
+        if not rmv:
+            return
+        slips = self.env['hr.payslip'].sudo().search([
+            ('state', '=', 'draft'),
+            ('struct_id.country_id.code', '=', 'PE'),
+            ('date_to', '>=', min(rmv.mapped('date_from'))),
+        ])
+        if slips:
+            self.env.add_to_compute(slips._fields['rmv'], slips)
