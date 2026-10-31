@@ -248,6 +248,36 @@ class HrPayslip(models.Model):
         else:
             super()._compute_basic_net()
 
+    def _l10n_pe_store_wage_totals(self):
+        """Guarda básico, bruto, neto y coste del empleador de las boletas
+        PE en cualquier estado. El nativo solo los calcula en borrador: las
+        boletas cerradas antes de que se sumaran BAS/TINGR/NETO quedaron en
+        0 (lo usa la migración 20.0.40)."""
+        slips = self.filtered(lambda s: s.struct_id.country_id.code == 'PE')
+        if not slips:
+            return
+        basic_codes = slips._get_basic_wage_line_codes()
+        gross_codes = slips._get_gross_wage_line_codes()
+        net_codes = slips._get_net_wage_line_codes()
+        values = slips._get_line_values([*basic_codes, *gross_codes, *net_codes])
+        employer_codes = {
+            structure: structure.rule_ids.filtered(
+                'appears_on_employee_cost_dashboard').mapped('code')
+            for structure in slips.struct_id
+        }
+        all_employer_codes = list({code for codes in employer_codes.values() for code in codes})
+        employer_values = slips._get_line_values(all_employer_codes) if all_employer_codes else {}
+        for slip in slips:
+            total = lambda codes, vals=values: sum(vals[code][slip.id]['total'] for code in codes)
+            # SQL directo: las boletas cerradas no admiten escritura.
+            self.env.cr.execute("""
+                UPDATE hr_payslip
+                   SET basic_wage = %s, gross_wage = %s, net_wage = %s, employer_cost = %s
+                 WHERE id = %s
+            """, [total(basic_codes), total(gross_codes), total(net_codes),
+                  total(employer_codes.get(slip.struct_id, []), employer_values), slip.id])
+        slips.invalidate_recordset(['basic_wage', 'gross_wage', 'net_wage', 'employer_cost'])
+
     def _l10n_pe_sctr(self, coverage, base):
         """Aporte SCTR (D.S. 003-98-SA) de ``coverage`` ('health' o
         'pension') sobre ``base``: solo para quien tiene esa cobertura

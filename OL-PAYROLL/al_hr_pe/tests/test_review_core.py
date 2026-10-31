@@ -140,6 +140,25 @@ class TestReviewCore(TransactionCase):
         slip.payslip_run_id = run
         self.assertAlmostEqual(run.net_sum, slip.net_wage)
 
+    def test_a2_closed_slips_get_their_totals(self):
+        """Boleta cerrada con los totales en 0 (calculada antes de sumar
+        BAS/TINGR/NETO): la migración los rellena desde sus líneas."""
+        slip = self._slip()
+        self.env.flush_all()
+        self.env.cr.execute("""
+            UPDATE hr_payslip SET state = 'validated', basic_wage = 0,
+                   gross_wage = 0, net_wage = 0, employer_cost = 0
+             WHERE id = %s""", [slip.id])
+        slip.invalidate_recordset()
+        self.assertFalse(slip.net_wage)
+        slip._l10n_pe_store_wage_totals()
+        self.assertEqual(slip.state, 'validated')
+        self.assertAlmostEqual(slip.basic_wage, self._line(slip, 'BAS').total)
+        self.assertAlmostEqual(slip.gross_wage, self._line(slip, 'TINGR').total)
+        self.assertAlmostEqual(slip.net_wage, self._line(slip, 'NETO').total)
+        self.assertTrue(slip.net_wage)
+        self.assertTrue(slip.employer_cost)
+
     def test_a2_foreign_structure_keeps_native_codes(self):
         """Una estructura de otro país no suma una regla que casualmente se
         llame NETO: sus totales siguen saliendo de BASIC/GROSS/NET."""
