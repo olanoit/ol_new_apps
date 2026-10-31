@@ -215,8 +215,10 @@ result = payslip._l10n_pe_construction_overtime('HE100', 2.0)
         <!-- Feriado o descanso semanal LABORADO (D.Leg. 713 arts. 3-4 y 9):
              el día ya se paga con el jornal (FER está entre los días
              pagados) y el feriado como descanso remunerado; esta regla
-             añade solo la sobretasa del 100 % sobre el jornal, como la
-             regla FER de BASE (mismo código SUNAT). -->
+             añade solo la sobretasa del 100 % de «la labor efectuada»:
+             las horas de las líneas FER × jornal ÷ 8 (por días si la
+             línea no trae horas), como la regla FER de BASE (mismo código
+             SUNAT). -->
         <record id="rule_FER100" model="hr.salary.rule">
             <field name="name">Sobretasa 100% feriado o descanso laborado</field>
             <field name="code">FER100</field>

@@ -185,6 +185,33 @@ class TestConstructionAuditFixes(TransactionCase):
                 2),
             89.30, 'la sobretasa es remuneración afecta (entra en TREM)')
 
+    def test_worked_holiday_surcharge_follows_the_hours(self):
+        """D.Leg. 713 art. 9: la sobretasa paga «la labor efectuada».
+
+        Cuatro horas en el feriado son medio jornal de recargo (4 × 89.30
+        ÷ 8 = 44.65), no el día entero; antes se pagaba 89.30 aunque solo
+        se trabajara media jornada. Sin horas en la línea (datos antiguos)
+        se conserva el cálculo por días. El jornal del día (JOR) sigue
+        yendo por los días de la línea.
+        """
+        worker = self._worker(10)
+        wd_fer = self.env.ref('al_hr_pe.wd_FER')
+        self._holiday(date(2026, 3, 4))
+        payslip = self._payslip(
+            worker, {self.wd_dlab: 4, wd_fer: 1, self.wd_dom: 3})
+        fer = payslip.worked_days_line_ids.filtered(
+            lambda wd: wd.work_entry_type_id == wd_fer)
+        fer.number_of_hours = 4
+        payslip.compute_sheet()
+        self.assertEqual(self._line(payslip, 'FER100'), 44.65)
+        self.assertEqual(self._line(payslip, 'JOR'), round(89.30 * 6, 2),
+                         'el jornal del día sigue los días de la línea')
+
+        fer.number_of_hours = 0
+        payslip.compute_sheet()
+        self.assertEqual(self._line(payslip, 'FER100'), 89.30,
+                         'sin horas, por días como antes')
+
     def test_worked_holiday_does_not_inflate_the_dso(self):
         """El D.S.O. es un sexto de los días que generan descanso: el
         feriado trabajado (FER) se paga aparte y no suma otro sexto."""

@@ -303,18 +303,29 @@ class HrPayslip(models.Model):
     def _l10n_pe_construction_rest_work_surcharge(self):
         """Sobretasa del 100 % por trabajar en feriado o día de descanso.
 
-        D.Leg. 713, arts. 3-4 y 9: sin descanso sustitutorio, la labor se
-        paga con una sobretasa del 100 %. El día trabajado (FER) ya entra
-        en el jornal y el feriado se paga como descanso remunerado; aquí
-        solo se añade el recargo, sobre el jornal, como las horas extras.
+        D.Leg. 713, arts. 3-4 y 9: sin descanso sustitutorio, «la labor
+        efectuada» se paga con una sobretasa del 100 %. El recargo es
+        proporcional a las **horas** trabajadas ese día (``number_of_hours``
+        de las líneas FER × valor hora sin redondear, jornal ÷ 8, como el
+        sobretiempo): cuatro horas en un feriado son medio jornal de
+        recargo, no uno entero. Una línea sin horas (datos antiguos) sigue
+        pagándose por días.
+
+        El día trabajado (FER) en sí entra en el jornal (JOR) **por días**:
+        ``_l10n_pe_construction_days`` suma su ``number_of_days``, que es lo
+        que el tareaje deja en la línea. Aquí solo se añade el recargo.
         """
         self.ensure_one()
         lines = self.worked_days_line_ids.filtered(
             lambda wd: wd.work_entry_type_id.code == 'FER')
-        days = sum(lines.mapped('number_of_days'))
-        if not days or not self.l10n_pe_daily_wage:
+        if not lines or not self.l10n_pe_daily_wage:
             return 0.0
-        return custom_round(self._l10n_pe_construction_effective_wage() * days)
+        wage = self._l10n_pe_construction_effective_wage()
+        total = sum(
+            line.number_of_hours * wage / 8.0 if line.number_of_hours
+            else line.number_of_days * wage
+            for line in lines)
+        return custom_round(total)
 
     # ------------------------------------------------------------------
     # Beneficios que en este régimen se pagan con la planilla
