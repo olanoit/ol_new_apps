@@ -129,3 +129,67 @@ class TestReviewBenefits(BenefitsCaseBase):
             lambda inp: inp.salary_rule_id == cts_tru)
         self.assertAlmostEqual(exported.amount,
                                sum(lines.mapped('total_cts')), places=2)
+
+    # ------------------------------------------------------------------
+    # A7: subsidio de varios meses con la base de la contingencia
+    # ------------------------------------------------------------------
+    def _suspension(self, code, date_from, date_to):
+        period = self.env['hr.period'].search([
+            ('company_id', '=', self.company.id),
+            ('date_start', '<=', date_from), ('date_end', '>=', date_from),
+        ], limit=1)
+        return self.env['hr.work.suspension'].create({
+            'employee_id': self.employee.id,
+            'version_id': self.employee.version_id.id,
+            'periodo_id': period.id,
+            'suspension_type_id': self.env['hr.suspension.type'].search(
+                [('code', '=', code)], limit=1).id,
+            'date_from': date_from, 'date_to': date_to,
+            'days': (date_to - date_from).days + 1,
+            'company_id': self.company.id,
+        })
+
+    def test_subsidio_por_tramos_usa_el_inicio_de_la_contingencia(self):
+        """Maternidad del 10/01 al 31/03 partida en tres suspensiones: el
+        tramo de marzo promedia los 12 meses previos a ENERO (nov y dic de
+        2025), no los previos a marzo (que incluyen enero y febrero ya
+        subsidiados)."""
+        self._suspension('22', date(2026, 1, 10), date(2026, 1, 31))
+        self._suspension('22', date(2026, 2, 1), date(2026, 2, 28))
+        march = self._suspension('22', date(2026, 3, 1), date(2026, 3, 31))
+        lot = self.env['hr.subsidies.lot'].create({
+            'company_id': self.company.id, 'periodo_id': march.periodo_id.id})
+        subsidy = self.env['hr.subsidies'].create({
+            'subsidies_lot_id': lot.id, 'type': 'maternity', 'suspension_id': march.id,
+            'employee_id': self.employee.id,
+            'date_start': march.date_from, 'date_end': march.date_to,
+        })
+        self.assertEqual(subsidy._l10n_pe_contingency_start(),
+                         date(2026, 1, 10))
+        history = subsidy._get_salary_history(self.param)
+        self.assertEqual(
+            sorted(periodo.date_start for periodo in history),
+            [date(2025, 11, 1), date(2025, 12, 1)])
+
+    def test_enfermedad_por_tramos_no_repite_los_20_dias(self):
+        """Enfermedad del 20/02 al 15/03: el tramo de marzo ya no paga los
+        20 días del empleador (9 se consumieron en febrero), así que se
+        subsidian 15 - (20 - 9) = 4 días."""
+        self._suspension('21', date(2026, 2, 20), date(2026, 2, 28))
+        march = self._suspension('21', date(2026, 3, 1), date(2026, 3, 15))
+        periodo = self.env['hr.period'].search([
+            ('code', '=', '202603'), ('company_id', '=', self.company.id)],
+            limit=1)
+        lot = self.env['hr.subsidies.lot'].create({
+            'company_id': self.company.id, 'periodo_id': periodo.id})
+        subsidy = self.env['hr.subsidies'].create({
+            'subsidies_lot_id': lot.id,
+            'type': 'illness', 'suspension_id': march.id,
+            'employee_id': self.employee.id,
+            'date_start': march.date_from, 'date_end': march.date_to,
+        })
+        self.env['hr.subsidies.line'].create({
+            'subsidies_id': subsidy.id, 'periodo_id': periodo.id,
+            'wage': 3000.0})
+        subsidy.action_compute()
+        self.assertEqual(subsidy.subsidies_total_ids.days, 4)

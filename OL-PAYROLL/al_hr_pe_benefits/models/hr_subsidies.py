@@ -231,7 +231,8 @@ class HrSubsidies(models.Model):
             self.company_id)
         self._check_configuration(param)
         if self.type == 'illness' and not self.is_compute_20_days:
-            contingency_days = (self.date_end - self.date_start).days + 1
+            contingency_days = (self.date_end - self.date_start).days + 1 \
+                + self._l10n_pe_previous_days()
             dmed_history = self._get_dmed_history()
             total_days = contingency_days + sum(
                 days for _periodo, days in dmed_history)
@@ -292,7 +293,9 @@ class HrSubsidies(models.Model):
         else:
             contingency_days = (self.date_end - self.date_start).days
             if not self.is_compute_20_days:
-                contingency_days += sum(
+                # Días de la misma contingencia en los tramos previos
+                # (meses anteriores) y DMED de otras contingencias del año.
+                contingency_days += self._l10n_pe_previous_days() + sum(
                     days for _periodo, days in self._get_dmed_history())
                 subsidized_days = \
                     contingency_days - (EMPLOYER_ILLNESS_DAYS - 1)
@@ -392,22 +395,60 @@ class HrSubsidies(models.Model):
             ('enfermedad_input_id', 'Input enfermedad'),
         ])
 
+    def _l10n_pe_contingency_start(self):
+        """Inicio de la contingencia (no del tramo).
+
+        La ausencia se parte en una suspensión por mes y cada una genera
+        su subsidio, pero la base (12 meses previos) y los 20 días del
+        empleador se cuentan desde el mes en que se INICIA la contingencia
+        (Ley 26790, D.S. 009-97-SA): desde el tramo, el de marzo promediaba
+        enero y febrero ya subsidiados. Sale de la ausencia de la
+        suspensión o, si se cargó a mano, de las suspensiones contiguas
+        del mismo tipo."""
+        self.ensure_one()
+        suspension = self.suspension_id
+        if suspension.leave_id.request_date_from:
+            return min(suspension.leave_id.request_date_from,
+                       self.date_start)
+        start = self.date_start
+        Suspension = self.env['hr.work.suspension']
+        seen = suspension
+        while suspension and suspension.date_from:
+            suspension = Suspension.search([
+                ('employee_id', '=', suspension.employee_id.id),
+                ('suspension_type_id', '=',
+                 suspension.suspension_type_id.id),
+                ('date_to', '=', suspension.date_from - relativedelta(days=1)),
+                ('id', 'not in', seen.ids),
+            ], limit=1)
+            seen |= suspension
+            if suspension.date_from:
+                start = min(start, suspension.date_from)
+        return start
+
+    def _l10n_pe_previous_days(self):
+        """Días de la misma contingencia anteriores a este tramo."""
+        self.ensure_one()
+        return (self.date_start - self._l10n_pe_contingency_start()).days
+
     def _get_dmed_history(self):
         """Días DMED por periodo en boletas BASE del año de la
         contingencia (sustituye al SQL ``_get_sql_wd_dmed`` v18).
 
-        Solo boletas cerradas y anteriores al mes de la contingencia: la
-        del propio mes (o posteriores) puede traer el DMED de esta misma
-        contingencia y contarlo dos veces."""
+        Solo boletas cerradas y anteriores al mes en que se inicia la
+        contingencia: las de ese mes o posteriores pueden traer el DMED de
+        esta misma contingencia (sus días previos los suma
+        ``_l10n_pe_previous_days``) y contarlo dos veces."""
         self.ensure_one()
+        contingency_start = self._l10n_pe_contingency_start()
         base_struct = self.env.ref('al_hr_pe.base_structure')
         slips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),
             ('company_id', '=', self.company_id.id),
             ('struct_id', '=', base_struct.id),
-            ('date_to', '>=', date(self.date_start.year, 1, 1)),
-            ('date_to', '<', date(self.date_start.year,
-                                  self.date_start.month, 1)),
+            ('date_to', '>=', date(contingency_start.year, 1, 1)),
+            ('date_to', '<', date(contingency_start.year,
+                                  contingency_start.month, 1)),
             ('state', 'in', ('validated', 'paid')),
             ('fortnightly_id', '=', False),
         ])
@@ -421,13 +462,15 @@ class HrSubsidies(models.Model):
         return history
 
     def _get_salary_history(self, param):
-        """Histórico BASE de los 12 meses cerrados previos, agrupado por
-        periodo (sustituye al SQL ``_get_sql_salary`` v18)."""
+        """Histórico BASE de los 12 meses cerrados previos al mes en que
+        se inicia la contingencia, agrupado por periodo (sustituye al SQL
+        ``_get_sql_salary`` v18)."""
         self.ensure_one()
         base_struct = self.env.ref('al_hr_pe.base_structure')
-        start_ref = self.date_start - relativedelta(months=12)
+        contingency_start = self._l10n_pe_contingency_start()
+        start_ref = contingency_start - relativedelta(months=12)
         date_from = date(start_ref.year, start_ref.month, 1)
-        end_ref = self.date_start - relativedelta(months=1)
+        end_ref = contingency_start - relativedelta(months=1)
         date_to = date(end_ref.year, end_ref.month, calendar.monthrange(
             end_ref.year, end_ref.month)[1])
         slips = self.env['hr.payslip'].search([
