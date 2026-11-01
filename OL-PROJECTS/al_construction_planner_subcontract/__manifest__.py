@@ -17,7 +17,7 @@ Asignar contrata con su OC de servicio, avance por driver, liquidación semanal 
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_subcontract/static/description/icon.png',
-    'version': '16.20261031',
+    'version': '17.20261101',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner', 'purchase', 'portal', 'al_report_base'],
@@ -43,6 +43,7 @@ Asignar contrata con su OC de servicio, avance por driver, liquidación semanal 
         'views/res_config_settings_views.xml',
         'views/account_move_views.xml',
         'views/portal_templates.xml',
+        'views/contract_intervention_views.xml',
         'views/menus.xml',
         'views/construction_board_views.xml',
     ],

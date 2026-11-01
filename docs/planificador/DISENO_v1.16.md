@@ -14,7 +14,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | Etapa | Contenido | Estado |
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
-| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Diseño confirmado; bloques 2a y 2b desarrollados |
+| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Pendiente |
 | 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
 
@@ -328,6 +328,33 @@ Desarrollado. Detalles:
   crédito conciliada contra las cuotas, de la más antigua a la más nueva.
 - Historial de contratas en el nodo con APU: orden, desde, hasta, cantidad y
   estado.
+
+Desarrollado. Detalles de la implementación:
+
+- La intervención queda guardada (`construction.contract.intervention`, con
+  su preliquidación por partida y las cuotas retenidas): botón
+  «Intervenciones» en la orden y menú Contratas › Intervenciones.
+- La preliquidación va por línea de la orden. Con condiciones «por partida»
+  cada línea es una partida; si la orden agrupa por actividad, la línea
+  muestra sus partidas e intervenirla interviene todas.
+- «Lo ejecutado» es lo valorizado o, si hay avance validado aún sin
+  valorizar, ese: la liquidación final lo paga y la contrata que entra no
+  vuelve a recibirlo.
+- No se interviene con avance de la contrata reportado sin validar, ni con
+  fecha anterior a su último avance validado.
+- El avance guarda su contrata (antes era la de la línea del plan): el de la
+  contrata que sale sigue siendo suyo y entra a su liquidación final; el
+  nuevo es de la que entra.
+- Una cuota ya retenida por otro motivo conserva el suyo y no se libera con
+  la liquidación final.
+- Liquidación final: si los deductivos dejarían el pago en negativo, entran a
+  la factura los que lo dejan en cero y el resto («Deductivos contra el
+  fondo») va a una nota de crédito del proveedor en borrador. Al publicarla
+  contabilidad, se concilia con las cuotas del fondo de la más antigua a la
+  más nueva, queda en el historial de cada cuota y se levanta la retención.
+  Sin exceso, la retención se levanta al aprobar la liquidación. Con
+  deductivos «descontados al pago» el exceso no se resuelve solo: se pide
+  registrarlos en su línea de la factura.
 
 ### Pruebas de la etapa 2
 
