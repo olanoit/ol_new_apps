@@ -34,3 +34,12 @@ body.o_cp_panel_resizing {
     cursor: col-resize !important;
     user-select: none;
 }
+
+// La versión de Odoo 19 del servidor pone `white-space: nowrap` a todo el
+// cuaderno horizontal (`.o_notebook.horizontal`): los textos de ayuda de las
+// pestañas de la ficha de la obra («Ajustes», «Facturación») no saltaban de
+// línea y la ficha se desbordaba a lo ancho. Solo los encabezados de las
+// pestañas van en una línea (lo hace `.nav-item`).
+.o_form_view .o_notebook.horizontal > .o_notebook_content {
+    white-space: normal;
+}
