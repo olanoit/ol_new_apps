@@ -48,6 +48,27 @@ class TestPackage116Stage4c2Sheet(TestWorksheetV18):
         # Las listas por grupo no cambian.
         self.assertNotIn('MATERIALES OBRA', lists['B1'])
 
+    def test_short_sheets_capacity(self):
+        """Rendimiento: TIPOLOGIAS y ACTIVIDADES no llevan fórmulas en todas
+        las filas de una hoja grande; BOM sí."""
+        data = self.site._construction_spreadsheet_data(rows=2500)
+        layout = self.site._construction_sheet_layout()
+        sheets = {sheet['name']: sheet['cells'] for sheet in data['sheets']}
+
+        def calc(name, row):
+            letter = next(iter(layout['sheets'][name]['calc_letters'].values()))
+            return '%s%s' % (letter, row) in sheets[name]
+
+        self.assertTrue(calc('TIPOLOGIAS', 501))
+        self.assertFalse(calc('TIPOLOGIAS', 502))
+        self.assertTrue(calc('ACTIVIDADES', 2001))
+        self.assertFalse(calc('ACTIVIDADES', 2002))
+        self.assertTrue(calc('BOM', 2501))
+        # La ampliación tampoco las pasa del tope.
+        parts = self.site._construction_row_parts(layout, 2502, 3001)
+        self.assertFalse(parts['TIPOLOGIAS']['cells'])
+        self.assertTrue(parts['BOM']['cells'])
+
     def test_panel_metadata_version_and_links(self):
         document = self._document()
         metadata = document._get_spreadsheet_metadata()
