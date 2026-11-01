@@ -803,6 +803,10 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: '27.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Accidente de trabajo: las ausencias por descanso médico o enfermedad tienen la marca «Accidente de trabajo o enfermedad profesional», que pasa a sus suspensiones. En las utilidades, esos días cuentan como laborados (D.S. 009-98-TR)."
   - version: '26.20261101'
     fecha: 01/11/2026
     cambios:

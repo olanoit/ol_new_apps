@@ -9,9 +9,10 @@ multiplicada por el % legal del giro se reparte:
   (D.S. 009-98-TR, art. 2): el descanso pre y posnatal (``SMAR``). Las
   faltas no se restan: en Odoo 20 ``DLAB`` ya viene sin ellas (``FAL`` es
   otra línea) y restarlas otra vez las descontaba dos veces. El accidente
-  de trabajo también se asimila, pero no tiene un tipo propio (``SENF``
-  junta la enfermedad común con el accidente): si se registra con un tipo
-  aparte, agréguelo a ``wd_dtrab``.
+  de trabajo y la enfermedad profesional también se asimilan: comparten
+  los tipos de día de la enfermedad común (``DMED``/``SENF``), así que se
+  suman los días de sus suspensiones T21 «20»/«21» marcadas como
+  accidente de trabajo.
 * **50 % por remuneraciones**: total anual de la regla salarial
   configurada (``rule_total_income``).
 
@@ -43,6 +44,7 @@ from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
 from .hr_benefits_engine import (
     employee_lot_slip, ensure_draft, ensure_slips_draft, recompute_slips)
+from .hr_leave import INCAPACITY_SUSPENSION_CODES
 
 # Días que la ley asimila a los efectivamente laborados (D.S. 009-98-TR,
 # art. 2): descanso pre y posnatal.
@@ -173,6 +175,9 @@ class HrUtilities(models.Model):
             bucket['days'] += sum(worked_days.filtered(
                 lambda line: line.work_entry_type_id in worked_types
             ).mapped('number_of_days'))
+        for employee, days in self._work_accident_days(
+                data, worked_types).items():
+            data[employee]['days'] += days
         self.worker_count = len(data)
         closing_date = date(self.year, 12, 31)
         for employee in sorted(data, key=lambda emp: emp.id):
@@ -277,6 +282,31 @@ class HrUtilities(models.Model):
                 fields=', '.join(missing)))
 
     @api.model
+    def _work_accident_days(self, data, worked_types):
+        """Días naturales del ejercicio con suspensión de incapacidad
+        temporal por accidente de trabajo o enfermedad profesional, por
+        trabajador (D.S. 009-98-TR, art. 2). Si los tipos de día de la
+        incapacidad ya cuentan como trabajados en la configuración, no se
+        suman otra vez."""
+        if worked_types.filtered(lambda wet: wet.code in ('DMED', 'SENF')):
+            return {}
+        year_start, year_end = date(self.year, 1, 1), date(self.year, 12, 31)
+        suspensions = self.env['hr.work.suspension'].search([
+            ('employee_id', 'in', [employee.id for employee in data]),
+            ('l10n_pe_work_accident', '=', True),
+            ('suspension_type_id.code', 'in', INCAPACITY_SUSPENSION_CODES),
+            ('date_from', '<=', year_end),
+            ('date_to', '>=', year_start),
+        ])
+        days = {}
+        for suspension in suspensions:
+            start = max(suspension.date_from, year_start)
+            end = min(suspension.date_to, year_end)
+            if end >= start:
+                days[suspension.employee_id] = \
+                    days.get(suspension.employee_id, 0) + (end - start).days + 1
+        return days
+
     def _closing_remuneration(self, employee, version, param, on_date):
         """Remuneración mensual vigente al cierre del ejercicio (base
         del tope de 18 remuneraciones): sueldo de la versión vigente más

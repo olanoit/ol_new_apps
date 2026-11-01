@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 27.20261101 — 01/11/2026
+
+- Accidente de trabajo: las ausencias por descanso médico o enfermedad tienen la marca «Accidente de trabajo o enfermedad profesional», que pasa a sus suspensiones. En las utilidades, esos días cuentan como laborados (D.S. 009-98-TR).
+
 ## 26.20261101 — 01/11/2026
 
 - Gratificación: la media subvención de los practicantes se exporta a la boleta por la regla «Subvención adicional (practicantes)» y ya no por la de gratificación.

@@ -212,6 +212,39 @@ class TestRev2Util5ta(BenefitsCaseBase):
         self.assertAlmostEqual(
             util.utilities_line_ids.number_of_days, days, places=2)
 
+    def test_utilidades_suma_accidente_de_trabajo(self):
+        """Decisión 5: los días de incapacidad por accidente de trabajo se
+        asimilan a los laborados (D.S. 009-98-TR, art. 2). Comparten tipo
+        con la enfermedad común (SENF), que no cuenta: la ausencia marcada
+        lleva la marca a sus suspensiones y las utilidades las suman."""
+        util = self._utilities()
+        util.action_process()
+        days = util.utilities_line_ids.number_of_days
+        self._add_days(self._slip(2026, 4), 'SENF', 10.0)
+        leave_type = self.env.ref('al_hr_pe.wd_SENF')
+        leave_type.requires_allocation = False
+        leave = self.env['hr.leave'].with_context(
+            leave_skip_state_check=True).create({
+                'name': 'Accidente', 'employee_id': self.employee.id,
+                'work_entry_type_id': leave_type.id,
+                'request_date_from': date(2026, 4, 6),
+                'request_date_to': date(2026, 4, 15),
+            })
+        if leave.state != 'validate':
+            leave._action_validate(check_state=False)
+        self.assertTrue(leave.l10n_pe_is_incapacity)
+        self.assertTrue(leave.l10n_pe_suspension_ids)
+        util.action_process()
+        # Enfermedad común: los 10 días no cuentan.
+        self.assertAlmostEqual(
+            util.utilities_line_ids.number_of_days, days - 10.0, places=2)
+        leave.l10n_pe_work_accident = True
+        self.assertTrue(all(
+            leave.l10n_pe_suspension_ids.mapped('l10n_pe_work_accident')))
+        util.action_process()
+        self.assertAlmostEqual(
+            util.utilities_line_ids.number_of_days, days, places=2)
+
     def test_utilidades_tope_con_asignacion_familiar_por_fecha(self):
         """El tope de 18 remuneraciones usa la asignación familiar de la
         RMV vigente al cierre, no el parámetro fijo de la compañía."""

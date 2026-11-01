@@ -57,6 +57,18 @@ class HrWorkEntryType(models.Model):
                 leave_type.l10n_pe_suspension_type_id = suspension
 
 
+# Suspensiones de incapacidad temporal (T21): enfermedad o accidente,
+# primeros 20 días a cargo del empleador («20») y subsidiados («21»).
+INCAPACITY_SUSPENSION_CODES = ('20', '21')
+
+WORK_ACCIDENT_HELP = (
+    'Incapacidad por accidente de trabajo o enfermedad profesional. La '
+    'PLAME la declara igual que la enfermedad común (T21 «20»/«21») y '
+    'cuenta igual para vacaciones, CTS y gratificación (hasta 60 días al '
+    'año), pero para las utilidades sus días valen como laborados (D.S. '
+    '009-98-TR, art. 2).')
+
+
 class HrWorkSuspension(models.Model):
     _inherit = 'hr.work.suspension'
 
@@ -65,6 +77,8 @@ class HrWorkSuspension(models.Model):
         ondelete='cascade', readonly=True,
         help='Ausencia aprobada que generó esta suspensión.',
         check_company=True)
+    l10n_pe_work_accident = fields.Boolean(
+        string='Accidente de trabajo', help=WORK_ACCIDENT_HELP)
 
 
 class HrLeave(models.Model):
@@ -72,6 +86,18 @@ class HrLeave(models.Model):
 
     l10n_pe_suspension_ids = fields.One2many(
         'hr.work.suspension', 'leave_id', string='Suspensiones PLAME')
+    l10n_pe_is_incapacity = fields.Boolean(
+        compute='_compute_l10n_pe_is_incapacity')
+    l10n_pe_work_accident = fields.Boolean(
+        string='Accidente de trabajo o enfermedad profesional',
+        help=WORK_ACCIDENT_HELP)
+
+    @api.depends('work_entry_type_id.l10n_pe_suspension_type_id.code')
+    def _compute_l10n_pe_is_incapacity(self):
+        for leave in self:
+            leave.l10n_pe_is_incapacity = (
+                leave.work_entry_type_id.l10n_pe_suspension_type_id.code
+                in INCAPACITY_SUSPENSION_CODES)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -83,7 +109,8 @@ class HrLeave(models.Model):
     def write(self, vals):
         res = super().write(vals)
         if {'state', 'request_date_from', 'request_date_to',
-                'work_entry_type_id', 'employee_id'} & set(vals):
+                'work_entry_type_id', 'employee_id',
+                'l10n_pe_work_accident'} & set(vals):
             self._l10n_pe_sync_suspensions()
         return res
 
@@ -182,5 +209,7 @@ class HrLeave(models.Model):
                 'days': (last - day).days + 1,
                 'company_id': company.id,
                 'leave_id': self.id,
+                'l10n_pe_work_accident': self.l10n_pe_work_accident
+                and suspension_type.code in INCAPACITY_SUSPENSION_CODES,
             })
             day = last + timedelta(days=1)
