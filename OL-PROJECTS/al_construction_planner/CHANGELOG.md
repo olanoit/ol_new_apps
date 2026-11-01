@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 65.20261101 — 01/11/2026
+
+- Las listas y tablas dinámicas con nombres largos (M116-08) ya no se encogen: la línea del plan, los informes y los pivotes ocupan todo el ancho.
+
 ## 64.20261101 — 01/11/2026
 
 - CR-23 y CR-22 a): «Reemplazar lo generado» y el envío de la hoja ya no duplican líneas en la nueva versión; la actividad archivada se reactiva al importar.

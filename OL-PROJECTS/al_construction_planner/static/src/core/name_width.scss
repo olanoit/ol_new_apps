@@ -22,9 +22,9 @@
     }
 }
 
-// Celdas sueltas (panel del Cronograma).
-td.o_cp_wrap_names,
-div.o_cp_wrap_names {
+// Celdas sueltas (panel del Cronograma). Solo celdas: en una lista o una
+// tabla dinámica la clase va en el contenedor de la vista, que no se acota.
+td.o_cp_wrap_names {
     white-space: normal;
     overflow-wrap: anywhere;
     max-width: var(--o-cp-name-max-width, 360px);
