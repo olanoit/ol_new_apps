@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 43.20261101 — 01/11/2026
+
+- Ausencias en días naturales: los sábados y domingos dentro de una maternidad, licencia o descanso médico ya no se pagan como sueldo.
+- Básico de una boleta que no cubre el mes entero (aumento o cese a mitad de mes): días × sueldo / 30.
+- Enfermedad larga: los primeros 20 días del año se pagan como descanso médico y el resto como subsidio.
+- Renta de 5ta: subsidios afectos, indemnización vacacional inafecta y proyección solo con la remuneración ordinaria.
+
 ## 36.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

@@ -803,6 +803,15 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: '25.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "CTS y gratificación: asignación familiar con la RMV vigente a la fecha, gratificación con la remuneración vigente al pago, bonificación de la Ley 30334 aunque la versión no tenga seguro, boletas anuladas fuera de los promedios, sin descontar faltas de meses que no cuentan; comisión como remuneración principal promediada sin la regla de 3 de 6 meses; un solo promedio de variables para todas las truncas."
+      - "Tipos de día por defecto (vacaciones, licencia con goce, paternidad y maternidad cuentan como laborados); provisiones con días reales del mes de ingreso, faltas y sexto de CTS sin elegir la gratificación."
+      - "Vacaciones: el goce descuenta el saldo, sin asignación familiar duplicada, mes completo = 30 días, venta hasta 15 días (7 en MYPE) y control de fraccionamiento; practicantes con 15 días de descanso y media subvención semestral (Ley 28518)."
+      - "Liquidación de cese: CTS de mayo a octubre no depositada, vacaciones devengadas, indemnización vacacional y adelantadas; mínimo de un mes para truncas; meses calendario y días; indemnización por despido arbitrario calculada; descuento de adelantos y préstamos de beneficios."
+      - "Subsidios: 20 días del empleador por año calendario en días naturales, base afecta a EsSalud, enfermedad larga partida en código 20 y 21, y subsidios de construcción civil."
+      - "Utilidades, quincena y préstamos: avisos de cesados o trabajadores sin boleta (ya no se omiten en silencio), faltas no restadas dos veces, maternidad como días laborados, quincena prorrateada, cuotas pendientes al cese y sin retención de 5ta negativa a mitad de año."
   - version: '24.20261101'
     fecha: 01/11/2026
     cambios:

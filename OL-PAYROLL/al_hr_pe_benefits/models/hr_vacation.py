@@ -44,7 +44,6 @@ from .hr_benefits_engine import ensure_draft, ensure_line_draft
 from .hr_benefits_engine import compute_has_history, compute_locked
 from .hr_benefits_engine import employee_lot_slip, ensure_slips_draft
 from .hr_benefits_engine import recompute_slips
-from .hr_advances_loans import BENEFIT_KINDS
 
 LABOR_REGIMES_WITH_VACATION = ('general', 'small', 'micro')
 VACATION_SUSPENSION_CODE = '23'  # T21-23: vacaciones
@@ -569,11 +568,6 @@ class HrVacation(models.Model):
             # lote: se descuentan en esta boleta por el input de su tipo.
             slip._l10n_pe_discount_benefit_advances(
                 'vaca', on_date=lot.date_end)
-            # El método fija el input solo con los tipos pedidos: si otro
-            # beneficio (p. ej. la gratificación) descontó en la misma
-            # boleta por el mismo input, se vuelve a totalizar con todos
-            # (tope 0: no descuenta nada más).
-            slip._l10n_pe_discount_benefit_advances(BENEFIT_KINDS, cap=0)
         recompute_slips(slips)
 
 

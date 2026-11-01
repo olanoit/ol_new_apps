@@ -607,6 +607,10 @@ faq:
       TXT publicado que implementar.
 
 novedades:
+  - version: '30.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Subsidios de maternidad e incapacidad para obreros: base con las semanas de cada mes, reglas propias en la estructura y afectos a renta de 5ta."
   - version: '25.20261027'
     fecha: 27/10/2026
     cambios:

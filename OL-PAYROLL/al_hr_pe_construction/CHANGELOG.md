@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_construction.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 30.20261101 — 01/11/2026
+
+- Subsidios de maternidad e incapacidad para obreros: base con las semanas de cada mes, reglas propias en la estructura y afectos a renta de 5ta.
+
 ## 25.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

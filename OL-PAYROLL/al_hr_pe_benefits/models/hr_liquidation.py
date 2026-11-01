@@ -40,7 +40,6 @@ from .hr_benefits_engine import (
 from .hr_benefits_engine import (
     employee_lot_slip, ensure_slips_draft, recompute_slips)
 from .hr_benefits_engine import compute_locked
-from .hr_advances_loans import BENEFIT_KINDS
 
 
 class HrLiquidation(models.Model):
@@ -310,10 +309,6 @@ class HrLiquidation(models.Model):
             if cts_lines:
                 slip._l10n_pe_discount_benefit_advances('cts', cap=custom_round(
                     sum(cts_lines.mapped('total_cts')) * 0.5, 2))
-            # Cada llamada fija el input solo con sus tipos: si comparten
-            # input (p. ej. DES_BBSS), se vuelve a totalizar con todos
-            # (tope 0: no descuenta nada más).
-            slip._l10n_pe_discount_benefit_advances(BENEFIT_KINDS, cap=0)
         recompute_slips(slips)
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
@@ -469,48 +464,13 @@ class HrLiquidation(models.Model):
                     days += 30
                 days = max(days, 0)
 
-            # Ventana de conceptos variables: 6 meses previos al cese
-            # (el mes de cese solo computa si termina en fin de mes).
-            date_limit_to = cessation_date
-            last_day = monthrange(date_limit_to.year, date_limit_to.month)[1]
-            if last_day == date_limit_to.day:
-                date_limit_from = date_limit_to - relativedelta(months=5)
-                date_limit_from = \
-                    date(date_limit_from.year, date_limit_from.month, 1)
-            else:
-                date_limit_from = date_limit_to - relativedelta(months=6)
-                date_limit_from = \
-                    date(date_limit_from.year, date_limit_from.month, 1)
-                date_limit_to = date_limit_to - relativedelta(months=1)
-                date_limit_to = date(
-                    date_limit_to.year, date_limit_to.month,
-                    monthrange(date_limit_to.year, date_limit_to.month)[1])
-            var_lots = Run.search([
-                ('date_end', '>=', date_limit_from),
-                ('date_end', '<=', date_limit_to),
-                ('company_id', '=', self.company_id.id),
-            ])
-            employee_slips = var_lots.slip_ids.filtered(
-                lambda slip: slip.employee_id == employee)
-            bonus_months = param._count_months(employee_slips)
-            salary_rules = employee_slips.mapped('line_ids')
-            commissions = salary_rules.filtered(
-                lambda line: line.salary_rule_id in param.commission_sr_ids
-                and line.total > 0)
-            bonus_lines = salary_rules.filtered(
-                lambda line: line.salary_rule_id in param.bonus_sr_ids
-                and line.total > 0)
-            extra_hours_lines = salary_rules.filtered(
-                lambda line: line.salary_rule_id == param.extra_hours_sr_id
-                and line.total > 0)
-
-            commission = param.calculate_bonus(
-                admission_date, date_limit_from, bonus_months, commissions)
-            bonus = param.calculate_bonus(
-                admission_date, date_limit_from, bonus_months, bonus_lines)
-            extra_hours = param.calculate_bonus(
-                admission_date, date_limit_from, bonus_months,
-                extra_hours_lines)
+            # Variables: el mismo criterio que la gratificación y la CTS
+            # truncas (6 meses previos al cese o los laborados si son menos).
+            averages = param._l10n_pe_truncated_variables(
+                employee, cessation_date, admission_date, version=version)
+            commission = averages['commission']
+            bonus = averages['bonus']
+            extra_hours = averages['extra_hours']
             computable_remuneration = (wage + household_allowance
                                        + commission + bonus + extra_hours)
             if version.l10n_pe_labor_regime == 'general':
