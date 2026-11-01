@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_l10n_pe_lease.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261101 — 01/11/2026
+
+- Remedición y terminación: si falta contabilizar la depreciación de los meses anteriores, el aviso está en español y dice qué asiento falta y desde cuándo se puede registrar la operación. Antes salía el error de Odoo en inglés.
+
 ## 6.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

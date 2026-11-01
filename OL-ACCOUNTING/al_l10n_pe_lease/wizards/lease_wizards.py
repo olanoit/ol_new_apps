@@ -12,8 +12,9 @@ def _months_between(start, end):
 
 class L10nPeLeaseOperationMixin(models.AbstractModel):
     """Comprobaciones comunes de la remedición y la terminación: rigen desde el
-    primer día de un mes y no deben quedar asientos del pasivo ni del activo
-    contabilizados desde esa fecha (se rehacen)."""
+    primer día de un mes, no deben quedar asientos del pasivo ni del activo
+    contabilizados desde esa fecha (se rehacen) y la depreciación de los meses
+    anteriores debe estar contabilizada."""
     _name = 'l10n_pe.lease.operation.mixin'
     _description = 'Operación sobre un arrendamiento'
 
@@ -34,6 +35,24 @@ class L10nPeLeaseOperationMixin(models.AbstractModel):
             raise UserError(self.env._(
                 'Ya hay asientos contabilizados desde %(date)s (%(moves)s): elija el primer día del mes siguiente '
                 'al último asiento contabilizado.', date=date, moves=', '.join(posted[:3].mapped('display_name'))))
+        # Odoo 20 modifica el derecho de uso (asset.modify) al día anterior y
+        # exige contabilizada la depreciación hasta ese día; como va fechada a
+        # fin de mes, una operación desde el 01/11 espera la depreciación del
+        # 31/10. Se avisa aquí, en vez del error nativo.
+        pending = lease._rou_variant().depreciation_move_ids.filtered(
+            lambda m: m.state == 'draft' and m.date < date).sorted('date')
+        if pending:
+            today = fields.Date.context_today(self)
+            if pending[-1].date > today:
+                raise UserError(self.env._(
+                    'La depreciación del derecho de uso hasta el %(last)s (%(moves)s) aún no está contabilizada: '
+                    'Odoo solo modifica el derecho de uso con los meses anteriores cerrados. Registre esta operación '
+                    'a partir del %(last)s, después de contabilizar esa depreciación.',
+                    last=pending[-1].date, moves=', '.join(pending[-3:].mapped('display_name'))))
+            raise UserError(self.env._(
+                'Contabilice antes la depreciación del derecho de uso hasta el %(last)s (%(moves)s): la operación '
+                'rige desde %(date)s y los meses anteriores deben estar cerrados.',
+                last=pending[-1].date, date=date, moves=', '.join(pending[-3:].mapped('display_name'))))
 
     @staticmethod
     def _close_loan(loan, date):

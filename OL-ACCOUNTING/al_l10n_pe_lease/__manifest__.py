@@ -36,7 +36,7 @@ Requiere Odoo Enterprise (``account_asset`` y ``account_loans``).
     'category': 'OL-ACCOUNTING/Apps',
     # Ícono nativo de la app a la que pertenece (como las l10n de Odoo).
     'icon': '/al_l10n_pe_lease/static/description/icon.png',
-    'version': '6.20261027',
+    'version': '7.20261101',
     'license': 'OPL-1',
     'countries': ['pe'],
     'depends': ['account_asset', 'account_loans', 'al_account_base'],

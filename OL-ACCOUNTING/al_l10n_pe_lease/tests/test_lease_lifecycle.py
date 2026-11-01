@@ -157,6 +157,31 @@ class TestLeaseLifecycle(TransactionCase):
                 'date': date(2026, 10, 15), 'payment_amount': 1000.0, 'remaining_months': 27,
                 'annual_rate': 12.0, 'reason': 'x'}).action_apply()
 
+    def test_remeasurement_needs_previous_depreciation_posted(self):
+        """Odoo 20 modifica el derecho de uso solo con la depreciación anterior
+        contabilizada: desde el 01/11 hay que esperar la del 31/10, y desde el
+        01/10 la de setiembre debe estar contabilizada. Mensaje propio en vez
+        del error nativo en inglés."""
+        lease = self._lease()
+        lease.action_confirm()
+
+        def remeasure(day, months):
+            return self.env['l10n_pe.lease.remeasure'].with_context(default_lease_id=lease.id).create({
+                'date': day, 'payment_amount': 1100.0, 'remaining_months': months,
+                'annual_rate': 12.0, 'reason': 'Reajuste'}).action_apply()
+
+        with self.assertRaisesRegex(UserError, 'a partir del 2026-10-31'):
+            remeasure(date(2026, 11, 1), 26)
+        september = lease._rou_variant().depreciation_move_ids.filtered(
+            lambda m: m.date == date(2026, 9, 30))
+        self.assertEqual(september.state, 'posted')
+        september.button_draft()
+        with self.assertRaisesRegex(UserError, 'Contabilice antes'):
+            remeasure(date(2026, 10, 1), 27)
+        september.action_post()
+        remeasure(date(2026, 10, 1), 27)
+        self.assertEqual(lease.event_ids.kind, 'remeasurement')
+
     # ------------------------------------------------------------------
     def test_early_termination(self):
         lease = self._lease()
