@@ -1119,7 +1119,9 @@ else:
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
+# Los subsidios de maternidad (0915) e incapacidad temporal (0916) están
+# afectos a 5ta (tabla 22 de la PLAME).
+result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>

@@ -206,7 +206,8 @@ class TestRev2Core(TransactionCase):
         anterior pasan a la nueva al actualizar."""
         from odoo.addons.al_hr_pe.models.l10n_pe_rule_formulas import (
             L10N_PE_AUDIT_RULES)
-        for xmlid in ('salary_rule_BAS', 'salary_rule_REAQ', 'salary_rule_PIAQ'):
+        for xmlid in ('salary_rule_BAS', 'salary_rule_REAQ', 'salary_rule_PIAQ',
+                      'salary_rule_ROAQ'):
             rule = self.env.ref('al_hr_pe.%s' % xmlid)
             new_code = rule.amount_python_compute
             old = L10N_PE_AUDIT_RULES[xmlid][0]
@@ -233,3 +234,50 @@ class TestRev2Core(TransactionCase):
         self.assertFalse(slip.error_count)
         slip.action_payslip_done()
         self.assertTrue(slip.has_negative_net_to_report)
+
+    # ------------------------------------------------------------------
+    # Enfermedad: los días a cargo del empleador son descanso médico
+    # ------------------------------------------------------------------
+    def test_sickness_employer_days_are_medical_rest(self):
+        """Enfermedad del 05/03 al 03/04 en una sola ausencia SENF: los 20
+        primeros días del año (suspensión T21 «20», del 05 al 24/03) se
+        pagan como descanso médico (DMED) y solo el resto es subsidio: 7
+        días en marzo y 3 en abril, sin días de más en DOM."""
+        Suspension = self.env['hr.work.suspension']
+        if 'leave_id' not in Suspension._fields:
+            self.skipTest('Las suspensiones por ausencia son de al_hr_pe_benefits.')
+        self.env['hr.period.generator'].create({
+            'year': 2026, 'company_id': self.company.id}).action_generate()
+        senf = self.env.ref('al_hr_pe.wd_SENF')
+        senf.l10n_pe_suspension_type_id = self.env.ref('al_hr_pe.suspension_21')
+        leave = self._leave('SENF', date(2026, 3, 5), date(2026, 4, 3))
+        employer = leave.l10n_pe_suspension_ids.filtered(
+            lambda s: s.suspension_type_id.code == '20')
+        self.assertEqual(sum(employer.mapped('days')), 20)
+
+        march = self._slip()
+        self.assertEqual(self._days(march, 'DMED'), 20)
+        self.assertEqual(self._days(march, 'SENF'), 7)
+        self.assertEqual(
+            self._days(march, 'DLAB') + self._days(march, 'DOM'), 4)
+        self.assertAlmostEqual(self._line(march, 'DMED'), 2000.0)
+
+        april = self._slip(date_from=date(2026, 4, 1), date_to=date(2026, 4, 30))
+        self.assertEqual(self._days(april, 'SENF'), 3)
+        self.assertFalse(self._days(april, 'DMED'))
+        self.assertEqual(
+            self._days(april, 'DLAB') + self._days(april, 'DOM'), 27)
+        self.assertAlmostEqual(self._line(april, 'BAS_M'), 2700.0)
+
+    # ------------------------------------------------------------------
+    # Subsidios afectos a 5ta
+    # ------------------------------------------------------------------
+    def test_subsidies_are_fifth_category_income(self):
+        """Los subsidios 0915/0916 están afectos a 5ta (tabla 22 de la
+        PLAME): entran en la renta del mes (ROAQ), no en la proyección."""
+        slip = self._slip()
+        roaq, piaq = self._line(slip, 'ROAQ'), self._line(slip, 'PIAQ')
+        slip = self._slip(inputs={'salary_rule_SMAR': 400.0,
+                                  'salary_rule_SENF': 300.0})
+        self.assertAlmostEqual(self._line(slip, 'ROAQ'), roaq + 700.0)
+        self.assertAlmostEqual(self._line(slip, 'PIAQ'), piaq)

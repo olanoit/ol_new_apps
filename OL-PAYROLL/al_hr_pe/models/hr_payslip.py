@@ -468,17 +468,25 @@ class HrPayslip(models.Model):
 
     def _l10n_pe_add_natural_absence_days(self, res, versions, work_entries_vals,
                                           date_from, date_to):
-        """Suma a las líneas de ausencia los días no laborables que caen
-        dentro de una ausencia aprobada (``hr.leave``) del periodo.
+        """Lleva a las líneas de ausencia los días de las ausencias
+        aprobadas (``hr.leave``) del periodo.
 
-        Los días laborables los sigue contando el motor nativo (también
-        las medias jornadas); aquí solo se añaden los días de la ausencia
-        en los que no hay ninguna entrada de su tipo: fines de semana y
-        feriados. Cada día va a la línea de la versión vigente ese día.
+        * **Días naturales**: los días laborables los sigue contando el
+          motor nativo (también las medias jornadas); aquí se añaden los
+          días de la ausencia en los que no hay ninguna entrada de su tipo:
+          fines de semana y feriados.
+        * **Enfermedad (SENF) con días a cargo del empleador**: los días
+          que la ausencia declara con la suspensión T21 «20» (los 20
+          primeros del año, Ley 26790 art. 12; la parte la hace
+          ``al_hr_pe_benefits``) son descanso médico remunerado (DMED) y
+          solo los de «21» son subsidio.
+
+        Cada día va a la línea de la versión vigente ese día.
         """
         self.ensure_one()
-        if not self.employee_id or not self._l10n_pe_natural_absence_days_apply():
+        if not self.employee_id:
             return
+        natural = self._l10n_pe_natural_absence_days_apply()
         leaves = self.env['hr.leave'].sudo().search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'validate'),
@@ -488,44 +496,91 @@ class HrPayslip(models.Model):
         ])
         if not leaves:
             return
-        entry_days = defaultdict(set)
+        dmed = self.env.ref('al_hr_pe.wd_DMED', raise_if_not_found=False)
+        versions = (versions or self.version_id).sorted('date_version')
+        hours_per_day = {
+            version.id: self._get_worked_day_lines_hours_per_day(version)
+            for version in versions}
+        # Horas nativas de cada (tipo, día).
+        entry_hours = defaultdict(float)
         for vals in work_entries_vals or []:
             work_entry_type = vals.get('work_entry_type_id')
             if isinstance(work_entry_type, models.BaseModel):
                 work_entry_type = work_entry_type.id
             if vals.get('date'):
-                entry_days[work_entry_type].add(vals['date'])
-        extra_days = defaultdict(set)
+                entry_hours[work_entry_type, vals['date']] += \
+                    vals.get('duration', 0.0) or 0.0
+
+        def version_of(day):
+            version = versions[:1]
+            for candidate in versions:
+                if candidate.date_version and candidate.date_version <= day:
+                    version = candidate
+            return version
+
+        def line_of(work_entry_type_id, version):
+            lines = [vals for vals in res
+                     if vals.get('work_entry_type_id') == work_entry_type_id]
+            line = next((vals for vals in lines
+                         if vals.get('version_id') == version.id),
+                        lines[0] if lines else None)
+            if line is None:
+                line = {
+                    'version_id': version.id or self.version_id.id,
+                    'sequence': 100,
+                    'work_entry_type_id': work_entry_type_id,
+                    'number_of_days': 0.0,
+                    'number_of_hours': 0.0,
+                }
+                res.append(line)
+            return line
+
         for leave in leaves:
             work_entry_type = leave.work_entry_type_id
+            employer_days = set()
+            if work_entry_type.code == 'SENF' and dmed:
+                employer_days = self._l10n_pe_leave_employer_days(leave)
             day = max(leave.request_date_from, date_from)
             last = min(leave.request_date_to, date_to)
             while day <= last:
-                if day not in entry_days[work_entry_type.id]:
-                    extra_days[work_entry_type.id].add(day)
+                target = dmed.id if day in employer_days else work_entry_type.id
+                version = version_of(day)
+                key = (work_entry_type.id, day)
+                if key in entry_hours:
+                    # Día laborable: ya contado por el motor nativo en el
+                    # tipo de la ausencia; solo se mueve si va a DMED.
+                    if target != work_entry_type.id:
+                        hours = entry_hours[key]
+                        days = hours / hours_per_day[version.id] \
+                            if hours_per_day.get(version.id) else 1.0
+                        source = line_of(work_entry_type.id, version)
+                        source['number_of_days'] -= days
+                        source['number_of_hours'] -= hours
+                        line = line_of(target, version)
+                        line['number_of_days'] += days
+                        line['number_of_hours'] += hours
+                elif natural:
+                    line_of(target, version)['number_of_days'] += 1.0
                 day += timedelta(days=1)
-        versions = (versions or self.version_id).sorted('date_version')
-        for work_entry_type_id, days in extra_days.items():
-            for day in days:
-                version = versions[:1]
-                for candidate in versions:
-                    if candidate.date_version and candidate.date_version <= day:
-                        version = candidate
-                lines = [vals for vals in res
-                         if vals.get('work_entry_type_id') == work_entry_type_id]
-                line = next((vals for vals in lines
-                             if vals.get('version_id') == version.id),
-                            lines[0] if lines else None)
-                if line is None:
-                    line = {
-                        'version_id': version.id or self.version_id.id,
-                        'sequence': 100,
-                        'work_entry_type_id': work_entry_type_id,
-                        'number_of_days': 0.0,
-                        'number_of_hours': 0.0,
-                    }
-                    res.append(line)
-                line['number_of_days'] = line.get('number_of_days', 0.0) + 1.0
+
+    def _l10n_pe_leave_employer_days(self, leave):
+        """Días de ``leave`` declarados con la suspensión T21 «20» (a cargo
+        del empleador). Las suspensiones las enlaza a su ausencia
+        ``al_hr_pe_benefits`` (``leave_id``); sin ese módulo no hay."""
+        Suspension = self.env['hr.work.suspension'].sudo()
+        if 'leave_id' not in Suspension._fields:
+            return set()
+        days = set()
+        for suspension in Suspension.search([
+                ('leave_id', '=', leave.id),
+                ('suspension_type_id.code', '=', '20')]):
+            if not suspension.date_from or not suspension.date_to:
+                continue
+            day = suspension.date_from
+            while day <= suspension.date_to:
+                days.add(day)
+                day += timedelta(days=1)
+        return days
 
     # Conceptos PE que OCUPAN días del mes (los que BAS y las reglas de
     # ausencias pagan o descuentan por día) y los ADICIONALES a la jornada

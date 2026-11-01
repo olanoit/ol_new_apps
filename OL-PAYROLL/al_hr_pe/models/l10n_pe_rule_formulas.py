@@ -274,3 +274,12 @@ _add('salary_rule_PIAQ',
      "# asignación familiar. Las horas extra, comisiones y bonos del mes no se\n"
      "# proyectan; entran en la renta del mes en que se pagan.\n"
      "result = version.wage+AF")
+
+# Los subsidios de maternidad (0915) e incapacidad temporal (0916) están
+# afectos a 5ta (tabla 22 de la PLAME): entran en la renta del mes (ROAQ),
+# no en la proyección (PIAQ).
+_add('salary_rule_ROAQ',
+     "result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI",
+     "# Los subsidios de maternidad (0915) e incapacidad temporal (0916) están\n"
+     "# afectos a 5ta (tabla 22 de la PLAME).\n"
+     "result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI")
