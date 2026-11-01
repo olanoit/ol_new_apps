@@ -682,7 +682,9 @@ class TierTierValidation(CommonTierValidation):
         self.env["ir.access"].search(
             Domain("model_id", "=", self.tester_model.id)
         ).unlink()
-        self.env.registry.clear_cache()
+        # Odoo 20: ya no hay registry.clear_cache(); el unlink de ir.access
+        # limpia la caché de permisos con este mismo método.
+        self.env["ir.access"]._clear_caches()
 
     def test_definition_onchange_warns_when_reviewer_lacks_access(self):
         """Setting an individual reviewer with no read access on the target

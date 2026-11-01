@@ -340,15 +340,17 @@ class TestGanttCalendar(GanttCommon):
         self.assertFalse(calendar['mixed'])
 
     def test_holidays_are_reported(self):
+        # Fecha sin feriado legal: con al_hr_pe_public_holidays instalado, Fiestas
+        # Patrias ya está en el calendario y dos feriados no pueden superponerse.
         self.env['resource.calendar.leaves'].create({
-            'name': 'Fiestas Patrias',
+            'name': 'Feriado de prueba del Gantt',
             'calendar_id': self.project.resource_calendar_id.id,
-            'date_from': '2026-07-28 00:00:00',
-            'date_to': '2026-07-29 23:59:59',
+            'date_from': '2026-07-15 00:00:00',
+            'date_to': '2026-07-16 23:59:59',
         })
         payload = self._get_data(user=self.gantt_user, project_ids=[self.project.id])
         names = {holiday['name'] for holiday in payload['calendar']['holidays']}
-        self.assertIn('Fiestas Patrias', names)
+        self.assertIn('Feriado de prueba del Gantt', names)
 
     def test_mixed_calendars_are_flagged(self):
         other_company = self.env['res.company'].create({'name': 'Compañía D'})

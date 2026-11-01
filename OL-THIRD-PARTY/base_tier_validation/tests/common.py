@@ -9,6 +9,10 @@ from odoo.addons.base.tests.common import BaseCommon
 
 
 class CommonTierValidation(BaseCommon):
+    # Odoo 20: BaseCommon corre cada test con un usuario interno común; estos
+    # tests (de OCA 19) crean definiciones en el cuerpo y esperan el superusuario.
+    _test_user_groups = ()
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
