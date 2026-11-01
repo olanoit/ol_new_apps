@@ -52,7 +52,7 @@ class TestPackage116Stage4Furniture(TestWorksheetV18):
                          '#FFF2CC')
         self.assertNotIn('#E8F0E0', str(styles))
         # El código se lee del final de «nombre · unidad · código».
-        self.assertIn('SUBSTITUTE', bom['cells'][code_ref[:-1] + '2'])
+        self.assertIn('TEXTAFTER', bom['cells'][code_ref[:-1] + '2'])
         self.assertIn('" · "', sheets['REFERENCIAS']['cells']['P3'])
         self.assertTrue(any('$P$3' in cell for cell in sheets['_LISTAS']['cells'].values()))
         keys = sheets[KEYS_SHEET]['cells']

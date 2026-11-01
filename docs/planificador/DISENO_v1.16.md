@@ -16,7 +16,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b) y aceptada |
-| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloques 4a y 4b desarrollados; 4c pendiente |
+| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloques 4a y 4b desarrollados; 4c, parte 1 desarrollada (pestañas, estado y CONTROL); falta la parte 2 (panel y acciones) |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
 empezar la siguiente.
@@ -944,6 +944,81 @@ hoja nace con 300 filas y la importación la amplía.
     (listas, ampliación y asistente), con el recorrido
     `al_construction_furniture_sheet_import`, que sube un libro, amplía de 10 a
     17 filas y comprueba que el servidor guardó lo escrito.
+
+### 4c · Implementación (parte 1)
+
+- **Defecto de 4a y 4b corregido:** la hoja de Odoo 19 no tiene `REPT`.
+  - Lo usaban el código calculado desde «Producto» (BOM y PIEZAS del maestro,
+    «Código del insumo» de APU_DETALLE del presupuesto) y el grupo y la
+    categoría de REFERENCIAS. Daban `#NAME?`, así que el costo vivo y las
+    listas por categoría no funcionaban en la hoja.
+  - Ahora usan `TEXTBEFORE` y `TEXTAFTER`.
+  - La migración `al_construction_planner_spreadsheet` 11.20261101 reescribe
+    esas fórmulas en las hojas ya creadas: datos, última foto y revisiones.
+  - El recorrido nuevo evalúa las fórmulas en el navegador para que esto no
+    vuelva a pasar.
+- **Columnas calculadas nuevas**, con columnas completas para que sigan
+  valiendo al ampliar la hoja:
+  - TIPOLOGIAS: en la obra, módulos, módulos a armar, ML, piezas, costo de
+    materiales y precio;
+  - MODULOS: a armar (el zócalo no) y ML de los grupos que cuentan;
+  - ARBOL: piso con su agrupador, rubro, módulos y ML (M113-08, punto 5, en
+    dos columnas para poder sumarlas);
+  - ACTIVIDADES: tarifa y costo en la obra;
+  - BOM: costo en la obra.
+- **INICIO (M113-07):** es la primera pestaña. Tiene:
+  - cabecera con el estado que escribe el sistema;
+  - ruta de 8 pasos con su semáforo y el enlace a su pestaña;
+  - indicadores;
+  - filas, errores y avisos por pestaña;
+  - «Lo que falta»;
+  - dos gráficos;
+  - resumen por piso en una tabla con filtros nativos.
+- **FICHA (M113-09):**
+  - la tipología se elige de una lista;
+  - datos, pisos, ML por grupo, piezas, costo por unidad y por sub etapa,
+    precio y margen;
+  - módulos con el ancho de OT frente al de las piezas (base, tapa o techo) y
+    las marcas «Controversia de ancho» y «Sin medida de OT».
+  - El menú tiene «‹ Tipología anterior», «Tipología siguiente ›», «Escribir el
+    precio en VENTA» y «Ver ficha de la tipología».
+- **PROGRAMA (M113-10):**
+  - entradas, semanas por sub etapa, fin estimado y ML en instalación por
+    semana;
+  - matriz piso × semana con el número y el color de la sub etapa;
+  - «Escribir fechas en OBRA» deja Inicio y Fin como «AAAA-MM-DD».
+- **CONTROL y «Traer de Odoo» (M113-11):**
+  - `construction_control_counts` entrega por piso los ambientes, los módulos
+    a armar de su tipología y su ML total;
+  - FUENTES, si tiene Piso, Muebles, Módulos y ML, da el origen;
+  - «Coincide» exige que cada piso de la hoja coincida y que el planificador
+    no tenga otros;
+  - CONTROL se actualiza desde el menú y al abrir la hoja después de un envío;
+  - «Traer de Odoo» guarda una versión y escribe tipologías, muebles, módulos,
+    actividades, BOM (la de los módulos y lo que no está en ellos), piezas,
+    árbol y tarifas, con el formato de «Importar Excel a la hoja».
+- **Estado de la hoja (M113-11/12):**
+  - `documents.document` guarda estado, fechas, última importación, versión y
+    mensaje del envío, y semáforo de CONTROL;
+  - el asistente del maestro tiene `spreadsheet_id` y guarda la versión al
+    importar;
+  - la ficha de la obra tiene el botón inteligente con la versión y el
+    estado, y el bloque «Hoja de trabajo» de solo lectura, salvo las filas.
+- **Hojas ya creadas:** las pestañas nuevas son de las hojas que se creen desde
+  ahora. Agregarlas a una hoja existente va en la parte 2.
+- **Pruebas:**
+  - `al_construction_planner_spreadsheet_furniture/tests/test_package_116_stage4c.py`;
+  - el recorrido `al_construction_furniture_planning` importa un libro con la
+    obra ya en el planificador y comprueba los valores de INICIO, FICHA,
+    PROGRAMA y CONTROL.
+- **Parte 2 (pendiente):**
+  - panel «Planificación» y sus acciones (copiar piso, asignar tipología,
+    numerar ambientes repetidos, crear variante y reemplazar un material);
+  - menú del clic derecho;
+  - filas agrupadas por piso;
+  - materiales de la obra primero en la lista;
+  - agregar las pestañas nuevas a hojas existentes;
+  - de CR-22 g, la receta por nombre y la banda de color en APU_DETALLE.
 
 ### Pruebas de la etapa 4
 

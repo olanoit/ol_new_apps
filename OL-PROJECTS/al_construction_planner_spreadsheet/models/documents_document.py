@@ -29,6 +29,18 @@ SHEET_KINDS = [
 BOOK_SHEETS = ('OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO', 'PLAN', 'LISTAS')
 # Pestañas que «Traer de Odoo» escribe por clave de columna.
 KEYED_SHEETS = ('INSUMOS', 'APU', 'APU_DETALLE')
+# Estado de la hoja (paquete 1.13, M113-11): lo escriben «Importar Excel a la
+# hoja», «Validar» y el envío; lo leen INICIO y la ficha de la obra (M113-12).
+SHEET_STATES = [
+    ('draft', 'Borrador'),
+    ('imported', 'Importada'),
+    ('validated', 'Validada'),
+    ('sent', 'Enviada'),
+]
+CONTROL_STATES = [
+    ('match', 'Coincide'),
+    ('mismatch', 'No coincide'),
+]
 
 
 class DocumentsDocument(models.Model):
@@ -53,6 +65,55 @@ class DocumentsDocument(models.Model):
     construction_source_id = fields.Many2one(
         'documents.document', string='Hoja de trabajo vigente', readonly=True, copy=False,
         ondelete='set null', help='En una copia numerada: la hoja de la que se copió.')
+    construction_sheet_state = fields.Selection(
+        SHEET_STATES, string='Estado de la hoja', default='draft', readonly=True, copy=False)
+    construction_state_date = fields.Datetime(string='Fecha del estado', readonly=True,
+                                              copy=False)
+    construction_import_filename = fields.Char(string='Última importación', readonly=True,
+                                               copy=False)
+    construction_import_date = fields.Datetime(string='Fecha de la importación', readonly=True,
+                                               copy=False)
+    construction_import_errors = fields.Integer(string='Errores al importar', readonly=True,
+                                                copy=False)
+    construction_validate_errors = fields.Integer(string='Errores de la última validación',
+                                                  readonly=True, copy=False)
+    construction_validate_warnings = fields.Integer(string='Avisos de la última validación',
+                                                    readonly=True, copy=False)
+    construction_send_version = fields.Integer(string='Versión enviada', readonly=True,
+                                               copy=False)
+    construction_send_date = fields.Datetime(string='Fecha del último envío', readonly=True,
+                                             copy=False)
+    construction_send_message_id = fields.Many2one(
+        'mail.message', string='Mensaje del envío', readonly=True, copy=False,
+        ondelete='set null')
+    construction_control_state = fields.Selection(
+        CONTROL_STATES, string='Control de alcance', readonly=True, copy=False)
+    construction_control_date = fields.Datetime(string='Fecha del control', readonly=True,
+                                                copy=False)
+
+    def _construction_state_label(self):
+        """«Enviada v3 · 01/11/2026 17:40»: el texto del estado en INICIO."""
+        self.ensure_one()
+        label = dict(self._fields['construction_sheet_state']._description_selection(
+            self.env)).get(self.construction_sheet_state or 'draft')
+        if self.construction_sheet_state == 'sent' and self.construction_send_version:
+            label = '%s v%s' % (label, self.construction_send_version)
+        if self.construction_state_date:
+            label = '%s · %s' % (label, fields.Datetime.context_timestamp(
+                self, self.construction_state_date).strftime('%d/%m/%Y %H:%M'))
+        return label
+
+    def _construction_set_state(self, state, **values):
+        """Pasa la hoja a ``state`` con la fecha de ahora (M113-11)."""
+        self.write(dict(values, construction_sheet_state=state,
+                        construction_state_date=fields.Datetime.now()))
+
+    def construction_control_done(self, matches):
+        """Semáforo de CONTROL para la ficha de la obra (M113-12)."""
+        self.ensure_one()
+        self.write({'construction_control_state': 'match' if matches else 'mismatch',
+                    'construction_control_date': fields.Datetime.now()})
+        return True
 
     def _get_spreadsheet_metadata(self, access_token=None):
         data = super()._get_spreadsheet_metadata(access_token)
@@ -70,6 +131,14 @@ class DocumentsDocument(models.Model):
         data['construction_send_sheets'] = document_sudo._construction_send_sheet_names() \
             if data['construction_sheet_kind'] else []
         data['construction_sheet_rows'] = document_sudo.construction_sheet_rows
+        # M113-07: INICIO muestra el estado que escribe el sistema.
+        data['construction_sheet_state'] = document_sudo._construction_state_label() \
+            if data['construction_sheet_kind'] else ''
+        # M113-11: CONTROL se actualiza al abrir la hoja después de un envío.
+        send_date = document_sudo.construction_send_date
+        control_date = document_sudo.construction_control_date
+        data['construction_control_pending'] = bool(
+            send_date and (not control_date or control_date < send_date))
         return data
 
     def _construction_send_sheet_names(self):
@@ -161,11 +230,20 @@ class DocumentsDocument(models.Model):
         # Primero los errores, en el orden de la hoja.
         issues = sorted(issues, key=lambda issue: issue[4] != 'error')
         labels = {'error': self.env._('Error'), 'warning': self.env._('Aviso')}
+        errors = sum(1 for issue in issues if issue[4] == 'error')
+        warnings = len(issues) - errors
+        # M113-11: sin errores la hoja queda validada; con errores vuelve a
+        # borrador (o se queda importada).
+        state = 'validated' if not errors else (
+            'imported' if self.construction_sheet_state == 'imported' else 'draft')
+        self._construction_set_state(state, construction_validate_errors=errors,
+                                     construction_validate_warnings=warnings)
         return {
             'rows': [[sheet or '', row or '', column or '', message, labels.get(kind, kind)]
                      for sheet, row, column, message, kind in issues],
-            'errors': sum(1 for issue in issues if issue[4] == 'error'),
-            'warnings': sum(1 for issue in issues if issue[4] != 'error'),
+            'errors': errors,
+            'warnings': warnings,
+            'state': self._construction_state_label(),
         }
 
     def _construction_validate_budget(self, sheets):
@@ -236,7 +314,29 @@ class DocumentsDocument(models.Model):
         self.ensure_one()
         return self._construction_save_version(self.env._('Nueva versión de la hoja'))
 
+    def _construction_sent(self, reason):
+        """Envío terminado: copia numerada y estado «Enviada vN» con la fecha
+        y el mensaje del historial (M113-11)."""
+        self.ensure_one()
+        copy, message = self._construction_copy_version(reason)
+        now = fields.Datetime.now()
+        self._construction_set_state(
+            'sent', construction_send_version=copy.construction_version,
+            construction_send_date=now, construction_send_message_id=message.id or False)
+        return copy
+
     def _construction_save_version(self, reason):
+        copy, _message = self._construction_copy_version(reason)
+        return {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
+            'type': 'success', 'message': self.env._('Versión %s guardada: %s',
+                                                     copy.construction_version, copy.name)}}
+
+    def _construction_copy_version(self, reason):
+        """Copia numerada de la hoja y el enlace en el historial de la
+        cotización y del plan (o de la obra, si no hay ninguno).
+
+        :return: (copia, mensaje del historial)
+        """
         self.ensure_one()
         version = self.construction_version
         copy = self.copy({
@@ -250,15 +350,19 @@ class DocumentsDocument(models.Model):
                       ) % (reason, copy.id, copy.name)
         order = self.construction_sale_order_id or \
             self.construction_project_id.construction_sale_order_id
+        messages = self.env['mail.message']
         if order:
-            order.message_post(body=body)
+            messages |= order.message_post(body=body)
         plan = self.construction_project_id._construction_current_plan() \
             if self.construction_project_id else False
         if plan:
-            plan.message_post(body=body)
-        return {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
-            'type': 'success', 'message': self.env._('Versión %s guardada: %s', version,
-                                                     copy.name)}}
+            messages |= plan.message_post(body=body)
+        if not messages and self.construction_project_id:
+            # sudo: quien planifica puede no tener escritura en la obra; solo
+            # se deja el enlace de la versión en su historial.
+            messages = self.construction_project_id.sudo().message_post(
+                body=body, author_id=self.env.user.partner_id.id)
+        return copy, messages[:1]
 
 
 class ConstructionBudgetBookWizard(models.TransientModel):
@@ -271,7 +375,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         res = super().action_import()
         # Cada envío deja una copia numerada de la hoja (6.7).
         if self.spreadsheet_id and self.state == 'done':
-            self.spreadsheet_id._construction_save_version(self.env._(
+            self.spreadsheet_id._construction_sent(self.env._(
                 'Hoja enviada al planificador (%s)', dict(self._fields['target'].selection)[
                     self.target]))
         return res

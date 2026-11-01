@@ -14,6 +14,7 @@ from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import 
 )
 
 from .sheet_keys import keys_sheet
+from .sheet_migration import last_part
 
 SPREADSHEET_VERSION = '18.5.10'
 HEADER_STYLE, TITLE_STYLE, CALC_STYLE, DATA_STYLE = 1, 2, 3, 4
@@ -51,8 +52,8 @@ CALCULATED = {
     'APU_DETALLE': [
         # CR-22 g: el código del insumo sale de «tipo · nombre · unidad ·
         # código» elegido en la columna anterior.
-        ('Código del insumo', '=IF({c:pick}{r}="","",IFERROR(TRIM(RIGHT(SUBSTITUTE({c:pick}{r},'
-                              '" · ",REPT(" ",200)),200)),{c:pick}{r}))'),
+        ('Código del insumo', '=IF({c:pick}{r}="","",IFERROR(%s,{c:pick}{r}))'
+         % last_part('{c:pick}{r}', '" · "')),
         ('Tipo (calc.)', '=IF({c:code}{r}="","",IFERROR(VLOOKUP({c:code}{r},INSUMOS!$A$2:$C${n},'
                          '3,0),""))'),
         ('Cantidad (calc.)', '=IF({c:apu}{r}="","",IF(AND({c:crew}{r}<>"",IFERROR(VLOOKUP('
@@ -189,6 +190,53 @@ class ProjectProject(models.Model):
         help='Filas con listas y columnas calculadas por pestaña. 0 (automático): la hoja nace '
              'con 300 filas y la importación de un Excel la amplía. Con un número, la hoja nace '
              'con esas filas; la importación también la amplía si no alcanzan.')
+
+    # Paquete 1.13, M113-12: la hoja vigente y su estado, en la ficha.
+    construction_sheet_document_id = fields.Many2one(
+        'documents.document', string='Hoja de trabajo vigente',
+        compute='_compute_construction_sheet_document_id')
+    construction_sheet_state = fields.Selection(
+        related='construction_sheet_document_id.construction_sheet_state')
+    construction_sheet_version = fields.Integer(
+        related='construction_sheet_document_id.construction_version')
+    construction_sheet_import_filename = fields.Char(
+        related='construction_sheet_document_id.construction_import_filename')
+    construction_sheet_import_date = fields.Datetime(
+        related='construction_sheet_document_id.construction_import_date')
+    construction_sheet_import_errors = fields.Integer(
+        related='construction_sheet_document_id.construction_import_errors')
+    construction_sheet_send_version = fields.Integer(
+        related='construction_sheet_document_id.construction_send_version')
+    construction_sheet_send_date = fields.Datetime(
+        related='construction_sheet_document_id.construction_send_date')
+    construction_sheet_send_message_id = fields.Many2one(
+        related='construction_sheet_document_id.construction_send_message_id')
+    construction_sheet_control_state = fields.Selection(
+        related='construction_sheet_document_id.construction_control_state')
+    construction_sheet_control_date = fields.Datetime(
+        related='construction_sheet_document_id.construction_control_date')
+
+    def _compute_construction_sheet_document_id(self):
+        # sudo: la ficha muestra el estado de la hoja aunque el usuario no
+        # tenga acceso a la carpeta del documento; solo se lee el vínculo.
+        documents_sudo = self.env['documents.document'].sudo().search([
+            ('construction_project_id', 'in', self.ids),
+            ('construction_source_id', '=', False),
+            ('handler', '=', 'spreadsheet')], order='id')
+        by_project = {}
+        for document_sudo in documents_sudo:
+            by_project.setdefault(document_sudo.construction_project_id.id, document_sudo)
+        for project in self:
+            project.construction_sheet_document_id = by_project.get(project.id, False)
+
+    def action_construction_open_sheet_message(self):
+        """Abre el registro con el mensaje del último envío de la hoja."""
+        self.ensure_one()
+        message = self.construction_sheet_send_message_id
+        if not message:
+            return False
+        return {'type': 'ir.actions.act_window', 'res_model': message.model,
+                'res_id': message.res_id, 'view_mode': 'form', 'views': [(False, 'form')]}
 
     def _construction_spreadsheet_kind(self):
         """La hoja del perfil de la obra; sin ella, presupuesto y plan."""

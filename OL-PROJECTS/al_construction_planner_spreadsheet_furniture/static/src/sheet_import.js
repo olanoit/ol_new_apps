@@ -195,7 +195,12 @@ function writeSheet(model, name, spec, payload, keys) {
     return start + spec.rows.length;
 }
 
-async function applyImport(env, payload) {
+/**
+ * Escribe en la hoja lo que entregó el servidor (un Excel o los datos de
+ * Odoo): amplía las filas si no alcanzan, escribe por clave y valida.
+ * Con ``logImport`` deja la importación en el historial y el estado de la hoja.
+ */
+export async function applyImport(env, payload, { logImport = true } = {}) {
     const model = env.model;
     const getters = model.getters;
     const keys = keyColumns(model);
@@ -242,13 +247,15 @@ async function applyImport(env, payload) {
     const sheetCount =
         Object.keys(payload.sheets).length + Object.keys(payload.other || {}).length;
     const result = await validate(env, { quiet: true });
-    await env.constructionCall(
-        "construction_sheet_import_done",
-        payload.filename,
-        sheetCount,
-        result.errors,
-        result.warnings
-    );
+    if (logImport) {
+        await env.constructionCall(
+            "construction_sheet_import_done",
+            payload.filename,
+            sheetCount,
+            result.errors,
+            result.warnings
+        );
+    }
     env.constructionNotify(
         _t("Importado de %(file)s · %(sheets)s pestañas · %(errors)s errores · %(warnings)s avisos", {
             file: payload.filename,
@@ -258,6 +265,7 @@ async function applyImport(env, payload) {
         }),
         result.errors ? "warning" : "success"
     );
+    return result;
 }
 
 async function importExcel(env) {

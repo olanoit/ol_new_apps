@@ -25,11 +25,15 @@ presupuesto y el plan del módulo genérico.
 """
 import base64
 import json
+import re
 
 from odoo import models
 
 from odoo.addons.al_construction_planner_furniture.wizards.master_import_layout import SHEETS
 from odoo.addons.al_construction_planner_spreadsheet.models.sheet_keys import keys_sheet
+from odoo.addons.al_construction_planner_spreadsheet.models.sheet_migration import (
+    first_part, last_part, second_part,
+)
 
 SPREADSHEET_VERSION = '18.5.10'
 REFERENCE_SHEET = 'REFERENCIAS'
@@ -46,15 +50,67 @@ STYLES = {str(HEADER_STYLE): {'bold': True, 'fillColor': '#DDE4EE'},
 # tramo; un «[código] nombre» de una hoja anterior se sigue leyendo.
 PICK_SEPARATOR = ' · '
 CODE_FROM_PICK = ('=IF({p}{r}="","",IF(LEFT({p}{r},1)="[",IFERROR(MID({p}{r},2,FIND("]",{p}{r})'
-                  '-2),{p}{r}),IFERROR(TRIM(RIGHT(SUBSTITUTE({p}{r},"' + PICK_SEPARATOR +
-                  '",REPT(" ",200)),200)),{p}{r})))')
+                  '-2),{p}{r}),IFERROR(%s,{p}{r})))' % last_part('{p}{r}', '"%s"' % PICK_SEPARATOR))
 DEFAULT_ROWS = 300
 MAX_PRODUCTS = 20000
 EXCLUDED_CATEGORIES = ('Deliveries', 'Expenses')
 
 # Columnas calculadas que agrega la plantilla a una hoja del maestro:
-# (encabezado, fórmula con {r} = fila y {c:<clave>} = letra de la columna).
+# (encabezado, fórmula con {r} = fila, {c:<clave>} = letra de la columna y
+# {x:<pestaña>:<clave>} = columna completa de otra pestaña). Una clave que
+# empieza con «#» es el encabezado de una columna calculada.
+_ML_GROUPS_COUNTED = ('Mueble bajo', 'Bajo', 'Mueble alto', 'Alto', 'Mueble completo',
+                      'Completo')
+# Ambientes de la obra con la tipología de la fila.
+_IN_SITE = ('IFERROR(XLOOKUP({c:typology}{r},{x:TIPOLOGIAS:code},'
+            '{x:TIPOLOGIAS:#En la obra (calc.)}),0)')
 CALCULATED = {
+    # Paquete 1.13, M113-07/09: lo que INICIO, FICHA y CONTROL suman.
+    'TIPOLOGIAS': [
+        ('En la obra (calc.)', '=IF({c:code}{r}="","",COUNTIF({x:ARBOL:typology},{c:code}{r}))'),
+        ('Módulos (calc.)', '=IF({c:code}{r}="","",COUNTIF({x:MODULOS:typology},{c:code}{r}))'),
+        ('Módulos a armar (calc.)', '=IF({c:code}{r}="","",SUMIFS({x:MODULOS:#A armar (calc.)},'
+                                    '{x:MODULOS:typology},{c:code}{r}))'),
+        # Con anchos en los módulos, su suma; sin anchos, los ML escritos.
+        ('ML (calc.)', '=IF({c:code}{r}="","",IF(SUMIFS({x:MODULOS:#ML (calc.)},'
+                       '{x:MODULOS:typology},{c:code}{r})>0,SUMIFS({x:MODULOS:#ML (calc.)},'
+                       '{x:MODULOS:typology},{c:code}{r}),IFERROR(VALUE({c:ml_low}{r}),0)+'
+                       'IFERROR(VALUE({c:ml_high}{r}),0)))'),
+        ('Piezas (calc.)', '=IF({c:code}{r}="","",SUMIFS({x:PIEZAS:qty},{x:PIEZAS:typology},'
+                           '{c:code}{r}))'),
+        ('Costo de materiales (calc.)', '=IF({c:code}{r}="","",SUMIFS('
+                                        '{x:BOM:#Costo de la línea (calc.)},{x:BOM:typology},'
+                                        '{c:code}{r}))'),
+        ('Precio (calc.)', '=IF({c:code}{r}="","",IFERROR(XLOOKUP({c:code}{r},'
+                           '{x:VENTA:typology},{x:VENTA:price}),0))'),
+    ],
+    # El zócalo no se arma (va sin unión): no cuenta en «módulos a armar».
+    'MODULOS': [
+        ('A armar (calc.)', '=IF({c:code}{r}="","",IF(OR(ISNUMBER(SEARCH("ZOCALO",{c:code}{r}&" "'
+                            '&{c:name}{r})),ISNUMBER(SEARCH("ZÓCALO",{c:code}{r}&" "&{c:name}{r}'
+                            '))),0,1))'),
+        ('ML (calc.)', '=IF(OR({c:code}{r}="",{c:width}{r}=""),"",IF(OR(%s),{c:width}{r}/1000,0))'
+         % ','.join('{c:ml_group}{r}="%s"' % group for group in _ML_GROUPS_COUNTED)),
+    ],
+    'ARBOL': [
+        # Piso con su agrupador («Torre A / Piso 3»), siempre como texto.
+        ('Piso (calc.)', '=IF({c:floor}{r}="","",IF({c:group}{r}="",{c:floor}{r}&"",'
+                         '{c:group}{r}&" / "&{c:floor}{r}))'),
+        ('Rubro (calc.)', '=IF({c:typology}{r}="","",IFERROR(XLOOKUP({c:typology}{r},'
+                          '{x:TIPOLOGIAS:code},{x:TIPOLOGIAS:family}),""))'),
+        # M113-08, punto 5: módulos a armar y ML de la tipología del ambiente.
+        ('Módulos (calc.)', '=IF({c:typology}{r}="","",IFERROR(XLOOKUP({c:typology}{r},'
+                            '{x:TIPOLOGIAS:code},{x:TIPOLOGIAS:#Módulos a armar (calc.)}),'
+                            '"Falta"))'),
+        ('ML (calc.)', '=IF({c:typology}{r}="","",IFERROR(XLOOKUP({c:typology}{r},'
+                       '{x:TIPOLOGIAS:code},{x:TIPOLOGIAS:#ML (calc.)}),0))'),
+    ],
+    'ACTIVIDADES': [
+        ('Tarifa (calc.)', '=IF({c:activity}{r}="","",IFERROR(XLOOKUP({c:activity}{r},'
+                           '{x:TARIFAS:activity},{x:TARIFAS:price}),0))'),
+        ('Costo en la obra (calc.)', '=IF({c:activity}{r}="","",IFERROR(VALUE({c:qty}{r}),0)*'
+                                     '{c:#Tarifa (calc.)}{r}*%s)' % _IN_SITE),
+    ],
     'PIEZAS': [
         ('m² (calc.)', '=IF(OR({c:qty}{r}="",{c:length}{r}="",{c:width}{r}=""),"",'
                        '{c:qty}{r}*{c:length}{r}*{c:width}{r}/1000000)'),
@@ -69,6 +125,10 @@ CALCULATED = {
         ('Costo de la línea (calc.)', '=IF({c:product_code}{r}="","",IFERROR({c:qty}{r}*'
                                       'VLOOKUP({c:product_code}{r},REFERENCIAS!$K$3:$M${p},3,0),'
                                       '{c:qty}{r}*{c:cost}{r}))'),
+        # M113-07: costo de la línea por los ambientes de su tipología.
+        ('Costo en la obra (calc.)', '=IF({c:product_code}{r}="","",IFERROR('
+                                     '{c:#Costo de la línea (calc.)}{r}*%s,0))'
+         % _IN_SITE),
     ],
 }
 # Columna «Producto» (lista dependiente) y código calculado desde ella.
@@ -79,11 +139,10 @@ GROUP_HEADER = 'Grupo de categoría'
 CATEGORY_SEPARATOR = ' / '
 # Fórmulas de REFERENCIAS sobre la ruta completa de la categoría (columna N):
 # tramos separados por « / », sin listas (una fila por producto).
-_SEGMENTS = 'SUBSTITUTE(N{r}," / ",REPT(" ",200))'
 _COUNT = '((LEN(N{r})-LEN(SUBSTITUTE(N{r}," / ","")))/3+1)'
-_FIRST = 'TRIM(LEFT(%s,200))' % _SEGMENTS
-_SECOND = 'TRIM(MID(%s,201,200))' % _SEGMENTS
-_LAST = 'TRIM(RIGHT(%s,200))' % _SEGMENTS
+_FIRST = first_part('N{r}', '" / "')
+_SECOND = second_part('N{r}', '" / "')
+_LAST = last_part('N{r}', '" / "')
 REF_GROUP = '=IF(N{r}="","",IF(%s>=2,%s,%s))' % (_COUNT, _SECOND, _FIRST)
 REF_LAST = '=IF(N{r}="","",%s)' % _LAST
 REF_SHORT = '=IF(N{r}="","",IF(%s>=3,Q{r}&" / "&R{r},R{r}))' % _COUNT
@@ -113,6 +172,11 @@ FIXED_LISTS = {
 LEEME = [
     'Hoja de trabajo de la oficina técnica (mobiliario)',
     '',
+    'INICIO muestra el estado de la hoja, la ruta de planificación con su semáforo, los '
+    'indicadores y lo que falta. FICHA resume una tipología, PROGRAMA arma el pre-plan por '
+    'piso y CONTROL compara la hoja con el planificador. Las acciones están en el menú '
+    'Planificación de obra.',
+    '',
     '1. OBRA: datos y condiciones de la obra (Inicio, Fin, Cliente, Adelanto %, Fondo de '
     'garantía %).',
     '2. ARBOL: piso, departamento, ambiente, tipología y tipo de unidad, medidos sobre el plano.',
@@ -126,9 +190,39 @@ LEEME = [
     '6. ACTIVIDADES, TARIFAS, CONTRATOS, HITOS, VENTA y MO PROPIA: contratas, tarifas de la '
     'obra, contrato con el cliente y mano de obra propia.',
     '7. RESUMEN: tablas dinámicas sobre la propia hoja.',
-    '8. Aprobado el presupuesto por el cliente: Archivo › Enviar al planificador. Un segundo '
-    'envío no duplica nada.',
+    '8. Aprobado el presupuesto por el cliente: Planificación de obra › Validar y después › '
+    'Enviar al planificador. Un segundo envío no duplica nada.',
 ]
+
+
+def sheet_ref(name):
+    """Nombre de la pestaña para una fórmula (entre comillas si tiene espacios)."""
+    return "'%s'" % name if ' ' in name else name
+
+
+def column_of(layout, sheet, key):
+    """Letra de la columna ``key`` de una pestaña; «#encabezado» es una
+    columna calculada."""
+    info = layout['sheets'][sheet]
+    if key.startswith('#'):
+        return info['calc_letters'][key[1:]]
+    return info['letters'][key]
+
+
+def full_column(layout, sheet, key):
+    """«ARBOL!$E:$E»: la columna completa, que sigue valiendo si la hoja
+    se amplía."""
+    letter = column_of(layout, sheet, key)
+    return '%s!$%s:$%s' % (sheet_ref(sheet), letter, letter)
+
+
+def sheet_formula(layout, name, text):
+    """Fórmula de la pestaña ``name`` con ``{c:clave}`` (columna de la
+    misma pestaña) y ``{x:pestaña:clave}`` (columna completa de otra)."""
+    text = re.sub(r'\{x:([^:}]+):([^}]+)\}',
+                  lambda match: full_column(layout, match.group(1), match.group(2)), text)
+    return re.sub(r'\{c:([^}]+)\}', lambda match: column_of(layout, name, match.group(1)),
+                  text)
 
 
 def _letter_index(letters):
@@ -279,11 +373,10 @@ class ProjectProject(models.Model):
             letters = info['letters']
             for header, formula in info['calculated']:
                 col = info['calc_letters'][header]
+                template = sheet_formula(layout, name, formula)
                 for row in range(first, last + 1):
-                    text = formula.replace('{r}', str(row)).replace('{p}', str(last_product))
-                    for key, letter in letters.items():
-                        text = text.replace('{c:%s}' % key, letter)
-                    cells['%s%s' % (col, row)] = text
+                    cells['%s%s' % (col, row)] = template.replace('{r}', str(row)).replace(
+                        '{p}', str(last_product))
             for (sheet, key), values in FIXED_LISTS.items():
                 if sheet == name and key in letters:
                     part['rules'].append({
@@ -422,7 +515,23 @@ class ProjectProject(models.Model):
                         self.env['construction.stage']._offered_stages(self)]
         parts = self._construction_row_parts(layout, 2, rows + 1)
         sheets = []
-        sheet_ids = {}
+        sheet_ids = {name: 'sheet%s' % index
+                     for index, name in enumerate(layout['sheets'], start=1)}
+        # Paquete 1.13, M113-07 a 11: INICIO (la hoja abre en ella), FICHA,
+        # PROGRAMA, CONTROL y ERRORES.
+        sheet_ids.update({name: 'sheet_%s' % name.lower() for name in (
+            'INICIO', 'FICHA', 'PROGRAMA', 'CONTROL', 'ERRORES')})
+        planning = self._construction_planning_sheets(layout, rows, sheet_ids, stage_labels)
+        formats = {}
+
+        def add_planning(name):
+            sheet = dict(planning[name], id=sheet_ids[name])
+            sheet['formats'] = {
+                ref: formats.setdefault(text, len(formats) + 1)
+                for ref, text in sheet.pop('formats', {}).items()}
+            sheets.append(sheet)
+
+        add_planning('INICIO')
 
         # LEEME
         sheets.append({
@@ -446,8 +555,7 @@ class ProjectProject(models.Model):
                 styles['%s1' % info['letters']['product_code']] = CALC_STYLE
             cells.update(parts[name]['cells'])
             key_columns[name] = [(key, i) for i, (key, _h) in enumerate(info['columns'])]
-            sheet_id = 'sheet%s' % index
-            sheet_ids[name] = sheet_id
+            sheet_id = sheet_ids[name]
             sheets.append({
                 'id': sheet_id, 'name': name, 'colNumber': max(26, len(headers)),
                 'rowNumber': rows + 50, 'cells': cells, 'styles': styles,
@@ -559,6 +667,8 @@ class ProjectProject(models.Model):
             layout, rows, sheet_ids)
         summary['cells'].update(summary_cells)
         summary['styles'].update(summary_styles)
+        for name in ('FICHA', 'PROGRAMA', 'CONTROL', 'ERRORES'):
+            add_planning(name)
 
         # Clave interna de cada columna del maestro (M116-09).
         sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))
@@ -567,6 +677,7 @@ class ProjectProject(models.Model):
             'version': SPREADSHEET_VERSION,
             'sheets': sheets,
             'styles': STYLES,
+            'formats': {str(format_id): text for text, format_id in formats.items()},
             'settings': settings,
             'lists': lists,
             'listNextId': len(reference_lists) + 1,
