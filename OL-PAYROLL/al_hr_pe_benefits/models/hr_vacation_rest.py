@@ -109,11 +109,15 @@ class HrVacationRest(models.Model):
         ]).unlink()
 
         today = fields.Date.context_today(self)
+        Record = self.env['hr.vacation.record']
         for employee in employees_to_process:
             version = employee.version_id
+            # Jornada menor a 4 horas: sin vacaciones (D.Leg. 713, art. 12),
+            # igual que la liquidación vacacional.
             if not version \
                     or version.l10n_pe_labor_regime not in (
                         'general', 'small', 'micro') \
+                    or version.l10n_pe_less_than_four \
                     or not version.contract_date_start:
                 continue
 
@@ -157,17 +161,31 @@ class HrVacationRest(models.Model):
                     - timedelta(days=1)
                 if period_end <= end_calculation_date:
                     # Año vacacional completo (cumplido hoy o antes del
-                    # cese): 12 meses × días/mes del régimen.
+                    # cese): 12 meses × días/mes del régimen, SOLO si el
+                    # año cumple el récord (D.Leg. 713, art. 10). Sin
+                    # boletas para evaluarlo («sin datos») se generan y el
+                    # motivo lo avisa.
+                    record = Record._l10n_pe_get_record(
+                        employee, current_date, period_end)
+                    motive = 'Vacaciones devengadas %s' % current_date.year
+                    year_days, year_total = days_per_year, year_amount
+                    if record.state in ('fails', 'not_applicable'):
+                        year_days = year_total = 0.0
+                        motive = 'Vacaciones no generadas %s: no cumple ' \
+                                 'el récord vacacional (%s)' % (
+                                     current_date.year,
+                                     record.evaluation_note or '')
+                    elif record.state == 'no_data':
+                        motive += ' (récord sin datos: verificar)'
                     vals = {
                         'date_aplication': period_end,
                         'date_from': current_date,
                         'date_end': period_end,
-                        'motive': 'Vacaciones devengadas %s'
-                                  % current_date.year,
-                        'days': days_per_year,
-                        'days_rest': days_per_year,
-                        'amount': year_amount,
-                        'amount_rest': year_amount,
+                        'motive': motive,
+                        'days': year_days,
+                        'days_rest': year_days,
+                        'amount': year_total,
+                        'amount_rest': year_total,
                     }
                 else:
                     # Año vacacional en curso (o cortado por el cese):

@@ -114,6 +114,149 @@
         </field>
     </record>
 
+    <!-- ============================================================ -->
+    <!-- Récord vacacional anual (D.Leg. 713, art. 10): hr.vacation.record -->
+    <!-- ============================================================ -->
+    <record id="hr_vacation_record_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.record.form.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.record</field>
+        <field name="arch" type="xml">
+            <form string="Récord vacacional anual" create="0">
+                <header>
+                    <button name="action_evaluate" string="Reevaluar" type="object" class="btn-primary"/>
+                    <button name="action_clear_manual" string="Quitar ajuste manual" type="object"
+                            invisible="not manual_state"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="employee_id"/></h1>
+                        <div class="text-muted">
+                            <field name="date_from" class="oe_inline"/> → <field name="date_to" class="oe_inline"/>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" role="status">
+                        Récord vacacional (D.Leg. 713, art. 10): el año de servicios genera las vacaciones si
+                        tiene al menos 260 días efectivos (jornada de seis días), 210 (jornada de cinco) o, con
+                        jornada de menos de cinco días, no más de 10 faltas injustificadas. Cuentan los días
+                        laborados, feriados o descansos laborados, vacaciones, licencias con goce, paternidad,
+                        maternidad y hasta 60 días de descanso médico al año.
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="state != 'no_data'">
+                        Sin datos suficientes para evaluar el récord: los días de vacaciones del año se generan
+                        igual. Verifíquelo y, si corresponde, ajústelo a mano.
+                    </div>
+                    <group>
+                        <group string="Jornada y umbral">
+                            <field name="version_id"/>
+                            <field name="weekly_days"/>
+                            <field name="workweek"/>
+                            <field name="threshold"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Días del año">
+                            <field name="worked_days"/>
+                            <field name="paid_leave_days"/>
+                            <field name="sick_days"/>
+                            <field name="sick_days_counted"/>
+                            <field name="effective_days" class="fw-bold"/>
+                            <field name="absence_days" class="fw-bold"/>
+                            <field name="covered_days"/>
+                            <field name="period_days"/>
+                            <field name="slip_count"/>
+                        </group>
+                    </group>
+                    <group string="Resultado">
+                        <group>
+                            <field name="computed_state"/>
+                            <field name="evaluation_date"/>
+                        </group>
+                        <group>
+                            <field name="manual_state"/>
+                            <field name="manual_note" required="manual_state" invisible="not manual_state"/>
+                            <field name="manual_user_id" invisible="not manual_state"/>
+                            <field name="manual_date" invisible="not manual_state"/>
+                        </group>
+                    </group>
+                    <field name="evaluation_note" nolabel="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_vacation_record_view_list" model="ir.ui.view">
+        <field name="name">hr.vacation.record.list.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.record</field>
+        <field name="arch" type="xml">
+            <list create="0" decoration-danger="state == 'fails'" decoration-warning="state == 'no_data'"
+                  decoration-muted="state == 'not_applicable'">
+                <field name="employee_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="workweek" optional="show"/>
+                <field name="threshold" optional="show"/>
+                <field name="effective_days"/>
+                <field name="sick_days" optional="hide"/>
+                <field name="absence_days"/>
+                <field name="covered_days" optional="hide"/>
+                <field name="computed_state" optional="hide"/>
+                <field name="manual_state" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'meets'"
+                       decoration-danger="state == 'fails'" decoration-warning="state == 'no_data'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="hr_vacation_record_view_search" model="ir.ui.view">
+        <field name="name">hr.vacation.record.search.al.hr.pe.benefits</field>
+        <field name="model">hr.vacation.record</field>
+        <field name="arch" type="xml">
+            <search string="Récord vacacional anual">
+                <field name="employee_id"/>
+                <separator/>
+                <filter string="Cumple" name="meets" domain="[('state', '=', 'meets')]"/>
+                <filter string="No cumple" name="fails" domain="[('state', '=', 'fails')]"/>
+                <filter string="Sin datos" name="no_data" domain="[('state', '=', 'no_data')]"/>
+                <filter string="Ajuste manual" name="manual" domain="[('manual_state', '!=', False)]"/>
+                <filter string="Trabajador" name="group_employee" context="{'group_by': 'employee_id'}"/>
+                <filter string="Récord" name="group_state" context="{'group_by': 'state'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_vacation_record" model="ir.actions.act_window">
+        <field name="name">Récord vacacional anual</field>
+        <field name="res_model">hr.vacation.record</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="hr_vacation_record_view_search"/>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aún no hay años de récord evaluados: se evalúan al cumplir el año (tarea diaria), al
+                recalcular los saldos de vacaciones o desde la ficha del trabajador.
+            </p>
+        </field>
+    </record>
+
+    <!-- Botón en la ficha del trabajador (solo nómina). -->
+    <record id="view_employee_form_vacation_record" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.pe.vacation.record</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_l10n_pe_vacation_records" type="object"
+                        class="oe_stat_button" icon="event_available"
+                        groups="hr_payroll.group_hr_payroll_user">
+                    <field name="l10n_pe_vacation_record_count" widget="statinfo"
+                           string="Récord vac."/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
     <!-- Asistente de recálculo del récord vacacional -->
     <record id="hr_vacation_rest_wizard_view_form" model="ir.ui.view">
         <field name="name">hr.vacation.rest.wizard.form.al.hr.pe.benefits</field>
@@ -395,5 +538,9 @@
               action="action_hr_vacation_rest"
               parent="menu_hr_pe_benefits_vacation"
               sequence="3"/>
+    <menuitem id="menu_hr_pe_benefits_vacation_record"
+              action="action_hr_vacation_record"
+              parent="menu_hr_pe_benefits_vacation"
+              sequence="4"/>
 
 </odoo>

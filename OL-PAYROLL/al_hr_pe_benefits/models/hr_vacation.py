@@ -436,14 +436,14 @@ class HrVacation(models.Model):
                 fields=', '.join(missing)))
 
     def _get_dom_record_days(self, version):
-        """Récord vacacional según el calendario: 260 días si la jornada
-        incluye descanso semanal DOM, 210 si no (v18 lo resolvía con SQL
-        crudo sobre resource_calendar_attendance)."""
-        dom_count = self.env['resource.calendar.attendance'].search_count([
-            ('calendar_id', '=', version.resource_calendar_id.id),
-            ('work_entry_type_id.code', '=', 'DOM'),
-        ])
-        return 260 if dom_count else 210
+        """Días efectivos que exige el récord vacacional según la jornada
+        semanal del calendario: 260 con seis días, 210 con cinco y 0 con
+        menos de cinco (ahí el récord son 10 faltas como máximo). Antes se
+        deducía de si el calendario tenía franjas DOM."""
+        Record = self.env['hr.vacation.record']
+        workweek, threshold = Record._l10n_pe_workweek(
+            Record._l10n_pe_weekly_days(version))
+        return 0 if workweek == 'less' else threshold
 
     # ------------------------------------------------------------------
     # Exportación al lote de nóminas

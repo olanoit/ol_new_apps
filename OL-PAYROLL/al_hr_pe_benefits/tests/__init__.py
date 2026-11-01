@@ -9,3 +9,4 @@ from . import test_state_readonly
 from . import test_review_fifth
 from . import test_review_benefits
 from . import test_review_misc
+from . import test_vacation_record

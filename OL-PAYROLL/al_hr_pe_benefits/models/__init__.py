@@ -5,6 +5,7 @@ from . import hr_gratification
 from . import hr_fifth_category
 from . import hr_leave
 from . import hr_vacation_rest
+from . import hr_vacation_record
 from . import hr_vacation
 from . import hr_liquidation
 from . import hr_provisions

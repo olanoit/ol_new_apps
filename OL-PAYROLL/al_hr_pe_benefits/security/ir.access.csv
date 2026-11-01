@@ -98,3 +98,5 @@ access_hr_loan_line_user,hr.loan.line user,hr.loan.line,hr_payroll.group_hr_payr
 hr_loan_line_company_rule,Cuota de préstamo: multicompañía,hr.loan.line,,crud,"[('company_id', 'in', company_ids)]"
 access_hr_fortnightly_user,hr.fortnightly user,hr.fortnightly,hr_payroll.group_hr_payroll_user,crud,
 hr_fortnightly_company_rule,Quincena: multicompañía,hr.fortnightly,,crud,"[('company_id', 'in', company_ids)]"
+access_hr_vacation_record_user,hr.vacation.record user,hr.vacation.record,hr_payroll.group_hr_payroll_user,crud,
+hr_vacation_record_company_rule,Récord vacacional anual: multicompañía,hr.vacation.record,,crud,"[('company_id', 'in', company_ids)]"
