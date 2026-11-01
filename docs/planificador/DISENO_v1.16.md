@@ -25,12 +25,10 @@ empezar la siguiente.
 las instancias v19 del servidor quedaron con la versión del repositorio: las
 bases de desarrollo, la principal y la de staging.
 
-Quedan dos pruebas, que dependen de insumos externos:
+Queda una prueba, que depende de un insumo externo:
 
 - la prueba de punta a punta del 1.13 con el libro real de la obra de
-  mobiliario (M113-07 y M113-08);
-- la medición de una hoja de 8 000 filas en dev1. En local abre en 13 a 15 s
-  (ver «Rendimiento de una hoja de 8 000 filas»).
+  mobiliario (M113-07 y M113-08).
 
 ## Etapa 1
 
@@ -1111,14 +1109,18 @@ hoja nace con 300 filas y la importación la amplía.
 
 ### Rendimiento de una hoja de 8 000 filas (medido el 01-nov-2026)
 
-Medido en local, en el navegador sin interfaz, con la plantilla de 8 000 filas.
-Falta medirlo en dev1.
+Medido en local, en el navegador sin interfaz, y en dev1, con la plantilla de
+8 000 filas.
 
 | Hoja | Tamaño | Abrir | Editar una celda |
 |---|---|---|---|
 | Vacía, antes del tope | 30 MB | 28 a 60 s | 2 a 5 s |
 | Vacía, con el tope | 24 MB | 13 s | 0.3 a 0.4 s |
 | Con datos (8 000 BOM, 4 000 piezas, 300 ambientes, 20 tipologías), con el tope | 25 MB | 14.7 s | BOM 1 s · MODULOS 0.9 s · TIPOLOGIAS 0.07 s |
+| La misma hoja en dev1, con un navegador de escritorio (01-nov) | 27.7 MB (2.7 MB comprimidos) | 24.6 s, de ellos unos 3 s de red | BOM 1.7 a 1.9 s · MODULOS 1.1 s · TIPOLOGIAS 0.07 s |
+
+En dev1 la pestaña usó unos 1.3 GB de memoria. La hoja y la obra de la
+medición se borraron al terminar.
 
 - **Causa:** las columnas calculadas en todas las filas. Sin ellas, la hoja
   abre en 13.5 s y una edición tarda 0.2 s. La más cara era TIPOLOGIAS: 7
