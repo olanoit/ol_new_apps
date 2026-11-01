@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_sale.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261101 — 01/11/2026
+
+- CR-23: el envío del libro de APU y presupuesto con «Reemplazar» ya no borra las copias de líneas manuales.
+- M116-01 y CR-22 a): una etapa de otro perfil es error de la fila y una actividad archivada se reactiva; la línea del cambio de obra ofrece las etapas del perfil.
+- M116-11 e I-12: el libro acepta filas de título y una ruta por código de partida (1.01.01 o 1.0101); el envío crea un nivel por tramo y la cotización conserva sección y subsección.
+- M116-05: columnas «Especialidad (catálogo)» y «Sub-especialidad (catálogo)»: llevan la cuenta analítica del nivel; un valor sin cuenta queda avisado en la cotización.
+- M116-09: el libro reconoce cada columna también por su clave interna.
+- M116-08: los cuadros dinámicos de contratos y del cronograma valorizado parten los nombres largos.
+
 ## 14.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

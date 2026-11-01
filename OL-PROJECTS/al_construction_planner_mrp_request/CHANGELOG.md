@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261031 — 01/11/2026
+
+- M114-05: si la lista del producto es del almacén del tipo de reposición de Ajustes, «Pedir reposición a planta» usa ese tipo.
+
 ## 5.20261027 — 27/10/2026
 
 - Paquete 1.12, M112-03: «Pedir reposición a planta» crea la orden en la planta de la lista del producto, con su lista y el tipo de ese almacén que pide motivo. Sin lista, o sin ese tipo, avisa y no crea una orden vacía.

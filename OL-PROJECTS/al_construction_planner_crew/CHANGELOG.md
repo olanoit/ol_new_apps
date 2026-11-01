@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_crew.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 6.20261101 — 01/11/2026
+
+- M116-08: el cuadro dinámico «Jornales de las cuadrillas» parte los nombres largos con el ancho máximo de Ajustes.
+
 ## 5.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

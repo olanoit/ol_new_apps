@@ -13,13 +13,24 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 
 | Etapa | Contenido | Estado |
 |---|---|---|
-| 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
-| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
+| 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada y aceptada |
+| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c) y aceptada |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b) y aceptada |
-| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloques 4a, 4b y 4c desarrollados (4c en dos partes: pestañas, estado y CONTROL; panel, acciones y hojas existentes) |
+| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Desarrollada (bloques 4a, 4b y 4c) y aceptada |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
 empezar la siguiente.
+
+**Paquete terminado el 01-nov-2026.** Las cuatro etapas están aceptadas. Todas
+las instancias v19 del servidor quedaron con la versión del repositorio: las
+bases de desarrollo, la principal y la de staging.
+
+Quedan dos pruebas, que dependen de insumos externos:
+
+- la prueba de punta a punta del 1.13 con el libro real de la obra de
+  mobiliario (M113-07 y M113-08);
+- la medición de una hoja de 8 000 filas en dev1. En local abre en 13 a 15 s
+  (ver «Rendimiento de una hoja de 8 000 filas»).
 
 ## Etapa 1
 

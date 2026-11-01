@@ -65,6 +65,11 @@ pasos:
       personal propio; al publicarlo crea los apuntes analíticos.
 
 novedades:
+  - version: '7.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "D2: el cierre de costo de mano de obra reparte el costo de cada persona entre las líneas del plan donde trabajó, por sus jornales ejecutados de cuadrilla y con la analítica de cada línea; lo que no tiene turno queda como antes."
+      - "D2: la pestaña de horas del cierre muestra el reparto por línea del plan."
   - version: '6.20261027'
     fecha: 27/10/2026
     cambios:

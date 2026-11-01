@@ -7,6 +7,12 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_mrp.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 17.20261101 — 01/11/2026
+
+- D1: el apunte de una orden de obra reparte cada etapa entre las cuentas Rubro, en proporción al material planificado de los ambientes de la orden por familia.
+- CR-26: las ayudas que nombran la orden de fabricación y el filtro «Orden de fabricación» de las asignaciones solo se ven con este puente; el núcleo habla de producción en taller.
+- M115-01: el asistente pasa a «Requerimiento de fabricación», con el botón «Crear requerimiento de fabricación».
+
 ## 14.20261027 — 27/10/2026
 
 - Paquete 1.12, M112-01: el paquete de piezas no vuelve a cargar costo analítico en la orden que lo consume (ajuste «El componente intermedio no carga costo analítico», activo por defecto); el asiento contable no cambia.

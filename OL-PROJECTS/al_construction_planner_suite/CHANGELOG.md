@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_suite.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 26.20261101 — 01/11/2026
+
+- Paquete 1.16: pruebas de las cuatro etapas (base común, requerimiento y analítica, Cronograma y mueble completo) y de la categoría de los productos de módulo.
+
 ## 23.20261027 — 27/10/2026
 
 - Paquete 1.12: pruebas de costo por etapa, reposición a planta y modalidad de ejecución; el ejemplo de la demostración paga sus actividades a contratas.

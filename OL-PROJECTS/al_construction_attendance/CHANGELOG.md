@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_attendance.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 7.20261101 — 01/11/2026
+
+- D2: el cierre de costo de mano de obra reparte el costo de cada persona entre las líneas del plan donde trabajó, por sus jornales ejecutados de cuadrilla y con la analítica de cada línea; lo que no tiene turno queda como antes.
+- D2: la pestaña de horas del cierre muestra el reparto por línea del plan.
+
 ## 6.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

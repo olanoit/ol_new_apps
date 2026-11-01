@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_subcontract.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 18.20261101 — 01/11/2026
+
+- CR-20 e I-13: asistente «Intervenir contrata» en la OC de contrata confirmada y en el Cronograma: preliquidación por partida, la línea del plan queda libre para otra contrata y las cuotas del fondo se retienen con el motivo «Contrata intervenida».
+- CR-20: la OC intervenida rechaza avance nuevo en esas partidas y acepta deductivos; tipo de deductivo «Defecto de la contrata intervenida»; las intervenciones quedan en «Contratas › Intervenciones».
+- CR-20: en la liquidación final, los deductivos que exceden lo que queda por pagar van a una nota de crédito del proveedor que se concilia con las cuotas del fondo, de la más antigua a la más nueva.
+- CR-24 con M116-06: «Asignar contrata» no abre si nada queda por asignar, lista lo omitido por contrata y avisa cuando la partida tiene «Personal propio»; la nueva modalidad se guarda en la partida.
+- M116-01 e I-11: el asistente ofrece las etapas del perfil de la obra; el portal de contratas filtra por «Lleva APU» cuando la plantilla tiene «APU en cualquier nivel».
+
 ## 14.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

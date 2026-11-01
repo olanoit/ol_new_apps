@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_purchase.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261101 — 01/11/2026
+
+- M114-01: al aprobar el plan, los requerimientos de obra pedidos sin plan se asignan a sus líneas; el exceso queda registrado con el motivo «Regularización de pedido sin plan». Filtro «Pedidos sin plan».
+- M116-03 (M114-02): valor «Material fuera del plan si la obra no tiene plan» en «Requerimiento de obra sin regla»: crea la regla de validación «obra sin plan» para la jefatura del planificador, y «Control de plan» muestra «Sin plan».
+- M114-03 y M116-04: el selector «Módulo» es el último nivel cuando la obra tiene módulos, y la ruta empieza en el «Primer nivel de la ruta» de la plantilla.
+- M114-04, M116-01 y M116-05: la línea manual con etapa y material toma la distribución del plan con las cuentas de los niveles de su ruta; la etapa se elige entre las del perfil de la obra.
+- M115-01: «Programar compra masiva» y «Requerimiento de materiales para obra» son los nuevos nombres de las acciones y sus asistentes.
+
 ## 17.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

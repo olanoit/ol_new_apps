@@ -20,6 +20,12 @@ configuracion:
 requisitos_nota: Requiere `account_budget_purchase`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '8.20261101'
+  fecha: 01/11/2026
+  cambios:
+    - "D3: ajuste «Planes que controla el presupuesto»: la compra se compara solo con las líneas del presupuesto que coinciden en esos planes; vacío, como antes."
+    - "M116-05: el presupuesto nativo del plan se rehace con las cuentas actuales (niveles y rubro) sin perder lo comprometido ni lo real."
+    - "M116-01: la etapa del consumo que llega sin etapa se elige entre las del perfil de la obra."
 - version: '6.20261027'
   fecha: 27/10/2026
   cambios:

@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_backend.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261101 — 01/11/2026
+
+- M115-02: los botones de la barra admiten grupo y etiqueta; con grupos, la barra se arma en una fila por grupo y el contador de la selección queda en la primera. Sin grupos, como antes.
+
 ## 19.20261027 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.

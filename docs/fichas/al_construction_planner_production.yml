@@ -25,6 +25,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_approvals_mrp`. Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '7.20261101'
+  fecha: 01/11/2026
+  cambios:
+    - "M116-08: el cuadro dinámico «Presupuestado frente a real de fabricación» parte los nombres largos con el ancho máximo de Ajustes."
 - version: '6.20261027'
   fecha: 27/10/2026
   cambios:

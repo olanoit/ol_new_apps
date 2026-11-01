@@ -27,6 +27,12 @@ configuracion:
 requisitos_nota: Requiere Fabricación (`project_mrp`). Licencia LGPL-3 porque el planificador
   depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '17.20261101'
+  fecha: 01/11/2026
+  cambios:
+    - "D1: el apunte de una orden de obra reparte cada etapa entre las cuentas Rubro, en proporción al material planificado de los ambientes de la orden por familia."
+    - "CR-26: las ayudas que nombran la orden de fabricación y el filtro «Orden de fabricación» de las asignaciones solo se ven con este puente; el núcleo habla de producción en taller."
+    - "M115-01: el asistente pasa a «Requerimiento de fabricación», con el botón «Crear requerimiento de fabricación»."
 - version: '14.20261027'
   fecha: 27/10/2026
   cambios:
