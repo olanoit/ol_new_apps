@@ -31,15 +31,30 @@ class HrWorkEntryType(models.Model):
 
     @api.model
     def _l10n_pe_set_default_suspensions(self):
-        """Vacaciones pagadas → T21 «23», si aún no tiene código."""
+        """Código T21 de fábrica de los tipos cuya suspensión no admite
+        duda, si aún no tienen uno (respeta lo configurado):
+
+        * vacaciones pagadas → «23»;
+        * descanso médico (DMED) → «20», primeros 20 días a cargo del
+          empleador;
+        * subsidio por enfermedad (SENF) → «21»;
+        * subsidio por maternidad (SMAR) → «22».
+
+        Sin código, la ausencia no generaba suspensiones y el lote de
+        subsidios no encontraba la contingencia."""
         # Odoo 20: las vacaciones pagadas son el tipo «PTO» de hr_work_entry.
-        leave_type = self.env.ref('hr_work_entry.generic_work_entry_type_legal_leave',
-                                  raise_if_not_found=False)
-        suspension = self.env.ref('al_hr_pe.suspension_23',
-                                  raise_if_not_found=False)
-        if leave_type and suspension \
-                and not leave_type.l10n_pe_suspension_type_id:
-            leave_type.l10n_pe_suspension_type_id = suspension
+        for type_xmlid, suspension_xmlid in (
+                ('hr_work_entry.generic_work_entry_type_legal_leave',
+                 'al_hr_pe.suspension_23'),
+                ('al_hr_pe.wd_DMED', 'al_hr_pe.suspension_20'),
+                ('al_hr_pe.wd_SENF', 'al_hr_pe.suspension_21'),
+                ('al_hr_pe.wd_SMAR', 'al_hr_pe.suspension_22')):
+            leave_type = self.env.ref(type_xmlid, raise_if_not_found=False)
+            suspension = self.env.ref(suspension_xmlid,
+                                      raise_if_not_found=False)
+            if leave_type and suspension \
+                    and not leave_type.l10n_pe_suspension_type_id:
+                leave_type.l10n_pe_suspension_type_id = suspension
 
 
 class HrWorkSuspension(models.Model):
@@ -74,14 +89,24 @@ class HrLeave(models.Model):
 
     def _l10n_pe_sync_suspensions(self):
         """Rehace las suspensiones de las ausencias: una por mes para las
-        aprobadas con tipo T21; ninguna para las demás."""
-        Suspension = self.env['hr.work.suspension'].sudo()
-        Period = self.env['hr.period'].sudo()
+        aprobadas con tipo T21; ninguna para las demás.
+
+        Una ausencia de incapacidad temporal (T21 «21») se parte sola: los
+        días que aún queden de los 20 primeros del año a cargo del
+        empleador van como «20» y el resto como «21» (Ley 26790, art. 12;
+        D.S. 009-97-SA, art. 15). Antes toda la ausencia se declaraba «21»
+        en la PLAME."""
         # sudo: el aprobador de ausencias no tiene por qué tener acceso a
         # las suspensiones de nómina; se escriben solo las de estas
         # ausencias.
-        Suspension.search([('leave_id', 'in', self.ids)]).unlink()
-        for leave in self:
+        self.env['hr.work.suspension'].sudo().search(
+            [('leave_id', 'in', self.ids)]).unlink()
+        employer_type = self.env.ref('al_hr_pe.suspension_20',
+                                     raise_if_not_found=False)
+        # Por fecha: los días del empleador que consume una ausencia los
+        # descuenta la siguiente del mismo lote.
+        for leave in self.sorted(lambda leave: leave.request_date_from
+                                 or leave.create_date.date()):
             suspension_type = \
                 leave.work_entry_type_id.l10n_pe_suspension_type_id
             if leave.state != 'validate' or not suspension_type \
@@ -89,33 +114,73 @@ class HrLeave(models.Model):
                     or not leave.request_date_from \
                     or not leave.request_date_to:
                 continue
-            company = leave.employee_id.company_id
-            day = leave.request_date_from
-            while day <= leave.request_date_to:
-                period = Period.search([
-                    ('company_id', '=', company.id),
-                    ('period_type', '=', 'monthly'),
-                    ('date_start', '<=', day),
-                    ('date_end', '>=', day),
-                ], limit=1)
-                if not period:
-                    _logger.warning(
-                        'al_hr_pe_benefits: sin periodo de nómina para %s; '
-                        'la ausencia %s no genera su suspensión de ese mes.',
-                        day, leave.id)
-                    month_end = (day.replace(day=28) + timedelta(days=4))
-                    day = month_end - timedelta(days=month_end.day - 1)
-                    continue
-                last = min(period.date_end, leave.request_date_to)
-                Suspension.create({
-                    'employee_id': leave.employee_id.id,
-                    'version_id': leave.employee_id._get_version(day).id,
-                    'periodo_id': period.id,
-                    'suspension_type_id': suspension_type.id,
-                    'date_from': day,
-                    'date_to': last,
-                    'days': (last - day).days + 1,
-                    'company_id': company.id,
-                    'leave_id': leave.id,
-                })
-                day = last + timedelta(days=1)
+            date_from = leave.request_date_from
+            if suspension_type.code == '21' and employer_type:
+                employer_days = leave._l10n_pe_employer_days_left()
+                if employer_days:
+                    split = min(date_from + timedelta(days=employer_days - 1),
+                                leave.request_date_to)
+                    leave._l10n_pe_create_suspensions(
+                        employer_type, date_from, split)
+                    date_from = split + timedelta(days=1)
+            leave._l10n_pe_create_suspensions(
+                suspension_type, date_from, leave.request_date_to)
+
+    def _l10n_pe_employer_days_left(self):
+        """Días de los 20 primeros del año (el de inicio de la ausencia)
+        que aún paga el empleador: 20 menos los días naturales de las
+        suspensiones «20»/«21» del trabajador anteriores a la ausencia."""
+        self.ensure_one()
+        start = self.request_date_from
+        year_start = start.replace(month=1, day=1)
+        suspensions = self.env['hr.work.suspension'].sudo().search([
+            ('employee_id', '=', self.employee_id.id),
+            ('suspension_type_id.code', 'in', ('20', '21')),
+            ('date_from', '<', start),
+            ('date_to', '>=', year_start),
+            ('leave_id', '!=', self.id),
+        ])
+        used = set()
+        for suspension in suspensions:
+            day = max(suspension.date_from, year_start)
+            while day <= min(suspension.date_to, start - timedelta(days=1)):
+                used.add(day)
+                day += timedelta(days=1)
+        return max(20 - len(used), 0)
+
+    def _l10n_pe_create_suspensions(self, suspension_type, date_from,
+                                    date_to):
+        """Una suspensión por mes de nómina entre ambas fechas."""
+        self.ensure_one()
+        Suspension = self.env['hr.work.suspension'].sudo()
+        Period = self.env['hr.period'].sudo()
+        company = self.employee_id.company_id
+        day = date_from
+        while day <= date_to:
+            period = Period.search([
+                ('company_id', '=', company.id),
+                ('period_type', '=', 'monthly'),
+                ('date_start', '<=', day),
+                ('date_end', '>=', day),
+            ], limit=1)
+            if not period:
+                _logger.warning(
+                    'al_hr_pe_benefits: sin periodo de nómina para %s; '
+                    'la ausencia %s no genera su suspensión de ese mes.',
+                    day, self.id)
+                month_end = (day.replace(day=28) + timedelta(days=4))
+                day = month_end - timedelta(days=month_end.day - 1)
+                continue
+            last = min(period.date_end, date_to)
+            Suspension.create({
+                'employee_id': self.employee_id.id,
+                'version_id': self.employee_id._get_version(day).id,
+                'periodo_id': period.id,
+                'suspension_type_id': suspension_type.id,
+                'date_from': day,
+                'date_to': last,
+                'days': (last - day).days + 1,
+                'company_id': company.id,
+                'leave_id': self.id,
+            })
+            day = last + timedelta(days=1)

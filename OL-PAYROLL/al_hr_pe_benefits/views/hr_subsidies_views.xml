@@ -112,6 +112,7 @@
                             <field name="extra_hours" sum="Total" optional="show"/>
                             <field name="others_income" sum="Total" optional="show"/>
                             <field name="lacks" sum="Total" optional="show"/>
+                            <field name="other_affected" sum="Total" optional="show"/>
                             <field name="total" sum="Total" optional="show"/>
                         </list>
                     </field>

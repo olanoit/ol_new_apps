@@ -3,11 +3,12 @@
 
 Portado de ``hr_subsidies`` (v18). El subsidio se calcula sobre el
 promedio de las remuneraciones de los 12 meses previos a la
-contingencia (básico + vacaciones + asignación familiar + comisiones +
-horas extras + otros ingresos − faltas) dividido entre 30 × nº de
+contingencia (la remuneración afecta a EsSalud de cada mes: regla
+AESSALUD en BASE, TREM en construcción civil) dividido entre 30 × nº de
 meses con boleta. La enfermedad descuenta los primeros 20 días del año
-a cargo del empleador (acumulado de días DMED en boletas del año);
-la maternidad se subsidia completa. El total se reparte por periodo
+calendario a cargo del empleador (días naturales de las suspensiones
+T21 «20» y «21» del año anteriores al tramo); la maternidad se
+subsidia completa. El total se reparte por periodo
 (`hr.subsidies.periodo`) con estados ``not payed``/``paid out`` y se
 importa a la boleta mensual vía ``import_subsidies``.
 
@@ -45,6 +46,7 @@ from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
 from .hr_benefits_engine import ensure_slips_draft, ensure_state
 
+EMPLOYER_SUSPENSION_CODE = '20'   # T21-20: primeros 20 días (empleador)
 ILLNESS_SUSPENSION_CODE = '21'    # T21-21: enfermedad
 MATERNITY_SUSPENSION_CODE = '22'  # T21-22: maternidad
 EMPLOYER_ILLNESS_DAYS = 20        # primeros 20 días a cargo del empleador
@@ -220,10 +222,10 @@ class HrSubsidies(models.Model):
     def action_load_information(self):
         """Trae el histórico de remuneraciones de los 12 meses previos.
 
-        Enfermedad: si el acumulado de días subsidiados del año (DMED
-        en boletas + días de la contingencia) no supera los 20 días a
-        cargo del empleador y no se marcó ``is_compute_20_days``, no
-        genera líneas y lo informa (paridad v18).
+        Enfermedad: si los días de incapacidad del año (suspensiones
+        «20»/«21» previas + días del tramo) no superan los 20 a cargo del
+        empleador y no se marcó ``is_compute_20_days``, no genera líneas
+        y lo informa (paridad v18).
         """
         self.ensure_one()
         if not (self.date_start and self.date_end):
@@ -233,16 +235,15 @@ class HrSubsidies(models.Model):
             self.company_id)
         self._check_configuration(param)
         if self.type == 'illness' and not self.is_compute_20_days:
-            contingency_days = (self.date_end - self.date_start).days + 1 \
-                + self._l10n_pe_previous_days()
-            dmed_history = self._get_dmed_history()
+            contingency_days = (self.date_end - self.date_start).days + 1
+            history = self._l10n_pe_prior_incapacity()
             total_days = contingency_days + sum(
-                days for _periodo, days in dmed_history)
+                days for _suspension, days in history)
             if total_days <= EMPLOYER_ILLNESS_DAYS:
                 log = ''.join(
-                    '%d días de DMED en la planilla %s\n'
-                    % (int(days), periodo.display_name)
-                    for periodo, days in dmed_history)
+                    '%d días de %s\n'
+                    % (days, suspension.display_name)
+                    for suspension, days in history)
                 log += '%d días de contingencia\n' % contingency_days
                 return {
                     'type': 'ir.actions.client',
@@ -271,9 +272,10 @@ class HrSubsidies(models.Model):
         * Base diaria = total de remuneraciones ÷ (30 × meses con
           boleta).
         * Maternidad: se subsidian todos los días de la contingencia.
-        * Enfermedad: se descuentan los primeros 20 días del año a
-          cargo del empleador (acumulando el DMED de boletas previas
-          salvo ``is_compute_20_days``).
+        * Enfermedad: se descuentan los primeros 20 días del año
+          calendario a cargo del empleador, en días naturales: los que
+          aún queden tras las suspensiones «20»/«21» del año previas al
+          tramo (D.S. 009-97-SA, art. 15), salvo ``is_compute_20_days``.
         """
         self.ensure_one()
         if any(line.validation == 'paid out'
@@ -293,22 +295,21 @@ class HrSubsidies(models.Model):
             subsidized_days = total_days
             date_start = self.date_start
         else:
-            contingency_days = (self.date_end - self.date_start).days
+            contingency_days = total_days
             if not self.is_compute_20_days:
-                # Días de la misma contingencia en los tramos previos
-                # (meses anteriores) y DMED de otras contingencias del año.
-                contingency_days += self._l10n_pe_previous_days() + sum(
-                    days for _periodo, days in self._get_dmed_history())
-                subsidized_days = \
-                    contingency_days - (EMPLOYER_ILLNESS_DAYS - 1)
-                total_days = contingency_days + 1
-                # Nunca más días que los de la propia contingencia.
-                subsidized_days = min(
-                    subsidized_days,
-                    (self.date_end - self.date_start).days + 1)
+                # Días de incapacidad del año antes de este tramo: los
+                # tramos previos de la misma contingencia y otros
+                # descansos médicos, también los del mismo mes.
+                previous_days = sum(
+                    days for _suspension, days
+                    in self._l10n_pe_prior_incapacity())
+                employer_days = max(
+                    EMPLOYER_ILLNESS_DAYS - previous_days, 0)
+                subsidized_days = contingency_days - employer_days
+                total_days = contingency_days + previous_days
             else:
-                subsidized_days = contingency_days + 1
-                total_days = contingency_days + EMPLOYER_ILLNESS_DAYS + 1
+                subsidized_days = contingency_days
+                total_days = contingency_days + EMPLOYER_ILLNESS_DAYS
             if subsidized_days <= 0:
                 raise UserError(self.env._(
                     'El trabajador aún no supera los primeros %(limit)d '
@@ -349,10 +350,13 @@ class HrSubsidies(models.Model):
                     period_days = self.date_end.day
             else:
                 period_days = last_day
+            # Periodo mensual: con semanas de construcción civil el mes y
+            # su semana contienen la misma fecha.
             periodo = self.env['hr.period'].search([
                 ('date_start', '<=', current),
                 ('date_end', '>=', current),
                 ('company_id', '=', self.company_id.id),
+                ('period_type', '=', 'monthly'),
             ], limit=1)
             Periodo.create({
                 'subsidies_id': self.id,
@@ -428,47 +432,89 @@ class HrSubsidies(models.Model):
                 start = min(start, suspension.date_from)
         return start
 
-    def _l10n_pe_previous_days(self):
-        """Días de la misma contingencia anteriores a este tramo."""
-        self.ensure_one()
-        return (self.date_start - self._l10n_pe_contingency_start()).days
+    def _l10n_pe_prior_incapacity(self):
+        """Días naturales de incapacidad del año anteriores a este tramo:
+        ``[(suspensión, días)]``.
 
-    def _get_dmed_history(self):
-        """Días DMED por periodo en boletas BASE del año de la
-        contingencia (sustituye al SQL ``_get_sql_wd_dmed`` v18).
-
-        Solo boletas cerradas y anteriores al mes en que se inicia la
-        contingencia: las de ese mes o posteriores pueden traer el DMED de
-        esta misma contingencia (sus días previos los suma
-        ``_l10n_pe_previous_days``) y contarlo dos veces."""
+        Los 20 primeros días de incapacidad de cada año calendario los
+        paga el empleador (Ley 26790, art. 12; D.S. 009-97-SA, art. 15).
+        Se acumulan las suspensiones T21 «20» (descanso médico) y «21»
+        (tramos previos de esta u otra contingencia) del año en que se
+        inicia la contingencia, hasta el día anterior al tramo, incluidas
+        las del mismo mes. Antes se sumaban los días DMED de las boletas
+        cerradas de meses anteriores: eran días laborables y se perdía el
+        descanso médico del mismo mes, así que un subsidio que empezaba
+        tras 20 días de descanso médico en marzo salía en cero. Un día
+        cubierto por dos suspensiones cuenta una vez."""
         self.ensure_one()
-        contingency_start = self._l10n_pe_contingency_start()
-        base_struct = self.env.ref('al_hr_pe.base_structure')
-        slips = self.env['hr.payslip'].search([
+        year_start = date(self._l10n_pe_contingency_start().year, 1, 1)
+        limit = self.date_start - relativedelta(days=1)
+        suspensions = self.env['hr.work.suspension'].search([
             ('employee_id', '=', self.employee_id.id),
-            ('company_id', '=', self.company_id.id),
-            ('struct_id', '=', base_struct.id),
-            ('date_to', '>=', date(contingency_start.year, 1, 1)),
-            ('date_to', '<', date(contingency_start.year,
-                                  contingency_start.month, 1)),
-            ('state', 'in', ('validated', 'paid')),
-            ('fortnightly_id', '=', False),
-        ])
+            ('suspension_type_id.code', 'in',
+             (EMPLOYER_SUSPENSION_CODE, ILLNESS_SUSPENSION_CODE)),
+            ('date_from', '<=', limit),
+            ('date_to', '>=', year_start),
+            ('id', '!=', self.suspension_id.id),
+        ], order='date_from')
+        seen = set()
         history = []
-        for slip in slips:
-            days = sum(slip.worked_days_line_ids.filtered(
-                lambda line: line.work_entry_type_id.code == 'DMED'
-            ).mapped('number_of_days'))
+        for suspension in suspensions:
+            day = max(suspension.date_from, year_start)
+            days = 0
+            while day <= min(suspension.date_to, limit):
+                if day not in seen:
+                    seen.add(day)
+                    days += 1
+                day += relativedelta(days=1)
             if days:
-                history.append((slip.periodo_id, days))
+                history.append((suspension, days))
         return history
 
+    @api.model
+    def _l10n_pe_subsidy_structures(self):
+        """Estructuras cuyas boletas forman la base del subsidio, con la
+        regla que da la remuneración afecta a EsSalud del periodo.
+
+        La base del subsidio es la remuneración sobre la que se aportó a
+        EsSalud (Ley 26790, art. 12; D.S. 009-97-SA, art. 16): la regla
+        AESSALUD ya suma lo pagado como descanso médico, licencia con goce
+        y paternidad (BAS_M), que el desglose por conceptos dejaba fuera.
+        ``al_hr_pe_construction`` añade la suya (TREM)."""
+        return {self.env.ref('al_hr_pe.base_structure'): 'AESSALUD'}
+
+    def _l10n_pe_subsidy_bucket(self, line, param):
+        """Columna del histórico en la que se muestra una línea de boleta
+        (solo informativo: el total del mes es la base afecta)."""
+        rule = line.salary_rule_id
+        if rule == param.basic_sr_id:
+            return 'wage'
+        if rule == param.vacation_sr_id:
+            return 'vacation'
+        if rule == param.household_allowance_sr_id:
+            return 'household_allowance'
+        if rule in param.commission_sr_ids:
+            return 'commission'
+        if rule == param.extra_hours_sr_id:
+            return 'extra_hours'
+        if rule in param.otros_sr_ids:
+            return 'others_income'
+        if rule in param.lack_sr_ids:
+            return 'lacks'
+        return False
+
     def _get_salary_history(self, param):
-        """Histórico BASE de los 12 meses cerrados previos al mes en que
-        se inicia la contingencia, agrupado por periodo (sustituye al SQL
-        ``_get_sql_salary`` v18)."""
+        """Histórico de los 12 meses cerrados previos al mes en que se
+        inicia la contingencia, agrupado por periodo mensual (sustituye al
+        SQL ``_get_sql_salary`` v18).
+
+        Cada mes suma la regla afecta a EsSalud de sus boletas (ver
+        ``_l10n_pe_subsidy_structures``); lo que no cae en ninguna columna
+        del desglose va a «Otros afectos a EsSalud», de modo que el total
+        del mes es esa base. Las boletas semanales (construcción civil) se
+        agrupan en el mes en que terminan."""
         self.ensure_one()
-        base_struct = self.env.ref('al_hr_pe.base_structure')
+        structures = self._l10n_pe_subsidy_structures()
         contingency_start = self._l10n_pe_contingency_start()
         start_ref = contingency_start - relativedelta(months=12)
         date_from = date(start_ref.year, start_ref.month, 1)
@@ -478,7 +524,7 @@ class HrSubsidies(models.Model):
         slips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),
             ('company_id', '=', self.company_id.id),
-            ('struct_id', '=', base_struct.id),
+            ('struct_id', 'in', [struct.id for struct in structures]),
             ('date_to', '>=', date_from),
             ('date_to', '<=', date_to),
             # Boletas cerradas y sin quincenales (misma estructura BASE):
@@ -486,34 +532,38 @@ class HrSubsidies(models.Model):
             ('state', 'in', ('validated', 'paid')),
             ('fortnightly_id', '=', False),
         ], order='date_to')
-        vacation_sr = param.vacation_sr_id
-        otros_srs = param.otros_sr_ids
-        lack_srs = param.lack_sr_ids
+        Period = self.env['hr.period']
+        months = {}
         history = {}
         for slip in slips:
-            bucket = history.setdefault(slip.periodo_id, {
+            month = (slip.date_to.year, slip.date_to.month)
+            if month not in months:
+                months[month] = Period.search([
+                    ('company_id', '=', slip.company_id.id),
+                    ('period_type', '=', 'monthly'),
+                    ('date_start', '<=', slip.date_to),
+                    ('date_end', '>=', slip.date_to),
+                ], limit=1)
+            bucket = history.setdefault(months[month], {
                 'wage': 0.0, 'vacation': 0.0, 'household_allowance': 0.0,
                 'commission': 0.0, 'extra_hours': 0.0,
-                'others_income': 0.0, 'lacks': 0.0,
+                'others_income': 0.0, 'lacks': 0.0, 'other_affected': 0.0,
             })
+            base_code = structures[slip.struct_id]
+            detail = 0.0
             for line in slip.line_ids:
                 if not line.total:
                     continue
-                rule = line.salary_rule_id
-                if rule == param.basic_sr_id:
-                    bucket['wage'] += line.total
-                elif rule == vacation_sr:
-                    bucket['vacation'] += line.total
-                elif rule == param.household_allowance_sr_id:
-                    bucket['household_allowance'] += line.total
-                elif rule in param.commission_sr_ids:
-                    bucket['commission'] += line.total
-                elif rule == param.extra_hours_sr_id:
-                    bucket['extra_hours'] += line.total
-                elif rule in otros_srs:
-                    bucket['others_income'] += line.total
-                elif rule in lack_srs:
-                    bucket['lacks'] += line.total
+                if line.code == base_code:
+                    bucket['other_affected'] += line.total
+                    continue
+                field_name = self._l10n_pe_subsidy_bucket(line, param)
+                if field_name:
+                    bucket[field_name] += line.total
+                    detail += -line.total if field_name == 'lacks' \
+                        else line.total
+            # «Otros afectos» = base afecta − lo ya desglosado.
+            bucket['other_affected'] -= detail
         return history
 
     @api.depends('employee_id', 'type', 'date_start', 'date_end')
@@ -552,17 +602,24 @@ class HrSubsidiesLine(models.Model):
     extra_hours = fields.Float(string='Horas extras')
     others_income = fields.Float(string='Otros ingresos')
     lacks = fields.Float(string='Descuento por inasistencias')
+    other_affected = fields.Float(
+        string='Otros afectos a EsSalud',
+        help='Resto de la remuneración afecta a EsSalud del mes que no '
+             'cae en las columnas anteriores: descanso médico, licencia '
+             'con goce, paternidad, feriados, jornal y bonificaciones de '
+             'construcción civil… Con él, la base del mes es la '
+             'remuneración sobre la que se aportó a EsSalud.')
     total = fields.Float(
         string='Base imponible', compute='_compute_total', store=True)
 
     @api.depends('wage', 'vacation', 'household_allowance', 'commission',
-                 'extra_hours', 'others_income', 'lacks')
+                 'extra_hours', 'others_income', 'lacks', 'other_affected')
     def _compute_total(self):
         for line in self:
             line.total = (line.wage + line.vacation
                           + line.household_allowance + line.commission
                           + line.extra_hours + line.others_income
-                          - line.lacks)
+                          - line.lacks + line.other_affected)
 
     @api.depends('subsidies_id', 'periodo_id')
     def _compute_display_name(self):
@@ -661,7 +718,12 @@ class HrPayslip(models.Model):
         """Vuelca los subsidios ``not payed`` del periodo de la boleta a
         los inputs de maternidad/enfermedad y los marca ``paid out``
         (solo boletas en borrador: en una cerrada no llegarían a sus
-        líneas)."""
+        líneas).
+
+        Una boleta semanal (construcción civil) busca los subsidios de su
+        mes y los lleva a la regla de su estructura con el mismo código
+        (SMAR/SENF): el subsidio del mes se paga en la semana en que se
+        importa."""
         ensure_slips_draft(self)
         log = ''
         for slip in self:
@@ -672,6 +734,8 @@ class HrPayslip(models.Model):
                 ('enfermedad_input_id', 'Input enfermedad'),
             ])
             periodo = slip.payslip_run_id.periodo_id or slip.periodo_id
+            if periodo:
+                periodo = periodo._l10n_pe_plame_period()
             pending = self.env['hr.subsidies.periodo'].search([
                 ('periodo_id', '=', periodo.id),
                 ('employee_id', '=', slip.employee_id.id),
@@ -686,8 +750,11 @@ class HrPayslip(models.Model):
                 lines = pending.filtered(
                     lambda p: p.subsidies_id.type == subsidy_type)
                 if lines:
+                    input_type = getattr(param, input_field)
                     slip._set_pe_input_amount(
-                        getattr(param, input_field),
+                        slip.struct_id.rule_ids.filtered(
+                            lambda rule: rule.code == input_type.code
+                            and rule.input_usage_payslip)[:1] or input_type,
                         sum(lines.mapped('total_sub')))
             pending.turn_paid_out()
             log += '%s\n' % slip.employee_id.display_name
