@@ -586,10 +586,13 @@ else:
                  de trabajo) y la indemnización (CTS), inafectas. La
                  gratificación y su bonificación van aquí, como renta
                  ordinaria del mes en que se pagan: en este régimen se
-                 pagan con cada planilla. -->
+                 pagan con cada planilla. Los subsidios de maternidad
+                 (0915) e incapacidad temporal (0916) también están
+                 afectos a 5ta (tabla 22 de la PLAME). -->
             <field name="amount_python_compute">
 result = (JOR + DSO + BUC + BAE + BALTI + BAGUA + BCOTA + BALTU
-          + HE60 + HE100 + FER100 + VAC10 + GRAT + BEXT + AESC)
+          + HE60 + HE100 + FER100 + VAC10 + GRAT + BEXT + AESC
+          + SMAR + SENF)
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('al_hr_pe.SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('construction_structure')])]"/>

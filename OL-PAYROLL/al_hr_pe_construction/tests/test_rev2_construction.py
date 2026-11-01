@@ -178,3 +178,15 @@ class TestRev2Construction(TransactionCase):
             -round(amount * slip.l10n_pe_retirement_fund / 100, 2),
             places=2)
         self.assertGreaterEqual(self._line(slip, 'TINGR'), round(amount, 2))
+
+    def test_subsidios_afectos_a_quinta(self):
+        """Los subsidios 0915/0916 están afectos a 5ta (tabla 22 de la
+        PLAME): la renta del mes (ROAQ) los suma."""
+        slip = self._payslip(date(2026, 3, 2), date(2026, 3, 8), {'DLAB': 6})
+        roaq = self._line(slip, 'ROAQ')
+        slip.write({'input_line_ids': [Command.create({
+            'salary_rule_id': self.env.ref('al_hr_pe.salary_rule_SENF').id,
+            'amount': 150.0})]})
+        slip.compute_sheet()
+        self.assertEqual(self._line(slip, 'SENF'), 150.0)
+        self.assertAlmostEqual(self._line(slip, 'ROAQ'), roaq + 150.0, places=2)
