@@ -23,7 +23,7 @@
               sequence="20"/>
 
     <menuitem id="menu_al_import_vacation_rest"
-              name="Récord vacacional (saldos)"
+              name="Saldos iniciales de vacaciones"
               parent="menu_al_hr_pe_import_root"
               action="action_al_import_vacation_rest_wizard"
               sequence="30"/>

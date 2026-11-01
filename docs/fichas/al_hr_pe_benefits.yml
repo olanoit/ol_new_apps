@@ -418,8 +418,8 @@ pasos:
 
   - seccion: Vacaciones
     texto: Récord, saldos y liquidación del goce o la venta.
-  - titulo: Recalcular el récord vacacional
-    ruta: Nómina ▸ Beneficios sociales ▸ Vacaciones ▸ Récord vacacional
+  - titulo: Recalcular los saldos de vacaciones
+    ruta: Nómina ▸ Beneficios sociales ▸ Vacaciones ▸ Calcular saldos de vacaciones
     texto: >-
       **Calcular saldos** recalcula para todos los empleados —o los elegidos
       al desmarcar **Todos los empleados**— los días devengados por año
@@ -806,6 +806,7 @@ novedades:
   - version: '24.20261101'
     fecha: 01/11/2026
     cambios:
+      - "El asistente que recalcula los saldos se llama ahora «Calcular saldos de vacaciones», para no confundirlo con el «Récord vacacional anual»."
       - "Récord vacacional (D.Leg. 713, art. 10 y 12): cada año de servicios, contado desde el aniversario de ingreso, se evalúa con las boletas cerradas (260 días efectivos con jornada de seis días, 210 con cinco, máximo 10 faltas con menos de cinco; descanso médico efectivo hasta 60 días). El año que no cumple no genera los 30 días en los saldos de vacaciones; sin boletas queda «sin datos» y no bloquea. Ajuste manual con motivo e historial, botón en la ficha del trabajador y tarea diaria."
   - version: '24.20261027'
     fecha: 27/10/2026

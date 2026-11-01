@@ -262,7 +262,7 @@
         <field name="name">hr.vacation.rest.wizard.form.al.hr.pe.benefits</field>
         <field name="model">hr.vacation.rest.wizard</field>
         <field name="arch" type="xml">
-            <form string="Récord vacacional">
+            <form string="Calcular saldos de vacaciones">
                 <group>
                     <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                     <field name="show_all"/>
@@ -277,7 +277,7 @@
     </record>
 
     <record id="action_hr_vacation_rest_wizard" model="ir.actions.act_window">
-        <field name="name">Récord vacacional</field>
+        <field name="name">Calcular saldos de vacaciones</field>
         <field name="res_model">hr.vacation.rest.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

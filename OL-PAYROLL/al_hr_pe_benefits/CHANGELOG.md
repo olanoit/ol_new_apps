@@ -9,6 +9,7 @@ Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 
 ## 24.20261101 — 01/11/2026
 
+- El asistente que recalcula los saldos se llama ahora «Calcular saldos de vacaciones», para no confundirlo con el «Récord vacacional anual».
 - Récord vacacional (D.Leg. 713, art. 10 y 12): cada año de servicios, contado desde el aniversario de ingreso, se evalúa con las boletas cerradas (260 días efectivos con jornada de seis días, 210 con cinco, máximo 10 faltas con menos de cinco; descanso médico efectivo hasta 60 días). El año que no cumple no genera los 30 días en los saldos de vacaciones; sin boletas queda «sin datos» y no bloquea. Ajuste manual con motivo e historial, botón en la ficha del trabajador y tarea diaria.
 
 ## 24.20261027 — 27/10/2026

@@ -151,7 +151,7 @@ pasos:
   - titulo: El menú de importadores
     ruta: Nómina ▸ Configuración ▸ Importar desde Excel
     texto: >-
-      Asistencias, Inputs de boletas (novedades), Récord vacacional (saldos),
+      Asistencias, Inputs de boletas (novedades), Saldos iniciales de vacaciones,
       Adelantos, Datos PE de versiones y Reglas salariales, además del
       **Historial de importaciones**.
     puntos:
@@ -248,7 +248,7 @@ pasos:
   - seccion: Récord vacacional
     texto: Saldos de vacaciones pendientes al arrancar con el sistema.
   - titulo: Importar los saldos iniciales
-    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Récord vacacional (saldos)
+    ruta: Nómina ▸ Configuración ▸ Importar desde Excel ▸ Saldos iniciales de vacaciones
     texto: >-
       Columnas FECHA DE APLICACIÓN, NRO DOCUMENTO, DÍAS DE SALDO e IMPORTE DE
       SALDO (opcional). Cada fila crea el **saldo inicial** del trabajador, del
@@ -522,6 +522,10 @@ faq:
       cabecera. Parta siempre de la plantilla descargada.
 
 novedades:
+  - version: '12.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "El importador de saldos de vacaciones se llama ahora «Saldos iniciales de vacaciones», para no confundirlo con el récord vacacional anual."
   - version: '12.20261027'
     fecha: 27/10/2026
     cambios:

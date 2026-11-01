@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_import.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 12.20261101 — 01/11/2026
+
+- El importador de saldos de vacaciones se llama ahora «Saldos iniciales de vacaciones», para no confundirlo con el récord vacacional anual.
+
 ## 12.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.
