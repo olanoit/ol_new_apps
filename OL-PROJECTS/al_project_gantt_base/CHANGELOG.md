@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_project_gantt_base.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 20.20261101 — 01/11/2026
+
+- El botón «Abrir en Odoo» del formulario de la barra vuelve a mostrar su ícono: Odoo 20 ya no trae Font Awesome.
+
 ## 19.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

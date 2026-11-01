@@ -56,6 +56,7 @@
         forcecreate="1"
     >
         <field name="name">Tier Validation Reminder</field>
-        <field name="icon">fa-bell</field>
+        <!-- Odoo 20: nombre de Material Symbols (antes fa-bell). -->
+        <field name="icon">notifications</field>
     </record>
 </odoo>

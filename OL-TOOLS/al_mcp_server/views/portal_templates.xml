@@ -140,6 +140,11 @@
             font-size: 1.25rem; flex-shrink: 0;
             background: rgba(99,102,241,0.1);
         }
+        /* Íconos de Material Symbols (fuente de Odoo) por ligadura. */
+        .oi { font-family: 'Material Symbols Outlined'; font-style: normal; font-weight: 400;
+              line-height: 1; letter-spacing: normal; white-space: nowrap; direction: ltr;
+              -webkit-font-smoothing: antialiased; }
+        .oi::before { content: attr(data-icon); text-rendering: geometricPrecision; word-break: keep-all; }
         .mcp-kpi-body { flex: 1; min-width: 0; }
         .mcp-kpi-value { font-size: 1.75rem; font-weight: 700; line-height: 1.1; }
         .mcp-kpi-label { font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.15rem; }
@@ -245,7 +250,7 @@
                             <div class="mcp-kpi">
                                 <div class="mcp-kpi-icon"
                                      t-attf-style="background: #{w.get('color', '#6366f1')}1a; color: #{w.get('color', '#6366f1')};">
-                                    <i t-attf-class="oi #{w.get('icon', 'fa-bar-chart')}"/>
+                                    <i class="oi" t-att-data-icon="w.get('icon') or 'bar_chart'"/>
                                 </div>
                                 <div class="mcp-kpi-body">
                                     <div class="mcp-kpi-value"
@@ -337,7 +342,7 @@
     </footer>
 
     <!-- Font Awesome (para los iconos KPI) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="/web/static/src/libs/materialsymbols/material_symbols_outlined.css"/>
 
     <!-- CDN de ECharts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js" crossorigin="anonymous"/>

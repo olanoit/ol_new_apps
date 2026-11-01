@@ -130,10 +130,13 @@
 // porque los nativos vienen del CSS de la librería.
 .gantt_cal_light .algantt_open_btn_set {
     .algantt_open_btn::before {
-        content: "\f08e"; // fa-external-link
-        font-family: FontAwesome;
-        font-size: 13px;
+        // Odoo 20 no trae Font Awesome: ícono de Material Symbols por ligadura.
+        content: "open_in_new";
+        font-family: 'Material Symbols Outlined';
+        font-size: 16px;
         line-height: 20px;
+        text-rendering: geometricPrecision;
+        word-break: keep-all;
     }
 }
 

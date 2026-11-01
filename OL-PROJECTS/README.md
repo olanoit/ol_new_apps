@@ -52,6 +52,6 @@ módulo | versión | licencia | resumen
 [al_construction_portal](al_construction_portal/) | 8.20261027 | LGPL-3 | Portal instalable y sin señal para capataces, contratas y oficina técnica: avance con fotos, parte diario, cuadrilla y tareo, requerimientos, recepción, devolución y valorizaciones, sobre servicios JSON versionados.
 [al_project_gantt_ai](al_project_gantt_ai/) | 9.20261027 | OPL-1 | Panel de chat opcional para consultar el diagrama de Gantt y recibir propuestas de cambio que el usuario revisa y aplica.
 [al_project_gantt_backend](al_project_gantt_backend/) | 19.20261027 | OPL-1 | Aplicación de Gantt interactivo dentro del backend de Odoo, con menú propio y carga perezosa de la librería.
-[al_project_gantt_base](al_project_gantt_base/) | 19.20261027 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
+[al_project_gantt_base](al_project_gantt_base/) | 20.20261101 | OPL-1 | Capa de datos, mapeo de campos, seguridad y librería Gantt compartidas por las interfaces de Gantt (backend y website).
 [al_project_gantt_website](al_project_gantt_website/) | 13.20261027 | OPL-1 | Página de Gantt en el sitio web, restringida a usuarios internos autenticados.
 [//]: # (end addons)

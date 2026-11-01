@@ -6,6 +6,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`). Este módulo no tiene ficha
 en `docs/fichas/`: el historial se mantiene a mano y debe coincidir con el
 de `static/description/index.html`.
 
+## 12.20261101 — 01/11/2026
+
+- Los indicadores (KPI) del portal usan los íconos de Material Symbols que trae Odoo, en lugar de Font Awesome descargado de internet: el ícono se indica por su nombre (p. ej. «payments»).
+
 ## 11.20261027 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.

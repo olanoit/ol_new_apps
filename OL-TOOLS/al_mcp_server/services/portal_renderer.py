@@ -17,7 +17,7 @@ Forma del resultado según el tipo de widget:
       "title": str,
       "value": float|int,
       "formatted": str,        # p. ej. "$1,234.56"
-      "icon": str,             # clase fa-*
+      "icon": str,             # nombre de Material Symbols (p. ej. "payments")
       "color": str,            # color hexadecimal
       "error": str|None,       # se rellena si el cálculo falló
     }
@@ -100,7 +100,7 @@ def _compute_kpi(env, spec: dict) -> dict:
         "title": spec.get("title", ""),
         "value": value,
         "formatted": _format_value(value, fmt, currency_code, env),
-        "icon": spec.get("icon", "fa-bar-chart"),
+        "icon": spec.get("icon", "bar_chart"),
         "color": spec.get("color", "#6366f1"),
         "error": None,
     }

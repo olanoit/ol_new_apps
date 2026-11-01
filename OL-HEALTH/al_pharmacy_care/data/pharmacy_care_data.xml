@@ -3,7 +3,8 @@
     <record id="mail_activity_type_refill" model="mail.activity.type">
         <field name="name">Recompra de tratamiento</field>
         <field name="summary">Recordar la recompra al paciente</field>
-        <field name="icon">fa-medkit</field>
+        <!-- Odoo 20: nombre de Material Symbols (antes fa-medkit). -->
+        <field name="icon">medical_services</field>
         <field name="res_model">pharmacy.treatment</field>
         <field name="delay_count">0</field>
     </record>

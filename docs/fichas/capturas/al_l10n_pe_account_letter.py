@@ -177,7 +177,7 @@ with Captura('al_l10n_pe_account_letter') as c:
     # 15. Refinanciación masiva desde la lista (sin confirmar)
     c.abrir_accion('al_l10n_pe_account_letter.account_letter_action_clientes', ms=2000)
     seleccionar(c, 'CLC00095', 'CLC00124')
-    c.clic('.o_cp_action_menus button:has(.fa-cog)', ms=800)
+    c.clic('.o_cp_action_menus button:has([data-icon="settings"])', ms=800)
     c.page.locator('.o-dropdown-item', has_text='Refinanciación masiva de canjes').first.click()
     c.esperar(2000)
     blur(c)

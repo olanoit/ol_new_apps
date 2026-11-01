@@ -93,7 +93,7 @@ if 2 in BLOQUES:
         # 07. Registro de Activos Fijos en pantalla, con los botones del libro
         c.abrir_accion('al_l10n_pe_ple.action_report_ple_asset_7_1', ms=3000)
         escoger_anio(c, 'Al 31/12/2025')
-        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.clic('.o_control_panel [data-icon="settings"]', ms=800)
         c.foto('07-libro7-pantalla')
         c.page.keyboard.press('Escape')
         c.esperar(500)
@@ -133,19 +133,19 @@ if 4 in BLOQUES:
 
         # 17. RCE 8.4 (septiembre 2026, periodo por defecto) con los botones TXT y XLSX
         c.abrir_accion('al_l10n_pe_ple.action_report_ple_purchase_8_1', ms=3000)
-        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.clic('.o_control_panel [data-icon="settings"]', ms=800)
         c.foto('17-rce-84')
         c.page.keyboard.press('Escape')
 
         # 18. RVIE 14.4 (septiembre 2026) con el botón XLSX RVIE 14.4
         c.abrir_accion('al_l10n_pe_ple.action_report_ple_sales_14_1', ms=3000)
-        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.clic('.o_control_panel [data-icon="settings"]', ms=800)
         c.foto('18-rvie-144')
         c.page.keyboard.press('Escape')
 
         # 20. Libro Mayor: botones XLSX junto a los TXT del PLE
         c.abrir_accion('account_reports.action_account_report_general_ledger', ms=3000)
-        c.clic('.o_control_panel .fa-cog', ms=800)
+        c.clic('.o_control_panel [data-icon="settings"]', ms=800)
         caja = c.page.locator('.o-dropdown--menu').first.bounding_box()
         c.foto('20-libro-mayor-xlsx', clip={
             'x': 0, 'y': 0, 'width': 760, 'height': caja['y'] + caja['height'] + 12})

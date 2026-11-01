@@ -132,7 +132,7 @@ with Captura('al_hr_pe_reports') as c:
         card = c.page.locator('.o_kanban_record:has-text("Planilla 2026-06")').first
         card.evaluate("e => e.scrollIntoView({block: 'end'})")
         c.esperar(500)
-        card.locator('button.o-dropdown:has(.fa-ellipsis-v)').first.click()
+        card.locator('button.o-dropdown:has([data-icon="more_vert"])').first.click()
         c.esperar(900)
         cbox = card.bounding_box()
         mbox = c.page.locator('.o-dropdown--menu:visible').last.bounding_box()
