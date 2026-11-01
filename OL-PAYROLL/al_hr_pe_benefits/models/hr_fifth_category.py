@@ -419,8 +419,14 @@ class HrFifthCategory(models.Model):
                 lambda rule: rule.code == input_type.code
                 and rule.input_usage_payslip)[:1] or input_type
 
+        # Una retención negativa es una devolución: solo cabe en la
+        # regularización final (diciembre o cese). En otro mes (p. ej. un
+        # excluido reincorporado con el asistente) se exporta 0.
         amounts = [(line.slip_id,
-                    custom_round(line.monthly_ret + line.ext_ret, 2))
+                    custom_round(line.monthly_ret + line.ext_ret, 2)
+                    if line._l10n_pe_is_final_month()
+                    else max(0.0, custom_round(
+                        line.monthly_ret + line.ext_ret, 2)))
                    for line in self.line_ids]
         amounts += [(line.slip_id, 0.0) for line in self.line_excluidos_ids
                     if line.employee_id not in self.line_ids.employee_id
@@ -428,7 +434,7 @@ class HrFifthCategory(models.Model):
                         lambda inp: inp.salary_rule_id
                         == slip_input(line.slip_id))]
         slips = self.env['hr.payslip'].union(
-            *[slip for slip, _amount in amounts])
+            [slip for slip, _amount in amounts])
         ensure_slips_draft(slips)
         for slip, amount in amounts:
             input_rule = slip_input(slip)
@@ -956,6 +962,16 @@ class HrFifthCategoryLine(models.Model):
                     'net_rent': record.net_rent,
                 })
                 record.unlink()
+
+    def _l10n_pe_is_final_month(self):
+        """Diciembre o mes del cese: la regularización final del año, el
+        único mes en que la retención puede ser negativa (devolución,
+        art. 40 del Reglamento LIR)."""
+        self.ensure_one()
+        slip = self.slip_id
+        cessation = slip.version_id.contract_date_end
+        return self.fifth_category_id.middle_month_number == 12 or bool(
+            cessation and slip.date_from <= cessation <= slip.date_to)
 
     def _l10n_pe_month_slips(self):
         """Boletas del trabajador en el lote de la quinta (Odoo 20 crea una

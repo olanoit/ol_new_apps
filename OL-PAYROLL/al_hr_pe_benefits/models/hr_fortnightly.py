@@ -231,11 +231,20 @@ class HrFortnightly(models.Model):
         quin_loan = param.quin_loan_id
         monthly_by_slip = {
             line: employee_lot_slip(lot, line.employee_id) for line in slips}
+        # Sin boleta mensual el adelanto nunca se descontaría (antes se
+        # saltaba al trabajador en silencio y el lote quedaba «exportado»).
+        missing = [line.employee_id.display_name
+                   for line, monthly_slip in monthly_by_slip.items()
+                   if not monthly_slip]
+        if missing:
+            raise UserError(self.env._(
+                'Estos trabajadores no tienen boleta en el lote mensual '
+                '%(lot)s; genérela antes de exportar la quincena: '
+                '%(employees)s.', lot=lot.display_name,
+                employees=', '.join(sorted(set(missing)))))
         ensure_slips_draft(
-            self.env['hr.payslip'].union(*monthly_by_slip.values()))
+            self.env['hr.payslip'].union(monthly_by_slip.values()))
         for line, monthly_slip in monthly_by_slip.items():
-            if not monthly_slip:
-                continue
             net_lines = line.line_ids.filtered(
                 lambda rule_line: rule_line.salary_rule_id == net_rule)
             if not net_lines:
@@ -293,7 +302,7 @@ class HrFortnightly(models.Model):
                         quin_advance.input_id,
                         sum((advances | ordinary).mapped('amount')))
         recompute_slips(
-            self.env['hr.payslip'].union(*monthly_by_slip.values()))
+            self.env['hr.payslip'].union(monthly_by_slip.values()))
 
 
 class HrPayslip(models.Model):
@@ -314,7 +323,11 @@ class HrPayslip(models.Model):
 
     def _l10n_pe_fortnightly_share(self):
         """Fracción del mes que se adelanta: la tasa configurada o los
-        días pagados de la quincena ÷ 30."""
+        días pagados de la quincena ÷ 30.
+
+        Con la tasa, quien ingresa o cesa dentro de la quincena recibe la
+        parte proporcional a sus días de contrato en ella (antes recibía
+        el 50 % completo por 2 días de trabajo)."""
         self.ensure_one()
         param = self._l10n_pe_fortnightly_param()
         if param.fortnightly_type == 'days':
@@ -322,7 +335,21 @@ class HrPayslip(models.Model):
                 lambda wd: wd.code in self.PAID_DAY_CODES
             ).mapped('number_of_days'))
             return min(days, 15.0) / 30.0
-        return param.tasa if param else 0.5
+        rate = param.tasa if param else 0.5
+        return rate * self._l10n_pe_fortnightly_contract_ratio()
+
+    def _l10n_pe_fortnightly_contract_ratio(self):
+        """Días de contrato dentro de la quincena ÷ días de la quincena."""
+        self.ensure_one()
+        if not (self.date_from and self.date_to):
+            return 1.0
+        version = self.version_id
+        start = max(self.date_from,
+                    version.contract_date_start or self.date_from)
+        end = min(self.date_to, version.contract_date_end or self.date_to)
+        total = (self.date_to - self.date_from).days + 1
+        days = (end - start).days + 1
+        return max(0, min(days, total)) / total
 
     def _l10n_pe_fortnightly_basic(self):
         self.ensure_one()
