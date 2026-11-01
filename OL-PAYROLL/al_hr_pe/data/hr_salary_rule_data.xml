@@ -472,6 +472,26 @@ result = inputs['BON9_TRU'].amount if inputs['BON9_TRU'] else 0
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
+        <!-- Subvención adicional de los practicantes (Ley 28518, art. 47 b):
+             media subvención cada 6 meses de convenio. No es remuneración ni
+             gratificación: sin aportes ni bonificación, y sin código de la
+             tabla 22 (el PLAME declara al personal en formación en el .for,
+             por monto pagado). -->
+        <record model="hr.salary.rule" id="salary_rule_SUBV_AD">
+            <field name="name">Subvención adicional (practicantes)</field>
+            <field name="code">SUBV_AD</field>
+            <!-- Odoo 20: el input de la boleta es la propia regla. -->
+            <field name="input_usage_payslip" eval="True"/>
+            <field name="sequence">36</field>
+            <field name="appears_on_payslip">always</field>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+result = inputs['SUBV_AD'].amount if inputs['SUBV_AD'] else 0
+            </field>
+            <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
+            <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
+        </record>
         <record model="hr.salary.rule" id="salary_rule_CTS">
             <field name="name">Compensación por tiempo de servicios</field>
             <field name="code">CTS</field>
@@ -580,7 +600,7 @@ result = inputs['UTIL'].amount if inputs['UTIL'] else 0
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM+INDVAC
+result = BAS_M+AF+TOT_EXT+BONR+BONI_EX+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA+GRA_TRU+BON9+BON9_TRU+CTS+CTS_TRU+COMI+UTIL+INDEM+INDVAC+SUBV_AD
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -1135,8 +1155,9 @@ result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COM
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 # La indemnización vacacional (INDVAC) es inafecta a 5ta (LIR, art. 18
-# inc. c): llega al neto pero no a la renta.
-result = BONI_EX+UTIL
+# inc. c): llega al neto pero no a la renta. La subvención adicional de
+# los practicantes (SUBV_AD) es renta de 5ta del mes en que se paga.
+result = BONI_EX+UTIL+SUBV_AD
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>

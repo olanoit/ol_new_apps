@@ -70,6 +70,9 @@
                 <button name="action_export_plame_toc" type="object"
                         class="btn btn-secondary" string="PLAME condiciones (.toc)"
                         groups="hr_payroll.group_hr_payroll_user"/>
+                <button name="action_export_plame_for" type="object"
+                        class="btn btn-secondary" string="PLAME practicantes (.for)"
+                        groups="hr_payroll.group_hr_payroll_user"/>
                 <button name="action_export_afpnet" type="object"
                         class="btn btn-secondary" string="AFPNet (.xlsx)"
                         groups="hr_payroll.group_hr_payroll_user"/>

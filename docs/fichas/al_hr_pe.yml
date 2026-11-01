@@ -724,6 +724,11 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: '44.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Practicantes: la media subvención de cada 6 meses tiene su propia regla, «Subvención adicional (practicantes)», sin aportes. Antes salía como gratificación (código PLAME 0406)."
+      - "PLAME: los practicantes se declaran en el archivo nuevo «PLAME practicantes (.for)», con el monto pagado del mes, y ya no salen en el .rem, .jor, .snl, .toc ni en AFPNet."
   - version: '43.20261101'
     fecha: 01/11/2026
     cambios:

@@ -11,6 +11,7 @@ Método                     Archivo    Contenido
 ``export_plame_hours``     ``.jor``   Jornada laboral (horas ordinarias y extras)
 ``export_plame_suspencion``  ``.snl``   Suspensiones de labores (Tabla 21 SUNAT)
 ``export_plame_other_conditions``  ``.toc``  Otras condiciones (+Vida, domiciliado)
+``action_export_plame_for``  ``.for``   Personal en formación: monto pagado
 ``afp_net``                ``.xlsx``  Plantilla de importación AFPNet
 =========================  =========  =============================================
 
@@ -425,6 +426,47 @@ class HrPayslipRun(models.Model):
             ))
 
         filename = self._l10n_pe_plame_filename('toc')
+        return self._l10n_pe_download_attachment(
+            filename, output.getvalue().encode('utf-8'))
+
+    # ------------------------------------------------------------------
+    # PLAME .for — Personal en formación (modalidades formativas)
+    # ------------------------------------------------------------------
+    def action_export_plame_for(self):
+        """Genera el ``.for`` de PLAME (estructura 21: personal en
+        formación - modalidad formativa laboral y otros).
+
+        Cada línea::
+
+            tipo_doc|nro_doc|monto_pagado|\r\n
+
+        El monto pagado es el total de ingresos de sus boletas del mes
+        (TINGR): la subvención mensual y, si corresponde, la subvención
+        adicional de cada 6 meses. Los practicantes no van en el .rem,
+        .jor, .snl ni .toc, que son de trabajadores.
+        """
+        self._l10n_pe_check_single(self.env._(
+            'Solo se puede procesar una planilla a la vez, '
+            'seleccione una sola nómina'))
+
+        totals = {}  # employee -> monto pagado del mes
+        for slip in self._l10n_pe_plame_slips(trainees=True):
+            amount = sum(slip.line_ids.filtered(
+                lambda line: line.code == 'TINGR').mapped('total'))
+            totals[slip.employee_id] = \
+                totals.get(slip.employee_id, 0.0) + amount
+        output = io.StringIO()
+        for employee in sorted(
+                totals, key=lambda e: e.identification_id or ''):
+            if not totals[employee]:
+                continue
+            output.write('%s|%s|%.2f|\r\n' % (
+                self._l10n_pe_doc_type(employee),
+                employee.identification_id or '',
+                totals[employee],
+            ))
+
+        filename = self._l10n_pe_plame_filename('for')
         return self._l10n_pe_download_attachment(
             filename, output.getvalue().encode('utf-8'))
 

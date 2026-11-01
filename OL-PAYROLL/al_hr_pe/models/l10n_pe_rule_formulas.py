@@ -283,3 +283,13 @@ _add('salary_rule_ROAQ',
      "# Los subsidios de maternidad (0915) e incapacidad temporal (0916) están\n"
      "# afectos a 5ta (tabla 22 de la PLAME).\n"
      "result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI")
+
+# Subvención adicional de los practicantes (Ley 28518, art. 47 b): regla
+# propia SUBV_AD en vez de la gratificación (GRA, 0406). Llega al neto y es
+# renta de 5ta del mes; no entra en las bases de aportes.
+_chain('salary_rule_TINGR', lambda code: code + '+SUBV_AD')
+_chain('salary_rule_REAQ', lambda code: (
+    "# La indemnización vacacional (INDVAC) es inafecta a 5ta (LIR, art. 18\n"
+    "# inc. c): llega al neto pero no a la renta. La subvención adicional de\n"
+    "# los practicantes (SUBV_AD) es renta de 5ta del mes en que se paga.\n"
+    "result = BONI_EX+UTIL+SUBV_AD"))

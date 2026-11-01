@@ -502,3 +502,40 @@ class TestReviewCore(TransactionCase):
             "result = worked_days['FER'].number_of_days * (version.wage/30) * 2")
         self.env['hr.salary.rule']._l10n_pe_sync_formulas()
         self.assertEqual(rule.amount_python_compute.strip(), new_code.strip())
+
+    # ------------------------------------------------------------------
+    # Practicantes: subvención adicional propia y PLAME por el .for
+    # ------------------------------------------------------------------
+    def test_trainee_additional_subsidy_and_plame_for(self):
+        """La media subvención va por SUBV_AD (no por la gratificación,
+        0406): llega al neto y a la 5ta, sin EsSalud. El practicante no
+        se declara en el .rem/.toc de trabajadores sino en el .for, con el
+        monto pagado del mes."""
+        trainee = self._create_employee('Leo', '44556611', wage=1200.0)
+        trainee.version_id.l10n_pe_labor_regime = 'practicante'
+        run = self.env['hr.payslip.run'].create({
+            'name': 'Lote 2026-03', 'date_start': date(2026, 3, 1),
+            'date_end': date(2026, 3, 31), 'company_id': self.company.id})
+        worker = self._slip()
+        slip = self._slip(employee=trainee, compute=False)
+        slip.write({'input_line_ids': [(0, 0, {
+            'salary_rule_id': self.env.ref('al_hr_pe.salary_rule_SUBV_AD').id,
+            'amount': 600.0,
+        })]})
+        slip.compute_sheet()
+        self.assertEqual(self._line(slip, 'SUBV_AD').total, 600.0)
+        self.assertFalse(self._line(slip, 'GRA').total)
+        self.assertAlmostEqual(self._line(slip, 'TINGR').total, 1800.0)
+        self.assertAlmostEqual(self._line(slip, 'REAQ').total, 600.0)
+        self.assertFalse(self._line(slip, 'ESSALUD').total)
+        self.assertFalse(self.env.ref('al_hr_pe.salary_rule_SUBV_AD').sunat_code)
+        (worker | slip).write({'payslip_run_id': run.id, 'state': 'validated'})
+        self.assertEqual(run._l10n_pe_plame_slips(), worker)
+        self.assertEqual(run._l10n_pe_plame_slips(trainees=True), slip)
+        rem = self._attachment_text(run.action_export_plame_rem())
+        self.assertIn('44556677', rem)
+        self.assertNotIn('44556611', rem)
+        self.assertNotIn('44556611', self._attachment_text(
+            run.action_export_plame_toc()))
+        self.assertEqual(self._attachment_text(run.action_export_plame_for()),
+                         '01|44556611|1800.00|\r\n')

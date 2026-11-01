@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 44.20261101 — 01/11/2026
+
+- Practicantes: la media subvención de cada 6 meses tiene su propia regla, «Subvención adicional (practicantes)», sin aportes. Antes salía como gratificación (código PLAME 0406).
+- PLAME: los practicantes se declaran en el archivo nuevo «PLAME practicantes (.for)», con el monto pagado del mes, y ya no salen en el .rem, .jor, .snl, .toc ni en AFPNet.
+
 ## 43.20261101 — 01/11/2026
 
 - Ausencias en días naturales: los sábados y domingos dentro de una maternidad, licencia o descanso médico ya no se pagan como sueldo.

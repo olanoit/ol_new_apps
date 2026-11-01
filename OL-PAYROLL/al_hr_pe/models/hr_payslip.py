@@ -678,7 +678,7 @@ class HrPayslipRun(models.Model):
                 'El lote no tiene periodo asignado.'))
         return self.periodo_id
 
-    def _l10n_pe_plame_slips(self):
+    def _l10n_pe_plame_slips(self, trainees=False):
         """Boletas que entran en la PLAME de este lote.
 
         La declaración es del **mes entero**: se toman las boletas
@@ -688,18 +688,27 @@ class HrPayslipRun(models.Model):
         parcial, y SUNAT espera un único envío por periodo: importar el
         segundo pisaría al primero. Una boleta cancelada (y rehecha) o en
         borrador no se declara.
+
+        Los practicantes (modalidades formativas, Ley 28518) no son
+        trabajadores: el PLAME los declara aparte, por monto pagado (.for).
+        Sin ``trainees`` se devuelven las boletas de los trabajadores; con
+        ``trainees``, solo las de los practicantes.
         """
         self.ensure_one()
         month = self.l10n_pe_plame_period_id
         if not month:
-            return self.slip_ids.filtered(
+            slips = self.slip_ids.filtered(
                 lambda s: s.state in ('validated', 'paid'))
-        periods = month | month.child_ids
-        return self.env['hr.payslip'].search([
-            ('periodo_id', 'in', periods.ids),
-            ('company_id', '=', self.company_id.id),
-            ('state', 'in', ('validated', 'paid')),
-        ])
+        else:
+            periods = month | month.child_ids
+            slips = self.env['hr.payslip'].search([
+                ('periodo_id', 'in', periods.ids),
+                ('company_id', '=', self.company_id.id),
+                ('state', 'in', ('validated', 'paid')),
+            ])
+        return slips.filtered(
+            lambda s: (s.version_id.l10n_pe_labor_regime == 'practicante')
+            == trainees)
 
 
 class HrPayslipCostDistribution(models.Model):
