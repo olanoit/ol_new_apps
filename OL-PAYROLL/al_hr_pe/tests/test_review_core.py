@@ -508,7 +508,8 @@ class TestReviewCore(TransactionCase):
     # ------------------------------------------------------------------
     def test_trainee_additional_subsidy_and_plame_for(self):
         """La media subvención va por SUBV_AD (no por la gratificación,
-        0406): llega al neto y a la 5ta, sin EsSalud. El practicante no
+        0406): llega al neto, sin EsSalud ni 5ta (Ley 28518, art. 47). El
+        practicante no
         se declara en el .rem/.toc de trabajadores sino en el .for, con el
         monto pagado del mes."""
         trainee = self._create_employee('Leo', '44556611', wage=1200.0)
@@ -526,7 +527,7 @@ class TestReviewCore(TransactionCase):
         self.assertEqual(self._line(slip, 'SUBV_AD').total, 600.0)
         self.assertFalse(self._line(slip, 'GRA').total)
         self.assertAlmostEqual(self._line(slip, 'TINGR').total, 1800.0)
-        self.assertAlmostEqual(self._line(slip, 'REAQ').total, 600.0)
+        self.assertFalse(self._line(slip, 'REAQ').total)
         self.assertFalse(self._line(slip, 'ESSALUD').total)
         self.assertFalse(self.env.ref('al_hr_pe.salary_rule_SUBV_AD').sunat_code)
         (worker | slip).write({'payslip_run_id': run.id, 'state': 'validated'})

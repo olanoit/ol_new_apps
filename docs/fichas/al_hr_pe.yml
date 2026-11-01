@@ -724,6 +724,10 @@ faq:
       conserva y desde el día siguiente figura «De baja».
 
 novedades:
+  - version: '45.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Practicantes: la subvención adicional ya no entra en la renta de 5ta. La Ley 28518 (art. 47) prohíbe cualquier retención al beneficiario."
   - version: '44.20261101'
     fecha: 01/11/2026
     cambios:

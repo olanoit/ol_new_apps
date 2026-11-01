@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 45.20261101 — 01/11/2026
+
+- Practicantes: la subvención adicional ya no entra en la renta de 5ta. La Ley 28518 (art. 47) prohíbe cualquier retención al beneficiario.
+
 ## 44.20261101 — 01/11/2026
 
 - Practicantes: la media subvención de cada 6 meses tiene su propia regla, «Subvención adicional (practicantes)», sin aportes. Antes salía como gratificación (código PLAME 0406).

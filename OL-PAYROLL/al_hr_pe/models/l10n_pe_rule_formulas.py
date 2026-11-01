@@ -293,3 +293,10 @@ _chain('salary_rule_REAQ', lambda code: (
     "# inc. c): llega al neto pero no a la renta. La subvención adicional de\n"
     "# los practicantes (SUBV_AD) es renta de 5ta del mes en que se paga.\n"
     "result = BONI_EX+UTIL+SUBV_AD"))
+
+# Ley 28518, art. 47: la subvención no está sujeta a ninguna retención a
+# cargo del beneficiario; la subvención adicional (SUBV_AD) sale de la 5ta.
+_chain('salary_rule_REAQ', lambda code: (
+    "# La indemnización vacacional (INDVAC) es inafecta a 5ta (LIR, art. 18\n"
+    "# inc. c): llega al neto pero no a la renta.\n"
+    "result = BONI_EX+UTIL"))

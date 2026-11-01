@@ -472,11 +472,11 @@ result = inputs['BON9_TRU'].amount if inputs['BON9_TRU'] else 0
             <field name="category_ids" eval="[(6, 0, [ref('ING')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
         </record>
-        <!-- Subvención adicional de los practicantes (Ley 28518, art. 47 b):
+        <!-- Subvención adicional de los practicantes (Ley 28518, art. 42.6):
              media subvención cada 6 meses de convenio. No es remuneración ni
-             gratificación: sin aportes ni bonificación, y sin código de la
-             tabla 22 (el PLAME declara al personal en formación en el .for,
-             por monto pagado). -->
+             gratificación: sin aportes, bonificación ni retención de 5ta
+             (art. 47), y sin código de la tabla 22 (el PLAME declara al
+             personal en formación en el .for, por monto pagado). -->
         <record model="hr.salary.rule" id="salary_rule_SUBV_AD">
             <field name="name">Subvención adicional (practicantes)</field>
             <field name="code">SUBV_AD</field>
@@ -1155,9 +1155,8 @@ result = BAS_M+AF+TOT_EXT+BONR+SMAR+SENF+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COM
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
 # La indemnización vacacional (INDVAC) es inafecta a 5ta (LIR, art. 18
-# inc. c): llega al neto pero no a la renta. La subvención adicional de
-# los practicantes (SUBV_AD) es renta de 5ta del mes en que se paga.
-result = BONI_EX+UTIL+SUBV_AD
+# inc. c): llega al neto pero no a la renta.
+result = BONI_EX+UTIL
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
