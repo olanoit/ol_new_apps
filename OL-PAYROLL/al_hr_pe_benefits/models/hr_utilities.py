@@ -4,16 +4,24 @@
 Portado de ``hr_utilities`` (v18). La renta anual antes de impuestos
 multiplicada por el % legal del giro se reparte:
 
-* **50 % por días laborados**: días trabajados − faltas del ejercicio
-  (worked days ``wd_dtrab`` − ``wd_falt``).
+* **50 % por días laborados**: días real y efectivamente laborados del
+  ejercicio (worked days ``wd_dtrab``) más los que la ley asimila
+  (D.S. 009-98-TR, art. 2): el descanso pre y posnatal (``SMAR``). Las
+  faltas no se restan: en Odoo 20 ``DLAB`` ya viene sin ellas (``FAL`` es
+  otra línea) y restarlas otra vez las descontaba dos veces. El accidente
+  de trabajo también se asimila, pero no tiene un tipo propio (``SENF``
+  junta la enfermedad común con el accidente): si se registra con un tipo
+  aparte, agréguelo a ``wd_dtrab``.
 * **50 % por remuneraciones**: total anual de la regla salarial
   configurada (``rule_total_income``).
 
 El descuadre por redondeo de ambos repartos se ajusta contra la última
 línea (paridad v18). La participación de cada trabajador se limita a 18
 remuneraciones mensuales vigentes al cierre del ejercicio (D.L. 892,
-art. 2); el exceso no se reparte (va al FONDOEMPLEO) y queda registrado
-en la línea. El total por trabajador se exporta como input
+art. 2), con la asignación familiar de la RMV vigente a esa fecha; el
+exceso no se reparte (va al FONDOEMPLEO) y queda registrado en la línea.
+Solo reparten las empresas con más de 20 trabajadores (D.Leg. 892,
+art. 2): con 20 o menos el registro muestra un aviso. El total por trabajador se exporta como input
 (``hr_input_for_results``) al lote de nóminas del pago.
 
 Cambios v19: ``account.fiscal.year`` (eliminado) → campo entero
@@ -35,6 +43,13 @@ from .hr_benefits_engine import notify_success
 from .hr_benefits_engine import compute_locked
 from .hr_benefits_engine import (
     employee_lot_slip, ensure_draft, ensure_slips_draft, recompute_slips)
+
+# Días que la ley asimila a los efectivamente laborados (D.S. 009-98-TR,
+# art. 2): descanso pre y posnatal.
+ASSIMILATED_DAY_CODES = ('SMAR',)
+# D.Leg. 892, art. 2: solo participan los trabajadores de empresas con
+# más de 20 trabajadores.
+MIN_WORKERS = 20
 
 
 class HrUtilities(models.Model):
@@ -88,6 +103,11 @@ class HrUtilities(models.Model):
         check_company=True,
         help='Lote mensual donde se pagan las utilidades.', tracking=True)
     utili_count = fields.Integer(string='Repartos', compute='_compute_utilities_count')
+    worker_count = fields.Integer(
+        string='Trabajadores del ejercicio', readonly=True,
+        help='Trabajadores distintos con boletas cerradas en el ejercicio '
+             '(sin modalidades formativas). Solo las empresas con más de '
+             '20 trabajadores reparten utilidades (D.Leg. 892, art. 2).')
 
     _unique_year = models.Constraint(
         'UNIQUE(company_id, year)',
@@ -126,8 +146,8 @@ class HrUtilities(models.Model):
             self.company_id)
         self._check_configuration(param)
         rule = param.rule_total_income
-        wd_dtrab = param.wd_dtrab
-        wd_falt = param.wd_falt
+        worked_types = param.wd_dtrab | self.env['hr.work.entry.type'].search(
+            [('code', 'in', ASSIMILATED_DAY_CODES)])
         # Solo boletas cerradas y sin las quincenales (su neto ya viaja
         # en la mensual; contarlas duplicaría sueldo y días). Las
         # modalidades formativas no son trabajadores y no participan en
@@ -151,11 +171,9 @@ class HrUtilities(models.Model):
                 bucket['has_rule'] = True
                 bucket['salary'] += sum(rule_lines.mapped('total'))
             bucket['days'] += sum(worked_days.filtered(
-                lambda line: line.work_entry_type_id in wd_dtrab
+                lambda line: line.work_entry_type_id in worked_types
             ).mapped('number_of_days'))
-            bucket['days'] -= sum(worked_days.filtered(
-                lambda line: line.work_entry_type_id in wd_falt
-            ).mapped('number_of_days'))
+        self.worker_count = len(data)
         closing_date = date(self.year, 12, 31)
         for employee in sorted(data, key=lambda emp: emp.id):
             bucket = data[employee]
@@ -202,8 +220,21 @@ class HrUtilities(models.Model):
         input_utilities = param.hr_input_for_results
         slip_by_line = {
             line: employee_lot_slip(self.payslip_run_id, line.employee_id)
-            for line in self.utilities_line_ids}
-        slips = self.env['hr.payslip'].union(*slip_by_line.values())
+            for line in self.utilities_line_ids
+            if not line.paid_separately}
+        # D.S. 009-98-TR: también se paga a los cesados. Sin boleta en el
+        # lote su participación no llegaba a ningún pago y el reparto
+        # quedaba «exportado» en silencio.
+        missing = [line.employee for line, slip in slip_by_line.items()
+                   if not slip and line.total_utilities]
+        if missing:
+            raise UserError(self.env._(
+                'Estos trabajadores (típicamente cesados) no tienen boleta '
+                'en el lote %(lot)s: %(employees)s. Agrégueles una boleta '
+                'en el lote o márquelos como «Pago aparte» si se les paga '
+                'por otro medio.', lot=self.payslip_run_id.display_name,
+                employees=', '.join(missing)))
+        slips = self.env['hr.payslip'].union(slip_by_line.values())
         ensure_slips_draft(slips)
         for line, slip in slip_by_line.items():
             if not slip:
@@ -237,7 +268,6 @@ class HrUtilities(models.Model):
         missing = [label for field_name, label in [
             ('rule_total_income', 'R.S. rem. afecta a utilidades'),
             ('wd_dtrab', 'W.D. días trabajados'),
-            ('wd_falt', 'W.D. faltas'),
             ('hr_input_for_results', 'Input utilidades'),
         ] if not getattr(param, field_name, False)]
         if missing:
@@ -250,10 +280,14 @@ class HrUtilities(models.Model):
     def _closing_remuneration(self, employee, version, param, on_date):
         """Remuneración mensual vigente al cierre del ejercicio (base
         del tope de 18 remuneraciones): sueldo de la versión vigente más
-        la asignación familiar si corresponde en esa fecha."""
+        la asignación familiar si corresponde en esa fecha, el 10 % de la
+        RMV vigente al cierre (tabla por fecha; el parámetro fijo de la
+        compañía solo si la tabla no la cubre)."""
         amount = version.wage or 0.0
         if employee._l10n_pe_has_family_allowance(on_date):
-            amount += param.family_allowance
+            rmv = self.env['hr.rule.parameter']._l10n_pe_get_rmv(on_date)
+            amount += custom_round(rmv * 0.10, 2) if rmv \
+                else param.family_allowance
         return amount
 
     def _distribute(self):
@@ -366,6 +400,11 @@ class HrUtilitiesLine(models.Model):
         string='Exceso del tope', digits=(12, 2),
         help='Parte de la participación que supera el tope de 18 '
              'remuneraciones: no se paga al trabajador.')
+    paid_separately = fields.Boolean(
+        string='Pago aparte',
+        help='La participación se paga fuera del lote de nóminas (p. ej. '
+             'a un cesado sin boleta en el lote): al exportar no se busca '
+             'su boleta. Sigue contando en el reparto.', tracking=True)
     preserve_record = fields.Boolean(
         string='No recalcular',
         help='Al procesar de nuevo, la línea se conserva tal cual, con sus '

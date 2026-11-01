@@ -32,6 +32,15 @@
                         empresa. La mitad se reparte según los días laborados y la otra mitad según
                         las remuneraciones de cada trabajador en el ejercicio. Nadie puede recibir
                         más de 18 remuneraciones mensuales: el exceso va al FONDOEMPLEO.
+                        Los días son los real y efectivamente laborados más los que la ley
+                        asimila (descanso pre y posnatal); los días de descanso semanal no
+                        cuentan como laborados.
+                    </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not worker_count or worker_count &gt; 20">
+                        En el ejercicio hubo solo <field name="worker_count" class="d-inline"/>
+                        trabajadores: las empresas con 20 trabajadores o menos no están
+                        obligadas a repartir utilidades (D.Leg. 892, art. 2).
                     </div>
                     <group>
                         <group string="Monto a repartir">
@@ -98,6 +107,7 @@
                     <group>
                         <group string="Trabajador">
                             <field name="preserve_record" readonly="l10n_pe_locked"/>
+                            <field name="paid_separately" readonly="l10n_pe_locked"/>
                             <field name="version_id" readonly="1"/>
                             <field name="admission_date" readonly="1"/>
                             <field name="distribution_id" readonly="1"/>
@@ -128,6 +138,7 @@
                 <field name="employee_id"/>
                 <field name="employee_document" optional="show"/>
                 <field name="preserve_record" optional="hide"/>
+                <field name="paid_separately" optional="hide"/>
                 <field name="admission_date" optional="hide"/>
                 <field name="distribution_id" optional="hide"/>
                 <field name="salary" sum="Total" optional="show"/>
