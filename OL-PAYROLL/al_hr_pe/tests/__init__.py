@@ -12,3 +12,4 @@ from . import test_payroll_form_pages
 from . import test_main_parameter_settings
 from . import test_state_readonly
 from . import test_review_core
+from . import test_rev2_core

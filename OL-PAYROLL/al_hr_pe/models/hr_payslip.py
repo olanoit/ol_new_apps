@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import calendar
 from collections import defaultdict
+from datetime import timedelta
 from types import SimpleNamespace
 
 from odoo import api, fields, models
@@ -397,15 +399,12 @@ class HrPayslip(models.Model):
         # fines de semana posteriores al cese terminarían como DOM.
         dom = self.env.ref('al_hr_pe.wd_DOM', raise_if_not_found=False)
         if dom and self.date_from and self.date_to:
-            date_from, date_to = self.date_from, self.date_to
-            contracts = versions or self.version_id
-            starts = [d for d in contracts.mapped('contract_date_start') if d]
-            if starts and len(starts) == len(contracts):
-                date_from = max(date_from, min(starts))
-            ends = contracts.mapped('contract_date_end')
-            if ends and all(ends):
-                date_to = min(date_to, max(ends))
+            date_from, date_to = self._l10n_pe_contract_period(versions)
             period_days = max(0, (date_to - date_from).days + 1)
+            # Las ausencias corren en días naturales: los sábados, domingos
+            # y feriados que caen dentro son de la ausencia, no de descanso.
+            self._l10n_pe_add_natural_absence_days(
+                res, versions, work_entries_vals, date_from, date_to)
             other_days = sum(
                 vals.get('number_of_days', 0.0) for vals in res
                 if self._l10n_pe_takes_rest_days(self.env['hr.work.entry.type'].browse(
@@ -418,6 +417,115 @@ class HrPayslip(models.Model):
                     vals['number_of_days'] = dom_days
                     dom_days = 0.0
         return res
+
+    def _l10n_pe_month_days(self):
+        """Días del mes calendario de la boleta (el de su fecha final). La
+        regla BAS paga el sueldo completo solo si la boleta va del día 1 a
+        este día."""
+        self.ensure_one()
+        if not self.date_to:
+            return 0
+        return calendar.monthrange(self.date_to.year, self.date_to.month)[1]
+
+    def _l10n_pe_contract_period(self, versions):
+        """Periodo de la boleta acotado al contrato (ingreso o cese a mitad
+        de mes)."""
+        self.ensure_one()
+        date_from, date_to = self.date_from, self.date_to
+        contracts = versions or self.version_id
+        starts = [d for d in contracts.mapped('contract_date_start') if d]
+        if starts and len(starts) == len(contracts):
+            date_from = max(date_from, min(starts))
+        ends = contracts.mapped('contract_date_end')
+        if ends and all(ends):
+            date_to = min(date_to, max(ends))
+        return date_from, date_to
+
+    # Ausencias que se cuentan en días NATURALES: el descanso médico, los
+    # subsidios (D.S. 009-97-SA, art. 15), las licencias y las vacaciones
+    # (D.Leg. 713, art. 10) corren también en los sábados, domingos y
+    # feriados que caen dentro. El motor nativo solo genera los días
+    # laborables del calendario; sin completarlos, el complemento DOM se
+    # quedaba con el fin de semana y BAS lo pagaba como sueldo (maternidad
+    # todo el mes: básico de 9 días, con su ONP y su EsSalud).
+    _L10N_PE_NATURAL_DAY_CODES = frozenset((
+        'DVAC', 'DMED', 'DPAT', 'LCGH', 'LSGH', 'SMAR', 'SENF'))
+
+    def _l10n_pe_natural_absence_days_apply(self):
+        """El conteo en días naturales es de la boleta mensual con sueldo.
+
+        La de pago por hora paga las horas de cada día, y la de
+        construcción civil (``al_hr_pe_construction``) paga jornales por
+        día laborable con su dominical aparte: ambas conservan el conteo
+        del calendario.
+        """
+        self.ensure_one()
+        version = self.version_id
+        if version.wage_type == 'hourly':
+            return False
+        return not ('l10n_pe_is_construction' in version._fields
+                    and version.l10n_pe_is_construction)
+
+    def _l10n_pe_add_natural_absence_days(self, res, versions, work_entries_vals,
+                                          date_from, date_to):
+        """Suma a las líneas de ausencia los días no laborables que caen
+        dentro de una ausencia aprobada (``hr.leave``) del periodo.
+
+        Los días laborables los sigue contando el motor nativo (también
+        las medias jornadas); aquí solo se añaden los días de la ausencia
+        en los que no hay ninguna entrada de su tipo: fines de semana y
+        feriados. Cada día va a la línea de la versión vigente ese día.
+        """
+        self.ensure_one()
+        if not self.employee_id or not self._l10n_pe_natural_absence_days_apply():
+            return
+        leaves = self.env['hr.leave'].sudo().search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'validate'),
+            ('work_entry_type_id.code', 'in', list(self._L10N_PE_NATURAL_DAY_CODES)),
+            ('request_date_from', '<=', date_to),
+            ('request_date_to', '>=', date_from),
+        ])
+        if not leaves:
+            return
+        entry_days = defaultdict(set)
+        for vals in work_entries_vals or []:
+            work_entry_type = vals.get('work_entry_type_id')
+            if isinstance(work_entry_type, models.BaseModel):
+                work_entry_type = work_entry_type.id
+            if vals.get('date'):
+                entry_days[work_entry_type].add(vals['date'])
+        extra_days = defaultdict(set)
+        for leave in leaves:
+            work_entry_type = leave.work_entry_type_id
+            day = max(leave.request_date_from, date_from)
+            last = min(leave.request_date_to, date_to)
+            while day <= last:
+                if day not in entry_days[work_entry_type.id]:
+                    extra_days[work_entry_type.id].add(day)
+                day += timedelta(days=1)
+        versions = (versions or self.version_id).sorted('date_version')
+        for work_entry_type_id, days in extra_days.items():
+            for day in days:
+                version = versions[:1]
+                for candidate in versions:
+                    if candidate.date_version and candidate.date_version <= day:
+                        version = candidate
+                lines = [vals for vals in res
+                         if vals.get('work_entry_type_id') == work_entry_type_id]
+                line = next((vals for vals in lines
+                             if vals.get('version_id') == version.id),
+                            lines[0] if lines else None)
+                if line is None:
+                    line = {
+                        'version_id': version.id or self.version_id.id,
+                        'sequence': 100,
+                        'work_entry_type_id': work_entry_type_id,
+                        'number_of_days': 0.0,
+                        'number_of_hours': 0.0,
+                    }
+                    res.append(line)
+                line['number_of_days'] = line.get('number_of_days', 0.0) + 1.0
 
     # Conceptos PE que OCUPAN días del mes (los que BAS y las reglas de
     # ausencias pagan o descuentan por día) y los ADICIONALES a la jornada

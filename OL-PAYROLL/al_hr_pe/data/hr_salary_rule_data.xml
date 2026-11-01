@@ -28,11 +28,16 @@ if version.wage_type == 'hourly':
 else:
     total_dias = worked_days['DLAB'].number_of_days+worked_days['DOM'].number_of_days+worked_days['FAL'].number_of_days+worked_days['DVAC'].number_of_days+worked_days['DMED'].number_of_days+worked_days['DPAT'].number_of_days+worked_days['LCGH'].number_of_days+worked_days['LSGH'].number_of_days+worked_days['SMAR'].number_of_days+worked_days['SENF'].number_of_days
     dias_lab = worked_days['DLAB'].number_of_days+worked_days['DOM'].number_of_days+worked_days['FAL'].number_of_days+worked_days['LSGH'].number_of_days
-    if total_dias >= payslip.date_to.day:
-        if dias_lab >= payslip.date_to.day:
+    # Sueldo del mes (30 días comerciales) solo si la boleta cubre el mes
+    # calendario entero; una boleta parcial (cese o aumento a mitad de mes)
+    # paga sus días.
+    dias_mes = payslip._l10n_pe_month_days()
+    mes_completo = payslip.date_from.day == 1 and payslip.date_to.day == dias_mes
+    if mes_completo and total_dias &gt;= dias_mes:
+        if dias_lab &gt;= dias_mes:
             result = version.wage
         else:
-            result = ((dias_lab + (30-payslip.date_to.day)) * (version.wage/30)) if dias_lab != 0 else 0
+            result = ((dias_lab + (30-dias_mes)) * (version.wage/30)) if dias_lab != 0 else 0
     else:
         result = dias_lab * (version.wage/30)
             </field>
@@ -1127,7 +1132,9 @@ result = BAS_M+AF+TOT_EXT+BONR+COMP_VAC+VAC+VATRU+GRA_TRU+BON9_TRU+COMI
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = BONI_EX+UTIL+INDVAC
+# La indemnización vacacional (INDVAC) es inafecta a 5ta (LIR, art. 18
+# inc. c): llega al neto pero no a la renta.
+result = BONI_EX+UTIL
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>
@@ -1140,7 +1147,10 @@ result = BONI_EX+UTIL+INDVAC
             <field name="condition_select">none</field>
             <field name="amount_select">code</field>
             <field name="amount_python_compute">
-result = version.wage+AF+TOT_EXT+BONR+COMI
+# Proyección con la remuneración ordinaria mensual (LIR, art. 40): sueldo y
+# asignación familiar. Las horas extra, comisiones y bonos del mes no se
+# proyectan; entran en la renta del mes en que se pagan.
+result = version.wage+AF
             </field>
             <field name="category_ids" eval="[(6, 0, [ref('SUB')])]"/>
             <field name="struct_ids" eval="[(6, 0, [ref('base_structure')])]"/>

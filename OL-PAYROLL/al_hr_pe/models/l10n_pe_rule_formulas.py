@@ -214,3 +214,63 @@ _chain('salary_rule_FER', lambda code: (
     "else:\n"
     "    # Línea sin horas (datos anteriores): por días.\n"
     "    result = worked_days['FER'].number_of_days * (version.wage/30) * 2"))
+
+
+# ----------------------------------------------------------------------
+# Revisión de beneficios sociales, ronda 2 (01/11/2026).
+# ----------------------------------------------------------------------
+# BAS: sueldo completo solo si la boleta cubre el mes calendario entero.
+# Antes comparaba los días con el día final de la boleta y una boleta del 1
+# al 20 (cese) o del 1 al 15 (aumento desde el 16) pagaba el mes completo.
+# Se mantiene el criterio de 30 días comerciales del mes completo.
+_BAS_HEAD = (
+    "if version.wage_type == 'hourly':\n"
+    "    hour_lab = worked_days['DLAB'].number_of_hours+worked_days['DOM'].number_of_hours+worked_days['FAL'].number_of_hours+worked_days['LSGH'].number_of_hours\n"
+    "    if version.schedule_pay == 'daily':\n"
+    "        result = hour_lab * (version.wage/version.resource_calendar_id.hours_per_day)\n"
+    "    elif version.schedule_pay == 'weekly':\n"
+    "        result = hour_lab * (version.wage/version.resource_calendar_id.full_time_required_hours)\n"
+    "    else:\n"
+    "        result = hour_lab * (version.wage/30/8)\n"
+    "else:\n"
+    "    total_dias = worked_days['DLAB'].number_of_days+worked_days['DOM'].number_of_days+worked_days['FAL'].number_of_days+worked_days['DVAC'].number_of_days+worked_days['DMED'].number_of_days+worked_days['DPAT'].number_of_days+worked_days['LCGH'].number_of_days+worked_days['LSGH'].number_of_days+worked_days['SMAR'].number_of_days+worked_days['SENF'].number_of_days\n"
+    "    dias_lab = worked_days['DLAB'].number_of_days+worked_days['DOM'].number_of_days+worked_days['FAL'].number_of_days+worked_days['LSGH'].number_of_days\n")
+_add('salary_rule_BAS',
+     _BAS_HEAD
+     + "    if total_dias >= payslip.date_to.day:\n"
+       "        if dias_lab >= payslip.date_to.day:\n"
+       "            result = version.wage\n"
+       "        else:\n"
+       "            result = ((dias_lab + (30-payslip.date_to.day)) * (version.wage/30)) if dias_lab != 0 else 0\n"
+       "    else:\n"
+       "        result = dias_lab * (version.wage/30)",
+     _BAS_HEAD
+     + "    # Sueldo del mes (30 días comerciales) solo si la boleta cubre el mes\n"
+       "    # calendario entero; una boleta parcial (cese o aumento a mitad de mes)\n"
+       "    # paga sus días.\n"
+       "    dias_mes = payslip._l10n_pe_month_days()\n"
+       "    mes_completo = payslip.date_from.day == 1 and payslip.date_to.day == dias_mes\n"
+       "    if mes_completo and total_dias >= dias_mes:\n"
+       "        if dias_lab >= dias_mes:\n"
+       "            result = version.wage\n"
+       "        else:\n"
+       "            result = ((dias_lab + (30-dias_mes)) * (version.wage/30)) if dias_lab != 0 else 0\n"
+       "    else:\n"
+       "        result = dias_lab * (version.wage/30)")
+
+# Decisión 3: la indemnización vacacional (INDVAC) es inafecta a 5ta (LIR,
+# art. 18 inc. c); sigue en el neto (TINGR).
+_chain('salary_rule_REAQ', lambda code: (
+    "# La indemnización vacacional (INDVAC) es inafecta a 5ta (LIR, art. 18\n"
+    "# inc. c): llega al neto pero no a la renta.\n"
+    "result = BONI_EX+UTIL"))
+
+# Decisión 4: la proyección de 5ta (LIR, art. 40) es con la remuneración
+# ordinaria mensual; las horas extra, comisiones y bonos del mes ya no se
+# repiten en los meses que faltan.
+_add('salary_rule_PIAQ',
+     "result = version.wage+AF+TOT_EXT+BONR+COMI",
+     "# Proyección con la remuneración ordinaria mensual (LIR, art. 40): sueldo y\n"
+     "# asignación familiar. Las horas extra, comisiones y bonos del mes no se\n"
+     "# proyectan; entran en la renta del mes en que se pagan.\n"
+     "result = version.wage+AF")
