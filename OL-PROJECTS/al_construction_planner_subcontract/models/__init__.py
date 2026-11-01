@@ -18,3 +18,4 @@ from . import project_project
 from . import construction_planner_home
 from . import construction_amounts
 from . import construction_board
+from . import construction_contract_intervention

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Intervenir contrata (paquete 3 de CREVAL, CR-20; paquete 1.16, I-13) -->
+    <record id="construction_contract_intervention_wizard_view_form" model="ir.ui.view">
+        <field name="name">construction.contract.intervention.wizard.form</field>
+        <field name="model">construction.contract.intervention.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Intervenir contrata">
+                <group>
+                    <group>
+                        <field name="purchase_order_id" options="{'no_create': True}"/>
+                        <field name="partner_id"/>
+                        <field name="project_id"/>
+                    </group>
+                    <group>
+                        <field name="date"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </group>
+                <field name="reason" placeholder="Motivo de la intervención…"/>
+                <separator string="Preliquidación por partida"/>
+                <div class="text-muted small mb-2">
+                    Sin asiento contable. Al confirmar, cada línea marcada baja a la cantidad
+                    nueva, su saldo queda disponible en «Asignar contrata» y las cuotas del fondo
+                    de la orden quedan retenidas hasta la liquidación final.
+                </div>
+                <field name="line_ids">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="intervene" widget="boolean_toggle"/>
+                        <field name="task_label" readonly="1"/>
+                        <field name="activity_id" readonly="1" optional="show"/>
+                        <field name="uom_id" readonly="1" optional="show"/>
+                        <field name="price_unit" readonly="1" optional="hide"/>
+                        <field name="qty_contracted" readonly="1"/>
+                        <field name="qty_validated" readonly="1"/>
+                        <field name="qty_valued" readonly="1"/>
+                        <field name="amount_valued" readonly="1" sum="Total"/>
+                        <field name="qty_released" readonly="1"/>
+                        <field name="qty_new" readonly="1"/>
+                        <field name="amount_released" readonly="1" sum="Total"/>
+                        <field name="purchase_line_id" column_invisible="True"/>
+                        <field name="currency_id" column_invisible="True"/>
+                    </list>
+                </field>
+                <group class="oe_subtotal_footer">
+                    <field name="amount_valued"/>
+                    <field name="amount_released"/>
+                    <field name="fund_amount"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" string="Intervenir" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_contract_intervention_wizard" model="ir.actions.act_window">
+        <field name="name">Intervenir contrata</field>
+        <field name="res_model">construction.contract.intervention.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[Command.link(ref('al_construction_planner.group_planner_exec_approver'))]"/>
+    </record>
+
+    <!-- Intervenciones (preliquidación guardada) -->
+    <record id="construction_contract_intervention_view_list" model="ir.ui.view">
+        <field name="name">construction.contract.intervention.list</field>
+        <field name="model">construction.contract.intervention</field>
+        <field name="arch" type="xml">
+            <list string="Intervenciones de contrata" create="0">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="purchase_order_id"/>
+                <field name="amount_valued" sum="Total"/>
+                <field name="amount_released" sum="Total"/>
+                <field name="user_id" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="construction_contract_intervention_view_form" model="ir.ui.view">
+        <field name="name">construction.contract.intervention.form</field>
+        <field name="model">construction.contract.intervention</field>
+        <field name="arch" type="xml">
+            <form string="Intervención de contrata" create="0" edit="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="purchase_order_id"/>
+                            <field name="partner_id"/>
+                            <field name="project_id"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="reason"/>
+                    <notebook>
+                        <page string="Preliquidación" name="lines">
+                            <field name="line_ids">
+                                <list>
+                                    <field name="task_label"/>
+                                    <field name="activity_id" optional="show"/>
+                                    <field name="uom_id" optional="show"/>
+                                    <field name="price_unit" optional="hide"/>
+                                    <field name="qty_contracted"/>
+                                    <field name="qty_validated"/>
+                                    <field name="qty_valued"/>
+                                    <field name="amount_valued" sum="Total"/>
+                                    <field name="qty_released"/>
+                                    <field name="qty_new"/>
+                                    <field name="amount_released" sum="Total"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_valued"/>
+                                <field name="amount_released"/>
+                            </group>
+                        </page>
+                        <page string="Fondo retenido" name="funds">
+                            <field name="fund_ids">
+                                <list>
+                                    <field name="move_id"/>
+                                    <field name="date_maturity"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="amount_residual" sum="Total"/>
+                                    <field name="amount_charged" sum="Total"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="construction_contract_intervention_view_search" model="ir.ui.view">
+        <field name="name">construction.contract.intervention.search</field>
+        <field name="model">construction.contract.intervention</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="project_id"/>
+                <field name="partner_id"/>
+                <field name="purchase_order_id"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Contratista" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_contract_intervention" model="ir.actions.act_window">
+        <field name="name">Intervenciones de contrata</field>
+        <field name="res_model">construction.contract.intervention</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin intervenciones</p>
+            <p>Se intervienen desde la orden de contrata o desde el Cronograma.</p>
+        </field>
+    </record>
+
+    <!-- Orden de contrata -->
+    <record id="purchase_order_view_form_construction_intervention" model="ir.ui.view">
+        <field name="name">purchase.order.form.construction.intervention</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_order_view_form_construction_terms"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_construction_liquidate']" position="after">
+                <field name="construction_can_intervene" invisible="1"/>
+                <button name="action_construction_intervene" type="object" string="Intervenir contrata"
+                        invisible="not construction_can_intervene"
+                        groups="al_construction_planner.group_planner_exec_approver"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_construction_interventions" type="object"
+                        class="oe_stat_button" icon="fa-exchange"
+                        invisible="not construction_intervened">
+                    <field name="construction_intervened" invisible="1"/>
+                    <span class="o_stat_text">Intervenciones</span>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='construction_closed']" position="after">
+                <field name="construction_intervened" invisible="not construction_intervened"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Valorización: deductivos contra el fondo en la liquidación final -->
+    <record id="construction_contract_settlement_view_form_intervention" model="ir.ui.view">
+        <field name="name">construction.contract.settlement.form.intervention</field>
+        <field name="model">construction.contract.settlement</field>
+        <field name="inherit_id" ref="construction_contract_settlement_view_form_terms"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_to_pay']" position="after">
+                <field name="amount_fund_charge" invisible="not amount_fund_charge"/>
+                <field name="fund_charge_move_id" invisible="not fund_charge_move_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Fondo de garantía -->
+    <record id="construction_guarantee_fund_view_list_intervention" model="ir.ui.view">
+        <field name="name">construction.guarantee.fund.list.intervention</field>
+        <field name="model">construction.guarantee.fund</field>
+        <field name="inherit_id" ref="construction_guarantee_fund_view_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_residual']" position="after">
+                <field name="amount_charged" optional="hide" readonly="1" sum="Total"/>
+                <field name="hold_by_intervention" optional="hide" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Historial de contratas de la partida (CR-20, punto 7) -->
+    <record id="project_task_view_form_construction_contract_history" model="ir.ui.view">
+        <field name="name">project.task.form.construction.contract.history</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="al_construction_planner.project_task_view_form_construction_planner"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='construction_override_ids']" position="after">
+                <separator string="Contratas" invisible="not construction_contract_history_ids"/>
+                <field name="construction_contract_history_ids" invisible="not construction_contract_history_ids"
+                       groups="al_construction_planner.group_planner_user">
+                    <list create="0" delete="0" edit="0"
+                          decoration-muted="contract_status in ('closed', 'cancel')"
+                          decoration-warning="contract_status == 'intervened'">
+                        <field name="contract_partner_id"/>
+                        <field name="document_name" string="Orden"/>
+                        <field name="activity_id" optional="show"/>
+                        <field name="contract_date_from"/>
+                        <field name="contract_date_to"/>
+                        <field name="qty_allocated" string="Cantidad"/>
+                        <field name="qty_done" optional="show"/>
+                        <field name="product_uom_id" optional="show"/>
+                        <field name="contract_status" widget="badge"
+                               decoration-warning="contract_status == 'intervened'"
+                               decoration-info="contract_status == 'open'"/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

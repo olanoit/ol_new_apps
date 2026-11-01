@@ -11,6 +11,9 @@
 
     <menuitem id="menu_planner_deductions" name="Deductivos" parent="al_construction_planner.menu_planner_contracts" action="action_construction_contract_deduction" sequence="40" groups="al_construction_planner.group_planner_user"/>
 
+    <menuitem id="menu_planner_interventions" name="Intervenciones" parent="al_construction_planner.menu_planner_contracts" action="action_construction_contract_intervention" sequence="45" groups="al_construction_planner.group_planner_user"/>
+
+
     <!-- Informes › Contratas -->
     <menuitem id="menu_planner_reports_contracts" name="Contratas" parent="al_construction_planner.menu_planner_reports" sequence="25" groups="al_construction_planner.group_planner_user,account.group_account_invoice">
         <menuitem id="menu_planner_contract_summary" name="Resumen de valorizaciones" action="action_construction_contract_summary_report" sequence="10"/>

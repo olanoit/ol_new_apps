@@ -56,6 +56,13 @@
             <field name="code">material_extra</field>
             <field name="sequence">40</field>
         </record>
+        <!-- CR-20: defecto de la contrata que sale, hallado después de
+             intervenirla; el re-trabajo lo hace la que entra. -->
+        <record id="deduction_type_intervened_defect" model="construction.contract.deduction.type">
+            <field name="name">Defecto de la contrata intervenida</field>
+            <field name="code">intervened_defect</field>
+            <field name="sequence">50</field>
+        </record>
         <record id="deduction_type_other" model="construction.contract.deduction.type">
             <field name="name">Otro</field>
             <field name="code">other</field>

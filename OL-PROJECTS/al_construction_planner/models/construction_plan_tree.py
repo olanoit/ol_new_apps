@@ -35,6 +35,7 @@ TREE_ACTIONS = [
     ('al_construction_planner_purchase.action_plan_request_wizard', 'Requerimiento de obra', 'local_shipping'),
     ('al_construction_planner_mrp.action_plan_production_wizard', 'Orden de fabricación', 'factory'),
     ('al_construction_planner_subcontract.action_plan_contract_wizard', 'Asignar contrata', 'handshake'),
+    ('al_construction_planner_subcontract.action_contract_intervention_wizard', 'Intervenir contrata', 'swap_horiz'),
     ('al_construction_planner_crew.action_plan_crew_wizard', 'Asignar cuadrilla', 'groups'),
     ('al_construction_planner.action_plan_progress_wizard', 'Registrar avance', 'check_box'),
     ('al_construction_planner.action_plan_reschedule_wizard', 'Cambiar fechas', 'calendar_month'),

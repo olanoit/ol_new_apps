@@ -50,3 +50,13 @@ access_construction_contract_opening_wizard_manager,construction.contract.openin
 access_construction_contract_summary_report_user,construction.contract.summary.report user,construction.contract.summary.report,al_construction_planner.group_planner_user,r,
 access_construction_contract_summary_report_account,construction.contract.summary.report account,construction.contract.summary.report,account.group_account_invoice,r,
 rule_construction_contract_summary_report_company,Resumen de valorizaciones: compañías del usuario,construction.contract.summary.report,,crud,"[('company_id', 'in', company_ids)]"
+access_construction_contract_intervention_wizard_exec_approver,construction.contract.intervention.wizard exec_approver,construction.contract.intervention.wizard,al_construction_planner.group_planner_exec_approver,crud,
+access_construction_contract_intervention_wizard_line_exec_approver,construction.contract.intervention.wizard.line exec_approver,construction.contract.intervention.wizard.line,al_construction_planner.group_planner_exec_approver,crud,
+access_construction_contract_intervention_user,construction.contract.intervention user,construction.contract.intervention,al_construction_planner.group_planner_user,r,
+access_construction_contract_intervention_line_user,construction.contract.intervention.line user,construction.contract.intervention.line,al_construction_planner.group_planner_user,r,
+access_construction_contract_intervention_manager,construction.contract.intervention manager,construction.contract.intervention,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_intervention_line_manager,construction.contract.intervention.line manager,construction.contract.intervention.line,al_construction_planner.group_planner_manager,crud,
+access_construction_contract_intervention_account,construction.contract.intervention account,construction.contract.intervention,account.group_account_invoice,r,
+access_construction_contract_intervention_line_account,construction.contract.intervention.line account,construction.contract.intervention.line,account.group_account_invoice,r,
+rule_construction_contract_intervention_company,Intervención de contrata: compañías del usuario,construction.contract.intervention,,crud,"[('company_id', 'in', company_ids)]"
+rule_construction_contract_intervention_line_company,Partida de la intervención: compañías del usuario,construction.contract.intervention.line,,crud,"[('company_id', 'in', company_ids)]"

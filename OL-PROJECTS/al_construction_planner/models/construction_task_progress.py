@@ -46,8 +46,12 @@ class ConstructionTaskProgress(models.Model):
     company_id = fields.Many2one(
         related='plan_line_id.company_id', string='Compañía', store=True, index=True)
     currency_id = fields.Many2one(related='plan_line_id.currency_id', string='Moneda')
+    # La contrata que ejecutó el avance: sigue a la línea del plan mientras el
+    # avance no tenga una. Si la partida se interviene (CREVAL, CR-20), la
+    # línea queda sin contrata y su avance sigue siendo de la que sale.
     partner_id = fields.Many2one(
-        related='plan_line_id.partner_id', string='Contrata', store=True, index=True)
+        'res.partner', string='Contrata', compute='_compute_partner_id', store=True,
+        index=True, readonly=True)
     stage = fields.Selection(related='plan_line_id.stage', string='Etapa', store=True)
     floor_task_id = fields.Many2one(
         related='plan_line_id.floor_task_id', string='Piso', store=True, index=True)
@@ -205,6 +209,11 @@ class ConstructionTaskProgress(models.Model):
             start, _end = project._construction_period(progress.date)
             progress.period_start = start
             progress.settlement_date_planned = project._construction_settlement_dates(start)[0]
+
+    @api.depends('plan_line_id.partner_id')
+    def _compute_partner_id(self):
+        for progress in self:
+            progress.partner_id = progress.partner_id or progress.plan_line_id.partner_id
 
     def _duplicate_groups(self, domain=None):
         """Grupos (nivel, actividad, tramo, fecha) con más de un avance
