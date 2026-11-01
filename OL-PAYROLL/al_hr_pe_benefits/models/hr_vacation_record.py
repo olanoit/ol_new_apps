@@ -28,6 +28,11 @@ Días efectivos (art. 12) por código de tipo de entrada:
   común, accidente o enfermedad profesional, hasta 60 días por año de
   récord entre los dos; el exceso no cuenta.
 
+Las ausencias (DVAC, DPAT, LCGH, SMAR, DMED, SENF) vienen de la boleta
+en días naturales: para el récord se convierten a días de jornada
+(× días de jornada a la semana / 7), porque el umbral es de días
+laborables.
+
 No son efectivos: DOM (descanso semanal), LSGH (licencia sin goce),
 FAL (falta: además es inasistencia injustificada), TAR, HTN y las horas
 extra (no se puede saber de la boleta si sumaron 4 horas en un día que
@@ -59,6 +64,10 @@ RECORD_OTHER_CODES = ('DOM', 'LSGH')
 # Regímenes con vacaciones del D.Leg. 713 (el practicante no tiene).
 RECORD_REGIMES = ('general', 'small', 'micro', 'construccion')
 RECORD_MAX_ABSENCES = 10
+# Ausencias que la boleta cuenta en días naturales (con los sábados,
+# domingos y feriados que caen dentro): en el récord valen los días de
+# jornada que cubren (× días de jornada a la semana / 7).
+RECORD_NATURAL_CODES = ('DVAC', 'DPAT', 'LCGH', 'SMAR', 'DMED', 'SENF')
 
 
 class HrVacationRecord(models.Model):
@@ -97,7 +106,9 @@ class HrVacationRecord(models.Model):
         string='Días efectivos', digits=(16, 2), readonly=True,
         help='Laborados + feriados o descansos laborados + vacaciones + '
              'licencias con goce, paternidad y maternidad + descanso '
-             'médico hasta 60 días.')
+             'médico hasta 60 días. Las ausencias (en días naturales) '
+             'cuentan como días de jornada: × días de jornada a la semana '
+             '/ 7.')
     worked_days = fields.Float(
         string='Laborados', digits=(16, 2), readonly=True,
         help='DLAB + FER.')
@@ -308,7 +319,9 @@ class HrVacationRecord(models.Model):
 
         Una boleta que cruza el aniversario (mensual con ingreso a mitad
         de mes) aporta la parte proporcional a los días que caen dentro
-        del año: las líneas de días no llevan fecha.
+        del año: las líneas de días no llevan fecha. La proporción se toma
+        sobre los días del contrato que cubre la boleta (sus días
+        trabajados ya son solo esos).
         """
         self.ensure_one()
         employee = self.employee_id
@@ -325,8 +338,16 @@ class HrVacationRecord(models.Model):
         year_start = self.date_from.toordinal()
         year_end = self.date_to.toordinal()
         for slip in slips:
-            slip_start = slip.date_from.toordinal()
-            slip_end = slip.date_to.toordinal()
+            # Los días de la boleta son solo los del contrato: la de ingreso
+            # (o cese) a mitad de mes se prorratea sobre los días del
+            # contrato que cubre, no sobre los del mes.
+            version = slip.version_id
+            slip_start = max(slip.date_from, version.contract_date_start
+                             or slip.date_from).toordinal()
+            slip_end = min(slip.date_to, version.contract_date_end
+                           or slip.date_to).toordinal()
+            if slip_end < slip_start:
+                continue
             overlap_start = max(slip_start, year_start)
             overlap_end = min(slip_end, year_end)
             if overlap_end < overlap_start:
@@ -345,7 +366,13 @@ class HrVacationRecord(models.Model):
         sick = sum(totals[code] for code in RECORD_SICK_CODES)
         sick_counted = min(sick, RECORD_SICK_CAP)
         absences = sum(totals[code] for code in RECORD_ABSENCE_CODES)
-        effective = custom_round(worked + paid_leave + sick_counted, 2)
+        # Las ausencias van en días naturales y el umbral (260/210) es de
+        # días de jornada: los descansos semanales que caen dentro de una
+        # ausencia no suman. El tope de 60 días de enfermedad se aplica a
+        # los días naturales de ausencia.
+        workday_ratio = min(weekly_days, 7.0) / 7.0 if weekly_days else 1.0
+        effective = custom_round(
+            worked + (paid_leave + sick_counted) * workday_ratio, 2)
         absences = custom_round(absences, 2)
         covered_days = len(covered)
         uncovered = period_days - covered_days

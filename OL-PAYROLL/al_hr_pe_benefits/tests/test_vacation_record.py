@@ -104,8 +104,10 @@ class TestVacationRecord(TransactionCase):
     # ------------------------------------------------------------------
     def test_six_days_260_meets(self):
         employee = self._employee(6)
-        record = self._year(employee, {'DLAB': 250, 'FER': 4, 'DVAC': 6,
-                                       'DOM': 52, 'FAL': 53})
+        # Las ausencias van en días naturales: 7 de vacaciones son 6 días
+        # de jornada de seis días.
+        record = self._year(employee, {'DLAB': 250, 'FER': 4, 'DVAC': 7,
+                                       'DOM': 51, 'FAL': 53})
         self.assertEqual(record.workweek, 'six')
         self.assertEqual(record.threshold, 260)
         self.assertAlmostEqual(record.effective_days, 260.0)
@@ -115,8 +117,8 @@ class TestVacationRecord(TransactionCase):
 
     def test_six_days_259_fails_and_blocks_the_year(self):
         employee = self._employee(6)
-        record = self._year(employee, {'DLAB': 253, 'DVAC': 6, 'LSGH': 20,
-                                       'DOM': 52, 'FAL': 34})
+        record = self._year(employee, {'DLAB': 253, 'DVAC': 7, 'LSGH': 20,
+                                       'DOM': 51, 'FAL': 34})
         self.assertAlmostEqual(record.effective_days, 259.0)
         self.assertEqual(record.state, 'fails')
         rest = self._rest_days(employee)
@@ -130,8 +132,9 @@ class TestVacationRecord(TransactionCase):
     # ------------------------------------------------------------------
     def test_five_days_210_meets_209_fails(self):
         employee = self._employee(5)
-        record = self._year(employee, {'DLAB': 200, 'LCGH': 5, 'DPAT': 5,
-                                       'DOM': 104, 'FAL': 51})
+        # 7 días naturales de licencia son 5 de jornada de cinco días.
+        record = self._year(employee, {'DLAB': 200, 'LCGH': 7, 'DPAT': 7,
+                                       'DOM': 100, 'FAL': 51})
         self.assertEqual(record.workweek, 'five')
         self.assertEqual(record.threshold, 210)
         self.assertEqual(record.state, 'meets')
@@ -162,22 +165,25 @@ class TestVacationRecord(TransactionCase):
     # ------------------------------------------------------------------
     def test_medical_rest_over_60_days_does_not_count(self):
         employee = self._employee(6)
+        # Los 60 días (naturales) computables son 60 × 6/7 días de jornada.
         record = self._year(employee, {'DLAB': 189, 'DMED': 50, 'SENF': 20,
                                        'DOM': 52, 'FAL': 54})
         self.assertAlmostEqual(record.sick_days, 70.0)
         self.assertAlmostEqual(record.sick_days_counted, 60.0)
-        self.assertAlmostEqual(record.effective_days, 249.0)
+        self.assertAlmostEqual(record.effective_days, 189 + 60 * 6 / 7,
+                               places=2)
 
         other = self._employee(6)
-        record = self._year(other, {'DLAB': 199, 'DMED': 70,
-                                    'DOM': 52, 'FAL': 44})
-        self.assertAlmostEqual(record.effective_days, 259.0)
+        record = self._year(other, {'DLAB': 208, 'DMED': 70,
+                                    'DOM': 52, 'FAL': 35})
+        self.assertAlmostEqual(record.effective_days, 208 + 60 * 6 / 7,
+                               places=2)
         self.assertEqual(record.state, 'fails',
                          'los 10 días de descanso médico por encima de 60 '
                          'no cuentan')
         third = self._employee(6)
-        record = self._year(third, {'DLAB': 200, 'DMED': 60,
-                                    'DOM': 52, 'FAL': 53})
+        record = self._year(third, {'DLAB': 209, 'DMED': 60,
+                                    'DOM': 52, 'FAL': 44})
         self.assertEqual(record.state, 'meets')
 
     # ------------------------------------------------------------------
