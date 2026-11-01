@@ -285,6 +285,27 @@ class TestRev2Util5ta(BenefitsCaseBase):
             self._input(slip, types['ordinary_adv'].input_id), 100.0,
             places=2)
 
+    def test_beneficios_con_el_mismo_input_no_se_pisan(self):
+        """Gratificación y CTS descuentan por el mismo input (DES_BBSS): la
+        segunda llamada suma lo que ya descontó la primera en la boleta."""
+        types = self._special_types()
+        shared = self.env.ref('al_hr_pe.salary_rule_DES_BBSS')
+        types['grat_adv'].input_id = shared
+        types['cts_loan'].input_id = shared
+        self._advance(types['grat_adv'], 1000.0, date(2026, 6, 10))
+        self._loan(types['cts_loan'], 600.0, 1, date(2026, 6, 5))
+        slip = self._slip(2026, 6)
+        slip.write({'state': 'draft'})
+        slip._l10n_pe_discount_benefit_advances(
+            'grat', on_date=date(2026, 6, 30))
+        self.assertAlmostEqual(self._input(slip, shared), 1000.0, places=2)
+        slip._l10n_pe_discount_benefit_advances('cts', cap=1500.0)
+        self.assertAlmostEqual(self._input(slip, shared), 1600.0, places=2)
+        # En orden inverso (o repitiendo) el total no cambia.
+        slip._l10n_pe_discount_benefit_advances(
+            'grat', on_date=date(2026, 6, 30))
+        self.assertAlmostEqual(self._input(slip, shared), 1600.0, places=2)
+
     def test_prestamo_contra_cts_tope_50(self):
         """Contra la CTS se descuenta hasta el 50 % (art. 40 del TUO de la
         Ley de CTS): la cuota que rebasa el tope se parte y el saldo

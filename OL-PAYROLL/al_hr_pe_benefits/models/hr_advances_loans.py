@@ -547,8 +547,9 @@ class HrPayslip(models.Model):
                                            cap=None):
         """Descuenta en esta boleta (en borrador) los adelantos y cuotas
         BBSS pendientes de ``kinds`` hasta ``on_date``: los marca pagados
-        con esta boleta y fija el input de cada tipo con todo lo
-        descontado en ella (exportar dos veces no duplica). Con ``cap``
+        con esta boleta y fija cada input con todo lo descontado en ella
+        por ese input, de cualquier tipo (exportar dos veces no duplica y
+        dos beneficios con el mismo input no se pisan). Con ``cap``
         (p. ej. el 50 % de la CTS, art. 40 del TUO de la Ley de CTS) se
         descuenta como máximo ese importe: el importe que lo rebasa se
         parte y el resto queda pendiente. Devuelve lo descontado ahora.
@@ -580,25 +581,26 @@ class HrPayslip(models.Model):
             discounted += amount
             if room is not None:
                 room = custom_round(room - amount, 2)
-        done_advances, done_loans = self._l10n_pe_benefit_discounted(kinds)
+        # Cada input se fija con TODO lo descontado en esta boleta por él,
+        # sin importar los tipos de esta llamada: dos beneficios que
+        # comparten input (p. ej. DES_BBSS para gratificación y CTS) no se
+        # pisan, y un tipo ordinario con el mismo input se conserva.
+        done_advances, done_loans = self._l10n_pe_benefit_discounted()
+        inputs = (done_advances.advance_type_id.input_id
+                  | done_loans.loan_type_id.input_id)
+        linked_advances = self.env['hr.advance'].search([
+            ('l10n_pe_payslip_id', '=', self.id),
+            ('advance_type_id.input_id', 'in', inputs.ids)])
+        linked_loans = self.env['hr.loan.line'].search([
+            ('l10n_pe_payslip_id', '=', self.id),
+            ('loan_type_id.input_id', 'in', inputs.ids)])
         totals = defaultdict(float)
-        for advance in done_advances:
+        for advance in linked_advances:
             totals[advance.advance_type_id.input_id] += advance.amount
-        for line in done_loans:
+        for line in linked_loans:
             totals[line.loan_type_id.input_id] += line.amount
-        totals.pop(self.env['hr.salary.rule'], None)
         for input_type, amount in totals.items():
-            # Si el input lo comparte un tipo ordinario, se conserva lo
-            # que este ya había importado en la boleta.
-            ordinary = sum(self.env['hr.advance'].search([
-                ('l10n_pe_payslip_id', '=', self.id),
-                ('advance_type_id.input_id', '=', input_type.id),
-                ('id', 'not in', done_advances.ids)]).mapped('amount')) \
-                + sum(self.env['hr.loan.line'].search([
-                    ('l10n_pe_payslip_id', '=', self.id),
-                    ('loan_type_id.input_id', '=', input_type.id),
-                    ('id', 'not in', done_loans.ids)]).mapped('amount'))
-            self._set_pe_input_amount(input_type, amount + ordinary)
+            self._set_pe_input_amount(input_type, custom_round(amount, 2))
         return custom_round(discounted, 2)
 
 
