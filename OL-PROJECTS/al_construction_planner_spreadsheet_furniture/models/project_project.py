@@ -60,6 +60,12 @@ CALCULATED = {
                        '{c:qty}{r}*{c:length}{r}*{c:width}{r}/1000000)'),
     ],
     'BOM': [
+        # Paquete 1.13, M113-06: unidad y costo del maestro, a la vista.
+        ('Unidad del producto (calc.)', '=IF({c:product_code}{r}="","",IFERROR(VLOOKUP('
+                                        '{c:product_code}{r},REFERENCIAS!$K$3:$L${p},2,0),""))'),
+        ('Costo unitario (calc.)', '=IF({c:product_code}{r}="","",IFERROR(VLOOKUP('
+                                   '{c:product_code}{r},REFERENCIAS!$K$3:$M${p},3,0),'
+                                   'IF({c:cost}{r}="","",{c:cost}{r})))'),
         ('Costo de la línea (calc.)', '=IF({c:product_code}{r}="","",IFERROR({c:qty}{r}*'
                                       'VLOOKUP({c:product_code}{r},REFERENCIAS!$K$3:$M${p},3,0),'
                                       '{c:qty}{r}*{c:cost}{r}))'),
@@ -67,13 +73,41 @@ CALCULATED = {
 }
 # Columna «Producto» (lista dependiente) y código calculado desde ella.
 PRODUCT_PICK = {'PIEZAS': ('categ', 'Producto'), 'BOM': ('categ', 'product_name')}
+# Paquete 1.13, M113-06: grupo de categoría (el segundo nivel de la ruta),
+# categoría (ruta corta «GRUPO / ÚLTIMO NIVEL») y producto, dependientes.
+GROUP_HEADER = 'Grupo de categoría'
+CATEGORY_SEPARATOR = ' / '
+# Fórmulas de REFERENCIAS sobre la ruta completa de la categoría (columna N):
+# tramos separados por « / », sin listas (una fila por producto).
+_SEGMENTS = 'SUBSTITUTE(N{r}," / ",REPT(" ",200))'
+_COUNT = '((LEN(N{r})-LEN(SUBSTITUTE(N{r}," / ","")))/3+1)'
+_FIRST = 'TRIM(LEFT(%s,200))' % _SEGMENTS
+_SECOND = 'TRIM(MID(%s,201,200))' % _SEGMENTS
+_LAST = 'TRIM(RIGHT(%s,200))' % _SEGMENTS
+REF_GROUP = '=IF(N{r}="","",IF(%s>=2,%s,%s))' % (_COUNT, _SECOND, _FIRST)
+REF_LAST = '=IF(N{r}="","",%s)' % _LAST
+REF_SHORT = '=IF(N{r}="","",IF(%s>=3,Q{r}&" / "&R{r},R{r}))' % _COUNT
+# Marcas de la hoja (formato condicional nativo).
+UNKNOWN_FILL = '#F4CCCC'
+NO_COST_FILL = '#FCE5CD'
+
+
+def category_parts(path):
+    """(grupo, ruta corta, último nivel) de la ruta de una categoría, como
+    las fórmulas de REFERENCIAS."""
+    segments = [part.strip() for part in (path or '').split(CATEGORY_SEPARATOR)]
+    last = segments[-1]
+    group = segments[1] if len(segments) >= 2 else segments[0]
+    short = '%s / %s' % (group, last) if len(segments) >= 3 else last
+    return group, short, last
 FIXED_LISTS = {
     ('TIPOLOGIAS', 'family'): ['Cocina', 'Closet', 'Baño', 'Lavandería', 'Ducto', 'Área común',
                                'Especial', 'Otro'],
     ('MODULOS', 'type'): ['Bajo', 'Alto', 'Cajonera', 'Campana', 'Repisero', 'Otro'],
     ('MODULOS', 'module_class'): ['Estándar', 'Especial'],
     ('MODULOS', 'join_method'): ['Tornillo', 'Tarugo', 'Mixto', 'Minifix', 'Sin unión'],
-    ('MODULOS', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Sin ML'],
+    ('MODULOS', 'ml_group'): ['Mueble bajo', 'Mueble alto', 'Mueble completo', 'Sin ML'],
+    ('MUEBLES', 'ml_group'): ['Bajo', 'Alto', 'Completo', 'Otro'],
     ('TARIFAS', 'family'): ['Cocina y baño', 'Closet y cajones'],
 }
 LEEME = [
@@ -95,6 +129,14 @@ LEEME = [
     '8. Aprobado el presupuesto por el cliente: Archivo › Enviar al planificador. Un segundo '
     'envío no duplica nada.',
 ]
+
+
+def _letter_index(letters):
+    """Índice de la columna (A → 0, AA → 26)."""
+    index = 0
+    for char in letters:
+        index = index * 26 + ord(char) - 64
+    return index - 1
 
 
 def _col(index):
@@ -128,6 +170,11 @@ class ProjectProject(models.Model):
         if name == 'PIEZAS' and not any(key == 'product_name' for key, _h in columns):
             index = next(i for i, (key, _h) in enumerate(columns) if key == 'product_code')
             columns.insert(index, ('product_name', 'Producto'))
+        if name in PRODUCT_PICK:
+            # M113-06: el grupo antes de la categoría (no es una clave del
+            # importador: la hoja lo usa para la lista de categorías).
+            index = next(i for i, (key, _h) in enumerate(columns) if key == 'categ')
+            columns.insert(index, ('categ_group', GROUP_HEADER))
         return columns
 
     def _construction_reference_counts(self):
@@ -139,17 +186,242 @@ class ProjectProject(models.Model):
             [('child_id', '=', False), ('name', 'not in', EXCLUDED_CATEGORIES)])
         return min(max(products, 1), MAX_PRODUCTS), max(categories, 1)
 
-    def _construction_spreadsheet_data(self):
+    def _construction_material_root(self):
+        """Ruta de la categoría raíz de materiales de la hoja (Ajustes)."""
+        self.ensure_one()
+        company = self.company_id or self.env.company
+        return company.construction_sheet_material_categ_id.complete_name or ''
+
+    def _construction_material_categories(self):
+        """Grupos y categorías cortas con productos (dentro de la raíz de
+        Ajustes) y el mayor número de productos de una categoría: el tamaño de
+        las listas de _LISTAS (M113-06)."""
+        self.ensure_one()
+        company = self.company_id or self.env.company
+        domain = [('type', '=', 'consu'), ('company_id', 'in', (company.id, False))]
+        root = company.construction_sheet_material_categ_id
+        if root:
+            domain.append(('categ_id', 'child_of', root.id))
+        groups, shorts = {}, {}
+        for categ, count in self.env['product.product']._read_group(
+                domain, ['categ_id'], ['__count']):
+            if not categ:
+                continue
+            group, short, last = category_parts(categ.complete_name)
+            if last in EXCLUDED_CATEGORIES:
+                continue
+            groups.setdefault(group, set()).add(short)
+            shorts[short] = shorts.get(short, 0) + count
+        return groups, shorts
+
+    # Pestañas con lista dependiente de materiales y su orden en _LISTAS:
+    # cada fila de datos usa 4 filas seguidas (categoría y producto de PIEZAS
+    # y de BOM), así una hoja ampliada sigue el mismo orden (M113-04).
+    HELPER_KINDS = (('PIEZAS', 'categ'), ('PIEZAS', 'prod'), ('BOM', 'categ'), ('BOM', 'prod'))
+
+    def _construction_sheet_layout(self):
+        """Lo que no depende de las filas: columnas y letras de cada pestaña,
+        tamaño del maestro de productos y de las listas de _LISTAS."""
+        self.ensure_one()
+        n_products, _n_categories = self._construction_reference_counts()
+        groups, shorts = self._construction_material_categories()
+        n_groups = len(groups) + 5
+        n_shorts = len(shorts) + 20
+        width = max([60] + [len(c) for c in groups.values()] + list(shorts.values())) + 5
+        sheets = {}
+        for name in SHEETS:
+            columns = self._construction_sheet_columns(name)
+            calculated = CALCULATED.get(name, [])
+            sheets[name] = {
+                'columns': columns,
+                'calculated': calculated,
+                'letters': {key: _col(i) for i, (key, _h) in enumerate(columns)},
+                'calc_letters': {header: _col(len(columns) + i)
+                                 for i, (header, _f) in enumerate(calculated)},
+                'headers': [h for _k, h in columns] + [h for h, _f in calculated],
+            }
+        return {
+            'sheets': sheets, 'last_product': n_products + 2, 'n_products': n_products,
+            'n_groups': n_groups, 'n_shorts': n_shorts, 'width': width,
+            'last_col': _col(width), 'list_base': n_groups + n_shorts,
+            'stage_count': len(self.env['construction.stage']._offered_stages(self)),
+        }
+
+    def _construction_helper_row(self, layout, name, kind, row):
+        """Fila de _LISTAS con la lista de ``kind`` de la fila ``row``."""
+        return layout['list_base'] + (row - 2) * len(self.HELPER_KINDS) + \
+            self.HELPER_KINDS.index((name, kind)) + 1
+
+    def _construction_row_parts(self, layout, first, last):
+        """Celdas, reglas de validación y formato condicional de las filas
+        ``first`` a ``last`` (números de fila de la hoja) de cada pestaña del
+        maestro y sus filas de _LISTAS: lo usa la plantilla y la ampliación de
+        una hoja ya abierta (M113-04/05).
+
+        :return: ``{pestaña: {'cells': {ref: texto}, 'rules': [...],
+            'conditional': [...]}}``; las reglas llevan ``zone`` (top, bottom,
+            left, right desde 0) además de ``ranges``.
+        """
+        self.ensure_one()
+        last_product = layout['last_product']
+        result = {name: {'cells': {}, 'rules': [], 'conditional': []} for name in SHEETS}
+        result[LISTS_SHEET] = {'cells': {}, 'rules': [], 'conditional': []}
+        if last < first:
+            return result
+
+        def zone(letter, top, bottom):
+            col = _letter_index(letter)
+            return {'top': top - 1, 'bottom': bottom - 1, 'left': col, 'right': col}
+
+        for name, info in layout['sheets'].items():
+            part = result[name]
+            cells = part['cells']
+            letters = info['letters']
+            for header, formula in info['calculated']:
+                col = info['calc_letters'][header]
+                for row in range(first, last + 1):
+                    text = formula.replace('{r}', str(row)).replace('{p}', str(last_product))
+                    for key, letter in letters.items():
+                        text = text.replace('{c:%s}' % key, letter)
+                    cells['%s%s' % (col, row)] = text
+            for (sheet, key), values in FIXED_LISTS.items():
+                if sheet == name and key in letters:
+                    part['rules'].append({
+                        'id': '%s_%s_%s' % (name, key, first), 'isBlocking': False,
+                        'zone': zone(letters[key], first, last),
+                        'ranges': ['%s%s:%s%s' % (letters[key], first, letters[key], last)],
+                        'criterion': {'type': 'isValueInList', 'values': values,
+                                      'displayStyle': 'arrow'}})
+            if 'stage' in letters and layout['stage_count']:
+                part['rules'].append({
+                    'id': '%s_stage_%s' % (name, first), 'isBlocking': False,
+                    'zone': zone(letters['stage'], first, last),
+                    'ranges': ['%s%s:%s%s' % (letters['stage'], first, letters['stage'], last)],
+                    'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                  'values': ['%s!$T$3:$T$%s' % (
+                                      REFERENCE_SHEET, layout['stage_count'] + 2)]}})
+            if name not in PRODUCT_PICK:
+                continue
+            pick = letters['product_name']
+            code = letters['product_code']
+            for row in range(first, last + 1):
+                # Código calculado desde «nombre · unidad · código».
+                cells['%s%s' % (code, row)] = CODE_FROM_PICK.replace(
+                    '{p}', pick).replace('{r}', str(row))
+            # M113-06: grupo › categoría › producto, con validación nativa
+            # (filtra al escribir). Cada fila apunta a su fila de _LISTAS.
+            group = letters['categ_group']
+            part['rules'].append({
+                'id': '%s_group_%s' % (name, first), 'isBlocking': False,
+                'zone': zone(group, first, last),
+                'ranges': ['%s%s:%s%s' % (group, first, group, last)],
+                'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                              'values': ['%s!$A$1:$A$%s' % (LISTS_SHEET, layout['n_groups'])]}})
+            for row in range(first, last + 1):
+                for kind, column in (('categ', letters['categ']), ('prod', pick)):
+                    helper = self._construction_helper_row(layout, name, kind, row)
+                    part['rules'].append({
+                        'id': '%s_%s_%s' % (name, kind, row), 'isBlocking': False,
+                        'zone': zone(column, row, row), 'ranges': ['%s%s' % (column, row)],
+                        'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
+                                      'values': ['%s!$A$%s:$%s$%s' % (
+                                          LISTS_SHEET, helper, layout['last_col'], helper)]}})
+            # Marcas: rojo el código que no está en el maestro ni en PRODUCTOS
+            # NUEVOS; ámbar el producto con costo 0.
+            code_range = '%s%s:%s%s' % (code, first, code, last)
+            part['conditional'].append({
+                'id': '%s_unknown_%s' % (name, first), 'ranges': [code_range], 'stopIfTrue': True,
+                'rule': {'type': 'CellIsRule', 'operator': 'customFormula', 'values': [
+                    '=AND({c}{f}<>"",COUNTIF({ref}!$K$3:$K${p},{c}{f})=0,COUNTIF('
+                    "'PRODUCTOS NUEVOS'!$A$2:$A${n},{c}{f})=0)".format(
+                        c=code, f=first, ref=REFERENCE_SHEET, p=last_product, n=last)],
+                    'style': {'fillColor': UNKNOWN_FILL}}})
+            if 'Costo unitario (calc.)' in info['calc_letters']:
+                unit_cost = info['calc_letters']['Costo unitario (calc.)']
+                part['conditional'].append({
+                    'id': '%s_no_cost_%s' % (name, first), 'ranges': [code_range],
+                    'stopIfTrue': False,
+                    'rule': {'type': 'CellIsRule', 'operator': 'customFormula', 'values': [
+                        '=AND({c}{f}<>"",{u}{f}<>"",{u}{f}=0)'.format(
+                            c=code, f=first, u=unit_cost)],
+                        'style': {'fillColor': NO_COST_FILL}}})
+        # _LISTAS: las filas de lista de cada fila de datos.
+        n_groups, n_shorts = layout['n_groups'], layout['n_shorts']
+        groups_zone = '$B$1:$%s$%s' % (layout['last_col'], n_groups)
+        group_names = '$A$1:$A$%s' % n_groups
+        shorts_zone = '$B$%s:$%s$%s' % (n_groups + 1, layout['last_col'], n_groups + n_shorts)
+        short_names = '$A$%s:$A$%s' % (n_groups + 1, n_groups + n_shorts)
+        list_cells = result[LISTS_SHEET]['cells']
+        for name in PRODUCT_PICK:
+            letters = layout['sheets'][name]['letters']
+            for row in range(first, last + 1):
+                # Sin grupo: todas las categorías; con grupo: las suyas.
+                list_cells['A%s' % self._construction_helper_row(layout, name, 'categ', row)] = (
+                    '=IF({s}!{g}{r}="",IFERROR(TRANSPOSE({ref}!$W$3:$W${n}),""),IFERROR(INDEX('
+                    '{zone},MATCH({s}!{g}{r},{names},0),0),""))').format(
+                    s=name, g=letters['categ_group'], r=row, ref=REFERENCE_SHEET,
+                    n=n_shorts + 2, zone=groups_zone, names=group_names)
+                list_cells['A%s' % self._construction_helper_row(layout, name, 'prod', row)] = (
+                    '=IF({s}!{c}{r}="","",IFERROR(INDEX({zone},MATCH({s}!{c}{r},{names},0),0),'
+                    '""))').format(s=name, c=letters['categ'], r=row, zone=shorts_zone,
+                                   names=short_names)
+        return result
+
+    def _construction_summary(self, layout, rows, sheet_ids):
+        """RESUMEN: tablas dinámicas sobre la propia hoja y sus fórmulas, para
+        ``rows`` filas de datos. Las filas vacías del rango quedan en el grupo
+        nulo, que va al final con el orden ascendente: la fórmula muestra solo
+        las filas con dato."""
+        cells, styles, pivots = {}, {}, {}
+        specs = [
+            ('1', 'Ambientes por tipología', 'ARBOL', 'typology', None, 'space', 'count', 'A1'),
+            ('2', 'Costo por módulo y sub etapa', 'BOM', 'module', 'stage',
+             'Costo de la línea (calc.)', 'sum', 'A40'),
+            ('3', 'Despiece por tablero', 'PIEZAS', 'product_name', None,
+             'm² (calc.)', 'sum', 'L1'),
+            ('4', 'Materiales por tipología', 'BOM', 'product_name', 'typology', 'qty', 'sum',
+             'L40'),
+        ]
+        for pivot_id, title, sheet, row_key, col_key, measure, aggregator, anchor in specs:
+            info = layout['sheets'][sheet]
+            by_key = dict(info['columns'])
+            measure_name = by_key.get(measure, measure)
+            pivots[pivot_id] = {
+                'type': 'SPREADSHEET', 'name': title, 'formulaId': pivot_id,
+                'dataSet': {'sheetId': sheet_ids.get(sheet), 'zone': {
+                    'top': 0, 'bottom': rows, 'left': 0, 'right': len(info['headers']) - 1}},
+                'rows': [{'fieldName': by_key[row_key], 'order': 'asc'}],
+                'columns': [{'fieldName': by_key[col_key], 'order': 'asc'}] if col_key else [],
+                'measures': [{'id': '%s:%s' % (measure_name, aggregator),
+                              'fieldName': measure_name, 'aggregator': aggregator}],
+            }
+            letter = info['letters'].get(row_key, 'A')
+            data_range = '%s!%s2:%s%s' % (sheet, letter, letter, rows + 1)
+            count_rows = 'IFERROR(ROWS(UNIQUE(FILTER(%s,%s<>""))),0)' % (data_range, data_range)
+            formula = '=PIVOT(%s,%s' % (pivot_id, count_rows)
+            if col_key:
+                col_letter = info['letters'][col_key]
+                col_range = '%s!%s2:%s%s' % (sheet, col_letter, col_letter, rows + 1)
+                formula += ',TRUE,TRUE,IFERROR(ROWS(UNIQUE(FILTER(%s,%s<>""))),0)' % (
+                    col_range, col_range)
+            cells[anchor] = title
+            styles[anchor] = TITLE_STYLE
+            column, line = anchor[0], int(anchor[1:])
+            cells['%s%s' % (column, line + 1)] = formula + ')'
+        return cells, styles, pivots
+
+    def _construction_spreadsheet_data(self, rows=None):
         """Hoja de trabajo con la estructura del piloto (M18-22)."""
         self.ensure_one()
-        rows = max(self.construction_spreadsheet_rows or DEFAULT_ROWS, 10)
-        n_products, n_categories = self._construction_reference_counts()
-        last_product = n_products + 2
-        last_category = n_categories + 2
+        rows = max(rows or self.construction_spreadsheet_rows or DEFAULT_ROWS, 10)
+        layout = self._construction_sheet_layout()
+        last_product = layout['last_product']
+        n_products = layout['n_products']
         # Las etapas del perfil de la obra (paquete 1.16, M116-01).
         stage_labels = [stage._label() for stage in
                         self.env['construction.stage']._offered_stages(self)]
-        sheets, pivots = [], {}
+        parts = self._construction_row_parts(layout, 2, rows + 1)
+        sheets = []
         sheet_ids = {}
 
         # LEEME
@@ -158,69 +430,22 @@ class ProjectProject(models.Model):
             'cells': {'A%s' % (i + 1): text for i, text in enumerate(LEEME) if text},
             'styles': {'A1': TITLE_STYLE}, 'cols': {'0': {'size': 900}},
         })
-        sheets.append({'id': 'sheet_resumen', 'name': 'RESUMEN', 'colNumber': 30,
-                       'rowNumber': 400, 'cells': {}, 'styles': {}})
+        summary = {'id': 'sheet_resumen', 'name': 'RESUMEN', 'colNumber': 30,
+                   'rowNumber': 400, 'cells': {}, 'styles': {}}
+        sheets.append(summary)
 
         # Pestañas del maestro.
-        positions = {}
         key_columns = {}
-        for index, name in enumerate(SHEETS, start=1):
-            columns = self._construction_sheet_columns(name)
-            calculated = CALCULATED.get(name, [])
-            letters = {key: _col(i) for i, (key, _h) in enumerate(columns)}
-            positions[name] = letters
-            headers = [header for _key, header in columns] + [h for h, _f in calculated]
+        for index, (name, info) in enumerate(layout['sheets'].items(), start=1):
+            headers = info['headers']
             cells = {'%s1' % _col(i): header for i, header in enumerate(headers)}
-            styles = {'%s1' % _col(i): DATA_STYLE for i in range(len(headers))}
-            key_columns[name] = [(key, i) for i, (key, _h) in enumerate(columns)]
-            rules = []
-
-            def fmt(formula, row, letters=letters):
-                text = formula.replace('{r}', str(row)).replace('{p}', str(last_product))
-                for key, letter in letters.items():
-                    text = text.replace('{c:%s}' % key, letter)
-                return text
-
-            for offset, (_header, formula) in enumerate(calculated):
-                col = _col(len(columns) + offset)
-                for row in range(2, rows + 2):
-                    cells['%s%s' % (col, row)] = fmt(formula, row)
-                styles['%s1' % col] = CALC_STYLE
+            styles = {'%s1' % _col(i): DATA_STYLE for i in range(len(info['columns']))}
+            for letter in info['calc_letters'].values():
+                styles['%s1' % letter] = CALC_STYLE
             if name in PRODUCT_PICK:
-                # Código calculado desde «nombre · unidad · código».
-                pick = letters['product_name']
-                code = letters['product_code']
-                for row in range(2, rows + 2):
-                    cells['%s%s' % (code, row)] = CODE_FROM_PICK.replace(
-                        '{p}', pick).replace('{r}', str(row))
-                styles['%s1' % code] = CALC_STYLE
-                rules.append({'id': '%s_categ' % name, 'ranges': ['%s2:%s%s' % (
-                    letters['categ'], letters['categ'], rows + 1)], 'isBlocking': False,
-                    'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
-                                  'values': ['%s!$R$3:$R$%s' % (REFERENCE_SHEET, last_category)]}})
-                base = 0 if name == 'PIEZAS' else rows
-                for row in range(2, rows + 2):
-                    list_row = base + row - 1
-                    rules.append({
-                        'id': '%s_prod_%s' % (name, row), 'isBlocking': False,
-                        'ranges': ['%s%s' % (pick, row)],
-                        'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
-                                      'values': ['%s!$A$%s:$ZZ$%s' % (LISTS_SHEET, list_row,
-                                                                     list_row)]}})
-            for (sheet, key), values in FIXED_LISTS.items():
-                if sheet == name and key in letters:
-                    rules.append({'id': '%s_%s' % (name, key), 'isBlocking': False,
-                                  'ranges': ['%s2:%s%s' % (letters[key], letters[key], rows + 1)],
-                                  'criterion': {'type': 'isValueInList', 'values': values,
-                                                'displayStyle': 'arrow'}})
-            stage_key = 'stage' if 'stage' in letters else None
-            if stage_key and stage_labels:
-                rules.append({'id': '%s_stage' % name, 'isBlocking': False,
-                              'ranges': ['%s2:%s%s' % (letters[stage_key], letters[stage_key],
-                                                       rows + 1)],
-                              'criterion': {'type': 'isValueInRange', 'displayStyle': 'arrow',
-                                            'values': ['%s!$T$3:$T$%s' % (
-                                                REFERENCE_SHEET, len(stage_labels) + 2)]}})
+                styles['%s1' % info['letters']['product_code']] = CALC_STYLE
+            cells.update(parts[name]['cells'])
+            key_columns[name] = [(key, i) for i, (key, _h) in enumerate(info['columns'])]
             sheet_id = 'sheet%s' % index
             sheet_ids[name] = sheet_id
             sheets.append({
@@ -229,7 +454,9 @@ class ProjectProject(models.Model):
                 'cols': {str(i): {'size': max(110, 9 * len(header))}
                          for i, header in enumerate(headers)},
                 'panes': {'xSplit': 0, 'ySplit': 1},
-                'dataValidationRules': rules,
+                'dataValidationRules': [{k: v for k, v in rule.items() if k != 'zone'}
+                                        for rule in parts[name]['rules']],
+                'conditionalFormats': parts[name]['conditional'],
             })
 
         # REFERENCIAS: listas vivas de Odoo.
@@ -244,8 +471,6 @@ class ProjectProject(models.Model):
              ['display_name', 'default_code', 'uom_id', 'standard_price', 'categ_id'], 9,
              n_products, [['type', '=', 'consu'], ['company_id', 'in', [company.id, False]]],
              'default_code'),
-            ('4', 'Categorías', 'product.category', ['name'], 17, n_categories,
-             [['child_id', '=', False], ['name', 'not in', list(EXCLUDED_CATEGORIES)]], 'name'),
         ]
         cells, styles, lists = {}, {}, {}
         for list_id, title, model, columns, start, count, domain, order in reference_lists:
@@ -263,13 +488,22 @@ class ProjectProject(models.Model):
                 'domain': domain, 'context': {}, 'orderBy': [{'name': order, 'asc': True}],
                 'fieldMatching': {},
             }
-        # Categoría de último nivel del producto (sin la ruta) y la de cada fila
-        # de categorías.
-        cells['O2'] = 'Categoría (último nivel)'
-        styles['O2'] = HEADER_STYLE
-        for row in range(3, last_product + 1):
-            cells['O%s' % row] = '=IFERROR(TRIM(RIGHT(SUBSTITUTE(N%s,"/",REPT(" ",100)),100)),' \
-                                 'N%s)' % (row, row)
+        # Categoría de cada producto (M113-06): ruta corta (O), grupo (Q),
+        # último nivel (R) y si está dentro de la raíz de materiales (S).
+        root = self._construction_material_root()
+        excluded = ','.join('R{r}<>"%s"' % name for name in EXCLUDED_CATEGORIES)
+        if root:
+            in_root = 'OR(N{r}="%s",LEFT(N{r},%s)="%s / ")' % (root, len(root) + 3, root)
+        else:
+            in_root = 'TRUE'
+        for column, title, formula in (
+                ('O', 'Categoría', REF_SHORT), ('Q', GROUP_HEADER, REF_GROUP),
+                ('R', 'Último nivel', REF_LAST),
+                ('S', 'Material', '=IF(N{r}="",0,IF(AND(%s,%s),1,0))' % (in_root, excluded))):
+            cells['%s2' % column] = title
+            styles['%s2' % column] = HEADER_STYLE
+            for row in range(3, last_product + 1):
+                cells['%s%s' % (column, row)] = formula.replace('{r}', str(row))
         # Producto para elegir: «nombre · unidad · código» (M116-09).
         cells['P2'] = 'Para elegir'
         styles['P2'] = HEADER_STYLE
@@ -281,63 +515,50 @@ class ProjectProject(models.Model):
         styles['T1'] = TITLE_STYLE
         for row, label in enumerate(stage_labels, start=3):
             cells['T%s' % row] = label
+        cells['V2'] = GROUP_HEADER
+        cells['V3'] = '=IFERROR(SORT(UNIQUE(FILTER($Q$3:$Q$%s,$S$3:$S$%s=1))),"")' % (
+            last_product, last_product)
+        cells['W2'] = 'Categoría'
+        cells['W3'] = '=IFERROR(SORT(UNIQUE(FILTER($O$3:$O$%s,$S$3:$S$%s=1))),"")' % (
+            last_product, last_product)
+        styles['V2'] = styles['W2'] = HEADER_STYLE
         sheets.append({
             'id': 'sheet_ref', 'name': REFERENCE_SHEET, 'colNumber': 26,
             'rowNumber': max(last_product, 302) + 2, 'cells': cells, 'styles': styles,
         })
 
-        # _LISTAS (oculta): la lista de productos de la categoría de cada fila.
+        # _LISTAS (oculta, M113-06): una fila por grupo y por categoría con su
+        # FILTER (menos de 100 aunque la hoja tenga 8 000 filas) y, por fila de
+        # datos, INDEX/MATCH sobre ellas.
+        ref = REFERENCE_SHEET
+        n_groups, n_shorts = layout['n_groups'], layout['n_shorts']
         list_cells = {}
-        for name, base in (('PIEZAS', 0), ('BOM', rows)):
-            categ = positions[name]['categ']
-            for row in range(2, rows + 2):
-                list_cells['A%s' % (base + row - 1)] = (
-                    '=IFERROR(TRANSPOSE(FILTER(%s!$P$3:$P$%s,%s!$O$3:$O$%s=%s!%s%s)),"")' % (
-                        REFERENCE_SHEET, last_product, REFERENCE_SHEET, last_product, name,
-                        categ, row))
-        sheets.append({'id': 'sheet_listas', 'name': LISTS_SHEET, 'colNumber': 60,
-                       'rowNumber': 2 * rows + 2, 'cells': list_cells, 'isVisible': False})
+        for index in range(1, n_groups + 1):
+            list_cells['A%s' % index] = '=IFERROR(INDEX(%s!$V$3:$V$%s,%s),"")' % (
+                ref, n_groups + 2, index)
+            list_cells['B%s' % index] = (
+                '=IF(A{i}="","",IFERROR(TRANSPOSE(SORT(UNIQUE(FILTER({ref}!$O$3:$O${p},'
+                '{ref}!$Q$3:$Q${p}=A{i},{ref}!$S$3:$S${p}=1)))),""))').format(
+                i=index, ref=ref, p=last_product)
+        for index in range(1, n_shorts + 1):
+            row = n_groups + index
+            list_cells['A%s' % row] = '=IFERROR(INDEX(%s!$W$3:$W$%s,%s),"")' % (
+                ref, n_shorts + 2, index)
+            list_cells['B%s' % row] = (
+                '=IF(A{i}="","",IFERROR(TRANSPOSE(FILTER({ref}!$P$3:$P${p},'
+                '{ref}!$O$3:$O${p}=A{i},{ref}!$S$3:$S${p}=1)),""))').format(
+                i=row, ref=ref, p=last_product)
+        list_cells.update(parts[LISTS_SHEET]['cells'])
+        sheets.append({'id': 'sheet_listas', 'name': LISTS_SHEET,
+                       'colNumber': layout['width'] + 2,
+                       'rowNumber': self._construction_helper_row(
+                           layout, 'BOM', 'prod', rows + 1) + 10,
+                       'cells': list_cells, 'isVisible': False})
 
-        # RESUMEN: tablas dinámicas sobre la propia hoja. Las filas vacías del
-        # rango quedan en el grupo nulo, que va al final con el orden
-        # ascendente: la fórmula muestra solo las filas con dato.
-        summary = sheets[1]
-        specs = [
-            ('1', 'Ambientes por tipología', 'ARBOL', 'typology', None, 'space', 'count', 'A1'),
-            ('2', 'Costo por módulo y sub etapa', 'BOM', 'module', 'stage',
-             'Costo de la línea (calc.)', 'sum', 'A40'),
-            ('3', 'Despiece por tablero', 'PIEZAS', 'product_name', None,
-             'm² (calc.)', 'sum', 'L1'),
-            ('4', 'Materiales por tipología', 'BOM', 'product_name', 'typology', 'qty', 'sum',
-             'L40'),
-        ]
-        for pivot_id, title, sheet, row_key, col_key, measure, aggregator, anchor in specs:
-            columns = self._construction_sheet_columns(sheet)
-            headers = [header for _k, header in columns] + [h for h, _f in CALCULATED.get(sheet, [])]
-            by_key = dict(columns)
-            measure_name = by_key.get(measure, measure)
-            pivots[pivot_id] = {
-                'type': 'SPREADSHEET', 'name': title, 'formulaId': pivot_id,
-                'dataSet': {'sheetId': sheet_ids[sheet], 'zone': {
-                    'top': 0, 'bottom': rows, 'left': 0, 'right': len(headers) - 1}},
-                'rows': [{'fieldName': by_key[row_key], 'order': 'asc'}],
-                'columns': [{'fieldName': by_key[col_key], 'order': 'asc'}] if col_key else [],
-                'measures': [{'id': '%s:%s' % (measure_name, aggregator),
-                              'fieldName': measure_name, 'aggregator': aggregator}],
-            }
-            letter = positions[sheet][row_key] if row_key in positions[sheet] else 'A'
-            data_range = '%s!%s2:%s%s' % (sheet, letter, letter, rows + 1)
-            count_rows = 'IFERROR(ROWS(UNIQUE(FILTER(%s,%s<>""))),0)' % (data_range, data_range)
-            formula = '=PIVOT(%s,%s' % (pivot_id, count_rows)
-            if col_key:
-                col_letter = positions[sheet][col_key]
-                col_range = '%s!%s2:%s%s' % (sheet, col_letter, col_letter, rows + 1)
-                formula += ',TRUE,TRUE,IFERROR(ROWS(UNIQUE(FILTER(%s,%s<>""))),0)' % (
-                    col_range, col_range)
-            summary['cells'][anchor] = title
-            summary['styles'][anchor] = TITLE_STYLE
-            column, line = anchor[0], int(anchor[1:])
-            summary['cells']['%s%s' % (column, line + 1)] = formula + ')'
+        summary_cells, summary_styles, pivots = self._construction_summary(
+            layout, rows, sheet_ids)
+        summary['cells'].update(summary_cells)
+        summary['styles'].update(summary_styles)
 
         # Clave interna de cada columna del maestro (M116-09).
         sheets.append(keys_sheet(key_columns, header_style=HEADER_STYLE))

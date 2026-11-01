@@ -21,14 +21,20 @@ el plan de construcción.
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_spreadsheet_furniture/static/description/icon.png',
-    'version': '4.20261101',
+    'version': '5.20261101',
     'license': 'LGPL-3',
     'countries': ['pe'],
     'depends': ['al_construction_planner_spreadsheet', 'al_construction_planner_furniture'],
     'data': [
+        'security/ir.model.access.csv',
         'data/profile_data.xml',
+        'wizards/sheet_import_wizard_views.xml',
+        'views/res_config_settings_views.xml',
     ],
     'assets': {
+        'spreadsheet.o_spreadsheet': [
+            'al_construction_planner_spreadsheet_furniture/static/src/**/*.js',
+        ],
         'web.assets_tests': [
             'al_construction_planner_spreadsheet_furniture/static/tests/tours/*',
         ],

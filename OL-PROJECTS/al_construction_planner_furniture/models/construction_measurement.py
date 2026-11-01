@@ -17,19 +17,20 @@ class ConstructionMeasurement(models.Model):
         typology = space.construction_typology_id
         modules = self.env['project.task'].search_count([
             ('construction_space_task_id', '=', space.id), ('construction_level', '=', 'module')])
-        return {'ml_low': typology.ml_low, 'ml_high': typology.ml_high, 'units': modules}
+        return {'ml_low': typology.ml_low, 'ml_high': typology.ml_high,
+                'ml_full': typology.ml_full, 'units': modules}
 
     def _driver_lines(self, plan, driver):
         """Las líneas de contrata y personal propio del ambiente que dependen del
         driver (por módulo o por ML de su grupo)."""
-        if driver not in ('ml_low', 'ml_high', 'units'):
+        if driver not in ('ml_low', 'ml_high', 'ml_full', 'units'):
             return super()._driver_lines(plan, driver)
         lines = self.env['construction.resource.plan.line'].search([
             ('plan_id', '=', plan.id), ('space_task_id', '=', self.task_id.id),
             ('resource_type', 'in', ('contract', 'labor')), ('activity_id', '!=', False)])
         if driver == 'units':
             return lines.filtered(lambda l: l.activity_id.module_level)
-        group = 'low' if driver == 'ml_low' else 'high'
+        group = {'ml_low': 'low', 'ml_high': 'high', 'ml_full': 'full'}[driver]
         return lines.filtered(lambda l: l.activity_id.ml_based and l.activity_id.ml_group == group)
 
     @api.model
@@ -47,5 +48,7 @@ class ConstructionMeasurementLine(models.Model):
     driver = fields.Selection(selection_add=[
         ('ml_low', 'ML de mueble bajo'),
         ('ml_high', 'ML de mueble alto'),
+        ('ml_full', 'ML de mueble completo'),
         ('units', 'Módulos'),
-    ], ondelete={'ml_low': 'cascade', 'ml_high': 'cascade', 'units': 'cascade'})
+    ], ondelete={'ml_low': 'cascade', 'ml_high': 'cascade', 'ml_full': 'cascade',
+                 'units': 'cascade'})

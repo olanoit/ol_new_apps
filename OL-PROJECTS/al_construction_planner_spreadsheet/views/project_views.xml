@@ -10,6 +10,15 @@
                         string="Hoja de trabajo" icon="fa-table" class="btn-secondary"
                         groups="al_construction_planner.group_planner_plan_planner"/>
             </button>
+            <!-- Paquete 1.13, M113-05: las filas de la hoja, a la vista. -->
+            <xpath expr="//page[@name='construction_planning']/div[1]" position="after">
+                <group name="construction_spreadsheet" string="Hoja de trabajo"
+                       groups="al_construction_planner.group_planner_plan_planner">
+                    <group>
+                        <field name="construction_spreadsheet_rows" placeholder="Automático"/>
+                    </group>
+                </group>
+            </xpath>
         </field>
     </record>
 

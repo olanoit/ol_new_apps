@@ -47,7 +47,7 @@ class ConstructionLaborActivity(models.Model):
              'ancho; si no, del ambiente.')
     ml_group = fields.Selection(
         ML_GROUPS, string='Grupo ML', default='none',
-        help='Qué metros lineales mide: los de mueble bajo o los de mueble alto.')
+        help='Qué metros lineales mide: los de mueble bajo, los de mueble alto o los de mueble completo (closets, baños, lavanderías, ductos).')
     default_price = fields.Monetary(
         string='Tarifa base', currency_field='currency_id',
         help='Tarifa si no hay una tarifa vigente de la obra o de la contrata.')

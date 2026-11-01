@@ -16,7 +16,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b) y aceptada |
-| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloque 4a desarrollado; 4b y 4c pendientes |
+| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloques 4a y 4b desarrollados; 4c pendiente |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
 empezar la siguiente.
@@ -887,6 +887,63 @@ hoja nace con 300 filas y la importación la amplía.
   - `al_construction_planner_spreadsheet_furniture/tests/test_package_116_stage4.py`,
     con el recorrido `al_construction_furniture_sheet_menu`.
   - Corren en `test_pe_creval`: la base del núcleo no tiene Documentos.
+
+### 4b · Implementación
+
+- **M116-10:**
+  - `ML_GROUPS` suma «Mueble completo» (`full`) y `ML_COUNTED` reúne los
+    grupos que cuentan.
+  - La tipología tiene `ml_full` y `ml_total`; además, `_ml_of_group` da a
+    cada actividad por ML los metros de su grupo.
+  - Lo usan el plan, la medición (driver «ML de mueble completo»), el árbol de
+    recursos (ML del ambiente = total), el importador y las listas de la hoja.
+  - Las actividades y tarifas de closets, baños, lavanderías y ductos son
+    configuración.
+- **M113-06:**
+  - Las columnas son «Grupo de categoría», «Categoría» (ruta corta) y
+    «Producto», con validación nativa, que filtra al escribir.
+  - REFERENCIAS calcula para cada producto el grupo, la ruta corta, el último
+    nivel y si está dentro de la raíz.
+  - `_LISTAS` tiene una fila por grupo y por categoría con su `FILTER`, y
+    cuatro filas por fila de datos con `INDEX/MATCH`. Con 8 000 filas son 33
+    `FILTER` y unos 16 MB de hoja; el tiempo de apertura se mide en dev1.
+  - BOM muestra «Unidad del producto (calc.)» y «Costo unitario (calc.)».
+  - Formato condicional: rojo para el código fuera del maestro y de PRODUCTOS
+    NUEVOS, ámbar para el costo 0.
+  - Ajuste nuevo: «Categoría raíz de materiales de la hoja». Rige para las
+    hojas nuevas.
+- **M113-05:** «Filas de la hoja de trabajo» queda en la pestaña
+  Planificación de la obra, con 0 = automático. La hoja guarda con cuántas
+  filas nació (`construction_sheet_rows`).
+- **M113-04:** asistente `construction.spreadsheet.import.wizard`.
+  - El servidor lee el libro, prepara las filas por clave y convierte el
+    producto en «nombre · unidad · código». Los códigos nuevos van a PRODUCTOS
+    NUEVOS.
+  - Guarda una versión antes de escribir y entrega las filas al cerrarse
+    (`infos`).
+  - La hoja escribe en el navegador y, si no alcanzan las filas, pide
+    `construction_sheet_extension`: las mismas fórmulas, listas y marcas de la
+    plantilla para las filas nuevas, y los rangos de RESUMEN.
+  - Al terminar, valida y deja un mensaje en la obra.
+  - Las hojas anteriores a este bloque no se amplían (sus listas tienen otro
+    orden) y lo avisan.
+- **Escrituras agrupadas:** cada dispatch de la hoja es una revisión que
+  viaja sola al servidor. Las escrituras masivas (importar, ampliar, Traer de
+  Odoo, ERRORES, Actualizar insumos) van en un comando `AL_CONSTRUCTION_BATCH`,
+  que un complemento de la hoja (`featurePluginRegistry`) despacha en
+  revisiones de 2 000 comandos.
+- **Pendiente para 4c:**
+  - materiales de la obra primero en la lista y «Reemplazar un material» (van
+    con el panel);
+  - de CR-22 g: receta por nombre en APU_DETALLE, banda de color por receta y
+    el código al final en INSUMOS y APU.
+- **Pruebas:**
+  - `al_construction_planner_suite/tests/test_package_116_stage4.py`
+    (mueble completo en el plan);
+  - `al_construction_planner_spreadsheet_furniture/tests/test_package_116_stage4b.py`
+    (listas, ampliación y asistente), con el recorrido
+    `al_construction_furniture_sheet_import`, que sube un libro, amplía de 10 a
+    17 filas y comprueba que el servidor guardó lo escrito.
 
 ### Pruebas de la etapa 4
 

@@ -182,10 +182,13 @@ def sheet_headers(name):
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
+    # Paquete 1.13, M113-05: 0 = automático (la hoja nace con 300 filas y
+    # «Importar Excel a la hoja» la amplía a las del archivo más un 10 %).
     construction_spreadsheet_rows = fields.Integer(
-        string='Filas de la hoja de trabajo', default=DEFAULT_ROWS,
-        help='Filas con listas y columnas calculadas por pestaña (ampliable antes de crear la '
-             'hoja).')
+        string='Filas de la hoja de trabajo', default=0,
+        help='Filas con listas y columnas calculadas por pestaña. 0 (automático): la hoja nace '
+             'con 300 filas y la importación de un Excel la amplía. Con un número, la hoja nace '
+             'con esas filas; la importación también la amplía si no alcanzan.')
 
     def _construction_spreadsheet_kind(self):
         """La hoja del perfil de la obra; sin ella, presupuesto y plan."""
@@ -221,6 +224,8 @@ class ProjectProject(models.Model):
                 'name': name, 'mimetype': 'application/o-spreadsheet', 'handler': 'spreadsheet',
                 'datas': base64.b64encode(json.dumps(data).encode()),
                 'construction_project_id': self.id, 'construction_sheet_kind': kind,
+                'construction_sheet_rows': max(self.construction_spreadsheet_rows or
+                                               DEFAULT_ROWS, 10),
                 'construction_sale_order_id': self.construction_sale_order_id.id
                 if kind == 'budget' else False,
             }

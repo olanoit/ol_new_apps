@@ -28,7 +28,7 @@ SHEETS = {
         ('stage', 'Etapa', True, 'Producción, Armado, Instalación o Acabado y entrega.'),
         ('uom', 'Unidad', True, 'Unidad del driver: UND, ML o el nombre de la unidad.'),
         ('measure', 'Se mide por', False, 'Módulo, ML o Ambiente (por defecto).'),
-        ('ml_group', 'Grupo ML', False, 'Mueble bajo o Mueble alto (actividades por ML).'),
+        ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto o Mueble completo (actividades por ML).'),
         ('price', 'Tarifa base', False, 'Tarifa si no hay una tarifa de la obra o de la contrata.'),
     ]),
     'TIPOLOGIAS': ('Tipologías de ambiente de la obra.', [
@@ -49,7 +49,7 @@ SHEETS = {
     'MUEBLES': ('Muebles de cada tipología (con el nivel Mueble en la plantilla de la obra).', [
         ('typology', 'Tipología', True, 'Código de la tipología.'),
         ('name', 'Mueble', True, 'Mueble bajo, mueble alto, torre de horno…'),
-        ('ml_group', 'Grupo', False, 'Bajo, Alto u Otro.'),
+        ('ml_group', 'Grupo', False, 'Bajo, Alto, Completo u Otro.'),
         ('ml', 'Metros lineales', False, 'Sin anchos en los módulos, los ML del mueble.'),
     ]),
     'MODULOS': ('Plantilla de módulos de cada tipología.', [
@@ -58,7 +58,7 @@ SHEETS = {
         ('code', 'Código del módulo', True, 'MB01, MA01, CAMPANA… (el mismo del ETO).'),
         ('type', 'Tipo', True, 'Bajo, Alto, Cajonera, Campana, Repisero u Otro.'),
         ('width', 'Ancho (mm)', False, 'Con ancho, las actividades por ML bajan al módulo.'),
-        ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto o Sin ML.'),
+        ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto, Mueble completo (closets, baños, lavanderías, ductos) o Sin ML.'),
         ('activity', 'Actividad de armado', False,
          'Código de una actividad que se mide por módulo; vacía: la del catálogo por el método '
          'de unión o el tipo de módulo.'),
@@ -175,7 +175,7 @@ SHEETS = {
         ('code', 'Código del módulo', True, 'El mismo código de la plantilla de la tipología.'),
         ('type', 'Tipo', False, 'Bajo, Alto, Cajonera, Campana, Repisero u Otro.'),
         ('width', 'Ancho (mm)', True, 'Ancho real del módulo.'),
-        ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto o Sin ML.'),
+        ('ml_group', 'Grupo ML', False, 'Mueble bajo, Mueble alto, Mueble completo (closets, baños, lavanderías, ductos) o Sin ML.'),
     ]),
 }
 
@@ -199,6 +199,7 @@ MODULE_TYPE_VALUES = {
 ML_GROUP_VALUES = {
     'low': ('Mueble bajo', 'Bajo'),
     'high': ('Mueble alto', 'Alto'),
+    'full': ('Mueble completo', 'Completo'),
     'none': ('Sin ML', 'Ninguno', 'No'),
 }
 FAMILY_VALUES = {
@@ -214,6 +215,7 @@ FAMILY_VALUES = {
 FURNITURE_GROUP_VALUES = {
     'low': ('Bajo', 'Mueble bajo'),
     'high': ('Alto', 'Mueble alto'),
+    'full': ('Completo', 'Mueble completo'),
     'other': ('Otro',),
 }
 OVERRIDE_KIND_VALUES = {

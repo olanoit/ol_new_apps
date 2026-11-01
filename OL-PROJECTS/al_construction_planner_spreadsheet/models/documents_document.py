@@ -45,6 +45,11 @@ class DocumentsDocument(models.Model):
         SHEET_KINDS, string='Hoja de trabajo', readonly=True, copy=False)
     construction_version = fields.Integer(string='Versión de la hoja', default=1, copy=False,
                                           readonly=True)
+    # Paquete 1.13, M113-04/05: filas con listas y fórmulas con que nació la
+    # hoja (o a las que la amplió «Importar Excel a la hoja»); 0 en las hojas
+    # anteriores, que no se amplían.
+    construction_sheet_rows = fields.Integer(string='Filas de la hoja', readonly=True,
+                                             copy=False)
     construction_source_id = fields.Many2one(
         'documents.document', string='Hoja de trabajo vigente', readonly=True, copy=False,
         ondelete='set null', help='En una copia numerada: la hoja de la que se copió.')
@@ -64,6 +69,7 @@ class DocumentsDocument(models.Model):
         # M113-02: el envío recoge solo estas pestañas.
         data['construction_send_sheets'] = document_sudo._construction_send_sheet_names() \
             if data['construction_sheet_kind'] else []
+        data['construction_sheet_rows'] = document_sudo.construction_sheet_rows
         return data
 
     def _construction_send_sheet_names(self):

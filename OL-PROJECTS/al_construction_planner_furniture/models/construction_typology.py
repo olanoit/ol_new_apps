@@ -5,7 +5,7 @@ from odoo import api, fields, models
 from odoo.exceptions import ValidationError
 
 from odoo.addons.al_construction_planner.models.common import (
-    FURNITURE_GROUPS, ML_GROUPS, MODULE_TYPES, TYPOLOGY_FAMILIES,
+    FURNITURE_GROUPS, ML_COUNTED, ML_GROUPS, MODULE_TYPES, TYPOLOGY_FAMILIES,
 )
 
 
@@ -37,6 +37,16 @@ class ConstructionTypology(models.Model):
     ml_high = fields.Float(
         string='ML alto', digits=(16, 2), compute='_compute_module_stats', store=True,
         readonly=False, help='Metros lineales de mueble alto (ver «ML bajo»).')
+    # Paquete 1.16, M116-10: los ML de closets, baños, lavanderías y ductos
+    # cuentan para la obra (instalación y limpieza por ML, control de alcance).
+    ml_full = fields.Float(
+        string='ML de mueble completo', digits=(16, 2), compute='_compute_module_stats',
+        store=True, readonly=False,
+        help='Metros lineales de los módulos «Mueble completo» (closets, baños, lavanderías, '
+             'ductos). Ver «ML bajo».')
+    ml_total = fields.Float(
+        string='ML total', digits=(16, 2), compute='_compute_ml_total', store=True,
+        help='Bajo, alto y mueble completo: lo que compara el control de alcance.')
     module_assembly_amount = fields.Monetary(
         string='Armado por módulo', compute='_compute_module_assembly_amount',
         currency_field='currency_id',
@@ -58,10 +68,22 @@ class ConstructionTypology(models.Model):
             if any(modules.mapped('width_mm')):
                 typology.ml_low = sum(m.width_mm for m in modules if m.ml_group == 'low') / 1000.0
                 typology.ml_high = sum(m.width_mm for m in modules if m.ml_group == 'high') / 1000.0
+                typology.ml_full = sum(m.width_mm for m in modules if m.ml_group == 'full') / 1000.0
             else:
                 # Sin anchos (p. ej. sin ETO) se conservan los escritos a mano.
                 typology.ml_low = typology.ml_low
                 typology.ml_high = typology.ml_high
+                typology.ml_full = typology.ml_full
+
+    @api.depends('ml_low', 'ml_high', 'ml_full')
+    def _compute_ml_total(self):
+        for typology in self:
+            typology.ml_total = typology.ml_low + typology.ml_high + typology.ml_full
+
+    def _ml_of_group(self, group):
+        """ML de la tipología del grupo de una actividad por ML."""
+        self.ensure_one()
+        return {'low': self.ml_low, 'high': self.ml_high, 'full': self.ml_full}.get(group, 0.0)
 
     @api.depends('module_line_ids.assembly_activity_id')
     def _compute_module_assembly_amount(self):

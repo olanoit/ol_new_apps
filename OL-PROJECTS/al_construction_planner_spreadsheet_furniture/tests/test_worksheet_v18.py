@@ -107,7 +107,7 @@ class TestWorksheetV18(PlannerCommon):
         self.assertIn('m² (calc.)', pieces['cells'].values())
         bom = sheets['BOM']
         product_rules = [r for r in bom['dataValidationRules'] if '_prod_' in r['id']]
-        self.assertEqual(len(product_rules), self.site.construction_spreadsheet_rows)
+        self.assertEqual(len(product_rules), self.site.construction_spreadsheet_rows or 300)
         self.assertEqual(len(data['pivots']), 4)
         self.assertTrue(all(p['rows'][0]['order'] == 'asc' for p in data['pivots'].values()))
         self.assertIn('=PIVOT(1,', sheets['RESUMEN']['cells']['A2'])
