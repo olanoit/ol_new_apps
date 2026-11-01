@@ -1118,8 +1118,8 @@ Falta medirlo en dev1.
   hoja. La ampliación respeta el mismo tope.
 - **Lo que queda:** cerca de 0.9 s de cada edición en BOM son las tablas
   dinámicas de RESUMEN, que se recalculan con cada cambio de BOM (nativo). Sin
-  ellas, la edición en BOM baja a 0.1 a 0.4 s. Se dejan porque las pide el
-  piloto; quitarlas o pasarlas a fórmulas es decisión de ALTA.
+  ellas, la edición en BOM baja a 0.1 a 0.4 s. Decisión de ALTA del
+  01-nov-2026: se mantienen.
 - `_LISTAS` tiene 81 `FILTER` con 8 000 filas: cumple el criterio de menos de
   100.
 
