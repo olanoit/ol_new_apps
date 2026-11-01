@@ -71,7 +71,7 @@
         <field name="name">construction.exceed.log.pivot</field>
         <field name="model">construction.exceed.log</field>
         <field name="arch" type="xml">
-            <pivot string="Excesos autorizados">
+            <pivot class="o_cp_wrap_names" string="Excesos autorizados">
                 <field name="project_id" type="row"/>
                 <field name="kind" type="col"/>
                 <field name="amount" type="measure"/>

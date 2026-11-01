@@ -20,6 +20,7 @@ from . import tier_definition
 from . import res_company
 from . import res_users
 from . import res_config_settings
+from . import ir_http
 from . import construction_task_progress
 from . import construction_space_stage
 from . import gantt_data

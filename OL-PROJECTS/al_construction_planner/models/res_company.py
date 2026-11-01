@@ -21,12 +21,22 @@ class ResCompany(models.Model):
         WEEKDAYS, string='Día de liquidación de contratas', default='3')
     construction_payment_day = fields.Selection(
         WEEKDAYS, string='Día de pago de contratas', default='5')
+    # Nombres largos (paquete 1.16, M116-08 y CR-25): ancho máximo de los
+    # nombres de partida, recurso y nivel en las tablas y vistas dinámicas
+    # del planificador y en el panel del Cronograma; más largos hacen salto
+    # de línea.
+    construction_name_max_width = fields.Integer(
+        string='Ancho máximo de los nombres', default=360,
+        help='En píxeles. Los nombres de partida, recurso y nivel hacen salto de línea con este '
+             'ancho en las tablas y vistas dinámicas del planificador y en el panel del '
+             'Cronograma.')
     # Cancelar un plan aprobado o en ejecución sin consumos ni documentos
     # abiertos (pedido de Allcenter del 24-oct-2026, prueba ZZMONTEC).
     construction_plan_cancel_open = fields.Boolean(
         string='Cancelar planes en ejecución',
         help='Permite cancelar un plan aprobado o en ejecución que no tenga documentos '
-             'abiertos (compras, requerimientos, OF, OC de servicio) ni consumos.')
+             'abiertos (compras, requerimientos, producción en taller, OC de servicio) ni '
+             'consumos.')
     construction_plan_cancel_group_id = fields.Many2one(
         'res.groups', string='Quién cancela planes en ejecución',
         default=lambda self: self.env.ref('al_construction_planner.group_planner_manager',

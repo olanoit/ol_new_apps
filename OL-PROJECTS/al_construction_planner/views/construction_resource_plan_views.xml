@@ -6,14 +6,14 @@
         <field name="name">construction.resource.plan.line.list</field>
         <field name="model">construction.resource.plan.line</field>
         <field name="arch" type="xml">
-            <list string="Líneas del plan" editable="bottom"
+            <list string="Líneas del plan" editable="bottom" class="o_cp_wrap_names"
                   decoration-warning="not stage" decoration-muted="line_state == 'cancel'">
                 <header>
                 </header>
                 <field name="plan_id" column_invisible="context.get('default_plan_id')"
                        options="{'no_create': True}"/>
                 <field name="plan_state" column_invisible="True"/>
-                <field name="task_id" options="{'no_create': True}"
+                <field name="task_id" options="{'no_create': True}" class="o_cp_name"
                        domain="[('project_id', '=', project_id), ('construction_level', '!=', False)]"/>
                 <field name="project_id" column_invisible="True"/>
                 <field name="task_level" optional="hide"/>
@@ -25,9 +25,9 @@
                 <field name="resource_type" column_invisible="True"/>
                 <field name="construction_stage_codes" column_invisible="True"/>
                 <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
-                <field name="product_id" options="{'no_create': True}"
+                <field name="product_id" options="{'no_create': True}" class="o_cp_name"
                        required="resource_type in ('material', 'service', 'equipment', 'production')"/>
-                <field name="activity_id" options="{'no_create': True}"
+                <field name="activity_id" options="{'no_create': True}" class="o_cp_name"
                        required="resource_type in ('contract', 'labor')"/>
                 <field name="partner_id" optional="hide" options="{'no_create': True}"/>
                 <field name="uses_level_driver" optional="hide"
@@ -72,11 +72,12 @@
         <field name="model">construction.resource.plan.line</field>
         <field name="priority">40</field>
         <field name="arch" type="xml">
-            <list string="Recursos y avance" default_group_by="stage" create="0" edit="0">
+            <list string="Recursos y avance" default_group_by="stage" create="0" edit="0"
+                  class="o_cp_wrap_names">
                 <field name="stage"/>
-                <field name="task_id" optional="hide"/>
+                <field name="task_id" optional="hide" class="o_cp_name"/>
                 <field name="resource_type_id" optional="hide"/>
-                <field name="resource_name"/>
+                <field name="resource_name" class="o_cp_name"/>
                 <field name="partner_id" optional="show"/>
                 <field name="qty_planned" string="Presupuestado"/>
                 <field name="product_uom_id" string="Und" groups="uom.group_uom"/>
@@ -168,7 +169,7 @@
         <field name="name">construction.resource.plan.line.pivot</field>
         <field name="model">construction.resource.plan.line</field>
         <field name="arch" type="xml">
-            <pivot string="Plan de recursos" sample="1">
+            <pivot class="o_cp_wrap_names" string="Plan de recursos" sample="1">
                 <field name="apartment_task_id" type="row"/>
                 <field name="stage" type="col"/>
                 <field name="amount_planned" type="measure"/>
@@ -241,7 +242,7 @@
         <field name="model">construction.resource.plan.line</field>
         <field name="priority">20</field>
         <field name="arch" type="xml">
-            <pivot string="Análisis de control" sample="1">
+            <pivot class="o_cp_wrap_names" string="Análisis de control" sample="1">
                 <field name="stage" type="row"/>
                 <field name="amount_planned" type="measure" string="Planificado"/>
                 <field name="amount_baseline" type="measure"/>

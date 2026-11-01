@@ -68,6 +68,8 @@ class ResConfigSettings(models.TransientModel):
         related='company_id.construction_week_start_day', readonly=False)
     construction_settlement_day = fields.Selection(
         related='company_id.construction_settlement_day', readonly=False)
+    construction_name_max_width = fields.Integer(
+        related='company_id.construction_name_max_width', readonly=False)
     construction_payment_day = fields.Selection(
         related='company_id.construction_payment_day', readonly=False)
     construction_plan_cancel_open = fields.Boolean(

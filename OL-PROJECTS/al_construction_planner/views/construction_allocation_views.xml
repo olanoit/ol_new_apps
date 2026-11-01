@@ -31,7 +31,7 @@
         <field name="name">construction.resource.plan.allocation.pivot</field>
         <field name="model">construction.resource.plan.allocation</field>
         <field name="arch" type="xml">
-            <pivot string="Asignaciones" sample="1">
+            <pivot class="o_cp_wrap_names" string="Asignaciones" sample="1">
                 <field name="product_id" type="row"/>
                 <field name="kind" type="col"/>
                 <field name="qty_allocated" type="measure"/>
@@ -49,7 +49,6 @@
                 <field name="plan_id"/>
                 <filter string="Compra masiva" name="purchase_request" domain="[('kind', '=', 'purchase_request')]"/>
                 <filter string="Requerimiento de obra" name="material_request" domain="[('kind', '=', 'material_request')]"/>
-                <filter string="Orden de fabricación" name="production" domain="[('kind', '=', 'production')]"/>
                 <group>
                     <filter string="Documento" name="group_kind" context="{'group_by': 'kind'}"/>
                     <filter string="Producto" name="group_product" context="{'group_by': 'product_id'}"/>
@@ -66,8 +65,9 @@
         <field name="context">{'create': False, 'search_default_group_kind': 1}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Aún no hay documentos generados desde el plan</p>
-            <p>La compra masiva, los requerimientos de obra y las órdenes de fabricación que
-               nacen del árbol de recursos dejan aquí qué parte corresponde a cada línea.</p>
+            <p>Los documentos que nacen del árbol de recursos (compra masiva, requerimientos
+               de obra, producción en taller, órdenes de servicio) dejan aquí qué parte
+               corresponde a cada línea.</p>
         </field>
     </record>
 

@@ -5,7 +5,7 @@
         <field name="name">construction.plan.purchase.wizard.form</field>
         <field name="model">construction.plan.purchase.wizard</field>
         <field name="arch" type="xml">
-            <form string="Compra masiva">
+            <form string="Programar compra masiva">
                 <field name="plan_id" invisible="1"/>
                 <field name="project_id" invisible="1"/>
                 <field name="company_id" invisible="1"/>
@@ -58,7 +58,7 @@
     </record>
 
     <record id="action_plan_purchase_wizard" model="ir.actions.act_window">
-        <field name="name">Compra masiva</field>
+        <field name="name">Programar compra masiva</field>
         <field name="res_model">construction.plan.purchase.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -70,7 +70,7 @@
         <field name="name">construction.plan.request.wizard.form</field>
         <field name="model">construction.plan.request.wizard</field>
         <field name="arch" type="xml">
-            <form string="Requerimiento de obra">
+            <form string="Requerimiento de materiales para obra">
                 <field name="plan_id" invisible="1"/>
                 <field name="project_id" invisible="1"/>
                 <field name="company_id" invisible="1"/>
@@ -105,7 +105,7 @@
                     el saldo del plan según su política de exceso.
                 </p>
                 <footer>
-                    <button name="action_create" type="object" string="Crear requerimiento de obra" class="btn-primary" data-hotkey="q"/>
+                    <button name="action_create" type="object" string="Crear requerimiento de materiales para obra" class="btn-primary" data-hotkey="q"/>
                     <button string="Descartar" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
@@ -113,7 +113,7 @@
     </record>
 
     <record id="action_plan_request_wizard" model="ir.actions.act_window">
-        <field name="name">Requerimiento de obra</field>
+        <field name="name">Requerimiento de materiales para obra</field>
         <field name="res_model">construction.plan.request.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

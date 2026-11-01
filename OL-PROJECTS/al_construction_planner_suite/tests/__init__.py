@@ -69,3 +69,4 @@ from . import test_package_112_mode
 from . import test_package_116_stage1
 from . import test_package_116_stage2
 from . import test_package_116_stage2b
+from . import test_package_116_stage3

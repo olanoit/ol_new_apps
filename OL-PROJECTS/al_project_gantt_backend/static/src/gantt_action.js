@@ -62,12 +62,37 @@ import { ActionPlugin } from "@web/webclient/actions/action_plugin";
  *   selección en cascada (`this.selection`, ver `gantt_selection.js`).
  * - `isRowSelectable(task)`: qué filas muestran casilla.
  * - `extraToolbarButtons`: botones `{key, label, icon, run, disabled, title}`
- *   de la barra de selección, que aparece si hay botones o casillas.
+ *   de la barra de selección, que aparece si hay botones o casillas. Con
+ *   `group` y `groupLabel` en los botones, la barra pinta una fila por grupo
+ *   con su etiqueta, en el orden en que aparecen; sin ningún grupo, una sola
+ *   fila como siempre.
  * - `showProjectBar`: ocultar la barra de proyectos (pantallas de una obra).
  * - `toolbarTemplate`, `sidePanelTemplate`, `bottomPanelTemplate`: nombre de
  *   una plantilla OWL que se pinta en la barra, a la derecha del diagrama o
  *   debajo de él, con el propio componente como contexto.
  */
+
+/**
+ * Agrupa los botones de la barra por `group` en el orden en que aparecen.
+ * Un grupo sin botones no tiene fila; sin grupos devuelve `null`.
+ */
+export function groupToolbarButtons(buttons) {
+    if (!buttons.some((button) => button.group)) {
+        return null;
+    }
+    const rows = [];
+    const byKey = new Map();
+    for (const button of buttons) {
+        const key = button.group || "";
+        if (!byKey.has(key)) {
+            const row = { key, label: button.groupLabel || "", buttons: [] };
+            byKey.set(key, row);
+            rows.push(row);
+        }
+        byKey.get(key).buttons.push(button);
+    }
+    return rows;
+}
 
 export class GanttAction extends Component {
     static template = "al_project_gantt_backend.GanttAction";
@@ -404,6 +429,14 @@ export class GanttAction extends Component {
 
     get extraToolbarButtons() {
         return [];
+    }
+
+    /**
+     * Filas de la barra de selección: `[{key, label, buttons}]` si algún
+     * botón trae grupo; `null` si ninguno (una fila, como siempre).
+     */
+    get toolbarButtonRows() {
+        return groupToolbarButtons(this.extraToolbarButtons);
     }
 
     get showActionBar() {

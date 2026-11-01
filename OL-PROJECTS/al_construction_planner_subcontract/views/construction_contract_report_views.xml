@@ -57,7 +57,7 @@
         <field name="name">construction.contract.summary.report.pivot</field>
         <field name="model">construction.contract.summary.report</field>
         <field name="arch" type="xml">
-            <pivot string="Indicadores de contratas">
+            <pivot class="o_cp_wrap_names" string="Indicadores de contratas">
                 <field name="project_id" type="row"/>
                 <field name="amount_valued" type="measure"/>
                 <field name="progress_pct" type="measure"/>
@@ -83,7 +83,7 @@
         <field name="name">construction.contract.settlement.line.pivot</field>
         <field name="model">construction.contract.settlement.line</field>
         <field name="arch" type="xml">
-            <pivot string="Análisis de valorizaciones">
+            <pivot class="o_cp_wrap_names" string="Análisis de valorizaciones">
                 <field name="project_id" type="row"/>
                 <field name="partner_id" type="row"/>
                 <field name="period_end" interval="month" type="col"/>

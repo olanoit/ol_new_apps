@@ -286,7 +286,7 @@ def can_see_amounts(env):
 #: Claves de monto en los diccionarios de los paneles OWL.
 PANEL_AMOUNT_KEYS = frozenset({
     'amount', 'material', 'contract', 'other', 'total', 'amount_total', 'amount_remaining',
-    'price', 'price_unit', 'cost', 'cost_unit'})
+    'price', 'price_unit', 'cost', 'cost_unit', 'amount_executed', 'amount_balance'})
 
 
 def mask_amounts(env, data, keys=PANEL_AMOUNT_KEYS):

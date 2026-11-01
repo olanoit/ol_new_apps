@@ -84,7 +84,7 @@
         <field name="name">construction.measurement.pivot</field>
         <field name="model">construction.measurement</field>
         <field name="arch" type="xml">
-            <pivot string="Metrados">
+            <pivot class="o_cp_wrap_names" string="Metrados">
                 <field name="floor_task_id" type="row"/>
                 <field name="state" type="col"/>
                 <field name="amount_difference" type="measure"/>
@@ -125,7 +125,7 @@
             <p>El supervisor anota la medida real de cada ambiente, partida o spool frente a lo
                planificado: el metrado en la unidad de su receta (m², und, ml, kg) o, en
                mobiliario, los ML de mueble bajo y alto y los módulos. Con diferencia, la jefatura de proyectos la
-               aprueba antes de lanzar la orden de fabricación del ambiente. Use «Generar
+               aprueba antes de lanzar la producción del ambiente. Use «Generar
                metrados» para cargar un piso entero.</p>
         </field>
     </record>

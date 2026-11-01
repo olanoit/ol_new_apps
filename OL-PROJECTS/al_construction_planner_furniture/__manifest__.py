@@ -30,7 +30,7 @@ Paquete 1.8 (M18-15 a M18-20, M17-15, M17-18 a M17-20):
     'website': 'https://www.altabpo.com',
     'category': 'OL-PROJECTS/Apps',
     'icon': '/al_construction_planner_furniture/static/description/icon.png',
-    'version': '17.20261101',
+    'version': '18.20261101',
     # LGPL-3 como el planificador del que depende (base_tier_validation es AGPL).
     'license': 'LGPL-3',
     'depends': ['al_construction_planner_mrp'],

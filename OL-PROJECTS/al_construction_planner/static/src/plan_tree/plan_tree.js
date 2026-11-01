@@ -198,6 +198,21 @@ export class ConstructionPlanTree extends Component {
         return effectiveSelection(this.state.nodes, this.state.selected);
     }
 
+    /** Acciones de la barra en filas por grupo (paquete 1.15, M115-02). */
+    get actionRows() {
+        const rows = [];
+        const byKey = new Map();
+        for (const act of this.state.actions) {
+            if (!byKey.has(act.group)) {
+                const row = { key: act.group, label: act.group_label, actions: [] };
+                byKey.set(act.group, row);
+                rows.push(row);
+            }
+            byKey.get(act.group).actions.push(act);
+        }
+        return rows;
+    }
+
     async runAction(xmlid) {
         const keys = this.selectionKeys;
         await this.action.doAction(xmlid, {
