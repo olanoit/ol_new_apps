@@ -7,6 +7,11 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_approvals.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 9.20261031 — 01/11/2026
+
+- M116-03 (M114-02): con «Material fuera del plan» y la obra sin plan, la solicitud cuenta cada línea como material fuera del plan al costo del producto, con la marca «Obra sin plan» y ese resumen.
+- M116-03: con «Pasar al jefe de la obra», el requerimiento sin regla pasa al jefe de la obra también con la aplicación Aprobaciones, igual que con la validación por niveles.
+
 ## 8.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_spreadsheet.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 13.20261101 — 01/11/2026
+
+- M116-09: el perfil de la obra define el tipo de hoja (presupuesto o maestro de mobiliario); un solo menú «Planificación de obra» con las opciones de cada hoja; las columnas se reconocen por su clave aunque se renombre el encabezado.
+- M113-03 y M116-09: pestaña ERRORES común con hoja, fila, columna, mensaje, tipo e «Ir», y fila de estado de la última validación.
+- CR-22 b, c, e y f: sin la función `N()`, columna «Costo unitario sin APU», rendimiento y horas de la receta en APU, amarillo para el dato y gris para la fórmula; una migración adapta las hojas ya creadas.
+- CR-22 g: INSUMOS y APU llevan el código al final y una columna «Para elegir»; APU_DETALLE elige insumo y receta por nombre con una lista que filtra al escribir, y una banda de color marca cada receta.
+- M113-11 y M113-12: la hoja guarda su estado, versión y último envío; la ficha de la obra tiene el botón con la versión y el estado y el bloque «Hoja de trabajo».
+- Corrección: la hoja de Odoo 19 no tiene `REPT`; esas fórmulas pasan a `TEXTBEFORE` y `TEXTAFTER`, y una migración repara las hojas ya creadas, también las anteriores al paquete 1.16.
+
 ## 6.20261027 — 27/10/2026
 
 - Ícono nuevo: el isotipo de ALTA.

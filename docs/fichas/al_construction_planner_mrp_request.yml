@@ -27,6 +27,10 @@ configuracion:
 requisitos_nota: Requiere `al_construction_planner_mrp` y `al_construction_planner_purchase`. Licencia
   LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '6.20261031'
+  fecha: 01/11/2026
+  cambios:
+    - "M114-05: si la lista del producto es del almacén del tipo de reposición de Ajustes, «Pedir reposición a planta» usa ese tipo."
 - version: '5.20261027'
   fecha: 27/10/2026
   cambios:

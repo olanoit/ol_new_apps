@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_material_request.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 32.20261101 — 01/11/2026
+
+- I-01: el traslado de una línea del requerimiento a la ubicación de la obra crea su apunte analítico con la distribución del requerimiento (obra, etapa, tipo de costo y niveles), no solo con la obra. Ahora depende de `project_stock_account`.
+
 ## 31.20261027 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.

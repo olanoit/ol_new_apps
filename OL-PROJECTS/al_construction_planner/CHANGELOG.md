@@ -7,6 +7,15 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 64.20261101 — 01/11/2026
+
+- CR-23 y CR-22 a): «Reemplazar lo generado» y el envío de la hoja ya no duplican líneas en la nueva versión; la actividad archivada se reactiva al importar.
+- M116-01 y M116-02: las etapas que se ofrecen (línea del plan, receta, actividad, importadores) son las del perfil de la obra; Pendiente, Medido y Entregado solo aparecen si el perfil mide sus ambientes.
+- M116-11 y M116-10: opción «APU en cualquier nivel» con «Subnivel de obra» (hasta seis niveles) y la marca «Lleva APU» en la tarea; perfiles de construcción de 3 a 6 niveles; grupo ML «Mueble completo».
+- M116-04 y M116-05: cada nivel de la plantilla lleva «Plan analítico» y «Modo de la cuenta», y la tarea crea o enlaza su cuenta; la distribución del plan suma las cuentas de su ruta; botón «Aplicar analítica a las obras» y campo «Primer nivel de la ruta».
+- CR-21 y M115-01 a M115-03: el Cronograma abre con el último plan de cada usuario; la barra agrupa las acciones en filas Consultar, Programar y Ejecutar con el nombre de cada acción; el panel de la selección se amplía y muestra ejecutado y saldo a quien ve montos.
+- M115-04 a M115-06, M116-07, M116-08, CR-25 y CR-26: etapa actual y plazo de cada ambiente en el Cronograma, informe «Etapa de los ambientes», carga semanal plan frente a ejecutado con umbrales en Ajustes, ancho máximo de los nombres y ayudas que hablan de producción en taller.
+
 ## 57.20261027 — 27/10/2026
 
 - Recupera su ícono original; el isotipo de ALTA queda solo para los módulos que no tenían ícono.

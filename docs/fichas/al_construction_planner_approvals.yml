@@ -29,6 +29,11 @@ configuracion:
 requisitos_nota: Requiere Aprobaciones (Enterprise) y el puente de compras (`al_construction_planner_purchase`).
   Licencia LGPL-3 porque el planificador depende de `base_tier_validation` (AGPL-3).
 novedades:
+- version: '9.20261031'
+  fecha: 01/11/2026
+  cambios:
+    - "M116-03 (M114-02): con «Material fuera del plan» y la obra sin plan, la solicitud cuenta cada línea como material fuera del plan al costo del producto, con la marca «Obra sin plan» y ese resumen."
+    - "M116-03: con «Pasar al jefe de la obra», el requerimiento sin regla pasa al jefe de la obra también con la aplicación Aprobaciones, igual que con la validación por niveles."
 - version: '8.20261027'
   fecha: 27/10/2026
   cambios:

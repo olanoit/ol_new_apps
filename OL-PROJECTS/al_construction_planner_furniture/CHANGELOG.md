@@ -7,6 +7,14 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner_furniture.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 21.20261101 — 01/11/2026
+
+- M116-01: «Generar plan» ofrece las etapas del perfil de la obra, sin lista fija.
+- M116-02: los nombres de los estados del ambiente (Pendiente, Medido y Entregado) se configuran por compañía en Ajustes; la marca de ambiente medido actualiza la etapa actual del Cronograma.
+- M116-05: menú «Rubros (analítica)» en la configuración del plan: la familia de la tipología suma su cuenta Rubro a la distribución analítica.
+- M116-10: grupo ML «Mueble completo» (closets, baños, lavanderías, ductos); la tipología tiene «ML total», que usan el plan, la medición y el árbol de recursos.
+- M113-01: el importador del maestro avisa del módulo desconocido, del tablero inexistente, de la BOM sin módulo en tipologías con recetas, del agrupador sin nivel y de la fecha de OBRA ilegible; la fecha se lee como número de la hoja o como texto.
+
 ## 15.20261029 — 29/10/2026
 
 - Ajuste «Categoría de los productos de módulo» (Fabricación ‣ Órdenes del plan de obra): los productos de módulo se crean con esa categoría y toman de ella su método de costo; con costo promedio, sus órdenes admiten el cierre de costos de fabricación.
