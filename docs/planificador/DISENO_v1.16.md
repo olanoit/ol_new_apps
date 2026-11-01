@@ -1098,6 +1098,31 @@ hoja nace con 300 filas y la importación la amplía.
     copia el piso 2 a los pisos 3 y 4, numera, asigna, crea la variante C01A
     y reemplaza un material.
 
+### Rendimiento de una hoja de 8 000 filas (medido el 01-nov-2026)
+
+Medido en local, en el navegador sin interfaz, con la plantilla de 8 000 filas.
+Falta medirlo en dev1.
+
+| Hoja | Tamaño | Abrir | Editar una celda |
+|---|---|---|---|
+| Vacía, antes del tope | 30 MB | 28 a 60 s | 2 a 5 s |
+| Vacía, con el tope | 24 MB | 13 s | 0.3 a 0.4 s |
+| Con datos (8 000 BOM, 4 000 piezas, 300 ambientes, 20 tipologías), con el tope | 25 MB | 14.7 s | BOM 1 s · MODULOS 0.9 s · TIPOLOGIAS 0.07 s |
+
+- **Causa:** las columnas calculadas en todas las filas. Sin ellas, la hoja
+  abre en 13.5 s y una edición tarda 0.2 s. La más cara era TIPOLOGIAS: 7
+  sumas sobre columnas completas en 8 000 filas, cuando una obra tiene
+  decenas de tipologías.
+- **Cambio:** `SHEET_CAPACITY`. TIPOLOGIAS lleva fórmulas y listas en 500
+  filas y ACTIVIDADES en 2 000; las demás pestañas, en todas las filas de la
+  hoja. La ampliación respeta el mismo tope.
+- **Lo que queda:** cerca de 0.9 s de cada edición en BOM son las tablas
+  dinámicas de RESUMEN, que se recalculan con cada cambio de BOM (nativo). Sin
+  ellas, la edición en BOM baja a 0.1 a 0.4 s. Se dejan porque las pide el
+  piloto; quitarlas o pasarlas a fórmulas es decisión de ALTA.
+- `_LISTAS` tiene 81 `FILTER` con 8 000 filas: cumple el criterio de menos de
+  100.
+
 ### Pruebas de la etapa 4
 
 - `al_construction_planner_suite/tests/test_package_116_stage4.py`:

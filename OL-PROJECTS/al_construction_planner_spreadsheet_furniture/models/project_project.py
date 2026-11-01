@@ -154,6 +154,19 @@ UNKNOWN_FILL = '#F4CCCC'
 NO_COST_FILL = '#FCE5CD'
 
 
+# Filas con fórmulas y listas de las pestañas cortas del maestro. Con una hoja
+# de 8 000 filas, las 7 columnas calculadas de TIPOLOGIAS en todas las filas
+# hacían que abrir tardara más de 30 s y cada edición, 2 a 5 s (medido en el
+# navegador el 01-nov-2026): una obra tiene decenas de tipologías.
+SHEET_CAPACITY = {'TIPOLOGIAS': 500, 'ACTIVIDADES': 2000}
+
+
+def sheet_capacity(name, rows):
+    """Filas de datos con fórmulas y listas de la pestaña ``name`` en una
+    hoja de ``rows`` filas."""
+    return min(rows, SHEET_CAPACITY.get(name, rows))
+
+
 def category_parts(path):
     """(grupo, ruta corta, último nivel) de la ruta de una categoría, como
     las fórmulas de REFERENCIAS."""
@@ -370,10 +383,16 @@ class ProjectProject(models.Model):
             col = _letter_index(letter)
             return {'top': top - 1, 'bottom': bottom - 1, 'left': col, 'right': col}
 
+        requested_last = last
         for name, info in layout['sheets'].items():
             part = result[name]
             cells = part['cells']
             letters = info['letters']
+            # Rendimiento: las pestañas cortas no llevan fórmulas y listas en
+            # todas las filas de la hoja (SHEET_CAPACITY).
+            last = min(requested_last, sheet_capacity(name, requested_last - 1) + 1)
+            if last < first:
+                continue
             for header, formula in info['calculated']:
                 col = info['calc_letters'][header]
                 template = sheet_formula(layout, name, formula)
@@ -441,6 +460,7 @@ class ProjectProject(models.Model):
                         '=AND({c}{f}<>"",{u}{f}<>"",{u}{f}=0)'.format(
                             c=code, f=first, u=unit_cost)],
                         'style': {'fillColor': NO_COST_FILL}}})
+        last = requested_last
         # _LISTAS: las filas de lista de cada fila de datos.
         n_groups, n_shorts = layout['n_groups'], layout['n_shorts']
         groups_zone = '$B$1:$%s$%s' % (layout['last_col'], n_groups)
