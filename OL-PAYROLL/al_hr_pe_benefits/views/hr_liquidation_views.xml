@@ -58,6 +58,7 @@
                                     <field name="truncated_vacation" readonly="1"/>
                                 </group>
                                 <group string="Vacaciones pendientes">
+                                    <field name="accrued_days" readonly="1"/>
                                     <field name="accrued_vacation" readonly="l10n_pe_locked"/>
                                     <field name="advanced_vacation" readonly="l10n_pe_locked"/>
                                     <field name="total_vacation" readonly="1" class="fw-bold"/>
@@ -74,6 +75,7 @@
                                     <field name="afp_fixed_com" readonly="1"/>
                                 </group>
                                 <group string="Neto a pagar">
+                                    <field name="indemnity_days" readonly="1"/>
                                     <field name="vacation_indemnity" readonly="l10n_pe_locked"/>
                                     <field name="total" readonly="1" class="fw-bold"/>
                                 </group>
@@ -170,6 +172,31 @@
                         <field name="type"/>
                     </list>
                 </field>
+                <group string="Indemnización por despido arbitrario" name="indemnity">
+                    <group>
+                        <field name="l10n_pe_cessation_reason" readonly="l10n_pe_locked"/>
+                        <field name="l10n_pe_labor_regime" readonly="1"/>
+                        <field name="l10n_pe_contract_kind" readonly="l10n_pe_locked" invisible="l10n_pe_cessation_reason != 'arbitrary' or l10n_pe_labor_regime in ('small', 'micro')"/>
+                        <field name="l10n_pe_planned_end" readonly="l10n_pe_locked" invisible="l10n_pe_cessation_reason != 'arbitrary' or l10n_pe_contract_kind != 'fixed' or l10n_pe_labor_regime in ('small', 'micro')"/>
+                    </group>
+                    <group invisible="l10n_pe_cessation_reason != 'arbitrary'">
+                        <field name="admission_date" readonly="1"/>
+                        <field name="cessation_date" readonly="1"/>
+                        <field name="l10n_pe_indemnity_base" readonly="l10n_pe_locked"/>
+                        <field name="l10n_pe_indemnity" readonly="1"/>
+                    </group>
+                </group>
+                <div class="text-muted" invisible="l10n_pe_cessation_reason != 'arbitrary'">
+                    Plazo indeterminado: 1,5 remuneraciones mensuales por año de servicios (tope 12).
+                    Plazo fijo: 1,5 remuneraciones por cada mes que faltaba (tope 12). Pequeña empresa:
+                    20 remuneraciones diarias por año (tope 120); microempresa: 10 (tope 90).
+                    El resultado queda en el concepto INDEM.
+                </div>
+                <footer>
+                    <button name="action_compute_indemnity" string="Calcular indemnización" type="object" class="oe_highlight" invisible="l10n_pe_locked or l10n_pe_cessation_reason != 'arbitrary'"/>
+                    <button special="save" string="Guardar" class="btn-primary" invisible="l10n_pe_locked"/>
+                    <button special="cancel" string="Cerrar" class="btn-secondary"/>
+                </footer>
             </form>
         </field>
     </record>

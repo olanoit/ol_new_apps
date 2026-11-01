@@ -296,6 +296,8 @@
                         <list editable="bottom">
                             <field name="periodo_id" required="1"/>
                             <field name="motive" optional="show"/>
+                            <field name="kind" optional="show"/>
+                            <field name="vacation_line_id" optional="hide"/>
                             <field name="date_aplication" optional="show"/>
                             <field name="request_date_from" optional="show"/>
                             <field name="request_date_to" optional="show"/>
@@ -338,6 +340,8 @@
                             <field name="compute_date_ini" readonly="1"/>
                             <field name="compute_date_fin" readonly="1"/>
                             <field name="accrued_vacation" readonly="l10n_pe_locked" class="fw-bold"/>
+                            <field name="paid_days"/>
+                            <field name="advance_days" readonly="1" invisible="not advance_days" decoration-warning="advance_days"/>
                         </group>
                     </group>
                     <notebook>
@@ -416,6 +420,8 @@
                 <field name="extra_hours" sum="Total" optional="hide"/>
                 <field name="computable_remuneration" sum="Total" optional="show"/>
                 <field name="accrued_vacation" sum="Total" optional="show"/>
+                <field name="paid_days" sum="Total" optional="hide"/>
+                <field name="advance_days" sum="Total" optional="show" decoration-warning="advance_days"/>
                 <field name="total_vacation" sum="Total" optional="show" force_save="1"/>
                 <field name="onp" sum="Total" optional="show" force_save="1"/>
                 <field name="afp_jub" sum="Total" optional="show" force_save="1"/>

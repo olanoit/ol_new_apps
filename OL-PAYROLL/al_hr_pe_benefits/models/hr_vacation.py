@@ -22,8 +22,12 @@ Adaptaciones v19:
 * ``account.fiscal.year`` desapareció en v19 → campo ``year``.
 * Sin SQL ``.format()``: el histórico de 6 meses y el conteo de domingos
   del calendario se resuelven con ORM.
-* Asignación familiar del snapshot de la boleta (10 % RMV de Parámetros
-  Principales), nunca 102.5 literal.
+* La asignación familiar NO entra en la remuneración del goce: la regla
+  AF la paga entera en la boleta del mes (también con vacaciones).
+* Un mes calendario completo de vacaciones se paga como 30 días
+  (febrero incluido; en meses de 31, tope 30).
+* Al exportar, cada goce o venta crea su movimiento en
+  ``hr.accrual.vacation``, que descuenta el saldo de vacaciones.
 """
 import io
 from calendar import monthrange
@@ -33,16 +37,25 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 from odoo.addons.al_hr_pe.models.display_name import pe_join
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 from odoo.addons.al_hr_pe.tools import custom_round
 from .hr_benefits_engine import ensure_draft, ensure_line_draft
 from .hr_benefits_engine import compute_has_history, compute_locked
 from .hr_benefits_engine import employee_lot_slip, ensure_slips_draft
 from .hr_benefits_engine import recompute_slips
+from .hr_advances_loans import BENEFIT_KINDS
 
 LABOR_REGIMES_WITH_VACATION = ('general', 'small', 'micro')
 VACATION_SUSPENSION_CODE = '23'  # T21-23: vacaciones
+# Venta de vacaciones (D.Leg. 713, art. 19 y D.Leg. 1405): hasta 15 días
+# por año en el régimen general y 7 en la pequeña y la microempresa.
+SALE_DAYS_CAP = {'general': 15}
+SALE_DAYS_CAP_MYPE = 7
+# Fraccionamiento (D.Leg. 1405): los periodos de menos de 7 días
+# consecutivos no pueden pasar de la mitad del descanso anual (15 días).
+SHORT_BLOCK_DAYS = 7
+SHORT_BLOCKS_CAP = 15
 
 
 class HrVacation(models.Model):
@@ -117,6 +130,8 @@ class HrVacation(models.Model):
         bonus_rules = param.bonus_sr_ids
         extra_hours_rule = param.extra_hours_sr_id
 
+        Rest = self.env['hr.vacation.rest'].with_company(company)
+        advances = []
         slips = lot.slip_ids.filtered(
             lambda s: s.version_id.l10n_pe_labor_regime
             in LABOR_REGIMES_WITH_VACATION
@@ -140,8 +155,9 @@ class HrVacation(models.Model):
                 ('date_from', '<=', lot.date_end),
             ])
             record_days = self._get_dom_record_days(version)
+            taken_in_lot = 0.0
 
-            for leave in vacation_suspensions:
+            for leave in vacation_suspensions.sorted('date_from'):
                 if not leave.date_from:
                     continue
                 months = days = 0
@@ -151,11 +167,12 @@ class HrVacation(models.Model):
                     admission_date, leave.date_from)
 
                 wage = version.wage
-                compute_af = param.compute_af_vac
-                # Mismo criterio que la boleta (derechohabientes por edad).
-                household_allowance = month_slip.family_allowance \
-                    if compute_af and month_slip.l10n_pe_family_allowance_ok \
-                    else 0.0
+                # La asignación familiar se paga entera en la boleta del mes
+                # aunque haya vacaciones (regla AF): sumarla también a la
+                # remuneración vacacional la pagaba dos veces. La
+                # remuneración vacacional es la que se habría percibido
+                # trabajando (D.S. 012-92-TR).
+                household_allowance = 0.0
 
                 # Récord (meses/días trabajados) desde el cómputo.
                 compute_payslip_date = date(
@@ -226,12 +243,26 @@ class HrVacation(models.Model):
                 if days >= 30:
                     days, months = param.get_months_of_30_days(days, months)
 
-                # v18 calculaba amount_per_month por régimen pero el goce
-                # usa la computable directa (el ajuste por régimen sólo
-                # aplica en el recálculo de línea) — se conserva EXACTO.
+                # Un día de vacaciones vale remuneración/30 en todo
+                # régimen; un mes calendario completo, 30 días.
+                paid_days = Line._l10n_pe_paid_days_for(
+                    'rest', leave.date_from, leave.date_to, leave.days)
                 advanced_vacation = computable_remuneration / 30.0 \
-                    * leave.days
+                    * paid_days
                 total_vacation = custom_round(advanced_vacation, 2)
+
+                # Sin saldo de años cumplidos, el goce es adelanto: se
+                # avisa y la liquidación de cese lo descuenta sola.
+                years, _advance = Rest._l10n_pe_pending_vacation(
+                    employee, leave.date_from)
+                available = sum(year['pending'] for year in years) \
+                    - taken_in_lot
+                advance_days = max(0.0, leave.days - max(available, 0.0))
+                taken_in_lot += leave.days
+                if advance_days:
+                    advances.append(self.env._(
+                        '%(employee)s: %(days)s días sin saldo',
+                        employee=employee.name, days=advance_days))
 
                 membership = version.membership_id
                 onp = afp_jub = afp_si = 0.0
@@ -281,6 +312,7 @@ class HrVacation(models.Model):
                     'extra_hours': extra_hours,
                     'computable_remuneration': computable_remuneration,
                     'accrued_vacation': leave.days,
+                    'advance_days': advance_days,
                     'total_vacation': total_vacation,
                     'onp': onp,
                     'afp_jub': afp_jub,
@@ -300,6 +332,11 @@ class HrVacation(models.Model):
         self.line_ids.filtered(
             lambda line: not line.preserve_record
             and line.employee_id in preserved_employees).unlink()
+        if advances:
+            return self._notify(self.env._(
+                'Se calculó. Goce sin saldo de vacaciones (se registra como '
+                'adelanto y la liquidación de cese lo descuenta): '
+                '%(detail)s.', detail='; '.join(advances)), 'warning')
         return self._notify(self.env._('Se calculó exitosamente.'))
 
     def action_recompute(self):
@@ -315,6 +352,8 @@ class HrVacation(models.Model):
         self.ensure_one()
         ensure_draft(self)
         self.set_amounts(self.line_ids, self.payslip_run_id)
+        # El goce y la venta exportados descuentan el saldo de vacaciones.
+        self.line_ids._l10n_pe_create_accruals()
         self.state = 'exported'
         return self._notify(self.env._('Se exportó exitosamente.'))
 
@@ -386,17 +425,21 @@ class HrVacation(models.Model):
         }
 
     def action_draft(self):
+        # Lo exportado deja de descontar el saldo hasta volver a exportar.
+        self.env['hr.accrual.vacation'].search([
+            ('vacation_line_id', 'in', self.line_ids.ids)]).unlink()
         self.write({'state': 'draft'})
 
     # ------------------------------------------------------------------
     # Helpers
     # ------------------------------------------------------------------
-    def _notify(self, message):
+    def _notify(self, message, notification_type='success'):
         """Sustituye al ``popup.it`` v18 (no migrado)."""
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
-            'params': {'message': message, 'type': 'success'},
+            'params': {'message': message, 'type': notification_type,
+                       'sticky': notification_type == 'warning'},
         }
 
     @api.model
@@ -461,6 +504,22 @@ class HrVacation(models.Model):
                 'amount': amount,
             })]})
 
+    @api.model
+    def _l10n_pe_check_advance_input(self, company, inp_ade_vacation):
+        """El adelanto de vacaciones de ``hr.advance`` no puede usar el
+        input ADE_VAC: ese lo fija la liquidación vacacional con el neto
+        adelantado y uno pisaría al otro. Debe ir por otro input (p. ej.
+        DES_BBSS)."""
+        advance_types, loan_types = self.env['hr.payslip'] \
+            ._l10n_pe_benefit_types('vaca', company)
+        if inp_ade_vacation in (advance_types.input_id
+                                | loan_types.input_id):
+            raise UserError(self.env._(
+                'El adelanto o préstamo de vacaciones de los Parámetros '
+                'Principales usa el input %(input)s, que es el del neto de '
+                'la liquidación vacacional: configúrelo con otro input '
+                '(p. ej. DES_BBSS).', input=inp_ade_vacation.code))
+
     def set_amounts(self, lines, lot):
         """Acumula por empleado y vuelca a los inputs de su boleta:
         VAC (goce), COMP_VAC (venta), ADE_VAC (adelanto neto) y QUINTA
@@ -482,38 +541,39 @@ class HrVacation(models.Model):
         slip_by_employee = {
             employee: employee_lot_slip(lot, employee)
             for employee in lines.employee_id}
-        slips = self.env['hr.payslip'].union(*slip_by_employee.values())
+        slips = self.env['hr.payslip'].union(slip_by_employee.values())
         ensure_slips_draft(slips)
-        total_vacation = total_venta_vacation = 0.0
-        total_ade_vaca = total_quinta = 0.0
-        previous_employee = self.env['hr.employee']
-        for line in lines.sorted(key=lambda l: l.employee_id.id):
-            slip = slip_by_employee[line.employee_id]
+        self._l10n_pe_check_advance_input(lot.company_id, inp_ade_vacation)
+        LiquidationLine = self.env['hr.liquidation.vacation.line']
+        for employee, employee_lines in lines.grouped('employee_id').items():
+            slip = slip_by_employee[employee]
             if not slip:
                 continue
-            if line.employee_id == previous_employee:
-                if line.vacation_kind == 'rest':
-                    total_vacation += line.total_vacation
-                else:
-                    total_venta_vacation += line.total_vacation
-                total_ade_vaca += line.total
-                total_quinta += line.quinta
-            else:
-                if line.vacation_kind == 'rest':
-                    total_vacation = line.total_vacation
-                    total_venta_vacation = 0.0
-                else:
-                    total_vacation = 0.0
-                    total_venta_vacation = line.total_vacation
-                total_ade_vaca = line.total
-                total_quinta = line.quinta
+            rest = employee_lines.filtered(
+                lambda line: line.vacation_kind == 'rest')
+            sale = employee_lines - rest
+            # El input de vacaciones también lleva las devengadas de una
+            # liquidación de cese ya exportada al mismo lote: se suman en
+            # vez de pisarlas.
+            total_vacation = sum(rest.mapped('total_vacation')) \
+                + LiquidationLine._l10n_pe_exported_accrued(lot, employee)
             self._set_input_amount(slip, inp_vacation, total_vacation)
             self._set_input_amount(
-                slip, inp_venta_vacation, total_venta_vacation)
-            self._set_input_amount(slip, inp_ade_vacation, total_ade_vaca)
+                slip, inp_venta_vacation, sum(sale.mapped('total_vacation')))
+            self._set_input_amount(
+                slip, inp_ade_vacation, sum(employee_lines.mapped('total')))
             if not fifth_exported:
-                self._set_input_amount(slip, inp_fifth, total_quinta)
-            previous_employee = line.employee_id
+                self._set_input_amount(
+                    slip, inp_fifth, sum(employee_lines.mapped('quinta')))
+            # Adelantos y préstamos de vacaciones pendientes al cierre del
+            # lote: se descuentan en esta boleta por el input de su tipo.
+            slip._l10n_pe_discount_benefit_advances(
+                'vaca', on_date=lot.date_end)
+            # El método fija el input solo con los tipos pedidos: si otro
+            # beneficio (p. ej. la gratificación) descontó en la misma
+            # boleta por el mismo input, se vuelve a totalizar con todos
+            # (tope 0: no descuenta nada más).
+            slip._l10n_pe_discount_benefit_advances(BENEFIT_KINDS, cap=0)
         recompute_slips(slips)
 
 
@@ -599,10 +659,22 @@ class HrVacationLine(models.Model):
              'bonificaciones y horas extras.')
     accrued_vacation = fields.Integer(
         string='Días de vacaciones',
-        help='Días de vacaciones que se pagan en esta liquidación.')
+        help='Días calendario de vacaciones gozados (o vendidos) que se '
+             'liquidan: son los que se descuentan del saldo.')
+    paid_days = fields.Float(
+        string='Días remunerados', compute='_compute_paid_days',
+        digits=(16, 2),
+        help='Días que se pagan: los de vacaciones, salvo un mes calendario '
+             'completo de goce, que vale 30 (febrero incluido; en meses de '
+             '31 días, tope 30).')
+    advance_days = fields.Float(
+        string='Días adelantados', digits=(16, 2),
+        help='Días gozados sin saldo de años de servicios cumplidos: es un '
+             'adelanto de vacaciones, que la liquidación de cese descuenta '
+             'de las truncas.')
     total_vacation = fields.Float(
         string='Remuneración vacacional',
-        help='Remuneración computable ÷ 30 × días de vacaciones.')
+        help='Remuneración computable ÷ 30 × días remunerados.')
     onp = fields.Float(string='ONP')
     afp_jub = fields.Float(string='AFP: aporte obligatorio')
     afp_si = fields.Float(
@@ -630,6 +702,152 @@ class HrVacationLine(models.Model):
         string='No recalcular',
         help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
              'ajustes manuales.', tracking=True)
+
+    @api.depends('vacation_kind', 'compute_date_ini', 'compute_date_fin',
+                 'accrued_vacation')
+    def _compute_paid_days(self):
+        for line in self:
+            line.paid_days = self._l10n_pe_paid_days_for(
+                line.vacation_kind, line.compute_date_ini,
+                line.compute_date_fin, line.accrued_vacation)
+
+    @api.model
+    def _l10n_pe_paid_days_for(self, kind, date_from, date_to, days):
+        """Días que se pagan: un mes calendario completo de goce vale 30
+        (decisión aprobada: febrero completo no paga 28 ni un mes de 31
+        paga 31); el resto, los días de vacaciones."""
+        if kind == 'rest' and date_from and date_to \
+                and date_from.day == 1 \
+                and (date_from.year, date_from.month) \
+                == (date_to.year, date_to.month) \
+                and date_to.day == monthrange(
+                    date_to.year, date_to.month)[1]:
+            return 30.0
+        return float(days or 0)
+
+    @api.model
+    def _l10n_pe_exported_rest(self, lot, employee):
+        """Goce de vacaciones de las liquidaciones vacacionales ya
+        exportadas al lote ``lot`` para ``employee`` (va al mismo input que
+        las devengadas de la liquidación de cese)."""
+        return sum(self.search([
+            ('vacation_id.payslip_run_id', '=', lot.id),
+            ('vacation_id.state', '=', 'exported'),
+            ('employee_id', '=', employee.id),
+            ('vacation_kind', '=', 'rest'),
+        ]).mapped('total_vacation'))
+
+    def _l10n_pe_create_accruals(self):
+        """Movimiento de goce o venta (``hr.accrual.vacation``) de cada
+        línea, en la boleta del trabajador en el lote: el recálculo de
+        saldos lo resta y la liquidación de cese lo descuenta de los años
+        ganados. Rehace los de estas líneas."""
+        Accrual = self.env['hr.accrual.vacation']
+        Accrual.search([('vacation_line_id', 'in', self.ids)]).unlink()
+        for line in self.filtered('accrued_vacation'):
+            lot = line.vacation_id.payslip_run_id
+            slip = employee_lot_slip(lot, line.employee_id)[:1]
+            if not slip:
+                continue
+            periodo = slip.periodo_id or lot.periodo_id \
+                or self.env['hr.period'].search([
+                    ('company_id', '=', line.company_id.id),
+                    ('date_start', '<=', slip.date_to),
+                    ('date_end', '>=', slip.date_to),
+                ], limit=1)
+            if not periodo:
+                continue
+            date_from = line.compute_date_ini or slip.date_from
+            kind = line.vacation_kind
+            Accrual.create({
+                'slip_id': slip.id,
+                'periodo_id': periodo.id,
+                'days': line.accrued_vacation,
+                'kind': kind,
+                'vacation_line_id': line.id,
+                'date_aplication': date_from,
+                'request_date_from': date_from,
+                'request_date_to': line.compute_date_fin or date_from,
+                'motive': ('Goce de vacaciones %s' if kind == 'rest'
+                           else 'Venta de vacaciones %s') % (
+                    line.vacation_id.name or lot.name),
+            })
+
+    def _l10n_pe_vacation_anchor(self):
+        """Inicio del año de servicios al que se imputa la línea (último
+        aniversario de ingreso a la fecha del goce o del lote)."""
+        self.ensure_one()
+        if self.compute_date:
+            return self.compute_date
+        admission = self.admission_date \
+            or self.env['hr.vacation']._get_admission_date(self.employee_id)
+        on_date = self.compute_date_ini \
+            or self.vacation_id.payslip_run_id.date_start
+        if not admission or not on_date:
+            return False
+        return self.env['hr.liquidation']._last_anniversary(
+            admission, on_date)
+
+    def _l10n_pe_year_lines(self, kind):
+        """Líneas del mismo trabajador, tipo y año de servicios."""
+        self.ensure_one()
+        anchor = self._l10n_pe_vacation_anchor()
+        return self.search([
+            ('employee_id', '=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
+            ('vacation_kind', '=', kind),
+        ]).filtered(lambda line: line._l10n_pe_vacation_anchor() == anchor)
+
+    @api.constrains('vacation_kind', 'accrued_vacation', 'employee_id',
+                    'compute_date', 'compute_date_ini', 'compute_date_fin')
+    def _check_sale_and_fractions(self):
+        """Venta: hasta 15 días por año (7 en la pequeña y la
+        microempresa). Fraccionamiento (régimen general): los periodos de
+        menos de 7 días consecutivos no pasan de 15 días en el año (D.Leg.
+        713, art. 19; D.Leg. 1405)."""
+        for line in self:
+            version = line.version_id or line.employee_id.version_id
+            regime = version.l10n_pe_labor_regime
+            if line.vacation_kind == 'sale':
+                cap = SALE_DAYS_CAP.get(regime, SALE_DAYS_CAP_MYPE)
+                sold = sum(line._l10n_pe_year_lines('sale').mapped(
+                    'accrued_vacation'))
+                if sold > cap:
+                    raise ValidationError(self.env._(
+                        '%(employee)s: la venta de vacaciones del año suma '
+                        '%(days)s días y el tope es %(cap)s (D.Leg. 713, '
+                        'art. 19).', employee=line.employee_id.name,
+                        days=sold, cap=cap))
+            elif regime == 'general' and line.accrued_vacation \
+                    and line.accrued_vacation < SHORT_BLOCK_DAYS:
+                short = sum(
+                    days for days in line._l10n_pe_rest_blocks()
+                    if days < SHORT_BLOCK_DAYS)
+                if short > SHORT_BLOCKS_CAP:
+                    raise ValidationError(self.env._(
+                        '%(employee)s: los periodos de vacaciones de menos de '
+                        '%(min)s días suman %(days)s días en el año; solo '
+                        'pueden fraccionarse así %(cap)s (D.Leg. 1405).',
+                        employee=line.employee_id.name, min=SHORT_BLOCK_DAYS,
+                        days=short, cap=SHORT_BLOCKS_CAP))
+
+    def _l10n_pe_rest_blocks(self):
+        """Días de cada periodo de goce del año de servicios de la línea:
+        las líneas con fechas seguidas (un goce partido por meses) son un
+        solo periodo."""
+        self.ensure_one()
+        blocks = []
+        last_end = False
+        for line in self._l10n_pe_year_lines('rest').sorted(
+                lambda line: (line.compute_date_ini or date.min, line.id)):
+            start = line.compute_date_ini
+            if blocks and last_end and start \
+                    and start == last_end + relativedelta(days=1):
+                blocks[-1] += line.accrued_vacation
+            else:
+                blocks.append(line.accrued_vacation)
+            last_end = line.compute_date_fin
+        return blocks
 
     def compute_quinta_line(self, lot):
         """Retención de 5ta proporcional: toma la retención ordinaria del
@@ -666,7 +884,7 @@ class HrVacationLine(models.Model):
                 ret_quinta = sum(past_slips.line_ids.filtered(
                     lambda pl: pl.salary_rule_id.code == 'QUINTA'
                 ).mapped('total'))
-            line.quinta = ret_quinta / 30.0 * line.accrued_vacation
+            line.quinta = ret_quinta / 30.0 * line.paid_days
             line.total = line.neto_total - line.quinta
         return self.env['hr.vacation']._notify(
             self.env._('Se importó la retención de quinta.'))
@@ -690,8 +908,7 @@ class HrVacationLine(models.Model):
             # la pequeña empresa tiene la MITAD DE DÍAS (15), no la mitad
             # de tarifa (igual que get_vacation).
             vacation = custom_round(record.computable_remuneration, 2)
-            advanced_vacation = vacation / 30.0 \
-                * int(record.accrued_vacation)
+            advanced_vacation = vacation / 30.0 * record.paid_days
             record.total_vacation = custom_round(advanced_vacation, 2)
 
             membership = version.membership_id

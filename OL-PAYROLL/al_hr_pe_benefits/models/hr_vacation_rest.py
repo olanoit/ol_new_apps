@@ -12,8 +12,8 @@ wizard de recálculo). Cambios v19:
   compañía ni empleado — borraba los saldos de TODAS las compañías y de
   todos los empleados. Aquí sólo se borran los registros ``normal`` de
   los empleados que se recalculan y de la compañía activa.
-* Asignación familiar desde ``hr.main.parameter.family_allowance``
-  (10 % RMV, Ley 25129) — nunca el literal 102.5 del v18.
+* Asignación familiar: 10 % de la RMV vigente a la fecha (tabla
+  ``hr.rule.parameter``, Ley 25129) — nunca el literal 102.5 del v18.
 * Devengue trunco del año vacacional en curso a 2.5 días/mes con los
   helpers ``get_months_days_difference``/``get_months_of_30_days``.
 """
@@ -54,7 +54,10 @@ class HrVacationRest(models.Model):
         related='employee_id.identification_id', string='N.º de documento')
     date_aplication = fields.Date(
         string='Fecha del movimiento',
-        help='Fecha en que se devenga o se goza.', tracking=True)
+        help='Fecha en que se devenga o se goza. En un saldo anterior, la '
+             'fecha de corte: el saldo incluye todo lo devengado y gozado '
+             'hasta ese día, y el cálculo sigue desde el día siguiente con '
+             'los años contados desde el ingreso.', tracking=True)
     date_from = fields.Date(
         string='Inicio del año vacacional',
         help='El año vacacional se cuenta desde la fecha de ingreso.', tracking=True)
@@ -113,10 +116,11 @@ class HrVacationRest(models.Model):
         for employee in employees_to_process:
             version = employee.version_id
             # Jornada menor a 4 horas: sin vacaciones (D.Leg. 713, art. 12),
-            # igual que la liquidación vacacional.
+            # igual que la liquidación vacacional. El practicante sí tiene
+            # su descanso subvencionado (Ley 28518, art. 47).
             if not version \
                     or version.l10n_pe_labor_regime not in (
-                        'general', 'small', 'micro') \
+                        'general', 'small', 'micro', 'practicante') \
                     or version.l10n_pe_less_than_four \
                     or not version.contract_date_start:
                 continue
@@ -126,101 +130,46 @@ class HrVacationRest(models.Model):
                 ('internal_motive', '=', 'rest'),
                 ('company_id', '=', company.id),
             ], limit=1, order='date_aplication desc')
-            if previous_balance and previous_balance.date_aplication:
-                start_date = previous_balance.date_aplication \
-                    - relativedelta(years=1)
-            else:
-                # Inicio del vínculo (mismo criterio que la liquidación):
-                # la versión actual puede ser de un contrato renovado que
-                # empieza después del ingreso.
-                start_date = param.get_first_version(
-                    employee).contract_date_start
-
-            # Asignación familiar de Parámetros Principales (10 % RMV),
-            # nunca hardcodeada.
+            # Inicio del vínculo (mismo criterio que la liquidación): la
+            # versión actual puede ser de un contrato renovado que empieza
+            # después del ingreso. Los años se anclan siempre al ingreso,
+            # aunque el saldo inicial tenga otra fecha de corte.
+            admission = param.get_first_version(
+                employee).contract_date_start
             end_calculation_date = min(
                 today, version.contract_date_end or today)
-            compute_af = param.compute_af_vac
-            # Mismo criterio que la boleta: derechohabientes por edad
-            # (Ley 25129), no el campo manual ``children``.
-            family_allowance = param.family_allowance \
+            # El practicante no tiene asignación familiar (percibe una
+            # subvención, no una remuneración).
+            compute_af = param.compute_af_vac \
+                and version.l10n_pe_labor_regime != 'practicante'
+            # Asignación familiar: 10 % de la RMV vigente a la fecha (tabla
+            # por fecha, como la boleta), no el valor fijo de Parámetros
+            # Principales. Derechohabientes por edad (Ley 25129), no el
+            # campo manual ``children``.
+            family_allowance = self._l10n_pe_family_allowance(
+                param, end_calculation_date) \
                 if compute_af and employee._l10n_pe_has_family_allowance(
                     end_calculation_date) else 0.0
             contract_amount = version.wage + family_allowance
-            # Días por año vacacional: 30 en el régimen general y 15 en la
-            # pequeña y la microempresa (REMYPE, D.S. 013-2013-PRODUCE).
-            # Un día de vacaciones vale remuneración/30 en todos.
-            days_per_year = 30.0 \
-                if version.l10n_pe_labor_regime == 'general' else 15.0
-            monthly_rate = days_per_year / 12.0
-            year_amount = custom_round(
-                contract_amount * days_per_year / 30.0, 2)
-            current_date = start_date
-            while current_date < end_calculation_date:
-                period_end = current_date + relativedelta(years=1) \
-                    - timedelta(days=1)
-                if period_end <= end_calculation_date:
-                    # Año vacacional completo (cumplido hoy o antes del
-                    # cese): 12 meses × días/mes del régimen, SOLO si el
-                    # año cumple el récord (D.Leg. 713, art. 10). Sin
-                    # boletas para evaluarlo («sin datos») se generan y el
-                    # motivo lo avisa.
-                    record = Record._l10n_pe_get_record(
-                        employee, current_date, period_end)
-                    motive = 'Vacaciones devengadas %s' % current_date.year
-                    year_days, year_total = days_per_year, year_amount
-                    if record.state in ('fails', 'not_applicable'):
-                        year_days = year_total = 0.0
-                        motive = 'Vacaciones no generadas %s: no cumple ' \
-                                 'el récord vacacional (%s)' % (
-                                     current_date.year,
-                                     record.evaluation_note or '')
-                    elif record.state == 'no_data':
-                        motive += ' (récord sin datos: verificar)'
-                    vals = {
-                        'date_aplication': period_end,
-                        'date_from': current_date,
-                        'date_end': period_end,
-                        'motive': motive,
-                        'days': year_days,
-                        'days_rest': year_days,
-                        'amount': year_total,
-                        'amount_rest': year_total,
-                    }
-                else:
-                    # Año vacacional en curso (o cortado por el cese):
-                    # devengue trunco a días/mes del régimen (helpers del
-                    # mes comercial de 30 días).
-                    period_to = min(end_calculation_date, period_end)
-                    days_diff, months_diff = \
-                        param.get_months_days_difference(
-                            current_date, period_to)
-                    accrued_days = custom_round(
-                        months_diff * monthly_rate
-                        + days_diff * (monthly_rate / 30.0), 2)
-                    if not accrued_days:
-                        break
-                    accrued_amount = custom_round(
-                        contract_amount * accrued_days / 30.0, 2)
-                    vals = {
-                        'date_aplication': period_to,
-                        'date_from': current_date,
-                        'date_end': period_to,
-                        'motive': 'Vacaciones truncas %s'
-                                  % current_date.year,
-                        'days': accrued_days,
-                        'days_rest': accrued_days,
-                        'amount': accrued_amount,
-                        'amount_rest': accrued_amount,
-                    }
-                vals.update({
+            for movement in self._l10n_pe_accrual_movements(
+                    employee, admission, end_calculation_date,
+                    previous_balance.date_aplication):
+                amount = custom_round(
+                    contract_amount * movement['days'] / 30.0, 2)
+                self.create({
                     'employee_id': employee.id,
                     'internal_motive': 'normal',
-                    'year': str(current_date.year),
+                    'year': str(movement['date_from'].year),
                     'company_id': company.id,
+                    'date_aplication': movement['date_end'],
+                    'date_from': movement['date_from'],
+                    'date_end': movement['date_end'],
+                    'motive': movement['motive'],
+                    'days': movement['days'],
+                    'days_rest': movement['days'],
+                    'amount': amount,
+                    'amount_rest': amount,
                 })
-                self.create(vals)
-                current_date = period_end + timedelta(days=1)
 
             # Goces registrados por boleta (hr.accrual.vacation).
             accrued_vacations = self.env['hr.accrual.vacation'].search([
@@ -228,11 +177,17 @@ class HrVacationRest(models.Model):
                 ('company_id', '=', company.id),
             ])
             for accrual in accrued_vacations:
-                # v18 hacía ``.filtered(...).total`` (crasheaba con varias
-                # líneas VAC); aquí se suma.
-                vacation_amount = sum(accrual.slip_id.line_ids.filtered(
-                    lambda line: line.salary_rule_id.code == 'VAC'
-                    and line.total > 0).mapped('total'))
+                # El goce exportado desde la liquidación vacacional lleva
+                # su propio importe (una boleta puede tener varios goces);
+                # el registrado a mano, el VAC de la boleta. v18 hacía
+                # ``.filtered(...).total`` (crasheaba con varias líneas
+                # VAC); aquí se suma.
+                if accrual.vacation_line_id:
+                    vacation_amount = accrual.vacation_line_id.total_vacation
+                else:
+                    vacation_amount = sum(accrual.slip_id.line_ids.filtered(
+                        lambda line: line.salary_rule_id.code == 'VAC'
+                        and line.total > 0).mapped('total'))
                 date_aplication = accrual.date_aplication \
                     or accrual.slip_id.date_from
                 self.create({
@@ -276,6 +231,194 @@ class HrVacationRest(models.Model):
                 })
             if sorted_records:
                 sorted_records[-1].is_saldo_final = True
+
+    @api.model
+    def _l10n_pe_family_allowance(self, param, on_date):
+        """Asignación familiar vigente a ``on_date``: 10 % de la RMV de la
+        tabla por fecha (``hr.rule.parameter``), la misma que usa la
+        boleta; el valor de Parámetros Principales solo como respaldo."""
+        rmv = self.env['hr.rule.parameter']._l10n_pe_get_rmv(on_date)
+        return custom_round(rmv * 0.10, 2) if rmv else param.family_allowance
+
+    @api.model
+    def _l10n_pe_days_per_year(self, employee, on_date):
+        """Días de vacaciones por año del régimen vigente a ``on_date``:
+        30 en el general y 15 en la pequeña y la microempresa (REMYPE,
+        D.S. 013-2013-PRODUCE). Cada año con el régimen de ESE año: el
+        que pasó de la microempresa al general no recalcula los años
+        anteriores con 30 días."""
+        version = employee._get_version(on_date) or employee.version_id
+        regime = version.l10n_pe_labor_regime
+        if regime == 'general':
+            return 30.0
+        # Practicante: 15 días de descanso subvencionado por cada 12 meses
+        # de convenio (Ley 28518, art. 47).
+        return 15.0 if regime in ('small', 'micro', 'practicante') else 0.0
+
+    @api.model
+    def _l10n_pe_accrual_movements(self, employee, admission, date_to,
+                                   balance_date=False):
+        """Devengue del trabajador desde el ingreso hasta ``date_to``.
+
+        Lista de movimientos (dict con ``date_from``, ``date_end``,
+        ``motive``, ``days`` y ``complete``): un año de servicios completo
+        da los días del régimen de ese año SOLO si cumple el récord
+        (D.Leg. 713, art. 10; sin boletas para evaluarlo, «sin datos», se
+        generan y el motivo lo avisa); el año en curso (o cortado por el
+        cese) devenga la parte proporcional.
+
+        Los años se cuentan siempre desde el ingreso. Con un saldo inicial
+        (``balance_date``, fecha de corte), lo devengado hasta esa fecha
+        ya está en el saldo: los años que terminan antes no se generan y
+        el que la contiene devenga solo la parte posterior al corte.
+        """
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.env.company)
+        Record = self.env['hr.vacation.record']
+        movements = []
+        current_date = admission
+        while current_date < date_to:
+            period_end = current_date + relativedelta(years=1) \
+                - timedelta(days=1)
+            next_date = period_end + timedelta(days=1)
+            if balance_date and period_end <= balance_date:
+                current_date = next_date
+                continue
+            start = current_date
+            if balance_date and balance_date >= current_date:
+                start = balance_date + timedelta(days=1)
+            days_per_year = self._l10n_pe_days_per_year(
+                employee, min(period_end, date_to))
+            monthly_rate = days_per_year / 12.0
+            complete = period_end <= date_to
+            year_version = employee._get_version(
+                min(period_end, date_to)) or employee.version_id
+            if year_version.l10n_pe_labor_regime == 'practicante':
+                # Modalidad formativa (Ley 28518, art. 47): 15 días por
+                # cada 12 meses de convenio cumplidos, sin récord de días
+                # efectivos ni truncas (son del D.Leg. 713).
+                if complete:
+                    movements.append({
+                        'date_from': start,
+                        'date_end': period_end,
+                        'year_from': current_date,
+                        'year_to': period_end,
+                        'motive': 'Descanso subvencionado %s (Ley 28518)'
+                                  % current_date.year,
+                        'days': days_per_year if start == current_date
+                        else custom_round(days_per_year * (
+                            (period_end - start).days + 1)
+                            / ((period_end - current_date).days + 1), 2),
+                        'complete': True,
+                        'formative': True,
+                    })
+                current_date = next_date
+                continue
+            period_to = min(period_end, date_to)
+            if start == current_date and complete:
+                days = days_per_year
+            else:
+                # Parte proporcional a días/mes del régimen (helpers del
+                # mes comercial de 30 días).
+                days_diff, months_diff = param.get_months_days_difference(
+                    start, period_to)
+                days = custom_round(
+                    months_diff * monthly_rate
+                    + days_diff * (monthly_rate / 30.0), 2)
+            if complete:
+                record = Record._l10n_pe_get_record(
+                    employee, current_date, period_end)
+                motive = 'Vacaciones devengadas %s' % current_date.year
+                if record.state in ('fails', 'not_applicable'):
+                    days = 0.0
+                    motive = 'Vacaciones no generadas %s: no cumple ' \
+                             'el récord vacacional (%s)' % (
+                                 current_date.year,
+                                 record.evaluation_note or '')
+                elif record.state == 'no_data':
+                    motive += ' (récord sin datos: verificar)'
+            else:
+                if not days:
+                    break
+                motive = 'Vacaciones truncas %s' % current_date.year
+            movements.append({
+                'date_from': start,
+                'date_end': period_to,
+                'year_from': current_date,
+                'year_to': period_end,
+                'motive': motive,
+                'days': days,
+                'complete': complete,
+            })
+            current_date = next_date
+        return movements
+
+    @api.model
+    def _l10n_pe_pending_vacation(self, employee, on_date):
+        """Días ganados y no gozados de los años de servicio completos a
+        ``on_date`` (récord y saldos de vacaciones), para la liquidación
+        de cese y el aviso del goce sin saldo.
+
+        Devuelve ``(años, adelanto)``: ``años`` es una lista de dict
+        (``date_from``, ``date_to``, ``days``, ``pending``, ``deadline``)
+        y ``adelanto`` los días gozados (o vendidos) por encima de lo
+        ganado. Los goces y ventas (``hr.accrual.vacation``) consumen
+        primero el año más antiguo. ``deadline`` es el último día del año
+        siguiente al de servicios: el plazo para gozarlo (D.Leg. 713,
+        art. 23). Un saldo inicial positivo se trata como un año que
+        termina en su fecha de corte.
+        """
+        company = self.env.company
+        param = self.env['hr.main.parameter'].get_main_parameter(company)
+        admission = param.get_first_version(
+            employee, on_date).contract_date_start
+        balance = self.search([
+            ('employee_id', '=', employee.id),
+            ('internal_motive', '=', 'rest'),
+            ('company_id', '=', company.id),
+            ('date_aplication', '<=', on_date),
+        ], limit=1, order='date_aplication desc')
+        balance_date = balance.date_aplication
+        years = []
+        consumed = 0.0
+        if balance and balance_date >= admission:
+            if balance.days_rest > 0:
+                years.append({
+                    'date_from': balance.date_from or admission,
+                    'date_to': balance_date,
+                    'days': balance.days_rest,
+                })
+            else:
+                consumed -= balance.days_rest
+        else:
+            balance_date = False
+        for movement in self._l10n_pe_accrual_movements(
+                employee, admission, on_date, balance_date):
+            if movement['complete'] and movement['days']:
+                years.append({
+                    'date_from': movement['year_from'],
+                    'date_to': movement['year_to'],
+                    'days': movement['days'],
+                    # Practicante: sin indemnización vacacional (es del
+                    # D.Leg. 713).
+                    'formative': movement.get('formative', False),
+                })
+        accruals = self.env['hr.accrual.vacation'].search([
+            ('employee_id', '=', employee.id),
+            ('company_id', '=', company.id),
+        ])
+        for accrual in accruals:
+            accrual_date = accrual.date_aplication \
+                or accrual.slip_id.date_from
+            if accrual_date and accrual_date <= on_date \
+                    and not (balance_date and accrual_date <= balance_date):
+                consumed += accrual.days
+        for year in years:
+            taken = min(year['days'], consumed)
+            consumed -= taken
+            year['pending'] = year['days'] - taken
+            year['deadline'] = year['date_to'] + relativedelta(years=1)
+        return years, consumed
 
     def action_show_details(self):
         """Movimientos del récord vacacional del empleado."""
@@ -325,6 +468,17 @@ class HrAccrualVacation(models.Model):
     request_date_from = fields.Date(string='Fecha inicio')
     request_date_to = fields.Date(string='Fecha fin')
     motive = fields.Char(string='Motivo')
+    kind = fields.Selection(
+        [('rest', 'Goce'), ('sale', 'Venta')], string='Tipo',
+        default='rest',
+        help='Goce: días de descanso. Venta: días compensados en dinero '
+             '(D.Leg. 713, art. 19). Los dos se restan del saldo.')
+    vacation_line_id = fields.Many2one(
+        'hr.vacation.line', string='Línea de liquidación vacacional',
+        ondelete='cascade', index='btree_not_null', readonly=True,
+        help='Goce o venta exportado desde la liquidación vacacional que '
+             'creó este movimiento; al volver la liquidación a borrador se '
+             'borra.')
 
     @api.depends('employee_id', 'periodo_id', 'days')
     def _compute_display_name(self):

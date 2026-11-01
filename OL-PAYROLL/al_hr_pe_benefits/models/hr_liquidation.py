@@ -40,6 +40,7 @@ from .hr_benefits_engine import (
 from .hr_benefits_engine import (
     employee_lot_slip, ensure_slips_draft, recompute_slips)
 from .hr_benefits_engine import compute_locked
+from .hr_advances_loans import BENEFIT_KINDS
 
 
 class HrLiquidation(models.Model):
@@ -180,6 +181,22 @@ class HrLiquidation(models.Model):
             # activos), así que se paga aquí. El motor la omite si ya se
             # depositó.
             param.compute_benefits(self, '05', liquidation=self)
+        if self.cts_type == '05' \
+                and self.payslip_run_id.date_start.month == 11:
+            # Igual en noviembre: la CTS de may-oct se deposita hasta el 15
+            # y el depósito regular '11' no incluye al cesado (situación
+            # 0). Si no se depositó antes del cese, se paga en la
+            # liquidación (D.S. 001-97-TR); el motor la omite si ya se
+            # depositó.
+            param.compute_benefits(self, '11', liquidation=self)
+        # Sin un mes de servicios no hay CTS trunca (D.S. 001-97-TR: se
+        # devenga desde el primer mes; luego, por treintavos).
+        short = self._get_cessation_slips().filtered(
+            lambda slip: not self._has_one_month(slip.employee_id,
+                                                 slip.version_id))
+        self.cts_line_ids.filtered(
+            lambda line: not line.preserve_record
+            and line.employee_id in short.employee_id).unlink()
         self.get_vacation_lines()
         self.get_extra_concepts_lines()
         for lines in (self.gratification_line_ids, self.cts_line_ids,
@@ -224,53 +241,79 @@ class HrLiquidation(models.Model):
             | self.cts_line_ids.employee_id
             | self.vacation_line_ids.employee_id
             | self.liq_ext_concept_ids.employee_id}
-        slips = self.env['hr.payslip'].union(*slip_by_employee.values())
+        slips = self.env['hr.payslip'].union(slip_by_employee.values())
         ensure_slips_draft(slips)
 
         def employee_slip(employee):
             return slip_by_employee[employee]
+
+        # Importe por (boleta, input): dos conceptos con el mismo input se
+        # suman en vez de pisarse.
+        amounts = {}
+
+        def add_input(slip, input_type, amount):
+            if slip and input_type:
+                key = (slip[:1], input_type)
+                amounts[key] = amounts.get(key, 0.0) + amount
 
         # Un cesado de julio puede tener dos truncas (ene-jun y jul): el
         # input lleva la suma, no la última línea.
         for employee, lines in \
                 self.gratification_line_ids.grouped('employee_id').items():
             slip = employee_slip(employee)
-            self._set_slip_input(
+            add_input(
                 slip, param.truncated_gratification_input_id,
                 sum(lines.mapped('total_grat')))
-            self._set_slip_input(
+            add_input(
                 slip, param.truncated_bonus_nine_input_id,
                 sum(lines.mapped('bonus_essalud')))
         # Igual con la CTS: un cese en mayo tiene la trunca de nov-abr y la
         # de mayo; antes la boleta se quedaba solo con la última.
         for employee, lines in \
                 self.cts_line_ids.grouped('employee_id').items():
-            self._set_slip_input(
+            add_input(
                 employee_slip(employee), param.truncated_cts_input_id,
                 sum(lines.mapped('total_cts')))
+        VacationLine = self.env['hr.vacation.line']
         for line in self.vacation_line_ids:
             slip = employee_slip(line.employee_id)
-            # Las vacaciones adelantadas ya pagaron aportes cuando se
-            # gozaron: se restan de las truncas (y, si no alcanzan, de las
-            # devengadas) en vez de ir como descuento neto ADE_VAC, que
-            # dejaba los aportes de la boleta sobre las truncas completas
-            # y no cuadraba con la línea.
-            truncated = line.truncated_vacation - line.advanced_vacation
-            accrued = line.accrued_vacation + min(truncated, 0.0)
-            self._set_slip_input(
-                slip, param.vacation_input_id, accrued)
-            self._set_slip_input(
-                slip, param.truncated_vacation_input_id,
-                max(truncated, 0.0))
+            accrued, truncated = line._l10n_pe_export_split()
+            # El input de vacaciones también lleva el goce del mes
+            # exportado desde la liquidación vacacional del mismo lote: se
+            # suma en vez de pisarlo.
+            accrued += VacationLine._l10n_pe_exported_rest(
+                self.payslip_run_id, line.employee_id)
+            add_input(slip, param.vacation_input_id, accrued)
+            add_input(slip, param.truncated_vacation_input_id, truncated)
             if line.vacation_indemnity:
-                self._set_slip_input(
+                # Input propio (INDVAC, PLAME 0504): la indemnización no
+                # es remuneración vacacional ni paga aportes.
+                add_input(
                     slip, self.env.ref('al_hr_pe.salary_rule_INDVAC'),
                     line.vacation_indemnity)
         for line in self.liq_ext_concept_ids:
             slip = employee_slip(line.employee_id)
             for concept in line.conceptos_lines:
-                self._set_slip_input(
-                    slip, concept.name_input_id, concept.amount)
+                add_input(slip, concept.name_input_id, concept.amount)
+        for (slip, input_type), amount in amounts.items():
+            self._set_slip_input(slip, input_type, amount)
+        # Adelantos y préstamos de beneficios pendientes: todos los de
+        # gratificación, vacaciones y liquidación; los de CTS hasta el 50 %
+        # de la CTS trunca (art. 40 del TUO de la Ley de CTS).
+        cts_by_employee = self.cts_line_ids.grouped('employee_id')
+        for employee, slip in slip_by_employee.items():
+            if not slip:
+                continue
+            slip = slip[:1]
+            slip._l10n_pe_discount_benefit_advances(('grat', 'vaca', 'liqui'))
+            cts_lines = cts_by_employee.get(employee)
+            if cts_lines:
+                slip._l10n_pe_discount_benefit_advances('cts', cap=custom_round(
+                    sum(cts_lines.mapped('total_cts')) * 0.5, 2))
+            # Cada llamada fija el input solo con sus tipos: si comparten
+            # input (p. ej. DES_BBSS), se vuelve a totalizar con todos
+            # (tope 0: no descuenta nada más).
+            slip._l10n_pe_discount_benefit_advances(BENEFIT_KINDS, cap=0)
         recompute_slips(slips)
         self.state = 'exported'
         return notify_success(self.env._('Se exportó exitosamente.'))
@@ -304,21 +347,52 @@ class HrLiquidation(models.Model):
             and (include_less_than_four
                  or not slip.version_id.l10n_pe_less_than_four))
 
-    def get_vacation_lines(self):
-        """Genera las líneas de vacaciones truncas del lote de cese.
+    @api.model
+    def _service_year_start(self, admission_date, on_date):
+        """Inicio del año de servicios en curso el día siguiente a
+        ``on_date``: el aniversario de ingreso (los años se cuentan como en
+        el récord vacacional). Si ``on_date`` cierra un año, es el día
+        siguiente (no hay periodo trunco)."""
+        start = admission_date
+        while start + relativedelta(years=1) - relativedelta(days=1) \
+                <= on_date:
+            start += relativedelta(years=1)
+        return start
 
-        Cómputo desde el último aniversario de ingreso (D.L. 713):
-        meses completos + días sueltos - faltas, sobre la remuneración
-        computable (sueldo + asignación familiar + promedios de
-        variables de los 6 meses previos al cese), con descuento
-        AFP/ONP tomado del snapshot de la boleta del mes.
+    @api.model
+    def _has_one_month(self, employee, version):
+        """¿El cesado tiene al menos un mes de servicios? Sin él no hay
+        vacaciones truncas (D.Leg. 713, art. 22) ni CTS trunca
+        (D.S. 001-97-TR)."""
+        cessation_date = version.contract_date_end
+        if not cessation_date:
+            return True
+        admission_date = self.env['hr.main.parameter'].get_first_version(
+            employee, cessation_date).contract_date_start
+        span = relativedelta(
+            cessation_date + relativedelta(days=1), admission_date)
+        return bool(span.years or span.months)
+
+    def get_vacation_lines(self):
+        """Genera las líneas de vacaciones del lote de cese.
+
+        * Truncas: desde el inicio del año de servicios en curso (D.L.
+          713), meses calendario + días - faltas, sobre la remuneración
+          computable (sueldo + asignación familiar + promedios de
+          variables de los 6 meses previos al cese). Exigen un mes de
+          servicios.
+        * Devengadas e indemnización vacacional: de los años cumplidos y
+          no gozados (``hr.vacation.rest._l10n_pe_pending_vacation``).
+        * Adelantadas: lo gozado de más, que se descuenta.
+
+        Descuento AFP/ONP tomado del snapshot de la boleta del mes.
         """
         self.ensure_one()
         param = self.env['hr.main.parameter'].get_main_parameter(
             self.company_id)
         VacationLine = self.env['hr.liquidation.vacation.line']
         Run = self.env['hr.payslip.run']
-        year = self.year
+        Rest = self.env['hr.vacation.rest'].with_company(self.company_id)
         slips = self._get_cessation_slips(include_less_than_four=False)
         for employee in slips.employee_id:
             month_slip = slips.filtered(
@@ -330,49 +404,70 @@ class HrLiquidation(models.Model):
             if admission_date > month_slip.date_from:
                 continue
             cessation_date = version.contract_date_end
-            # Fecha de cómputo: último aniversario de ingreso anterior o
-            # igual al cese. Las truncas van desde ahí; los años ya
-            # cumplidos y no gozados son vacaciones devengadas (campo
-            # «Vac. devengadas»), no truncas.
-            compute_date = self._last_anniversary(
+            # Vacaciones truncas: basta un mes de servicios (D.Leg. 713,
+            # art. 22); con menos no hay línea.
+            if not self._has_one_month(employee, version):
+                continue
+            # Fecha de cómputo: inicio del año de servicios en curso al
+            # cese (aniversario de ingreso). Las truncas van desde ahí; los
+            # años ya cumplidos y no gozados son vacaciones devengadas, no
+            # truncas. Si el cese cierra justo un año, no hay truncas.
+            compute_date = self._service_year_start(
                 admission_date, cessation_date)
-            dias_fracc = compute_date.day - 1
-            if (cessation_date - admission_date).days <= 365:
-                compute_date = admission_date
-                dias_fracc = 0
 
             wage = version.wage
             household_allowance = sum(month_slip.line_ids.filtered(
                 lambda line: line.salary_rule_id
                 == param.household_allowance_sr_id).mapped('total'))
 
-            # Meses/días/faltas desde la fecha de cómputo hasta el cese.
+            # Meses calendario y días desde la fecha de cómputo hasta el
+            # cese (como ``get_months_days_difference`` pero sin sumar los
+            # días sueltos de los dos extremos: 10-03 → 20-10 son 7 meses
+            # y 11 días). De ahí se restan los días del periodo que las
+            # boletas no computan (licencia sin goce, meses sin boleta…).
             months = days = lacks = 0
-            compute_payslip_date = \
-                date(compute_date.year, compute_date.month, 1)
-            lots = Run.search([
-                ('date_end', '>=', compute_payslip_date),
-                ('date_end', '<=', month_slip.date_to),
-                ('company_id', '=', self.company_id.id),
-            ])
-            # Un mes cuenta una vez aunque tenga varios lotes: vale el lote
-            # con más días computables.
-            for month_lots in param._l10n_pe_lots_by_month(lots):
-                # Las faltas cuentan para el mes y se descuentan una vez.
-                counted, lot_lacks, lot = max(
-                    (param._l10n_pe_month_computable_days(
-                        lot.slip_ids.filtered(
-                            lambda slip: slip.employee_id == employee
-                        ).worked_days_line_ids)[:2] + (lot,)
-                     for lot in month_lots),
-                    key=lambda item: item[0])
-                if lot.date_start < compute_date <= lot.date_end:
-                    counted -= dias_fracc
-                if counted >= (lot.date_end - lot.date_start).days + 1:
-                    months += 1
-                else:
-                    days += counted
-                lacks += lot_lacks
+            missing = 0.0
+            if compute_date <= cessation_date:
+                span = relativedelta(
+                    cessation_date + relativedelta(days=1), compute_date)
+                months = span.years * 12 + span.months
+                days = span.days
+                lots = Run.search([
+                    ('date_end', '>=', date(
+                        compute_date.year, compute_date.month, 1)),
+                    ('date_end', '<=', month_slip.date_to),
+                    ('company_id', '=', self.company_id.id),
+                ])
+                # Un mes cuenta una vez aunque tenga varios lotes: vale el
+                # lote con más días computables.
+                for month_lots in param._l10n_pe_lots_by_month(lots):
+                    # Las faltas cuentan para el mes y se descuentan una
+                    # vez (``amount_per_lack``).
+                    counted, lot_lacks, lot = max(
+                        (param._l10n_pe_month_computable_days(
+                            lot.slip_ids.filtered(
+                                lambda slip: slip.employee_id == employee
+                            ).worked_days_line_ids)[:2] + (lot,)
+                         for lot in month_lots),
+                        key=lambda item: item[0])
+                    first = max(lot.date_start, compute_date)
+                    last = min(lot.date_end, cessation_date)
+                    if last < first:
+                        continue
+                    # La boleta del mes del aniversario trae los días
+                    # anteriores a la fecha de cómputo (del año ya
+                    # cumplido): no son de este periodo.
+                    before = (compute_date - max(
+                        lot.date_start, admission_date)).days
+                    if before > 0:
+                        counted -= before
+                    missing += max(0.0, (last - first).days + 1 - counted)
+                    lacks += lot_lacks
+                days -= missing
+                while days < 0 and months > 0:
+                    months -= 1
+                    days += 30
+                days = max(days, 0)
 
             # Ventana de conceptos variables: 6 meses previos al cese
             # (el mes de cese solo computa si termina en fin de mes).
@@ -418,8 +513,6 @@ class HrLiquidation(models.Model):
                 extra_hours_lines)
             computable_remuneration = (wage + household_allowance
                                        + commission + bonus + extra_hours)
-            if days >= 30:
-                days, months = param.get_months_of_30_days(days, months)
             if version.l10n_pe_labor_regime == 'general':
                 amount_per_month = computable_remuneration / 12
             else:
@@ -430,7 +523,28 @@ class HrLiquidation(models.Model):
             vacation_per_day = custom_round(amount_per_day * days, 2)
             truncated_vacation = custom_round(
                 vacation_per_month + vacation_per_day - amount_per_lack, 2)
-            total_vacation = truncated_vacation
+            # Años de servicios cumplidos y no gozados (récord y saldos de
+            # vacaciones): una remuneración vacacional por los días
+            # pendientes y, si venció el plazo para gozarlos (el año
+            # siguiente), además la indemnización vacacional (D.Leg. 713,
+            # art. 23). Lo gozado o vendido por encima de lo ganado es
+            # adelanto y se descuenta de las truncas.
+            years, advance_days = Rest._l10n_pe_pending_vacation(
+                employee, cessation_date)
+            amount_per_vacation_day = computable_remuneration / 30
+            accrued_days = sum(year['pending'] for year in years)
+            indemnity_days = sum(
+                year['pending'] for year in years
+                if year['deadline'] < cessation_date
+                and not year.get('formative'))
+            accrued_vacation = custom_round(
+                amount_per_vacation_day * accrued_days, 2)
+            vacation_indemnity = custom_round(
+                amount_per_vacation_day * indemnity_days, 2)
+            advanced_vacation = custom_round(
+                amount_per_vacation_day * advance_days, 2)
+            total_vacation = custom_round(
+                accrued_vacation + truncated_vacation - advanced_vacation, 2)
             deductions = VacationLine._get_pension_deductions(
                 month_slip, total_vacation)
             vals = {
@@ -455,9 +569,15 @@ class HrLiquidation(models.Model):
                 'vacation_per_month': vacation_per_month,
                 'vacation_per_day': vacation_per_day,
                 'truncated_vacation': truncated_vacation,
+                'accrued_vacation': accrued_vacation,
+                'accrued_days': accrued_days,
+                'vacation_indemnity': vacation_indemnity,
+                'indemnity_days': indemnity_days,
+                'advanced_vacation': advanced_vacation,
                 'total_vacation': total_vacation,
                 'total': custom_round(
-                    total_vacation - sum(deductions.values()), 2),
+                    total_vacation - sum(deductions.values())
+                    + vacation_indemnity, 2),
             }
             vals.update(deductions)
             # TODO(fase4-revisar): distribution_id (distribución
@@ -583,13 +703,24 @@ class HrLiquidationVacationLine(models.Model):
         help='Vacaciones ya pagadas por adelantado: se descuentan.', tracking=True)
     accrued_vacation = fields.Float(
         string='Vacaciones devengadas',
-        help='Vacaciones de años completos ganadas y no gozadas: se suman.')
+        help='Vacaciones de años completos ganadas y no gozadas: se suman. '
+             'Salen del récord y de los saldos de vacaciones (años que '
+             'cumplen el récord menos los días gozados o vendidos, primero '
+             'los del año más antiguo).')
+    accrued_days = fields.Float(
+        string='Días devengados no gozados', digits=(16, 2),
+        help='Días de los años de servicios cumplidos que no se gozaron ni '
+             'vendieron.')
     vacation_indemnity = fields.Float(
         string='Indemnización vacacional',
         help='D.Leg. 713, art. 23: una remuneración por cada período '
              'devengado que no se gozó dentro del año siguiente. No paga '
-             'AFP/ONP ni EsSalud (sí es renta de 5ta); va a la boleta por '
-             'el input INDVAC (PLAME 0504).')
+             'AFP/ONP ni EsSalud; va a la boleta por su propio input '
+             'INDVAC (PLAME 0504).')
+    indemnity_days = fields.Float(
+        string='Días con plazo de goce vencido', digits=(16, 2),
+        help='Días devengados no gozados cuyo plazo para gozarlos (el año '
+             'siguiente al de servicios) venció antes del cese.')
     total_vacation = fields.Float(
         string='Total vacaciones',
         help='Devengadas + truncas − adelantadas (base de los aportes).')
@@ -607,6 +738,29 @@ class HrLiquidationVacationLine(models.Model):
         string='No recalcular',
         help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
              'ajustes manuales.', tracking=True)
+
+    def _l10n_pe_export_split(self):
+        """(devengadas, truncas) que van a la boleta. Las vacaciones
+        adelantadas ya pagaron aportes cuando se gozaron: se restan de las
+        truncas (y, si no alcanzan, de las devengadas) en vez de ir como
+        descuento neto ADE_VAC, que dejaba los aportes de la boleta sobre
+        las truncas completas y no cuadraba con la línea."""
+        self.ensure_one()
+        truncated = self.truncated_vacation - self.advanced_vacation
+        accrued = self.accrued_vacation + min(truncated, 0.0)
+        return accrued, max(truncated, 0.0)
+
+    @api.model
+    def _l10n_pe_exported_accrued(self, lot, employee):
+        """Vacaciones devengadas de las liquidaciones de cese ya exportadas
+        al lote ``lot`` para ``employee`` (van al mismo input que el goce
+        de la liquidación vacacional)."""
+        lines = self.search([
+            ('liquidation_id.payslip_run_id', '=', lot.id),
+            ('liquidation_id.state', '=', 'exported'),
+            ('employee_id', '=', employee.id),
+        ])
+        return sum(line._l10n_pe_export_split()[0] for line in lines)
 
     @api.model
     def _get_pension_deductions(self, month_slip, total_vacation):
@@ -733,6 +887,40 @@ class HrLiquidationExtraConcepts(models.Model):
         string='No recalcular',
         help='Al procesar de nuevo, la línea se conserva tal cual, con sus '
              'ajustes manuales.')
+    # Indemnización por despido arbitrario (asistente del popup).
+    l10n_pe_cessation_reason = fields.Selection(
+        [('arbitrary', 'Despido arbitrario'),
+         ('other', 'Otro motivo (sin indemnización)')],
+        string='Motivo del cese', default='other',
+        help='Solo el despido arbitrario (sin causa justa o sin probarla) '
+             'da indemnización: D.S. 003-97-TR, arts. 34, 38 y 76. La '
+             'renuncia, el término del contrato o el despido por causa '
+             'justa no la dan.')
+    l10n_pe_contract_kind = fields.Selection(
+        [('indefinite', 'Plazo indeterminado'), ('fixed', 'Plazo fijo')],
+        string='Tipo de contrato', default='indefinite',
+        help='Plazo indeterminado: 1,5 remuneraciones mensuales por año de '
+             'servicios (fracciones por dozavos y treintavos), tope 12. '
+             'Plazo fijo: 1,5 remuneraciones por cada mes que faltaba para '
+             'el fin pactado, tope 12. En la pequeña empresa son 20 '
+             'remuneraciones diarias por año (tope 120) y en la '
+             'microempresa 10 (tope 90).')
+    l10n_pe_labor_regime = fields.Selection(
+        related='version_id.l10n_pe_labor_regime', string='Régimen laboral')
+    l10n_pe_planned_end = fields.Date(
+        string='Fin pactado del contrato',
+        help='Contrato a plazo fijo: fecha en que debía terminar. La '
+             'indemnización cubre los meses que faltaban desde el cese.')
+    l10n_pe_indemnity_base = fields.Float(
+        string='Remuneración mensual',
+        help='Remuneración mensual ordinaria para la indemnización. Si se '
+             'deja en cero, se toma la remuneración computable de las '
+             'vacaciones truncas (o sueldo + asignación familiar).')
+    l10n_pe_indemnity = fields.Float(
+        string='Indemnización calculada', readonly=True,
+        help='Se escribe en el concepto INDEM del cesado al calcular. Se '
+             'paga junto con los beneficios sociales, dentro de las 48 '
+             'horas del cese.')
 
     @api.depends('conceptos_lines.amount', 'conceptos_lines.type')
     def _compute_totals(self):
@@ -744,6 +932,71 @@ class HrLiquidationExtraConcepts(models.Model):
                 lambda line: line.type == 'in').mapped('amount'))
             record.expenses = sum(lines.filtered(
                 lambda line: line.type == 'out').mapped('amount'))
+
+    def _l10n_pe_indemnity_base(self):
+        """Remuneración mensual de la indemnización: la indicada o, si no
+        hay, la computable de las vacaciones truncas del cesado (o sueldo
+        + asignación familiar de la boleta)."""
+        self.ensure_one()
+        if self.l10n_pe_indemnity_base:
+            return self.l10n_pe_indemnity_base
+        vacation = self.liquidation_id.vacation_line_ids.filtered(
+            lambda line: line.employee_id == self.employee_id)[:1]
+        if vacation:
+            return vacation.computable_remuneration
+        param = self.env['hr.main.parameter'].get_main_parameter(
+            self.company_id)
+        slip = self.liquidation_id.payslip_run_id.slip_ids.filtered(
+            lambda slip: slip.employee_id == self.employee_id)[:1]
+        household_allowance = sum(slip.line_ids.filtered(
+            lambda line: line.salary_rule_id
+            == param.household_allowance_sr_id).mapped('total'))
+        return self.version_id.wage + household_allowance
+
+    def _l10n_pe_compute_indemnity(self):
+        """Indemnización por despido arbitrario (D.S. 003-97-TR, arts. 38
+        y 76; pequeña y microempresa: TUO de la Ley MYPE, D.S.
+        013-2013-PRODUCE)."""
+        self.ensure_one()
+        if self.l10n_pe_cessation_reason != 'arbitrary' \
+                or not self.cessation_date:
+            return 0.0
+        base = self._l10n_pe_indemnity_base()
+        after_cessation = self.cessation_date + relativedelta(days=1)
+        service = relativedelta(after_cessation, self.admission_date) \
+            if self.admission_date else relativedelta()
+        # Fracciones de año por dozavos y treintavos.
+        years = service.years + service.months / 12 + service.days / 360
+        regime = self.version_id.l10n_pe_labor_regime
+        if regime in ('small', 'micro'):
+            per_year, cap = (20, 120) if regime == 'small' else (10, 90)
+            daily = base / 30
+            return custom_round(min(daily * per_year * years, daily * cap), 2)
+        if self.l10n_pe_contract_kind == 'fixed':
+            if not self.l10n_pe_planned_end \
+                    or self.l10n_pe_planned_end < after_cessation:
+                return 0.0
+            rest = relativedelta(
+                self.l10n_pe_planned_end + relativedelta(days=1),
+                after_cessation)
+            months = rest.years * 12 + rest.months + rest.days / 30
+            return custom_round(min(1.5 * base * months, 12 * base), 2)
+        return custom_round(min(1.5 * base * years, 12 * base), 2)
+
+    def action_compute_indemnity(self):
+        """Calcula la indemnización por despido arbitrario y la deja en el
+        concepto INDEM del cesado (reemplaza el que hubiera)."""
+        self.ensure_one()
+        ensure_line_draft(self, 'liquidation_id')
+        rule = self.env.ref('al_hr_pe.salary_rule_INDEM')
+        amount = self._l10n_pe_compute_indemnity()
+        self.conceptos_lines.filtered(
+            lambda line: line.name_input_id == rule).unlink()
+        if amount:
+            self.conceptos_lines = [(0, 0, {
+                'name_input_id': rule.id, 'amount': amount, 'type': 'in'})]
+        self.l10n_pe_indemnity = amount
+        return self.action_add_concepts()
 
     def action_add_concepts(self):
         """Popup para capturar los conceptos extra del cesado."""
