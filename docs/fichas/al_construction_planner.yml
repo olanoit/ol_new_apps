@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '65.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Las listas y tablas dinámicas con nombres largos (M116-08) ya no se encogen: la línea del plan, los informes y los pivotes ocupan todo el ancho."
   - version: '64.20261101'
     fecha: 01/11/2026
     cambios:
