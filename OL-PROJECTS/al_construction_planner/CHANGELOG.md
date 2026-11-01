@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 66.20261101 — 01/11/2026
+
+- Las columnas de nombre (nivel, producto, actividad, recurso) tienen un ancho fijo de lectura: el nombre se parte en dos o tres renglones y la lista se desplaza a lo ancho si no cabe.
+
 ## 65.20261101 — 01/11/2026
 
 - Las listas y tablas dinámicas con nombres largos (M116-08) ya no se encogen: la línea del plan, los informes y los pivotes ocupan todo el ancho.

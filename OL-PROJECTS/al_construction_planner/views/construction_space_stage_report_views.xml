@@ -40,7 +40,7 @@
                 <field name="project_id" optional="hide"/>
                 <field name="construction_level1_task_id" optional="show"/>
                 <field name="construction_level2_task_id" optional="show"/>
-                <field name="name" class="o_cp_name"/>
+                <field name="name" class="o_cp_name" width="180px"/>
                 <field name="construction_typology_id" optional="hide"/>
                 <field name="construction_current_stage" widget="badge"/>
                 <field name="construction_current_stage_progress" string="Avance %"/>

@@ -13,7 +13,7 @@
                 <field name="plan_id" column_invisible="context.get('default_plan_id')"
                        options="{'no_create': True}"/>
                 <field name="plan_state" column_invisible="True"/>
-                <field name="task_id" options="{'no_create': True}" class="o_cp_name"
+                <field name="task_id" options="{'no_create': True}" class="o_cp_name" width="180px"
                        domain="[('project_id', '=', project_id), ('construction_level', '!=', False)]"/>
                 <field name="project_id" column_invisible="True"/>
                 <field name="task_level" optional="hide"/>
@@ -25,9 +25,9 @@
                 <field name="resource_type" column_invisible="True"/>
                 <field name="construction_stage_codes" column_invisible="True"/>
                 <field name="stage" widget="filterable_selection" options="{'whitelist_fname': 'construction_stage_codes'}"/>
-                <field name="product_id" options="{'no_create': True}" class="o_cp_name"
+                <field name="product_id" options="{'no_create': True}" class="o_cp_name" width="180px"
                        required="resource_type in ('material', 'service', 'equipment', 'production')"/>
-                <field name="activity_id" options="{'no_create': True}" class="o_cp_name"
+                <field name="activity_id" options="{'no_create': True}" class="o_cp_name" width="180px"
                        required="resource_type in ('contract', 'labor')"/>
                 <field name="partner_id" optional="hide" options="{'no_create': True}"/>
                 <field name="uses_level_driver" optional="hide"
@@ -75,9 +75,9 @@
             <list string="Recursos y avance" default_group_by="stage" create="0" edit="0"
                   class="o_cp_wrap_names">
                 <field name="stage"/>
-                <field name="task_id" optional="hide" class="o_cp_name"/>
+                <field name="task_id" optional="hide" class="o_cp_name" width="180px"/>
                 <field name="resource_type_id" optional="hide"/>
-                <field name="resource_name" class="o_cp_name"/>
+                <field name="resource_name" class="o_cp_name" width="180px"/>
                 <field name="partner_id" optional="show"/>
                 <field name="qty_planned" string="Presupuestado"/>
                 <field name="product_uom_id" string="Und" groups="uom.group_uom"/>
