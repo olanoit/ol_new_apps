@@ -160,6 +160,89 @@ def paint_headers(data, sheet_names, texts, style):
     return changed
 
 
+# La hoja de Odoo 19 no tiene REPT: los tramos de un texto se sacan con
+# TEXTBEFORE y TEXTAFTER (nativas). ``text`` es una referencia o expresión y
+# ``sep`` el separador entre comillas («" · "», «" / "»).
+def last_part(text, sep):
+    """Último tramo (todo el texto si no tiene separador)."""
+    return 'TRIM(TEXTAFTER(%s&%s,%s,-1))' % (sep, text, sep)
+
+
+def first_part(text, sep):
+    """Primer tramo."""
+    return 'TRIM(TEXTBEFORE(%s&%s,%s,1))' % (text, sep, sep)
+
+
+def second_part(text, sep):
+    """Segundo tramo (vacío si no hay)."""
+    return 'TRIM(TEXTBEFORE(TEXTAFTER(%s&%s,%s,1)&%s,%s,1))' % (text, sep, sep, sep, sep)
+
+
+_REPT = r'SUBSTITUTE\(([^,()]+),("[^"]*"),REPT\(" ",200\)\)'
+_REPT_FORMULAS = (
+    (re.compile(r'TRIM\(RIGHT\(%s,200\)\)' % _REPT), last_part),
+    (re.compile(r'TRIM\(LEFT\(%s,200\)\)' % _REPT), first_part),
+    (re.compile(r'TRIM\(MID\(%s,201,200\)\)' % _REPT), second_part),
+)
+
+
+def replace_rept(formula):
+    """Reescribe los tramos armados con REPT (que la hoja no tiene y daban
+    #NAME?) con TEXTBEFORE y TEXTAFTER."""
+    if not isinstance(formula, str) or 'REPT(' not in formula:
+        return formula
+    for pattern, builder in _REPT_FORMULAS:
+        formula = pattern.sub(lambda match, b=builder: b(match.group(1), match.group(2)),
+                              formula)
+    return formula
+
+
+def replace_in_cells(data, function):
+    """Aplica ``function`` al contenido de cada celda; True si cambió algo."""
+    changed = False
+    for sheet in data.get('sheets') or []:
+        cells = sheet.get('cells') or {}
+        for ref, cell in list(cells.items()):
+            content = cell_content(cell)
+            new = function(content)
+            if new != content:
+                set_cell_content(cells, ref, new)
+                changed = True
+    return changed
+
+
+def _replace_contents(value, function):
+    if isinstance(value, dict):
+        changed = False
+        for key, item in value.items():
+            if key == 'content' and isinstance(item, str):
+                new = function(item)
+                if new != item:
+                    value[key] = new
+                    changed = True
+            elif _replace_contents(item, function):
+                changed = True
+        return changed
+    if isinstance(value, list):
+        return any([_replace_contents(item, function) for item in value])
+    return False
+
+
+def migrate_revisions(env, documents, function, marker):
+    """Aplica ``function`` al contenido de las celdas que escriben las
+    revisiones de las hojas (las que contienen ``marker``)."""
+    revisions = env['spreadsheet.revision'].with_context(active_test=False).search([
+        ('res_model', '=', 'documents.document'), ('res_id', 'in', documents.ids),
+        ('commands', 'ilike', marker)])
+    for revision in revisions:
+        try:
+            commands = json.loads(revision.commands)
+        except ValueError:
+            continue
+        if _replace_contents(commands, function):
+            revision.commands = json.dumps(commands)
+
+
 def migrate_documents(env, documents, transform):
     """Aplica ``transform(data) -> bool`` a los datos y a la última foto de
     cada hoja, sin perder sus revisiones."""
@@ -184,6 +267,7 @@ def first_free_column(sheet):
     return max(headers) + 1 if headers else 0
 
 
-__all__ = ['add_keys_sheet', 'cell_content', 'col_letter', 'first_free_column', 'header_cells',
-           'migrate_documents', 'norm', 'paint_headers', 'replace_n', 'set_cell_content',
-           'style_id']
+__all__ = ['add_keys_sheet', 'cell_content', 'col_letter', 'first_free_column', 'first_part',
+           'header_cells', 'last_part', 'migrate_documents', 'migrate_revisions', 'norm',
+           'paint_headers', 'replace_in_cells', 'replace_n', 'replace_rept', 'second_part',
+           'set_cell_content', 'style_id']

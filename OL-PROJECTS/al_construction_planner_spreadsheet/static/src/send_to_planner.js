@@ -139,7 +139,7 @@ export function writeRows(model, sheetId, rows, startRow) {
 }
 
 /** Borra los datos de la pestaña desde la fila ``fromRow`` (0 = la primera). */
-function clearData(model, sheetId, fromRow = 1) {
+export function clearData(model, sheetId, fromRow = 1) {
     const zone = model.getters.getSheetZone(sheetId);
     if (zone.bottom >= fromRow) {
         model.dispatch("DELETE_CONTENT", {
@@ -149,7 +149,7 @@ function clearData(model, sheetId, fromRow = 1) {
     }
 }
 
-function activateSheet(model, sheetId) {
+export function activateSheet(model, sheetId) {
     const from = model.getters.getActiveSheetId();
     if (from !== sheetId) {
         model.dispatch("ACTIVATE_SHEET", { sheetIdFrom: from, sheetIdTo: sheetId });
@@ -179,6 +179,7 @@ patch(SpreadsheetAction.prototype, {
             },
             constructionNotify: (message, type = "success") => notification.add(message, { type }),
             constructionOfferLocked: () => Boolean(this.data?.construction_offer_locked),
+            constructionMetadata: (key) => this.data?.[key],
         });
     },
 });
@@ -234,12 +235,21 @@ export function writeErrors(model, result) {
     return sheetId;
 }
 
+/**
+ * Funciones que corren después de «Validar» con su resultado: el puente de
+ * mobiliario escribe el estado de la hoja en INICIO (paquete 1.13, M113-07).
+ */
+export const afterValidateHooks = [];
+
 export async function validate(env, { quiet = false } = {}) {
     const result = await env.constructionCall(
         "action_construction_validate",
         collectForSend(env)
     );
     const sheetId = writeErrors(env.model, result);
+    for (const hook of afterValidateHooks) {
+        hook(env, result);
+    }
     if (result.errors) {
         activateSheet(env.model, sheetId);
     }

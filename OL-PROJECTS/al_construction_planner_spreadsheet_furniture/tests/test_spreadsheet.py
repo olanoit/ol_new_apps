@@ -21,8 +21,11 @@ class TestConstructionSpreadsheet(PlannerCommon):
         self.assertEqual(action['params']['spreadsheet_id'], document.id)
         data = json.loads(document.spreadsheet_data)
         names = [sheet['name'] for sheet in data['sheets']]
-        self.assertEqual(names, ['LEEME', 'RESUMEN'] + list(SHEETS) +
-                         ['REFERENCIAS', '_LISTAS', '_CLAVES'])
+        # Paquete 1.13, M113-07 a 11: la hoja abre en INICIO y suma FICHA,
+        # PROGRAMA, CONTROL y ERRORES.
+        self.assertEqual(names, ['INICIO', 'LEEME', 'RESUMEN'] + list(SHEETS) +
+                         ['REFERENCIAS', '_LISTAS', 'FICHA', 'PROGRAMA', 'CONTROL', 'ERRORES',
+                          '_CLAVES'])
         arbol = next(sheet for sheet in data['sheets'] if sheet['name'] == 'ARBOL')
         self.assertEqual(arbol['cells']['A1'], SHEETS['ARBOL'][1][0][1])
         self.assertEqual({lst['model'] for lst in data['lists'].values()},

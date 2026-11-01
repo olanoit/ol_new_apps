@@ -5,6 +5,23 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="al_construction_planner.project_project_view_form_construction_planner"/>
         <field name="arch" type="xml">
+            <!-- Paquete 1.13, M113-12: versión y estado de la hoja vigente. -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="construction_sheet_document_id" invisible="1"/>
+                <button name="action_construction_open_spreadsheet" type="object"
+                        class="oe_stat_button" icon="fa-table"
+                        invisible="not is_construction_site or not construction_sheet_document_id"
+                        groups="al_construction_planner.group_planner_plan_planner">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            v<field name="construction_sheet_version" readonly="1"/>
+                        </span>
+                        <span class="o_stat_text">
+                            <field name="construction_sheet_state" readonly="1"/>
+                        </span>
+                    </div>
+                </button>
+            </xpath>
             <button name="action_construction_open_schedule" position="after">
                 <button name="action_construction_open_spreadsheet" type="object"
                         string="Hoja de trabajo" icon="table_chart" class="btn-secondary"
@@ -16,6 +33,33 @@
                        groups="al_construction_planner.group_planner_plan_planner">
                     <group>
                         <field name="construction_spreadsheet_rows" placeholder="Automático"/>
+                        <field name="construction_sheet_state" readonly="1"
+                               invisible="not construction_sheet_document_id"/>
+                        <field name="construction_sheet_control_state" readonly="1"
+                               decoration-success="construction_sheet_control_state == 'match'"
+                               decoration-danger="construction_sheet_control_state == 'mismatch'"
+                               widget="badge" invisible="not construction_sheet_control_state"/>
+                        <field name="construction_sheet_control_date" readonly="1"
+                               invisible="not construction_sheet_control_state"/>
+                    </group>
+                    <group invisible="not construction_sheet_document_id">
+                        <label for="construction_sheet_import_filename" string="Última importación"/>
+                        <div class="o_row" invisible="not construction_sheet_import_filename">
+                            <field name="construction_sheet_import_filename" readonly="1"/>
+                            <field name="construction_sheet_import_date" readonly="1"/>
+                            <span>· <field name="construction_sheet_import_errors" readonly="1"
+                                           class="oe_inline"/> errores</span>
+                        </div>
+                        <label for="construction_sheet_send_version" string="Último envío"/>
+                        <div class="o_row" invisible="not construction_sheet_send_version">
+                            <span>v<field name="construction_sheet_send_version" readonly="1"
+                                          class="oe_inline"/></span>
+                            <field name="construction_sheet_send_date" readonly="1"/>
+                            <field name="construction_sheet_send_message_id" invisible="1"/>
+                            <button name="action_construction_open_sheet_message" type="object"
+                                    string="Ver en el historial" class="btn-link p-0"
+                                    invisible="not construction_sheet_send_message_id"/>
+                        </div>
                     </group>
                 </group>
             </xpath>
