@@ -346,12 +346,17 @@ class HrFifthCategory(models.Model):
 
         Punto de extensión: construcción civil añade a los obreros con
         boletas semanales en el mes, que viven en otros lotes.
+
+        Los practicantes no van: su subvención no está sujeta a ninguna
+        retención a cargo del beneficiario (Ley 28518, art. 47).
         """
         self.ensure_one()
         run = self.payslip_run_id
         return {employee: employee_lot_slip(run, employee)
                 for employee in run.slip_ids.filtered(
-                    lambda slip: slip.state != 'cancel').employee_id}
+                    lambda slip: slip.state != 'cancel'
+                    and slip.version_id.l10n_pe_labor_regime
+                    != 'practicante').employee_id}
 
     def _l10n_pe_month_range(self):
         """Primer y último día del mes de la quinta (``middle_month_number``

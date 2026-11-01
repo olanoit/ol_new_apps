@@ -803,6 +803,13 @@ faq:
       en microempresa solo se provisionan vacaciones.
 
 novedades:
+  - version: '28.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "Renta de 5ta: los practicantes ya no tienen línea ni retención (Ley 28518, art. 47)."
+      - "Liquidación de cese: las vacaciones gozadas por adelantado se compensan con las truncas, y si las superan, el exceso ya no se descuenta (D.Leg. 1405 y D.S. 002-2019-TR)."
+      - "Liquidación de cese: el practicante que termina su convenio con el descanso de 15 días ganado y no gozado cobra la subvención íntegra de ese descanso (D.S. 007-2005-TR, art. 32)."
+      - "Saldo inicial de vacaciones: se reparte por años de servicio contados desde el ingreso, cada uno con su plazo de goce. La indemnización vacacional vence en su fecha legal y no un año después del corte."
   - version: '27.20261101'
     fecha: 01/11/2026
     cambios:

@@ -378,7 +378,10 @@ class HrLiquidation(models.Model):
           servicios.
         * Devengadas e indemnización vacacional: de los años cumplidos y
           no gozados (``hr.vacation.rest._l10n_pe_pending_vacation``).
-        * Adelantadas: lo gozado de más, que se descuenta.
+        * Adelantadas: lo gozado de más se compensa con las truncas; el
+          exceso no se descuenta (D.Leg. 1405 y D.S. 002-2019-TR).
+        * Practicantes: el descanso de 15 días ganado y no gozado se paga
+          íntegro (D.S. 007-2005-TR, art. 32); sin truncas.
 
         Descuento AFP/ONP tomado del snapshot de la boleta del mes.
         """
@@ -488,7 +491,8 @@ class HrLiquidation(models.Model):
             # pendientes y, si venció el plazo para gozarlos (el año
             # siguiente), además la indemnización vacacional (D.Leg. 713,
             # art. 23). Lo gozado o vendido por encima de lo ganado es
-            # adelanto y se descuenta de las truncas.
+            # adelanto: se compensa con las truncas y el trabajador no
+            # devuelve el exceso (D.Leg. 1405; D.S. 002-2019-TR).
             years, advance_days = Rest._l10n_pe_pending_vacation(
                 employee, cessation_date)
             amount_per_vacation_day = computable_remuneration / 30
@@ -501,8 +505,9 @@ class HrLiquidation(models.Model):
                 amount_per_vacation_day * accrued_days, 2)
             vacation_indemnity = custom_round(
                 amount_per_vacation_day * indemnity_days, 2)
-            advanced_vacation = custom_round(
-                amount_per_vacation_day * advance_days, 2)
+            advanced_vacation = custom_round(min(
+                amount_per_vacation_day * advance_days,
+                max(truncated_vacation, 0.0)), 2)
             total_vacation = custom_round(
                 accrued_vacation + truncated_vacation - advanced_vacation, 2)
             deductions = VacationLine._get_pension_deductions(
@@ -543,6 +548,53 @@ class HrLiquidation(models.Model):
             # TODO(fase4-revisar): distribution_id (distribución
             # analítica del contrato v18) sin equivalente en hr.version.
             VacationLine.create(vals)
+        self._l10n_pe_trainee_vacation_lines()
+
+    def _l10n_pe_trainee_vacation_lines(self):
+        """Practicantes que cesan con el descanso de 15 días ganado (cada 12
+        meses de convenio) y no gozado: se les paga la subvención íntegra de
+        ese descanso (D.S. 007-2005-TR, art. 32). Sin truncas, sin
+        indemnización vacacional (son del D.Leg. 713) y sin descuentos
+        previsionales (Ley 28518, art. 47)."""
+        self.ensure_one()
+        VacationLine = self.env['hr.liquidation.vacation.line']
+        Rest = self.env['hr.vacation.rest'].with_company(self.company_id)
+        slips = self.payslip_run_id.slip_ids.filtered(
+            lambda slip:
+            slip.version_id.l10n_pe_labor_regime == 'practicante'
+            and slip.version_id.situation_code == '0'
+            and slip.version_id.contract_date_end
+            and slip.date_from <= slip.version_id.contract_date_end
+            and slip.date_to >= slip.version_id.contract_date_end)
+        for employee in slips.employee_id:
+            month_slip = slips.filtered(
+                lambda slip: slip.employee_id == employee)[:1]
+            version = month_slip.version_id
+            cessation_date = version.contract_date_end
+            years, _advance = Rest._l10n_pe_pending_vacation(
+                employee, cessation_date)
+            accrued_days = sum(year['pending'] for year in years)
+            if not accrued_days:
+                continue
+            admission_date = self.env['hr.main.parameter'] \
+                .get_first_version(employee, month_slip.date_to) \
+                .contract_date_start
+            accrued_vacation = custom_round(
+                version.wage / 30 * accrued_days, 2)
+            VacationLine.create({
+                'liquidation_id': self.id,
+                'employee_id': employee.id,
+                'version_id': version.id,
+                'admission_date': admission_date,
+                'compute_date': cessation_date,
+                'cessation_date': cessation_date,
+                'wage': version.wage,
+                'computable_remuneration': version.wage,
+                'accrued_vacation': accrued_vacation,
+                'accrued_days': accrued_days,
+                'total_vacation': accrued_vacation,
+                'total': accrued_vacation,
+            })
 
     def get_extra_concepts_lines(self):
         """Crea una fila de conceptos extra por cesado y fija
@@ -660,7 +712,9 @@ class HrLiquidationVacationLine(models.Model):
              'parte del año vacacional en curso al cese.')
     advanced_vacation = fields.Float(
         string='Vacaciones adelantadas',
-        help='Vacaciones ya pagadas por adelantado: se descuentan.', tracking=True)
+        help='Vacaciones gozadas por adelantado: se compensan con las truncas '
+             'y el exceso no se descuenta (D.Leg. 1405 y D.S. 002-2019-TR).',
+        tracking=True)
     accrued_vacation = fields.Float(
         string='Vacaciones devengadas',
         help='Vacaciones de años completos ganadas y no gozadas: se suman. '
@@ -701,14 +755,20 @@ class HrLiquidationVacationLine(models.Model):
 
     def _l10n_pe_export_split(self):
         """(devengadas, truncas) que van a la boleta. Las vacaciones
-        adelantadas ya pagaron aportes cuando se gozaron: se restan de las
-        truncas (y, si no alcanzan, de las devengadas) en vez de ir como
-        descuento neto ADE_VAC, que dejaba los aportes de la boleta sobre
-        las truncas completas y no cuadraba con la línea."""
+        adelantadas ya pagaron aportes cuando se gozaron: se compensan con
+        las truncas (hasta ellas; el exceso no se descuenta) en vez de ir
+        como descuento neto ADE_VAC, que dejaba los aportes de la boleta
+        sobre las truncas completas y no cuadraba con la línea."""
         self.ensure_one()
-        truncated = self.truncated_vacation - self.advanced_vacation
+        truncated = self.truncated_vacation - self._l10n_pe_advance_offset()
         accrued = self.accrued_vacation + min(truncated, 0.0)
         return accrued, max(truncated, 0.0)
+
+    def _l10n_pe_advance_offset(self):
+        """Parte del adelanto que se compensa: hasta las truncas. El exceso
+        no se descuenta (D.Leg. 1405 y D.S. 002-2019-TR)."""
+        self.ensure_one()
+        return min(self.advanced_vacation, max(self.truncated_vacation, 0.0))
 
     @api.model
     def _l10n_pe_exported_accrued(self, lot, employee):
@@ -728,11 +788,14 @@ class HrLiquidationVacationLine(models.Model):
 
         Usa el snapshot AFP/ONP de la boleta del mes de cese:
         jubilación y comisión sobre el total; prima de seguro sobre
-        ``min(total, tope asegurable)`` y exenta para mayores de 65.
+        ``min(total, tope asegurable)`` y exenta para mayores de 65. El
+        practicante no tiene retenciones (Ley 28518, art. 47).
         """
         onp = afp_jub = afp_si = afp_mixed_com = afp_fixed_com = 0.0
         membership = month_slip.membership_id
-        if membership.is_afp:
+        if month_slip.version_id.l10n_pe_labor_regime == 'practicante':
+            pass
+        elif membership.is_afp:
             afp_jub = custom_round(
                 month_slip.l10n_pe_retirement_fund / 100 * total_vacation, 2)
             si_base = min(
@@ -789,7 +852,7 @@ class HrLiquidationVacationLine(models.Model):
                 - record.amount_per_lack, 2)
             record.total_vacation = (
                 record.accrued_vacation + record.truncated_vacation
-                - record.advanced_vacation)
+                - record._l10n_pe_advance_offset())
             deductions = self._get_pension_deductions(
                 month_slip, record.total_vacation)
             record.update(deductions)

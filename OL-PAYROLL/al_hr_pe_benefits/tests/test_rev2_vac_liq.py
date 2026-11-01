@@ -605,3 +605,86 @@ class TestRev2VacLiq(TransactionCase):
         years, _advance = Rest._l10n_pe_pending_vacation(
             employee, date(2026, 6, 30))
         self.assertTrue(all(year['formative'] for year in years))
+
+    # ------------------------------------------------------------------
+    # Criterios legales revisados (01/11/2026)
+    # ------------------------------------------------------------------
+    def test_adelanto_mayor_que_truncas_no_se_descuenta(self):
+        """D.Leg. 1405 y D.S. 002-2019-TR: al cese los días adelantados se
+        compensan con las truncas y el trabajador no devuelve el exceso.
+        Ingreso 01-08, 15 días gozados en octubre y cese el 31-10: truncas
+        de 3 meses (500) contra un adelanto de 1 000; se compensan 500."""
+        employee = self._employee(2000.0, date(2026, 8, 1),
+                                  end=date(2026, 10, 31))
+        self._slips(employee, date(2026, 8, 1), date(2026, 9, 1))
+        self._slip(employee, 2026, 10, done=False)
+        self._suspension(employee, date(2026, 10, 1), date(2026, 10, 15))
+        vacation = self._vacation(2026, 10)
+        vacation.action_process()
+        vacation.action_export_to_payslips()
+        _years, advance = self.env['hr.vacation.rest'] \
+            ._l10n_pe_pending_vacation(employee, date(2026, 10, 31))
+        self.assertEqual(advance, 15.0)
+        self._cease(employee)
+        liquidation = self._liquidation(2026, 10)
+        liquidation.action_process()
+        line = liquidation.vacation_line_ids.filtered(
+            lambda line: line.employee_id == employee)
+        self.assertAlmostEqual(line.truncated_vacation, 500.0, places=2)
+        self.assertAlmostEqual(line.advanced_vacation, 500.0, places=2)
+        self.assertAlmostEqual(line.total_vacation, 0.0, places=2)
+        self.assertEqual(line._l10n_pe_export_split(), (0.0, 0.0))
+
+    def test_practicante_cesa_con_descanso_pendiente(self):
+        """D.S. 007-2005-TR, art. 32: el practicante cuyo convenio termina
+        tras 12 meses sin haber gozado el descanso cobra la subvención
+        íntegra de ese descanso. Dos años cumplidos sin goce: 30 días, sin
+        indemnización vacacional ni descuentos previsionales."""
+        employee = self._employee(1130.0, date(2024, 7, 1),
+                                  end=date(2026, 6, 30),
+                                  regime='practicante')
+        self._cease(employee)
+        self._slip(employee, 2026, 6, done=False)
+        liquidation = self._liquidation(2026, 6)
+        liquidation.action_process()
+        line = liquidation.vacation_line_ids.filtered(
+            lambda line: line.employee_id == employee)
+        self.assertEqual(len(line), 1)
+        self.assertAlmostEqual(line.accrued_days, 30.0)
+        self.assertAlmostEqual(line.accrued_vacation, 1130.0, places=2)
+        self.assertEqual((line.truncated_vacation, line.vacation_indemnity),
+                         (0.0, 0.0))
+        self.assertEqual((line.afp_jub, line.afp_si, line.onp), (0.0, 0.0, 0.0))
+        self.assertAlmostEqual(line.total, 1130.0, places=2)
+
+    def test_saldo_inicial_por_anios_de_servicio(self):
+        """El saldo inicial (acumulado al corte) se reparte por años de
+        servicio anclados al ingreso, cada uno con su plazo de goce (D.Leg.
+        713, art. 23): 50 días al 30-06-2025 con ingreso 01-01-2022 son el
+        devengado de 2025 hasta el corte (30 × 181/365), 30 días de 2024 y
+        el resto de 2023. Antes era un solo año con plazo al 30-06-2026."""
+        employee = self._employee(2000.0, date(2022, 1, 1))
+        Rest = self.env['hr.vacation.rest']
+        Rest.create({
+            'employee_id': employee.id, 'internal_motive': 'rest',
+            'date_aplication': date(2025, 6, 30), 'days': 50.0,
+            'days_rest': 50.0, 'company_id': self.company.id})
+        partial = round(30 * 181 / 365, 2)
+        expected = [
+            (date(2023, 12, 31), date(2024, 12, 31), round(20 - partial, 2)),
+            (date(2024, 12, 31), date(2025, 12, 31), 30.0),
+            (date(2025, 12, 31), date(2026, 12, 31), partial)]
+
+        def balance_years(on_date):
+            years, _advance = Rest._l10n_pe_pending_vacation(
+                employee, on_date)
+            return [(year['date_to'], year['deadline'], year['days'])
+                    for year in years
+                    if year['date_from'] <= date(2025, 6, 30)
+                    and not (year['date_from'] == date(2025, 1, 1)
+                             and year['days'] != partial)]
+
+        # El tramo de 2025 aún no se gana al 30-09-2025: es parte de las
+        # truncas de ese año.
+        self.assertEqual(balance_years(date(2025, 9, 30)), expected[:2])
+        self.assertEqual(balance_years(date(2026, 1, 31)), expected)

@@ -7,6 +7,13 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_hr_pe_benefits.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 28.20261101 — 01/11/2026
+
+- Renta de 5ta: los practicantes ya no tienen línea ni retención (Ley 28518, art. 47).
+- Liquidación de cese: las vacaciones gozadas por adelantado se compensan con las truncas, y si las superan, el exceso ya no se descuenta (D.Leg. 1405 y D.S. 002-2019-TR).
+- Liquidación de cese: el practicante que termina su convenio con el descanso de 15 días ganado y no gozado cobra la subvención íntegra de ese descanso (D.S. 007-2005-TR, art. 32).
+- Saldo inicial de vacaciones: se reparte por años de servicio contados desde el ingreso, cada uno con su plazo de goce. La indemnización vacacional vence en su fecha legal y no un año después del corte.
+
 ## 27.20261101 — 01/11/2026
 
 - Accidente de trabajo: las ausencias por descanso médico o enfermedad tienen la marca «Accidente de trabajo o enfermedad profesional», que pasa a sus suspensiones. En las utilidades, esos días cuentan como laborados (D.S. 009-98-TR).

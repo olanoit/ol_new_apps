@@ -120,16 +120,19 @@ class TestReviewFifth(BenefitsCaseBase):
         self.assertAlmostEqual(line.grat_july, self.wage / 2, places=2)
         self.assertAlmostEqual(line.grat_december, self.wage / 2, places=2)
 
-    def test_gratificacion_proyectada_microempresa_y_practicante(self):
+    def test_gratificacion_proyectada_microempresa(self):
         self._configure_fifth()
-        for regime in ('micro', 'practicante'):
-            self.employee.version_id.l10n_pe_labor_regime = regime
-            fifth = self._fifth()
-            line = self._employee_line(fifth)
-            self.assertEqual(len(line), 1)
-            self.assertEqual((line.grat_july, line.grat_december),
-                             (0.0, 0.0), regime)
-            fifth.unlink()
+        self.employee.version_id.l10n_pe_labor_regime = 'micro'
+        line = self._employee_line(self._fifth())
+        self.assertEqual(len(line), 1)
+        self.assertEqual((line.grat_july, line.grat_december), (0.0, 0.0))
+
+    def test_practicante_sin_quinta(self):
+        """La subvención no está sujeta a ninguna retención a cargo del
+        beneficiario (Ley 28518, art. 47): el practicante no tiene línea."""
+        self._configure_fifth()
+        self.employee.version_id.l10n_pe_labor_regime = 'practicante'
+        self.assertFalse(self._employee_line(self._fifth()))
 
     # ------------------------------------------------------------------
     # A4: una línea y una retención por trabajador

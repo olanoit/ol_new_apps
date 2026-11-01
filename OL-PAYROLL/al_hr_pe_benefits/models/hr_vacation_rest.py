@@ -365,8 +365,9 @@ class HrVacationRest(models.Model):
         ganado. Los goces y ventas (``hr.accrual.vacation``) consumen
         primero el año más antiguo. ``deadline`` es el último día del año
         siguiente al de servicios: el plazo para gozarlo (D.Leg. 713,
-        art. 23). Un saldo inicial positivo se trata como un año que
-        termina en su fecha de corte.
+        art. 23). Un saldo inicial positivo se reparte por años de
+        servicio (``_l10n_pe_balance_years``) para que cada parte tenga su
+        plazo legal.
         """
         company = self.env.company
         param = self.env['hr.main.parameter'].get_main_parameter(company)
@@ -383,11 +384,12 @@ class HrVacationRest(models.Model):
         consumed = 0.0
         if balance and balance_date >= admission:
             if balance.days_rest > 0:
-                years.append({
-                    'date_from': balance.date_from or admission,
-                    'date_to': balance_date,
-                    'days': balance.days_rest,
-                })
+                years += [
+                    year for year in self._l10n_pe_balance_years(
+                        employee, admission, balance_date, balance.days_rest)
+                    # El tramo del año en curso al corte solo se gana al
+                    # cerrar ese año: antes es parte de las truncas.
+                    if year['date_to'] <= on_date]
             else:
                 consumed -= balance.days_rest
         else:
@@ -419,6 +421,41 @@ class HrVacationRest(models.Model):
             year['pending'] = year['days'] - taken
             year['deadline'] = year['date_to'] + relativedelta(years=1)
         return years, consumed
+
+    @api.model
+    def _l10n_pe_balance_years(self, employee, admission, balance_date,
+                               days):
+        """Reparte un saldo inicial positivo en años de servicio anclados al
+        ingreso (D.Leg. 713, arts. 10 y 23: el año se gana en el aniversario
+        y se goza dentro del año siguiente). El saldo es lo acumulado al
+        corte: primero lo devengado del año en curso (proporcional desde el
+        último aniversario), luego un año completo por cada año anterior
+        hacia atrás. Lo que exceda los años posibles desde el ingreso (dato
+        inconsistente) queda como un tramo que termina en el corte, como
+        antes. De más antiguo a más reciente, como los consume el goce."""
+        anniversary = admission
+        while anniversary + relativedelta(years=1) <= balance_date:
+            anniversary += relativedelta(years=1)
+        year_end = anniversary + relativedelta(years=1) - timedelta(days=1)
+        per_year = self._l10n_pe_days_per_year(employee, balance_date)
+        partial = min(days, custom_round(
+            per_year * ((balance_date - anniversary).days + 1)
+            / ((year_end - anniversary).days + 1), 2))
+        years = [{'date_from': anniversary, 'date_to': year_end,
+                  'days': partial}]
+        remaining = custom_round(days - partial, 2)
+        start = anniversary
+        while remaining > 0 and start > admission:
+            end = start - timedelta(days=1)
+            start = max(start - relativedelta(years=1), admission)
+            taken = min(remaining, self._l10n_pe_days_per_year(employee, end))
+            years.insert(0, {'date_from': start, 'date_to': end,
+                             'days': taken})
+            remaining = custom_round(remaining - taken, 2)
+        if remaining > 0:
+            years.insert(0, {'date_from': admission, 'date_to': balance_date,
+                             'days': remaining})
+        return [year for year in years if year['days'] > 0]
 
     def action_show_details(self):
         """Movimientos del récord vacacional del empleado."""
