@@ -15,8 +15,8 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
-| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b); por probar en las bases |
-| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
+| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b) y aceptada |
+| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Diseñada (bloques 4a, 4b y 4c); por confirmar las rutas devueltas |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
 empezar la siguiente.
@@ -586,6 +586,271 @@ cambia nada más.
 - Pruebas de interfaz en `al_construction_planner/static/tests/`: barra en
   filas, panel ampliable y nombres largos.
 
+## Etapa 4 · Hoja de trabajo
+
+Se entrega en tres bloques, en el orden que propone el paquete 1.13: primero
+lo que asegura el envío, después lo que permite cargar las obras desde la
+hoja y al final la experiencia de planificación. Los tres se prueban juntos en
+las dos bases. La programación empieza cuando la etapa 3 esté aceptada.
+
+| Bloque | Contenido |
+|---|---|
+| 4a · Envío seguro y convención común | M116-09, M113-01, M113-02, M113-03, CR-22 b) a g) |
+| 4b · Cargar la obra desde la hoja | M113-04, M113-05, M113-06, M116-10 |
+| 4c · Planificar en la hoja | M113-07 a M113-12 |
+
+### Rutas ya existentes que cambian el pedido (se devuelven antes de programar)
+
+1. **M113-06 punto 3 · el desplegable nativo ya busca al escribir.** La
+   validación por lista o por rango de la hoja de Odoo 19 ofrece sus valores
+   en el editor de la celda y los filtra por coincidencia aproximada mientras
+   se escribe (proveedor `dataValidation` de `autoCompleteProviders`, con
+   `fuzzySearchKey`, en `addons/spreadsheet/.../o_spreadsheet.js`). Propuesta:
+   no se programa el buscador del panel. Escribir parte del nombre en la celda
+   «Producto» basta, y cumple el criterio «el producto se elige escribiendo
+   parte del nombre» de M116-09.
+2. **M113-10 punto 4 · las fechas por piso ya se ponen en el planificador.**
+   «Cambiar fechas» (W-08) del Árbol de recursos lleva la selección (un piso,
+   varios pisos) a una fecha nueva o la desplaza n días, y el Cronograma mueve
+   las etapas de cada ambiente arrastrando la barra. Propuesta: el maestro no
+   lleva una pestaña de fechas por piso. PROGRAMA queda como pre-plan en la
+   hoja y solo escribe Inicio y Fin en OBRA. El ritmo por piso se lleva al
+   plan con esas dos herramientas, ya generado el plan.
+3. **M113-03 · el menú del presupuesto en la hoja de mobiliario.** En dev1 las
+   cuatro hojas de trabajo tienen `construction_sheet_kind = furniture`, y el
+   código vigente solo muestra ese menú en las de presupuesto. Lo observado el
+   30-oct no se reproduce con el código de hoy; probablemente eran recursos
+   anteriores en la caché del navegador. Al revisarlo encontré otra causa
+   real, que sí se corrige en 4a: el puente de mobiliario decide el tipo de
+   hoja con `profile.code != 'construction'`
+   (`al_construction_planner_spreadsheet_furniture/models/project_project.py`).
+   Los perfiles «Construcción PROF 4» a «PROF 6» de la etapa 1 tienen otro
+   código, así que en una base con los dos puentes una obra de construcción
+   abriría la hoja de mobiliario. Hoy no pasa en creval-dev porque ahí no está
+   el puente de mobiliario. Propuesta: el perfil tiene un campo «Hoja de
+   trabajo» (presupuesto y plan / maestro de mobiliario), que traen los
+   perfiles de cada vertical. Así no queda una condición por código de perfil.
+4. **M113-07 puntos 2 y 8 · lo que la hoja nativa no hace.** Un enlace de la
+   hoja abre una dirección o una pestaña, pero no ejecuta una opción del menú.
+   Tampoco hay forma nativa de poner un conteo en el nombre de la pestaña. Por
+   eso «Validar» y «Enviar» quedan en INICIO como texto que dice dónde está la
+   opción, y los conteos van en INICIO, como prevé el pedido.
+5. **M116-10 punto 3 · las actividades y tarifas por ML son configuración.**
+   La actividad tiene «Se mide por ML» y «Grupo ML», y la lista de tarifas
+   tiene la familia «Closet y cajones». Con el grupo nuevo, las actividades
+   de instalación y limpieza de closets, baños, lavanderías y ductos se crean
+   en el catálogo (o en la hoja CATALOGO) con «Grupo ML: Mueble completo», y
+   su tarifa va en la lista de su familia. El desarrollo solo agrega el grupo
+   y lo suma; no crea actividades.
+6. **Duda del 1.13 · la BOM con módulo no se cuenta dos veces.** Al generar el
+   plan, si algún módulo de la tipología tiene receta, la BOM de la tipología
+   no se usa (`plan_generate_wizard.py`, `sources = … [] if recipe_modules`).
+   El material no se duplica. Pero de ahí sale un **quinto caso de pérdida
+   silenciosa**: en una tipología con recetas por módulo, las filas de BOM
+   *sin* «Módulo» llegan a la BOM de la tipología y el plan no las usa.
+   Propuesta: se agrega a M113-01 como aviso `bom_without_module`, con la hoja
+   y la fila. En «Validar» cuenta como error.
+
+### Diseño
+
+**Clave interna de columna (M116-09 punto 3, CR-22 d).** La hoja de Odoo 19
+no tiene notas de celda ni rangos con nombre, y una fila técnica arriba
+correría todas las fórmulas, tablas dinámicas y referencias de las hojas ya
+creadas. Se usa una pestaña oculta `_CLAVES`, con una fila por columna leída:
+pestaña, clave y `=COLUMN(<pestaña>!<celda del encabezado>)`. La hoja
+actualiza esa referencia cuando el usuario inserta, mueve o borra columnas, y
+renombrar el encabezado no la cambia. Una columna borrada da `#REF` y se
+informa como «falta la columna obligatoria».
+- Al enviar, el servidor cambia el encabezado de cada columna leída por su
+  clave antes de armar el libro.
+- Los dos importadores ya reconocen el encabezado por su texto. El de
+  mobiliario ya acepta la clave; al del presupuesto (`COLUMNS`) se le agrega
+  la clave como un alias más.
+- El libro .xlsx importado directo sigue leyéndose por encabezado, como hoy.
+
+**Pestaña ERRORES común (M116-09 punto 4, M113-03).** Está en
+`al_construction_planner_spreadsheet`.
+- Columnas: Hoja, Fila, Columna, Mensaje, Tipo (Error / Aviso) e «Ir».
+- «Ir» es `HYPERLINK` a la pestaña, nativo; si el enlace admite celda, va a la
+  celda.
+- Arriba, una fila de estado: «Validada el [fecha] · N errores · M avisos».
+- Cada vertical entrega sus filas con el mismo formato: el presupuesto desde
+  `_parse` y el mobiliario desde `_analyze`.
+- Para el mobiliario, el análisis guarda además una lista
+  `issues` (hoja, fila, columna, mensaje, tipo). Los avisos de texto de la
+  vista previa del asistente no cambian.
+
+**Colores y producto (M116-09 puntos 1 y 2, CR-22 f y g).**
+- Colores en las dos plantillas: amarillo `#FFF2CC` para el dato y gris
+  `#D9D9D9` para la fórmula. El verde del mobiliario desaparece.
+- El producto se muestra «nombre · unidad · código». El código calculado lee
+  el último tramo después de « · ». En la hoja de presupuesto, INSUMOS lleva
+  la columna calculada «Para elegir», con el mismo formato.
+- «Traer de Odoo» del presupuesto escribe:
+  - el nombre del producto sin el código;
+  - la unidad en español;
+  - la etapa por su nombre.
+- APU y APU_DETALLE llevan la receta por nombre con el código al final, y la
+  primera fila y las primeras columnas quedan inmovilizadas.
+
+**Sin `N()` (CR-22 c).** La función no existe en la hoja de Odoo 19 (no está
+en el registro de funciones de `o_spreadsheet.js`). La plantilla del
+presupuesto pasa a `IFERROR(VALUE(x),0)`. Una migración reescribe esas
+fórmulas en las hojas ya creadas, en los datos y en la última foto, sin perder
+las revisiones (como la migración `5.20261016`).
+
+**Rendimiento en APU (CR-22 e).** «Traer de Odoo» escribe el rendimiento por
+día y las horas por jornada que la receta guarda en sus líneas por cuadrilla.
+Sin horas, usa las de la compañía. El envío ya recalcula la mano de obra por
+cuadrilla cuando hay rendimiento.
+
+**Hojas ya creadas (CR-22 b y f, M116-09).** Una migración por módulo:
+- agrega «Costo unitario sin APU» donde falta, y «Traer de Odoo» la llena para
+  las partidas sin receta (D1);
+- pasa a gris los encabezados de fórmula;
+- crea `_CLAVES`.
+
+Agrega o cambia formato; no borra datos del usuario.
+
+**Contrato de datos (M113-01).** Los cinco casos van en `_analyze` de
+`master_import_v18.py`:
+- `module_unknown`: BOM o PIEZAS con un módulo que no está en MODULOS de su
+  tipología, ni en el libro ni en la obra;
+- `piece_product_unknown`: tablero que no existe y no está en PRODUCTOS NUEVOS;
+- `obra_date_invalid`: la fecha no se puede leer. Además, `_apply_obra` acepta
+  el número de serie de la hoja (días desde el 30-dic-1899), «AAAA-MM-DD» y
+  «DD-MM-AAAA»;
+- error de fila en ARBOL: trae Agrupador y la plantilla de la obra no tiene
+  niveles de agrupador. Lleva el mensaje del pedido;
+- `bom_without_module`: el caso nuevo de la ruta 6.
+
+También: «Tipo de módulo» escrito ya no deja vacío el tipo especial. El tipo
+especial se deduce del nombre aunque la fila traiga «Especial». Desde la hoja,
+los casos 1, 2, 4 y 5 son errores y bloquean el envío. En el asistente directo
+siguen siendo avisos. La vista previa cuenta las piezas y las líneas que no se
+importarán.
+
+**Solo las pestañas del maestro (M113-02).** `collectSheets(model, names)`
+recoge solo las pestañas pedidas y corta en la última fila con datos antes de
+leer celda por celda (`getSheetZone` más la última fila no vacía). La lista
+llega en `_get_spreadsheet_metadata`:
+- mobiliario: `SHEETS` más `_CLAVES`;
+- presupuesto: `BOOK_SHEETS` más `_CLAVES`.
+
+**Menú del mobiliario (M113-03).** «Planificación de obra» con `isVisible:
+isFurniture` y las opciones del pedido en su orden. La de 4b y las de 4c
+aparecen con su bloque.
+- «Validar» llama a `action_construction_validate_furniture(sheets)`. Arma el
+  libro como el envío, ejecuta `_analyze` sin escribir y devuelve las filas de
+  ERRORES.
+- «Enviar al planificador» valida primero. Con errores no abre el asistente:
+  lleva a ERRORES y dice cuántos hay.
+- La opción de Archivo se queda.
+
+**Importar Excel a la hoja (M113-04).** Asistente transitorio
+`construction.spreadsheet.import.wizard` en el puente de la hoja de
+mobiliario.
+- Campos: archivo; modo (reemplazar / agregar al final); las tres opciones
+  del pedido; y la revisión por pestaña antes de escribir (filas, columnas
+  reconocidas, columnas extra y resultado de `_analyze`).
+- El servidor lee el libro con `_read_workbook` y devuelve las filas por
+  clave.
+- El cliente escribe con `UPDATE_CELL` en la columna de cada clave, que busca
+  en `_CLAVES`, no por posición. No toca las columnas calculadas.
+- El código del producto del archivo se convierte en el texto de «Producto».
+  La categoría se llena con la del producto si el archivo no la trae.
+- Los códigos desconocidos quedan como texto y se agregan a PRODUCTOS NUEVOS.
+- Las columnas extra van a la derecha, con encabezado gris. Las pestañas que no
+  son del maestro se copian.
+- Antes de escribir guarda una versión. Si faltan filas, amplía la hoja: las
+  filas del archivo más 10 %.
+- Al terminar ejecuta «Validar» y deja un mensaje en la obra.
+- «Descargar formato de carga» reutiliza `action_download_template`.
+
+**Filas (M113-05).** `construction_spreadsheet_rows` pasa a 0 = «Automático»
+y se ve en la ficha de la obra, junto a «Hoja de trabajo». En automático la
+hoja nace con 300 filas y la importación la amplía.
+
+**Elegir materiales (M113-06).**
+- **Listas:** «Grupo de categoría», «Categoría» (ruta corta «ACCESORIOS /
+  OTROS») y «Producto», las tres con validación nativa.
+- **Ajuste nuevo:** «Categoría raíz de materiales de la hoja». Sin él, todas
+  las categorías menos las excluidas.
+- **Rendimiento:** la validación nativa por rango exige una referencia fija;
+  no admite un rango calculado con `INDEX` o `MATCH` (`isValueInRange`,
+  `rangeReference`). Por eso `_LISTAS` tiene dos bloques:
+  - una fila por categoría con su `FILTER`: menos de 100 en total;
+  - una fila por fila de datos, con `INDEX(…, MATCH(categoría), 0)` sobre el
+    bloque de categorías, sin `FILTER`. La regla de cada celda «Producto»
+    apunta a su fila, como hoy.
+  - El ancho de `_LISTAS` sale de la categoría con más productos. Hoy son 60
+    columnas, y una categoría más grande se corta.
+- **Materiales de la obra:** van primero en la lista de su categoría
+  (`VSTACK` con `UNIQUE`; las dos son nativas).
+- **Columnas calculadas:** «Unidad del producto (calc.)» y «Costo unitario
+  (calc.)».
+- **Formato condicional:** rojo para el código fuera del maestro y ámbar para
+  el costo 0.
+- **«Reemplazar un material…»:** va en 4c, con el panel.
+
+**ML de mueble completo (M116-10).**
+- `ML_GROUPS` suma `('full', 'Mueble completo')`.
+- La tipología tiene «ML de mueble completo» (`ml_full`) y «ML total» (bajo +
+  alto + completo).
+- La generación del plan, la medición, el árbol de recursos y la plantilla
+  tratan «Mueble completo» como un grupo más.
+- Las actividades por ML de ese grupo toman los ML de los módulos de ese
+  grupo.
+- El formato de carga y la conversión del 1.13 ponen «Mueble completo» a los
+  muebles completos. Los zócalos siguen en «Sin ML».
+
+**Planificar en la hoja (4c).**
+- **INICIO (M113-07):** la primera pestaña, con fórmulas sobre las pestañas
+  del maestro.
+  - Estado de la hoja, ruta de 8 pasos con su semáforo, indicadores, dos
+    gráficos y «Lo que falta».
+  - El ML que muestra es el total de M116-10.
+- **Panel «Planificación» (M113-08):** `sidePanelRegistry`.
+  - Muestra la pestaña activa, la ayuda de la columna (de `SHEETS`) y los
+    enlaces a Odoo.
+  - Acciones que guardan versión antes de escribir: copiar piso, asignar
+    tipología, numerar ambientes repetidos, crear variante, reemplazar un
+    material y ver ficha.
+  - Clic derecho en la celda (`cellMenuRegistry`).
+- **FICHA (M113-09):** fórmulas y una acción para escribir el precio en
+  VENTA. «‹ Anterior» y «Siguiente ›» son acciones del panel.
+- **PROGRAMA (M113-10):**
+  - Entradas, matriz piso × semana con formato condicional e indicadores.
+  - La semana empieza el día de la obra (`_construction_period`), con la
+    regla de M116-07.
+  - Solo Inicio y Fin pasan a OBRA (ruta 2).
+- **CONTROL y «Traer de Odoo» (M113-11):**
+  - Campo `spreadsheet_id` en el asistente del maestro, para guardar la
+    versión al importar.
+  - Estado de la hoja en `documents.document`: borrador / importada /
+    validada / enviada, con fecha y versión.
+  - «Traer de Odoo» del mobiliario y CONTROL por piso, con un método que
+    entrega los conteos del planificador (muebles, módulos a armar y ML total).
+- **Ficha de la obra (M113-12):** botón inteligente con la versión y el
+  estado; bloque «Hoja de trabajo» de solo lectura, salvo las filas.
+
+### Pruebas de la etapa 4
+
+- `al_construction_planner_suite/tests/test_package_116_stage4.py`:
+  - un libro con los cinco casos de M113-01 (avisos en el asistente, errores
+    en «Validar» y la obra sin datos parciales);
+  - encabezado renombrado y columna obligatoria borrada (`_CLAVES`), en las
+    dos hojas;
+  - fechas de OBRA como número y como texto;
+  - ML de mueble completo en la tipología y en una actividad por ML;
+  - asistente «Importar Excel a la hoja» (lectura y análisis);
+  - migración de una hoja de presupuesto anterior (sin `N(`, con la columna
+    D1, encabezados grises).
+- Pruebas JS de la hoja: escritura del asistente de importación, `collectSheets`
+  con la lista de pestañas, ERRORES con «Ir».
+- Prueba de punta a punta del 1.13 en dev1 con el libro de la obra de prueba
+  de mobiliario: la corre ALTA, con la autorización que ya dio Vicente.
+
 ## Estimación
 
 Días de desarrollo con pruebas automáticas, sin contar las pruebas en las
@@ -597,5 +862,5 @@ requerimientos; se precisan al diseñarlas.
 | 1 · Base común | 1 (hecha) | — |
 | 2 · Requerimiento de obra y contratas | 8 a 10 | 2b (analítica, migración, D1 a D3): 4 a 5 · 2c (intervención): 2 a 3 · 2a: 2 |
 | 3 · Cronograma | 6 a 7 | 3a: 2 (panel ampliable 1) · 3b: 4 a 5 (etapa actual con sus disparadores 2, carga semanal 1.5, informe 0.5) |
-| 4 · Hoja de trabajo | 7 a 9 | M113-01 a 04 y M116-09 (contrato de datos, pestaña ERRORES común, importar Excel) y las pestañas nuevas |
-| Total | 22 a 27 | |
+| 4 · Hoja de trabajo | 8 a 10 | 4a (claves de columna, ERRORES común, cinco casos de M113-01, migraciones de las hojas): 3 · 4b (importar Excel a la hoja, listas por categoría, mueble completo): 3 a 3.5 · 4c (INICIO, panel y acciones, FICHA, PROGRAMA, CONTROL): 2.5 a 3.5 |
+| Total | 23 a 28 | |
