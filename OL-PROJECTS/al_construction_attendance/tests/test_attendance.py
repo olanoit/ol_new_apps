@@ -152,3 +152,32 @@ class TestConstructionAttendance(HttpCase, PlannerCommon):
         self.assertEqual(entry[self.modf.plan_id._column_name()], self.modf)
         allocation.action_draft()
         self.assertFalse(allocation.analytic_line_ids.exists())
+
+    def test_monthly_labor_cost_split_by_crew_days(self):
+        """Paquete 1.16, D2: el cierre reparte el costo entre las líneas del
+        plan con jornales ejecutados; lo que no tiene turno queda en la sede."""
+        if not self.project.account_id:
+            self.project._create_analytic_account()
+        self.employee.sudo().hourly_cost = 10.0
+        self.env['hr.attendance'].create([
+            {'employee_id': self.employee.id, 'l10n_pe_construction_site_id': self.site.id,
+             'check_in': datetime(2026, 9, day, 13, 0), 'check_out': datetime(2026, 9, day, 21, 0)}
+            for day in (1, 2)])
+        plan_line = self.env['construction.resource.plan.line'].create({
+            'plan_id': self.plan.id, 'task_id': self.space_501.id, 'resource_type': 'labor',
+            'activity_id': self.act_inst_low.id, 'stage': 'installation', 'qty_planned': 8,
+            'price_unit_planned': 10.0, 'product_uom_id': self.meter.id,
+            'analytic_distribution': {'%s,%s' % (self.project.account_id.id, self.ins.id): 100.0}})
+        self.env['construction.crew.day'].create({
+            'kind': 'executed', 'project_id': self.project.id, 'plan_line_id': plan_line.id,
+            'employee_id': self.employee.id, 'date': date(2026, 9, 1), 'days': 1, 'hours': 8})
+        allocation = self.env['construction.labor.cost.allocation'].create(
+            {'date_from': date(2026, 9, 1)})
+        allocation.action_compute()
+        self.assertIn('50.0 %', allocation.line_ids.plan_share_note)
+        allocation.action_post()
+        entries = allocation.analytic_line_ids
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(sorted(entries.mapped('amount')), [-80.0, -80.0])
+        for entry in entries:
+            self.assertEqual(entry[self.modf.plan_id._column_name()], self.modf)

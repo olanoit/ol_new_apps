@@ -11,3 +11,4 @@ from . import construction_amounts
 from . import project_task_measured
 from . import construction_stage_bom
 from . import construction_site_dispatch
+from . import construction_rubro

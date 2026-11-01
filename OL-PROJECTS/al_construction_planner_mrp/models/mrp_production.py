@@ -90,6 +90,30 @@ class MrpProduction(models.Model):
         return bool(self.env['mrp.bom']._bom_find(
             product, company_id=self.company_id.id, bom_type='normal')[product])
 
+    def _construction_rubro_shares(self):
+        """Paquete 1.16, D1: {cuenta Rubro (o vacía): fracción} del material
+        planificado de los ambientes de la orden, agrupado por la familia de
+        su tipología. Vacío si ningún ambiente tiene cuenta Rubro."""
+        self.ensure_one()
+        spaces = self.construction_space_task_ids
+        if not spaces or not self.construction_plan_id:
+            return {}
+        # El plan lo lee el sistema por quien confirma en planta.
+        Line_sudo = self.env['construction.resource.plan.line'].sudo()
+        amounts = dict(Line_sudo._read_group(
+            [('plan_id', '=', self.construction_plan_id.id), ('resource_type', '=', 'material'),
+             ('space_task_id', 'in', spaces.ids)],
+            ['space_task_id'], ['amount_planned:sum']))
+        Account = self.env['account.analytic.account']
+        by_rubro = defaultdict(float)
+        for space in spaces.sudo():
+            by_rubro[space._construction_rubro_account().sudo(False) or Account] += \
+                amounts.get(space, 0.0)
+        total = sum(by_rubro.values())
+        if not total or not any(by_rubro):
+            return {}
+        return {rubro: amount / total for rubro, amount in by_rubro.items() if amount}
+
     def _construction_plan_lines(self, product):
         """Líneas de material del plan en los ambientes y las etapas de la OF."""
         self.ensure_one()

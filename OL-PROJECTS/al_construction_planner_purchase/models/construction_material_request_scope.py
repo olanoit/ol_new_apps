@@ -448,7 +448,8 @@ class ConstructionMaterialRequestLine(models.Model):
             node = node.parent_id
         return ' / '.join(reversed(names))
 
-    @api.depends('construction_stage', 'product_id', 'task_id')
+    @api.depends('construction_stage', 'product_id', 'task_id',
+                 'task_id.construction_analytic_account_id')
     def _compute_analytic_distribution(self):
         """Paquete 1.14, M114-04: la línea de obra con etapa y material que no
         viene del plan lleva, además de la obra, las cuentas de las reglas
@@ -482,6 +483,12 @@ class ConstructionMaterialRequestLine(models.Model):
         accounts = Account.browse(int(a) for a in next(iter(base)).split(','))
         accounts |= self.env['construction.analytic.rule']._accounts_for(
             request.company_id, 'material', stage, self.product_id.categ_id)
+        # Paquete 1.16, M116-05: las cuentas de los niveles de su ruta y el
+        # rubro de su ambiente, como la línea del plan.
+        task = self.task_id or request.task_id
+        if task:
+            accounts |= task._construction_path_accounts() \
+                | (task.construction_space_task_id or task)._construction_rubro_account()
         return {','.join(str(a) for a in sorted(accounts.ids)): 100.0}
 
     def _construction_scope_plan_lines(self, plan):

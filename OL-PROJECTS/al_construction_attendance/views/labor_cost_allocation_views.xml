@@ -57,6 +57,7 @@
                                     <field name="hours" sum="Horas"/>
                                     <field name="hourly_cost"/>
                                     <field name="amount" sum="Total"/>
+                                    <field name="plan_share_note" optional="show"/>
                                     <field name="currency_id" column_invisible="True"/>
                                 </list>
                             </field>

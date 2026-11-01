@@ -173,6 +173,37 @@ class ConstructionLaborCostAllocation(models.Model):
             vals[account.plan_id._column_name()] = account.id
         return vals
 
+    def _analytic_vals_list(self, line):
+        """Paquete 1.16, D2: el costo de la persona se reparte entre las
+        líneas del plan donde trabajó en el periodo, por sus horas ejecutadas
+        de cuadrilla, cada parte con la distribución completa de su línea
+        (obra, etapa, MODF, nivel, rubro). Lo que no tiene turno asignado
+        queda como antes: obra, etapa de la sede y MODF."""
+        base = self._analytic_vals(line)
+        shares = line._construction_plan_shares()
+        if not shares:
+            return [base]
+        currency = self.currency_id
+        modf = self.company_id.construction_labor_cost_account_id
+        result, assigned = [], 0.0
+        for plan_line, fraction in shares.items():
+            amount = currency.round(line.amount * fraction)
+            assigned += amount
+            vals = dict(base, amount=-amount, unit_amount=round(line.hours * fraction, 2))
+            Account = self.env['account.analytic.account']
+            for key in (plan_line.analytic_distribution or {}):
+                accounts = Account.browse(int(a) for a in key.split(',') if a).exists()
+                for account in accounts | modf.filtered(
+                        lambda m: m.root_plan_id not in accounts.root_plan_id):
+                    vals[account.root_plan_id._column_name()] = account.id
+                break
+            result.append(vals)
+        rest = currency.round(line.amount - assigned)
+        if not currency.is_zero(rest):
+            result.append(dict(base, amount=-rest, unit_amount=round(
+                line.hours * (1 - sum(shares.values())), 2)))
+        return result
+
     def action_post(self):
         for allocation in self:
             if allocation.state != 'draft':
@@ -181,7 +212,7 @@ class ConstructionLaborCostAllocation(models.Model):
             if not lines:
                 raise UserError(self.env._('%s no tiene costo que publicar.', allocation.name))
             self.env['account.analytic.line'].create(
-                [allocation._analytic_vals(line) for line in lines])
+                [vals for line in lines for vals in allocation._analytic_vals_list(line)])
             allocation.state = 'posted'
         return True
 
@@ -211,11 +242,54 @@ class ConstructionLaborCostAllocationLine(models.Model):
     amount = fields.Monetary(string='Monto', compute='_compute_amount', store=True,
                              currency_field='currency_id')
 
+    plan_share_note = fields.Char(
+        string='Reparto', compute='_compute_plan_share_note',
+        help='Paquete 1.16, D2: cómo se reparte el costo entre las líneas del plan, según los '
+             'jornales ejecutados de cuadrilla del periodo; el resto queda en la sede.')
+
     @api.depends('hours', 'hourly_cost')
     def _compute_amount(self):
         for line in self:
             line.amount = line.currency_id.round(line.hours * line.hourly_cost) \
                 if line.currency_id else line.hours * line.hourly_cost
+
+    def _construction_plan_shares(self):
+        """{línea del plan: fracción de las horas de la persona} según sus
+        jornales ejecutados de cuadrilla con línea del plan en el periodo y en
+        la obra de la sede. La suma no pasa de 1."""
+        self.ensure_one()
+        project = self.site_id.project_id
+        allocation = self.allocation_id
+        if not project or not self.hours or 'construction.crew.day' not in self.env:
+            return {}
+        # Los jornales los lee el sistema: quien cierra el mes es de RR. HH.
+        days = self.env['construction.crew.day'].sudo()._read_group([
+            ('kind', '=', 'executed'), ('employee_id', '=', self.employee_id.id),
+            ('project_id', '=', project.id), ('plan_line_id', '!=', False),
+            ('date', '>=', allocation.date_from), ('date', '<=', allocation.date_to)],
+            ['plan_line_id'], ['hours:sum'])
+        hours = {plan_line: total for plan_line, total in days if total}
+        executed = sum(hours.values())
+        if not executed:
+            return {}
+        base = max(self.hours, executed)
+        return {plan_line: total / base for plan_line, total in hours.items()}
+
+    @api.depends('hours', 'employee_id', 'site_id', 'allocation_id.date_from',
+                 'allocation_id.date_to')
+    def _compute_plan_share_note(self):
+        for line in self:
+            shares = line._construction_plan_shares() if line._origin.id else {}
+            if not shares:
+                line.plan_share_note = False
+                continue
+            parts = ['%s %s %%' % (plan_line.task_id.display_name or plan_line.display_name,
+                                   round(fraction * 100, 1))
+                     for plan_line, fraction in shares.items()]
+            rest = 1 - sum(shares.values())
+            if rest > 0.0001:
+                parts.append(self.env._('sede %s %%', round(rest * 100, 1)))
+            line.plan_share_note = ' · '.join(parts)
 
 
 class AccountAnalyticLine(models.Model):

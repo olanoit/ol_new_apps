@@ -22,7 +22,8 @@ class ConstructionPlanExceedWizard(models.TransientModel):
         rows = order_sudo._construction_budget_excess()
         policies = [row[0]._exceed_policy_for('material') for row in rows]
         lines = [{
-            'name': budget_line.display_name if budget_line else self.env._(
+            'name': ', '.join(budget_line[:3].mapped('display_name')) + (
+                ' …' if len(budget_line) > 3 else '') if budget_line else self.env._(
                 '%s (combinación fuera del presupuesto)', plan.display_name),
             'qty_remaining': budget - used,
             'qty_requested': amount,

@@ -14,7 +14,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | Etapa | Contenido | Estado |
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
-| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Diseño confirmado; bloque 2a desarrollado |
+| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Diseño confirmado; bloques 2a y 2b desarrollados |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Pendiente |
 | 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
 
@@ -279,6 +279,32 @@ la implementación:
   distribución de las líneas de plan abiertas y regenera el presupuesto nativo
   de los planes aprobados o en ejecución. No toca apuntes contabilizados. Sin
   plan en ningún nivel, no hace nada.
+
+### 2b · Implementación
+
+Desarrollado. Detalles:
+
+- Plantilla de niveles: «Plan analítico» y «Modo de la cuenta» por nivel.
+  La tarea guarda su cuenta (`construction_analytic_account_id`); la propia
+  (`construction_analytic_own`) sigue el nombre y se archiva con la tarea si
+  nadie más la usa. El código por obra es «cuenta de la obra-número de la
+  partida».
+- La hoja: columnas «Especialidad (catálogo)» y «Sub-especialidad
+  (catálogo)» al final de PRESUPUESTO; el valor se busca por código o por
+  nombre en el plan del nivel. Un valor sin cuenta queda avisado en la
+  cotización y el nivel sigue su modo (mixto: cuenta por obra).
+- Rubro: «Rubros (analítica)» en Configuración del plan
+  (`construction.rubro.account`, en el puente de mobiliario). El núcleo deja
+  los ganchos `_construction_extra_analytic_accounts` (línea) y
+  `_construction_rubro_account` (tarea).
+- I-01: `al_construction_material_request` depende ahora de
+  `project_stock_account` para que su distribución mande sobre la del
+  proyecto en el traslado a la obra.
+- D3: `res.company.construction_budget_control_plan_ids`, en Ajustes junto a
+  «Control de consumo».
+- Punto 7 (obras ya cargadas): botón «Aplicar analítica a las obras» en la
+  plantilla de niveles. Al actualizar el módulo ningún nivel tiene plan
+  todavía, así que la migración se hace después de configurar, con el botón.
 
 ### 2c · Intervenir contrata
 

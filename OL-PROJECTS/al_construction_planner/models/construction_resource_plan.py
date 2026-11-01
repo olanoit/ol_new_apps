@@ -588,6 +588,11 @@ class ConstructionResourcePlan(models.Model):
             plan.with_context(al_construction_approving=True).write(dict(
                 values, state='approved', date_approved=fields.Datetime.now()))
 
+    def _construction_refresh_budget(self):
+        """Gancho: el puente de presupuesto regenera el presupuesto nativo con
+        la distribución actual de las líneas (paquete 1.16, M116-05)."""
+        return True
+
     def _construction_on_approve(self, previous):
         """Gancho de la aprobación (antes de reemplazar ``previous``): devuelve
         valores que se escriben con el estado «Aprobado». El puente de
@@ -1250,6 +1255,12 @@ class ConstructionResourcePlanLine(models.Model):
                 result[line]['material'] += qty * line.price_unit_planned
         return result
 
+    def _construction_extra_analytic_accounts(self):
+        """Cuentas que una vertical suma a la distribución de la línea
+        (gancho; mobiliario suma la cuenta Rubro de la tipología)."""
+        self.ensure_one()
+        return self.env['account.analytic.account']
+
     def _apply_analytic_rules(self):
         """Distribución de la línea con la cuenta de la obra más las cuentas de
         la regla analítica que le toca (etapa, partida, área: M15-12). Sin
@@ -1264,7 +1275,11 @@ class ConstructionResourcePlanLine(models.Model):
             key = (line.company_id.id, line.resource_type, line.stage, categ.id)
             if key not in cache:
                 cache[key] = Rule._accounts_for(line.company_id, line.resource_type, line.stage, categ)
-            accounts = project_account | cache[key]
+            # Paquete 1.16, M116-05: las cuentas de los niveles de la ruta y
+            # las que agregue una vertical (el rubro de mobiliario).
+            path_task = line.task_id or line.space_task_id
+            accounts = project_account | cache[key] | path_task._construction_path_accounts() \
+                | line._construction_extra_analytic_accounts()
             distribution = {','.join(str(a) for a in sorted(accounts.ids)): 100.0}
             if line.analytic_distribution != distribution:
                 line.analytic_distribution = distribution

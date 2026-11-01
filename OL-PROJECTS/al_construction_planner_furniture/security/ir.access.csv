@@ -42,3 +42,6 @@ access_construction_module_dispatch_wizard_line_user,construction.module.dispatc
 access_construction_projection_import_wizard_plan_planner,construction.projection.import.wizard plan_planner,construction.projection.import.wizard,al_construction_planner.group_planner_plan_planner,crud,
 access_construction_projection_import_column_plan_planner,construction.projection.import.column plan_planner,construction.projection.import.column,al_construction_planner.group_planner_plan_planner,crud,
 access_construction_space_measured_wizard_user,construction.space.measured.wizard user,construction.space.measured.wizard,al_construction_planner.group_planner_user,crud,
+access_construction_rubro_account_progress,construction.rubro.account progress,construction.rubro.account,al_construction_planner.group_planner_progress,r,
+access_construction_rubro_account_manager,construction.rubro.account manager,construction.rubro.account,al_construction_planner.group_planner_manager,crud,
+rule_construction_rubro_account_company,Cuenta Rubro: compañías del usuario,construction.rubro.account,,crud,"[('company_id', 'in', company_ids)]"

@@ -300,7 +300,11 @@ class ProjectProject(models.Model):
                     'cost_slack_pct': line.construction_cost_slack_pct or '',
                     'cost_slack': line.construction_cost_slack or '',
                     'margin_pct': line.construction_margin_pct or '',
-                    'margin': line.construction_margin_amount or ''})
+                    'margin': line.construction_margin_amount or '',
+                    # Paquete 1.16, M116-05: catálogo de los dos primeros niveles.
+                    'specialty_catalog': (line.construction_budget_catalog or ['', ''])[0] or '',
+                    'subspecialty_catalog': ((line.construction_budget_catalog or ['', ''])
+                                             + [''])[1] or ''})
                 if task:
                     rows['PLAN'].append([item, name, modes.get(task.construction_execution_mode,
                                                                ''), '', '', '', ''])

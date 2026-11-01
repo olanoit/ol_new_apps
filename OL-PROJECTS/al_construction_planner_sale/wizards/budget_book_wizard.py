@@ -92,6 +92,11 @@ COLUMNS = {
         ('amount_offered', ('Costo ofertado',), False),
         ('subtotal', ('Parcial de venta',), False),
         ('reserve', ('Reserva por holguras',), False),
+        # Paquete 1.16, M116-05: cuenta analítica compartida de los dos
+        # primeros niveles (catálogo), al final para no mover las fórmulas.
+        ('specialty_catalog', ('Especialidad (catálogo)', 'Especialidad (catalogo)'), False),
+        ('subspecialty_catalog', ('Sub-especialidad (catálogo)', 'Sub-especialidad (catalogo)',
+                                  'Subespecialidad (catálogo)'), False),
     ],
 }
 # Columnas de PRESUPUESTO que son fórmulas (gris); la unidad lo es solo con APU.
@@ -376,6 +381,10 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             if item and not apu and not _text(row.get('uom')) and not _number(
                     row.get('qty_real')) and cost_no_apu is None and cost_real is None:
                 book['titles'][item] = _text(row.get('name')) or item
+                catalog = _text(row.get('specialty_catalog')) or _text(
+                    row.get('subspecialty_catalog'))
+                if catalog:
+                    book.setdefault('title_catalog', {})[item] = catalog
                 continue
             if item:
                 items[item] += 1
@@ -388,6 +397,8 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                     item or _text(row.get('name')))))
             book['partidas'].append({
                 'cost_no_apu': cost_no_apu,
+                'catalog': [_text(row.get('specialty_catalog')),
+                            _text(row.get('subspecialty_catalog'))],
                 'item': item, 'specialty': _text(row.get('specialty')),
                 'subspecialty': _text(row.get('subspecialty')), 'name': _text(row.get('name')),
                 'apu': apu, 'uom': uom_of(row.get('uom'), 'PRESUPUESTO', row['_row'], False),
@@ -830,6 +841,7 @@ class ConstructionBudgetBookWizard(models.TransientModel):
                 'name': label, 'sequence': sequence,
                 'construction_budget_item': partida['item'] or False,
                 'construction_budget_path': path,
+                'construction_budget_catalog': self._partida_catalog(book, partida),
                 'construction_qty_real': partida['qty_real'],
                 'construction_qty_slack_pct': partida['qty_slack_pct'],
                 'construction_qty_slack': partida['qty_slack'],
@@ -853,6 +865,19 @@ class ConstructionBudgetBookWizard(models.TransientModel):
         partidas = touched.filtered(lambda l: not l.display_type)
         self._apply_footer(book, sequence)
         return partidas
+
+    @api.model
+    def _partida_catalog(self, book, partida):
+        """Catálogo de los dos primeros niveles de la ruta (M116-05): el de
+        la fila o, si no lo trae, el de la fila de título de ese nivel."""
+        codes = budget_code_levels(partida['item'])[:-1]
+        titles = book.get('title_catalog', {})
+        catalog = []
+        for depth in range(2):
+            value = (partida.get('catalog') or [None, None])[depth] or (
+                titles.get(codes[depth]) if depth < len(codes) else None)
+            catalog.append(value or False)
+        return catalog if any(catalog) else False
 
     @api.model
     def _partida_path(self, book, partida):

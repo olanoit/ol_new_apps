@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Paquete 1.16, M116-05: familia de tipología → cuenta Rubro. -->
+    <record id="construction_rubro_account_view_list" model="ir.ui.view">
+        <field name="name">construction.rubro.account.list</field>
+        <field name="model">construction.rubro.account</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="family"/>
+                <field name="account_id" options="{'no_create': True}"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_construction_rubro_account" model="ir.actions.act_window">
+        <field name="name">Rubros (analítica)</field>
+        <field name="res_model">construction.rubro.account</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Asigne una cuenta Rubro a cada familia de tipología</p>
+            <p>La cuenta se suma a la analítica de las líneas del plan y reparte el consumo de las órdenes de fabricación. Las familias sin cuenta no suman nada.</p>
+        </field>
+    </record>
+</odoo>

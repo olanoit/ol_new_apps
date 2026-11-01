@@ -24,13 +24,16 @@ Plan: ``docs/construccion/PLAN_MODULO_al_construction_material_request.md``.
     'category': 'OL-PROJECTS/Apps',
     # Ícono propio de la app, con el estilo de Odoo 19 (icon.svg 50×50).
     'icon': '/al_construction_material_request/static/description/icon.png',
-    'version': '31.20261027',
+    'version': '32.20261101',
     # LGPL-3 y no OPL-1: base_tier_validation es AGPL-3 (plan, F0.4).
     'license': 'LGPL-3',
     'depends': [
         'analytic',
         # stock.picking.project_id
         'project_stock',
+        # Apunte analítico del traslado a la obra (paquete 1.16, I-01): el
+        # gancho de la distribución debe correr después del suyo.
+        'project_stock_account',
         # purchase_stock incluido
         'purchase_request',
         'base_tier_validation',

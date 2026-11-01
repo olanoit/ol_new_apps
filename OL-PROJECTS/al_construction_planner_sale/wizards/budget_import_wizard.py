@@ -241,6 +241,11 @@ class SaleOrderLine(models.Model):
         string='Ruta en la hoja', copy=True,
         help='Código y nombre de cada nivel por encima de la partida en la hoja de presupuesto '
              '(paquete 1.16, M116-11): el envío crea los niveles del árbol con esta ruta.')
+    construction_budget_catalog = fields.Json(
+        string='Catálogo de la hoja', copy=True,
+        help='Columnas «Especialidad (catálogo)» y «Sub-especialidad (catálogo)» de la fila '
+             '(paquete 1.16, M116-05): la cuenta analítica compartida de los dos primeros '
+             'niveles de la ruta.')
 
 
 class SaleOrder(models.Model):
@@ -315,24 +320,39 @@ class SaleOrder(models.Model):
         own_recipes = self._construction_copy_quote_recipes(project)
         cache = {}
 
-        def node(code, name, level, parent):
+        def node(code, name, level, parent, catalog=None):
             label = ' '.join(filter(None, [code, name])) if code and not (
                 name or '').startswith(code) else name
             key = (parent.id, level.id, label)
+            # Paquete 1.16, M116-05: la cuenta del catálogo del nivel, si la
+            # fila la trae (modo Catálogo o Mixto); nunca sale del título.
+            account = Task._construction_catalog_account(level, catalog) \
+                if level.analytic_mode in ('catalog', 'mixed') else Task.env[
+                    'account.analytic.account']
             if key not in cache:
                 cache[key] = Task.search([
                     ('project_id', '=', project.id), ('parent_id', '=', parent.id),
                     ('construction_level_line_id', '=', level.id), ('name', '=', label)],
                     limit=1) or Task.create({
                         'name': label, 'project_id': project.id, 'parent_id': parent.id,
-                        'construction_level_line_id': level.id, 'user_ids': False})
-            return cache[key]
+                        'construction_level_line_id': level.id, 'user_ids': False,
+                        'construction_analytic_account_id': account.id})
+            task = cache[key]
+            if account and not task.construction_analytic_account_id:
+                task.construction_analytic_account_id = account
+            return task
 
         created = Task
+        unknown = set()
         for path, line in groups:
             parent = Task
+            catalog = line.construction_budget_catalog or []
             for depth, (code, name) in enumerate(path):
-                parent = node(code, name, levels[depth], parent)
+                value = catalog[depth] if depth < len(catalog) else None
+                parent = node(code, name, levels[depth], parent, value)
+                if value and levels[depth].analytic_plan_id \
+                        and not parent.construction_analytic_account_id:
+                    unknown.add((value, levels[depth].analytic_plan_id.name))
             apu_node = node(False, line.name.splitlines()[0], levels[len(path)], parent)
             apu_node.write(dict(self._construction_partida_values(line, project, own_recipes),
                                 construction_has_apu=True))
@@ -340,6 +360,10 @@ class SaleOrder(models.Model):
         self.message_post(body=self.env._(
             '%(count)s nodos con APU creados o actualizados en los niveles de %(project)s.',
             count=len(created), project=project.display_name))
+        if unknown:
+            self.message_post(body=self.env._(
+                'Valores de catálogo sin cuenta en su plan analítico: %s.',
+                ', '.join('%s (%s)' % item for item in sorted(unknown))))
         return {'type': 'ir.actions.act_window', 'res_model': 'project.task',
                 'view_mode': 'list,form', 'domain': [('id', 'in', created.ids)],
                 'name': self.env._('Partidas de %s', project.display_name)}
