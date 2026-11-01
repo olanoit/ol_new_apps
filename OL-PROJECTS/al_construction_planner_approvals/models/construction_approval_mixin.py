@@ -191,6 +191,7 @@ class ConstructionApprovalMixin(models.AbstractModel):
                 'percent', info['values'].get('all', {}).get('percent', 0.0)),
             'construction_origin_pct_set': True,
             'product_line_ids': [fields.Command.create(vals) for vals in info['lines']],
+            **info.get('extra_vals', {}),
         })
         request_sudo.write({'approver_ids': [fields.Command.clear()] + [
             fields.Command.create(vals) for vals in approver_values]})

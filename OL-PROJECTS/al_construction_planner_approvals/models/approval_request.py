@@ -18,6 +18,7 @@ CHANGE_SUMMARY = [
     ('quantity', 'Cantidad'),
     ('material', 'Fuera del plan'),
     ('both', 'Ambos'),
+    ('no_plan', 'Material fuera del plan (obra sin plan)'),
 ]
 
 
@@ -84,6 +85,8 @@ class ApprovalRequest(models.Model):
     # Paquete 1.11, M111-05: el % lo da el documento al crear la solicitud.
     construction_origin_pct = fields.Float(digits=(16, 2), readonly=True, copy=False)
     construction_origin_pct_set = fields.Boolean(readonly=True, copy=False)
+    # Paquete 1.16, M114-02: la obra no tenía plan al pedir el material.
+    construction_no_plan = fields.Boolean(string='Obra sin plan', readonly=True, copy=False)
     construction_change_summary = fields.Selection(
         CHANGE_SUMMARY, string='En el plan', compute='_compute_construction_summary', store=True,
         help='Cantidad: todos los materiales están en el plan y piden más. Fuera del plan: '
@@ -95,7 +98,7 @@ class ApprovalRequest(models.Model):
         help='Con un material, la cantidad con su unidad; con varios, cuántos son (no se suman '
              'unidades distintas).')
 
-    @api.depends('product_line_ids.construction_change_type',
+    @api.depends('construction_no_plan', 'product_line_ids.construction_change_type',
                  'product_line_ids.construction_diff_pct', 'product_line_ids.construction_qty_diff',
                  'construction_origin_pct', 'construction_origin_pct_set')
     def _compute_construction_summary(self):
@@ -105,8 +108,8 @@ class ApprovalRequest(models.Model):
             request.construction_excess_pct = request.construction_origin_pct \
                 if request.construction_origin_pct_set \
                 else max(lines.mapped('construction_diff_pct'), default=0.0)
-            request.construction_change_summary = 'both' if len(changes) > 1 else (
-                changes.pop() if changes else False)
+            request.construction_change_summary = 'no_plan' if request.construction_no_plan \
+                else 'both' if len(changes) > 1 else (changes.pop() if changes else False)
             request.construction_excess_lines = len(lines)
             if len(lines) == 1:
                 request.construction_excess_qty_label = '%s %s' % (

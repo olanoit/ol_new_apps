@@ -8,7 +8,7 @@ from odoo import Command, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_compare
 
-from odoo.addons.al_construction_planner.models.common import stage_selection
+from odoo.addons.al_construction_planner.models.common import EXECUTION_MODES, stage_selection
 
 from ..models.construction_contract_condition import compute_cascade
 
@@ -92,6 +92,16 @@ class ConstructionPlanContractWizard(models.TransientModel):
              'una actividad por contratista, cada partida conserva su precio). Tarifa de la '
              'actividad: la tarifa vigente (obra y contrata, obra, contrata o base). En las '
              'dos, el precio se puede corregir en cada línea.')
+    # CREVAL, CR-24 c) con el paquete 1.16, M116-06: partidas de la selección
+    # con «Personal propio» escrito en su campo.
+    mode_task_ids = fields.Many2many(
+        'project.task', 'construction_plan_contract_wiz_mode_task_rel', 'wizard_id', 'task_id',
+        string='Partidas con personal propio', compute='_compute_mode', store=True)
+    mode_note = fields.Text(string='Aviso de modalidad', compute='_compute_mode', store=True)
+    execution_mode = fields.Selection(
+        [mode for mode in EXECUTION_MODES if mode[0] != 'own'], string='Nueva modalidad',
+        compute='_compute_mode', store=True, readonly=False,
+        help='Se guarda en las partidas al asignar; con el plan aprobado, va en una nueva versión.')
     exceed_reason = fields.Text(
         string='Motivo del alcance adicional',
         help='Obligatorio si se asigna más de lo que queda de la actividad en la selección y '
@@ -151,7 +161,39 @@ class ConstructionPlanContractWizard(models.TransientModel):
         stages = self.env.context.get('construction_selection_stages') or []
         if 'stage' in fields_list and stages:
             res['stage'] = stages[0] if len(stages) == 1 else False
+        if res.get('plan_id'):
+            self.new(res)._check_something_to_assign()
         return res
+
+    def _contract_lines(self):
+        self.ensure_one()
+        return self._get_selected_lines(
+            [('resource_type', '=', 'contract'), ('activity_id', '!=', False)])
+
+    @api.model
+    def _has_balance(self, line):
+        return line.product_uom_id.compare(line.qty_planned - line.qty_requested, 0.0) > 0
+
+    def _taken_by_partner(self, lines):
+        """{contrata: líneas} de las líneas que ya tienen contrata."""
+        return lines.filtered('partner_id').grouped('partner_id')
+
+    def _check_something_to_assign(self):
+        """CR-24 a): si toda la selección ya tiene contrata (con saldo o sin
+        él), el asistente no abre: dice de quién es y sugiere intervenirla."""
+        self.ensure_one()
+        lines = self._contract_lines()
+        if not lines or lines.filtered(lambda l: not l.partner_id and self._has_balance(l)):
+            return
+        taken = self._taken_by_partner(lines)
+        if not taken:
+            return
+        raise UserError(self.env._(
+            'Las partidas seleccionadas ya tienen contrata: %(partners)s. Para cambiarla, use '
+            '«Intervenir contrata» en su orden.',
+            partners='; '.join(self.env._('%(partner)s (%(count)s líneas)',
+                                          partner=partner.display_name, count=len(group))
+                               for partner, group in taken.items())))
 
     def _get_stages(self):
         self.ensure_one()
@@ -196,6 +238,14 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 '%(count)s líneas ya tienen otra contrata (%(partners)s) y no se reasignan.',
                 count=len(others), partners=', '.join(others.partner_id.mapped('display_name'))))
             lines -= others
+        # CR-24 b): también lo omitido por no tener saldo, por contrata.
+        exhausted = self._contract_lines().filtered(lambda l: not self._has_balance(l))
+        if self.activity_ids:
+            exhausted = exhausted.filtered(lambda l: l.activity_id in self.activity_ids)
+        for partner, group in self._taken_by_partner(exhausted).items():
+            notes.append(self.env._(
+                '%(count)s líneas sin saldo ya están asignadas a %(partner)s.',
+                count=len(group), partner=partner.display_name))
         # Con condiciones «por partida», una línea por actividad y partida
         # (CREVAL v1.0, 3.4: toda línea de la orden lleva su partida).
         by_task = self.condition_id.line_detail == 'task'
@@ -227,6 +277,51 @@ class ConstructionPlanContractWizard(models.TransientModel):
                 'plan_line_ids': [Command.set(plan_lines.ids)],
             })
         return rows, notes
+
+    @api.depends('line_ids.plan_line_ids')
+    def _compute_mode(self):
+        """M116-06: avisa solo si la partida (o el ambiente) tiene «Personal
+        propio» escrito en su campo; la modalidad de la actividad o de la
+        etapa no cuenta. Propone «solo mano de obra» si la partida tiene
+        materiales o equipos en el plan; si no, «todo costo»."""
+        for wizard in self:
+            plan_lines = wizard.line_ids.plan_line_ids
+            tasks = (plan_lines.space_task_id | plan_lines.task_id).filtered(
+                lambda t: t.construction_execution_mode == 'own')
+            wizard.mode_task_ids = tasks
+            if not tasks:
+                wizard.mode_note = wizard.execution_mode = False
+                continue
+            supplies = self.env['construction.resource.plan.line'].search_count([
+                ('plan_id', '=', wizard.plan_id.id),
+                ('resource_type', 'in', ('material', 'equipment')),
+                '|', ('task_id', 'in', tasks.ids), ('space_task_id', 'in', tasks.ids)], limit=1)
+            wizard.execution_mode = 'labor_contract' if supplies else 'full_contract'
+            wizard.mode_note = self.env._(
+                'Estas partidas tienen «Personal propio» como modalidad: %s. Al asignar la '
+                'contrata se cambia a la modalidad elegida.',
+                ', '.join(tasks.mapped('display_name')))
+
+    def _apply_execution_mode(self):
+        """Guarda la modalidad elegida en las partidas avisadas; con el plan
+        aprobado, el cambio queda anotado para la nueva versión."""
+        self.ensure_one()
+        if not self.mode_task_ids or not self.execution_mode:
+            return
+        labels = dict(EXECUTION_MODES)
+        pending = self.env['project.task']
+        for task in self.mode_task_ids:
+            try:
+                task._construction_check_mode_change(self.execution_mode)
+            except UserError:
+                pending |= task
+                continue
+            task.construction_execution_mode = self.execution_mode
+        if pending:
+            self.plan_id.message_post(body=self.env._(
+                'Modalidad por cambiar a «%(mode)s» en la nueva versión del plan: %(tasks)s.',
+                mode=labels[self.execution_mode],
+                tasks=', '.join(pending.mapped('display_name'))))
 
     @api.depends('line_ids.amount', 'line_ids.retention_amount', 'line_ids.plan_line_ids')
     def _compute_totals(self):
@@ -341,6 +436,7 @@ class ConstructionPlanContractWizard(models.TransientModel):
             raise UserError(self.env._(
                 'No hay actividades de contrata por asignar en esta selección.'))
         self._check_additional_scope(rows)
+        self._apply_execution_mode()
         project = plan.project_id
         # sudo: la OC de servicio nace de la asignación y queda en borrador
         # para que Compras la confirme; quien asigna (Proyectos) no necesita

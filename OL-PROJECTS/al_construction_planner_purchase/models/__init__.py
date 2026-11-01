@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from . import res_company
+from . import tier_definition
 from . import res_config_settings
 from . import product
 from . import construction_resource_plan_allocation

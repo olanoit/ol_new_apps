@@ -42,6 +42,14 @@ class ConstructionLevelTemplate(models.Model):
              'nivel. El nodo que «Lleva APU» tiene las etapas, la receta, el metrado, el avance y '
              'la valorización; los niveles de arriba solo agrupan. Apagada (mobiliario): lo '
              'decide la función «Nivel con etapas».')
+    # Paquete 1.16, M116-04: desde dónde se lee la ruta del nivel en el
+    # requerimiento de obra y en su solicitud de aprobación.
+    path_start_line_id = fields.Many2one(
+        'construction.level.template.line', string='Primer nivel de la ruta',
+        domain="[('template_id', '=', id)]",
+        help='La etiqueta del nivel de una línea del requerimiento de obra va desde este nivel '
+             'hasta la tarea. Vacío: la unidad de entrega, si la plantilla la tiene; si no, el '
+             'primer nivel.')
     purchase_destination = fields.Selection(
         PURCHASE_DESTINATIONS, string='Destino de la compra masiva', default='general',
         required=True,
@@ -88,6 +96,12 @@ class ConstructionLevelTemplate(models.Model):
                 raise ValidationError(self.env._(
                     'Los niveles de la plantilla %s van en este orden: agrupadores, unidad de '
                     'entrega, nivel con etapas, subnivel y nivel de detalle.', template.name))
+
+    def _construction_path_start(self):
+        """Nivel donde empieza la ruta del nivel (M116-04)."""
+        self.ensure_one()
+        return self.path_start_line_id or self._first_line('unit') \
+            or self.line_ids.sorted(lambda l: (l.sequence, l.id))[:1]
 
     def _first_line(self, role):
         self.ensure_one()

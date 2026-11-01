@@ -11,9 +11,13 @@
             <select id="o_cp_schedule_plan" class="form-select form-select-sm w-auto o_cp_schedule_plan"
                     t-on-change="onPlanChange">
                 <option t-if="!schedule.plans.length" value="">Sin planes</option>
-                <t t-foreach="schedule.plans" t-as="plan" t-key="plan.id">
-                    <option t-att-value="plan.id" t-att-selected="plan.id === schedule.planId"
-                            t-esc="plan.display_name"/>
+                <t t-foreach="schedule.planGroups" t-as="group" t-key="group_index">
+                    <optgroup t-att-label="group.project">
+                        <t t-foreach="group.plans" t-as="plan" t-key="plan.id">
+                            <option t-att-value="plan.id" t-att-selected="plan.id === schedule.planId"
+                                    t-esc="plan.label"/>
+                        </t>
+                    </optgroup>
                 </t>
             </select>
             <div class="btn-group btn-group-sm" role="group">

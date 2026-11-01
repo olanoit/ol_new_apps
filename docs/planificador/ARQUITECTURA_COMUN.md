@@ -220,6 +220,8 @@ esa misma regla.
 | 31-oct-2026 | La analítica es la nativa de Odoo: el planificador crea planes y cuentas y llena la distribución; sin analítica paralela. Cada nivel de la plantilla indica plan y modo de cuenta (compartida o por obra); mobiliario agrega el plan «Rubro» compartido por familia de tipología (paquete 1.16, M116-05) | Las dos | Común |
 | 31-oct-2026 | Construcción: la plantilla puede marcar «APU en cualquier nivel»; etapas, receta, avance y valorización van en el nodo que lleva APU. Perfiles por profundidad (PROF 3 a PROF 6). Especialidad por catálogo compartido. Mobiliario mantiene el nivel fijo (paquete 1.16, M116-11) | Construcción | Común (opción de plantilla) |
 | 31-oct-2026 | Las etapas se eligen entre las activas del perfil de la obra; el dato guardado sigue siendo el código. Las ayudas de etapa reciben la obra (paquete 1.16, M116-01; cierra C-02 y C-03) | Las dos | Común |
+| 31-oct-2026 | «Requerimiento de obra sin regla» tiene un tercer valor, «Material fuera del plan si la obra no tiene plan». La regla 7.4 (jefe de la obra) da el mismo resultado con la aplicación Aprobaciones que con la validación por niveles (paquete 1.16, M116-03) | Las dos | Común (ajuste por compañía) |
+| 31-oct-2026 | La ruta del nivel del requerimiento empieza en el «Primer nivel de la ruta» de la plantilla (por defecto, la unidad de entrega o el primer nivel). El aviso de modalidad de «Asignar contrata» sale solo con «Personal propio» guardado en la partida (paquete 1.16, M116-04 y M116-06) | Las dos | Común |
 
 ## 9. Conflictos abiertos
 

@@ -11,10 +11,10 @@
                  columna derecha. -->
             <xpath expr="//field[@name='is_extra']" position="before">
                 <field name="construction_plan_id" readonly="1" groups="al_construction_planner.group_planner_progress"/>
-                <field name="construction_exceed_state" widget="badge" invisible="not construction_plan_id" decoration-success="construction_exceed_state == 'ok'" decoration-danger="construction_exceed_state == 'exceeded'" decoration-info="construction_exceed_state == 'approved'"/>
+                <field name="construction_exceed_state" widget="badge" invisible="not construction_plan_id and construction_exceed_state != 'no_plan'" decoration-warning="construction_exceed_state == 'no_plan'" decoration-success="construction_exceed_state == 'ok'" decoration-danger="construction_exceed_state == 'exceeded'" decoration-info="construction_exceed_state == 'approved'"/>
             </xpath>
             <xpath expr="//group[@name='dates']/.." position="after">
-                <group invisible="construction_exceed_state == 'ok' and not construction_exceed_reason">
+                <group invisible="construction_exceed_state in ('ok', 'no_plan') and not construction_exceed_reason">
                     <field name="construction_exceed_reason" readonly="state != 'draft'" placeholder="Por qué se pide más de lo que queda en el plan"/>
                 </group>
             </xpath>
@@ -22,6 +22,19 @@
                 <field name="construction_plan_remaining" optional="show" column_invisible="not parent.construction_plan_id"/>
                 <field name="construction_plan_exceeded" column_invisible="1"/>
                 <field name="construction_plan_control" optional="show" column_invisible="not parent.construction_plan_id" decoration-danger="construction_plan_exceeded" decoration-success="not construction_plan_exceeded"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Paquete 1.16, M114-01: lo pedido sin línea del plan que lo cubra. -->
+    <record id="construction_material_request_view_search_planner" model="ir.ui.view">
+        <field name="name">construction.material.request.search.planner</field>
+        <field name="model">construction.material.request</field>
+        <field name="inherit_id" ref="al_construction_material_request.construction_material_request_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='extra']" position="after">
+                <filter name="construction_unplanned" string="Pedidos sin plan"
+                        domain="[('construction_unplanned', '=', True)]"/>
             </xpath>
         </field>
     </record>

@@ -23,8 +23,10 @@ class ConstructionMaterialRequest(models.Model):
         'construction.resource.plan', string='Plan de recursos', copy=False,
         compute='_compute_construction_plan_id', store=True, index='btree_not_null',
         check_company=True, help='Plan vigente de la obra al pedir la aprobación.')
+    # «Sin plan» (paquete 1.16, M114-02): requerimiento de obra pedido cuando
+    # la obra aún no tiene plan vigente.
     construction_exceed_state = fields.Selection(
-        EXCEED_STATES, string='Control de plan', default='ok', copy=False, readonly=True,
+        EXCEED_STATES + [('no_plan', 'Sin plan')], string='Control de plan', default='ok', copy=False, readonly=True,
         tracking=True)
     # Política de materiales con la que se controló el exceso (la de la obra
     # o la del plan, no la general): la regla de aprobación la mira a ella.
@@ -33,6 +35,20 @@ class ConstructionMaterialRequest(models.Model):
     construction_exceed_reason = fields.Text(
         string='Justificación del exceso', copy=False, tracking=True,
         help='Por qué se pide más de lo que queda en el plan.')
+    # Paquete 1.16, M114-01: tiene líneas sin línea del plan que las cubra.
+    construction_unplanned = fields.Boolean(
+        string='Pedido sin plan', compute='_compute_construction_unplanned', store=True,
+        compute_sudo=True)
+
+    @api.depends('state', 'request_type', 'line_ids.cancelled', 'line_ids.product_id',
+                 'line_ids.construction_allocation_ids')
+    def _compute_construction_unplanned(self):
+        for request in self:
+            request.construction_unplanned = request.request_type == 'site' \
+                and request.state in ('approved', 'in_progress', 'done') and any(
+                    not line.construction_allocation_ids
+                    for line in request.line_ids if not line.cancelled and line.product_id)
+
     @api.depends('project_id')
     def _compute_construction_plan_id(self):
         for request in self:
@@ -58,7 +74,8 @@ class ConstructionMaterialRequest(models.Model):
     @api.model
     def _get_under_validation_exceptions(self):
         return super()._get_under_validation_exceptions() + [
-            'construction_exceed_state', 'construction_plan_id', 'construction_exceed_policy']
+            'construction_exceed_state', 'construction_plan_id', 'construction_exceed_policy',
+            'construction_unplanned']
 
     # ------------------------------------------------------------------
     # Control al solicitar la aprobación
@@ -88,7 +105,11 @@ class ConstructionMaterialRequest(models.Model):
         checked = self.env.context.get('construction_exceed_checked')
         for request in self:
             plan = request.construction_plan_id
-            exceeding = plan and request._construction_exceeding_lines()
+            if not plan:
+                request.construction_exceed_state = 'no_plan' \
+                    if request.request_type == 'site' and request.project_id else 'ok'
+                continue
+            exceeding = request._construction_exceeding_lines()
             if not exceeding:
                 request.construction_exceed_state = 'ok'
                 continue

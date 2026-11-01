@@ -67,3 +67,4 @@ from . import test_package_112_analytic
 from . import test_package_112_request
 from . import test_package_112_mode
 from . import test_package_116_stage1
+from . import test_package_116_stage2

@@ -27,6 +27,7 @@
                         <field name="summary"/>
                         <field name="purchase_destination"/>
                         <field name="apu_any_level"/>
+                        <field name="path_start_line_id" options="{'no_create': True}"/>
                         <field name="active" invisible="1"/>
                     </group>
                     <field name="line_ids">

@@ -71,7 +71,7 @@ class TestRequestScope(PlannerCommon):
         request = self._new_request()
         self.assertEqual(
             [request['construction_scope_%s_label' % depth] for depth in range(1, 5)],
-            ['Piso', 'Departamento', 'Ambiente', False])
+            ['Piso', 'Departamento', 'Ambiente', 'Módulo'])
         self.assertEqual(request.construction_scope_2_allowed_ids, self.apt_501 | self.apt_502)
         # Cascada: el ambiente solo ofrece los del departamento elegido.
         with Form(request.with_user(self.requester)) as form:

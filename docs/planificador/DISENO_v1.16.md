@@ -14,7 +14,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | Etapa | Contenido | Estado |
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
-| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Diseñada, por confirmar (este documento) |
+| 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Diseño confirmado; bloque 2a desarrollado |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Pendiente |
 | 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
 
@@ -184,6 +184,21 @@ anterior. Los tres se prueban juntos en las dos bases antes de la etapa 3.
   nueva ni asiento manual.
 
 ### 2a · Requerimiento sin plan y asignación
+
+Desarrollado. Las tres propuestas de arriba quedaron confirmadas. Detalles de
+la implementación:
+
+- La regla de validación por niveles «obra sin plan» la crea y archiva la
+  compañía al cambiar el ajuste (`tier.definition.construction_no_plan`),
+  revisada por «Planificación de obra: ejecución › Aprueba». Con Aprobaciones,
+  la solicitud lleva la marca «Obra sin plan» y el resumen «Material fuera del
+  plan (obra sin plan)».
+- «Control de plan» del requerimiento muestra «Sin plan» en todo requerimiento
+  de obra enviado sin plan vigente, con cualquier valor del ajuste.
+- M114-01: las asignaciones de versiones anteriores quedan como historia; la
+  regularización solo crea las del plan que se aprueba.
+- CR-24 c): si el plan está aprobado, el cambio de modalidad queda anotado en
+  el plan para la nueva versión; la asignación no se detiene.
 
 - **M114-01** (`al_construction_planner_purchase`): `_construction_on_approve`
   del plan, después de pasar las asignaciones a la nueva versión. Busca las

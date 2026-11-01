@@ -224,6 +224,10 @@ class ConstructionReplacementRequest(models.Model):
                 '%s no tiene lista de materiales: la planta no puede fabricarla. Pida a '
                 'Producción que cree su lista.', product.display_name))
         warehouse = bom_sudo.picking_type_id.warehouse_id
+        # Paquete 1.14, M114-05: si la lista es del almacén del tipo de Ajustes,
+        # se usa ese tipo aunque el almacén tenga otros que piden motivo.
+        if warehouse and picking_type.warehouse_id == warehouse:
+            return bom_sudo, picking_type
         other_type_sudo = warehouse and self.env['stock.picking.type'].sudo().search([
             ('warehouse_id', '=', warehouse.id), ('code', '=', 'mrp_operation'),
             ('construction_reason_required', '=', True), ('company_id', '=', company.id),

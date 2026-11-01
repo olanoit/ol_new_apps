@@ -110,3 +110,14 @@ class TestPackage112Request(ConstructionRequestCommon):
             replacement.action_submit()
         self.assertFalse(self.env['mrp.production'].search(
             [('product_id', '=', self.module.id)]))
+
+    def test_settings_type_when_bom_is_of_its_warehouse(self):
+        """Paquete 1.14, M114-05: con dos tipos que piden motivo en la planta
+        de la lista, se usa el de Ajustes si es de esa planta."""
+        self.replacement_type.copy({
+            'name': 'Producción de piezas · reposición bis (test 114)', 'sequence_code': 'RB14',
+            'construction_reason_required': True, 'sequence': 1})
+        replacement = self._replacement(self.door)
+        replacement.action_submit()
+        self.assertEqual(replacement.sudo().production_id.picking_type_id, self.replacement_type)
+        self.assertEqual(replacement.sudo().production_id.bom_id, self.door_bom)
