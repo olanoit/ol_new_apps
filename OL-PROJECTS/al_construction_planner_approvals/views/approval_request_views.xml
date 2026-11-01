@@ -75,7 +75,7 @@
                 <filter name="construction_my_turn" string="Me toca aprobar"
                         domain="[('approver_ids.user_id', '=', uid), ('approver_ids.status', '=', 'pending')]"/>
                 <filter name="construction_out_of_plan" string="Fuera del plan"
-                        domain="[('construction_change_summary', 'in', ('material', 'both'))]"/>
+                        domain="[('construction_change_summary', 'in', ('material', 'both', 'no_plan'))]"/>
                 <filter name="construction_over_10" string="Exceso mayor a 10 %"
                         domain="[('construction_excess_pct', '>', 10)]"/>
                 <group>
@@ -95,7 +95,7 @@
         <field name="inherit_id" ref="approvals.approval_request_view_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//list" position="attributes">
-                <attribute name="decoration-danger">construction_change_summary in ('material', 'both')</attribute>
+                <attribute name="decoration-danger">construction_change_summary in ('material', 'both', 'no_plan')</attribute>
             </xpath>
             <xpath expr="//field[@name='name']" position="after">
                 <field name="construction_res_model" column_invisible="1"/>

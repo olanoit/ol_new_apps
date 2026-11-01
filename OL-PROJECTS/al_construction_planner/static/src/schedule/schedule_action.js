@@ -201,6 +201,7 @@ export class ConstructionScheduleAction extends GanttAction {
         const context = this.props.action?.context || {};
         this.schedule = proxy({
             plans: [],
+            planGroups: [],
             plansLoaded: false,
             planId: context.construction_plan_id || null,
             rows: "stages",
@@ -222,28 +223,22 @@ export class ConstructionScheduleAction extends GanttAction {
     // Datos
     // ------------------------------------------------------------------
     async loadPlans() {
-        const [plans, buttons] = await Promise.all([
-            this.orm.searchRead(
-                PLAN,
-                [["state", "not in", ["cancel", "replaced"]]],
-                ["id", "display_name", "project_id", "state"],
-                { order: "id desc" }
-            ),
+        const [result, buttons] = await Promise.all([
+            this.orm.call(PLAN, "get_schedule_plans", [this.schedule.planId || false]),
             this.orm.call(PLAN, "get_tree_actions", []),
         ]);
-        this.schedule.plans = plans;
+        // CR-21: agrupados por obra, con versión y estado.
+        this.schedule.planGroups = result.groups;
+        this.schedule.plans = result.groups.flatMap((group) => group.plans);
         this.schedule.buttons = buttons;
         this.schedule.plansLoaded = true;
-        const current =
-            plans.find((plan) => plan.id === this.schedule.planId) ||
-            plans.find((plan) => ["approved", "in_progress"].includes(plan.state)) ||
-            plans[0];
-        this.selectPlan(current);
+        this.selectPlan(this.schedule.plans.find((plan) => plan.id === result.plan_id));
     }
 
     selectPlan(plan) {
         this.schedule.planId = plan ? plan.id : null;
         if (plan) {
+            this.orm.call(PLAN, "remember_schedule_plan", [plan.id]);
             this.orm.call(PLAN, "get_tree_terms", [[plan.id]]).then((terms) => {
                 this.schedule.terms = terms;
             });

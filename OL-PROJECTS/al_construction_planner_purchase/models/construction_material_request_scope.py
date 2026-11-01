@@ -18,8 +18,8 @@ from odoo.exceptions import UserError
 
 from odoo.addons.al_construction_planner.models.common import LEVELS, stage_selection
 
-# Selectores de nivel del formulario: uno por nivel de la plantilla, sin el
-# nivel de detalle (módulo, actividad), hasta seis como los niveles del plan.
+# Selectores de nivel del formulario: uno por nivel de la plantilla (el módulo
+# el último, M114-03), hasta seis como los niveles del plan.
 SCOPE_DEPTH = 6
 
 
@@ -155,8 +155,9 @@ class ConstructionMaterialRequest(models.Model):
         Task = self.env['project.task']
         template = self.project_id.construction_level_template_id
         if template:
-            levels = template.line_ids.sorted(lambda l: (l.sequence, l.id)).filtered(
-                lambda l: l.role != 'module')
+            # El módulo va como último selector (paquete 1.14, M114-03), solo si
+            # la obra tiene módulos.
+            levels = template.line_ids.sorted(lambda l: (l.sequence, l.id))
             # Solo los niveles que llevan la etapa elegida (M111-20 E): la
             # línea de la plantilla sin etapas las lleva todas.
             stages = self.construction_stage_ids._origin
@@ -167,8 +168,7 @@ class ConstructionMaterialRequest(models.Model):
                 '&', ('construction_level_line_id', '=', False),
                 ('construction_level', '=', line.level)]) for line in levels]
         else:
-            slots = [(label, [('construction_level', '=', level)])
-                     for level, label in LEVELS if level != 'module']
+            slots = [(label, [('construction_level', '=', level)]) for level, label in LEVELS]
         base = [('project_id', '=', self.project_id.id)]
         return [(name, base + domain) for name, domain in slots
                 if Task.search_count(base + domain, limit=1)][:SCOPE_DEPTH]
@@ -416,15 +416,73 @@ class ConstructionMaterialRequestLine(models.Model):
             line.construction_stage_codes = \
                 line.request_id.construction_allowed_stage_ids.mapped('code')
 
-    @api.depends('task_id.name', 'task_id.parent_id.name', 'task_id.construction_level')
+    @api.depends('task_id.name', 'task_id.parent_id.name', 'task_id.construction_level',
+                 'task_id.construction_level_line_id',
+                 'task_id.project_id.construction_level_template_id.path_start_line_id')
     def _compute_construction_level_label(self):
         for line in self:
-            task = line.task_id
+            line.construction_level_label = line._construction_level_path() or False
+
+    def _construction_level_path(self):
+        """Ruta del nivel (paquete 1.16, M116-04): desde el primer nivel de la
+        ruta de la plantilla hasta la tarea, p. ej. «Dpto 101 / Cocina /
+        Mueble bajo / Bajo». Sin plantilla, el nivel de arriba y la tarea."""
+        self.ensure_one()
+        task = self.task_id
+        if not task:
+            return ''
+        template = task.project_id.construction_level_template_id
+        if not template or not task.construction_level_line_id:
             parent = task.parent_id
             if task.construction_level and parent.construction_level:
-                line.construction_level_label = '%s / %s' % (parent.name, task.name)
-            else:
-                line.construction_level_label = task.name or False
+                return '%s / %s' % (parent.name, task.name)
+            return task.name
+        start = template._construction_path_start()
+        start_key = (start.sequence, start.id)
+        names, node = [], task
+        while node and node.construction_level_line_id:
+            names.append(node.name)
+            level_line = node.construction_level_line_id
+            if (level_line.sequence, level_line.id) <= start_key:
+                break
+            node = node.parent_id
+        return ' / '.join(reversed(names))
+
+    @api.depends('construction_stage', 'product_id', 'task_id')
+    def _compute_analytic_distribution(self):
+        """Paquete 1.14, M114-04: la línea de obra con etapa y material que no
+        viene del plan lleva, además de la obra, las cuentas de las reglas
+        analíticas del material en su etapa (lo mismo que la línea del plan).
+        Lo que el usuario escriba a mano manda."""
+        super()._compute_analytic_distribution()
+        for line in self:
+            request = line.request_id
+            if request.request_type == 'internal' or not line.product_id \
+                    or not line.construction_stage:
+                continue
+            current = line.analytic_distribution or {}
+            previous = line._construction_rule_distribution(line._origin.construction_stage) \
+                if line._origin.construction_stage else None
+            if current and current != (request.analytic_distribution or {}) \
+                    and current != previous:
+                continue
+            distribution = line._construction_rule_distribution(line.construction_stage)
+            if distribution:
+                line.analytic_distribution = distribution
+
+    def _construction_rule_distribution(self, stage):
+        """Distribución del requerimiento más las cuentas de las reglas
+        analíticas para material, ``stage`` y la categoría del producto."""
+        self.ensure_one()
+        request = self.request_id
+        base = request.analytic_distribution or {}
+        if len(base) != 1:
+            return {}
+        Account = self.env['account.analytic.account']
+        accounts = Account.browse(int(a) for a in next(iter(base)).split(','))
+        accounts |= self.env['construction.analytic.rule']._accounts_for(
+            request.company_id, 'material', stage, self.product_id.categ_id)
+        return {','.join(str(a) for a in sorted(accounts.ids)): 100.0}
 
     def _construction_scope_plan_lines(self, plan):
         """Una línea con etapa solo se compara con las líneas del plan de esa

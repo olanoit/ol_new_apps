@@ -55,6 +55,13 @@
                 <div class="alert alert-warning" role="alert" invisible="not note">
                     <field name="note" nolabel="1"/>
                 </div>
+                <div class="alert alert-info" role="alert" invisible="not mode_note">
+                    <field name="mode_note" nolabel="1"/>
+                    <group>
+                        <field name="execution_mode" required="mode_note"/>
+                    </group>
+                    <field name="mode_task_ids" invisible="1"/>
+                </div>
                 <field name="exceed_reason" placeholder="Motivo si asigna más de lo que queda en el plan (alcance adicional)"/>
                 <p class="text-muted small">
                     El precio de cada línea es el costo del plan de la partida o la tarifa vigente

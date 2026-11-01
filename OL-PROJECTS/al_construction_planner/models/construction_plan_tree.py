@@ -588,6 +588,50 @@ class ConstructionResourcePlan(models.Model):
         return [[partner.id, partner.display_name] for (partner,) in partners]
 
     @api.model
+    def get_schedule_plans(self, plan_id=False):
+        """Planes del selector del Cronograma (CREVAL, CR-21), agrupados por
+        obra: primero la del plan que se abre. Se abre ``plan_id`` (botón de
+        la obra); si no, el último que usó el usuario; si no, el último
+        aprobado o en ejecución que él tocó; si no, el primero."""
+        plans = self.search([('state', 'not in', ('cancel', 'replaced'))], order='id desc')
+        current = self.browse(plan_id).exists() & plans if plan_id else self.browse()
+        if not current:
+            current = self.env.user.construction_schedule_plan_id & plans
+        if not current:
+            current = plans.filtered(lambda p: p.state in ('approved', 'in_progress')
+                                     and p.write_uid == self.env.user)[:1]
+        current = current or plans[:1]
+        states = dict(self._fields['state']._description_selection(self.env))
+        by_project = plans.grouped('project_id')
+        projects = sorted(by_project, key=lambda p: (p != current.project_id, p.display_name))
+        return {
+            'plan_id': current.id,
+            'groups': [{
+                'project': project.display_name,
+                'plans': [{
+                    'id': plan.id,
+                    'display_name': plan.display_name,
+                    'project_id': [project.id, project.display_name],
+                    'state': plan.state,
+                    'label': '%s · v%s · %s' % (plan.name, plan.version, states[plan.state]),
+                } for plan in by_project[project]],
+            } for project in projects],
+        }
+
+    @api.model
+    def remember_schedule_plan(self, plan_id):
+        """Guarda el plan que el usuario abrió en el Cronograma (CR-21)."""
+        plan = self.browse(plan_id).exists()
+        if not plan:
+            return False
+        plan.check_access('read')
+        if self.env.user.construction_schedule_plan_id != plan:
+            # Preferencia del propio usuario: cada uno la guarda aunque no
+            # tenga permiso de escribir en su ficha de usuario.
+            self.env.user.sudo().construction_schedule_plan_id = plan
+        return True
+
+    @api.model
     def get_tree_actions(self):
         """Botones de la barra de selección: los asistentes instalados que el
         usuario puede abrir."""

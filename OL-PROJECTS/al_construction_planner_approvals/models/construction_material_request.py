@@ -56,6 +56,22 @@ class ConstructionMaterialRequest(models.Model):
             request._construction_open_approval(
                 category, approver_values, request._construction_approval_info(), summary)
             submitted |= request
+        # Regla 7.4 con Aprobaciones (paquete 1.16, M116-03): lo que no tiene
+        # tramo pasa al jefe de la obra, igual que con la validación por niveles.
+        for request in self - internal - submitted:
+            manager = request._construction_site_manager_review()
+            if not manager:
+                continue
+            category = self.env['approval.category']._construction_category(request.company_id)
+            summary = self.env._(
+                '%(doc)s · obra %(project)s · sin regla de aprobación: jefe de la obra %(user)s.',
+                doc=request.display_name, project=request.project_id.display_name,
+                user=manager.name)
+            request._construction_open_approval(category, [{
+                'user_id': manager.id, 'sequence': 1000, 'construction_step': 1,
+                'construction_slots': '1:any:site_manager', 'status': 'new',
+            }], request._construction_approval_info(), summary)
+            submitted |= request
         return submitted
 
     def _construction_internal_approvers(self):
@@ -91,7 +107,10 @@ class ConstructionMaterialRequest(models.Model):
         self.ensure_one()
         values, lines, total = {}, [], 0.0
         plan = self.construction_plan_id
-        if not plan:
+        # Paquete 1.16, M116-03 (M114-02): sin plan, con «Material fuera del
+        # plan», cada línea es material fuera del plan y sigue su tramo.
+        no_plan = not plan and self._construction_no_plan_review()
+        if not plan and not no_plan:
             return {'values': values, 'lines': lines, 'amount': total, 'reason': ''}
         # El residente no ve el plan: el saldo y los precios se leen sin sus
         # permisos, solo para armar la solicitud.
@@ -99,7 +118,8 @@ class ConstructionMaterialRequest(models.Model):
         for line in self.line_ids.filtered(lambda l: not l.cancelled and l.product_id):
             line_sudo = line.sudo()
             uom = line.product_id.uom_id
-            plan_lines = line_sudo._construction_candidate_plan_lines(plan_sudo)
+            plan_lines = line_sudo._construction_candidate_plan_lines(plan_sudo) \
+                if plan else plan_sudo.line_ids
             # Cifras de la solicitud (paquete 1.10, M110-08), en la unidad del
             # producto: presupuestado, ya pedido por otros documentos y saldo.
             planned = requested_before = budget = 0.0
@@ -153,8 +173,30 @@ class ConstructionMaterialRequest(models.Model):
                 'percent': max(v['percent'] for v in values.values()),
                 'amount': sum(v['amount'] for v in values.values()),
             }
-        return {'values': values, 'lines': lines, 'amount': total,
-                'reason': self.construction_exceed_reason or ''}
+        reason = self.construction_exceed_reason or ''
+        if no_plan and values:
+            reason = '\n'.join(filter(None, [
+                self.env._('Material fuera del plan (obra sin plan).'), reason]))
+        return {'values': values, 'lines': lines, 'amount': total, 'reason': reason,
+                'extra_vals': {'construction_no_plan': True} if no_plan else {}}
+
+    def _construction_no_plan_review(self):
+        """Requerimiento de obra sin plan vigente que la compañía revisa como
+        material fuera del plan (M116-03)."""
+        self.ensure_one()
+        return self.request_type == 'site' and bool(self.project_id) \
+            and self.company_id.construction_site_request_without_rule == 'out_of_plan'
+
+    def _construction_site_manager_review(self):
+        """Regla 7.4 con la aplicación Aprobaciones: sin cambios que aprobar,
+        el requerimiento de obra pasa al jefe de la obra si la compañía lo pide
+        (con la validación por niveles lo hace la regla de respaldo)."""
+        self.ensure_one()
+        manager = self.project_manager_id
+        return manager if (
+            self.request_type == 'site' and manager and manager != self.env.user
+            and self.company_id.construction_site_request_without_rule == 'manager') \
+            else self.env['res.users']
 
     def action_draft(self):
         self.filtered(lambda r: r.state == 'to_approve')._construction_cancel_open_approvals()

@@ -18,6 +18,7 @@ from . import construction_io_matrix
 from . import construction_exceed
 from . import tier_definition
 from . import res_company
+from . import res_users
 from . import res_config_settings
 from . import construction_task_progress
 from . import construction_space_stage
