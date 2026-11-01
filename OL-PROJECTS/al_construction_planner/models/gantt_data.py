@@ -25,6 +25,7 @@ from odoo.exceptions import AccessError
 
 from .common import DRIVER_TYPES, UNIT_STATES, can_see_amounts
 from .construction_plan_tree import LINE_FIELD
+from .construction_space_current_stage import SCHEDULE_RANK
 
 #: Días antes del inicio en que una etapa sin contrata ni cuadrilla es alerta.
 UNASSIGNED_ALERT_DAYS = 14
@@ -49,6 +50,9 @@ class GanttData(models.AbstractModel):
             'rows': rows if rows in ('stages', 'tasks') else 'stages',
             'stages': self.env['construction.stage']._leaf_codes(stages),
             'plan_id': options.get('construction_plan_id') or False,
+            # Filtros de la etapa actual (paquete 1.15, M115-04).
+            'current_stages': list(options.get('construction_current_stages') or []),
+            'only_late': bool(options.get('construction_only_late')),
         }
 
     @api.model
@@ -58,7 +62,30 @@ class GanttData(models.AbstractModel):
         if schedule and schedule['rows'] == 'stages':
             # Las barras son las etapas: los módulos no se listan.
             domain = domain + [('construction_level', 'in', ('group', 'floor', 'apartment', 'space'))]
+        if schedule and (schedule['current_stages'] or schedule['only_late']):
+            domain = domain + [('id', 'in', self._construction_current_filter_ids(
+                project_ids, schedule))]
         return domain
+
+    @api.model
+    def _construction_current_filter_ids(self, project_ids, schedule):
+        """Ambientes que pasan los filtros de la etapa actual y sus
+        ancestros (para que el árbol se siga leyendo)."""
+        Task = self.env['project.task']
+        domain = [('construction_current_stage', '!=', False)]
+        if project_ids:
+            domain.append(('project_id', 'in', list(project_ids)))
+        if schedule['current_stages']:
+            domain.append(('construction_current_stage', 'in', schedule['current_stages']))
+        if schedule['only_late']:
+            domain.append(('construction_stage_schedule', 'in', ['late', 'risk']))
+        ids = set()
+        for task in Task.search(domain):
+            node = task
+            while node and node.id not in ids:
+                ids.add(node.id)
+                node = node.parent_id
+        return list(ids)
 
     @api.model
     def get_data(self, project_ids=None, options=None):
@@ -119,12 +146,19 @@ class GanttData(models.AbstractModel):
         payload['construction_stages'] = []
         payload['construction_stage_groups'] = []
         payload['construction_stage_links'] = []
+        # Estados del ambiente para la etapa actual (M115-04): sin los de
+        # mobiliario si la obra no los usa.
+        has_states = bool(plan.project_id._construction_space_state_labels()) if plan else False
+        payload['construction']['space_states'] = [
+            state for state in self.env['project.task']._construction_space_states()
+            if has_states or not state['is_state']]
         if not plan:
             return
         tasks = payload['tasks']
         info = self._construction_task_info(tasks, plan, schedule['stages'])
         for task in tasks:
             task['construction'] = info.get(task['id'], {})
+        self._construction_current_stage_info(tasks, payload['construction']['space_states'])
         if schedule['rows'] == 'stages':
             self._construction_stage_rows(payload, plan, schedule['stages'], stage_labels)
 
@@ -182,6 +216,45 @@ class GanttData(models.AbstractModel):
                 'partners': '', 'unit_state': '', 'alerts': [],
             }
         return result
+
+    @api.model
+    def _construction_current_stage_info(self, tasks, states):
+        """Etapa actual y plazo (M115-04) en ``construction.current`` de
+        cada ambiente; en sus ancestros, cuántos ambientes hay en cada estado
+        (``current_counts``) y el peor plazo (``worst``)."""
+        Task = self.env['project.task']
+        by_code = {state['code']: state for state in states}
+        parents = {task['id']: task['parent_id'] for task in tasks}
+        by_id = {task['id']: task for task in tasks}
+        records = Task.browse(list(by_id)).filtered('construction_current_stage')
+        labels = dict(Task._fields['construction_stage_schedule']._description_selection(self.env))
+        for record in records:
+            state = by_code.get(record.construction_current_stage, {})
+            schedule = record.construction_stage_schedule
+            item = by_id[record.id].setdefault('construction', {})
+            item['current'] = {
+                'code': record.construction_current_stage,
+                'label': state.get('label') or record.construction_current_stage,
+                'color': state.get('color') or '#3d85c6',
+                'is_state': state.get('is_state', False),
+                'pct': record.construction_current_stage_progress,
+                'schedule': schedule or '',
+                'schedule_name': labels.get(schedule, ''),
+                'schedule_label': record.construction_stage_schedule_label or '',
+            }
+            node, seen = parents.get(record.id), set()
+            while node and node in by_id and node not in seen:
+                seen.add(node)
+                parent = by_id[node].setdefault('construction', {})
+                counts = parent.setdefault('current_counts', {})
+                counts[record.construction_current_stage] = \
+                    counts.get(record.construction_current_stage, 0) + 1
+                worst = parent.get('worst')
+                if schedule and (not worst or SCHEDULE_RANK[schedule] > SCHEDULE_RANK[worst['state']]):
+                    parent['worst'] = {'state': schedule, 'name': labels.get(schedule, ''), 'count': 1}
+                elif worst and schedule == worst['state']:
+                    worst['count'] += 1
+                node = parents.get(node)
 
     @api.model
     def _construction_stage_rows(self, payload, plan, stages_filter, stage_labels):
@@ -300,13 +373,26 @@ class ConstructionResourcePlan(models.Model):
     _inherit = 'construction.resource.plan'
 
     def get_schedule_load(self, stage=False):
-        """Carga semanal del cronograma (P-15): monto de contratas y personal
-        propio por contrata (o cuadrilla) y etapa, repartido en partes iguales
-        entre los días hábiles (lunes a viernes) de la etapa de cada ambiente
-        y sumado por semana calendario (desde el lunes).
+        """Carga semanal del cronograma (P-15; paquete 1.15, M115-06, con
+        M116-07): monto de contratas y personal propio por etapa y por quién
+        lo hace, planificado y ejecutado, por semana de la obra.
 
-        :returns: ``{'weeks': [lunes ISO], 'rows': [{label, stage, values,
-            total}], 'totals': [...], 'total': n}``
+        * Planificado: el monto de cada línea repartido en partes iguales
+          entre los días hábiles de la etapa del ambiente (calendario y
+          feriados de la compañía, ``_construction_is_site_day``).
+        * Ejecutado: los avances validados (sin retrabajos) por la semana de
+          su fecha de ejecución.
+        * Semanas: las de la obra (``_construction_period``), las mismas de
+          la liquidación (CR-10).
+
+        :returns: ``{'weeks': [inicio ISO], 'week_ends': [fin ISO],
+            'current_week': índice o -1, 'rows': [...], 'groups': [...],
+            'totals': [...], 'executed_totals': [...], 'diff': [...],
+            'total', 'plan_to_date', 'executed_total', 'pct', 'thresholds'}``.
+            Cada fila: ``label, stage, stage_label, unassigned, values
+            (planificado), executed, total, plan_to_date, executed_total,
+            pct``. Cada grupo (etapa) trae lo mismo con ``color`` y las filas
+            de la etapa en ``rows``.
         """
         self.ensure_one()
         if not can_see_amounts(self.env):
@@ -316,7 +402,10 @@ class ConstructionResourcePlan(models.Model):
         self.check_access('read')
         Line = self.env['construction.resource.plan.line']
         Stage = self.env['construction.space.stage']
-        stage_domain = [('project_id', '=', self.project_id.id)]
+        Progress = self.env['construction.task.progress']
+        project = self.project_id
+        company = project.company_id or self.company_id or self.env.company
+        stage_domain = [('project_id', '=', project.id)]
         line_domain = [('plan_id', '=', self.id), ('resource_type', 'in', DRIVER_TYPES),
                        ('space_task_id', '!=', False), ('stage', '!=', False)]
         # Una etapa, varias o una etapa padre (sus sub etapas: M18-02).
@@ -328,10 +417,22 @@ class ConstructionResourcePlan(models.Model):
         dates = {(record.space_task_id.id, record.stage): (record.date_start, record.date_end)
                  for record in Stage.search(stage_domain)}
         stage_labels = dict(Stage._fields['stage']._description_selection(self.env))
-        unassigned = self.env._('Sin asignar')
-        rows = {}
+        unassigned = self.env._('Por asignar')
+        extra = Line._weekly_load_groupby()
+
+        def week_of(day):
+            return project._construction_period(day)[0]
+
+        site_days = {}
+
+        def is_site_day(day):
+            if day not in site_days:
+                site_days[day] = company._construction_is_site_day(day)
+            return site_days[day]
+
+        planned, executed = {}, {}
         # Quién ejecuta: la contrata o, con el puente de cuadrillas, el rol.
-        groupby = ['space_task_id', 'stage', 'partner_id'] + Line._weekly_load_groupby()
+        groupby = ['space_task_id', 'stage', 'partner_id'] + extra
         for space, line_stage, *resources, amount in Line._read_group(
                 line_domain, groupby, ['amount_planned:sum']):
             period = dates.get((space.id, line_stage))
@@ -339,35 +440,90 @@ class ConstructionResourcePlan(models.Model):
                 continue
             days = [period[0] + timedelta(days=offset)
                     for offset in range((period[1] - period[0]).days + 1)]
-            workdays = [day for day in days if day.weekday() < 5] or days[:1]
+            workdays = [day for day in days if is_site_day(day)] or days[:1]
             who = next((record for record in resources if record), None)
-            name = who.display_name if who else unassigned
-            row = rows.setdefault((name, line_stage), {})
+            row = planned.setdefault((who.display_name if who else unassigned, line_stage), {})
             share = amount / len(workdays)
             for day in workdays:
-                week = day - timedelta(days=day.weekday())
+                week = week_of(day)
                 row[week] = row.get(week, 0.0) + share
-        weeks = sorted({week for values in rows.values() for week in values})
+        # Lo ejecutado: avances validados de esas líneas, con la contrata que
+        # los ejecutó (el avance la guarda) o el rol de la línea.
+        for line, partner, day, amount in Progress._read_group(
+                [('state', '=', 'validated'), ('is_rework', '=', False),
+                 ('plan_line_id', 'any', line_domain)],
+                ['plan_line_id', 'partner_id', 'date:day'], ['amount:sum']):
+            if not amount or not day:
+                continue
+            who = partner or next((line[field] for field in extra if line[field]), None)
+            row = executed.setdefault((who.display_name if who else unassigned, line.stage), {})
+            week = week_of(fields.Date.to_date(day))
+            row[week] = row.get(week, 0.0) + amount
+        today = fields.Date.context_today(self)
+        current = week_of(today)
+        weeks = sorted({week for values in list(planned.values()) + list(executed.values())
+                        for week in values})
         if weeks:
             # Semanas seguidas, aunque alguna no tenga montos.
             weeks = [weeks[0] + timedelta(days=7 * index)
                      for index in range((weeks[-1] - weeks[0]).days // 7 + 1)]
+        to_date = [week <= current for week in weeks]
+
+        def measure(plan_values, done_values):
+            plan_list = [round(plan_values.get(week, 0.0), 2) for week in weeks]
+            done_list = [round(done_values.get(week, 0.0), 2) for week in weeks]
+            plan_to_date = sum(value for value, past in zip(plan_list, to_date) if past)
+            done_total = sum(done_list)
+            return {
+                'values': plan_list, 'executed': done_list,
+                'total': round(sum(plan_values.values()), 2),
+                'plan_to_date': round(plan_to_date, 2),
+                'executed_total': round(done_total, 2),
+                'pct': round(100.0 * done_total / plan_to_date, 1) if plan_to_date else False,
+            }
+
         order = {key: index for index, key in enumerate(stage_labels)}
-        result_rows = []
-        for (name, line_stage), values in sorted(
-                rows.items(), key=lambda item: (order.get(item[0][1], 9), item[0][0])):
-            amounts = [round(values.get(week, 0.0), 2) for week in weeks]
-            result_rows.append({
-                'label': name, 'stage': line_stage,
-                'stage_label': stage_labels.get(line_stage, ''),
-                'unassigned': name == unassigned,
-                'values': amounts, 'total': round(sum(values.values()), 2),
-            })
-        totals = [round(sum(row['values'][index] for row in result_rows), 2)
-                  for index in range(len(weeks))]
+        colors = {record.code: record.color for record in self.env['construction.stage'].with_context(
+            active_test=False).search([])}
+        keys = sorted(set(planned) | set(executed),
+                      key=lambda key: (order.get(key[1], 9999), key[0] == unassigned, key[0]))
+        result_rows, groups = [], {}
+        for name, line_stage in keys:
+            row = dict(measure(planned.get((name, line_stage), {}),
+                               executed.get((name, line_stage), {})),
+                       label=name, stage=line_stage,
+                       stage_label=stage_labels.get(line_stage, ''),
+                       unassigned=name == unassigned)
+            result_rows.append(row)
+            groups.setdefault(line_stage, []).append(row)
+
+        def add(rows, key):
+            return [round(sum(row[key][index] for row in rows), 2) for index in range(len(weeks))]
+
+        result_groups = []
+        for line_stage, rows in groups.items():
+            plan_values = dict(zip(weeks, add(rows, 'values')))
+            done_values = dict(zip(weeks, add(rows, 'executed')))
+            group = measure(plan_values, done_values)
+            group.update(stage=line_stage, stage_label=stage_labels.get(line_stage, ''),
+                         color=colors.get(line_stage) or '#3d85c6', rows=rows)
+            result_groups.append(group)
+        totals = measure(dict(zip(weeks, add(result_rows, 'values'))),
+                         dict(zip(weeks, add(result_rows, 'executed'))))
         return {
             'weeks': [fields.Date.to_string(week) for week in weeks],
+            'week_ends': [fields.Date.to_string(week + timedelta(days=6)) for week in weeks],
+            'current_week': weeks.index(current) if current in weeks else -1,
             'rows': result_rows,
-            'totals': totals,
-            'total': round(sum(row['total'] for row in result_rows), 2),
+            'groups': result_groups,
+            'totals': totals['values'],
+            'executed_totals': totals['executed'],
+            'diff': [round(done - plan, 2) if past else False for plan, done, past in zip(
+                totals['values'], totals['executed'], to_date)],
+            'total': totals['total'],
+            'plan_to_date': totals['plan_to_date'],
+            'executed_total': totals['executed_total'],
+            'pct': totals['pct'],
+            'thresholds': {'green': company.construction_load_green_pct,
+                           'amber': company.construction_load_amber_pct},
         }

@@ -27,6 +27,16 @@ registry.category("web_tour.tours").add("al_construction_planner_schedule", {
         { trigger: `body:not(:has(${row("Producción de piezas")}))` },
         { trigger: `${row("2.1 Instalación")}:not(:has(.algantt-check-on))` },
         { trigger: `.o_cp_load_table td:contains(Instalación)` },
+        // M115-04: etapa actual y plazo de cada ambiente; filtro por etapa actual.
+        { trigger: `${row("Dpto 501")} .o_cp_count_bar` },
+        { trigger: ".gantt_row .o_cp_current_badge" },
+        { trigger: ".o_cp_current_filter .dropdown-toggle" },
+        // M115-06: plan vs ejecutado por defecto; los tres modos.
+        { trigger: '.o_cp_load_modes [data-mode="compare"].active' },
+        { trigger: '.o_cp_load_modes [data-mode="planned"]', run: "click" },
+        { trigger: '.o_cp_load_modes [data-mode="planned"].active' },
+        { trigger: '.o_cp_load_modes [data-mode="compare"]', run: "click" },
+        { trigger: ".o_cp_load_table .o_cp_load_diff" },
         { trigger: `${row("Piso 05")} .algantt-check`, run: "click" },
         { trigger: `${row("Piso 05")} .algantt-check-on` },
         { trigger: `${row("Dpto 501")} .algantt-check-on` },

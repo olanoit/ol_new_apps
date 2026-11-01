@@ -95,6 +95,23 @@
                                 </div>
                             </div>
                         </setting>
+                        <setting company_dependent="1" id="construction_schedule_thresholds" string="Plazos y carga del Cronograma"
+                                 help="Margen para marcar en riesgo la etapa actual de un ambiente y colores de lo ejecutado frente a lo planificado en la carga semanal.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_stage_risk_margin" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_stage_risk_margin" class="oe_inline"/> puntos
+                                </div>
+                                <div class="row">
+                                    <label for="construction_load_green_pct" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_load_green_pct" class="oe_inline"/> %
+                                </div>
+                                <div class="row">
+                                    <label for="construction_load_amber_pct" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_load_amber_pct" class="oe_inline"/> %
+                                </div>
+                            </div>
+                        </setting>
                         <setting company_dependent="1" id="construction_plan_cancel_open" string="Cancelar planes en ejecución"
                                  help="Permite cancelar un plan aprobado o en ejecución que no tenga documentos abiertos (compras, requerimientos, producción en taller, OC de servicio) ni despachos o consumos.">
                             <field name="construction_plan_cancel_open"/>
