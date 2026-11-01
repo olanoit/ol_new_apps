@@ -38,7 +38,8 @@ class TestBudgetWorksheet(TestBudgetBook):
         data = json.loads(document.spreadsheet_data)
         names = [sheet['name'] for sheet in data['sheets']]
         self.assertEqual(names, ['INSTRUCCIONES', 'OBRA', 'INSUMOS', 'APU', 'APU_DETALLE',
-                                 'PRESUPUESTO', 'PLAN', 'LISTAS', 'REFERENCIAS', 'ERRORES'])
+                                 'PRESUPUESTO', 'PLAN', 'LISTAS', 'REFERENCIAS', 'ERRORES',
+                                 '_CLAVES'])
         budget = next(sheet for sheet in data['sheets'] if sheet['name'] == 'PRESUPUESTO')
         self.assertEqual(budget['cells']['A1'], 'Ítem')
         # CR-18, c: columnas A a W del libro 6.6; M es el costo unitario.
@@ -62,11 +63,13 @@ class TestBudgetWorksheet(TestBudgetBook):
         document = self._document()
         sheets = _sheets_from_book(self._book().content)
         result = document.action_construction_validate(sheets)
-        self.assertEqual(result['errors'], [])
+        self.assertEqual(result['errors'], 0, result['rows'])
         bad = dict(sheets, APU_DETALLE=sheets['APU_DETALLE'] + [['BK-R01', 'NO-EXISTE', '', '',
                                                                  1]])
-        errors = document.action_construction_validate(bad)['errors']
-        self.assertTrue(any('NO-EXISTE' in error[3] for error in errors))
+        result = document.action_construction_validate(bad)
+        self.assertTrue(result['errors'])
+        self.assertTrue(any('NO-EXISTE' in row[3] and row[4] == 'Error'
+                            for row in result['rows']))
         action = document.action_construction_send_to_planner(sheets, 'plan')
         wizard = self.env[action['res_model']].browse(action['res_id'])
         self.assertEqual(wizard.state, 'preview')

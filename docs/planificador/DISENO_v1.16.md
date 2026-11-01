@@ -16,7 +16,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
 | 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b) y aceptada |
-| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Diseñada (bloques 4a, 4b y 4c); por confirmar las rutas devueltas |
+| 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Bloque 4a desarrollado; 4b y 4c pendientes |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
 empezar la siguiente.
@@ -833,6 +833,60 @@ hoja nace con 300 filas y la importación la amplía.
     entrega los conteos del planificador (muebles, módulos a armar y ML total).
 - **Ficha de la obra (M113-12):** botón inteligente con la versión y el
   estado; bloque «Hoja de trabajo» de solo lectura, salvo las filas.
+
+### 4a · Implementación
+
+- **Tipo de hoja:** `construction.vertical.profile.construction_spreadsheet_kind`
+  (`al_construction_planner_spreadsheet`), con exportación e importación del
+  perfil. El puente de mobiliario marca el perfil Mobiliario
+  (`_construction_set_furniture_sheet`, sin pisar lo que ajustó la base) y deja
+  el maestro solo para las obras sin perfil.
+- **Menú:** la barra de la hoja de Odoo 19 muestra todos los menús raíz, sin
+  mirar su `isVisible` (`menu.children` es una función y su `length` nunca es
+  0). Esa era la causa de lo visto en dev1. Queda un solo menú «Planificación
+  de obra» y cada opción es visible según el tipo de hoja. En una hoja que no
+  es del planificador, el menú solo dice dónde abrirla.
+- **Claves:** `models/sheet_keys.py` (`_CLAVES`, `apply_keys`). El envío y
+  «Validar» aplican las claves antes de armar el libro. Al libro de
+  presupuesto se le agregó la clave como un alias más de cada columna.
+- **«Traer de Odoo» del presupuesto:** escribe INSUMOS, APU y APU_DETALLE por
+  clave (de `_CLAVES` o, en una hoja anterior, por el encabezado) y no pisa las
+  columnas de fórmula.
+- **ERRORES:** fila de estado, encabezados en la fila 2 y «Ir» con
+  `HYPERLINK("o-spreadsheet://<pestaña>")`. La hoja de Odoo no enlaza a una
+  celda, solo a la pestaña.
+- **M113-01:** el análisis del importador guarda `issues` (hoja, fila,
+  columna, mensaje, tipo). Avisos nuevos: `module_unknown`,
+  `piece_product_unknown`, `bom_without_module`, `obra_date_invalid` y
+  `group_without_levels`. `obra_date` lee el número de serie de la hoja y las
+  fechas como texto. Con «Tipo de módulo: Especial» escrito, el tipo especial
+  sale del nombre. La vista previa cuenta las piezas.
+- **CR-22 g, parcial:**
+  - Hecho:
+    - INSUMOS tiene «Para elegir» («tipo · nombre · unidad · código»);
+    - APU_DETALLE elige el insumo con una lista sobre esa columna, y «Código
+      del insumo» es una fórmula;
+    - «Traer de Odoo» escribe nombres sin código, unidades en español y la
+      etapa por su número y nombre;
+    - encabezado y dos primeras columnas inmovilizados.
+  - Queda para 4b:
+    - INSUMOS y APU siguen con el código en la columna A, porque las fórmulas
+      de APU_DETALLE y PRESUPUESTO lo buscan con `VLOOKUP`;
+    - la receta por nombre en APU_DETALLE y la banda de color por receta.
+- **Migraciones:**
+  - `al_construction_planner_spreadsheet` 9.20261101:
+    - quita `N()`;
+    - agrega «Costo unitario sin APU» al final de PRESUPUESTO si falta;
+    - pinta de gris los encabezados de fórmula;
+    - crea `_CLAVES`.
+  - `al_construction_planner_spreadsheet_furniture` 4.20261101: pasa el verde a
+    gris y los encabezados de datos a amarillo, y crea `_CLAVES`.
+  - En los datos y en la última foto, sin perder revisiones.
+- **Pruebas:**
+  - `al_construction_planner_spreadsheet/tests/test_package_116_stage4.py`;
+  - `al_construction_planner_spreadsheet_furniture/tests/test_package_116_stage4.py`,
+    con el recorrido `al_construction_furniture_sheet_menu`.
+  - Corren en `test_pe_creval`: la base del núcleo no tiene Documentos.
 
 ### Pruebas de la etapa 4
 

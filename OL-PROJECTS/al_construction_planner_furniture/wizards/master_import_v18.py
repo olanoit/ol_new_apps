@@ -20,15 +20,49 @@ Un segundo envío no duplica nada: todo se busca por su código o su nombre.
 import logging
 import re
 from collections import defaultdict
+from datetime import date, datetime, timedelta
 
 from odoo import Command, models
 
 from odoo.addons.al_construction_planner.models.common import norm
 
-from ..models.construction_furniture_model import JOIN_METHODS, MODULE_CLASSES
+from ..models.construction_furniture_model import (
+    JOIN_METHODS, MODULE_CLASSES, special_kind_from_name,
+)
 from .master_import_wizard import _number, _text
 
 _logger = logging.getLogger(__name__)
+
+
+# Día cero de los números de serie de fecha de una hoja de cálculo.
+SERIAL_EPOCH = date(1899, 12, 30)
+
+
+def obra_date(value):
+    """Fecha de un valor de OBRA (M113-01, caso 3): fecha, número de serie de
+    la hoja (días desde el 30-dic-1899), «AAAA-MM-DD» o «DD-MM-AAAA».
+    ``None`` si no se puede leer; ``False`` si está vacío."""
+    if value in (None, '', False):
+        return False
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if 1 <= value < 2958466:
+            return SERIAL_EPOCH + timedelta(days=int(value))
+        return None
+    text = str(value).strip()[:10]
+    for fmt in ('%Y-%m-%d', '%d-%m-%Y', '%d/%m/%Y', '%Y/%m/%d'):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    try:
+        number = float(text)
+    except ValueError:
+        return None
+    return obra_date(number)
 
 
 def _choice(selection, text):
@@ -116,6 +150,13 @@ class ConstructionMasterImportWizard(models.TransientModel):
         module_class = _choice(MODULE_CLASSES, row.get('module_class'))
         if module_class:
             values['module_class'] = module_class
+            # Con «Tipo de módulo» escrito no se calcula el tipo especial: se
+            # deduce del nombre (paquete 1.16, M113-01), o la actividad de
+            # armado del catálogo para especiales no lo encuentra.
+            if module_class == 'special':
+                kind = special_kind_from_name(_text(row.get('name')) or _text(row.get('code')))
+                if kind:
+                    values['special_kind'] = kind
         join_method = _choice(JOIN_METHODS, row.get('join_method'))
         if join_method:
             values['join_method'] = join_method
@@ -137,23 +178,93 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 if text:
                     stage_codes[norm(text)] = stage.code
 
-        # Receta por módulo: BOM con módulo y PIEZAS.
+        # Módulos de cada tipología: los del libro (MODULOS reemplaza la
+        # plantilla) o, si el libro no trae la tipología, los de la obra.
+        issues = result['issues']
+        records = {t.code: t for t in self.env['construction.typology'].with_context(
+            active_test=False).search([('project_id', '=', self.project_id.id)])}
+        known_modules = {}
+        with_recipe = set()
+        for code in typologies:
+            if code in result['modules']:
+                known_modules[code] = set(result['modules'][code])
+            elif code in records:
+                known_modules[code] = set(records[code].module_line_ids.mapped('code'))
+                if records[code].module_line_ids.material_ids:
+                    with_recipe.add(code)
+            else:
+                known_modules[code] = set()
+
+        def module_unknown(sheet, row, typology, module):
+            warn['module_unknown'].append(self.env._(
+                '%(sheet)s fila %(row)s: %(typology)s · %(module)s', sheet=sheet,
+                row=row['_row'], typology=typology, module=module))
+            issues.append((sheet, row['_row'], self.env._('Módulo'), self.env._(
+                'El módulo %(module)s no está en MODULOS de la tipología %(typology)s: la fila no '
+                'se importa.', module=module, typology=typology), 'error'))
+
+        # Receta por módulo: BOM con módulo y PIEZAS (M113-01: un módulo que
+        # no existe ya no se pierde en silencio).
         module_bom = defaultdict(list)
+        unknown_count = 0
+        bom_without_module = []
         for row in sheets.get('BOM', []):
             module = _text(row.get('module'))
             typology = _text(row.get('typology'))
-            if module and typology in typologies:
-                module_bom[(typology, module)].append({
-                    'code': _text(row.get('product_code')), 'qty': _number(row.get('qty')) or 0.0,
-                    'stage': stage_codes.get(norm(row.get('stage'))) or False,
-                })
+            if typology not in typologies:
+                continue
+            if not module:
+                bom_without_module.append((typology, row))
+                continue
+            if module not in known_modules[typology]:
+                module_unknown('BOM', row, typology, module)
+                unknown_count += 1
+                continue
+            module_bom[(typology, module)].append({
+                'code': _text(row.get('product_code')), 'qty': _number(row.get('qty')) or 0.0,
+                'stage': stage_codes.get(norm(row.get('stage'))) or False,
+            })
+        with_recipe |= {typology for typology, _module in module_bom}
+        # Caso 5: en una tipología con receta por módulo, el plan no usa la
+        # BOM de la tipología; la fila sin módulo se perdería.
+        for typology, row in bom_without_module:
+            if typology in with_recipe:
+                warn['bom_without_module'].append(self.env._(
+                    'BOM fila %(row)s: %(typology)s · %(code)s', row=row['_row'],
+                    typology=typology, code=_text(row.get('product_code'))))
+                issues.append(('BOM', row['_row'], self.env._('Módulo'), self.env._(
+                    'La tipología %s tiene recetas por módulo: una línea sin módulo no llega al '
+                    'plan. Indique el módulo.', typology), 'error'))
+        # Tableros de las piezas: los del maestro y los de PRODUCTOS NUEVOS.
+        new_rows = sheets.get('PRODUCTOS NUEVOS') or []
+        result['new_products'] = self._new_product_codes(new_rows) if new_rows else {}
+        new_codes = {code for code, _values, _existing in result['new_products'].values()}
+        piece_codes = {_text(row.get('product_code')) for row in sheets.get('PIEZAS', [])} - {''}
+        company = self._company()
+        existing_codes = set(self.env['product.product'].with_context(active_test=False).search([
+            ('default_code', 'in', list(piece_codes)),
+            ('company_id', 'in', (company.id, False))]).mapped('default_code'))
         pieces = defaultdict(list)
+        piece_count = 0
         for row in sheets.get('PIEZAS', []):
             typology = _text(row.get('typology'))
             if typology not in typologies:
                 warn['unknown_typology'].append('PIEZAS · %s' % (typology or '—'))
                 continue
-            pieces[(typology, _text(row.get('module')))].append({
+            module = _text(row.get('module'))
+            if module not in known_modules[typology]:
+                module_unknown('PIEZAS', row, typology, module)
+                unknown_count += 1
+                continue
+            code = _text(row.get('product_code'))
+            if code and code not in existing_codes and code not in new_codes:
+                warn['piece_product_unknown'].append(self.env._(
+                    'PIEZAS fila %(row)s: %(code)s', row=row['_row'], code=code))
+                issues.append(('PIEZAS', row['_row'], self.env._('Código del producto'),
+                               self.env._('El tablero %s no existe ni está en PRODUCTOS NUEVOS: '
+                                          'la pieza quedaría sin tablero.', code), 'error'))
+            piece_count += 1
+            pieces[(typology, module)].append({
                 'qty': _number(row.get('qty')) or 0.0,
                 'length_mm': _number(row.get('length')) or 0.0,
                 'width_mm': _number(row.get('width')) or 0.0,
@@ -162,10 +273,19 @@ class ConstructionMasterImportWizard(models.TransientModel):
             })
         result['module_bom'] = dict(module_bom)
         result['pieces'] = dict(pieces)
-        # Los registros de Odoo 19 no guardan atributos: se vuelve a calcular
-        # (mismos códigos, reservados con la misma búsqueda).
-        new_rows = sheets.get('PRODUCTOS NUEVOS') or []
-        result['new_products'] = self._new_product_codes(new_rows) if new_rows else {}
+        rows = sheets.get('PIEZAS', [])
+        if rows:
+            result['stats']['PIEZAS'] = (len(rows), piece_count, 0)
+        result['unknown_module_rows'] = unknown_count
+        # Fechas de OBRA (M113-01, caso 3).
+        for row in sheets.get('OBRA', []):
+            key = norm(_text(row.get('key')))
+            if key in ('inicio', 'fin') and obra_date(row.get('value')) is None:
+                warn['obra_date_invalid'].append('%s «%s»' % (_text(row.get('key')),
+                                                              _text(row.get('value'))))
+                issues.append(('OBRA', row['_row'], self.env._('Valor'), self.env._(
+                    'La fecha «%s» no se puede leer: use AAAA-MM-DD.', _text(row.get('value'))),
+                    'warning'))
         # Parecidos de los productos nuevos (lógica de P-17).
         creator = self.env.get('construction.product.create.wizard')
         if creator is not None:
@@ -217,8 +337,40 @@ class ConstructionMasterImportWizard(models.TransientModel):
                 'Contratos sin cliente (ni en la hoja ni en la obra): no se crean'),
             'budget_not_approved': self.env._(
                 'El presupuesto de la obra no está aprobado por el cliente'),
+            'module_unknown': self.env._(
+                'Filas de BOM o PIEZAS con un módulo que no está en MODULOS de su tipología '
+                '(no se importan)'),
+            'piece_product_unknown': self.env._(
+                'Piezas con un tablero que no existe ni está en PRODUCTOS NUEVOS (quedan sin '
+                'tablero)'),
+            'bom_without_module': self.env._(
+                'Filas de BOM sin módulo en una tipología con recetas por módulo (el plan no las '
+                'usa)'),
+            'obra_date_invalid': self.env._(
+                'Fechas de OBRA que no se pueden leer (no se escriben)'),
         })
         return messages
+
+    # Avisos que ya van fila por fila en ``issues``.
+    ISSUE_WARNINGS = ('invalid_value', 'group_without_levels', 'module_unknown',
+                      'piece_product_unknown', 'bom_without_module', 'obra_date_invalid')
+
+    def _construction_issues(self, data):
+        """Errores y avisos del análisis para la pestaña ERRORES de la hoja
+        de trabajo (paquete 1.13, M113-03): ``[(hoja, fila, columna,
+        mensaje, tipo)]``. Son errores los del análisis y los casos 1, 2, 4 y
+        5 de M113-01; lo demás, avisos."""
+        issues = [('', '', '', error, 'error') for error in data['errors']]
+        issues += list(data.get('issues', []))
+        messages = self._warning_messages()
+        for key, values in data['warnings'].items():
+            if key in self.ISSUE_WARNINGS or not values:
+                continue
+            names = list(dict.fromkeys(values))
+            issues.append(('', '', '', '%s: %s' % (
+                messages.get(key, key), ', '.join(names[:20]) + (' …' if len(names) > 20 else '')),
+                'warning'))
+        return issues
 
     # ------------------------------------------------------------------
     # Escritura
@@ -313,13 +465,10 @@ class ConstructionMasterImportWizard(models.TransientModel):
         project = self.project_id
         vals = {}
         for key, field in (('inicio', 'date_start'), ('fin', 'date')):
-            value = values.get(key)
+            # M113-01, caso 3: la hoja manda las fechas como número de serie.
+            value = obra_date(values.get(key))
             if value:
-                try:
-                    vals[field] = value if not isinstance(value, str) else \
-                        value.strip()[:10]
-                except Exception:  # noqa: BLE001
-                    continue
+                vals[field] = value
         client = _text(values.get('cliente'))
         if client:
             partner = self.env['res.partner'].search(

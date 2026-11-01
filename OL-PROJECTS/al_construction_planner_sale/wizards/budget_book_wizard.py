@@ -65,6 +65,9 @@ COLUMNS = {
         ('qty', ('Cantidad por unidad', 'Cantidad'), False),
         ('price', ('Precio manual',), False),
         ('stage', ('Etapa',), False),
+        # Paquete 1.16, CR-22 g: el insumo se elige por nombre en la hoja de
+        # trabajo; el código se calcula de esta columna (informativa).
+        ('pick', ('Insumo: escriba tipo o nombre',), False),
     ],
     # Columnas A a W del libro 6.6 con «Costo unitario sin APU» (CR-18, c y
     # D1), en el orden de la hoja; las de PRESUPUESTO_FORMULAS son fórmulas.
@@ -222,7 +225,9 @@ class ConstructionBudgetBookWizard(models.TransientModel):
             names = [norm(_text(cell)) for cell in row]
             index = {}
             for key, aliases, _required in columns:
-                for alias in aliases:
+                # La clave interna de la columna también vale como encabezado:
+                # la hoja de trabajo la pone al enviar (paquete 1.16, M116-09).
+                for alias in (key,) + tuple(aliases):
                     if norm(alias) in names:
                         index[key] = names.index(norm(alias))
                         break

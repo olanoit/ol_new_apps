@@ -17,7 +17,10 @@ from odoo import fields, models
 from odoo.exceptions import UserError
 from odoo.tools import BinaryBytes
 
-from .project_project import PRESUPUESTO_HEADERS, cell_text, presupuesto_row
+from odoo.addons.al_construction_planner_sale.wizards.budget_book_wizard import COLUMNS
+
+from .project_project import PRESUPUESTO_HEADERS, cell_text, data_keys, presupuesto_row
+from .sheet_keys import KEYS_SHEET, apply_keys
 
 SHEET_KINDS = [
     ('budget', 'Presupuesto y plan'),
@@ -25,6 +28,8 @@ SHEET_KINDS = [
 ]
 # Pestañas de la hoja que van al libro de carga.
 BOOK_SHEETS = ('OBRA', 'INSUMOS', 'APU', 'APU_DETALLE', 'PRESUPUESTO', 'PLAN', 'LISTAS')
+# Pestañas que «Traer de Odoo» escribe por clave de columna.
+KEYED_SHEETS = ('INSUMOS', 'APU', 'APU_DETALLE')
 
 
 class DocumentsDocument(models.Model):
@@ -57,7 +62,14 @@ class DocumentsDocument(models.Model):
             document_sudo.construction_project_id.construction_sale_order_id
         # D3: con la cotización confirmada no se envía el presupuesto.
         data['construction_offer_locked'] = bool(order) and order._construction_offer_locked()
+        # M113-02: el envío recoge solo estas pestañas.
+        data['construction_send_sheets'] = document_sudo._construction_send_sheet_names() \
+            if data['construction_sheet_kind'] else []
         return data
+
+    def _construction_send_sheet_names(self):
+        """Pestañas que lee el envío (M113-02): las del libro y _CLAVES."""
+        return list(BOOK_SHEETS) + [KEYS_SHEET]
 
     # ------------------------------------------------------------------
     # Enviar al planificador
@@ -111,6 +123,8 @@ class DocumentsDocument(models.Model):
         self.ensure_one()
         if not self.construction_project_id and not self.construction_sale_order_id:
             raise UserError(self.env._('Esta hoja no es una hoja de trabajo del planificador.'))
+        # Las columnas se leen por su clave interna (M116-09, CR-22 d).
+        sheets = apply_keys(sheets)
         if self.construction_sheet_kind != 'budget':
             return self._construction_send_furniture(sheets)
         wizard = self._construction_book_wizard(sheets, target)
@@ -127,19 +141,47 @@ class DocumentsDocument(models.Model):
             'Esta hoja es el maestro de mobiliario: instale el planificador de mobiliario.'))
 
     def action_construction_validate(self, sheets):
-        """«Validar plantilla»: los errores de la hoja como filas de la
-        pestaña ERRORES (hoja, fila, columna, mensaje) y los avisos."""
+        """«Validar»: las filas de la pestaña ERRORES común (paquete 1.16,
+        M116-09): hoja, fila, columna, mensaje y tipo.
+
+        :return: ``{'rows': [[hoja, fila, columna, mensaje, tipo]],
+            'errors': n, 'warnings': m}``
+        """
         self.ensure_one()
+        sheets = apply_keys(sheets)
+        if self.construction_sheet_kind == 'budget':
+            issues = self._construction_validate_budget(sheets)
+        else:
+            issues = self._construction_validate_furniture(sheets)
+        # Primero los errores, en el orden de la hoja.
+        issues = sorted(issues, key=lambda issue: issue[4] != 'error')
+        labels = {'error': self.env._('Error'), 'warning': self.env._('Aviso')}
+        return {
+            'rows': [[sheet or '', row or '', column or '', message, labels.get(kind, kind)]
+                     for sheet, row, column, message, kind in issues],
+            'errors': sum(1 for issue in issues if issue[4] == 'error'),
+            'warnings': sum(1 for issue in issues if issue[4] != 'error'),
+        }
+
+    def _construction_validate_budget(self, sheets):
+        """Errores y avisos del libro de presupuesto: ``[(hoja, fila,
+        columna, mensaje, tipo)]``."""
         # La cotización confirmada no es un error de la plantilla (D3).
         wizard = self._construction_book_wizard(sheets).with_context(
             construction_validate_only=True)
         _book, errors, warnings = wizard._parse()
         wizard.unlink()
-        return {
-            'errors': [[sheet, row or '', column or '', message]
-                       for sheet, row, column, message in errors],
-            'warnings': warnings,
-        }
+        headers = {(name, key): aliases[0] for name, columns in COLUMNS.items()
+                   for key, aliases, _required in columns}
+        issues = [(sheet, row, headers.get((sheet, column), column), message, 'error')
+                  for sheet, row, column, message in errors]
+        issues += [('', '', '', warning, 'warning') for warning in warnings]
+        return issues
+
+    def _construction_validate_furniture(self, sheets):
+        """Maestro de mobiliario: lo implementa su puente."""
+        raise UserError(self.env._(
+            'Esta hoja es el maestro de mobiliario: instale el planificador de mobiliario.'))
 
     def construction_current_costs(self, codes):
         """«Actualizar insumos»: {código: (costo vigente, unidad)} del maestro
@@ -163,8 +205,20 @@ class DocumentsDocument(models.Model):
         rows = self.env['project.project']._construction_budget_rows(order, project)
         # Todo como texto (CR-18, a); PRESUPUESTO con sus encabezados y sus
         # fórmulas, para que una hoja anterior quede con las columnas A a W.
+        keyed = {}
+        for name in KEYED_SHEETS:
+            keys = data_keys(name) + (['code'] if name == 'APU_DETALLE' else [])
+            aliases = {key: list(texts) for key, texts, _required in COLUMNS[name]}
+            keyed[name] = {'keys': keys, 'aliases': {key: aliases.get(key, [key])
+                                                     for key in keys},
+                           'rows': [[cell_text(value) for value in row]
+                                    for row in rows.pop(name)]}
         result = {name: [[cell_text(value) for value in row] for row in sheet_rows]
                   for name, sheet_rows in rows.items() if name != 'PRESUPUESTO'}
+        # INSUMOS, APU y APU_DETALLE se escriben por la clave de cada columna
+        # (paquete 1.16, M116-09): sirve para las hojas nuevas y las anteriores,
+        # y no pisa las columnas de fórmula.
+        result['_keyed'] = keyed
         result['PRESUPUESTO'] = [PRESUPUESTO_HEADERS] + [
             presupuesto_row(values, number) for number, values in
             enumerate(rows['PRESUPUESTO'], start=2)]
