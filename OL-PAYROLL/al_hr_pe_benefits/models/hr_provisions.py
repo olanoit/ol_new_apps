@@ -55,7 +55,9 @@ class HrProvisiones(models.Model):
     gratificacion_id = fields.Many2one(
         'hr.gratification', string='Gratificación', check_company=True,
         help='Gratificación semestral de la que se toma el sexto para la '
-             'remuneración computable de la CTS.', tracking=True)
+             'remuneración computable de la CTS. Si se deja vacía, se usa la '
+             'del semestre CTS del lote (julio para may-oct, diciembre para '
+             'nov-abr) si ya está calculada.', tracking=True)
     cts_lines = fields.One2many(
         'hr.provisiones.cts.line', 'provision_id', string='Provisión de CTS')
     grati_lines = fields.One2many(
@@ -108,8 +110,11 @@ class HrProvisiones(models.Model):
         CtsLine = self.env['hr.provisiones.cts.line']
         GratiLine = self.env['hr.provisiones.grati.line']
         VacaLine = self.env['hr.provisiones.vaca.line']
+        gratification = self._l10n_pe_cts_gratification()
+        # Una boleta anulada no se provisiona.
+        lot_slips = lot.slip_ids.filtered(lambda slip: slip.state != 'cancel')
         seen = self.env['hr.employee']
-        for slip in lot.slip_ids:
+        for slip in lot_slips:
             employee = slip.employee_id
             version = slip.version_id
             if employee in seen:
@@ -128,7 +133,17 @@ class HrProvisiones(models.Model):
                     <= lot.date_end:
                 continue
             less_than_four = version.l10n_pe_less_than_four
-            averages = self._get_variable_averages(param, employee)
+            averages = self._get_variable_averages(
+                param, employee,
+                principal_commission=version.l10n_pe_commission_principal)
+            # Faltas del mes (todas las boletas del trabajador en el lote):
+            # se descuentan por día, como en la CTS, la gratificación y las
+            # vacaciones truncas.
+            lacks = sum(lot_slips.filtered(
+                lambda other: other.employee_id == employee
+            ).worked_days_line_ids.filtered(
+                lambda line: line.work_entry_type_id in param.lack_wd_ids
+            ).mapped('number_of_days'))
             common_vals = {
                 'provision_id': self.id,
                 'employee_id': employee.id,
@@ -136,9 +151,12 @@ class HrProvisiones(models.Model):
                 'fecha_ingreso': version.contract_date_start,
                 'basico': version.wage,
                 # Mismo criterio que la regla AF de la boleta
-                # (derechohabientes por edad, Ley 25129).
-                'asignacion': param.family_allowance
+                # (derechohabientes por edad, Ley 25129) y la RMV
+                # vigente en el mes, no la fija del parámetro.
+                'asignacion':
+                param._l10n_pe_family_allowance_amount(slip.date_to)
                 if slip.l10n_pe_family_allowance_ok else 0.0,
+                'faltas': lacks,
                 'commission': averages['commission'],
                 'bonus': averages['bonus'],
                 'extra_hours': averages['extra_hours'],
@@ -150,7 +168,7 @@ class HrProvisiones(models.Model):
                     VacaLine.create(common_vals)
                 continue
             if not less_than_four:
-                grati_line = self.gratificacion_id.line_ids.filtered(
+                grati_line = gratification.line_ids.filtered(
                     lambda line: line.employee_id == employee)[:1]
                 CtsLine.create(dict(
                     common_vals,
@@ -162,7 +180,9 @@ class HrProvisiones(models.Model):
                     and version.contract_date_start <= lot.date_start:
                 GratiLine.create(dict(
                     common_vals,
-                    tasa=version.social_insurance_id.percent or 0.0,
+                    # Sin seguro en la versión, la tasa de EsSalud de la
+                    # regla (Ley 30334, art. 3), como la gratificación.
+                    tasa=param._l10n_pe_bonus_rate(version, lot.date_end),
                 ))
         return notify_success(self.env._('Se actualizó exitosamente.'))
 
@@ -244,14 +264,39 @@ class HrProvisiones(models.Model):
         """Reabre la provisión a borrador para permitir recálculo."""
         self.write({'state': 'draft'})
 
-    def _get_variable_averages(self, param, employee):
+    def _l10n_pe_cts_gratification(self):
+        """Gratificación de la que sale el sexto de la CTS: la elegida o,
+        si no se eligió, la del semestre CTS del lote (Fiestas Patrias para
+        may-oct, Navidad del año anterior o del mismo año para nov-abr).
+        Sin ella el sexto valía 0 aunque la gratificación ya existiera."""
+        self.ensure_one()
+        if self.gratificacion_id:
+            return self.gratificacion_id
+        end = self.payslip_run_id.date_end
+        if not end:
+            return self.env['hr.gratification']
+        if 5 <= end.month <= 10:
+            year, grat_type = end.year, '07'
+        elif end.month >= 11:
+            year, grat_type = end.year, '12'
+        else:
+            year, grat_type = end.year - 1, '12'
+        return self.env['hr.gratification'].search([
+            ('company_id', '=', self.company_id.id),
+            ('year', '=', year), ('type', '=', grat_type),
+        ], limit=1)
+
+    def _get_variable_averages(self, param, employee,
+                               principal_commission=False):
         """(comisión, bonificación, horas extras) promedios /6.
 
         Regla v18: se suman las líneas de los 6 meses (lote actual y 5
         previos, solo boletas con lote) y cada concepto promedia ÷6
         únicamente si se percibió en al menos 3 MESES distintos; si no,
         vale 0. Se cuentan meses, no líneas: dos reglas del mismo
-        concepto o dos boletas en un mes son un solo mes.
+        concepto o dos boletas en un mes son un solo mes. La comisión del
+        comisionista (``principal_commission``) promedia sin ese
+        requisito, como en el motor.
         """
         lot = self.payslip_run_id
         date_from = lot.date_start - relativedelta(months=5)
@@ -280,7 +325,9 @@ class HrProvisiones(models.Model):
                     (line.slip_id.date_to.year, line.slip_id.date_to.month))
         return {
             bucket: custom_round(totals[bucket] / 6, 2)
-            if len(months[bucket]) >= 3 else 0.0
+            if len(months[bucket]) >= 3
+            or (bucket == 'commission' and principal_commission)
+            else 0.0
             for bucket in totals
         }
 
@@ -333,20 +380,30 @@ class HrProvisionesLineMixin(models.AbstractModel):
     commission = fields.Float(string='Promedio de comisiones')
     bonus = fields.Float(string='Promedio de bonificaciones')
     extra_hours = fields.Float(string='Promedio de horas extras')
+    faltas = fields.Float(
+        string='Faltas (días)', digits=(16, 2),
+        help='Días de falta del mes (tipos de día «faltas» de los parámetros): '
+             'cada uno descuenta 1/30 de la provisión del mes, como en el '
+             'pago de la CTS, la gratificación y las vacaciones truncas.')
     prov_acumulado = fields.Float(
         string='Acumulado provisionado',
         help='Lo provisionado en el semestre (CTS y gratificación) o en el año '
              '(vacaciones) hasta este lote; se obtiene con «Obtener acumulado».')
 
     def _prorate_by_admission(self, amount):
-        """Prorratea el mes de ingreso: días laborados / mes de 30."""
+        """Prorratea el mes por días: mes de 30 en un mes completo; en el
+        de ingreso, los días calendario desde el ingreso hasta el fin del
+        lote (como el motor, que cuenta los días de la boleta; antes
+        ``30 − día + 1`` daba 16 días con ingreso el 15/02 y 0 con ingreso
+        el día 31). Las faltas descuentan un día cada una."""
         self.ensure_one()
         lot = self.provision_id.payslip_run_id
+        dias = 30
         if self.fecha_ingreso and lot.date_start \
                 and lot.date_start < self.fecha_ingreso <= lot.date_end:
-            dias = 30 - self.fecha_ingreso.day + 1
-            amount = amount / 30 * dias
-        return amount
+            dias = min(30, (lot.date_end - self.fecha_ingreso).days + 1)
+        dias = max(0.0, dias - self.faltas)
+        return amount / 30 * dias
 
     def action_open_concepts(self):
         """Popup con los conceptos adicionales de la línea."""
@@ -395,7 +452,7 @@ class HrProvisionesCtsLine(models.Model):
 
     @api.depends('basico', 'asignacion', 'commission', 'bonus',
                  'extra_hours', 'un_sexto_grati', 'total_cts',
-                 'fecha_ingreso', 'version_id.l10n_pe_labor_regime',
+                 'fecha_ingreso', 'faltas', 'version_id.l10n_pe_labor_regime',
                  'provision_id.payslip_run_id')
     def _compute_provisiones_cts(self):
         for record in self:
@@ -442,7 +499,7 @@ class HrProvisionesGratiLine(models.Model):
             record.total_grati = sum(record.concepto_ids.mapped('monto'))
 
     @api.depends('basico', 'asignacion', 'commission', 'bonus',
-                 'extra_hours', 'total_grati',
+                 'extra_hours', 'total_grati', 'faltas',
                  'version_id.l10n_pe_labor_regime')
     def _compute_provisiones_grati(self):
         for record in self:
@@ -451,6 +508,8 @@ class HrProvisionesGratiLine(models.Model):
                       + record.total_grati) / 6
             divider = 2 if record.version_id.l10n_pe_labor_regime \
                 == 'small' else 1
+            # Faltas a 1/180 por día, como la gratificación.
+            amount = amount / 30 * max(0.0, 30 - record.faltas)
             record.provisiones_grati = custom_round(amount / divider, 2)
 
     @api.depends('provisiones_grati', 'tasa')
@@ -488,7 +547,7 @@ class HrProvisionesVacaLine(models.Model):
             record.total_vaca = sum(record.concepto_ids.mapped('monto'))
 
     @api.depends('basico', 'asignacion', 'commission', 'bonus',
-                 'extra_hours', 'total_vaca', 'fecha_ingreso',
+                 'extra_hours', 'total_vaca', 'fecha_ingreso', 'faltas',
                  'version_id.l10n_pe_labor_regime',
                  'provision_id.payslip_run_id')
     def _compute_provisiones_vaca(self):

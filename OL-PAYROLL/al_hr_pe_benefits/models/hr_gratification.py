@@ -20,6 +20,8 @@ correo quedan para la Fase 7.
 import calendar
 from datetime import date
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import api, fields, models
 from odoo.addons.al_hr_pe.models.display_name import pe_join
 
@@ -132,12 +134,80 @@ class HrGratification(models.Model):
         ensure_draft(self)
         self.line_ids.filtered(lambda line: not line.preserve_record).unlink()
         self.env['hr.main.parameter'].compute_benefits(self, self.type)
+        self._l10n_pe_process_trainees()
         preserved_employees = \
             self.line_ids.filtered('preserve_record').employee_id
         self.line_ids.filtered(
             lambda line: not line.preserve_record
             and line.employee_id in preserved_employees).unlink()
         return notify_success(self.env._('Se calculó exitosamente.'))
+
+    def _l10n_pe_process_trainees(self):
+        """Media subvención de los practicantes (Ley 28518, art. 47 b).
+
+        Las modalidades formativas no tienen gratificación (no es
+        remuneración), pero sí una subvención adicional de media
+        subvención mensual cada 6 meses de duración continua del convenio.
+        Una línea por practicante del lote de pago que cumple 6, 12, 18…
+        meses continuos de convenio dentro del semestre (ene-jun o jul-dic)
+        y antes de su fin: estar en planilla en julio o diciembre no basta.
+        Sin bonificación de la Ley 30334 (no aporta a EsSalud por
+        gratificación)."""
+        self.ensure_one()
+        Param = self.env['hr.main.parameter']
+        if self.type == '07':
+            semester_start, semester_end = \
+                date(self.year, 1, 1), date(self.year, 6, 30)
+        else:
+            semester_start, semester_end = \
+                date(self.year, 7, 1), date(self.year, 12, 31)
+        slips = self.payslip_run_id.slip_ids.filtered(
+            lambda slip: slip.state != 'cancel'
+            and slip.version_id.l10n_pe_labor_regime == 'practicante')
+        Line = self.env['hr.gratification.line']
+        for employee, employee_slips in slips.grouped('employee_id').items():
+            slip = employee_slips.sorted(lambda slip: (slip.date_to, slip.id))[-1]
+            version = slip.version_id
+            start = Param.get_first_version(
+                employee, slip.date_to).contract_date_start
+            end = version.contract_date_end
+            periods = 0
+            step = 1
+            while True:
+                # Último día de cada tramo de 6 meses continuos.
+                completed = start + relativedelta(months=6 * step, days=-1)
+                if completed > semester_end:
+                    break
+                if completed >= semester_start \
+                        and (not end or completed <= end):
+                    periods += 1
+                step += 1
+            if not periods:
+                continue
+            wage = version.wage
+            total = custom_round(wage / 2 * periods, 2)
+            # Mismos campos que una gratificación de pequeña empresa de 6
+            # meses (÷ 12 por mes): «Recalcular» da el mismo importe.
+            Line.create({
+                'gratification_id': self.id,
+                'employee_id': employee.id,
+                'version_id': version.id,
+                'admission_date': start,
+                'months': 6 * periods,
+                'days': 0,
+                'lacks': 0.0,
+                'wage': wage,
+                'household_allowance': 0.0,
+                'computable_remuneration': wage,
+                'amount_per_month': custom_round(wage / 12, 2),
+                'amount_per_day': custom_round(wage / 12 / 30, 2),
+                'amount_per_lack': 0.0,
+                'grat_per_month': total,
+                'grat_per_day': 0.0,
+                'total_grat': total,
+                'bonus_essalud': 0.0,
+                'total': total,
+            })
 
     def action_recompute(self):
         """Recalcula todas las líneas del lote en una pasada."""
@@ -182,14 +252,20 @@ class HrGratification(models.Model):
         """
         slip_by_line = {line: employee_lot_slip(lot, line.employee_id)
                         for line in line_ids}
-        slips = self.env['hr.payslip'].union(*slip_by_line.values())
+        slips = self.env['hr.payslip'].union(slip_by_line.values())
         ensure_slips_draft(slips)
         for line, slip in slip_by_line.items():
             if not slip:
                 continue
-            for input_type, amount in (
-                    (param.gratification_input_id, line.total_grat),
-                    (param.bonus_nine_input_id, line.bonus_essalud)):
+            grat_input = param.gratification_input_id
+            amounts = [(grat_input, line.total_grat),
+                       (param.bonus_nine_input_id, line.bonus_essalud)]
+            if line.labor_regime == 'practicante':
+                # Media subvención (Ley 28518): su propio input si está
+                # configurado; sin bonificación.
+                amounts = [(param.trainee_subsidy_input_id or grat_input,
+                            line.total_grat)]
+            for input_type, amount in amounts:
                 input_line = slip.input_line_ids.filtered(
                     lambda inp: inp.salary_rule_id == input_type)
                 if input_line:
@@ -199,6 +275,10 @@ class HrGratification(models.Model):
                         'salary_rule_id': input_type.id,
                         'amount': amount,
                     })]})
+            # Adelantos y préstamos de gratificación pendientes: se
+            # descuentan en la misma boleta.
+            slip._l10n_pe_discount_benefit_advances(
+                'grat', on_date=lot.date_end)
         recompute_slips(slips)
 
 
@@ -286,7 +366,12 @@ class HrGratificationLine(models.Model):
     amount_per_day = fields.Float(
         string='Importe por día', help='Importe por mes ÷ 30.')
     amount_per_lack = fields.Float(
-        string='Descuento por faltas', help='Importe por día × faltas.')
+        string='Descuento por faltas',
+        help='Importe por día × faltas: 1/180 de la remuneración computable '
+             'por día de falta (1/30 del sexto). La Ley 27735 no lo regula '
+             'expresamente; se descuenta por analogía con la CTS. Solo '
+             'cuentan las faltas de los meses que suman a la gratificación: '
+             'las de un mes incompleto que no se computa no se descuentan.')
     grat_per_month = fields.Float(
         string='Grat. por meses completos',
         help='Importe por mes × meses.')
@@ -333,8 +418,15 @@ class HrGratificationLine(models.Model):
                 - record.amount_per_lack, 2)
             percent = 0.0
             header = record.gratification_id or record.liquidation_id
-            if header and header.with_bonus:
-                percent = record.social_insurance_id.percent or 0.0
+            if header and header.with_bonus \
+                    and record.labor_regime != 'practicante':
+                # Sin seguro en la versión, la tasa de EsSalud de la regla
+                # (Ley 30334, art. 3), como el motor.
+                percent = self.env['hr.main.parameter']._l10n_pe_bonus_rate(
+                    record.version_id,
+                    record.gratification_id.deposit_date
+                    or record.cessation_date
+                    or fields.Date.context_today(record))
             record.bonus_essalud = custom_round(
                 record.total_grat * percent * 0.01, 2)
             record.total = custom_round(

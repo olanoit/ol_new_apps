@@ -162,6 +162,21 @@ class HrBenefitsLineMixin(models.AbstractModel):
         return lines.with_env(self.env)
 
 
+class HrVersion(models.Model):
+    _inherit = 'hr.version'
+
+    l10n_pe_commission_principal = fields.Boolean(
+        string='Comisión como remuneración principal',
+        tracking=True, groups='hr.group_hr_user',
+        help='Marque si la comisión es la remuneración principal del '
+             'trabajador (comisionista). En la gratificación, la CTS y las '
+             'truncas su comisión se promedia en los 6 meses aunque no la '
+             'haya cobrado en 3 de ellos (remuneración principal '
+             'imprecisa, D.S. 001-97-TR art. 17). Sin marcar, la comisión '
+             'solo promedia si se percibió en al menos 3 meses del '
+             'semestre.')
+
+
 class HrMainParameter(models.Model):
     _inherit = 'hr.main.parameter'
 
@@ -170,6 +185,12 @@ class HrMainParameter(models.Model):
         'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input gratificación')
     bonus_nine_input_id = fields.Many2one(
         'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input bonificación 9 %')
+    trainee_subsidy_input_id = fields.Many2one(
+        'hr.salary.rule', domain=[('input_usage_payslip', '=', True)],
+        string='Input media subvención (practicantes)',
+        help='Input por el que se paga la subvención adicional de los '
+             'practicantes (media subvención cada 6 meses de convenio, Ley '
+             '28518 art. 47). Vacío: se usa el input de gratificación.')
     bonus_sr_ids = fields.Many2many(
         'hr.salary.rule', 'sr_bonus_main_parameter_rel',
         'main_parameter_id', 'sr_id',
@@ -187,24 +208,38 @@ class HrMainParameter(models.Model):
         'hr.salary.rule', string='R.S. asignación familiar')
     lack_wd_ids = fields.Many2many(
         'hr.work.entry.type', 'sr_lack_main_parameter_rel',
-        'main_parameter_id', 'sr_id', string='W.D. faltas')
+        'main_parameter_id', 'sr_id', string='W.D. faltas',
+        help='Tipos de día que son faltas: el mes sigue completo y cada día '
+             'descuenta 1/30 del importe mensual de la CTS o la '
+             'gratificación. Por defecto: FAL.')
     working_wd_ids = fields.Many2many(
         'hr.work.entry.type', 'sr_working_main_parameter_rel',
         'main_parameter_id', 'sr_id',
-        string='W.D. días laborados (beneficios)')
+        string='W.D. días laborados (beneficios)',
+        help='Tipos de día que computan como laborados para la CTS y la '
+             'gratificación. Incluya las vacaciones, la licencia con goce, '
+             'la paternidad y la maternidad subsidiada (Ley 27735 art. 7, '
+             'D.S. 001-97-TR art. 8): si faltan, ese mes deja de contar. Por '
+             'defecto: DLAB, DOM, DVAC, LCGH, DPAT y SMAR.')
 
     # --- CTS ---
     cts_input_id = fields.Many2one(
         'hr.salary.rule', domain=[('input_usage_payslip', '=', True)], string='Input CTS')
     medical_rest_wd_ids = fields.Many2many(
         'hr.work.entry.type', 'wd_medical_rest_parameter_rel',
-        'main_parameter_id', 'wd_id', string='W.D. descanso médico')
+        'main_parameter_id', 'wd_id', string='W.D. descanso médico',
+        help='Tipos de día de descanso médico: computan como laborados (en '
+             'la CTS hasta 60 días por año; el exceso se descuenta). Por '
+             'defecto: DMED y SENF.')
     employee_in_charge_id = fields.Many2one(
         'hr.employee', string='Encargado liquidación semestral',
         check_company=True)
     compute_af_vac = fields.Boolean(
         string='Calcular asignación familiar en vacaciones', default=True,
-        help='Incluir la asignación familiar en la remuneración computable de la liquidación vacacional.')
+        help='Incluir la asignación familiar en la remuneración computable '
+             'del saldo de vacaciones (importe de los días pendientes). No '
+             'afecta al goce: en el mes de vacaciones la asignación familiar '
+             'ya la paga su propia regla de la boleta.')
 
     # --- Liquidación de cese (Fase 4) ---
     truncated_gratification_input_id = fields.Many2one(
@@ -322,7 +357,49 @@ class HrMainParameter(models.Model):
         # recibe las mismas semillas que los datos del módulo.
         params = super().create(vals_list)
         params._l10n_pe_set_fortnightly_defaults()
+        params._l10n_pe_set_benefit_wd_defaults()
         return params
+
+    # Tipos de día por defecto de los beneficios (códigos de al_hr_pe).
+    # Laborados: también las vacaciones, la licencia con goce, la
+    # paternidad y la maternidad subsidiada, que son tiempo computable
+    # (Ley 27735 art. 7, D.S. 005-2002-TR art. 3, D.S. 001-97-TR art. 8);
+    # sin ellos un mes de vacaciones dejaba de contar un sexto. FER
+    # (feriado laborado) no: son días que se pagan aparte y ya están en
+    # DLAB/DOM, sumarlos los contaría dos veces. Faltas: FAL (la licencia
+    # sin goce no es falta: el mes queda incompleto). Descanso médico:
+    # DMED y SENF (computan, con el tope de 60 días en la CTS).
+    _L10N_PE_BENEFIT_WD_DEFAULTS = {
+        'working_wd_ids': ('DLAB', 'DOM', 'DVAC', 'LCGH', 'DPAT', 'SMAR'),
+        'lack_wd_ids': ('FAL',),
+        'medical_rest_wd_ids': ('DMED', 'SENF'),
+    }
+
+    def _l10n_pe_set_benefit_wd_defaults(self):
+        """Siembra los tipos de día de los beneficios que estén vacíos
+        (compañía nueva o migrada sin configurar); lo configurado a mano
+        no se toca."""
+        WorkEntryType = self.env['hr.work.entry.type'].sudo()
+        for param in self or self.search([]):
+            vals = {}
+            for field_name, codes in \
+                    self._L10N_PE_BENEFIT_WD_DEFAULTS.items():
+                if param[field_name]:
+                    continue
+                types = WorkEntryType.search([
+                    ('code', 'in', codes),
+                    ('country_id.code', 'in', ('PE', False)),
+                ])
+                # Un código por tipo (el de Perú si hay dos con el mismo).
+                by_code = {}
+                for work_entry_type in types.sorted(
+                        lambda wet: not wet.country_id):
+                    by_code.setdefault(work_entry_type.code, work_entry_type)
+                if by_code:
+                    vals[field_name] = [(6, 0, [
+                        wet.id for wet in by_code.values()])]
+            if vals:
+                param.write(vals)
 
     @api.model
     def _l10n_pe_set_fortnightly_defaults(self):
@@ -444,18 +521,129 @@ class HrMainParameter(models.Model):
             by_month[key] = by_month.get(key, lots.browse()) | lot
         return list(by_month.values())
 
+    def _l10n_pe_family_allowance_amount(self, on_date):
+        """Asignación familiar vigente a ``on_date``: 10 % de la RMV de la
+        tabla «RMV» (Ley 25129), como la boleta. ``family_allowance`` del
+        parámetro (RMV fija) solo es el respaldo si la tabla no cubre la
+        fecha: con él, la CTS y la gratificación no cuadraban con la
+        boleta al cambiar la RMV."""
+        rmv = self.env['hr.rule.parameter']._l10n_pe_get_rmv(on_date)
+        if rmv:
+            return round(rmv * 0.10, 2)
+        return self[:1].family_allowance
+
     @api.model
-    def calculate_bonus(self, admission_date, date_from, months, lines):
+    def _l10n_pe_bonus_rate(self, version, on_date):
+        """% de la bonificación extraordinaria (Ley 30334, art. 3): lo
+        que el empleador aportaría al seguro social sobre la
+        gratificación.
+
+        Con seguro en la versión, su porcentaje (EsSalud 9 % o EPS
+        6,75 %). Sin seguro, la boleta igual cobra EsSalud con la tasa
+        del parámetro de reglas ``l10n_pe_essalud_rate`` (regla ESSALUD):
+        la bonificación usa esa misma tasa en lugar de quedar en 0.
+        """
+        if version.social_insurance_id:
+            return version.social_insurance_id.percent or 0.0
+        return float(self.env['hr.rule.parameter'].sudo()
+                     ._get_parameter_from_code(
+                         'l10n_pe_essalud_rate', on_date,
+                         raise_if_not_found=False) or 0.0)
+
+    @api.model
+    def _l10n_pe_truncated_window(self, cessation_date):
+        """Ventana de los promedios de variables en las truncas: los 6
+        meses previos al cese; el mes de cese solo cuenta si el cese cae
+        a fin de mes (si no, la ventana termina el mes anterior).
+
+        Criterio único para la gratificación, la CTS y las vacaciones
+        truncas (antes cada una promediaba su propio semestre y daban
+        promedios distintos para el mismo trabajador)."""
+        last_day = calendar.monthrange(
+            cessation_date.year, cessation_date.month)[1]
+        if cessation_date.day == last_day:
+            date_to = cessation_date
+        else:
+            date_to = date(cessation_date.year, cessation_date.month, 1) \
+                - relativedelta(days=1)
+        start = date_to - relativedelta(months=5)
+        return date(start.year, start.month, 1), date_to
+
+    def _l10n_pe_average_variables(self, slips, admission_date, date_from,
+                                   principal_commission=False):
+        """Promedios ``{'commission', 'bonus', 'extra_hours'}`` de las
+        boletas ``slips`` (las canceladas no cuentan) con
+        ``calculate_bonus``; ``months`` son los meses con boleta.
+
+        ``principal_commission``: la comisión es la remuneración
+        principal del trabajador (``l10n_pe_commission_principal`` de la
+        versión) y se promedia sin la regla de las 3 apariciones (D.S.
+        001-97-TR art. 17, remuneración principal imprecisa).
+        """
+        self.ensure_one()
+        param = self
+        slips = slips.filtered(lambda slip: slip.state != 'cancel')
+        months = self._count_months(slips)
+        lines = slips.line_ids.filtered(lambda line: line.total > 0)
+        commissions = lines.filtered(
+            lambda line: line.salary_rule_id in param.commission_sr_ids)
+        bonus_lines = lines.filtered(
+            lambda line: line.salary_rule_id in param.bonus_sr_ids)
+        extra_hours_lines = lines.filtered(
+            lambda line: line.salary_rule_id == param.extra_hours_sr_id)
+        return {
+            'commission': self.calculate_bonus(
+                admission_date, date_from, months, commissions,
+                principal=principal_commission),
+            'bonus': self.calculate_bonus(
+                admission_date, date_from, months, bonus_lines),
+            'extra_hours': self.calculate_bonus(
+                admission_date, date_from, months, extra_hours_lines),
+            'months': months,
+        }
+
+    def _l10n_pe_truncated_variables(self, employee, cessation_date,
+                                     admission_date, version=None):
+        """Promedios de variables de las truncas de un cese (gratificación,
+        CTS y vacaciones): boletas de los lotes de la compañía en
+        ``_l10n_pe_truncated_window``, divididas entre 6 o entre los meses
+        laborados si son menos (ingreso dentro de la ventana).
+
+        Devuelve el dict de ``_l10n_pe_average_variables`` más
+        ``date_from``/``date_to`` de la ventana."""
+        self.ensure_one()
+        date_from, date_to = self._l10n_pe_truncated_window(cessation_date)
+        admission_month = date(admission_date.year, admission_date.month, 1)
+        slips = self.env['hr.payslip.run'].search([
+            ('date_end', '>=', date_from),
+            ('date_end', '<=', date_to),
+            ('company_id', '=', self.company_id.id),
+        ]).slip_ids.filtered(
+            lambda slip: slip.employee_id == employee
+            and slip.date_to >= admission_month)
+        result = self._l10n_pe_average_variables(
+            slips, admission_date, date_from,
+            principal_commission=bool(
+                version and version.l10n_pe_commission_principal))
+        result.update(date_from=date_from, date_to=date_to)
+        return result
+
+    @api.model
+    def calculate_bonus(self, admission_date, date_from, months, lines,
+                        principal=False):
         """Promedio de variables (regla peruana de las 3 apariciones).
 
         Cada código de regla cobrado en >= 3 meses distintos del semestre
         (y con >= 3 meses laborados) promedia ÷6, o ÷meses trabajados si
         el empleado ingresó después del inicio del semestre.
+
+        ``principal``: remuneración principal imprecisa (comisionista):
+        se promedia con el mismo divisor sin exigir las 3 apariciones.
         """
         total = 0.0
         for code_lines in lines.grouped('code').values():
             appearances = self._count_months(code_lines)
-            if months >= 3 and appearances >= 3:
+            if (principal and months) or (months >= 3 and appearances >= 3):
                 amount = sum(code_lines.mapped('total'))
                 if admission_date > date_from:
                     amount = custom_round(amount / months, 2)
@@ -507,6 +695,7 @@ class HrMainParameter(models.Model):
                 ('employee_id', '=', employee.id),
                 ('company_id', '=', company.id),
                 ('payslip_run_id', '!=', False),
+                ('state', '!=', 'cancel'),
                 ('date_to', '>=', year_start),
                 ('date_to', '<=', date_to),
             ])
@@ -547,6 +736,7 @@ class HrMainParameter(models.Model):
             ('employee_id', 'in', employees.ids),
             ('company_id', '=', company.id),
             ('struct_id', '=', self.env.ref('al_hr_pe.base_structure').id),
+            ('state', '!=', 'cancel'),
             ('date_to', '>=', date_from),
             ('date_to', '<=', date_to),
         ], ['employee_id'])
@@ -568,6 +758,8 @@ class HrMainParameter(models.Model):
             ('employee_id', '=', employee.id),
             ('company_id', '=', company.id),
             ('struct_id', '=', base_struct.id),
+            # Una boleta anulada (reintegro cancelado) no es remuneración.
+            ('state', '!=', 'cancel'),
             ('date_to', '>=', date_from),
             ('date_to', '<=', date_to),
         ])
@@ -642,7 +834,8 @@ class HrMainParameter(models.Model):
 
         if liquidation:
             month_lot = record.payslip_run_id
-            filtered_slips = month_lot.slip_ids
+            filtered_slips = month_lot.slip_ids.filtered(
+                lambda slip: slip.state != 'cancel')
             if record_type in ('05', '11'):
                 filtered_slips = filtered_slips.filtered(
                     lambda slip: not slip.version_id.l10n_pe_less_than_four)
@@ -670,7 +863,8 @@ class HrMainParameter(models.Model):
                 ('periodo_id', '=', periodo.id),
                 ('company_id', '=', company.id),
             ])
-            filtered_slips = month_lot.slip_ids
+            filtered_slips = month_lot.slip_ids.filtered(
+                lambda slip: slip.state != 'cancel')
             if record_type in ('05', '11'):
                 filtered_slips = filtered_slips.filtered(
                     lambda slip: not slip.version_id.l10n_pe_less_than_four)
@@ -695,11 +889,18 @@ class HrMainParameter(models.Model):
                 ('company_id', '=', company.id),
             ])
         # Precarga única (evita recorrer las boletas de cada lote por
-        # empleado): boletas de los lotes agrupadas por trabajador.
+        # empleado): boletas de los lotes agrupadas por trabajador. Una
+        # boleta anulada no es remuneración ni tiempo laborado.
         Payslip = self.env['hr.payslip']
         slips_by_employee = (lots | lots_wd).slip_ids.filtered(
             lambda slip: slip.employee_id in employees
+            and slip.state != 'cancel'
         ).grouped('employee_id')
+        # Gratificación sin días sueltos (Ley 27735: solo meses calendario
+        # completos): el mes incompleto no cuenta y sus faltas tampoco se
+        # descuentan.
+        whole_months_only = record_type in ('07', '12') \
+            and not record.months_and_days
 
         remaining_by_employee = {}
         if record_type in ('05', '11'):
@@ -728,14 +929,13 @@ class HrMainParameter(models.Model):
                 ('employee_id', 'in', employees.ids),
                 ('company_id', '=', company.id),
                 ('payslip_run_id', '!=', False),
+                ('state', '!=', 'cancel'),
                 ('date_to', '>=', medical_start),
                 ('date_to', '<=', date_to),
             ])
 
         for employee in employees:
             months = days = lacks = 0
-            commissions = bonus_lines = extra_hours_lines = \
-                self.env['hr.payslip.line']
             month_slip = filtered_slips.filtered(
                 lambda slip: slip.employee_id == employee)
             if len(month_slip) > 1:
@@ -750,11 +950,27 @@ class HrMainParameter(models.Model):
                 employee, month_slip.date_to).contract_date_start
             remaining_wage = remaining_by_employee.get(employee, 0.0)
 
+            # Fecha de la remuneración computable: la CTS toma la de
+            # octubre/abril (D.S. 001-97-TR art. 9, boleta del mes de
+            # cierre) y la liquidación la del cese; la gratificación, la
+            # vigente al pagarla (Ley 27735 art. 2, «en la oportunidad en
+            # que corresponde otorgar el beneficio»): un aumento desde el
+            # 1 de julio entra en la de Fiestas Patrias.
+            remuneration_date = month_slip.date_to
+            if record_type in ('07', '12') and not liquidation \
+                    and record.deposit_date:
+                remuneration_date = record.deposit_date
+                deposit_version = employee._get_version(record.deposit_date)
+                if deposit_version.contract_date_start \
+                        == version.contract_date_start:
+                    version = deposit_version
             wage = version.wage
             # Asignación familiar con el mismo criterio que la boleta
             # (derechohabientes por edad, Ley 25129), no el campo manual
-            # ``children``.
-            household_allowance = param.family_allowance \
+            # ``children``, y con la RMV vigente a esa fecha (no la fija
+            # del parámetro).
+            household_allowance = \
+                param._l10n_pe_family_allowance_amount(remuneration_date) \
                 if month_slip.l10n_pe_family_allowance_ok else 0.0
             employee_all_slips = slips_by_employee.get(employee, Payslip)
             admission_payslip_date = \
@@ -766,8 +982,6 @@ class HrMainParameter(models.Model):
                     lambda slip: slip.payslip_run_id == lot
                     and admission_payslip_date <= slip.date_to <= month_limit)
 
-            bonus_months = self._count_months(employee_all_slips.filtered(
-                lambda slip: slip.payslip_run_id in lots))
 
             for month_lots in self._l10n_pe_lots_by_month(lots_wd):
                 # Del mes vale el lote con más días computables.
@@ -776,22 +990,14 @@ class HrMainParameter(models.Model):
                         lot_slips(lot).worked_days_line_ids)[:2] + (lot,)
                      for lot in month_lots),
                     key=lambda item: item[0])
-                if counted >= (lot.date_end - lot.date_start).days + 1:
+                complete = \
+                    counted >= (lot.date_end - lot.date_start).days + 1
+                if complete:
                     months += 1
                 else:
                     days += counted
-                lacks += lot_lacks
-            for lot in lots:
-                salary_rules = lot_slips(lot).line_ids
-                commissions += salary_rules.filtered(
-                    lambda line: line.salary_rule_id
-                    in param.commission_sr_ids and line.total > 0)
-                bonus_lines += salary_rules.filtered(
-                    lambda line: line.salary_rule_id
-                    in param.bonus_sr_ids and line.total > 0)
-                extra_hours_lines += salary_rules.filtered(
-                    lambda line: line.salary_rule_id
-                    == param.extra_hours_sr_id and line.total > 0)
+                if complete or not whole_months_only:
+                    lacks += lot_lacks
 
             if record_type in ('07', '12'):
                 # Sin días sueltos (Ley 27735: solo meses calendario
@@ -802,12 +1008,25 @@ class HrMainParameter(models.Model):
                 if days >= 30:
                     days, months = param.get_months_of_30_days(days, months)
 
-            commission = self.calculate_bonus(
-                admission_date, date_from, bonus_months, commissions)
-            bonus = self.calculate_bonus(
-                admission_date, date_from, bonus_months, bonus_lines)
-            extra_hours = self.calculate_bonus(
-                admission_date, date_from, bonus_months, extra_hours_lines)
+            # Promedios de variables: el semestre en el cálculo regular; en
+            # las truncas, criterio único de los 6 meses previos al cese
+            # (``_l10n_pe_truncated_variables``, el mismo de las
+            # vacaciones truncas).
+            if liquidation:
+                averages = param._l10n_pe_truncated_variables(
+                    employee, version.contract_date_end, admission_date,
+                    version=version)
+            else:
+                averages = param._l10n_pe_average_variables(
+                    employee_all_slips.filtered(
+                        lambda slip: slip.payslip_run_id in lots
+                        and admission_payslip_date <= slip.date_to
+                        <= month_limit),
+                    admission_date, date_from,
+                    principal_commission=version.l10n_pe_commission_principal)
+            commission = averages['commission']
+            bonus = averages['bonus']
+            extra_hours = averages['extra_hours']
             computable_remuneration = (wage + household_allowance
                                        + commission + bonus + extra_hours)
             divider = 6 if record_type in ('07', '12') else 12
@@ -890,13 +1109,17 @@ class HrMainParameter(models.Model):
                     vals['liquidation_id'] = record.id
                 else:
                     vals['gratification_id'] = record.id
+                # Faltas: 1/30 del sexto (1/180 de la remuneración) por
+                # día. La Ley 27735 no lo regula de forma expresa; se
+                # descuenta por analogía con la CTS, práctica usual
+                # (decisión aprobada), solo en los meses que sí cuentan.
                 amount_per_lack = amount_per_day * lacks
                 grat_per_month = custom_round(amount_per_month * months, 2)
                 grat_per_day = custom_round(amount_per_day * days, 2)
                 total_grat = custom_round(
                     (grat_per_month + grat_per_day) - amount_per_lack, 2)
-                percent = (version.social_insurance_id.percent or 0.0) \
-                    if record.with_bonus else 0.0
+                percent = param._l10n_pe_bonus_rate(
+                    version, remuneration_date) if record.with_bonus else 0.0
                 bonus_essalud = custom_round(total_grat * percent * 0.01, 2)
                 vals.update({
                     'amount_per_lack': custom_round(amount_per_lack, 2),
@@ -959,6 +1182,12 @@ class HrMainParameter(models.Model):
                 })
                 if liquidation:
                     if admission_date > month_slip.date_from:
+                        continue
+                    # La CTS exige al menos un mes de servicios (D.S.
+                    # 001-97-TR art. 4): ingreso el 25/08 y cese el 05/09
+                    # no generan CTS trunca, aunque crucen dos meses.
+                    if admission_date + relativedelta(months=1) > \
+                            version.contract_date_end + relativedelta(days=1):
                         continue
                     cts = self.env['hr.cts'].search([
                         ('payslip_run_id', '=',

@@ -34,7 +34,7 @@
                         <div class="content-group">
                             <div class="mt8">
                                 <field name="l10n_pe_payroll_vacation_family_allowance"/>
-                                <label for="l10n_pe_payroll_vacation_family_allowance" string="Asignación familiar en vacaciones" class="o_light_label"/>
+                                <label for="l10n_pe_payroll_vacation_family_allowance" string="Asignación familiar en el saldo de vacaciones" class="o_light_label"/>
                             </div>
                             <div class="row mt8">
                                 <label for="l10n_pe_payroll_settlement_employee_id" string="Encargado" class="col-lg-4 o_light_label"/>

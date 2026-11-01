@@ -217,4 +217,18 @@
         parent="menu_hr_pe_benefits_main"
         sequence="10"/>
 
+    <!-- Comisionista: la comisión es su remuneración principal y se
+         promedia sin la regla de las 3 apariciones. -->
+    <record id="view_employee_form_commission_principal" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.pe.commission.principal</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="al_hr_pe.view_employee_form_tregistro"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_pe_payment_type']" position="after">
+                <field name="l10n_pe_commission_principal"
+                       groups="hr_payroll.group_hr_payroll_user"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

@@ -105,8 +105,10 @@ class TestFase4Benefits(BenefitsCaseBase):
             vaca.provisiones_vaca, self.wage / 12, places=2)
         self.assertAlmostEqual(
             grati.provisiones_grati, self.wage / 6, places=2)
-        # Sin seguro social en la versión: bono 0
-        self.assertAlmostEqual(grati.boni_grati, 0.0, places=2)
+        # Sin seguro social en la versión: la tasa de EsSalud de la regla
+        # (Ley 30334), como la boleta (antes 0).
+        self.assertAlmostEqual(grati.boni_grati, self.wage / 6 * 0.09,
+                               places=2)
 
     def test_utilidades_50_50(self):
         """Un solo trabajador recibe el 100 % del monto a distribuir

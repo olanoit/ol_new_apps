@@ -14,6 +14,7 @@
                         <group string="Gratificación">
                             <field name="gratification_input_id"/>
                             <field name="bonus_nine_input_id"/>
+                            <field name="trainee_subsidy_input_id"/>
                         </group>
                         <group string="CTS">
                             <field name="cts_input_id"/>

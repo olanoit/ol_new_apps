@@ -122,6 +122,7 @@
                                     <field name="commission" sum="Total" optional="hide"/>
                                     <field name="bonus" sum="Total" optional="hide"/>
                                     <field name="extra_hours" sum="Total" optional="hide"/>
+                                    <field name="faltas" sum="Total" optional="show"/>
                                     <field name="total_grati" sum="Total" optional="hide"/>
                                     <field name="provisiones_grati" sum="Total" optional="show"/>
                                     <field name="tasa" optional="hide"/>
@@ -147,6 +148,7 @@
                                     <field name="commission" sum="Total" optional="hide"/>
                                     <field name="bonus" sum="Total" optional="hide"/>
                                     <field name="extra_hours" sum="Total" optional="hide"/>
+                                    <field name="faltas" sum="Total" optional="show"/>
                                     <field name="un_sexto_grati" sum="Total" optional="show"/>
                                     <field name="total_cts" sum="Total" optional="hide"/>
                                     <field name="provisiones_cts" sum="Total" class="fw-bold"/>
@@ -170,6 +172,7 @@
                                     <field name="commission" sum="Total" optional="hide"/>
                                     <field name="bonus" sum="Total" optional="hide"/>
                                     <field name="extra_hours" sum="Total" optional="hide"/>
+                                    <field name="faltas" sum="Total" optional="show"/>
                                     <field name="total_vaca" sum="Total" optional="hide"/>
                                     <field name="provisiones_vaca" sum="Total" class="fw-bold"/>
                                     <button name="action_open_concepts" invisible="l10n_pe_locked and not concepto_ids" type="object" icon="article" title="Conceptos adicionales"/>

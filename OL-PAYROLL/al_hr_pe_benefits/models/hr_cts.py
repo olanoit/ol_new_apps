@@ -187,7 +187,7 @@ class HrCts(models.Model):
             line: employee_lot_slip(lot, line.employee_id)
             for line in line_ids.filtered(
                 lambda line: not line.less_than_one_month)}
-        slips = self.env['hr.payslip'].union(*slip_by_line.values())
+        slips = self.env['hr.payslip'].union(slip_by_line.values())
         ensure_slips_draft(slips)
         for line, slip in slip_by_line.items():
             if not slip:
@@ -201,6 +201,11 @@ class HrCts(models.Model):
                     'salary_rule_id': input_cts.id,
                     'amount': line.total_cts,
                 })]})
+            # Adelantos y préstamos contra la CTS pendientes, con el tope
+            # del 50 % del depósito (art. 40 del TUO de la Ley de CTS).
+            slip._l10n_pe_discount_benefit_advances(
+                'cts', on_date=lot.date_end,
+                cap=custom_round(line.total_cts * 0.5, 2))
         recompute_slips(slips)
 
 
