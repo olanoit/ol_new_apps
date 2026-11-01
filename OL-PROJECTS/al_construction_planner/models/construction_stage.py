@@ -65,12 +65,12 @@ class ConstructionStage(models.Model):
     active = fields.Boolean(default=True)
     kind = fields.Selection(
         STAGE_KINDS, string='Tipo', required=True, default='field',
-        help='Fabricación: la etapa se hace en taller y habilita la orden de fabricación. '
+        help='Fabricación: la etapa se hace en taller (producción en taller). '
              'Ejecución en campo: se asigna a una contrata o a una cuadrilla. Control: '
              'pruebas, protocolos o entregas sin recurso propio.')
     production_consumption = fields.Boolean(
-        string='Consume en la orden de fabricación',
-        help='Los materiales de esta etapa salen con la orden de fabricación aunque la etapa '
+        string='Consume en la producción en taller',
+        help='Los materiales de esta etapa salen con la producción en taller aunque la etapa '
              'se ejecute en campo (armado de mobiliario).')
     previous_stage_id = fields.Many2one(
         'construction.stage', string='Etapa anterior',
@@ -443,7 +443,7 @@ class ConstructionResourceType(models.Model):
         RESOURCE_TYPES, string='Comportamiento', required=True, default='material',
         help='Lo que hace el planificador con la línea: material y equipo se compran o salen '
              'del almacén, la contrata se asigna y se liquida por avance, el personal propio '
-             'se asigna en cuadrillas y la producción sale de una orden de fabricación.')
+             'se asigna en cuadrillas y la producción se hace en taller.')
     supply_method = fields.Selection(
         SUPPLY_METHODS, string='Abastecimiento', required=True, default='purchase')
     is_default = fields.Boolean(

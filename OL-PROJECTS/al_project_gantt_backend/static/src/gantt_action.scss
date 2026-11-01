@@ -40,6 +40,23 @@
         flex: 0 0 auto;
     }
 
+    // Barra en filas por grupo: contador, etiqueta del grupo y sus botones
+    // alineados en columnas; en pantallas angostas cada parte baja de línea.
+    .algantt-actionbar-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        .algantt-actionbar-lead {
+            flex: 0 0 15rem;
+            min-height: 1px;
+        }
+
+        .algantt-actionbar-label {
+            flex: 0 0 5.5rem;
+        }
+    }
+
     // Diagrama y panel lateral opcional (pantallas heredadas).
     .algantt-main {
         flex: 1 1 auto;

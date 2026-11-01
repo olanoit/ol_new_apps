@@ -4,7 +4,7 @@
         <field name="name">construction.production.analysis.pivot</field>
         <field name="model">construction.production.analysis</field>
         <field name="arch" type="xml">
-            <pivot string="Presupuestado frente a real de fabricación" sample="1">
+            <pivot class="o_cp_wrap_names" string="Presupuestado frente a real de fabricación" sample="1">
                 <field name="floor_task_id" type="row"/>
                 <field name="product_id" type="row"/>
                 <field name="qty_budget" type="measure"/>

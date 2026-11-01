@@ -29,17 +29,22 @@ TREE_ACTION_FEATURES = {
 
 # Acciones de la barra de selección (W-02 a W-08). Las de un puente que no
 # está instalado no se muestran; las de una función apagada en Ajustes,
-# tampoco (TREE_ACTION_FEATURES).
+# tampoco (TREE_ACTION_FEATURES). El nombre del botón es el de la acción
+# (paquete 1.15, M115-01): se cambia en la base, con su traducción, sin
+# tocar código. Cada botón va en la fila de su grupo (M115-02).
 TREE_ACTIONS = [
-    ('al_construction_planner_purchase.action_plan_purchase_wizard', 'Compra masiva', 'fa-shopping-cart'),
-    ('al_construction_planner_purchase.action_plan_request_wizard', 'Requerimiento de obra', 'fa-truck'),
-    ('al_construction_planner_mrp.action_plan_production_wizard', 'Orden de fabricación', 'fa-industry'),
-    ('al_construction_planner_subcontract.action_plan_contract_wizard', 'Asignar contrata', 'fa-handshake-o'),
-    ('al_construction_planner_subcontract.action_contract_intervention_wizard', 'Intervenir contrata', 'fa-exchange'),
-    ('al_construction_planner_crew.action_plan_crew_wizard', 'Asignar cuadrilla', 'fa-users'),
-    ('al_construction_planner.action_plan_progress_wizard', 'Registrar avance', 'fa-check-square-o'),
-    ('al_construction_planner.action_plan_reschedule_wizard', 'Cambiar fechas', 'fa-calendar'),
+    ('al_construction_planner_purchase.action_plan_purchase_wizard', 'fa-shopping-cart', 'program'),
+    ('al_construction_planner_purchase.action_plan_request_wizard', 'fa-truck', 'program'),
+    ('al_construction_planner_mrp.action_plan_production_wizard', 'fa-industry', 'program'),
+    ('al_construction_planner_subcontract.action_plan_contract_wizard', 'fa-handshake-o', 'execute'),
+    ('al_construction_planner_subcontract.action_contract_intervention_wizard', 'fa-exchange', 'execute'),
+    ('al_construction_planner_crew.action_plan_crew_wizard', 'fa-users', 'execute'),
+    ('al_construction_planner.action_plan_progress_wizard', 'fa-check-square-o', 'execute'),
+    ('al_construction_planner.action_plan_reschedule_wizard', 'fa-calendar', 'execute'),
 ]
+# Grupos de la barra, en su orden: Consultar (Insumo-producto, que pinta la
+# interfaz), Programar y Ejecutar. Etiquetas en ``get_tree_action_groups``.
+TREE_ACTION_GROUPS = ['consult', 'program', 'execute']
 
 
 class ConstructionResourcePlan(models.Model):
@@ -505,6 +510,15 @@ class ConstructionResourcePlan(models.Model):
         for key, qty in executed.items():
             if key in resources:
                 resources[key]['executed'] = round(qty, 2)
+        # Ejecutado y saldo en soles (paquete 1.15, M115-03): avances validados
+        # por recurso y por etapa, con el valor guardado en el avance.
+        executed_amounts = self._selection_executed_amounts(line_domain)
+        for key, item in resources.items():
+            if item['resource_type'] in DRIVER_TYPES:
+                item['amount_executed'] = sum(
+                    value for (rkey, _stage), value in executed_amounts.items() if rkey == key)
+            else:
+                item['amount_executed'] = False
         rows = []
         for item in sorted(resources.values(), key=lambda r: (-r['amount'], r['name'])):
             partners = sorted(item.pop('partners'))
@@ -512,12 +526,16 @@ class ConstructionResourcePlan(models.Model):
                 partners.append(self.env._('sin asignar'))
             item.update(qty=round(item['qty'], 2), amount=round(item['amount'], 2),
                         partners=', '.join(partners))
+            self._selection_balance(item)
             rows.append(item)
 
-        def row_of(key, values=None):
+        def row_of(key, values=None, stage=None):
             row = dict(resources[key])
             if values:
                 row.update(qty=round(values['qty'], 2), amount=round(values['amount'], 2))
+                if row['amount_executed'] is not False:
+                    row['amount_executed'] = executed_amounts.get((key, stage), 0.0)
+                self._selection_balance(row)
             return row
 
         result_groups = []
@@ -525,7 +543,8 @@ class ConstructionResourcePlan(models.Model):
             stages = []
             for stage_group in sorted(group['stages'].values(),
                                       key=lambda g: stage_order.get(g['stage'], 9999)):
-                items = [row_of(key, values) for key, values in stage_group['items'].items()]
+                items = [row_of(key, values, stage_group['stage'])
+                         for key, values in stage_group['items'].items()]
                 stages.append({
                     'stage': stage_group['stage'], 'label': stage_group['label'],
                     'qty': round(stage_group['qty'], 2), 'amount': round(stage_group['amount'], 2),
@@ -540,6 +559,32 @@ class ConstructionResourcePlan(models.Model):
                 'stages': stages,
             })
         return {'resources': rows, 'groups': result_groups}
+
+    @api.model
+    def _selection_executed_amounts(self, line_domain):
+        """{(clave del recurso, etapa): monto ejecutado} de las líneas de
+        contrata y personal propio: avances validados, sin retrabajos."""
+        Progress = self.env['construction.task.progress']
+        domain = list(line_domain) + [('resource_type', 'in', DRIVER_TYPES)]
+        result = {}
+        for line, amount in Progress._read_group(
+                [('state', '=', 'validated'), ('is_rework', '=', False),
+                 ('plan_line_id', 'any', domain)],
+                ['plan_line_id'], ['amount:sum']):
+            key = ((line.resource_type, 'construction.labor.activity', line.activity_id.id,
+                    line.product_uom_id.id), line.stage or False)
+            result[key] = result.get(key, 0.0) + (amount or 0.0)
+        return {key: round(value, 2) for key, value in result.items()}
+
+    @api.model
+    def _selection_balance(self, row):
+        """Saldo en soles de una fila del panel: plan menos ejecutado (solo
+        contratas y personal propio)."""
+        executed = row.get('amount_executed')
+        row['amount_executed'] = round(executed, 2) if executed is not False else False
+        row['amount_balance'] = round(row['amount'] - executed, 2) \
+            if executed is not False else False
+        return row
 
     @api.model
     def _plural(self, name):
@@ -635,10 +680,11 @@ class ConstructionResourcePlan(models.Model):
     @api.model
     def get_tree_actions(self):
         """Botones de la barra de selección: los asistentes instalados que el
-        usuario puede abrir."""
+        usuario puede abrir, con el nombre de su acción y su grupo."""
         actions = []
         user_groups = self.env.user.all_group_ids
-        for xmlid, label, icon in TREE_ACTIONS:
+        group_labels = dict(self.get_tree_action_groups())
+        for xmlid, icon, group in TREE_ACTIONS:
             # sudo: los grupos de la acción solo los lee el administrador; se
             # miran para mostrar el botón a quien puede abrirla.
             action_sudo = self.env.ref(xmlid, raise_if_not_found=False)
@@ -648,5 +694,15 @@ class ConstructionResourcePlan(models.Model):
                 continue
             if action_sudo and (not action_sudo.group_ids
                                 or action_sudo.group_ids & user_groups):
-                actions.append({'xmlid': xmlid, 'name': label, 'icon': icon})
+                actions.append({
+                    'xmlid': xmlid, 'name': action_sudo.with_context(lang=self.env.lang).name,
+                    'icon': icon, 'group': group, 'group_label': group_labels[group],
+                })
         return actions
+
+    @api.model
+    def get_tree_action_groups(self):
+        """Grupos de la barra en su orden: [(clave, etiqueta)]."""
+        labels = {'consult': self.env._('Consultar'), 'program': self.env._('Programar'),
+                  'execute': self.env._('Ejecutar')}
+        return [(key, labels[key]) for key in TREE_ACTION_GROUPS]

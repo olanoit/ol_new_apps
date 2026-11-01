@@ -88,13 +88,20 @@
                     Material S/ <t t-esc="fmt(state.summary.material)"/> ·
                     Contrata S/ <t t-esc="fmt(state.summary.contract)"/>
                 </span>
-                <div class="ms-auto d-flex flex-wrap gap-1">
-                    <t t-foreach="state.actions" t-as="act" t-key="act.xmlid">
-                        <button class="btn btn-sm btn-primary" t-on-click="() => this.runAction(act.xmlid)">
-                            <i t-att-class="'fa me-1 ' + act.icon"/><t t-esc="act.name"/>
-                        </button>
+                <button class="btn btn-sm btn-secondary o_cp_clear ms-auto" t-on-click="clearSelection">Quitar selección</button>
+                <!-- Una fila por grupo de acción (paquete 1.15, M115-02). -->
+                <div class="w-100 d-flex flex-column gap-1 o_cp_action_rows">
+                    <t t-foreach="actionRows" t-as="row" t-key="row.key">
+                        <div class="d-flex flex-wrap align-items-center gap-2 o_cp_action_row" t-att-data-group="row.key">
+                            <span class="small text-muted fw-bold o_cp_action_label" t-esc="row.label"/>
+                            <t t-foreach="row.actions" t-as="act" t-key="act.xmlid">
+                                <button class="btn btn-sm btn-primary" t-att-data-xmlid="act.xmlid"
+                                        t-on-click="() => this.runAction(act.xmlid)">
+                                    <i t-att-class="'fa me-1 ' + act.icon"/><t t-esc="act.name"/>
+                                </button>
+                            </t>
+                        </div>
                     </t>
-                    <button class="btn btn-sm btn-secondary o_cp_clear" t-on-click="clearSelection">Quitar selección</button>
                 </div>
             </div>
 

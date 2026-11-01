@@ -5,7 +5,7 @@
         <field name="name">construction.plan.production.wizard.form</field>
         <field name="model">construction.plan.production.wizard</field>
         <field name="arch" type="xml">
-            <form string="Orden de fabricación">
+            <form string="Requerimiento de fabricación">
                 <field name="plan_id" invisible="1"/>
                 <field name="project_id" invisible="1"/>
                 <field name="company_id" invisible="1"/>
@@ -42,7 +42,7 @@
                     el saldo de las etapas que fabrica cada orden en sus ambientes.
                 </p>
                 <footer>
-                    <button name="action_create" type="object" string="Crear órdenes de fabricación" class="btn-primary" data-hotkey="q"/>
+                    <button name="action_create" type="object" string="Crear requerimiento de fabricación" class="btn-primary" data-hotkey="q"/>
                     <button string="Descartar" special="cancel" data-hotkey="x"/>
                 </footer>
             </form>
@@ -50,7 +50,7 @@
     </record>
 
     <record id="action_plan_production_wizard" model="ir.actions.act_window">
-        <field name="name">Orden de fabricación</field>
+        <field name="name">Requerimiento de fabricación</field>
         <field name="res_model">construction.plan.production.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

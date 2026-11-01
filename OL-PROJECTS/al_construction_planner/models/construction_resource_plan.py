@@ -1023,18 +1023,19 @@ class ConstructionResourcePlanLine(models.Model):
     qty_requested = fields.Float(
         string='Pedido', compute='_compute_execution_qty', digits='Product Unit',
         compute_sudo=True,
-        help='Material: requerimientos de obra y OF. Contrata: OC de servicio. Personal '
-             'propio: horas de turnos.')
+        help='Material: requerimientos de obra y producción en taller. Contrata: OC de '
+             'servicio. Personal propio: horas de turnos.')
     qty_purchased = fields.Float(
         string='Comprado', compute='_compute_execution_qty', digits='Product Unit',
         compute_sudo=True,
         help='Compra masiva y compras confirmadas del faltante de los requerimientos.')
     qty_dispatched = fields.Float(
         string='Despachado', compute='_compute_execution_qty', digits='Product Unit',
-        compute_sudo=True, help='Llegado a la obra y entregado a la planta para las OF.')
+        compute_sudo=True, help='Llegado a la obra y entregado al taller para la producción.')
     qty_consumed = fields.Float(
         string='Consumido', compute='_compute_execution_qty', digits='Product Unit',
-        compute_sudo=True, help='Consumo en obra y componentes consumidos de las OF.')
+        compute_sudo=True, help='Consumo en obra y componentes consumidos en la producción en '
+                                 'taller.')
     qty_remaining = fields.Float(
         string='Saldo por pedir', compute='_compute_execution_qty', digits='Product Unit',
         compute_sudo=True, help='Planificado menos pedido.')

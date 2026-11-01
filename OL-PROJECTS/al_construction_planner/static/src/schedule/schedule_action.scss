@@ -1,11 +1,55 @@
 // Cronograma con recursos (P-15): panel lateral, carga semanal y barras de
 // etapa. La maquetación del diagrama es la del Gantt de proyectos.
 .o_algantt_action {
+    // Panel ampliable (paquete 1.15, M115-03): el ancho lo pone la
+    // interfaz (320 px por defecto, de 280 a 720 arrastrando el borde).
     .o_cp_schedule_panel {
+        position: relative;
+        display: flex;
+        flex-direction: column;
         flex: 0 0 320px;
         width: 320px;
-        overflow-y: auto;
+        max-height: 100%;
+        overflow: hidden;
         background-color: var(--o-view-background-color, #fff);
+
+        .o_cp_panel_body {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        &.o_cp_panel_full {
+            position: fixed;
+            inset: 4vh 4vw;
+            width: auto !important;
+            z-index: 1055;
+            border: 1px solid var(--border-color, #dee2e6);
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.3);
+            padding: 1rem !important;
+        }
+    }
+
+    .o_cp_panel_resizer {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 6px;
+        z-index: 2;
+        cursor: col-resize;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+    }
+
+    .o_cp_panel_backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1050;
+        background-color: rgba(0, 0, 0, 0.35);
     }
 
     .o_cp_schedule_load {

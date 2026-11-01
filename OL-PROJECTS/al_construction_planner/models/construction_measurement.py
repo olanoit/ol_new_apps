@@ -89,7 +89,7 @@ class ConstructionMeasurement(models.Model):
     has_difference = fields.Boolean(
         string='Con diferencia', compute='_compute_totals', store=True,
         help='Alguna medida difiere de lo planificado: hay que aprobarla antes de lanzar la '
-             'orden de fabricación del ambiente.')
+             'producción del ambiente.')
     amount_difference = fields.Monetary(
         string='Diferencia en soles', compute='_compute_totals', store=True,
         currency_field='currency_id')
@@ -217,7 +217,7 @@ class ConstructionMeasurement(models.Model):
             if measurement.has_difference:
                 measurement.message_post(body=Markup(self.env._(
                     'Metrado aprobado con una diferencia de <b>%(amount)s</b>: ya se puede lanzar '
-                    'la orden de fabricación del ambiente.',
+                    'la producción del ambiente.',
                     amount=measurement.currency_id.format(measurement.amount_difference))))
 
     def action_draft(self):

@@ -22,6 +22,9 @@ registry.category("web_tour.tours").add("al_construction_planner_plan_tree", {
         { trigger: `.o_cp_tree_row[data-level="module"] .o_cp_check.o_cp_on` },
         { trigger: `.o_cp_summary_modules:contains(66)` },
         { trigger: `.o_cp_panel_table tbody tr` },
+        // Paquete 1.15, M115-01 y M115-02: botones en filas, con el nombre de la acción.
+        { trigger: `.o_cp_action_row[data-group="program"] button:contains(Programar compra masiva)` },
+        { trigger: `.o_cp_action_row[data-group="execute"] button:contains(Asignar contrata)` },
         // Desmarcar un módulo deja al ambiente, al departamento y al piso en parcial.
         { trigger: `.o_cp_tree_row[data-level="module"] .o_cp_check`, run: "click" },
         { trigger: `.o_cp_summary_modules:contains(65)` },

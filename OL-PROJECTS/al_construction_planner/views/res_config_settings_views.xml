@@ -86,8 +86,17 @@
                                 </div>
                             </div>
                         </setting>
+                        <setting company_dependent="1" id="construction_name_max_width" string="Ancho máximo de los nombres"
+                                 help="Los nombres de partida, recurso y nivel hacen salto de línea con este ancho en las tablas y vistas dinámicas del planificador y en el panel del Cronograma.">
+                            <div class="content-group">
+                                <div class="row mt-2">
+                                    <label for="construction_name_max_width" class="col-lg-5 o_light_label"/>
+                                    <field name="construction_name_max_width" class="oe_inline"/> px
+                                </div>
+                            </div>
+                        </setting>
                         <setting company_dependent="1" id="construction_plan_cancel_open" string="Cancelar planes en ejecución"
-                                 help="Permite cancelar un plan aprobado o en ejecución que no tenga documentos abiertos (compras, requerimientos, OF, OC de servicio) ni despachos o consumos.">
+                                 help="Permite cancelar un plan aprobado o en ejecución que no tenga documentos abiertos (compras, requerimientos, producción en taller, OC de servicio) ni despachos o consumos.">
                             <field name="construction_plan_cancel_open"/>
                             <div class="content-group" invisible="not construction_plan_cancel_open">
                                 <div class="row mt-2">

@@ -43,6 +43,38 @@ const STAGE = "construction.space.stage";
 /** Color de la barra si la etapa del catálogo no tiene uno propio. */
 const DEFAULT_STAGE_COLOR = "#3d85c6";
 
+/** Panel «Recursos de la selección» (paquete 1.15, M115-03): ancho inicial,
+ * límites del borde arrastrable, ancho de «Ampliar» y desde cuándo se ven las
+ * columnas completas. El ancho se guarda en el navegador. */
+export const PANEL_WIDTH = 320;
+export const PANEL_MIN_WIDTH = 280;
+export const PANEL_MAX_WIDTH = 720;
+export const PANEL_EXPANDED_WIDTH = 640;
+export const PANEL_WIDE_FROM = 480;
+const PANEL_WIDTH_KEY = "al_construction_planner.schedule_panel_width";
+
+export function clampPanelWidth(width) {
+    const value = Math.round(Number(width) || PANEL_WIDTH);
+    return Math.min(PANEL_MAX_WIDTH, Math.max(PANEL_MIN_WIDTH, value));
+}
+
+function readPanelWidth() {
+    try {
+        const saved = window.localStorage.getItem(PANEL_WIDTH_KEY);
+        return saved ? clampPanelWidth(saved) : PANEL_WIDTH;
+    } catch {
+        return PANEL_WIDTH;
+    }
+}
+
+function savePanelWidth(width) {
+    try {
+        window.localStorage.setItem(PANEL_WIDTH_KEY, String(width));
+    } catch {
+        // Sin almacenamiento del navegador: el ancho dura lo que la pantalla.
+    }
+}
+
 export function isStageRow(id) {
     return /^s\d+$/.test(String(id));
 }
@@ -214,9 +246,12 @@ export class ConstructionScheduleAction extends GanttAction {
             showPanel: true,
             showLoad: true,
             panelByStage: false,
+            panelWidth: readPanelWidth(),
+            panelFull: false,
             terms: { details: _t("Módulos"), show_ml: true },
         });
         this.summaryRequest = 0;
+        this.onPanelResizeStart = this.onPanelResizeStart.bind(this);
     }
 
     // ------------------------------------------------------------------
@@ -620,6 +655,8 @@ export class ConstructionScheduleAction extends GanttAction {
             key: "io_matrix",
             label: _t("Insumo-producto"),
             icon: "fa-table",
+            group: "consult",
+            groupLabel: _t("Consultar"),
             disabled: !this.schedule.planId,
             title: _t("Recursos de la selección (o de la obra) como tabla insumo-producto"),
             run: () => this.openIoMatrix(),
@@ -628,6 +665,8 @@ export class ConstructionScheduleAction extends GanttAction {
             key: button.xmlid,
             label: button.name,
             icon: button.icon,
+            group: button.group,
+            groupLabel: button.group_label,
             disabled,
             title: disabled ? _t("Marque filas para abrir el asistente con ellas") : button.name,
             run: () => this.runPlanAction(button.xmlid),
@@ -651,6 +690,59 @@ export class ConstructionScheduleAction extends GanttAction {
 
     togglePanelByStage() {
         this.schedule.panelByStage = !this.schedule.panelByStage;
+    }
+
+    // ------------------------------------------------------------------
+    // Panel ampliable (paquete 1.15, M115-03)
+    // ------------------------------------------------------------------
+    /** Columnas completas: contrata, cantidad, ejecutado y saldo. */
+    get panelWide() {
+        return this.schedule.panelFull || this.schedule.panelWidth >= PANEL_WIDE_FROM;
+    }
+
+    get panelExpanded() {
+        return this.schedule.panelWidth > PANEL_WIDTH;
+    }
+
+    setPanelWidth(width) {
+        this.schedule.panelWidth = clampPanelWidth(width);
+        savePanelWidth(this.schedule.panelWidth);
+        this.gantt?.setSizes?.();
+    }
+
+    resetPanelWidth() {
+        this.setPanelWidth(PANEL_WIDTH);
+    }
+
+    /** «Ampliar / Reducir»: del ancho inicial al ampliado y de vuelta. */
+    togglePanelWide() {
+        this.setPanelWidth(this.panelExpanded ? PANEL_WIDTH : PANEL_EXPANDED_WIDTH);
+    }
+
+    togglePanelFull() {
+        this.schedule.panelFull = !this.schedule.panelFull;
+    }
+
+    /** Borde izquierdo arrastrable: el panel crece hacia la izquierda. */
+    onPanelResizeStart(event) {
+        if (event.button !== 0) {
+            return;
+        }
+        event.preventDefault();
+        const startX = event.clientX;
+        const startWidth = this.schedule.panelWidth;
+        const onMove = (moveEvent) => {
+            this.schedule.panelWidth = clampPanelWidth(startWidth + startX - moveEvent.clientX);
+        };
+        const onUp = () => {
+            window.removeEventListener("mousemove", onMove);
+            window.removeEventListener("mouseup", onUp);
+            document.body.classList.remove("o_cp_panel_resizing");
+            this.setPanelWidth(this.schedule.panelWidth);
+        };
+        document.body.classList.add("o_cp_panel_resizing");
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
     }
 
     async runPlanAction(xmlid) {

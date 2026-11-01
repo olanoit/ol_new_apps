@@ -234,7 +234,7 @@
         <field name="name">construction.unit.milestone.pivot</field>
         <field name="model">construction.unit.milestone</field>
         <field name="arch" type="xml">
-            <pivot>
+            <pivot class="o_cp_wrap_names">
                 <field name="template_line_id" type="col"/>
                 <field name="typology_id" type="row"/>
                 <field name="amount" type="measure"/>

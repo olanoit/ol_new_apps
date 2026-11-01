@@ -12,3 +12,4 @@ from . import res_config_settings
 from . import remnant
 from . import production_date_review
 from . import stock_move
+from . import manufacturing_texts

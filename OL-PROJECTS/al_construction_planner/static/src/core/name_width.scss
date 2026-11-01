@@ -1,0 +1,36 @@
+// Regla común de nombres largos (paquete 1.16, M116-08 y CR-25): salto de
+// línea con el ancho máximo de Ajustes. Solo en las vistas del planificador
+// que llevan la clase `o_cp_wrap_names` (las de Odoo no cambian).
+.o_cp_wrap_names {
+    // Tablas dinámicas: los encabezados de fila (niveles, partidas, recursos).
+    &.o_pivot_view .o_pivot tbody th.o_pivot_header_cell_closed,
+    &.o_pivot_view .o_pivot tbody th.o_pivot_header_cell_opened,
+    .o_pivot tbody th.o_pivot_header_cell_closed,
+    .o_pivot tbody th.o_pivot_header_cell_opened {
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        min-width: 10rem;
+        max-width: var(--o-cp-name-max-width, 360px);
+    }
+
+    // Listas: las columnas de nombre marcadas con `o_cp_name`.
+    &.o_list_view .o_data_cell.o_cp_name,
+    .o_list_view .o_data_cell.o_cp_name {
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        max-width: var(--o-cp-name-max-width, 360px);
+    }
+}
+
+// Celdas sueltas (panel del Cronograma).
+td.o_cp_wrap_names,
+div.o_cp_wrap_names {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    max-width: var(--o-cp-name-max-width, 360px);
+}
+
+body.o_cp_panel_resizing {
+    cursor: col-resize !important;
+    user-select: none;
+}

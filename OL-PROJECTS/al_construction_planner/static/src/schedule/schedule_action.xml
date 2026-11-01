@@ -72,8 +72,31 @@
     </t>
 
     <t t-name="al_construction_planner.SchedulePanel">
-        <aside class="o_cp_schedule_panel border-start p-2" t-if="schedule.showPanel">
-            <h6 class="mb-2">Recursos de la selección</h6>
+        <!-- Panel ampliable (paquete 1.15, M115-03): borde que se arrastra,
+             «Ampliar / Reducir» y «Pantalla completa». -->
+        <div class="o_cp_panel_backdrop" t-if="schedule.showPanel and schedule.panelFull"
+             t-on-click="() => this.togglePanelFull()"/>
+        <aside class="o_cp_schedule_panel border-start p-2" t-if="schedule.showPanel"
+               t-att-class="{'o_cp_panel_wide': panelWide, 'o_cp_panel_full': schedule.panelFull}"
+               t-att-style="schedule.panelFull ? '' : 'width:' + schedule.panelWidth + 'px;flex-basis:' + schedule.panelWidth + 'px'">
+            <div class="o_cp_panel_resizer" t-if="!schedule.panelFull"
+                 title="Arrastre para cambiar el ancho; doble clic vuelve al ancho inicial"
+                 t-on-mousedown="onPanelResizeStart" t-on-dblclick="() => this.resetPanelWidth()"/>
+            <div class="o_cp_panel_body">
+            <div class="d-flex align-items-center gap-1 mb-2">
+                <h6 class="mb-0 me-auto">Recursos de la selección</h6>
+                <button type="button" class="btn btn-sm btn-link p-0 o_cp_panel_expand" t-if="!schedule.panelFull"
+                        t-on-click="() => this.togglePanelWide()">
+                    <i t-att-class="'fa me-1 ' + (panelExpanded ? 'fa-compress' : 'fa-expand')"/>
+                    <t t-if="panelExpanded">Reducir</t><t t-else="">Ampliar</t>
+                </button>
+                <button type="button" class="btn btn-sm btn-link p-0 ms-2 o_cp_panel_fullscreen"
+                        t-att-title="schedule.panelFull ? 'Cerrar' : 'Pantalla completa'"
+                        t-on-click="() => this.togglePanelFull()">
+                    <i t-att-class="'fa ' + (schedule.panelFull ? 'fa-times' : 'fa-window-maximize')"/>
+                    <span class="ms-1" t-if="schedule.panelFull">Cerrar</span>
+                </button>
+            </div>
             <p class="text-muted small" t-if="!schedule.planId">
                 La obra no tiene plan de recursos: genérelo para ver sus etapas.
             </p>
@@ -99,61 +122,76 @@
                     <thead>
                         <tr>
                             <th>Recurso</th>
+                            <th t-if="panelWide" class="o_cp_col_partner">Contrata o proveedor</th>
+                            <th t-if="panelWide" class="text-end o_cp_col_qty">Plan</th>
                             <th t-if="showAmounts" class="text-end">Plan S/</th>
+                            <th t-if="panelWide and showAmounts" class="text-end o_cp_col_executed">Ejecutado S/</th>
+                            <th t-if="panelWide and showAmounts" class="text-end o_cp_col_balance">Saldo S/</th>
                             <th class="text-end">Avance</th>
                         </tr>
                     </thead>
                     <t t-foreach="schedule.summary.groups" t-as="group" t-key="group.type_id or group_index">
                         <tbody class="o_cp_panel_group" t-att-data-type="group.resource_type">
                             <tr class="table-light fw-bold o_cp_panel_group_row">
-                                <td><t t-esc="group.name"/>
+                                <td t-att-colspan="panelWide ? 3 : 1"><t t-esc="group.name"/>
                                     <span class="text-muted small fw-normal"> · <t t-esc="fmt(group.qty)"/></span></td>
                                 <td t-if="showAmounts" class="text-end o_cp_panel_group_total" t-esc="fmt(group.amount)"/>
+                                <td t-if="panelWide and showAmounts" colspan="2"/>
                                 <td/>
                             </tr>
                             <t t-if="schedule.panelByStage">
                                 <t t-foreach="group.stages" t-as="stage" t-key="stage.stage or stage_index">
                                     <tr class="fw-bold text-muted">
-                                        <td class="ps-2" t-esc="stage.label"/>
+                                        <td class="ps-2" t-att-colspan="panelWide ? 3 : 1" t-esc="stage.label"/>
                                         <td t-if="showAmounts" class="text-end" t-esc="fmt(stage.amount)"/>
+                                        <td t-if="panelWide and showAmounts" colspan="2"/>
                                         <td/>
                                     </tr>
                                     <t t-foreach="stage.resources" t-as="resource" t-key="resource_index">
-                                        <tr>
-                                            <td class="ps-3">
-                                                <div t-esc="resource.name"/>
-                                                <div class="text-muted small" t-if="resource.partners" t-esc="resource.partners"/>
-                                            </td>
-                                            <td t-if="showAmounts" class="text-end" t-esc="fmt(resource.amount)"/>
-                                            <td class="text-end" t-esc="resourceProgress(resource)"/>
-                                        </tr>
+                                        <t t-set="indent" t-value="'ps-3'"/>
+                                        <t t-call="al_construction_planner.SchedulePanelRow"/>
                                     </t>
                                 </t>
                             </t>
                             <t t-else="">
                                 <t t-foreach="group.resources" t-as="resource" t-key="resource_index">
-                                    <tr>
-                                        <td class="ps-2">
-                                            <div t-esc="resource.name"/>
-                                            <div class="text-muted small" t-if="resource.partners" t-esc="resource.partners"/>
-                                        </td>
-                                        <td t-if="showAmounts" class="text-end" t-esc="fmt(resource.amount)"/>
-                                        <td class="text-end" t-esc="resourceProgress(resource)"/>
-                                    </tr>
+                                    <t t-set="indent" t-value="'ps-2'"/>
+                                    <t t-call="al_construction_planner.SchedulePanelRow"/>
                                 </t>
                             </t>
                         </tbody>
                     </t>
                     <tfoot>
                         <tr>
-                            <th>Total de la selección</th>
+                            <th t-att-colspan="panelWide ? 3 : 1">Total de la selección</th>
                             <th t-if="showAmounts" class="text-end o_cp_schedule_total" t-esc="fmt(schedule.summary.total)"/>
+                            <th t-if="panelWide and showAmounts" colspan="2"/>
                             <th/>
                         </tr>
                     </tfoot>
                 </table>
             </t>
+            </div>
         </aside>
+    </t>
+
+    <t t-name="al_construction_planner.SchedulePanelRow">
+        <tr>
+            <td t-att-class="indent + ' o_cp_wrap_names'">
+                <div t-esc="resource.name"/>
+                <div class="text-muted small" t-if="resource.partners and !panelWide" t-esc="resource.partners"/>
+            </td>
+            <td t-if="panelWide" class="small o_cp_col_partner o_cp_wrap_names" t-esc="resource.partners or '—'"/>
+            <td t-if="panelWide" class="text-end text-nowrap o_cp_col_qty">
+                <t t-esc="fmt(resource.qty)"/> <span class="text-muted small" t-esc="resource.uom"/>
+            </td>
+            <td t-if="showAmounts" class="text-end" t-esc="fmt(resource.amount)"/>
+            <td t-if="panelWide and showAmounts" class="text-end o_cp_col_executed"
+                t-esc="resource.amount_executed === false ? '—' : fmt(resource.amount_executed)"/>
+            <td t-if="panelWide and showAmounts" class="text-end o_cp_col_balance"
+                t-esc="resource.amount_balance === false ? '—' : fmt(resource.amount_balance)"/>
+            <td class="text-end" t-esc="resourceProgress(resource)"/>
+        </tr>
     </t>
 
     <t t-name="al_construction_planner.ScheduleLoad">

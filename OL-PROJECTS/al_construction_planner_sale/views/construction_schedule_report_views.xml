@@ -26,7 +26,7 @@
         <field name="name">construction.schedule.report.pivot</field>
         <field name="model">construction.schedule.report</field>
         <field name="arch" type="xml">
-            <pivot string="Cronograma valorizado" sample="1">
+            <pivot class="o_cp_wrap_names" string="Cronograma valorizado" sample="1">
                 <field name="week_start" interval="day" type="row"/>
                 <field name="concept" type="col"/>
                 <field name="amount" type="measure"/>

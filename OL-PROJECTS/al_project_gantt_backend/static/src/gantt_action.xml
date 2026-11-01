@@ -154,31 +154,35 @@
                 </div>
 
                 <!-- Barra de selección: casillas marcadas y acciones propias de
-                     una pantalla heredada (`extraToolbarButtons`). -->
+                     una pantalla heredada (`extraToolbarButtons`). Con grupos,
+                     una fila por grupo con su etiqueta; el contador va en la
+                     primera. -->
+                <t t-set="buttonRows" t-value="toolbarButtonRows"/>
                 <div class="algantt-actionbar d-flex flex-wrap align-items-center gap-2 px-2 py-1 border-bottom"
-                     t-if="showActionBar">
-                    <t t-if="selection">
-                        <span class="small" t-if="state.selectionCount">
-                            <i class="fa fa-check-square me-1"/>
-                            <span class="algantt-selection-count" t-esc="state.selectionCount"/> fila(s) marcada(s)
-                        </span>
-                        <span class="small text-muted" t-else="">Marque filas en la primera columna</span>
-                        <button type="button" class="btn btn-sm btn-link algantt-selection-clear"
-                                t-if="state.selectionCount"
-                                t-on-click="() => this.clearSelection()">Quitar selección</button>
-                    </t>
+                     t-if="showActionBar and !buttonRows">
+                    <t t-call="al_project_gantt_backend.GanttSelectionCount"/>
                     <div class="d-flex flex-wrap gap-1 ms-auto">
                         <t t-foreach="extraToolbarButtons" t-as="button" t-key="button.key">
-                            <button type="button" class="btn btn-sm btn-outline-primary algantt-extra-button"
-                                    t-att-data-key="button.key"
-                                    t-att-disabled="button.disabled"
-                                    t-att-title="button.title or button.label"
-                                    t-on-click="() => button.run()">
-                                <i t-if="button.icon" t-att-class="'fa ' + button.icon + ' me-1'"/>
-                                <t t-esc="button.label"/>
-                            </button>
+                            <t t-call="al_project_gantt_backend.GanttToolbarButton"/>
                         </t>
                     </div>
+                </div>
+                <div class="algantt-actionbar algantt-actionbar-rows px-2 py-1 border-bottom"
+                     t-if="showActionBar and buttonRows">
+                    <t t-foreach="buttonRows" t-as="row" t-key="row.key">
+                        <div class="d-flex flex-wrap align-items-center gap-2 algantt-actionbar-row"
+                             t-att-data-group="row.key">
+                            <div class="algantt-actionbar-lead d-flex align-items-center gap-2">
+                                <t t-if="row_first" t-call="al_project_gantt_backend.GanttSelectionCount"/>
+                            </div>
+                            <span class="algantt-actionbar-label small text-muted fw-bold" t-esc="row.label"/>
+                            <div class="d-flex flex-wrap gap-1">
+                                <t t-foreach="row.buttons" t-as="button" t-key="button.key">
+                                    <t t-call="al_project_gantt_backend.GanttToolbarButton"/>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
                 </div>
 
                 <div class="algantt-filters border-bottom p-2" t-if="state.showFilters">
@@ -289,6 +293,30 @@
             </div>
         </Layout>
         </div>
+    </t>
+
+    <t t-name="al_project_gantt_backend.GanttSelectionCount">
+        <t t-if="selection">
+            <span class="small" t-if="state.selectionCount">
+                <i class="fa fa-check-square me-1"/>
+                <span class="algantt-selection-count" t-esc="state.selectionCount"/> fila(s) marcada(s)
+            </span>
+            <span class="small text-muted" t-else="">Marque filas en la primera columna</span>
+            <button type="button" class="btn btn-sm btn-link algantt-selection-clear"
+                    t-if="state.selectionCount"
+                    t-on-click="() => this.clearSelection()">Quitar selección</button>
+        </t>
+    </t>
+
+    <t t-name="al_project_gantt_backend.GanttToolbarButton">
+        <button type="button" class="btn btn-sm btn-outline-primary algantt-extra-button"
+                t-att-data-key="button.key"
+                t-att-disabled="button.disabled"
+                t-att-title="button.title or button.label"
+                t-on-click="() => button.run()">
+            <i t-if="button.icon" t-att-class="'fa ' + button.icon + ' me-1'"/>
+            <t t-esc="button.label"/>
+        </button>
     </t>
 
 </templates>

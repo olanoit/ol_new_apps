@@ -14,7 +14,7 @@
                 <div class="alert alert-danger" role="alert" invisible="policy != 'approval'">
                     Se pide más de lo que queda en el plan. Justifique el exceso: el
                     requerimiento recibirá una revisión adicional de la jefatura del planificador
-                    (la OF y la OC las confirma esa jefatura).
+                    (la producción en taller y la OC las confirma esa jefatura).
                 </div>
                 <group name="document">
                     <field name="policy"/>

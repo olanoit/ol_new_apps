@@ -34,6 +34,10 @@
 
     .o_cp_selbar {
         background-color: rgba($o-action, 0.1);
+
+        .o_cp_action_label {
+            flex: 0 0 5.5rem;
+        }
     }
 
     .o_cp_panel {

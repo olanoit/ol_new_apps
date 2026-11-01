@@ -98,7 +98,7 @@
         <field name="name">construction.contract.deduction.pivot</field>
         <field name="model">construction.contract.deduction</field>
         <field name="arch" type="xml">
-            <pivot string="Deductivos">
+            <pivot class="o_cp_wrap_names" string="Deductivos">
                 <field name="partner_id" type="row"/>
                 <field name="type_id" type="col"/>
                 <field name="signed_amount" type="measure"/>
@@ -173,7 +173,7 @@
         <field name="name">construction.guarantee.fund.pivot</field>
         <field name="model">construction.guarantee.fund</field>
         <field name="arch" type="xml">
-            <pivot string="Fondos de garantía">
+            <pivot class="o_cp_wrap_names" string="Fondos de garantía">
                 <field name="partner_id" type="row"/>
                 <field name="date_maturity" interval="month" type="col"/>
                 <field name="amount_residual" type="measure"/>

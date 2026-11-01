@@ -54,8 +54,8 @@
             <p class="o_view_nocontent_smiling_face">Cree las etapas de ejecución</p>
             <p>Las etapas que programa el cronograma y que llevan las líneas del plan: producción,
                armado e instalación en mobiliario; trazo, emplacado y masillado en una partida de
-               drywall. El tipo decide qué asistentes aplican: una etapa de fabricación habilita
-               la orden de fabricación; una de campo, la contrata o la cuadrilla.</p>
+               drywall. El tipo decide qué asistentes aplican: una etapa de fabricación se produce
+               en taller; una de campo, la contrata o la cuadrilla.</p>
             <p>Una etapa con etapa padre es una sub etapa («1 Producción › 1.1 Producción de
                piezas»): los recursos van en la sub etapa y la etapa padre los suma.</p>
         </field>

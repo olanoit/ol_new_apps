@@ -15,7 +15,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
-| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Diseñada (puntos devueltos confirmados el 01-nov) |
+| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Bloque 3a desarrollado; 3b por desarrollar |
 | 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
@@ -507,6 +507,32 @@ ve el Cronograma.
 - Colores del %: verde desde 95, ámbar desde 70, rojo debajo. Los dos
   umbrales en Ajustes.
 - El permiso es el de hoy: solo «ve montos».
+
+### 3a · Implementación
+
+Desarrollado. Detalles:
+
+- `TREE_ACTIONS` guarda xmlid, ícono y grupo; `get_tree_actions` devuelve el
+  nombre de la acción y la etiqueta del grupo; `get_tree_action_groups` da el
+  orden de las filas. «Insumo-producto» va en Consultar.
+- Gantt base (`al_project_gantt_backend`): `toolbarButtonRows` arma las filas
+  con `groupToolbarButtons`; el contador de la selección queda en la primera.
+  El Árbol de recursos pinta las mismas filas.
+- Panel: el ancho vive en `localStorage`
+  (`al_construction_planner.schedule_panel_width`). Con 480 px o más, o en
+  pantalla completa, salen las columnas completas. `get_selection_summary`
+  agrega `amount_executed` y `amount_balance` por recurso y por etapa (avances
+  validados, sin retrabajos), solo para contratas y personal propio, y los
+  oculta a quien no ve montos.
+- Nombres largos: `res.company.construction_name_max_width` (360 px), en la
+  sesión (`ir.http.session_info`) y en la variable CSS
+  `--o-cp-name-max-width`. La clase `o_cp_wrap_names` está en las vistas
+  dinámicas del planificador y sus puentes y en las listas de líneas del plan
+  (columnas `o_cp_name`).
+- CR-26: el núcleo dice «producción en taller»; el puente de Fabricación
+  redefine las ayudas de `kind`, `production_consumption`, `behavior` y de
+  las cantidades de la línea del plan, y trae el filtro «Orden de
+  fabricación» de las asignaciones.
 
 ### Ajustes nuevos (Ajustes › Planificación de obra)
 
