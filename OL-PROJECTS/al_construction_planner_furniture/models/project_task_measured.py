@@ -53,6 +53,16 @@ class ProjectTask(models.Model):
             return domain
         return ['!', '&'] + domain
 
+    # Etapa actual del ambiente (paquete 1.15, M115-04): «Medido» sale de esta
+    # marca y su cambio recalcula la etapa actual.
+    def _construction_space_measured(self):
+        self.ensure_one()
+        return bool(self.construction_measured)
+
+    @api.model
+    def _construction_current_stage_trigger_fields(self):
+        return super()._construction_current_stage_trigger_fields() | {'construction_measured'}
+
     def action_construction_mark_measured(self):
         self._construction_check_supervisor()
         spaces = self.filtered(lambda t: t.construction_level == 'space')
@@ -101,6 +111,12 @@ class ResCompany(models.Model):
         string='Estado del ambiente medido', default='Medido', translate=True)
     construction_state_delivered_label = fields.Char(
         string='Estado del ambiente entregado', default='Entregado', translate=True)
+
+    def _construction_space_state_names(self):
+        names = super()._construction_space_state_names()
+        return {'pending': self.construction_state_pending_label or names['pending'],
+                'measured': self.construction_state_measured_label or names['measured'],
+                'delivered': self.construction_state_delivered_label or names['delivered']}
 
 
 class ResConfigSettings(models.TransientModel):

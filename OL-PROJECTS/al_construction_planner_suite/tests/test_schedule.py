@@ -301,14 +301,21 @@ class TestSchedule(TransactionCase):
         drivers = self.plan.line_ids.filtered(lambda l: l.resource_type in ('contract', 'labor'))
         self.assertAlmostEqual(load['total'], round(sum(drivers.mapped('amount_planned')), 2))
         self.assertAlmostEqual(load['total'], 2301.53)
-        # Una etapa por semana desde el lunes 12/10; la producción no tiene
-        # contratas: la carga empieza con el armado, el 19/10.
-        self.assertEqual(load['weeks'], ['2026-10-19', '2026-10-26', '2026-11-02'])
+        # Semanas de la obra (paquete 1.16, M116-07): desde el jueves, como la
+        # liquidación. Una etapa por semana desde el lunes 12/10; la
+        # producción no tiene contratas: la carga empieza con el armado
+        # (lunes 19/10, en la semana del jueves 15/10).
+        self.assertEqual(self.project.construction_week_start_day, '3')
+        self.assertEqual(load['weeks'], ['2026-10-15', '2026-10-22', '2026-10-29', '2026-11-05'])
         installation = next(r for r in load['rows'] if r['stage'] == 'installation')
         self.assertTrue(installation['unassigned'])
+        self.assertEqual(installation['label'], 'Por asignar')
         self.assertAlmostEqual(installation['total'], 941.17)
         self.assertEqual(installation['values'][0], 0.0)
-        self.assertAlmostEqual(installation['values'][1], 941.17)
+        # La instalación (lunes 26/10 a viernes 30/10) cae en dos semanas de
+        # la obra: tres días en la del 22/10 y dos en la del 29/10.
+        self.assertAlmostEqual(installation['values'][1], round(941.17 * 3 / 5, 2), places=1)
+        self.assertAlmostEqual(installation['values'][2], round(941.17 * 2 / 5, 2), places=1)
         self.assertAlmostEqual(sum(load['totals']), load['total'], places=1)
         only = self.plan.get_schedule_load('installation')
         self.assertEqual([r['stage'] for r in only['rows']], ['installation'])

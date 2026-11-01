@@ -54,12 +54,34 @@
 
     .o_cp_schedule_load {
         flex: 0 0 auto;
-        max-height: 30vh;
+        max-height: 35vh;
         overflow: auto;
 
         td,
         th {
             white-space: nowrap;
+        }
+
+        // Plan vs ejecutado (paquete 1.15, M115-06): el color siempre con su
+        // número y su %, para impresión y daltonismo.
+        .o_cp_load_good {
+            color: #2e7d32;
+        }
+
+        .o_cp_load_warn {
+            color: #b26a00;
+        }
+
+        .o_cp_load_bad {
+            color: #c62828;
+        }
+
+        .o_cp_load_current {
+            background-color: rgba(61, 133, 198, 0.12);
+        }
+
+        .o_cp_load_group_row td {
+            background-color: rgba(0, 0, 0, 0.03);
         }
     }
 
@@ -74,5 +96,51 @@
         background-image: repeating-linear-gradient(
             45deg, transparent, transparent 4px, rgba(220, 53, 69, 0.45) 4px, rgba(220, 53, 69, 0.45) 8px);
         border-color: #dc3545;
+    }
+
+    // Etapa actual y plazo de cada ambiente (paquete 1.15, M115-04).
+    .o_cp_current_badge {
+        display: inline-block;
+        padding: 0 0.4rem;
+        border-radius: 0.6rem;
+        font-size: 0.8em;
+        line-height: 1.4;
+        white-space: nowrap;
+    }
+
+    .o_cp_state_steps {
+        display: inline-flex;
+        gap: 1px;
+        margin-left: 0.3rem;
+        vertical-align: middle;
+
+        .o_cp_state_step {
+            width: 6px;
+            height: 6px;
+            opacity: 0.3;
+        }
+
+        .o_cp_state_on {
+            opacity: 1;
+            height: 10px;
+        }
+    }
+
+    .o_cp_count_bar {
+        display: inline-flex;
+        width: 100%;
+        height: 10px;
+        vertical-align: middle;
+        overflow: hidden;
+        border-radius: 2px;
+    }
+
+    .o_cp_dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 0.3rem;
+        border-radius: 50%;
+        vertical-align: middle;
     }
 }

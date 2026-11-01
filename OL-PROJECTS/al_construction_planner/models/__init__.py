@@ -24,6 +24,7 @@ from . import ir_http
 from . import construction_task_progress
 from . import construction_space_stage
 from . import gantt_data
+from . import construction_space_current_stage
 from . import construction_analytic_rule
 from . import construction_planner_home
 from . import ir_ui_menu

@@ -56,11 +56,15 @@
         <menuitem id="menu_planner_allocations" name="Asignaciones del plan" action="action_construction_resource_plan_allocation" sequence="40"/>
     </menuitem>
 
-    <menuitem id="menu_planner_reports" name="Informes" parent="menu_planner_root" sequence="60" groups="group_planner_plan_viewer,group_planner_revenue">
+    <menuitem id="menu_planner_reports" name="Informes" parent="menu_planner_root" sequence="60" groups="group_planner_plan_viewer,group_planner_revenue,group_planner_user">
         <menuitem id="menu_planner_reports_plan" name="Plan" sequence="10" groups="group_planner_plan_viewer">
             <menuitem id="menu_planner_analysis" name="Análisis del plan" action="action_construction_resource_plan_line_analysis" sequence="10"/>
             <menuitem id="menu_planner_control" name="Control de saldo" action="action_construction_plan_control" groups="group_planner_feature_control" sequence="20"/>
             <menuitem id="menu_planner_exceed_logs" name="Excesos autorizados" action="action_construction_exceed_log" groups="group_planner_feature_control" sequence="25"/>
+        </menuitem>
+        <!-- Lo ve quien ve el Cronograma (paquete 1.15, M115-05). -->
+        <menuitem id="menu_planner_reports_schedule" name="Cronograma" sequence="15" groups="group_planner_user">
+            <menuitem id="menu_planner_space_stage_report" name="Etapa de los ambientes" action="action_construction_space_stage_report" sequence="10"/>
         </menuitem>
         </menuitem>
 

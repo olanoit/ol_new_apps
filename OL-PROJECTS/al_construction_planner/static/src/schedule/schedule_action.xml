@@ -54,6 +54,35 @@
                     </t>
                 </div>
             </div>
+            <!-- Etapa actual de los ambientes (paquete 1.15, M115-04). -->
+            <div class="dropdown o_cp_current_filter" t-if="schedule.rows === 'stages' and schedule.spaceStates.length">
+                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                        t-att-class="schedule.currentStages.length or schedule.onlyLate ? 'active' : ''"
+                        data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false"
+                        title="Ambientes por su etapa actual y su plazo">
+                    <i class="fa fa-flag me-1"/><t t-esc="currentFilterLabel"/>
+                </button>
+                <div class="dropdown-menu p-2">
+                    <div class="dropdown-item o_cp_current_all" t-on-click.stop="() => this.clearCurrentFilters()">
+                        <span t-att-class="'o_cp_check o_cp_' + (schedule.currentStages.length or schedule.onlyLate ? 'off' : 'on')"/>
+                        Todos los ambientes
+                    </div>
+                    <div class="dropdown-item o_cp_only_late" t-on-click.stop="() => this.toggleOnlyLate()">
+                        <span t-att-class="'o_cp_check o_cp_' + (schedule.onlyLate ? 'on' : 'off')"/>
+                        Solo atrasados o en riesgo
+                    </div>
+                    <div class="dropdown-divider"/>
+                    <t t-foreach="schedule.spaceStates" t-as="state" t-key="state.code">
+                        <div class="dropdown-item d-flex align-items-center o_cp_current_node"
+                             t-att-data-code="state.code"
+                             t-on-click.stop="() => this.toggleCurrentStage(state.code)">
+                            <span t-att-class="'o_cp_check o_cp_' + (schedule.currentStages.includes(state.code) ? 'on' : 'off')"/>
+                            <span class="o_cp_dot" t-att-style="'background-color:' + state.color"/>
+                            <t t-esc="state.label"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
             <div class="btn-group btn-group-sm">
                 <button type="button" class="btn btn-outline-secondary"
                         t-att-class="schedule.showPanel ? 'active' : ''"
@@ -195,52 +224,115 @@
     </t>
 
     <t t-name="al_construction_planner.ScheduleLoad">
+        <!-- Carga semanal (paquete 1.15, M115-06, con M116-07): semanas de la
+             obra, días hábiles de la compañía y plan frente a ejecutado. -->
         <div class="o_cp_schedule_load border-top" t-if="schedule.showLoad and schedule.load">
+            <t t-set="load" t-value="schedule.load"/>
             <div class="d-flex flex-wrap align-items-baseline gap-2 px-2 pt-1">
-                <span class="fw-bold">Carga semanal</span>
-                <span class="text-muted small">
-                    Contratas y personal propio por semana, repartidos entre los días hábiles de cada etapa.
-                </span>
+                <span class="fw-bold o_cp_load_title">¿Cuánto hay que pagar cada semana a contratas y personal propio, y cuánto se ejecutó?</span>
+                <div class="btn-group btn-group-sm ms-auto o_cp_load_modes" role="group">
+                    <button type="button" class="btn btn-outline-secondary" data-mode="planned"
+                            t-att-class="schedule.loadMode === 'planned' ? 'active' : ''"
+                            t-on-click="() => this.setLoadMode('planned')">Planificado</button>
+                    <button type="button" class="btn btn-outline-secondary" data-mode="executed"
+                            t-att-class="schedule.loadMode === 'executed' ? 'active' : ''"
+                            t-on-click="() => this.setLoadMode('executed')">Ejecutado</button>
+                    <button type="button" class="btn btn-outline-secondary" data-mode="compare"
+                            t-att-class="schedule.loadMode === 'compare' ? 'active' : ''"
+                            t-on-click="() => this.setLoadMode('compare')">Plan vs ejecutado</button>
+                </div>
             </div>
-            <p class="text-muted small px-2 mb-1" t-if="!schedule.load.rows.length">
+            <div class="text-muted small px-2 mb-1">
+                Soles por etapa y por quién la hace. Planificado: el monto de cada etapa repartido
+                entre sus días hábiles. Ejecutado: los avances validados por su fecha. En «Plan vs
+                ejecutado», hasta la semana actual: ejecutado arriba y «de» lo planificado abajo, en
+                <span class="o_cp_load_good">verde</span> desde <t t-esc="load.thresholds.green"/> %,
+                <span class="o_cp_load_warn">ámbar</span> desde <t t-esc="load.thresholds.amber"/> % y
+                <span class="o_cp_load_bad">rojo</span> debajo; las semanas futuras, solo lo planificado.
+            </div>
+            <p class="text-muted small px-2 mb-1" t-if="!load.rows.length">
                 Sin montos de contratas ni personal propio en las etapas del cronograma.
             </p>
             <div class="table-responsive" t-else="">
                 <table class="table table-sm mb-0 o_cp_load_table">
                     <thead>
                         <tr>
-                            <th>Contrata · etapa</th>
-                            <t t-foreach="schedule.load.weeks" t-as="week" t-key="week">
-                                <th class="text-end" t-esc="weekLabel(week)"/>
+                            <th>Etapa · quién la hace</th>
+                            <t t-foreach="load.weeks" t-as="week" t-key="week">
+                                <th class="text-end" t-att-class="week_index === load.current_week ? 'o_cp_load_current' : ''"
+                                    t-esc="weekRange(week_index)"/>
                             </t>
-                            <th class="text-end">Total</th>
+                            <th class="text-end">Plan total</th>
+                            <th class="text-end">Plan a la fecha</th>
+                            <th class="text-end">Ejecutado</th>
+                            <th class="text-end">% a la fecha</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <t t-foreach="schedule.load.rows" t-as="row" t-key="row_index">
-                            <tr>
-                                <td t-att-class="row.unassigned ? 'text-warning' : ''">
-                                    <t t-esc="row.label"/> · <t t-esc="row.stage_label"/>
+                    <t t-foreach="load.groups" t-as="group" t-key="group.stage">
+                        <tbody class="o_cp_load_group" t-att-data-stage="group.stage">
+                            <tr class="fw-bold o_cp_load_group_row">
+                                <td>
+                                    <span class="o_cp_dot" t-att-style="'background-color:' + group.color"/>
+                                    <t t-esc="group.stage_label"/>
                                 </td>
-                                <t t-foreach="row.values" t-as="value" t-key="value_index">
-                                    <td class="text-end" t-esc="value ? fmt(value) : '—'"/>
-                                </t>
-                                <td class="text-end fw-bold" t-esc="fmt(row.total)"/>
+                                <t t-set="item" t-value="group"/>
+                                <t t-call="al_construction_planner.ScheduleLoadCells"/>
                             </tr>
-                        </t>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th>Total</th>
-                            <t t-foreach="schedule.load.totals" t-as="value" t-key="value_index">
-                                <th class="text-end" t-esc="fmt(value)"/>
+                            <t t-foreach="group.rows" t-as="row" t-key="row_index">
+                                <tr class="o_cp_load_row">
+                                    <td class="ps-3">
+                                        <span t-if="row.unassigned" class="badge text-bg-warning o_cp_load_unassigned" t-esc="row.label"/>
+                                        <t t-else="" t-esc="row.label"/>
+                                    </td>
+                                    <t t-set="item" t-value="row"/>
+                                    <t t-call="al_construction_planner.ScheduleLoadCells"/>
+                                </tr>
                             </t>
-                            <th class="text-end o_cp_load_total" t-esc="fmt(schedule.load.total)"/>
+                        </tbody>
+                    </t>
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <th>Total</th>
+                            <t t-set="item" t-value="loadTotals"/>
+                            <t t-call="al_construction_planner.ScheduleLoadCells"/>
+                        </tr>
+                        <tr class="o_cp_load_diff">
+                            <th>Diferencia ejecutado − plan</th>
+                            <t t-foreach="load.diff" t-as="value" t-key="value_index">
+                                <td class="text-end" t-att-class="value === false ? '' : (value &lt; 0 ? 'o_cp_load_bad' : 'o_cp_load_good')"
+                                    t-esc="value === false ? '' : fmt0(value)"/>
+                            </t>
+                            <td/>
+                            <td/>
+                            <td class="text-end" t-esc="fmt0(load.executed_total - load.plan_to_date)"/>
+                            <td/>
                         </tr>
                     </tfoot>
                 </table>
             </div>
         </div>
+    </t>
+
+    <t t-name="al_construction_planner.ScheduleLoadCells">
+        <t t-foreach="load.weeks" t-as="week" t-key="week">
+            <t t-set="past" t-value="load.diff[week_index] !== false"/>
+            <t t-set="planned" t-value="item.values[week_index]"/>
+            <t t-set="done" t-value="item.executed[week_index]"/>
+            <td class="text-end" t-att-class="week_index === load.current_week ? 'o_cp_load_current' : ''">
+                <t t-if="schedule.loadMode === 'planned'"><t t-esc="planned ? fmt0(planned) : '—'"/></t>
+                <t t-elif="schedule.loadMode === 'executed'"><t t-esc="done ? fmt0(done) : '—'"/></t>
+                <t t-elif="past">
+                    <div t-att-class="loadClass(done, planned)" t-esc="done ? fmt0(done) : (planned ? '0' : '—')"/>
+                    <div class="text-muted small" t-if="planned">de <t t-esc="fmt0(planned)"/> · <t t-esc="loadPct(done, planned)"/></div>
+                </t>
+                <t t-else=""><span class="text-muted" t-esc="planned ? fmt0(planned) : '—'"/></t>
+            </td>
+        </t>
+        <td class="text-end" t-esc="fmt0(item.total)"/>
+        <td class="text-end" t-esc="fmt0(item.plan_to_date)"/>
+        <td class="text-end" t-esc="fmt0(item.executed_total)"/>
+        <td class="text-end" t-att-class="item.pct === false ? '' : loadClass(item.executed_total, item.plan_to_date)"
+            t-esc="item.pct === false ? '—' : Math.round(item.pct) + ' %'"/>
     </t>
 
 </templates>

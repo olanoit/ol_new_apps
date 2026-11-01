@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Informe «Etapa de los ambientes» (paquete 1.15, M115-05): un ambiente
+         cuenta una sola vez, en su etapa actual (M115-04). -->
+    <record id="project_task_view_pivot_construction_space_stage" model="ir.ui.view">
+        <field name="name">project.task.pivot.construction.space.stage</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <pivot string="Etapa de los ambientes" class="o_cp_wrap_names">
+                <field name="construction_level1_task_id" type="row"/>
+                <field name="construction_level2_task_id" type="row"/>
+                <field name="construction_current_stage" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="project_task_view_graph_construction_space_stage" model="ir.ui.view">
+        <field name="name">project.task.graph.construction.space.stage</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <graph string="Etapa de los ambientes" type="bar" stacked="1">
+                <field name="construction_level1_task_id"/>
+                <field name="construction_current_stage"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="project_task_view_list_construction_space_stage" model="ir.ui.view">
+        <field name="name">project.task.list.construction.space.stage</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Etapa de los ambientes" class="o_cp_wrap_names" create="0" edit="0" delete="0"
+                  decoration-danger="construction_stage_schedule == 'late'"
+                  decoration-warning="construction_stage_schedule == 'risk'"
+                  decoration-muted="construction_stage_schedule == 'done'">
+                <field name="project_id" optional="hide"/>
+                <field name="construction_level1_task_id" optional="show"/>
+                <field name="construction_level2_task_id" optional="show"/>
+                <field name="name" class="o_cp_name"/>
+                <field name="construction_typology_id" optional="hide"/>
+                <field name="construction_current_stage" widget="badge"/>
+                <field name="construction_current_stage_progress" string="Avance %"/>
+                <field name="construction_current_stage_start"/>
+                <field name="construction_current_stage_end"/>
+                <field name="construction_stage_schedule" widget="badge"
+                       decoration-danger="construction_stage_schedule == 'late'"
+                       decoration-warning="construction_stage_schedule == 'risk'"
+                       decoration-success="construction_stage_schedule in ('on_time', 'done')"/>
+                <field name="construction_stage_schedule_label" string="Detalle del plazo"/>
+                <field name="construction_current_partner_id" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="project_task_view_search_construction_space_stage" model="ir.ui.view">
+        <field name="name">project.task.search.construction.space.stage</field>
+        <field name="model">project.task</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Etapa de los ambientes">
+                <field name="name"/>
+                <field name="project_id" string="Obra"/>
+                <field name="construction_level1_task_id"/>
+                <field name="construction_level2_task_id"/>
+                <field name="construction_typology_id"/>
+                <field name="construction_current_partner_id"/>
+                <filter string="Solo atrasados o en riesgo" name="late_or_risk"
+                        domain="[('construction_stage_schedule', 'in', ['late', 'risk'])]"/>
+                <group>
+                    <filter string="Obra" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Nivel 1" name="group_level1" context="{'group_by': 'construction_level1_task_id'}"/>
+                    <filter string="Nivel 2" name="group_level2" context="{'group_by': 'construction_level2_task_id'}"/>
+                    <filter string="Tipología" name="group_typology" context="{'group_by': 'construction_typology_id'}"/>
+                    <filter string="Contrata de la etapa actual" name="group_partner"
+                            context="{'group_by': 'construction_current_partner_id'}"/>
+                    <filter string="Etapa actual" name="group_current_stage"
+                            context="{'group_by': 'construction_current_stage'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_construction_space_stage_report" model="ir.actions.act_window">
+        <field name="name">Etapa de los ambientes</field>
+        <field name="res_model">project.task</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('construction_current_stage', '!=', False)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="search_view_id" ref="project_task_view_search_construction_space_stage"/>
+        <field name="view_ids" eval="[Command.clear(),
+            Command.create({'view_mode': 'pivot', 'view_id': ref('project_task_view_pivot_construction_space_stage')}),
+            Command.create({'view_mode': 'graph', 'view_id': ref('project_task_view_graph_construction_space_stage')}),
+            Command.create({'view_mode': 'list', 'view_id': ref('project_task_view_list_construction_space_stage')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Sin ambientes con etapas</p>
+            <p>Cuenta cada ambiente una vez, en su etapa actual: la primera sin terminar. Las
+               etapas salen del Cronograma de la obra.</p>
+        </field>
+    </record>
+
+</odoo>

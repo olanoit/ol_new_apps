@@ -15,7 +15,7 @@ Reglas comunes: [`ARQUITECTURA_COMUN.md`](ARQUITECTURA_COMUN.md).
 |---|---|---|
 | 1 · Base común | CR-23, CR-22 a), CR-19 con M116-01, M116-02, M116-11 | Desarrollada (este documento) |
 | 2 · Requerimiento de obra y contratas | M114-01 a 05, M116-03 a 06, CR-20, CR-21, CR-24, I-01 a I-09, I-13, D1 a D3 | Desarrollada (bloques 2a, 2b y 2c); por probar en las bases |
-| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Bloque 3a desarrollado; 3b por desarrollar |
+| 3 · Cronograma | M115-01 a 06, M116-07, M116-08, CR-25, CR-26 | Desarrollada (bloques 3a y 3b); por probar en las bases |
 | 4 · Hoja de trabajo | M113-01 a 12, M116-09, M116-10, CR-22 b) a g) | Pendiente |
 
 Cada etapa se prueba en las bases de desarrollo de las dos verticales antes de
@@ -533,6 +533,36 @@ Desarrollado. Detalles:
   redefine las ayudas de `kind`, `production_consumption`, `behavior` y de
   las cantidades de la línea del plan, y trae el filtro «Orden de
   fabricación» de las asignaciones.
+
+### 3b · Implementación
+
+Desarrollado. Detalles:
+
+- `construction_space_current_stage.py` (núcleo): campos guardados de la
+  etapa actual en la tarea, plazo calculado con búsqueda, ancestros de nivel 1
+  y 2, y `_construction_refresh_current_stage`. Lo llaman
+  `_refresh_control` de las líneas del plan (avances, versiones, acción
+  programada), las etapas del ambiente (crear, fechas, borrar) y la escritura
+  de los campos de `_construction_current_stage_trigger_fields` (estado del
+  módulo; el puente de mobiliario agrega «Ambiente medido»).
+- Etapa sin contratas ni personal propio (la producción en taller de
+  mobiliario): no tiene avance que medir. Una etapa de fabricación queda
+  terminada cuando todos los módulos del ambiente salieron de producción;
+  cualquier etapa sin líneas queda terminada si una etapa siguiente ya tiene
+  avance. Sin esta regla, el ambiente quedaría siempre en su primera etapa.
+- Colores de Pendiente, Medido y Entregado: fijos en el núcleo (gris, azul y
+  verde), junto a la lista de estados; los nombres siguen en el puente de
+  mobiliario (M116-02).
+- Cronograma: el payload trae `construction.space_states`, y en cada tarea
+  `current` (ambiente) o `current_counts` y `worst` (ancestros). Filtros
+  `construction_current_stages` y `construction_only_late`: el ambiente y sus
+  ancestros.
+- Carga semanal: `get_schedule_load` mantiene `weeks`, `rows`, `totals` y
+  `total`, y agrega `week_ends`, `current_week`, `groups`, `executed` por
+  fila, `executed_totals`, `diff`, `plan_to_date`, `executed_total`, `pct` y
+  `thresholds`. «Sin asignar» pasa a «Por asignar».
+- Informe: Informes › Cronograma › Etapa de los ambientes (lo ve
+  «Planificación de obra: usuario»).
 
 ### Ajustes nuevos (Ajustes › Planificación de obra)
 

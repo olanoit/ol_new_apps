@@ -37,6 +37,8 @@ import {
     toggleStageNode,
 } from "../stage_filter/stage_filter";
 
+const { DateTime } = luxon;
+
 const PLAN = "construction.resource.plan";
 const STAGE = "construction.space.stage";
 
@@ -224,7 +226,79 @@ function infoFields(info) {
         cp_partner: info.partners || "",
         cp_unit_state: info.unit_state || "",
         cp_alerts: info.alerts || [],
+        cp_current: info.current || null,
+        cp_current_counts: info.current_counts || null,
+        cp_worst: info.worst || null,
     };
+}
+
+/** Colores del plazo (paquete 1.15, M115-04): el texto va siempre al lado. */
+const SCHEDULE_COLORS = {
+    late: "#d32f2f",
+    risk: "#f9a825",
+    on_time: "#2e7d32",
+    done: "#2e7d32",
+    no_dates: "#9e9e9e",
+};
+
+/**
+ * Distintivo de la etapa actual: nombre, % y color; borde punteado y «por
+ * iniciar» con 0 %; al lado, la mini barra de los estados con el actual
+ * marcado. En pisos y departamentos, cuántos ambientes hay en cada estado.
+ */
+export function currentStageHtml(task, states) {
+    const current = task.cp_current;
+    if (current) {
+        const empty = !current.pct && !current.is_state;
+        const text = current.is_state
+            ? current.label
+            : empty
+            ? `${current.label} · ${_t("por iniciar")}`
+            : `${current.label} ${Math.round(current.pct)} %`;
+        const style = empty
+            ? `border:1px dashed ${escapeText(current.color)};color:${escapeText(current.color)}`
+            : `background-color:${escapeText(current.color)};color:#fff`;
+        const steps = states
+            .map((state) => {
+                const on = state.code === current.code;
+                return `<span class="o_cp_state_step${on ? " o_cp_state_on" : ""}" style="background-color:${escapeText(state.color)}" title="${escapeText(state.label)}"></span>`;
+            })
+            .join("");
+        return `<span class="o_cp_current_badge" style="${style}">${escapeText(text)}</span><span class="o_cp_state_steps">${steps}</span>`;
+    }
+    const counts = task.cp_current_counts;
+    if (counts) {
+        const total = Object.values(counts).reduce((sum, value) => sum + value, 0);
+        const parts = states
+            .filter((state) => counts[state.code])
+            .map((state) => {
+                const width = Math.max(4, (100 * counts[state.code]) / total);
+                return `<span class="o_cp_count_part" style="width:${width}%;background-color:${escapeText(state.color)}" title="${escapeText(`${state.label}: ${counts[state.code]}`)}"></span>`;
+            })
+            .join("");
+        return `<span class="o_cp_count_bar" title="${escapeText(
+            states.filter((state) => counts[state.code]).map((state) => `${state.label}: ${counts[state.code]}`).join(" · ")
+        )}">${parts}</span>`;
+    }
+    return "";
+}
+
+/** Plazo: punto de color y texto («atrasada 3 d»); en los ancestros, el peor. */
+export function scheduleHtml(task) {
+    const current = task.cp_current;
+    if (current && current.schedule) {
+        const color = SCHEDULE_COLORS[current.schedule] || "#9e9e9e";
+        return `<span class="o_cp_dot" style="background-color:${color}"></span>${escapeText(current.schedule_label || current.schedule_name)}`;
+    }
+    const worst = task.cp_worst;
+    if (worst) {
+        const color = SCHEDULE_COLORS[worst.state] || "#9e9e9e";
+        const text = ["late", "risk"].includes(worst.state)
+            ? `${worst.count} ${worst.name.toLowerCase()}`
+            : worst.name;
+        return `<span class="o_cp_dot" style="background-color:${color}"></span>${escapeText(text)}`;
+    }
+    return "";
 }
 
 export class ConstructionScheduleAction extends GanttAction {
@@ -247,6 +321,11 @@ export class ConstructionScheduleAction extends GanttAction {
             showLoad: true,
             panelByStage: false,
             panelWidth: readPanelWidth(),
+            // Etapa actual de los ambientes (paquete 1.15, M115-04).
+            spaceStates: [],
+            currentStages: [],
+            onlyLate: false,
+            loadMode: "compare",
             panelFull: false,
             terms: { details: _t("Módulos"), show_ml: true },
         });
@@ -300,6 +379,8 @@ export class ConstructionScheduleAction extends GanttAction {
             construction_plan_id: this.schedule.planId,
             construction_rows: this.schedule.rows,
             construction_stages: this.schedule.stages,
+            construction_current_stages: this.schedule.currentStages,
+            construction_only_late: this.schedule.onlyLate,
         };
     }
 
@@ -307,6 +388,7 @@ export class ConstructionScheduleAction extends GanttAction {
         this.construction = payload.construction || {};
         this.schedule.stageLabels = this.construction.stage_labels || {};
         this.schedule.stageTree = this.construction.stage_tree || [];
+        this.schedule.spaceStates = this.construction.space_states || [];
         if (this.construction.rows === "stages") {
             return buildStageRows(ganttData, payload);
         }
@@ -404,6 +486,26 @@ export class ConstructionScheduleAction extends GanttAction {
                 },
             },
         ];
+        if (this.schedule.rows === "stages") {
+            columns.push(
+                {
+                    name: "cp_current",
+                    label: _t("Etapa actual"),
+                    align: "left",
+                    width: 190,
+                    resize: true,
+                    template: (task) => currentStageHtml(task, this.schedule.spaceStates),
+                },
+                {
+                    name: "cp_schedule",
+                    label: _t("Plazo"),
+                    align: "left",
+                    width: 130,
+                    resize: true,
+                    template: (task) => scheduleHtml(task),
+                }
+            );
+        }
         return this.showAmounts ? columns : columns.filter((col) => col.name !== "cp_amount");
     }
 
@@ -798,6 +900,36 @@ export class ConstructionScheduleAction extends GanttAction {
         await this.reload();
     }
 
+    // ------------------------------------------------------------------
+    // Filtros de la etapa actual (paquete 1.15, M115-04)
+    // ------------------------------------------------------------------
+    get currentFilterLabel() {
+        const count = this.schedule.currentStages.length + (this.schedule.onlyLate ? 1 : 0);
+        return count ? _t("Etapa actual (%s)", count) : _t("Etapa actual");
+    }
+
+    async toggleCurrentStage(code) {
+        const codes = new Set(this.schedule.currentStages);
+        if (codes.has(code)) {
+            codes.delete(code);
+        } else {
+            codes.add(code);
+        }
+        this.schedule.currentStages = [...codes];
+        await this.reload();
+    }
+
+    async toggleOnlyLate() {
+        this.schedule.onlyLate = !this.schedule.onlyLate;
+        await this.reload();
+    }
+
+    async clearCurrentFilters() {
+        this.schedule.currentStages = [];
+        this.schedule.onlyLate = false;
+        await this.reload();
+    }
+
     togglePanel() {
         this.schedule.showPanel = !this.schedule.showPanel;
     }
@@ -825,9 +957,51 @@ export class ConstructionScheduleAction extends GanttAction {
         return this.pct(resource.executed / resource.qty);
     }
 
-    weekLabel(isoDate) {
-        const [year, month, day] = isoDate.split("-");
-        return `${day}/${month}`;
+    // ------------------------------------------------------------------
+    // Carga semanal (paquete 1.15, M115-06)
+    // ------------------------------------------------------------------
+    /** Montos sin decimales. */
+    fmt0(value) {
+        return formatFloat(Math.round(value || 0), { digits: [16, 0] });
+    }
+
+    /** Rango de la semana de la obra: «jue 5 – mié 11 nov». */
+    weekRange(index) {
+        const load = this.schedule.load;
+        const start = DateTime.fromISO(load.weeks[index]);
+        const end = DateTime.fromISO(load.week_ends[index]);
+        const startFormat = start.month === end.month ? "ccc d" : "ccc d LLL";
+        return `${start.toFormat(startFormat)} – ${end.toFormat("ccc d LLL")}`;
+    }
+
+    loadPct(done, planned) {
+        return planned ? `${Math.round((100 * (done || 0)) / planned)} %` : "";
+    }
+
+    /** Verde, ámbar o rojo según los umbrales de Ajustes. */
+    loadClass(done, planned) {
+        if (!planned) {
+            return "";
+        }
+        const pct = (100 * (done || 0)) / planned;
+        const { green, amber } = this.schedule.load.thresholds;
+        return pct >= green ? "o_cp_load_good" : pct >= amber ? "o_cp_load_warn" : "o_cp_load_bad";
+    }
+
+    get loadTotals() {
+        const load = this.schedule.load;
+        return {
+            values: load.totals,
+            executed: load.executed_totals,
+            total: load.total,
+            plan_to_date: load.plan_to_date,
+            executed_total: load.executed_total,
+            pct: load.pct,
+        };
+    }
+
+    setLoadMode(mode) {
+        this.schedule.loadMode = mode;
     }
 }
 
