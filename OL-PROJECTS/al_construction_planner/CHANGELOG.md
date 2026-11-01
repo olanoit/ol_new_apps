@@ -7,6 +7,10 @@ el `version` de `__manifest__.py` (`N.AAAAMMDD`).
 Generado desde `docs/fichas/al_construction_planner.yml` (sección `novedades`) con
 `python3 scripts/gen_changelog.py`: no editar a mano.
 
+## 68.20261101 — 01/11/2026
+
+- «Árbol de recursos» e «Insumo-producto» abren el plan desde el que se llaman aunque esté reemplazado o cancelado; antes el árbol mostraba el plan más reciente de otra obra.
+
 ## 67.20261101 — 01/11/2026
 
 - Los textos de las pestañas de un formulario vuelven a saltar de línea: la ficha de la obra ya no se desborda a lo ancho en «Ajustes» y «Facturación».

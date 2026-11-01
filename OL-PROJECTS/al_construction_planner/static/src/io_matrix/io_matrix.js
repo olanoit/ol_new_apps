@@ -98,6 +98,16 @@ export class ConstructionIoMatrix extends Component {
                 ["display_name", "project_id"],
                 { order: "id desc" }
             );
+            // El plan pedido aparece en el selector aunque esté reemplazado.
+            const wanted = this.state.planId;
+            if (wanted && !this.state.plans.some((p) => p.id === wanted)) {
+                const requested = await this.orm.searchRead(
+                    PLAN,
+                    [["id", "=", wanted]],
+                    ["display_name", "project_id"]
+                );
+                this.state.plans = [...requested, ...this.state.plans];
+            }
             if (!this.state.planId && this.state.plans.length) {
                 this.state.planId = this.state.plans[0].id;
             }

@@ -1220,6 +1220,10 @@ faq:
       ambiente con su cantidad por ambiente, y se avisa.
 
 novedades:
+  - version: '68.20261101'
+    fecha: 01/11/2026
+    cambios:
+      - "«Árbol de recursos» e «Insumo-producto» abren el plan desde el que se llaman aunque esté reemplazado o cancelado; antes el árbol mostraba el plan más reciente de otra obra."
   - version: '67.20261101'
     fecha: 01/11/2026
     cambios:

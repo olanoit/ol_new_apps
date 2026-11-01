@@ -65,6 +65,16 @@ export class ConstructionPlanTree extends Component {
             this.state.options = options;
             this.state.actions = actions;
             const wanted = context.construction_plan_id || context.active_id;
+            // El plan pedido se abre aunque esté reemplazado o cancelado (su
+            // historia); sin él, el árbol abría el plan más reciente de otra obra.
+            if (wanted && !plans.some((p) => p.id === wanted)) {
+                const requested = await this.orm.searchRead(
+                    PLAN,
+                    [["id", "=", wanted]],
+                    ["display_name", "project_id", "state"]
+                );
+                plans.unshift(...requested);
+            }
             const plan = plans.find((p) => p.id === wanted) || plans[0];
             if (plan) {
                 await this.loadPlan(plan.id);
