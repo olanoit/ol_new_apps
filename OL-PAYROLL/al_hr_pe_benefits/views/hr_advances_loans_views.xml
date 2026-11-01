@@ -33,6 +33,7 @@
                         <group string="Fechas">
                             <field name="date" required="1" readonly="state == 'paid out'"/>
                             <field name="discount_date" required="1" readonly="state == 'paid out'"/>
+                            <field name="l10n_pe_payslip_id" invisible="not l10n_pe_payslip_id"/>
                             <field name="company_id" readonly="1" groups="base.group_multi_company"/>
                         </group>
                     </group>
@@ -54,6 +55,7 @@
                 <field name="advance_type_id" optional="show"/>
                 <field name="date" optional="show"/>
                 <field name="discount_date" optional="show"/>
+                <field name="l10n_pe_payslip_id" optional="hide"/>
                 <field name="amount" sum="Total"/>
                 <field name="state" widget="badge"
                        decoration-info="state == 'draft'"
@@ -180,6 +182,7 @@
                             <field name="loan_type_id" readonly="validation == 'paid out'" optional="hide"/>
                             <field name="amount" sum="Total" readonly="validation == 'paid out'"/>
                             <field name="debt" readonly="validation == 'paid out'"/>
+                            <field name="l10n_pe_payslip_id" optional="hide"/>
                             <field name="validation" readonly="1" widget="badge"
                                    decoration-success="validation == 'paid out'"
                                    decoration-info="validation == 'not payed'"/>

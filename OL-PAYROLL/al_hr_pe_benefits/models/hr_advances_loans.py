@@ -14,7 +14,15 @@ Portado de ``hr_advances_and_loans`` (v18):
   tipos BBSS (gratificación, CTS, liquidación, vacaciones — esos van
   por el flujo de beneficios sociales) y el de quincena; añade como
   regularización los importes de tipos especiales ya pagados en el
-  periodo (paridad v18). Al final marca ``paid out``.
+  periodo (paridad v18). Al final marca ``paid out``. En la boleta del
+  mes del cese trae además todo lo pendiente de vencimiento posterior:
+  las cuotas vencen a fin de mes y con un cese a mitad de mes quedaban
+  fuera de la última boleta para siempre.
+* **_l10n_pe_pending_advances / _l10n_pe_discount_benefit_advances**: los
+  adelantos y préstamos de tipo BBSS (gratificación, CTS, vacaciones,
+  liquidación) los descuenta el proceso respectivo al exportar a su
+  boleta, con el tope del 50 % cuando van contra la CTS (art. 40 del TUO
+  de la Ley de CTS). Cada importe guarda la boleta donde se descontó.
 
 Cambios v19: sin SQL ``.format()`` (agregación por ORM); redondeo con
 ``custom_round``; los tipos especiales (``grat/cts/liqui/vaca/quin_
@@ -41,6 +49,9 @@ SPECIAL_ADVANCE_FIELDS = ('grat_advance_id', 'cts_advance_id',
                           'quin_advance_id')
 SPECIAL_LOAN_FIELDS = ('grat_loan_id', 'cts_loan_id', 'liqui_loan_id',
                        'vaca_loan_id', 'quin_loan_id')
+# Tipos BBSS que descuenta su propio proceso (prefijo de los campos
+# ``<tipo>_advance_id`` / ``<tipo>_loan_id`` de los parámetros).
+BENEFIT_KINDS = ('grat', 'cts', 'liqui', 'vaca')
 
 
 def _special_types(param, field_names):
@@ -101,6 +112,10 @@ class HrAdvance(models.Model):
         help='Pagado: ya se descontó en una boleta.')
     observations = fields.Text(string='Observaciones')
     active = fields.Boolean(string='Activo', default=True)
+    l10n_pe_payslip_id = fields.Many2one(
+        'hr.payslip', string='Descontado en', readonly=True, copy=False,
+        index='btree_not_null', ondelete='set null',
+        help='Boleta en la que se descontó el adelanto.')
 
     def turn_paid_out(self):
         """Marca el adelanto como aplicado en la planilla."""
@@ -108,7 +123,7 @@ class HrAdvance(models.Model):
 
     def action_set_unpaid(self):
         """Revierte a ``not payed`` (cancela la aplicación)."""
-        self.write({'state': 'not payed'})
+        self.write({'state': 'not payed', 'l10n_pe_payslip_id': False})
 
     @api.onchange('employee_id', 'advance_type_id')
     def _get_name(self):
@@ -270,12 +285,16 @@ class HrLoanLine(models.Model):
         selection=[('not payed', 'No pagado'), ('paid out', 'Pagado')],
         string='Estado', default='not payed',
         help='Pagado: la cuota ya se descontó en una boleta.')
+    l10n_pe_payslip_id = fields.Many2one(
+        'hr.payslip', string='Descontada en', readonly=True, copy=False,
+        index='btree_not_null', ondelete='set null',
+        help='Boleta en la que se descontó la cuota.')
 
     def turn_paid_out(self):
         self.write({'validation': 'paid out'})
 
     def action_set_unpaid(self):
-        self.write({'validation': 'not payed'})
+        self.write({'validation': 'not payed', 'l10n_pe_payslip_id': False})
 
     @api.depends('loan_id', 'fee')
     def _compute_display_name(self):
@@ -285,6 +304,33 @@ class HrLoanLine(models.Model):
 
 class HrPayslip(models.Model):
     _inherit = 'hr.payslip'
+
+    def _l10n_pe_is_cessation_slip(self):
+        """La boleta cubre el cese del contrato: es la última del
+        trabajador y en ella se cobra todo lo pendiente."""
+        self.ensure_one()
+        cessation = self.version_id.contract_date_end
+        return bool(cessation and self.date_from <= cessation <= self.date_to)
+
+    def _l10n_pe_discount_domain(self, date_field, state_field, state):
+        """Dominio base de adelantos (``discount_date``/``state``) o cuotas
+        (``date``/``validation``) del trabajador en el periodo de la boleta.
+        En la boleta del cese no hay límite de fechas: entra todo lo
+        pendiente (y lo ya descontado en ella)."""
+        self.ensure_one()
+        domain = [
+            ('employee_id', '=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
+            (state_field, '=', state),
+        ]
+        if self._l10n_pe_is_cessation_slip():
+            if state == 'paid out':
+                domain += ['|', ('l10n_pe_payslip_id', '=', self.id),
+                           '&', (date_field, '>=', self.date_from),
+                           (date_field, '<=', self.date_to)]
+            return domain
+        return domain + [(date_field, '>=', self.date_from),
+                         (date_field, '<=', self.date_to)]
 
     def import_advances(self):
         """Vuelca los adelantos ``not payed`` con ``discount_date`` en
@@ -296,7 +342,10 @@ class HrPayslip(models.Model):
         La quincena no entra en la regularización: su exportación ya los
         descuenta en la mensual por el input de su tipo (se descontaban
         dos veces). Si ese input es el mismo que el de un tipo ordinario,
-        el importe lleva ambos para que ningún flujo pise al otro. Solo
+        el importe lleva ambos para que ningún flujo pise al otro. Los BBSS
+        que ya descontó su proceso en esta boleta tampoco son
+        regularización, pero se conservan en el input si lo comparten.
+        En la boleta del cese entran también los de fecha posterior. Solo
         boletas en borrador."""
         ensure_slips_draft(self)
         log = ''
@@ -306,14 +355,10 @@ class HrPayslip(models.Model):
             special = _special_types(param, SPECIAL_ADVANCE_FIELDS)
             special_ids = [record.id for record in special]
             quin = param.quin_advance_id
-            pending = self.env['hr.advance'].search([
-                ('discount_date', '>=', slip.date_from),
-                ('discount_date', '<=', slip.date_to),
-                ('employee_id', '=', slip.employee_id.id),
-                ('company_id', '=', slip.company_id.id),
-                ('state', '=', 'not payed'),
-                ('advance_type_id', 'not in', special_ids),
-            ])
+            pending = self.env['hr.advance'].search(
+                slip._l10n_pe_discount_domain(
+                    'discount_date', 'state', 'not payed')
+                + [('advance_type_id', 'not in', special_ids)])
             paid_special = self.env['hr.advance'].search([
                 ('discount_date', '>=', slip.date_from),
                 ('discount_date', '<=', slip.date_to),
@@ -322,6 +367,7 @@ class HrPayslip(models.Model):
                 ('state', '=', 'paid out'),
                 ('advance_type_id', 'in', special_ids),
                 ('advance_type_id', '!=', quin.id),
+                ('l10n_pe_payslip_id', '=', False),
             ])
             # Solo se aplica (y se marca pagado) lo que tiene input: un
             # tipo sin input nunca llega a descontarse en la boleta.
@@ -330,15 +376,12 @@ class HrPayslip(models.Model):
             # El input se recalcula con TODO lo del periodo, también lo
             # importado antes: importar dos veces pisaba la primera tanda
             # (ya marcada como pagada) con la segunda.
-            imported = self.env['hr.advance'].search([
-                ('discount_date', '>=', slip.date_from),
-                ('discount_date', '<=', slip.date_to),
-                ('employee_id', '=', slip.employee_id.id),
-                ('company_id', '=', slip.company_id.id),
-                ('state', '=', 'paid out'),
-                ('advance_type_id', 'not in', special_ids),
-                ('advance_type_id.input_id', '!=', False),
-            ]) if pending else self.env['hr.advance']
+            imported = self.env['hr.advance'].search(
+                slip._l10n_pe_discount_domain(
+                    'discount_date', 'state', 'paid out')
+                + [('advance_type_id', 'not in', special_ids),
+                   ('advance_type_id.input_id', '!=', False)],
+            ) if pending else self.env['hr.advance']
             amounts = defaultdict(float)
             for advance in pending | imported:
                 amounts[advance.advance_type_id.input_id] += advance.amount
@@ -351,6 +394,10 @@ class HrPayslip(models.Model):
                     ('state', '=', 'paid out'),
                     ('advance_type_id', '=', quin.id),
                 ]).mapped('amount'))
+            for advance in slip._l10n_pe_benefit_discounted()[0]:
+                if advance.advance_type_id.input_id in amounts:
+                    amounts[advance.advance_type_id.input_id] += \
+                        advance.amount
             # La regularización se suma una sola vez (v18 la repetía en
             # cada tipo de input).
             regularization = sum(paid_special.mapped('amount'))
@@ -358,7 +405,8 @@ class HrPayslip(models.Model):
                 slip._set_pe_input_amount(
                     input_type, amount + regularization)
                 regularization = 0.0
-            pending.turn_paid_out()
+            pending.write({'state': 'paid out',
+                           'l10n_pe_payslip_id': slip.id})
             if amounts:
                 log += '%s\n' % slip.employee_id.display_name
         if log:
@@ -370,7 +418,9 @@ class HrPayslip(models.Model):
     def import_loans(self):
         """Análogo a :meth:`import_advances` para cuotas de préstamo
         (`hr.loan.line`) con vencimiento en el rango de la boleta (la
-        quincena tampoco entra en la regularización)."""
+        quincena tampoco entra en la regularización). En la boleta del
+        cese entran todas las cuotas pendientes: vencen a fin de mes y con
+        un cese a mitad de mes el saldo quedaba sin descontar."""
         ensure_slips_draft(self)
         log = ''
         for slip in self:
@@ -379,14 +429,9 @@ class HrPayslip(models.Model):
             special = _special_types(param, SPECIAL_LOAN_FIELDS)
             special_ids = [record.id for record in special]
             quin = param.quin_loan_id
-            pending = self.env['hr.loan.line'].search([
-                ('date', '>=', slip.date_from),
-                ('date', '<=', slip.date_to),
-                ('employee_id', '=', slip.employee_id.id),
-                ('company_id', '=', slip.company_id.id),
-                ('validation', '=', 'not payed'),
-                ('loan_type_id', 'not in', special_ids),
-            ])
+            pending = self.env['hr.loan.line'].search(
+                slip._l10n_pe_discount_domain('date', 'validation', 'not payed')
+                + [('loan_type_id', 'not in', special_ids)])
             paid_special = self.env['hr.loan.line'].search([
                 ('date', '>=', slip.date_from),
                 ('date', '<=', slip.date_to),
@@ -395,20 +440,17 @@ class HrPayslip(models.Model):
                 ('validation', '=', 'paid out'),
                 ('loan_type_id', 'in', special_ids),
                 ('loan_type_id', '!=', quin.id),
+                ('l10n_pe_payslip_id', '=', False),
             ])
             pending = pending.filtered(
                 lambda line: line.loan_type_id.input_id)
             # Igual que en los adelantos: se suman también las cuotas del
             # periodo importadas antes.
-            imported = self.env['hr.loan.line'].search([
-                ('date', '>=', slip.date_from),
-                ('date', '<=', slip.date_to),
-                ('employee_id', '=', slip.employee_id.id),
-                ('company_id', '=', slip.company_id.id),
-                ('validation', '=', 'paid out'),
-                ('loan_type_id', 'not in', special_ids),
-                ('loan_type_id.input_id', '!=', False),
-            ]) if pending else self.env['hr.loan.line']
+            imported = self.env['hr.loan.line'].search(
+                slip._l10n_pe_discount_domain('date', 'validation', 'paid out')
+                + [('loan_type_id', 'not in', special_ids),
+                   ('loan_type_id.input_id', '!=', False)],
+            ) if pending else self.env['hr.loan.line']
             amounts = defaultdict(float)
             for line in pending | imported:
                 amounts[line.loan_type_id.input_id] += line.amount
@@ -421,12 +463,16 @@ class HrPayslip(models.Model):
                     ('validation', '=', 'paid out'),
                     ('loan_type_id', '=', quin.id),
                 ]).mapped('amount'))
+            for line in slip._l10n_pe_benefit_discounted()[1]:
+                if line.loan_type_id.input_id in amounts:
+                    amounts[line.loan_type_id.input_id] += line.amount
             regularization = sum(paid_special.mapped('amount'))
             for input_type, amount in amounts.items():
                 slip._set_pe_input_amount(
                     input_type, amount + regularization)
                 regularization = 0.0
-            pending.turn_paid_out()
+            pending.write({'validation': 'paid out',
+                           'l10n_pe_payslip_id': slip.id})
             if amounts:
                 log += '%s\n' % slip.employee_id.display_name
         if log:
@@ -434,6 +480,126 @@ class HrPayslip(models.Model):
                 'Se importaron préstamos a los siguientes empleados:\n'
                 '%(log)s', log=log))
         return notify_success(self.env._('No se importó ningún préstamo.'))
+
+    # ------------------------------------------------------------------
+    # Adelantos y préstamos BBSS (gratificación, CTS, vacaciones,
+    # liquidación): los descuenta su propio proceso
+    # ------------------------------------------------------------------
+    @api.model
+    def _l10n_pe_benefit_types(self, kinds, company):
+        """Tipos de adelanto y de préstamo configurados para ``kinds``
+        (``'grat'``, ``'cts'``, ``'liqui'``, ``'vaca'``)."""
+        if isinstance(kinds, str):
+            kinds = (kinds,)
+        unknown = set(kinds) - set(BENEFIT_KINDS)
+        if unknown:
+            raise UserError(self.env._(
+                'Tipo de beneficio desconocido: %(kinds)s.',
+                kinds=', '.join(sorted(unknown))))
+        param = self.env['hr.main.parameter'].get_main_parameter(company)
+        advance_types = self.env['hr.advance.type'].union(
+            param['%s_advance_id' % kind] for kind in kinds)
+        loan_types = self.env['hr.loan.type'].union(
+            param['%s_loan_id' % kind] for kind in kinds)
+        return advance_types, loan_types
+
+    @api.model
+    def _l10n_pe_pending_advances(self, employee, kinds, on_date=None,
+                                  company=None):
+        """Adelantos y cuotas de préstamo pendientes (``not payed``) del
+        trabajador de los tipos BBSS ``kinds`` (``'grat'``, ``'cts'``,
+        ``'liqui'``, ``'vaca'`` o una tupla de ellos), con fecha de
+        descuento o vencimiento hasta ``on_date`` (sin fecha: todos, como en
+        la liquidación). Devuelve ``(adelantos, cuotas)`` ordenados por
+        fecha."""
+        company = company or employee.company_id
+        advance_types, loan_types = self._l10n_pe_benefit_types(
+            kinds, company)
+        base = [('employee_id', '=', employee.id),
+                ('company_id', '=', company.id)]
+        advances = self.env['hr.advance'].search(base + [
+            ('state', '=', 'not payed'),
+            ('advance_type_id', 'in', advance_types.ids),
+        ] + (['|', ('discount_date', '=', False),
+              ('discount_date', '<=', on_date)] if on_date else []),
+            order='discount_date, id')
+        loans = self.env['hr.loan.line'].search(base + [
+            ('validation', '=', 'not payed'),
+            ('loan_type_id', 'in', loan_types.ids),
+        ] + ([('date', '<=', on_date)] if on_date else []),
+            order='date, id')
+        return advances, loans
+
+    def _l10n_pe_benefit_discounted(self, kinds=BENEFIT_KINDS):
+        """Adelantos y cuotas BBSS ya descontados en esta boleta."""
+        self.ensure_one()
+        advance_types, loan_types = self._l10n_pe_benefit_types(
+            kinds, self.company_id)
+        advances = self.env['hr.advance'].search([
+            ('l10n_pe_payslip_id', '=', self.id),
+            ('advance_type_id', 'in', advance_types.ids)])
+        loans = self.env['hr.loan.line'].search([
+            ('l10n_pe_payslip_id', '=', self.id),
+            ('loan_type_id', 'in', loan_types.ids)])
+        return advances, loans
+
+    def _l10n_pe_discount_benefit_advances(self, kinds, on_date=None,
+                                           cap=None):
+        """Descuenta en esta boleta (en borrador) los adelantos y cuotas
+        BBSS pendientes de ``kinds`` hasta ``on_date``: los marca pagados
+        con esta boleta y fija el input de cada tipo con todo lo
+        descontado en ella (exportar dos veces no duplica). Con ``cap``
+        (p. ej. el 50 % de la CTS, art. 40 del TUO de la Ley de CTS) se
+        descuenta como máximo ese importe: el importe que lo rebasa se
+        parte y el resto queda pendiente. Devuelve lo descontado ahora.
+
+        El proceso que llama recalcula la boleta después."""
+        self.ensure_one()
+        ensure_slips_draft(self)
+        advances, loans = self._l10n_pe_pending_advances(
+            self.employee_id, kinds, on_date=on_date,
+            company=self.company_id)
+        # Lo descontado antes en esta boleta cuenta para el tope.
+        done_advances, done_loans = self._l10n_pe_benefit_discounted(kinds)
+        room = None if cap is None else custom_round(
+            cap - sum(done_advances.mapped('amount'))
+            - sum(done_loans.mapped('amount')), 2)
+        discounted = 0.0
+        for record, state_field in [(adv, 'state') for adv in advances] \
+                + [(line, 'validation') for line in loans]:
+            if room is not None and room <= 0:
+                break
+            amount = record.amount
+            if room is not None and amount > room:
+                # Se cobra hasta el tope; el saldo sigue pendiente.
+                record.copy({'amount': custom_round(amount - room, 2)})
+                amount = room
+                record.amount = amount
+            record.write({state_field: 'paid out',
+                          'l10n_pe_payslip_id': self.id})
+            discounted += amount
+            if room is not None:
+                room = custom_round(room - amount, 2)
+        done_advances, done_loans = self._l10n_pe_benefit_discounted(kinds)
+        totals = defaultdict(float)
+        for advance in done_advances:
+            totals[advance.advance_type_id.input_id] += advance.amount
+        for line in done_loans:
+            totals[line.loan_type_id.input_id] += line.amount
+        totals.pop(self.env['hr.salary.rule'], None)
+        for input_type, amount in totals.items():
+            # Si el input lo comparte un tipo ordinario, se conserva lo
+            # que este ya había importado en la boleta.
+            ordinary = sum(self.env['hr.advance'].search([
+                ('l10n_pe_payslip_id', '=', self.id),
+                ('advance_type_id.input_id', '=', input_type.id),
+                ('id', 'not in', done_advances.ids)]).mapped('amount')) \
+                + sum(self.env['hr.loan.line'].search([
+                    ('l10n_pe_payslip_id', '=', self.id),
+                    ('loan_type_id.input_id', '=', input_type.id),
+                    ('id', 'not in', done_loans.ids)]).mapped('amount'))
+            self._set_pe_input_amount(input_type, amount + ordinary)
+        return custom_round(discounted, 2)
 
 
 class HrPayslipRun(models.Model):
